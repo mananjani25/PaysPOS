@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">POS Android</string>
+    <string name="tv_pos">POS</string>
+    <string name="tv_Info">Enterprise Cloud Point of Sale</string>
+    <string name="tv_hint_email">Email Address</string>
+    <string name="tv_hint_password">Password</string>
+    <string name="tv_login">Login</string>
+    <string name="tv_info_provider">If you forgot password, please contact your sales provider</string>
+    <string name="tv_pos_2021">&#169; POS 2021</string>
 </resources>
