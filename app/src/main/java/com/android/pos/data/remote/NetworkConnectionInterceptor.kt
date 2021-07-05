@@ -1,4 +1,4 @@
-package com.example.financialinvestment.data.remote
+package com.android.pos.data.remote
 
 import android.content.Context
 import android.net.ConnectivityManager
@@ -10,9 +10,6 @@ import com.android.pos.utils.extensions.NoInternetException
 import okhttp3.Interceptor
 import okhttp3.Response
 
-/**
- * Created by Gaurav Kumawat on 26-06-2020.
- */
 class NetworkConnectionInterceptor(
     context: Context
 ) : Interceptor {

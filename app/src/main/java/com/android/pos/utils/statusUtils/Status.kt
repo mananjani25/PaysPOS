@@ -1,4 +1,4 @@
-package com.example.financialinvestment.utils.statusUtils
+package com.android.pos.utils.statusUtils
 
 enum class Status {
     SUCCESS,

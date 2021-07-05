@@ -1,4 +1,4 @@
-package com.example.financialinvestment.data.remote
+package com.android.pos.data.remote
 
 object Constants {
     const val DATABASE_NAME = "finInvest-db"

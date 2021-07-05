@@ -1,9 +1,9 @@
-package com.example.financialinvestment.di
+package com.android.pos.di
 
 import android.content.Context
 import com.android.pos.BuildConfig
 import com.android.pos.data.remote.ApiServie
-import com.example.financialinvestment.data.remote.NetworkConnectionInterceptor
+import com.android.pos.data.remote.NetworkConnectionInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

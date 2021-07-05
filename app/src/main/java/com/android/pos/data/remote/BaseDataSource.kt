@@ -2,7 +2,7 @@ package com.android.pos.data.remote
 
 import android.util.Log
 import com.android.pos.utils.extensions.NoInternetException
-import com.example.financialinvestment.utils.statusUtils.Resource
+import com.android.pos.utils.statusUtils.Resource
 import org.json.JSONObject
 import retrofit2.HttpException
 import java.net.SocketTimeoutException

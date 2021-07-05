@@ -1,10 +1,4 @@
-package com.android.pos.data.dao.db
-
-import android.content.Context
-import androidx.room.Database
-import androidx.room.Room
-import androidx.room.RoomDatabase
-import com.example.financialinvestment.data.remote.Constants.DATABASE_NAME
+package com.android.pos.data.db
 
 
 /*@Database(

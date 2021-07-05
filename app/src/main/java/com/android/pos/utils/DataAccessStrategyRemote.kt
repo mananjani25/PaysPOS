@@ -3,9 +3,8 @@ package com.android.pos.utils
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.liveData
-import androidx.lifecycle.map
-import com.example.financialinvestment.utils.statusUtils.Resource
-import com.example.financialinvestment.utils.statusUtils.Status
+import com.android.pos.utils.statusUtils.Resource
+import com.android.pos.utils.statusUtils.Status
 
 import kotlinx.coroutines.Dispatchers
 import java.lang.Exception
