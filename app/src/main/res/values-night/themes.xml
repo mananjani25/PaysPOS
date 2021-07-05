@@ -13,4 +13,20 @@
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
+
+    <style name="CustomFontRegularStyle" parent="@android:style/TextAppearance.Medium">
+        <item name="android:fontFamily">@font/sf_pro_display_regular</item>
+    </style>
+
+    <style name="CustomFontMediumStyle" parent="@android:style/TextAppearance.Medium">
+        <item name="android:fontFamily">@font/sf_pro_display_medium</item>
+    </style>
+
+    <style name="CustomFontSemiBold" parent="@android:style/TextAppearance.Medium">
+        <item name="android:fontFamily">@font/sf_pro_display_semibold</item>
+    </style>
+    <style name="CustomFontBold" parent="@android:style/TextAppearance.Medium">
+        <item name="android:fontFamily">@font/sf_pro_display_bold</item>
+    </style>
+
 </resources>

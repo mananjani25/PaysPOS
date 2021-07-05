@@ -11,4 +11,12 @@
     <color name="cool_grey">#8d989e</color>
     <color name="hint_color">#4c000000</color>
     <color name="btnColorDark">#2997cc</color>
+    <color name="btnColor">#007AFF</color>
+    <color name="view">#DBDCE0</color>
+    <color name="boxColor">#9FA2A9</color>
+    <color name="txtColor">#292E32</color>
+    <color name="hintColor">#C5C5C6</color>
+    <color name="viewTextColor">#111214</color>
+    <color name="gray_border">#F4F4F8</color>
+    <color name="gray_rect">#E6E5E8</color>
 </resources>
