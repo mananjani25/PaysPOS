@@ -1,4 +1,4 @@
-package com.android.pos.ui.fragment
+package com.android.pos.ui.ui.activities.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater

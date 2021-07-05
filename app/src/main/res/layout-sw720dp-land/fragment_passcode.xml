@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/black"
     android:gravity="center_horizontal"
     android:orientation="vertical"
     tools:ignore="MissingDefaultResource">
@@ -22,43 +23,27 @@
             android:orientation="horizontal"
             android:padding="15dp">
 
-            <TextView
+            <ImageView
                 android:id="@+id/tvSupportTag"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                style="@style/CustomFontRegularStyle"
-                android:text="Support Number:\n(802)255-4767"
+                android:src="@drawable/ic_cancel"
                 android:textSize="14sp" />
-
-            <ImageView
-                android:id="@+id/pin_code_logo_imageview"
-                android:layout_width="0dp"
-                android:layout_height="30dp"
-                android:layout_marginTop="2dp"
-                android:layout_weight="1"
-                android:visibility="visible"
-                tools:src="@android:drawable/sym_def_app_icon"
-                tools:visibility="visible" />
 
             <TextView
                 android:id="@+id/tvWelcomeTag"
-                android:layout_width="wrap_content"
+                style="@style/CustomFontRegularStyle"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:drawablePadding="10dp"
                 android:gravity="center"
-                style="@style/CustomFontRegularStyle"
-                android:text="Welcome, ipos"
-                android:textSize="14sp"
-                app:drawableEndCompat="@drawable/logout" />
+                android:text="@string/tv_clock_in_out"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_20ssp" />
 
         </LinearLayout>
-
-        <View
-            android:id="@+id/viewLine"
-            android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:background="@color/colorTextBold" />
     </LinearLayout>
 
     <LinearLayout
@@ -74,7 +59,8 @@
             android:gravity="center"
             android:padding="20.0dp"
             android:text="Enter your passcode"
-            android:textSize="18.0sp" />
+            android:textColor="@color/white"
+            android:textSize="@dimen/_15ssp" />
 
         <in.arjsna.passcodeview.PassCodeView
             android:id="@+id/passCodeView"
@@ -85,7 +71,7 @@
             app:digits="4"
             app:empty_drawable="@drawable/empty_dot"
             app:filled_drawable="@drawable/bg_round"
-            app:key_text_size="30.0sp" />
+            app:key_text_size="@dimen/_20ssp" />
     </LinearLayout>
 
 </RelativeLayout>

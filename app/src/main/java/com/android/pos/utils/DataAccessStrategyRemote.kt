@@ -1,0 +1,37 @@
+package com.android.pos.utils
+
+import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.liveData
+import androidx.lifecycle.map
+import com.example.financialinvestment.utils.statusUtils.Resource
+import com.example.financialinvestment.utils.statusUtils.Status
+
+import kotlinx.coroutines.Dispatchers
+import java.lang.Exception
+
+fun <T> performGetOperationNew(
+/*databaseQuery: () -> LiveData<T>,*/
+    networkCall: suspend () -> Resource<T>
+    /* saveCallResult: suspend (A) -> Unit*/
+): LiveData<Resource<T>> =
+    liveData(Dispatchers.IO) {
+        emit(Resource.loading())
+        /*val source = databaseQuery.invoke().map { Resource.success(it) }
+        emitSource(source)*/
+
+        try {
+            val responseStatus = networkCall.invoke()
+            if (responseStatus.status == Status.SUCCESS) {
+                // saveCallResult(responseStatus.data!!)
+                // emitSource(source)
+                emit(Resource.success(responseStatus.data!!))
+
+            } else if (responseStatus.status == Status.ERROR) {
+                emit(Resource.error(responseStatus.message!!))
+                //emitSource(source)
+            }
+        } catch (e: Exception) {
+            Log.d("exception123", "::" + e.message)
+        }
+    }
