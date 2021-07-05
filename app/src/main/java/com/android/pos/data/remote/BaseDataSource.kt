@@ -1,14 +1,10 @@
 package com.android.pos.data.remote
 
 import android.util.Log
-import com.android.pos.utils.NoInternetException
-
+import com.android.pos.utils.extensions.NoInternetException
 import com.example.financialinvestment.utils.statusUtils.Resource
-
-
 import org.json.JSONObject
 import retrofit2.HttpException
-import java.io.IOException
 import java.net.SocketTimeoutException
 
 enum class ErrorCodesNew(val code: Int) {
@@ -49,13 +45,6 @@ abstract class BaseDataSource {
                     message = e.message!!
                 ), null
             )
-
-            /*else -> Resource.error(
-                getErrorMessage(
-                    "",
-                    Int.MAX_VALUE
-                ), null
-            )*/
         }
     }
 
@@ -81,6 +70,5 @@ abstract class BaseDataSource {
 
         return ""
     }
-
 
 }

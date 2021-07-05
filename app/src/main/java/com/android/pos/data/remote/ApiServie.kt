@@ -6,9 +6,8 @@ import retrofit2.Call
 import retrofit2.http.*
 
 
-interface ApiServieNew {
-    /*@GET("character")
-    suspend fun getAllCharacters(): CharacterList*/
+interface ApiServie {
+
 
     @FormUrlEncoded
     @POST("users/session/otp")

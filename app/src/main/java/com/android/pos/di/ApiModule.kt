@@ -2,7 +2,7 @@ package com.example.financialinvestment.di
 
 import android.content.Context
 import com.android.pos.BuildConfig
-import com.android.pos.data.remote.ApiServieNew
+import com.android.pos.data.remote.ApiServie
 import com.example.financialinvestment.data.remote.NetworkConnectionInterceptor
 import dagger.Module
 import dagger.Provides
@@ -19,9 +19,6 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object ApiModule {
 
-    private const val BASE_URL = "https://rickandmortyapi.com/api/"
-
-    //  private const val BASE_URL_Meal = "https://www.themealdb.com/api/json/v1/1/"
     private const val BASE_URL_Meal = "http://13.56.17.221/api/v1/"
 
     @Singleton
@@ -33,7 +30,7 @@ object ApiModule {
 
     @Singleton
     @Provides
-    fun getRetrofit(networkConnectionInterceptor: NetworkConnectionInterceptor): ApiServieNew =
+    fun getRetrofit(networkConnectionInterceptor: NetworkConnectionInterceptor): ApiServie =
         Retrofit.Builder()
             .baseUrl(BASE_URL_Meal)
             .client(
@@ -48,14 +45,10 @@ object ApiModule {
                             logging.setLevel(HttpLoggingInterceptor.Level.BODY)
                             client.addInterceptor(logging)
                             client.addInterceptor(networkConnectionInterceptor)
-                            //  client.addInterceptor(NetworkConnectionInterceptor())
                         }
                     }.build()
             )
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-            .create(ApiServieNew::class.java)
-
-
-    // val apiService: ApiService = getRetrofit().create(ApiService::class.java)
+            .create(ApiServie::class.java)
 }

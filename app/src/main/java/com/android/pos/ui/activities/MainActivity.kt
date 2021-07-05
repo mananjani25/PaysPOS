@@ -10,12 +10,12 @@ import kotlinx.android.synthetic.main.fragment_passcode.*
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.fragment_login)
+        setContentView(R.layout.fragment_passcode)
 
-       /* passCodeView.setKeyTextColor(resources.getColor(R.color.white))
+         passCodeView.setKeyTextColor(resources.getColor(R.color.white))
 
-        val typeface: Typeface? =
-            ResourcesCompat.getFont(this, R.font.sf_pro_display_regular)
-        passCodeView.setTypeFace(typeface)*/
+         val typeface: Typeface? =
+             ResourcesCompat.getFont(this, R.font.sf_pro_display_regular)
+         passCodeView.setTypeFace(typeface)
     }
 }

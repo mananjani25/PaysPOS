@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import com.example.financialinvestment.data.remote.Constants.DATABASE_NAME
 
 
-@Database(
+/*@Database(
     entities = [],
     version = 1
 )
@@ -34,4 +34,4 @@ abstract class AppDatabase : RoomDatabase() {
                 .build()
     }
 
-}
+}*/

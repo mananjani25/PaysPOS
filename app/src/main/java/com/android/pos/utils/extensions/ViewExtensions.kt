@@ -1,4 +1,4 @@
-package com.android.pos.utils
+package com.android.pos.utils.extensions
 
 
 import android.content.Context
@@ -19,6 +19,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import com.android.pos.utils.Event
 import com.google.android.material.snackbar.Snackbar
 import java.io.IOException
 

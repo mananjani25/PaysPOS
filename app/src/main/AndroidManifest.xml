@@ -3,13 +3,13 @@
     package="com.android.pos">
 
     <supports-screens
-        android:resizeable="true"
-        android:normalScreens="true"
+        android:anyDensity="true"
         android:largeScreens="true"
-        android:anyDensity="true"/>
+        android:normalScreens="true"
+        android:resizeable="true" />
 
     <application
-
+        android:name=".MainApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"

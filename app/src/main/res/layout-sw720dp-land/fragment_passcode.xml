@@ -13,7 +13,7 @@
         android:id="@+id/llChild"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="@dimen/_10sdp"
         android:gravity="center"
         android:orientation="vertical">
 
@@ -21,27 +21,26 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:padding="15dp">
+            android:padding="@dimen/_15sdp">
 
             <ImageView
-                android:id="@+id/tvSupportTag"
+                android:id="@+id/Cancel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:src="@drawable/ic_cancel"
-                android:textSize="14sp" />
+                android:layout_gravity="center"
+                android:src="@drawable/ic_cancel" />
 
             <TextView
                 android:id="@+id/tvWelcomeTag"
-                style="@style/CustomFontRegularStyle"
-                android:layout_width="match_parent"
+                style="@style/CustomFontMediumStyle"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:drawablePadding="10dp"
+                android:layout_weight="1"
                 android:gravity="center"
                 android:text="@string/tv_clock_in_out"
                 android:textColor="@color/white"
-                android:textSize="@dimen/_20ssp" />
+                android:textSize="@dimen/_15ssp" />
 
         </LinearLayout>
     </LinearLayout>
@@ -50,24 +49,25 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/llChild"
-        android:orientation="vertical"
-        android:padding="@dimen/_10sdp">
+        android:orientation="vertical">
 
         <TextView
+            style="@style/CustomFontRegularStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:gravity="center"
-            android:padding="20.0dp"
-            android:text="Enter your passcode"
+            android:padding="@dimen/_8sdp"
+            android:text="@string/tv_enter_your_passcode"
             android:textColor="@color/white"
-            android:textSize="@dimen/_15ssp" />
+            android:textSize="@dimen/_20ssp" />
 
         <in.arjsna.passcodeview.PassCodeView
             android:id="@+id/passCodeView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="25.0dp"
-            app:digit_size="30.0dp"
+            android:padding="@dimen/_25sdp"
+            app:digit_size="@dimen/_10sdp"
             app:digits="4"
             app:empty_drawable="@drawable/empty_dot"
             app:filled_drawable="@drawable/bg_round"

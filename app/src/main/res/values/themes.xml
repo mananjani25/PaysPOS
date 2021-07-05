@@ -27,4 +27,8 @@
         <item name="android:fontFamily">@font/sf_pro_display_semibold</item>
     </style>
 
+    <style name="CustomFontBold" parent="@android:style/TextAppearance.Medium">
+        <item name="android:fontFamily">@font/sf_pro_display_bold</item>
+    </style>
+
 </resources>

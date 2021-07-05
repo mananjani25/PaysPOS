@@ -5,7 +5,8 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 import com.android.pos.R
-import com.android.pos.utils.NoInternetException
+import com.android.pos.utils.extensions.NoInternetException
+
 import okhttp3.Interceptor
 import okhttp3.Response
 
