@@ -27,4 +27,29 @@
     <!--Validation messages-->
 
     <string name="mobile_number_validate">Please enter Mobile Number</string>
+    <string name="create_item">Create Item</string>
+    <string name="name">Name</string>
+    <string name="plus">+</string>
+    <string name="options">Options</string>
+    <string name="add_options">Add Options</string>
+    <string name="add_a_custom_set_of_options_to_an_item_to_create_variations_learn_more"><![CDATA[Add a custom set of options to an item to create variations. Learn more >]]></string>
+    <string name="price_and_inventory">Price and inventory</string>
+    <string name="unit_type">Unit Type</string>
+    <string name="per_item">Per Item</string>
+    <string name="choose_between_selling_whole_or_decimal_quantities_for_the_item_learn_more">Choose between selling whole or decimal quantities for the item. Learn more</string>
+    <string name="price">Price</string>
+    <string name="sku">SKU</string>
+    <string name="stock">Stock</string>
+    <string name="receive_stock">Receive Stock</string>
+    <string name="add_variation">Add Variation</string>
+    <string name="leave_the_price_blank_to_enter_at_the_time_of_sale">Leave the price blank to enter at the time of sale.</string>
+    <string name="modifier_sets">Modifier sets</string>
+    <string name="description">Description</string>
+    <string name="modifier_set_name">Modifier Set Name</string>
+    <string name="to_set_pre_selected_modifiers_or_update_the_minimum_maximum_number_of_modifiers_that_can_be_applied_visit_your_dashboard_if_you_modify_this_set_in_point_of_sale_it_will_only_apply_the_basic_settings_below">To set pre-selected modifiers or update the minimum/maximum number of modifiers that can be applied, visit your Dashboard. If you modify this set in Point of Sale, it will only apply the basic settings below.</string>
+    <string name="modifiers">Modifiers</string>
+    <string name="modifier">Modifier</string>
+    <string name="_0_00">$0.00</string>
+    <string name="apply_set">Apply Set</string>
+    <string name="new_modifier_set">New Modifier Set</string>
 </resources>
