@@ -25,7 +25,7 @@
                 android:layout_centerVertical="true"
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/_10sdp"
-                app:srcCompat="@drawable/ic_cancel"
+                app:srcCompat="@drawable/ic_cancel_black"
                 app:tint="@color/viewTextColor" />
 
             <androidx.appcompat.widget.AppCompatTextView
