@@ -19,8 +19,9 @@
     <color name="viewTextColor">#111214</color>
     <color name="gray_border">#F4F4F8</color>
     <color name="gray_rect">#E6E5E8</color>
-    <color name="hint_color_">#B6B6B7</color>
+    <color name="gray_border_1">#F0F0F2</color>
     <color name="gray_color">#A5A5A5</color>
     <color name="btnColorDark_">#00A3E0</color>
     <color name="btn_gray_black">#292E32</color>
+    <color name="txtColorGray">#F8F8F8</color>
 </resources>

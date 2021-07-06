@@ -24,7 +24,28 @@
     <string name="loading">Loading…</string>
     <string name="no_internet">Internet is required for the application to work. Please enable the internet and try again.</string>
 
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="phone">Phone Number</string>
+    <string name="street">Street</string>
+    <string name="zip">Zip</string>
+    <string name="state">State</string>
+    <string name="city">City</string>
+    <string name="company">Company</string>
+    <string name="reference_id">Reference ID</string>
+    <string name="birthday">Birthday</string>
+    <string name="groups">Groups</string>
+
+
     <!--Validation messages-->
 
     <string name="mobile_number_validate">Please enter Mobile Number</string>
+    <string name="tv_personal_info">Personal Info</string>
+    <string name="tv_jobs">Jobs</string>
+    <string name="tv_primary_job_title">Primary job title</string>
+    <string name="tv_hourly_rate">Hourly Rate</string>
+    <string name="tv_access">Access</string>
+    <string name="tv_permission_set">Permission set</string>
+    <string name="tv_personal_passcode">Personal passcode</string>
+    <string name="tv_location">Location</string>
 </resources>
