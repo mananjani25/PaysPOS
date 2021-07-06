@@ -48,4 +48,8 @@
     <string name="tv_permission_set">Permission set</string>
     <string name="tv_personal_passcode">Personal passcode</string>
     <string name="tv_location">Location</string>
+    <string name="tv_create_team_member">Create Team Member</string>
+    <string name="tv_info_email">Adding an email will invite this team member to create their login for POS.</string>
+    <string name="tv_add_job_title">Add job title</string>
+    <string name="tv_team_permissions">Team Permissions</string>
 </resources>
