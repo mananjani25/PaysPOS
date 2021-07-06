@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.android.pos.R
 import com.android.pos.data.model.requestModel.MobileNumberRequestModel
 import com.android.pos.data.repositories.PosRepository
+import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,10 +16,11 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
-
-
 @HiltViewModel
-class MobileNumberViewModel @Inject constructor(private val posRepository: PosRepository) :
+class MobileNumberViewModel @Inject constructor(
+    private val posRepository: PosRepository,
+    private val prefProvider: PrefProvider
+) :
     ViewModel() {
 
     val loginDetails = MutableLiveData(MobileNumberRequestModel())
