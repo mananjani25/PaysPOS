@@ -1,15 +1,21 @@
 package com.android.pos.data.db
 
+import android.content.Context
+import androidx.room.Database
+import androidx.room.Room
+import androidx.room.RoomDatabase
+import com.android.pos.data.model.CharacterModel
+import com.android.pos.data.remote.Constants.DATABASE_NAME
 
-/*@Database(
-    entities = [],
+
+@Database(
+    entities = [CharacterModel::class],
     version = 1
 )
 
 abstract class AppDatabase : RoomDatabase() {
 
-
-
+    abstract fun characterDao(): CharacterDao
 
     companion object {
         @Volatile
@@ -28,4 +34,4 @@ abstract class AppDatabase : RoomDatabase() {
                 .build()
     }
 
-}*/
+}
