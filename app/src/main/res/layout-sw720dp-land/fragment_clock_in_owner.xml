@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:ignore="MissingDefaultResource">
 
     <ImageView
         android:id="@+id/imgCacncel"
@@ -10,7 +12,7 @@
         android:layout_height="@dimen/_23sdp"
         android:layout_marginStart="@dimen/_10sdp"
         android:layout_marginTop="@dimen/_10sdp"
-        android:src="@drawable/ic_cancel"
+        android:src="@drawable/ic_cancel_white"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:tint="#292E32" />
@@ -19,10 +21,10 @@
         android:id="@+id/txtTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:fontFamily="@font/sf_pro_display_bold"
         android:text="Rohan Patange"
         android:textColor="#292E32"
         android:textSize="@dimen/_12ssp"
-        android:fontFamily="@font/sf_pro_display_bold"
         app:layout_constraintBottom_toBottomOf="@+id/imgCacncel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -34,7 +36,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/_10sdp"
         android:fontFamily="@font/sf_pro_display_semibold"
-        android:text="Clock In/Out"
+        android:text="@string/tv_clock_in_out"
         android:textColor="#00A3E0"
         android:textSize="@dimen/_10ssp"
         app:layout_constraintBottom_toBottomOf="@+id/txtTitle"
@@ -91,7 +93,7 @@
         android:ems="15"
         android:gravity="center"
         android:paddingVertical="@dimen/_10sdp"
-        android:text="Continue to POS"
+        android:text="@string/tv_continue_to_pos"
         android:textColor="@color/white"
         android:textSize="@dimen/_12ssp"
         app:layout_constraintEnd_toEndOf="parent"

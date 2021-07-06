@@ -62,6 +62,7 @@
                 android:imeOptions="actionNext"
                 android:inputType="textEmailAddress"
                 android:padding="@dimen/_5sdp"
+                android:text="@={viewModel.loginDetails.mobileNumber}"
                 android:textColor="@color/black"
                 android:textColorHint="@color/hint_color"
                 android:textSize="@dimen/_15ssp" />
@@ -76,6 +77,7 @@
                 android:background="@drawable/bg_button_border"
                 android:ems="15"
                 android:gravity="center"
+                android:onClick="@{() -> viewModel.submit()}"
                 android:padding="@dimen/_5sdp"
                 android:text="@string/tv_login"
                 android:textColor="@color/white"
