@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- For SDP-->
 
-    //For SDP
     <dimen name="_1mdp">@dimen/_3sdp</dimen>
     <dimen name="_2mdp">@dimen/_7sdp</dimen>
     <dimen name="_3mdp">@dimen/_10sdp</dimen>
@@ -64,11 +64,7 @@
     <dimen name="_60mdp">@dimen/_205sdp</dimen>
 
 
-
-
-
-
-    //For SSP
+    <!--For SSP-->
     <dimen name="_1msp">@dimen/_3ssp</dimen>
     <dimen name="_2msp">@dimen/_7ssp</dimen>
     <dimen name="_3msp">@dimen/_10ssp</dimen>
