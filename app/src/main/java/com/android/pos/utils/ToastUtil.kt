@@ -1,4 +1,4 @@
-package com.app.newsappmvvm.utils
+package com.android.pos.utils
 
 import android.content.Context
 import android.view.Gravity

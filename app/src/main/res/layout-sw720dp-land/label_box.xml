@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:layout_marginTop="@dimen/_20sdp"
+    android:layout_marginBottom="@dimen/_20sdp"
+    android:orientation="vertical"
+    tools:ignore="MissingDefaultResource">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:layout_width="@dimen/_60sdp"
+        android:layout_height="@dimen/_45sdp"
+        android:layout_gravity="center"
+        android:background="@color/boxColor"
+        android:padding="@dimen/_10sdp" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        style="@style/CustomFontSemiBold"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@drawable/edt_border_gray"
+        android:gravity="center"
+        android:padding="@dimen/_2sdp"
+        android:text="@string/tap_to_edit"
+        android:textColor="@color/txtColor"
+        android:textSize="@dimen/_9ssp" />
+
+
+</androidx.appcompat.widget.LinearLayoutCompat>

@@ -8,6 +8,7 @@
         android:normalScreens="true"
         android:resizeable="true" />
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <application
         android:name=".MainApplication"
         android:allowBackup="true"
@@ -17,7 +18,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.POSAndroid">
         <activity
-            android:name=".ui.ui.activities.MainActivity"
+            android:name=".ui.activities.MainActivity"
             android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

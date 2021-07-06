@@ -6,7 +6,9 @@
     android:background="@color/white"
     android:gravity="center"
     android:orientation="vertical"
+    tools:context=".ui.activity.MainActivity"
     tools:ignore="MissingDefaultResource">
+
 
     <androidx.appcompat.widget.AppCompatTextView
         style="@style/CustomFontBold"

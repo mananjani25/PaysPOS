@@ -1,4 +1,4 @@
-package com.example.financialinvestment.utils.statusUtils
+package com.android.pos.utils.statusUtils
 
 data class Resource<out T>(val status: Status, val data: T?, val message: String?) {
 

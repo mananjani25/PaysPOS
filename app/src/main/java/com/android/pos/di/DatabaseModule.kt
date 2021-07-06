@@ -1,4 +1,4 @@
-package com.example.financialinvestment.di
+package com.android.pos.di
 
 import android.content.Context
 
