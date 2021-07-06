@@ -27,14 +27,6 @@
     <string name="first_name">First Name</string>
     <string name="last_name">Last Name</string>
     <string name="phone">Phone Number</string>
-    <string name="street">Street</string>
-    <string name="zip">Zip</string>
-    <string name="state">State</string>
-    <string name="city">City</string>
-    <string name="company">Company</string>
-    <string name="reference_id">Reference ID</string>
-    <string name="birthday">Birthday</string>
-    <string name="groups">Groups</string>
 
 
     <!--Validation messages-->
@@ -52,4 +44,6 @@
     <string name="tv_info_email">Adding an email will invite this team member to create their login for POS.</string>
     <string name="tv_add_job_title">Add job title</string>
     <string name="tv_team_permissions">Team Permissions</string>
+    <string name="tv_clock_in">Clock In</string>
+    <string name="tv_continue_to_pos">Continue to POS</string>
 </resources>

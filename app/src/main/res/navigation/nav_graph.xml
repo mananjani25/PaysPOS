@@ -19,7 +19,7 @@
         android:id="@+id/clockInOwner"
         android:name="com.android.pos.ui.fragments.loginscreen.ClockInOwner"
         android:label="ClockInOwner"
-        tools:layout="@layout/fragment_clock_in_owner" >
+        tools:layout="@layout/fragment_clock_in_owner">
         <action
             android:id="@+id/action_clockInOwner_to_passcode"
             app:destination="@id/passcode"
@@ -29,7 +29,7 @@
         android:id="@+id/scheduledShifts"
         android:name="com.android.pos.ui.fragments.loginscreen.ScheduledShifts"
         android:label="ScheduledShifts"
-        tools:layout="@layout/fragment_scheduled_shift" >
+        tools:layout="@layout/fragment_scheduled_shift">
         <action
             android:id="@+id/action_scheduledShifts_to_passcode"
             app:destination="@id/passcode"

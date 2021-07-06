@@ -85,7 +85,7 @@
                         android:orientation="vertical">
 
                         <androidx.appcompat.widget.AppCompatTextView
-                            style="@style/CustomFontMediumStyle"
+                            style="@style/CustomFontBold"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
@@ -95,7 +95,7 @@
                             android:textSize="@dimen/_11ssp" />
 
                         <androidx.appcompat.widget.AppCompatEditText
-                            style="@style/CustomFontRegularStyle"
+                            style="@style/CustomFontSemiBold"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
@@ -118,7 +118,7 @@
                         android:orientation="vertical">
 
                         <androidx.appcompat.widget.AppCompatTextView
-                            style="@style/CustomFontMediumStyle"
+                            style="@style/CustomFontBold"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
@@ -128,7 +128,7 @@
                             android:textSize="@dimen/_11ssp" />
 
                         <androidx.appcompat.widget.AppCompatEditText
-                            style="@style/CustomFontRegularStyle"
+                            style="@style/CustomFontSemiBold"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
@@ -151,7 +151,7 @@
                     android:orientation="vertical">
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontMediumStyle"
+                        style="@style/CustomFontBold"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
@@ -161,7 +161,7 @@
                         android:textSize="@dimen/_11ssp" />
 
                     <androidx.appcompat.widget.AppCompatEditText
-                        style="@style/CustomFontRegularStyle"
+                        style="@style/CustomFontSemiBold"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
@@ -175,7 +175,7 @@
                         android:textSize="@dimen/_13ssp" />
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontMediumStyle"
+                        style="@style/CustomFontRegularStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
@@ -194,7 +194,7 @@
                     android:orientation="vertical">
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontMediumStyle"
+                        style="@style/CustomFontBold"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
@@ -204,7 +204,7 @@
                         android:textSize="@dimen/_11ssp" />
 
                     <androidx.appcompat.widget.AppCompatEditText
-                        style="@style/CustomFontRegularStyle"
+                        style="@style/CustomFontSemiBold"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
@@ -238,7 +238,7 @@
                         android:orientation="horizontal">
 
                         <androidx.appcompat.widget.AppCompatTextView
-                            style="@style/CustomFontMediumStyle"
+                            style="@style/CustomFontSemiBold"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
@@ -248,7 +248,7 @@
                             android:textSize="@dimen/_13ssp" />
 
                         <androidx.appcompat.widget.AppCompatTextView
-                            style="@style/CustomFontMediumStyle"
+                            style="@style/CustomFontSemiBold"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
@@ -283,7 +283,7 @@
                         android:orientation="horizontal">
 
                         <androidx.appcompat.widget.AppCompatTextView
-                            style="@style/CustomFontMediumStyle"
+                            style="@style/CustomFontSemiBold"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
@@ -293,7 +293,7 @@
                             android:textSize="@dimen/_13ssp" />
 
                         <androidx.appcompat.widget.AppCompatTextView
-                            style="@style/CustomFontMediumStyle"
+                            style="@style/CustomFontSemiBold"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
@@ -322,7 +322,7 @@
                         android:orientation="horizontal">
 
                         <androidx.appcompat.widget.AppCompatTextView
-                            style="@style/CustomFontMediumStyle"
+                            style="@style/CustomFontSemiBold"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
@@ -332,7 +332,7 @@
                             android:textSize="@dimen/_13ssp" />
 
                         <androidx.appcompat.widget.AppCompatTextView
-                            style="@style/CustomFontMediumStyle"
+                            style="@style/CustomFontSemiBold"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
@@ -368,7 +368,7 @@
                         android:orientation="horizontal">
 
                         <androidx.appcompat.widget.AppCompatTextView
-                            style="@style/CustomFontMediumStyle"
+                            style="@style/CustomFontSemiBold"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
@@ -378,7 +378,7 @@
                             android:textSize="@dimen/_13ssp" />
 
                         <androidx.appcompat.widget.AppCompatTextView
-                            style="@style/CustomFontMediumStyle"
+                            style="@style/CustomFontSemiBold"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
@@ -407,7 +407,7 @@
                         android:orientation="horizontal">
 
                         <androidx.appcompat.widget.AppCompatTextView
-                            style="@style/CustomFontMediumStyle"
+                            style="@style/CustomFontSemiBold"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
@@ -417,7 +417,7 @@
                             android:textSize="@dimen/_13ssp" />
 
                         <androidx.appcompat.widget.AppCompatTextView
-                            style="@style/CustomFontMediumStyle"
+                            style="@style/CustomFontSemiBold"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
