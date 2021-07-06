@@ -9,5 +9,35 @@
         android:id="@+id/login"
         android:name="com.android.pos.ui.fragments.loginscreen.LoginFragment"
         android:label="Login"
-        tools:layout="@layout/fragment_login" />
+        tools:layout="@layout/fragment_login">
+        <action
+            android:id="@+id/action_login_to_scheduledShifts"
+            app:destination="@id/scheduledShifts"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+    </fragment>
+    <fragment
+        android:id="@+id/clockInOwner"
+        android:name="com.android.pos.ui.fragments.loginscreen.ClockInOwner"
+        android:label="ClockInOwner"
+        tools:layout="@layout/fragment_clock_in_owner" >
+        <action
+            android:id="@+id/action_clockInOwner_to_passcode"
+            app:destination="@id/passcode"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+    </fragment>
+    <fragment
+        android:id="@+id/scheduledShifts"
+        android:name="com.android.pos.ui.fragments.loginscreen.ScheduledShifts"
+        android:label="ScheduledShifts"
+        tools:layout="@layout/fragment_scheduled_shift" >
+        <action
+            android:id="@+id/action_scheduledShifts_to_passcode"
+            app:destination="@id/passcode"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+    </fragment>
+    <fragment
+        android:id="@+id/passcode"
+        android:name="com.android.pos.ui.fragments.loginscreen.Passcode"
+        android:label="Passcode"
+        tools:layout="@layout/fragment_passcode" />
 </navigation>
