@@ -5,11 +5,14 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.graphics.Typeface
 import android.net.Uri
 import android.os.Build
+import android.util.TypedValue
 import android.view.ViewGroup
 import android.widget.*
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import com.android.pos.R
 
 
@@ -30,14 +33,28 @@ object AlertUtils {
         message: String?
     ): AlertDialog {
         val builder = AlertDialog.Builder(context)
+
         builder.setIcon(0)
-        builder.setTitle(context.getString(R.string.app_name))
+        setAlertTitle(context, builder)
         //		builder.setTitle(context.getString(R.string.alert));
         builder.setMessage(message)
         builder.setPositiveButton(context.getString(android.R.string.ok), null)
         val dialog = builder.show()
-        changeDefaultColor(dialog)
+        changeDefaultColor(dialog, context)
         return dialog
+    }
+
+    private fun setAlertTitle(
+        context: Context,
+        builder: AlertDialog.Builder
+    ) {
+        val title = TextView(context)
+        title.setText(context.getString(R.string.app_name))
+        title.setPadding(15, 10, 15, 0);
+        title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30f)
+        title.setTypeface(title.getTypeface(), Typeface.BOLD)
+        title.setTextColor(context.resources.getColor(R.color.btnColorDark))
+        builder.setCustomTitle(title)
     }
 
     /***
@@ -53,12 +70,12 @@ object AlertUtils {
     ): AlertDialog {
         val builder = AlertDialog.Builder(context)
         builder.setIcon(0)
-        builder.setTitle(title)
+        setAlertTitle(context, builder)
         //		builder.setTitle(context.getString(R.string.alert));
         builder.setMessage(message)
         builder.setNeutralButton(context.getString(android.R.string.ok), null)
         val dialog = builder.show()
-        changeDefaultColor(dialog)
+        changeDefaultColor(dialog, context)
         return dialog
     }
 
@@ -73,19 +90,23 @@ object AlertUtils {
         //builder.setNeutralButton(context.getString(R.string.ok), null);
         builder.setNeutralButton(context.getString(android.R.string.ok), listener)
         val dialog = builder.show()
-        changeDefaultColor(dialog)
+        changeDefaultColor(dialog, context)
         return dialog
     }
 
-    fun showAlertWithListener(context: Context, message: String?, listener: (Any, Any) -> Unit): AlertDialog {
+    fun showAlertWithListener(
+        context: Context,
+        message: String?,
+        listener: (Any, Any) -> Unit
+    ): AlertDialog {
         val builder = AlertDialog.Builder(context)
         builder.setIcon(0)
         builder.setCancelable(false)
-        builder.setTitle(context.getString(R.string.app_name))
+        setAlertTitle(context, builder)
         builder.setMessage(message)
         builder.setPositiveButton(context.getString(android.R.string.ok), listener)
         val dialog = builder.show()
-        changeDefaultColor(dialog)
+        changeDefaultColor(dialog, context)
         return dialog
     }
 
@@ -113,7 +134,7 @@ object AlertUtils {
         }
         builder.setOnCancelListener { dialog -> listener?.onClick(dialog, 0) }
         val dialog = builder.show()
-        changeDefaultColor(dialog)
+        changeDefaultColor(dialog, context)
         return dialog
     }
 
@@ -140,7 +161,7 @@ object AlertUtils {
         builder.setPositiveButton(context.getString(android.R.string.yes), onYesClick)
         builder.setNegativeButton(context.getString(android.R.string.no), null)
         val dialog = builder.show()
-      //  changeDefaultColor(dialog)
+        //  changeDefaultColor(dialog)
         return dialog
     }
 
@@ -171,7 +192,7 @@ object AlertUtils {
         }
         builder.setNegativeButton("Later", null)
         val dialog = builder.show()
-        changeDefaultColor(dialog)
+        changeDefaultColor(dialog, context)
         return dialog
     }
 
@@ -203,7 +224,7 @@ object AlertUtils {
         }
         builder.setNegativeButton(context.getString(android.R.string.cancel), null)
         val dialog = builder.show()
-        changeDefaultColor(dialog)
+        changeDefaultColor(dialog, context)
         return dialog
     }
 
@@ -231,7 +252,7 @@ object AlertUtils {
         builder.setNegativeButton(context.getString(android.R.string.cancel), null)
         builder.setPositiveButton(context.getString(android.R.string.ok), onOkClickListener)
         val dialog = builder.show()
-        changeDefaultColor(dialog)
+        changeDefaultColor(dialog, context)
         return dialog
     }
 
@@ -257,7 +278,7 @@ object AlertUtils {
         }
         builder.setNegativeButton(context.getString(android.R.string.cancel), null)
         val dialog = builder.show()
-        changeDefaultColor(dialog)
+        changeDefaultColor(dialog, context)
         return dialog
     }
 
@@ -281,7 +302,7 @@ object AlertUtils {
         }
         builder.setNegativeButton(context.getString(android.R.string.cancel), null)
         val dialog = builder.show()
-        changeDefaultColor(dialog)
+        changeDefaultColor(dialog, context)
         return dialog
     }
 
@@ -289,10 +310,20 @@ object AlertUtils {
      * Change default color theme for Alert dialog
      * @param dialog AlertDialog
      */
-    fun changeDefaultColor(dialog: AlertDialog) {
+    fun changeDefaultColor(dialog: AlertDialog, context: Context) {
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 // only for gingerbread and newer versions
+
+                val tvMessage = dialog.getWindow()?.findViewById<TextView>(android.R.id.message)
+                tvMessage?.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25f)
+                tvMessage?.setPadding(15, 0, 15, 0)
+
+                val typeface: Typeface? =
+                    ResourcesCompat.getFont(context, R.font.sf_pro_display_regular)
+
+                tvMessage?.setTypeface(typeface)
+
                 var b = dialog.getButton(DialogInterface.BUTTON_NEGATIVE)
                 b?.setTextColor(
                     ContextCompat.getColor(
@@ -300,6 +331,8 @@ object AlertUtils {
                         R.color.btnColorDark
                     )
                 )
+                b.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30f)
+                b?.setPadding(0, 0, 15, 10)
                 b = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
                 b?.setTextColor(
                     ContextCompat.getColor(
@@ -307,6 +340,8 @@ object AlertUtils {
                         R.color.btnColorDark
                     )
                 )
+                b.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30f)
+                b?.setPadding(0, 0, 15, 10)
                 b = dialog.getButton(DialogInterface.BUTTON_NEUTRAL)
                 b?.setTextColor(
                     ContextCompat.getColor(
@@ -314,6 +349,8 @@ object AlertUtils {
                         R.color.btnColorDark
                     )
                 )
+                b.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30f)
+                b?.setPadding(0, 0, 15, 10)
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                 val decorView = dialog.window
                     ?.decorView as ViewGroup
@@ -328,7 +365,8 @@ object AlertUtils {
                 val titleDivider = topPanel.getChildAt(2)
                 val titleTemplate = topPanel
                     .getChildAt(1) as LinearLayout
-                val alertTitle = titleTemplate.getChildAt(1) as androidx.appcompat.widget.AppCompatTextView
+                val alertTitle =
+                    titleTemplate.getChildAt(1) as androidx.appcompat.widget.AppCompatTextView
                 val textColor = ContextCompat.getColor(
                     dialog.context,
                     R.color.btnColorDark
@@ -344,6 +382,7 @@ object AlertUtils {
             // e.printStackTrace();
         }
     }
+
     fun isEmailValid(email: String): Boolean {
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }

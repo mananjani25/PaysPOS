@@ -3,6 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingDefaultResource">
 
+    <data>
+
+        <variable
+            name="loginViewModel"
+            type="com.android.pos.ui.fragments.loginscreen.LoginViewModel" />
+    </data>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -30,7 +37,6 @@
             android:textColor="@color/black"
             android:textSize="@dimen/_14ssp" />
 
-
         <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/edtEmail"
             style="@style/CustomFontSemiBold"
@@ -43,6 +49,7 @@
             android:imeOptions="actionNext"
             android:inputType="textEmailAddress"
             android:padding="@dimen/_8sdp"
+            android:text="@={loginViewModel.loginDetails.emailAddress}"
             android:textColor="@color/black"
             android:textColorHint="@color/hint_color"
             android:textSize="@dimen/_15ssp" />
@@ -61,6 +68,7 @@
             android:inputType="textPassword"
             android:padding="@dimen/_8sdp"
             android:textColor="@color/black"
+            android:text="@={loginViewModel.loginDetails.password}"
             android:textColorHint="@color/hint_color"
             android:textSize="@dimen/_15ssp" />
 
@@ -76,8 +84,10 @@
             android:gravity="center"
             android:padding="@dimen/_8sdp"
             android:text="@string/tv_login"
+            android:onClick="@{() -> loginViewModel.submit()}"
             android:textColor="@color/white"
             android:textSize="@dimen/_15ssp" />
+
 
         <androidx.appcompat.widget.AppCompatTextView
             style="@style/CustomFontRegularStyle"

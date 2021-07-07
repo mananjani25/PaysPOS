@@ -12,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.databinding.FragmentLoginBinding
 import com.android.pos.databinding.FragmentLoginTestBinding
+import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.hide
 import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.extensions.show
@@ -24,7 +25,7 @@ class LoginFragment : Fragment() {
 
     private lateinit var binding: FragmentLoginBinding
 
-    private val viewModel by viewModels<MobileNumberViewModel>()
+    private val viewModel by viewModels<LoginViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,10 +35,10 @@ class LoginFragment : Fragment() {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_login, container, false)
 
         binding.lifecycleOwner = this
-        //  binding.viewModel = viewModel
+        binding.loginViewModel = viewModel
 
-        //  setupSnackbar()
-        // observeShowProgress()
+          setupSnackbar()
+         observeShowProgress()
 
         return binding.root
     }
@@ -50,24 +51,24 @@ class LoginFragment : Fragment() {
         }
     }
 
-    /*private fun observeShowProgress() {
+    private fun observeShowProgress() {
         viewModel.showProgress.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
-                    binding.progressBar.show()
+                    ProgressUtils.showProgressDialog(requireActivity())
                 } else {
-                    binding.progressBar.hide()
+                    ProgressUtils.dismissProgressDialog()
                 }
             }
         })
-    }*/
+    }
 
-    /*private fun setupSnackbar() {
+    private fun setupSnackbar() {
 
         binding.root.liveSnackBar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
 
 
-    }*/
+    }
 
 
 }

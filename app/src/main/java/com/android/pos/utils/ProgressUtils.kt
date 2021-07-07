@@ -21,7 +21,7 @@ import com.android.pos.R
  * @author Vishal Patel
  * @version 1.0
  */
-class ProgressUtils(private val context: Context) {
+object ProgressUtils {
     private var builder: Dialog? = null
 
     /***
@@ -31,7 +31,7 @@ class ProgressUtils(private val context: Context) {
      * Like if you want to do 2 tasks at a time then just call this showProgressDialog with processCount=2 and then call dismissProgressDialog() method at every task finish
      */
     @JvmOverloads
-    fun showProgressDialog() {
+    fun showProgressDialog(context: Context) {
         if (builder == null)
             builder = Dialog(context)
 
@@ -57,7 +57,7 @@ class ProgressUtils(private val context: Context) {
     }
 
     @JvmOverloads
-    fun showProgressDialog(message: String?) {
+    fun showProgressDialog(message: String?,context: Context) {
         if (builder == null)
             builder = Dialog(context)
 

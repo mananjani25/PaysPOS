@@ -49,7 +49,9 @@
 
     <!--Validation messages-->
 
-    <string name="mobile_number_validate">Please enter Mobile Number</string>
+    <string name="email_validate">Please enter Email Address</string>
+    <string name="valid_email_validate">Please enter valid Email Address</string>
+    <string name="password_validate">Please enter  Password</string>
     <string name="tv_personal_info">Personal Info</string>
     <string name="tv_jobs">Jobs</string>
     <string name="tv_primary_job_title">Primary job title</string>

@@ -11,7 +11,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.fragment_custom_item)
+        setContentView(R.layout.parent_activity)
 
 //         passCodeView.setKeyTextColor(resources.getColor(R.color.white))
 //

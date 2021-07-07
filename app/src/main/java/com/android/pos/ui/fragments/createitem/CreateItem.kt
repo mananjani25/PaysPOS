@@ -1,4 +1,4 @@
-package com.android.pos.ui.fragments.loginscreen
+package com.android.pos.ui.fragments.createitem
 
 import android.os.Bundle
 import android.view.LayoutInflater

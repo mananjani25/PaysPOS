@@ -48,7 +48,7 @@
     </fragment>
     <fragment
         android:id="@+id/dashboard"
-        android:name="com.android.pos.ui.fragments.loginscreen.Dashboard"
+        android:name="com.android.pos.ui.fragments.dashboard.Dashboard"
         android:label="Dashboard"
         tools:layout="@layout/fragment_dashboard" >
         <action
@@ -58,7 +58,7 @@
     </fragment>
     <fragment
         android:id="@+id/createItem"
-        android:name="com.android.pos.ui.fragments.loginscreen.CreateItem"
+        android:name="com.android.pos.ui.fragments.createitem.CreateItem"
         android:label="CreateItem"
         tools:layout="@layout/create_item" >
         <action
@@ -68,7 +68,7 @@
     </fragment>
     <fragment
         android:id="@+id/createCategory"
-        android:name="com.android.pos.ui.fragments.loginscreen.CreateCategory"
+        android:name="com.android.pos.ui.fragments.createcategory.CreateCategory"
         android:label="CreateCategory" />
 
 

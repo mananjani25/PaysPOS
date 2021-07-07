@@ -1,12 +1,13 @@
 package com.android.pos.ui.fragments.loginscreen
 
 import android.text.TextUtils
+import android.util.Patterns
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.R
-import com.android.pos.data.model.requestModel.MobileNumberRequestModel
+import com.android.pos.data.model.requestModel.LoginRequestModel
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
@@ -17,13 +18,13 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class MobileNumberViewModel @Inject constructor(
+class LoginViewModel @Inject constructor(
     private val posRepository: PosRepository,
     private val prefProvider: PrefProvider
 ) :
     ViewModel() {
 
-    val loginDetails = MutableLiveData(MobileNumberRequestModel())
+    val loginDetails = MutableLiveData(LoginRequestModel())
 
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
@@ -33,16 +34,22 @@ class MobileNumberViewModel @Inject constructor(
 
     fun submit() {
 
-        if (TextUtils.isEmpty(loginDetails.value?.mobileNumber?.trim())) {
-            _snackbarText.value = Event(R.string.mobile_number_validate)
+        if (TextUtils.isEmpty(loginDetails.value?.emailAddress?.trim())) {
+            _snackbarText.value = Event(R.string.email_validate)
+        } else if (!Patterns.EMAIL_ADDRESS.matcher(loginDetails.value?.emailAddress?.trim())
+                .matches()
+        ) {
+            _snackbarText.value = Event(R.string.valid_email_validate)
+        } else if (TextUtils.isEmpty(loginDetails.value?.password?.trim())) {
+            _snackbarText.value = Event(R.string.password_validate)
         } else {
             _showProgress.value = Event(true)
 
             val data = HashMap<String, String>()
-            data["phone_number"] = loginDetails.value?.mobileNumber.toString()
-            data["country_code"] = "+91"
+            // data["phone_number"] = loginDetails.value?.mobileNumber.toString()
+            // data["country_code"] = "+91"
 
-            viewModelScope.launch {
+            /*viewModelScope.launch {
                 val resource = posRepository.sendOtp(data)
                 when (resource.status) {
                     Status.SUCCESS -> {
@@ -61,7 +68,7 @@ class MobileNumberViewModel @Inject constructor(
                         _showProgress.value = Event(true)
                     }
                 }
-            }
+            }*/
 
         }
 

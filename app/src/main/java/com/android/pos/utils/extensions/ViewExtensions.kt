@@ -19,6 +19,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.Event
 import com.google.android.material.snackbar.Snackbar
 import java.io.IOException
@@ -80,16 +81,17 @@ fun View.liveSnackBar(
     snackbarEvent.observe(lifecycleOwner, Observer { event ->
         event.getContentIfNotHandled()?.let {
             when (it) {
-                is Int -> showSnackbar(context.getString(it), timeLength)
-                is String -> showSnackbar(it, timeLength)
+                is Int -> showAlert(context.getString(it), timeLength)
+                is String -> showAlert(it, timeLength)
             }
 
         }
     })
 }
 
-fun View.showSnackbar(snackbarText: String, timeLength: Int) {
-    Snackbar.make(this, snackbarText, timeLength).show()
+fun View.showAlert(message: String, timeLength: Int) {
+    // Snackbar.make(this, snackbarText, timeLength).show()
+    AlertUtils.showAlert(context, message)
 }
 
 fun Context.getRandomMaterialColor(typeColor: String): Int {
