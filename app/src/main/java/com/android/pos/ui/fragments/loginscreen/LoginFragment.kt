@@ -34,10 +34,10 @@ class LoginFragment : Fragment() {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_login, container, false)
 
         binding.lifecycleOwner = this
-      //  binding.viewModel = viewModel
+        //  binding.viewModel = viewModel
 
-      //  setupSnackbar()
-       // observeShowProgress()
+        //  setupSnackbar()
+        // observeShowProgress()
 
         return binding.root
     }
