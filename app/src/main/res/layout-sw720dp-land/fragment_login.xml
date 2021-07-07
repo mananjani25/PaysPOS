@@ -100,7 +100,7 @@
             android:layout_weight="1"
             android:gravity="bottom|center"
             android:text="@string/tv_pos_2021"
-            android:textColor="@color/btn_gray_black"
+            android:textColor="@color/txtColor"
             android:textSize="@dimen/_12ssp" />
 
     </LinearLayout>

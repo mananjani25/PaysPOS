@@ -27,6 +27,25 @@
     <string name="last_name">Last Name</string>
     <string name="phone">Phone Number</string>
 
+    <string name="buttonOne">1</string>
+    <string name="buttonTwo">2</string>
+    <string name="buttonThree">3</string>
+
+
+    <string name="buttonFour">4</string>
+    <string name="buttonFive">5</string>
+    <string name="buttonSix">6</string>
+
+    <string name="buttonSeven">7</string>
+    <string name="buttonEight">8</string>
+    <string name="buttonNine">9</string>
+
+    <string name="buttonPlus">+</string>
+
+    <string name="buttonClear">.</string>
+
+    <string name="buttonZero">0</string>
+
 
     <!--Validation messages-->
 
@@ -75,6 +94,15 @@
     <string name="create_category">Create Category</string>
     <string name="search_modifiers">Search Modifiers</string>
     <string name="create_modifier_set">Create Modifier Set</string>
-    <string name="tv_custom_item">Custom Item</string>
     <string name="tv_home">Home</string>
+    <string name="tv_price">Price</string>
+    <string name="tv_quantity">Quantity</string>
+    <string name="tv_total">Total</string>
+    <string name="tv_item_name">Item Name</string>
+    <string name="tv_custom_item">Custom Item</string>
+    <string name="tv_add_to_inventory">Add to Inventory</string>
+    <string name="tv_apply_default_taxes">Apply default Taxes</string>
+    <string name="tv_add_item">Add Item</string>
+    <string name="tv_add_create_another"><![CDATA[Add & Create Another]]></string>
+    <string name="tv_cancel">Cancel</string>
 </resources>
