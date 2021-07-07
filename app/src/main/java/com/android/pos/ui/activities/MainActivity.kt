@@ -4,12 +4,21 @@ import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.navigation.NavController
+import androidx.navigation.findNavController
+import androidx.navigation.ui.setupWithNavController
 import com.android.pos.R
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.android.synthetic.main.parent_activity.*
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
+    private var navController: NavController? = null
+    private lateinit var listner: NavController.OnDestinationChangedListener
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -18,6 +27,26 @@ class MainActivity : AppCompatActivity() {
             window.statusBarColor = getColor(R.color.txtColorGray)
         }
         setContentView(R.layout.parent_activity)
+
+        val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
+        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+        navController = findNavController(R.id.navHostFrag)
+
+        listner = NavController.OnDestinationChangedListener { controller, destination, arguments ->
+
+            if (destination.id == R.id.dashboard) {
+                drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+            } else {
+                drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+
+            }
+        }
+        nav_view.setupWithNavController(navController!!)
+        val imgBack = nav_view.getHeaderView(0).findViewById<ImageView>(R.id.imgBack)
+        imgBack.setOnClickListener {
+            closeDrawer()
+
+        }
         // setContentView(R.layout.fragment_custom_item)
 
 
@@ -27,4 +56,37 @@ class MainActivity : AppCompatActivity() {
 //             ResourcesCompat.getFont(this, R.font.sf_pro_display_regular)
 //         passCodeView.setTypeFace(typeface)
     }
+
+    override fun onResume() {
+        super.onResume()
+        navController?.addOnDestinationChangedListener(listner)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        navController?.removeOnDestinationChangedListener(listner)
+    }
+
+    fun openDrawer() {
+        drawer_layout.openDrawer(GravityCompat.START)
+
+    }
+
+    fun closeDrawer() {
+        drawer_layout.closeDrawer(GravityCompat.START)
+    }
+
+    override fun onBackPressed() {
+        if (drawer_layout.isDrawerOpen(GravityCompat.START)) {
+            drawer_layout.closeDrawer(GravityCompat.START)
+        } else {
+            super.onBackPressed()
+        }
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        navController?.navigateUp()
+        return super.onSupportNavigateUp()
+    }
+
 }

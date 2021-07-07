@@ -10,6 +10,7 @@ import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.model.DashboardItemModel
 import com.android.pos.databinding.FragmentDashboardBinding
+import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.DashboardItemAdapter
 
 class Dashboard : Fragment() {
@@ -31,6 +32,10 @@ class Dashboard : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setAdapter()
+        binding.layoutMenu.imgDrawer.setOnClickListener {
+            (requireActivity() as MainActivity).openDrawer()
+        }
+
     }
 
     private fun setAdapter() {

@@ -31,6 +31,24 @@
         <item name="android:fontFamily">@font/sf_pro_display_bold</item>
     </style>
 
+    <style name="NavigationTheme" parent="Theme.POSAndroid">
+        <item name="android:layout_marginBottom">0dp</item>
+        <item name="android:layout_marginTop">0dp</item>
+        <item name="minHeight">0dp</item>
+        <item name="minWidth">0dp</item>
+        <item name="android:minHeight">0dp</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:layout_marginStart">0dp</item>
+        <item name="android:layout_marginEnd">0dp</item>
 
+    </style>
+
+    <style name="DrawerItem">
+        <item name="android:textSize">@dimen/_9ssp</item>
+        <item name="fontFamily">@font/sf_pro_display_bold</item>
+        <item name="android:fontFamily">@font/sf_pro_display_bold</item>
+        <item name="android:layout_marginBottom">@dimen/_25sdp</item>
+        <item name="android:textColor">#8D8D8D</item>
+    </style>
 
 </resources>
