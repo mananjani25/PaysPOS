@@ -105,4 +105,19 @@
     <string name="tv_add_item">Add Item</string>
     <string name="tv_add_create_another"><![CDATA[Add & Create Another]]></string>
     <string name="tv_cancel">Cancel</string>
+    <string name="add_service_charge">Add Service Charge</string>
+    <string name="enable_service_charge">Enable Service Charge</string>
+    <string name="service_charge_name">Service Charge Name</string>
+    <string name="service_charge">Service Charge</string>
+    <string name="percentage">Percentage</string>
+    <string name="create_note">Create Note</string>
+    <string name="note_title">Note Title</string>
+    <string name="create">Create</string>
+    <string name="create_notes">Create Notes</string>
+    <string name="tax_rates_can_be_applied_to_specific_items_and_will_be_automatically_calculated_at_purchase">Tax rates can be applied to specific items and will be automatically calculated at purchase.</string>
+    <string name="create_discount">Create Discount</string>
+    <string name="discount_name">Discount Name</string>
+    <string name="apply_discount_after_taxes">Apply discount after taxes</string>
+    <string name="leave_the_discount_amount_blank_to_enter_at_the_time_of_sale_n_discount_are_applied_to_the_ticket_before_tax_is_calculated">Leave the discount amount blank to enter at the time of sale.<br />Discount are applied to the ticket before tax is calculated.</string>
+    <string name="this_should_only_be_used_for_manufacture_discount_and_instant_rebates_learn_more">This should only be used for manufacture discount and instant rebates. <b>Learn More.</b></string>
 </resources>
