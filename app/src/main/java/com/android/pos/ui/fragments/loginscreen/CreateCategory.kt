@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.model.CategoryListItemModel
 import com.android.pos.databinding.CreateCategoryActivityBinding
@@ -30,6 +31,10 @@ class CreateCategory : Fragment() {
 
         setAdapter()
 
+        binding.txtSave.setOnClickListener {
+            findNavController().navigate(R.id.action_createCategory_to_createIModifierSet)
+        }
+
     }
 
     private fun setAdapter() {
@@ -37,6 +42,7 @@ class CreateCategory : Fragment() {
         listCategory.add(CategoryListItemModel(0,"Chicken Biryani","Biryani",""))
 
         binding.recyclerViewItemsList.adapter = CategoryListItemAdapter(requireContext(),listCategory)
+
 
     }
 }

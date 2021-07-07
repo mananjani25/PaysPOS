@@ -61,7 +61,7 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/_5sdp"
                 android:layout_marginEnd="@dimen/_10sdp"
-                app:srcCompat="@android:drawable/checkbox_on_background" />
+                app:srcCompat="@drawable/ic_outline_circle" />
         </androidx.appcompat.widget.LinearLayoutCompat>
 
         <View
