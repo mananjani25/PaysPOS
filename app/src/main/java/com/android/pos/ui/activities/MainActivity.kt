@@ -18,7 +18,7 @@ class MainActivity : AppCompatActivity() {
             window.statusBarColor = getColor(R.color.txtColorGray)
         }
         setContentView(R.layout.parent_activity)
-        setContentView(R.layout.fragment_custom_item)
+        // setContentView(R.layout.fragment_custom_item)
 
 
 //         passCodeView.setKeyTextColor(resources.getColor(R.color.white))

@@ -1,4 +1,4 @@
-package com.android.pos.ui.fragments.loginscreen
+package com.android.pos.ui.fragments.createmodifier
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,7 +11,7 @@ import com.android.pos.R
 import com.android.pos.databinding.CreateItemBinding
 import com.android.pos.databinding.CreateModifierSetBinding
 
-class CreateIModifierSet : Fragment() {
+class CreateModifierSet : Fragment() {
 
     private lateinit var binding: CreateModifierSetBinding
     override fun onCreateView(
