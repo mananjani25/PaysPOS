@@ -71,4 +71,10 @@
     <string name="_0_00">$0.00</string>
     <string name="apply_set">Apply Set</string>
     <string name="new_modifier_set">New Modifier Set</string>
+    <string name="search">Search</string>
+    <string name="create_item">Create Item</string>
+    <string name="search_categories">Search Categories</string>
+    <string name="create_category">Create Category</string>
+    <string name="search_modifiers">Search Modifiers</string>
+    <string name="create_modifier_set">Create Modifier Set</string>
 </resources>
