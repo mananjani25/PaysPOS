@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
+import com.android.pos.databinding.FragmentLoginBinding
 import com.android.pos.databinding.FragmentLoginTestBinding
 import com.android.pos.utils.extensions.hide
 import com.android.pos.utils.extensions.liveSnackBar
@@ -21,7 +22,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class LoginFragment : Fragment() {
 
 
-    private lateinit var binding: FragmentLoginTestBinding
+    private lateinit var binding: FragmentLoginBinding
 
     private val viewModel by viewModels<MobileNumberViewModel>()
 
@@ -30,13 +31,13 @@ class LoginFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_login_test, container, false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_login, container, false)
 
         binding.lifecycleOwner = this
-        binding.viewModel = viewModel
+      //  binding.viewModel = viewModel
 
-        setupSnackbar()
-        observeShowProgress()
+      //  setupSnackbar()
+       // observeShowProgress()
 
         return binding.root
     }
@@ -49,7 +50,7 @@ class LoginFragment : Fragment() {
         }
     }
 
-    private fun observeShowProgress() {
+    /*private fun observeShowProgress() {
         viewModel.showProgress.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
@@ -59,14 +60,14 @@ class LoginFragment : Fragment() {
                 }
             }
         })
-    }
+    }*/
 
-    private fun setupSnackbar() {
+    /*private fun setupSnackbar() {
 
         binding.root.liveSnackBar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
 
 
-    }
+    }*/
 
 
 }

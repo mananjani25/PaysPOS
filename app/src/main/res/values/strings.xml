@@ -77,4 +77,6 @@
     <string name="create_category">Create Category</string>
     <string name="search_modifiers">Search Modifiers</string>
     <string name="create_modifier_set">Create Modifier Set</string>
+    <string name="tv_custom_item">Custom Item</string>
+    <string name="tv_home">Home</string>
 </resources>
