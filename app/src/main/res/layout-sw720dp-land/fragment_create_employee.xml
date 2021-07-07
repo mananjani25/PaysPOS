@@ -55,7 +55,7 @@
                 android:paddingBottom="@dimen/_10sdp"
                 android:text="@string/save"
                 android:textColor="@color/white"
-                android:textSize="@dimen/_14sdp" />
+                android:textSize="@dimen/_14ssp" />
         </LinearLayout>
 
         <View

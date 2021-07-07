@@ -23,7 +23,6 @@
     <color name="gray_border_1">#F0F0F2</color>
     <color name="gray_color">#A5A5A5</color>
     <color name="btnColorDark_">#00A3E0</color>
-    <color name="btn_gray_black">#292E32</color>
     <color name="color">#F8F8F8</color>
     <color name="background">#EFF0F0</color>
     <color name="colorCB">#CBCBCC</color>
@@ -31,6 +30,7 @@
     <color name="colorE9">#E90C0C</color>
     <color name="color96">#969AA3</color>
     <color name="colorE2">#E2E2E2</color>
+    <color name="color65">#656565</color>
 
 
     <color name="txtColorGray">#F8F8F8</color>
