@@ -8,20 +8,18 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
-import com.android.pos.databinding.FragmentScheduledShiftBinding
+import com.android.pos.databinding.CreateItemBinding
 
+class CreateItem : Fragment() {
 
-class ScheduledShifts : Fragment() {
-    lateinit var  binding : FragmentScheduledShiftBinding
-
+    private lateinit var binding: CreateItemBinding
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = DataBindingUtil.inflate(inflater,R.layout.fragment_scheduled_shift,container,false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.create_item, container, false)
         binding.lifecycleOwner = this
-
         return binding.root
     }
 
@@ -32,11 +30,8 @@ class ScheduledShifts : Fragment() {
     }
 
     private fun onClick() {
-
-
-        binding.txtClockIn.setOnClickListener {
-            findNavController().navigate(R.id.action_scheduledShifts_to_passcode)
-
+        binding.txtSave.setOnClickListener {
+            findNavController().navigate(R.id.action_createItem_to_createCategory)
         }
     }
 }

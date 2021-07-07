@@ -4,19 +4,26 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
+import com.android.pos.databinding.FragmentClockInOwnerBinding
 import kotlinx.android.synthetic.main.fragment_clock_in_owner.*
 
 class ClockInOwner : Fragment() {
+    private lateinit var binding: FragmentClockInOwnerBinding
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_clock_in_owner,container,false)
+        binding =
+            DataBindingUtil.inflate(inflater, R.layout.fragment_clock_in_owner, container, false)
+        binding.lifecycleOwner = this
+
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -26,8 +33,9 @@ class ClockInOwner : Fragment() {
     }
 
     private fun onClick() {
-        txtContinuePOS.setOnClickListener {
-            findNavController().navigate(R.id.action_clockInOwner_to_passcode)
+
+        binding.txtContinuePOS.setOnClickListener {
+            findNavController().navigate(R.id.action_clockInOwner_to_dashboard)
         }
 
     }

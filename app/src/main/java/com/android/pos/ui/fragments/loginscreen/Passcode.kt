@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import kotlinx.android.synthetic.main.fragment_passcode.*
 
@@ -19,7 +20,7 @@ class Passcode : Fragment() {
     ): View? {
 
 
-        return inflater.inflate(R.layout.fragment_passcode,container,false)
+        return inflater.inflate(R.layout.fragment_passcode, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -29,5 +30,12 @@ class Passcode : Fragment() {
         val typeface: Typeface? =
             ResourcesCompat.getFont(requireActivity(), R.font.sf_pro_display_regular)
         passCodeView.setTypeFace(typeface)
+
+        passCodeView.setOnTextChangeListener {
+            if (it.length == 4) {
+                findNavController().navigate(R.id.action_passcode_to_clockInOwner)
+            }
+        }
+
     }
 }

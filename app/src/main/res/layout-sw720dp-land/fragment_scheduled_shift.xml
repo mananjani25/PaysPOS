@@ -1,90 +1,102 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
     tools:ignore="MissingDefaultResource">
 
-    <ImageView
-        android:id="@+id/imgCacncel"
-        android:layout_width="@dimen/_23sdp"
-        android:layout_height="@dimen/_23sdp"
-        android:layout_marginStart="@dimen/_10sdp"
-        android:layout_marginTop="@dimen/_10sdp"
-        android:src="@drawable/ic_cancel_white"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tint="#292E32" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/txtTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/sf_pro_display_bold"
-        android:text="Rohan Patange"
-        android:textColor="#292E32"
-        android:textSize="@dimen/_12ssp"
-        app:layout_constraintBottom_toBottomOf="@+id/imgCacncel"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/imgCacncel" />
+        <ImageView
+            android:id="@+id/imgCacncel"
+            android:layout_width="@dimen/_23sdp"
+            android:layout_height="@dimen/_23sdp"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:src="@drawable/ic_cancel_white"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="#292E32" />
 
-    <TextView
-        android:id="@+id/txtTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_40sdp"
-        android:fontFamily="@font/sf_pro_display_medium"
-        android:text="4:25 AM"
-        android:textColor="#292E32"
-        android:textSize="@dimen/_22sdp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtTitle" />
+        <TextView
+            android:id="@+id/txtTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/sf_pro_display_bold"
+            android:text="Rohan Patange"
+            android:textColor="#292E32"
+            android:textSize="@dimen/_12ssp"
+            app:layout_constraintBottom_toBottomOf="@+id/imgCacncel"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/imgCacncel" />
+
+        <View
+            android:id="@+id/viewLine"
+            android:layout_width="match_parent"
+            android:layout_marginTop="@dimen/_9sdp"
+            android:layout_height="1dp"
+            android:background="@color/view"
+            app:layout_constraintTop_toBottomOf="@+id/txtTitle" />
 
 
-    <TextView
-        android:id="@+id/txtNoScheduleLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_10sdp"
-        android:text="No scheduled shifts"
-        android:textColor="#292E32"
-        android:textSize="@dimen/_14ssp"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:fontFamily="@font/sf_pro_display_bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtTime" />
+        <TextView
+            android:id="@+id/txtTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_40sdp"
+            android:fontFamily="@font/sf_pro_display_medium"
+            android:text="4:25 AM"
+            android:textColor="#292E32"
+            android:textSize="@dimen/_22sdp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/viewLine" />
 
-    <TextView
-        android:id="@+id/txtNoShiftLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_10sdp"
-        android:fontFamily="@font/sf_pro_display_medium"
-        android:text="No shifts worked so far today"
-        android:textColor="#292E32"
-        android:textSize="@dimen/_12ssp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtNoScheduleLabel" />
 
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/txtClockIn"
-        style="@style/CustomFontSemiBold"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="@dimen/_15sdp"
-        android:background="@drawable/bg_button_border"
-        android:ems="20"
-        android:gravity="center"
-        android:paddingVertical="@dimen/_10sdp"
-        android:text="@string/tv_clock_in"
-        android:textColor="@color/white"
-        android:textSize="@dimen/_12ssp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtNoShiftLabel" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <TextView
+            android:id="@+id/txtNoScheduleLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:fontFamily="@font/sf_pro_display_bold"
+            android:text="No scheduled shifts"
+            android:textColor="#292E32"
+            android:textSize="@dimen/_14ssp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txtTime" />
+
+        <TextView
+            android:id="@+id/txtNoShiftLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:fontFamily="@font/sf_pro_display_medium"
+            android:text="No shifts worked so far today"
+            android:textColor="#292E32"
+            android:textSize="@dimen/_12ssp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txtNoScheduleLabel" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txtClockIn"
+            style="@style/CustomFontSemiBold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/_15sdp"
+            android:background="@drawable/bg_button_border"
+            android:ems="20"
+            android:gravity="center"
+            android:paddingVertical="@dimen/_10sdp"
+            android:text="@string/tv_clock_in"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_12ssp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txtNoShiftLabel" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
