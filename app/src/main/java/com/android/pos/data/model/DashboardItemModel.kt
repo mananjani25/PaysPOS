@@ -5,5 +5,5 @@ data class DashboardItemModel(
     val title: String,
     val description: String,
     val price: String,
-    val flag:Boolean
+    val flag:Boolean=false
 )

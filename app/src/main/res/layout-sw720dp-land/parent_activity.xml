@@ -35,6 +35,6 @@
         android:theme="@style/NavigationTheme"
         app:headerLayout="@layout/drawer_header"
         app:itemTextAppearance="@style/DrawerItem"
-        app:itemTextColor="#8D8D8D"
+        app:itemTextColor="@color/drawer_item_text_color_selector"
         app:menu="@menu/drawer_menu" />
 </androidx.drawerlayout.widget.DrawerLayout>
