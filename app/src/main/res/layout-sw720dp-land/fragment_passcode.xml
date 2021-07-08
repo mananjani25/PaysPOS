@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black"
+    android:background="@color/txtColor"
     android:gravity="center_horizontal"
     android:orientation="vertical"
     tools:ignore="MissingDefaultResource">
@@ -21,7 +21,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:padding="@dimen/_15sdp">
+            android:padding="@dimen/_10sdp">
 
             <ImageView
                 android:id="@+id/Cancel"
@@ -40,7 +40,7 @@
                 android:gravity="center"
                 android:text="@string/tv_clock_in_out"
                 android:textColor="@color/white"
-                android:textSize="@dimen/_15ssp" />
+                android:textSize="@dimen/_14ssp" />
 
         </LinearLayout>
     </LinearLayout>

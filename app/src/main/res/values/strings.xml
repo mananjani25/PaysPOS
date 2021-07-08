@@ -137,4 +137,6 @@
     <string name="tv_tip_name">Tip Name</string>
     <string name="tv_entertainment">Entertainment</string>
     <string name="tv_create_discount">Create Discount</string>
+    <string name="no_shifts_worked_so_far_today">No shifts worked so far today</string>
+    <string name="no_scheduled_shifts">No scheduled shifts</string>
 </resources>

@@ -67,7 +67,7 @@
         android:inputType="text"
         android:textColor="@color/black"
         android:textColorHint="#C4C4C4"
-        android:textSize="@dimen/_12ssp"
+        android:textSize="@dimen/_10ssp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/imgCalculator"
         app:layout_constraintTop_toTopOf="parent" />
@@ -76,7 +76,8 @@
         android:layout_width="@dimen/_15sdp"
         android:layout_height="@dimen/_15sdp"
         android:layout_marginEnd="@dimen/_10sdp"
-        android:src="@drawable/search"
+        android:src="@drawable/ic_search"
+        android:tint="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/edtSearch"
         app:layout_constraintStart_toEndOf="@+id/imgDrawer"

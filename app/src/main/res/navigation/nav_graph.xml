@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/login">
+    app:startDestination="@id/dashboardCategory">
 
     <fragment
         android:id="@+id/login"
@@ -80,6 +80,10 @@
         android:label="CreateIModifierSet">
 
     </fragment>
+    <fragment
+        android:id="@+id/dashboardCategory"
+        android:name="com.android.pos.ui.fragments.dashboard.DashboardCategory"
+        android:label="DashboardCategory" />
 
 
 </navigation>

@@ -10,14 +10,13 @@
 
         <ImageView
             android:id="@+id/imgCacncel"
-            android:layout_width="@dimen/_23sdp"
-            android:layout_height="@dimen/_23sdp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/_10sdp"
             android:layout_marginTop="@dimen/_10sdp"
-            android:src="@drawable/ic_cancel_white"
+            android:src="@drawable/ic_cancel_black"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:tint="#292E32" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/txtTitle"
@@ -25,7 +24,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/sf_pro_display_bold"
             android:text="Rohan Patange"
-            android:textColor="#292E32"
+            android:textColor="@color/txtColor"
             android:textSize="@dimen/_12ssp"
             app:layout_constraintBottom_toBottomOf="@+id/imgCacncel"
             app:layout_constraintEnd_toEndOf="parent"
@@ -46,10 +45,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_40sdp"
-            android:fontFamily="@font/sf_pro_display_medium"
+            style="@style/CustomFontMediumStyle"
             android:text="4:25 AM"
-            android:textColor="#292E32"
-            android:textSize="@dimen/_22sdp"
+            android:textColor="@color/txtColor"
+            android:textSize="@dimen/_20ssp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/viewLine" />
@@ -59,11 +58,11 @@
             android:id="@+id/txtNoScheduleLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_10sdp"
-            android:fontFamily="@font/sf_pro_display_bold"
-            android:text="No scheduled shifts"
-            android:textColor="#292E32"
-            android:textSize="@dimen/_14ssp"
+            android:layout_marginTop="@dimen/_5sdp"
+            style="@style/CustomFontBold"
+            android:text="@string/no_scheduled_shifts"
+            android:textColor="@color/txtColor"
+            android:textSize="@dimen/_12ssp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/txtTime" />
@@ -73,10 +72,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_10sdp"
-            android:fontFamily="@font/sf_pro_display_medium"
-            android:text="No shifts worked so far today"
-            android:textColor="#292E32"
-            android:textSize="@dimen/_12ssp"
+            style="@style/CustomFontMediumStyle"
+            android:text="@string/no_shifts_worked_so_far_today"
+            android:textColor="@color/txtColor"
+            android:textSize="@dimen/_10ssp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/txtNoScheduleLabel" />
