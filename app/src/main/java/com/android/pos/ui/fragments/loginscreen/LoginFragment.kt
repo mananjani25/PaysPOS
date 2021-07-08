@@ -38,7 +38,7 @@ class LoginFragment : Fragment() {
         binding.loginViewModel = viewModel
 
           setupSnackbar()
-         observeShowProgress()
+      //   observeShowProgress()
 
         return binding.root
     }
