@@ -53,17 +53,16 @@ class MainActivity : AppCompatActivity() {
         nav_view.setNavigationItemSelectedListener {
 
 
-
-            when(it.itemId)  {
+            when (it.itemId) {
                 R.id.menuHome -> {
                     closeDrawer()
                     return@setNavigationItemSelectedListener true
                 }
-                R.id.menuOrders ->{
+                R.id.menuOrders -> {
                     closeDrawer()
                     return@setNavigationItemSelectedListener true
                 }
-                R.id.menuTransactions ->{
+                R.id.menuTransactions -> {
                     closeDrawer()
                     return@setNavigationItemSelectedListener true
                 }
@@ -71,28 +70,29 @@ class MainActivity : AppCompatActivity() {
                     closeDrawer()
                     return@setNavigationItemSelectedListener true
                 }
-                R.id.menuReports ->{
+                R.id.menuReports -> {
                     closeDrawer()
                     return@setNavigationItemSelectedListener true
                 }
 
-                R.id.menuCustomers ->{
+                R.id.menuCustomers -> {
                     closeDrawer()
                     return@setNavigationItemSelectedListener true
                 }
-                R.id.menuTeam ->{
+                R.id.menuTeam -> {
                     closeDrawer()
                     return@setNavigationItemSelectedListener true
                 }
-                R.id.memuInventory ->{
+                R.id.memuInventory -> {
+                    closeDrawer()
+                    navController?.navigate(R.id.action_global_inventory)
+                    return@setNavigationItemSelectedListener true
+                }
+                R.id.menuSettings -> {
                     closeDrawer()
                     return@setNavigationItemSelectedListener true
                 }
-                R.id.menuSettings ->{
-                    closeDrawer()
-                    return@setNavigationItemSelectedListener true
-                }
-                R.id.menuSupport ->{
+                R.id.menuSupport -> {
                     closeDrawer()
                     return@setNavigationItemSelectedListener true
                 }

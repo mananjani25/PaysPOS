@@ -8,12 +8,18 @@ import com.android.pos.data.model.CategoryListItemModel
 import com.android.pos.data.model.DashboardItemModel
 import com.android.pos.databinding.ViewDashboardItemBinding
 
-class CategoryItemAdapter(val context: Context,val list:ArrayList<DashboardItemModel>):RecyclerView.Adapter<CategoryItemAdapter.MyViewHolder>() {
+class CategoryItemAdapter(val context: Context,val list:ArrayList<DashboardItemModel>,val listner:CategoryItemList):RecyclerView.Adapter<CategoryItemAdapter.MyViewHolder>() {
     inner class MyViewHolder(private val binding:ViewDashboardItemBinding):RecyclerView.ViewHolder(binding.root){
 
         fun bind(item:DashboardItemModel){
             binding.viewModel = item
             binding.executePendingBindings()
+        }
+        init {
+
+            binding.root.setOnClickListener {
+                listner.onClick()
+            }
         }
     }
     override fun onCreateViewHolder(
@@ -31,5 +37,8 @@ class CategoryItemAdapter(val context: Context,val list:ArrayList<DashboardItemM
 
     override fun getItemCount(): Int {
         return list.size
+    }
+    interface CategoryItemList{
+        fun onClick()
     }
 }

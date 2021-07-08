@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/dashboardCategory">
+    app:startDestination="@id/login">
+
 
     <fragment
         android:id="@+id/login"
@@ -24,6 +25,10 @@
         <action
             android:id="@+id/action_clockInOwner_to_dashboard"
             app:destination="@id/dashboard"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_clockInOwner_to_dashboardCategory"
+            app:destination="@id/dashboardCategory"
             app:enterAnim="@anim/nav_default_enter_anim" />
     </fragment>
     <fragment
@@ -83,7 +88,21 @@
     <fragment
         android:id="@+id/dashboardCategory"
         android:name="com.android.pos.ui.fragments.dashboard.DashboardCategory"
-        android:label="DashboardCategory" />
+        android:label="DashboardCategory">
+        <action
+            android:id="@+id/action_dashboardCategory_to_createItem"
+            app:destination="@id/createItem"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+    </fragment>
+    <fragment
+        android:id="@+id/inventory"
+        android:name="com.android.pos.ui.fragments.inventory.Inventory"
+        android:label="Inventory"
+        tools:layout="@layout/fragment_inventory"/>
+    <action
+        android:id="@+id/action_global_inventory"
+        app:destination="@id/inventory"
+        app:enterAnim="@anim/nav_default_enter_anim" />
 
 
 </navigation>
