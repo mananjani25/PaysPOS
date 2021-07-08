@@ -71,7 +71,7 @@
             app:digits="4"
             app:empty_drawable="@drawable/empty_dot"
             app:filled_drawable="@drawable/bg_round"
-            app:key_text_size="@dimen/_20ssp" />
+            app:key_text_size="@dimen/_15ssp" />
     </LinearLayout>
 
 </RelativeLayout>
