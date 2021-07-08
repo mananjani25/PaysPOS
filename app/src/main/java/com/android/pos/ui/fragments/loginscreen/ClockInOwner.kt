@@ -35,7 +35,7 @@ class ClockInOwner : Fragment() {
     private fun onClick() {
 
         binding.txtContinuePOS.setOnClickListener {
-            findNavController().navigate(R.id.action_clockInOwner_to_dashboard)
+            findNavController().navigate(R.id.action_clockInOwner_to_dashboardCategory)
         }
 
     }

@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.model.CategoryListItemModel
 import com.android.pos.data.model.DashboardItemModel
@@ -53,6 +54,14 @@ class CategoryList : Fragment() {
             requireArguments().get(ITEM_LIST) as ArrayList<DashboardItemModel>
         Log.e("CategoryList", "${list.size}")
 
-        binding.recyclerViewItemsList.adapter = CategoryItemAdapter(requireContext(),list)
+        binding.recyclerViewItemsList.adapter = CategoryItemAdapter(
+            requireContext(),
+            list,
+            object : CategoryItemAdapter.CategoryItemList {
+                override fun onClick() {
+                    findNavController().navigate(R.id.action_dashboardCategory_to_createItem)
+                }
+
+            })
     }
 }
