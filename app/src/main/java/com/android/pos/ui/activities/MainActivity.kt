@@ -34,7 +34,7 @@ class MainActivity : AppCompatActivity() {
 
         listner = NavController.OnDestinationChangedListener { controller, destination, arguments ->
 
-            if (destination.id == R.id.dashboard) {
+            if (destination.id == R.id.dashboard || destination.id == R.id.dashboardCategory) {
                 drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
             } else {
                 drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
@@ -46,6 +46,60 @@ class MainActivity : AppCompatActivity() {
         imgBack.setOnClickListener {
             closeDrawer()
 
+        }
+
+
+
+        nav_view.setNavigationItemSelectedListener {
+
+
+
+            when(it.itemId)  {
+                R.id.menuHome -> {
+                    closeDrawer()
+                    return@setNavigationItemSelectedListener true
+                }
+                R.id.menuOrders ->{
+                    closeDrawer()
+                    return@setNavigationItemSelectedListener true
+                }
+                R.id.menuTransactions ->{
+                    closeDrawer()
+                    return@setNavigationItemSelectedListener true
+                }
+                R.id.menuCashLog -> {
+                    closeDrawer()
+                    return@setNavigationItemSelectedListener true
+                }
+                R.id.menuReports ->{
+                    closeDrawer()
+                    return@setNavigationItemSelectedListener true
+                }
+
+                R.id.menuCustomers ->{
+                    closeDrawer()
+                    return@setNavigationItemSelectedListener true
+                }
+                R.id.menuTeam ->{
+                    closeDrawer()
+                    return@setNavigationItemSelectedListener true
+                }
+                R.id.memuInventory ->{
+                    closeDrawer()
+                    return@setNavigationItemSelectedListener true
+                }
+                R.id.menuSettings ->{
+                    closeDrawer()
+                    return@setNavigationItemSelectedListener true
+                }
+                R.id.menuSupport ->{
+                    closeDrawer()
+                    return@setNavigationItemSelectedListener true
+                }
+
+            }
+
+            return@setNavigationItemSelectedListener false
         }
         // setContentView(R.layout.fragment_custom_item)
 

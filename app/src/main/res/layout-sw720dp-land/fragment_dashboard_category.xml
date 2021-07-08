@@ -7,7 +7,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/dashBackground">
+        android:background="@color/colorDashBack">
 
         <include
             android:id="@+id/layoutMenu"
@@ -18,6 +18,31 @@
             app:layout_constraintEnd_toStartOf="@+id/linearMenu"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayout"
+            style="@style/MyTabLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/background_button_menu"
+            android:clipToPadding="true"
+            android:isScrollContainer="true"
+            android:paddingTop="@dimen/_5sdp"
+            app:layout_constraintEnd_toStartOf="@+id/linearMenu"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/layoutMenu"
+            app:tabIndicator="@color/txtColor"
+            app:tabIndicatorGravity="bottom"
+            app:tabMode="scrollable"
+            app:tabPaddingBottom="@dimen/_10sdp"
+            app:tabPaddingEnd="@dimen/_5sdp"
+            app:tabPaddingStart="@dimen/_5sdp"
+            app:tabPaddingTop="@dimen/_5sdp"
+            app:tabSelectedTextColor="@color/txtColor"
+            app:tabTextAppearance="@style/MyTabTextAppearance"
+            app:tabTextColor="@color/drawerItemUnselected" />
+
 
         <LinearLayout
             android:id="@+id/linearMenu"
@@ -82,19 +107,15 @@
 
         </LinearLayout>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerViewItemsList"
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/viewPagerCategory"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginStart="@dimen/_5sdp"
-            android:layout_marginTop="@dimen/_10sdp"
-            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/linearMenu"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/layoutMenu"
-            app:spanCount="5"
-            tools:listitem="@layout/view_dashboard_item" />
+            app:layout_constraintTop_toBottomOf="@+id/tabLayout" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
