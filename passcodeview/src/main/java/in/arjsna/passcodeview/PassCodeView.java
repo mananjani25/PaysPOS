@@ -6,6 +6,7 @@ import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
@@ -26,7 +27,9 @@ import java.util.Map;
 public class PassCodeView extends View {
     private final boolean DEBUG = false;
     private final int KEYS_COUNT = 12;
-    private final String eraseChar = "\u232B";
+
+    private final String clear = "Clear";
+    private final String eraseChar = "\u2190";
     private final int KEY_PAD_COLS = 3;
     private final int KEY_PAD_ROWS = 4;
     private int digits;
@@ -211,7 +214,7 @@ public class PassCodeView extends View {
                 x = kpStartX;
             }
         }
-        keyRects.get(9).setValue("");
+        keyRects.get(9).setValue(clear);
         keyRects.get(10).setValue("0");
         keyRects.get(11).setValue(eraseChar);
     }
@@ -404,7 +407,10 @@ public class PassCodeView extends View {
                     @Override
                     public void onStart() {
                         int length = passCodeText.length();
-                        if (keyRect.value.equals(eraseChar)) {
+                        if (keyRect.value.equals(clear)) {
+                            setFilledCount(0);
+                            passCodeText = "";
+                        } else if (keyRect.value.equals(eraseChar)) {
                             if (length > 0) {
                                 passCodeText = passCodeText.substring(0, passCodeText.length() - 1);
                                 setFilledCount(passCodeText.length());
