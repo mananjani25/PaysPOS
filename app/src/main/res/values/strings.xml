@@ -122,4 +122,6 @@
     <string name="apply_discount_after_taxes">Apply discount after taxes</string>
     <string name="leave_the_discount_amount_blank_to_enter_at_the_time_of_sale_n_discount_are_applied_to_the_ticket_before_tax_is_calculated">Leave the discount amount blank to enter at the time of sale.<br />Discount are applied to the ticket before tax is calculated.</string>
     <string name="this_should_only_be_used_for_manufacture_discount_and_instant_rebates_learn_more">This should only be used for manufacture discount and instant rebates. <b>Learn More.</b></string>
+    <string name="no_shifts_worked_so_far_today">No shifts worked so far today</string>
+    <string name="no_scheduled_shifts">No scheduled shifts</string>
 </resources>

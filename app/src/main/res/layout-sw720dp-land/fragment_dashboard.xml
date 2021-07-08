@@ -38,13 +38,13 @@
                 android:layout_marginTop="@dimen/_5sdp"
                 android:layout_marginEnd="@dimen/_5sdp"
                 android:background="@drawable/background_button_menu"
-                android:ems="10"
+                android:ems="12"
                 android:fontFamily="@font/sf_pro_display_bold"
                 android:gravity="center"
-                android:paddingVertical="@dimen/_10sdp"
+                android:paddingVertical="@dimen/_8sdp"
                 android:text="Take Out"
                 android:textColor="#111214"
-                android:textSize="@dimen/_12ssp" />
+                android:textSize="@dimen/_10ssp" />
 
 
             <TextView
@@ -55,13 +55,13 @@
                 android:layout_marginTop="@dimen/_15sdp"
                 android:layout_marginEnd="@dimen/_5sdp"
                 android:background="@drawable/background_button_menu"
-                android:ems="10"
+                android:ems="12"
                 android:fontFamily="@font/sf_pro_display_bold"
                 android:gravity="center"
-                android:paddingVertical="@dimen/_10sdp"
+                android:paddingVertical="@dimen/_8sdp"
                 android:text="Dine In"
                 android:textColor="#111214"
-                android:textSize="@dimen/_12ssp" />
+                android:textSize="@dimen/_10ssp" />
 
 
             <TextView
@@ -72,13 +72,13 @@
                 android:layout_marginTop="@dimen/_15sdp"
                 android:layout_marginEnd="@dimen/_5sdp"
                 android:background="@drawable/background_button_menu"
-                android:ems="10"
+                android:ems="12"
                 android:fontFamily="@font/sf_pro_display_bold"
                 android:gravity="center"
-                android:paddingVertical="@dimen/_10sdp"
+                android:paddingVertical="@dimen/_8sdp"
                 android:text="Open Order"
                 android:textColor="#111214"
-                android:textSize="@dimen/_12ssp" />
+                android:textSize="@dimen/_10ssp" />
 
         </LinearLayout>
 

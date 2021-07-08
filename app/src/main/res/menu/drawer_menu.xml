@@ -1,39 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item
-        android:id="@+id/menuHome"
-        android:title="Home" />
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/menuHome"
+            android:title="Home" />
 
-    <item
-        android:id="@+id/menuOrders"
-        android:title="Orders" />
+        <item
+            android:id="@+id/menuOrders"
+            android:title="Orders" />
 
-    <item
-        android:id="@+id/menuTransactions"
-        android:title="Transactions" />
+        <item
+            android:id="@+id/menuTransactions"
+            android:title="Transactions" />
 
-    <item
-        android:id="@+id/menuCashLog"
-        android:title="Cash Log" />
+        <item
+            android:id="@+id/menuCashLog"
+            android:title="Cash Log" />
 
-    <item
-        android:id="@+id/menuReports"
-        android:title="Reports" />
-    <item
-        android:id="@+id/menuCustomers"
-        android:title="Customers" />
+        <item
+            android:id="@+id/menuReports"
+            android:title="Reports" />
+        <item
+            android:id="@+id/menuCustomers"
+            android:title="Customers" />
 
-    <item
-        android:id="@+id/menuTeam"
-        android:title="Team" />
-    <item
-        android:id="@+id/memuInventory"
-        android:title="Inventory" />
-    <item
-        android:id="@+id/menuSettings"
-        android:title="Settings" />
-    <item
-        android:id="@+id/menuSupport"
-        android:title="Support" />
+        <item
+            android:id="@+id/menuTeam"
+            android:title="Team" />
+        <item
+            android:id="@+id/memuInventory"
+            android:title="Inventory" />
+        <item
+            android:id="@+id/menuSettings"
+            android:title="Settings" />
+        <item
+            android:id="@+id/menuSupport"
+            android:title="Support" />
+    </group>
 </menu>
