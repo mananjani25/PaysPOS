@@ -11,6 +11,7 @@ import com.android.pos.R
 import com.android.pos.data.model.CategoryListItemModel
 import com.android.pos.data.model.DashboardItemModel
 import com.android.pos.databinding.FragmentDashboardCategoryBinding
+import com.android.pos.ui.activities.MainActivity
 import com.google.android.material.tabs.TabLayoutMediator
 
 class DashboardCategory : Fragment() {
@@ -46,33 +47,38 @@ class DashboardCategory : Fragment() {
         setTabs()
         setViewPager()
         // binding.tabLayout.setupWithViewPager(binding.viewPagerCategory)
-            TabLayoutMediator(binding.tabLayout, binding.viewPagerCategory) { tab, position ->
-           // binding.tabLayout.getTabAt(position).setText()
+        TabLayoutMediator(binding.tabLayout, binding.viewPagerCategory) { tab, position ->
+            // binding.tabLayout.getTabAt(position).setText()
         }
+
+        binding.layoutMenu.imgDrawer.setOnClickListener {
+            (requireActivity() as MainActivity).openDrawer()
+        }
+
 
     }
 
     private fun setViewPager() {
         var list: ArrayList<DashboardItemModel> = arrayListOf()
-        list.add(DashboardItemModel(0,"TP","Three Piece...","15.33"))
-        list.add(DashboardItemModel(0,"TP","Three Piece...","15.33"))
-        list.add(DashboardItemModel(0,"TP","Three Piece...","15.33"))
-        list.add(DashboardItemModel(0,"TP","Three Piece...","15.33"))
-        list.add(DashboardItemModel(0,"TP","Three Piece...","15.33"))
-        list.add(DashboardItemModel(0,"TP","Three Piece...","15.33"))
-        list.add(DashboardItemModel(0,"TP","Three Piece...","15.33"))
-        list.add(DashboardItemModel(0,"TP","Three Piece...","15.33"))
-        list.add(DashboardItemModel(0,"TP","Three Piece...","15.33"))
-        list.add(DashboardItemModel(0,"TP","Three Piece...","15.33"))
-        list.add(DashboardItemModel(0,"TP","Three Piece...","15.33"))
-        list.add(DashboardItemModel(0,"TP","Three Piece...","15.33"))
-        list.add(DashboardItemModel(0,"TP","Three Piece...","15.33"))
-        list.add(DashboardItemModel(0,"TP","Three Piece...","15.33"))
-        list.add(DashboardItemModel(0,"TP","Three Piece...","15.33"))
-        list.add(DashboardItemModel(0,"TP","Three Piece...","15.33"))
-        list.add(DashboardItemModel(0,"TP","Three Piece...","15.33"))
-        list.add(DashboardItemModel(0,"TP","Three Piece...","15.33"))
-        list.add(DashboardItemModel(0,"TP","Three Piece...","15.33"))
+        list.add(DashboardItemModel(0, "TP", "Three Piece...", "15.33"))
+        list.add(DashboardItemModel(0, "TP", "Three Piece...", "15.33"))
+        list.add(DashboardItemModel(0, "TP", "Three Piece...", "15.33"))
+        list.add(DashboardItemModel(0, "TP", "Three Piece...", "15.33"))
+        list.add(DashboardItemModel(0, "TP", "Three Piece...", "15.33"))
+        list.add(DashboardItemModel(0, "TP", "Three Piece...", "15.33"))
+        list.add(DashboardItemModel(0, "TP", "Three Piece...", "15.33"))
+        list.add(DashboardItemModel(0, "TP", "Three Piece...", "15.33"))
+        list.add(DashboardItemModel(0, "TP", "Three Piece...", "15.33"))
+        list.add(DashboardItemModel(0, "TP", "Three Piece...", "15.33"))
+        list.add(DashboardItemModel(0, "TP", "Three Piece...", "15.33"))
+        list.add(DashboardItemModel(0, "TP", "Three Piece...", "15.33"))
+        list.add(DashboardItemModel(0, "TP", "Three Piece...", "15.33"))
+        list.add(DashboardItemModel(0, "TP", "Three Piece...", "15.33"))
+        list.add(DashboardItemModel(0, "TP", "Three Piece...", "15.33"))
+        list.add(DashboardItemModel(0, "TP", "Three Piece...", "15.33"))
+        list.add(DashboardItemModel(0, "TP", "Three Piece...", "15.33"))
+        list.add(DashboardItemModel(0, "TP", "Three Piece...", "15.33"))
+        list.add(DashboardItemModel(0, "TP", "Three Piece...", "15.33"))
         binding.viewPagerCategory.adapter = ViewPagerAdapter(list, binding.tabLayout.tabCount)
 
     }
