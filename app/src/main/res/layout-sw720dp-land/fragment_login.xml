@@ -47,7 +47,7 @@
 
             <androidx.appcompat.widget.AppCompatEditText
                 android:id="@+id/edtEmail"
-                style="@style/CustomFontSemiBold"
+                android:fontFamily="@font/sf_pro_display_semibold"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -99,7 +99,7 @@
             android:padding="@dimen/_8sdp"
             android:text="@string/tv_login"
             android:textColor="@color/white"
-            android:textSize="@dimen/_8ssp" />
+            android:textSize="@dimen/_10ssp" />
 
         <androidx.appcompat.widget.AppCompatTextView
             style="@style/CustomFontRegularStyle"

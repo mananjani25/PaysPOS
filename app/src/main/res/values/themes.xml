@@ -49,6 +49,8 @@
         <item name="android:fontFamily">@font/sf_pro_display_bold</item>
         <item name="android:layout_marginBottom">@dimen/_25sdp</item>
         <item name="android:textColor">#8D8D8D</item>
+        <item name="android:paddingTop">30dp</item>
+        <item name="android:paddingBottom">30dp</item>
     </style>
 
 </resources>
