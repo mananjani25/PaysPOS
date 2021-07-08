@@ -122,4 +122,14 @@
     <string name="apply_discount_after_taxes">Apply discount after taxes</string>
     <string name="leave_the_discount_amount_blank_to_enter_at_the_time_of_sale_n_discount_are_applied_to_the_ticket_before_tax_is_calculated">Leave the discount amount blank to enter at the time of sale.<br />Discount are applied to the ticket before tax is calculated.</string>
     <string name="this_should_only_be_used_for_manufacture_discount_and_instant_rebates_learn_more">This should only be used for manufacture discount and instant rebates. <b>Learn More.</b></string>
+    <string name="tv_new_tax">New Tax</string>
+    <string name="tv_enable_default_tax">Enable Default Tax</string>
+    <string name="tv_sales_tax">Sales Tax</string>
+    <string name="item_pricing">Item Pricing</string>
+    <string name="tv_apply_tax_to">APPLY TAX TO</string>
+    <string name="tv_custom_amount">Custom Amount</string>
+    <string name="tv_items">Items</string>
+    <string name="tv_add_tax_to_price">Add Tax to Price</string>
+    <string name="tv_all_items">All Items</string>
+    <string name="tv_add_a_new_tax">Add a New Tax</string>
 </resources>

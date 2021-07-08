@@ -84,7 +84,7 @@
             android:gravity="center"
             android:padding="@dimen/_8sdp"
             android:text="@string/tv_login"
-            android:onClick="@{() -> loginViewModel.submit()}"
+
             android:textColor="@color/white"
             android:textSize="@dimen/_15ssp" />
 
