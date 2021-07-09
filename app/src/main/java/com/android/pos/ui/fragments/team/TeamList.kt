@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import com.android.pos.R
 import com.android.pos.data.model.TeamListModel
 import com.android.pos.databinding.FragmentTeamListBinding
@@ -33,8 +34,16 @@ class TeamList : Fragment() {
         binding.layoutTool.imgDrawer.setOnClickListener {
             (requireActivity() as MainActivity).openDrawer()
         }
+        loadTeamDetails()
 
 
+    }
+
+    private fun loadTeamDetails() {
+
+        var teamDetails: TeamDetails = TeamDetails()
+        val fm: FragmentManager = requireActivity().supportFragmentManager
+        fm.beginTransaction().replace(binding.frameContainer.id, teamDetails).commit()
     }
 
     private fun setAdapter() {
