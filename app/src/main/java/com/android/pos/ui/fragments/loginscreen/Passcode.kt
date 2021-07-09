@@ -2,38 +2,95 @@ package com.android.pos.ui.fragments.loginscreen
 
 import android.graphics.Typeface
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.res.ResourcesCompat
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
-import kotlinx.android.synthetic.main.fragment_passcode.*
+import com.android.pos.databinding.FragmentPasscodeBinding
+import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.extensions.liveSnackBar
+import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class Passcode : Fragment() {
+
+    private lateinit var binding: FragmentPasscodeBinding
+    private val viewModel by viewModels<PasscodeViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_passcode, container, false)
+
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_passcode, container, false)
+        binding.lifecycleOwner = this
+        binding.passcodeViewModel = viewModel
+
+        setupSnackbar()
+        observeShowProgress()
+        navigate()
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        passCodeView.setKeyTextColor(resources.getColor(R.color.white))
+
+        binding.passCodeView.setKeyTextColor(resources.getColor(R.color.white))
 
         val typeface: Typeface? =
             ResourcesCompat.getFont(requireActivity(), R.font.sf_pro_display_regular)
-        passCodeView.setTypeFace(typeface)
+        binding.passCodeView.setTypeFace(typeface)
 
-        passCodeView.setOnTextChangeListener {
+        binding.passCodeView.setOnTextChangeListener {
             if (it.length == 4) {
-                findNavController().navigate(R.id.action_passcode_to_clockInOwner)
+
+                Log.e("passCodeView", it.toString())
+                viewModel.submit()
+
             }
         }
+
+    }
+
+    private fun observeShowProgress() {
+
+        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    ProgressUtils.showProgressDialog(requireActivity())
+                } else {
+                    ProgressUtils.dismissProgressDialog()
+                }
+            }
+        })
+
+    }
+
+    private fun navigate() {
+
+        viewModel.data.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    findNavController().navigate(R.id.action_passcode_to_clockInOwner)
+                }
+            }
+        })
+
+    }
+
+    private fun setupSnackbar() {
+
+
+        binding.root.liveSnackBar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
+
 
     }
 }
