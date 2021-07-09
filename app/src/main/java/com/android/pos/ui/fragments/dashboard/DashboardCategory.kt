@@ -49,7 +49,8 @@ class DashboardCategory : Fragment() {
         // binding.tabLayout.setupWithViewPager(binding.viewPagerCategory)
         TabLayoutMediator(binding.tabLayout, binding.viewPagerCategory) { tab, position ->
             // binding.tabLayout.getTabAt(position).setText()
-        }
+            tab.setText(listTabs.get(position))
+        }.attach()
 
         binding.layoutMenu.imgDrawer.setOnClickListener {
             (requireActivity() as MainActivity).openDrawer()
