@@ -2,7 +2,7 @@ package com.android.pos.di
 
 import android.content.Context
 import com.android.pos.BuildConfig
-import com.android.pos.data.remote.ApiServie
+import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.NetworkConnectionInterceptor
 import dagger.Module
 import dagger.Provides
@@ -19,7 +19,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object ApiModule {
 
-    private const val BASE_URL_Meal = "http://34.205.43.53/api/v1/"
+    private const val BASE_URL = "http://34.205.43.53/api/v1/"
 
     @Singleton
     @Provides
@@ -30,9 +30,9 @@ object ApiModule {
 
     @Singleton
     @Provides
-    fun getRetrofit(networkConnectionInterceptor: NetworkConnectionInterceptor): ApiServie =
+    fun getRetrofit(networkConnectionInterceptor: NetworkConnectionInterceptor): ApiService =
         Retrofit.Builder()
-            .baseUrl(BASE_URL_Meal)
+            .baseUrl(BASE_URL)
             .client(
                 OkHttpClient.Builder()
                     .addInterceptor { chain ->
@@ -50,5 +50,5 @@ object ApiModule {
             )
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-            .create(ApiServie::class.java)
+            .create(ApiService::class.java)
 }

@@ -4,6 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingDefaultResource">
 
+    <data>
+
+        <variable
+            name="createModifierViewModel"
+            type="com.android.pos.ui.fragments.createmodifier.CreateModifierViewModel" />
+    </data>
+
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -48,14 +55,14 @@
                     android:layout_gravity="center"
                     android:background="@color/btnColor"
                     android:gravity="center"
+                    android:onClick="@{() -> createModifierViewModel.submit()}"
                     android:paddingStart="@dimen/_25sdp"
                     android:paddingTop="@dimen/_10sdp"
                     android:paddingEnd="@dimen/_25sdp"
                     android:paddingBottom="@dimen/_10sdp"
                     android:text="@string/save"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/_12ssp"
-                    />
+                    android:textSize="@dimen/_12ssp" />
 
             </RelativeLayout>
 
@@ -81,6 +88,7 @@
                     android:background="@drawable/edt_border_gray"
                     android:hint="@string/modifier_set_name"
                     android:padding="@dimen/_10sdp"
+                    android:text="@={createModifierViewModel.modifierDetails.modifierName}"
                     android:textColor="@color/black"
                     android:textColorHint="@color/hintColor"
                     android:textSize="@dimen/_12ssp" />
@@ -169,8 +177,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/_20sdp"
-                    android:orientation="vertical"
-                    >
+                    android:orientation="vertical">
 
                     <View
                         android:layout_width="match_parent"

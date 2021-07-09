@@ -4,6 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingDefaultResource">
 
+    <data>
+
+        <variable
+            name="createItemVewModel"
+            type="com.android.pos.ui.fragments.createitem.CreateItemViewModel" />
+    </data>
+
     <androidx.core.widget.NestedScrollView
 
         android:layout_width="match_parent"
@@ -51,6 +58,7 @@
                     android:layout_gravity="center"
                     android:background="@color/btnColor"
                     android:gravity="center"
+                    android:onClick="@{() -> createItemVewModel.submit()}"
                     android:paddingStart="@dimen/_15sdp"
                     android:paddingTop="@dimen/_10sdp"
                     android:paddingEnd="@dimen/_15sdp"
@@ -141,6 +149,7 @@
                     android:imeOptions="actionNext"
                     android:inputType="textCapWords"
                     android:padding="@dimen/_10sdp"
+                    android:text="@={createItemVewModel.itemDetails.itemName}"
                     android:textColor="@color/black"
                     android:textColorHint="@color/hintColor"
                     android:textSize="@dimen/_10ssp" />
@@ -332,6 +341,7 @@
                             android:imeOptions="actionNext"
                             android:inputType="numberDecimal"
                             android:padding="@dimen/_10sdp"
+                            android:text="@={``+createItemVewModel.itemDetails.price}"
                             android:textColor="@color/black"
                             android:textColorHint="@color/hintColor"
                             android:textSize="@dimen/_10ssp" />
@@ -368,6 +378,7 @@
                             android:imeOptions="actionNext"
                             android:inputType="text"
                             android:padding="@dimen/_10sdp"
+                            android:text="@={createItemVewModel.itemDetails.sku}"
                             android:textColor="@color/black"
                             android:textColorHint="@color/hintColor"
                             android:textSize="@dimen/_10ssp" />
@@ -474,6 +485,7 @@
                     android:inputType="textMultiLine"
                     android:minLines="3"
                     android:padding="@dimen/_10sdp"
+                    android:text="@={createItemVewModel.itemDetails.description}"
                     android:textColor="@color/black"
                     android:textColorHint="@color/hintColor"
                     android:textSize="@dimen/_10ssp" />

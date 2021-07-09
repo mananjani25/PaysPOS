@@ -51,7 +51,15 @@
 
     <string name="email_validate">Please enter Email Address</string>
     <string name="valid_email_validate">Please enter valid Email Address</string>
-    <string name="password_validate">Please enter  Password</string>
+    <string name="password_validate">Please enter Password</string>
+    <string name="item_name_validate">Please enter Item Name</string>
+    <string name="item_price_validate">Please enter Valid Price</string>
+    <string name="item_sku_validate">Please enter SKU</string>
+
+    <string name="category_name_validate">Please enter Category Name</string>
+    <string name="modifier_name_validate">Please enter Modifier Name</string>
+
+
     <string name="tv_personal_info">Personal Info</string>
     <string name="tv_jobs">Jobs</string>
     <string name="tv_primary_job_title">Primary job title</string>
