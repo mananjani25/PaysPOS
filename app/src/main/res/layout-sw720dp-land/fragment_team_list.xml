@@ -11,16 +11,25 @@
             type="com.android.pos.ui.fragments.loginscreen.MobileNumberViewModel" />
     </data>-->
 
-    <LinearLayout
+
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <include
+            android:id="@+id/layoutTool"
+            layout="@layout/common_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvEmployeeList"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_margin="@dimen/_10sdp"
+            android:layout_below="@+id/layoutTool"
             android:layout_weight="2"
+            android:orientation="vertical"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:listitem="@layout/view_team_item" />
 
@@ -28,13 +37,18 @@
             android:id="@+id/view"
             android:layout_width="1dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@color/gray_color" />
+            android:layout_marginStart="@dimen/_5sdp"
+            android:layout_toEndOf="@+id/rvEmployeeList"
+            android:background="@color/gray_color"
+            android:elevation="@dimen/_4sdp" />
 
         <FrameLayout
+            android:id="@+id/frameContainer"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-    </LinearLayout>
+            android:layout_height="match_parent"
+            android:layout_below="@+id/layoutTool"
+            android:layout_toEndOf="@+id/view" />
+    </RelativeLayout>
 
 
 </layout>

@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity() {
 
         listner = NavController.OnDestinationChangedListener { controller, destination, arguments ->
 
-            if (destination.id == R.id.dashboard || destination.id == R.id.dashboardCategory) {
+            if (destination.id == R.id.dashboard || destination.id == R.id.dashboardCategory || destination.id == R.id.teamList) {
                 drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
             } else {
                 drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
