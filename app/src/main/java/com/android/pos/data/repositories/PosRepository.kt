@@ -16,6 +16,7 @@ class PosRepository @Inject constructor(
     private val apiHelperNew: ApiHelper
 ) : IDataManager {
     suspend fun sendOtp(data: HashMap<String, String>) = apiHelperNew.userLogIn(data)
+    suspend fun employeeClockIn(data: HashMap<String, String>) = apiHelperNew.employeeClockIn(data)
     override suspend fun abs() {
 
         appDatabase.characterDao().getCharacter(0)

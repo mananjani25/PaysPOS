@@ -5,4 +5,6 @@ import javax.inject.Inject
 class ApiHelper @Inject constructor(private val apiService: ApiServie): BaseDataSource() {
 
     suspend fun userLogIn(data: HashMap<String, String>) = getResult { apiService.userLogIn(data) }
+    suspend fun employeeClockIn(data: HashMap<String, String>) =
+        getResult { apiService.employeeClockIn(data) }
 }
