@@ -26,15 +26,18 @@
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view"
+        style="@style/NavigationTheme"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="#292E32"
+        android:background="@color/drawerBack"
         android:fitsSystemWindows="true"
         app:itemBackground="@drawable/bk_menu_item"
         android:isScrollContainer="false"
         android:theme="@style/NavigationTheme"
         app:headerLayout="@layout/drawer_header"
+
+        app:itemBackground="@android:color/transparent"
         app:itemTextAppearance="@style/DrawerItem"
         app:itemTextColor="@color/drawer_item_text_color_selector"
         app:menu="@menu/drawer_menu" />
