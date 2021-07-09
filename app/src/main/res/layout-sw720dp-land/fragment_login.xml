@@ -41,7 +41,7 @@
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/edt_border_gray"
+            android:background="@drawable/edt_border_light_gray"
             android:minWidth="@dimen/_325sdp"
             android:orientation="vertical">
 
