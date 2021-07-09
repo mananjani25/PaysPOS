@@ -87,6 +87,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.menuTeam -> {
                     closeDrawer()
+                    navController?.navigate(R.id.action_global_teamList)
                     return@setNavigationItemSelectedListener true
                 }
                 R.id.memuInventory -> {

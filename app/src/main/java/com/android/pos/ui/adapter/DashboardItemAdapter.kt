@@ -24,7 +24,6 @@ class DashboardItemAdapter(
         }
 
         init {
-
             binding.root.setOnClickListener {
                 listner.onItemClick()
             }
