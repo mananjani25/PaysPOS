@@ -21,20 +21,20 @@
         <androidx.appcompat.widget.AppCompatImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
             android:padding="@dimen/_10sdp"
+            android:layout_gravity="center"
             app:srcCompat="@drawable/ic_check_box" />
 
         <androidx.appcompat.widget.AppCompatTextView
             style="@style/CustomFontSemiBold"
             android:layout_width="0dp"
+            android:padding="@dimen/_10sdp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginStart="@dimen/_5sdp"
             android:layout_weight="1"
             android:gravity="start"
-            android:padding="@dimen/_10sdp"
-            android:text="Staff Meal"
+            android:text="Entertainment"
             android:textColor="@color/color65"
             android:textSize="@dimen/_12ssp" />
 
@@ -46,7 +46,7 @@
             android:layout_marginStart="@dimen/_5sdp"
             android:gravity="start"
             android:padding="@dimen/_10sdp"
-            android:text="50.00%"
+            android:text="3.45%"
             android:textColor="@color/color96"
             android:textSize="@dimen/_12ssp" />
 
