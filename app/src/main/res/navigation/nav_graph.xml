@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/login">
+    app:startDestination="@id/dashboardCategory">
 
 
     <fragment
@@ -98,7 +98,7 @@
         android:id="@+id/inventory"
         android:name="com.android.pos.ui.fragments.inventory.Inventory"
         android:label="Inventory"
-        tools:layout="@layout/fragment_inventory"/>
+        tools:layout="@layout/fragment_inventory" />
     <action
         android:id="@+id/action_global_inventory"
         app:destination="@id/inventory"

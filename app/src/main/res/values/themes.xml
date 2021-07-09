@@ -34,10 +34,7 @@
     <style name="NavigationTheme" parent="Theme.POSAndroid">
         <item name="android:layout_marginBottom">0dp</item>
         <item name="android:layout_marginTop">0dp</item>
-        <item name="minHeight">0dp</item>
-        <item name="minWidth">0dp</item>
-        <item name="android:minHeight">0dp</item>
-        <item name="android:minWidth">0dp</item>
+        <item name="listPreferredItemHeightSmall">@dimen/_25sdp</item>
         <item name="android:layout_marginStart">0dp</item>
         <item name="android:layout_marginEnd">0dp</item>
 
@@ -51,6 +48,7 @@
         <item name="android:textColor">@color/drawer_item_text_color_selector</item>
         <item name="background">@null</item>
         <item name="backgroundColor">@null</item>
+
 
 
         <!--<item name="android:paddingTop">30dp</item>
