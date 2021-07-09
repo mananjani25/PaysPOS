@@ -36,8 +36,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/_10sdp"
                     android:text="@string/tv_personal_info"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/_18ssp" />
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_13ssp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -50,8 +50,8 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:text="@string/first_name"
-                        android:textColor="@color/black"
-                        android:textSize="@dimen/_13ssp" />
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_12ssp" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontMediumStyle"
@@ -61,7 +61,7 @@
                         android:layout_marginTop="@dimen/_5sdp"
                         android:layout_marginBottom="@dimen/_5sdp"
                         android:text="David"
-                        android:textColor="@color/hintColor"
+                        android:textColor="@color/colorB9"
                         android:textSize="@dimen/_11ssp" />
 
                     <View
@@ -83,8 +83,8 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:text="@string/last_name"
-                        android:textColor="@color/black"
-                        android:textSize="@dimen/_13ssp" />
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_12ssp" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontMediumStyle"
@@ -94,7 +94,7 @@
                         android:layout_marginTop="@dimen/_5sdp"
                         android:layout_marginBottom="@dimen/_5sdp"
                         android:text="Miller"
-                        android:textColor="@color/hintColor"
+                        android:textColor="@color/colorB9"
                         android:textSize="@dimen/_11ssp" />
 
                     <View
@@ -116,8 +116,8 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:text="@string/tv_hint_email"
-                        android:textColor="@color/black"
-                        android:textSize="@dimen/_13ssp" />
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_12ssp" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontMediumStyle"
@@ -127,7 +127,7 @@
                         android:layout_marginTop="@dimen/_5sdp"
                         android:layout_marginBottom="@dimen/_5sdp"
                         android:text="david@gmail.com"
-                        android:textColor="@color/hintColor"
+                        android:textColor="@color/colorB9"
                         android:textSize="@dimen/_11ssp" />
 
                     <View
@@ -149,8 +149,8 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:text="@string/phone"
-                        android:textColor="@color/black"
-                        android:textSize="@dimen/_13ssp" />
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_12ssp" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontMediumStyle"
@@ -160,7 +160,7 @@
                         android:layout_marginTop="@dimen/_5sdp"
                         android:layout_marginBottom="@dimen/_5sdp"
                         android:text="None"
-                        android:textColor="@color/hintColor"
+                        android:textColor="@color/colorB9"
                         android:textSize="@dimen/_11ssp" />
 
                     <View
@@ -177,8 +177,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/_10sdp"
                     android:text="@string/tv_jobs"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/_18ssp" />
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_13ssp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -192,7 +192,7 @@
                         android:layout_gravity="center"
                         android:text="@string/tv_primary_job_title"
                         android:textColor="@color/black"
-                        android:textSize="@dimen/_13ssp" />
+                        android:textSize="@dimen/_12ssp" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontMediumStyle"
@@ -202,7 +202,7 @@
                         android:layout_marginTop="@dimen/_5sdp"
                         android:layout_marginBottom="@dimen/_5sdp"
                         android:text="owner"
-                        android:textColor="@color/hintColor"
+                        android:textColor="@color/colorB9"
                         android:textSize="@dimen/_11ssp" />
 
                     <View
@@ -225,7 +225,7 @@
                         android:layout_gravity="center"
                         android:text="@string/tv_hourly_rate"
                         android:textColor="@color/black"
-                        android:textSize="@dimen/_13ssp" />
+                        android:textSize="@dimen/_12ssp" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontMediumStyle"
@@ -235,7 +235,7 @@
                         android:layout_marginTop="@dimen/_5sdp"
                         android:layout_marginBottom="@dimen/_5sdp"
                         android:text="None"
-                        android:textColor="@color/hintColor"
+                        android:textColor="@color/colorB9"
                         android:textSize="@dimen/_11ssp" />
 
                     <View
@@ -253,7 +253,7 @@
                     android:layout_marginBottom="@dimen/_10sdp"
                     android:text="@string/tv_access"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/_18ssp" />
+                    android:textSize="@dimen/_13ssp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -267,7 +267,7 @@
                         android:layout_gravity="center"
                         android:text="@string/tv_permission_set"
                         android:textColor="@color/black"
-                        android:textSize="@dimen/_13ssp" />
+                        android:textSize="@dimen/_12ssp" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontMediumStyle"
@@ -277,7 +277,7 @@
                         android:layout_marginTop="@dimen/_5sdp"
                         android:layout_marginBottom="@dimen/_5sdp"
                         android:text="Owner"
-                        android:textColor="@color/hintColor"
+                        android:textColor="@color/colorB9"
                         android:textSize="@dimen/_11ssp" />
 
                     <View
@@ -300,7 +300,7 @@
                         android:layout_gravity="center"
                         android:text="@string/tv_personal_passcode"
                         android:textColor="@color/black"
-                        android:textSize="@dimen/_13ssp" />
+                        android:textSize="@dimen/_12ssp" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontMediumStyle"
@@ -310,7 +310,7 @@
                         android:layout_marginTop="@dimen/_5sdp"
                         android:layout_marginBottom="@dimen/_5sdp"
                         android:text="1234"
-                        android:textColor="@color/hintColor"
+                        android:textColor="@color/colorB9"
                         android:textSize="@dimen/_11ssp" />
 
                     <View
@@ -333,7 +333,7 @@
                         android:layout_gravity="center"
                         android:text="@string/tv_location"
                         android:textColor="@color/black"
-                        android:textSize="@dimen/_13ssp" />
+                        android:textSize="@dimen/_12ssp" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontMediumStyle"
@@ -343,7 +343,7 @@
                         android:layout_marginTop="@dimen/_5sdp"
                         android:layout_marginBottom="@dimen/_5sdp"
                         android:text="All current and future locations"
-                        android:textColor="@color/hintColor"
+                        android:textColor="@color/colorB9"
                         android:textSize="@dimen/_11ssp" />
 
                     <View

@@ -29,7 +29,7 @@
                 android:gravity="center"
                 android:padding="@dimen/_8sdp"
                 android:textColor="@color/btnColor"
-                android:textSize="@dimen/_16ssp"
+                android:textSize="@dimen/_12ssp"
                 tools:text="AF" />
         </LinearLayout>
 
@@ -41,25 +41,25 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtName"
-                style="@style/CustomFontMediumStyle"
+                style="@style/CustomFontSemiBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingStart="@dimen/_5sdp"
                 android:paddingEnd="@dimen/_5sdp"
                 android:textColor="@color/black"
-                android:textSize="@dimen/_13ssp"
+                android:textSize="@dimen/_12ssp"
                 tools:text="Aiden T. Ford" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtNumber"
-                style="@style/CustomFontRegularStyle"
+                style="@style/CustomFontMediumStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingStart="@dimen/_5sdp"
                 android:paddingEnd="@dimen/_5sdp"
-                android:text="aiden@gmail.com"
+                tools:text="aiden@gmail.com"
                 android:textColor="@color/cool_grey"
-                android:textSize="@dimen/_12ssp" />
+                android:textSize="@dimen/_10ssp" />
         </LinearLayout>
 
     </LinearLayout>

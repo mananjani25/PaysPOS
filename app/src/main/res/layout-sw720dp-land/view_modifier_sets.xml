@@ -31,7 +31,7 @@
                 android:layout_gravity="center"
                 android:gravity="start"
                 android:textColor="@color/viewTextColor"
-                android:textSize="@dimen/_14ssp"
+                android:textSize="@dimen/_10ssp"
                 tools:text="Image one" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -41,7 +41,7 @@
                 android:layout_gravity="center"
                 android:gravity="start"
                 android:textColor="@color/colorCB"
-                android:textSize="@dimen/_12ssp"
+                android:textSize="@dimen/_10ssp"
                 tools:text="Image one" />
         </androidx.appcompat.widget.LinearLayoutCompat>
 

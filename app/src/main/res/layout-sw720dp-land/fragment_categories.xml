@@ -49,7 +49,7 @@
             android:padding="@dimen/_10sdp"
             android:text="@string/create_category"
             android:textColor="@color/btnColor"
-            android:textSize="@dimen/_13ssp"
+            android:textSize="@dimen/_12ssp"
             app:textAllCaps="false" />
 
 

@@ -1,6 +1,5 @@
 package com.android.pos.ui.fragments.loginscreen
 
-import android.app.Activity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,11 +10,8 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.databinding.FragmentLoginBinding
-import com.android.pos.databinding.FragmentLoginTestBinding
 import com.android.pos.utils.ProgressUtils
-import com.android.pos.utils.extensions.hide
 import com.android.pos.utils.extensions.liveSnackBar
-import com.android.pos.utils.extensions.show
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -37,21 +33,23 @@ class LoginFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.loginViewModel = viewModel
 
-          setupSnackbar()
-      //   observeShowProgress()
+        setupSnackbar()
+        observeShowProgress()
+        navigate()
 
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        binding.txtSignIn.setOnClickListener {
-            findNavController().navigate(R.id.action_login_to_scheduledShifts)
-        }
+//
+//        binding.txtSignIn.setOnClickListener {
+//            findNavController().navigate(R.id.action_login_to_scheduledShifts)
+//        }
     }
 
     private fun observeShowProgress() {
+
         viewModel.showProgress.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
@@ -61,9 +59,23 @@ class LoginFragment : Fragment() {
                 }
             }
         })
+
+    }
+
+    private fun navigate() {
+
+        viewModel.data.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    findNavController().navigate(R.id.action_login_to_scheduledShifts)
+                }
+            }
+        })
+
     }
 
     private fun setupSnackbar() {
+
 
         binding.root.liveSnackBar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
 

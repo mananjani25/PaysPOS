@@ -11,40 +11,40 @@ import javax.inject.Singleton
 class PrefProvider @Inject constructor(@ApplicationContext context: Context) {
 
     private var sharedPreferences: SharedPreferences? = null
+    private var mContext = context
 
-    private fun openPref(context: Context) {
-        sharedPreferences = context.getSharedPreferences(
-            context.resources.getString(R.string.app_name),
+    private fun openPref() {
+        sharedPreferences = mContext.getSharedPreferences(
+            mContext.resources.getString(R.string.app_name),
             Context.MODE_PRIVATE
         )
     }
 
     fun getValue(
-        context: Context, key: String?,
+        key: String?,
         defaultValue: String?
     ): String? {
-        openPref(context)
+        openPref()
         val result = sharedPreferences!!.getString(key, defaultValue)
         sharedPreferences = null
         return result
     }
 
     fun getValueInt(
-        context: Context, key: String?,
+        key: String?,
         defaultValue: Int
     ): Int {
-        openPref(context)
+        openPref()
         val result = sharedPreferences!!.getInt(key, defaultValue)
         sharedPreferences = null
         return result
     }
 
     fun setValue(
-        context: Context,
         key: String?,
         value: String?
     ) {
-        openPref(context)
+        openPref()
         val prefsPrivateEditor = sharedPreferences!!.edit()
         prefsPrivateEditor!!.putString(key, value)
         prefsPrivateEditor.apply()
@@ -52,11 +52,10 @@ class PrefProvider @Inject constructor(@ApplicationContext context: Context) {
     }
 
     fun setValueInt(
-        context: Context,
         key: String?,
         value: Int
     ) {
-        openPref(context)
+        openPref()
         val prefsPrivateEditor = sharedPreferences!!.edit()
         prefsPrivateEditor!!.putInt(key, value)
         prefsPrivateEditor.apply()
@@ -64,21 +63,21 @@ class PrefProvider @Inject constructor(@ApplicationContext context: Context) {
     }
 
     fun getValueboolean(
-        context: Context, key: String?,
+        key: String?,
         defaultValue: Boolean
     ): Boolean {
-        openPref(context)
+        openPref()
         val result = sharedPreferences!!.getBoolean(key, defaultValue)
         sharedPreferences = null
         return result
     }
 
     fun setValueboolean(
-        context: Context,
+
         key: String?,
         value: Boolean
     ) {
-        openPref(context)
+        openPref()
         val prefsPrivateEditor = sharedPreferences!!.edit()
         prefsPrivateEditor!!.putBoolean(key, value)
         prefsPrivateEditor.apply()
@@ -86,52 +85,52 @@ class PrefProvider @Inject constructor(@ApplicationContext context: Context) {
     }
 
 
-    fun setClear(context: Context) {
-        openPref(context)
+    fun setClear() {
+        openPref()
         val prefsPrivateEditor = sharedPreferences!!.edit()
         prefsPrivateEditor!!.clear().apply()
         sharedPreferences = null
     }
 
-   /* fun setCustomObject(
-        context: Context,
-        key: String?,
-        `object`: Any?
-    ) {
-        val gson = Gson()
-        val json = gson.toJson(`object`)
+    /* fun setCustomObject(
+         context: Context,
+         key: String?,
+         `object`: Any?
+     ) {
+         val gson = Gson()
+         val json = gson.toJson(`object`)
 
-        openPref(context)
-        val prefsPrivateEditor = sharedPreferences!!.edit()
-        prefsPrivateEditor!!.putString(key, json)
-        prefsPrivateEditor.apply()
-        sharedPreferences = null
-    }
+         openPref(context)
+         val prefsPrivateEditor = sharedPreferences!!.edit()
+         prefsPrivateEditor!!.putString(key, json)
+         prefsPrivateEditor.apply()
+         sharedPreferences = null
+     }
 
-    fun getCustomObject(
-        context: Context,
-        key: String?,
-        dataBeanClass: Class<NearByLocation?>?
-    ): NearByLocation? {
-        val gson = Gson()
-        openPref(context)
-        val json = sharedPreferences!!.getString(key, "")
+     fun getCustomObject(
+         context: Context,
+         key: String?,
+         dataBeanClass: Class<NearByLocation?>?
+     ): NearByLocation? {
+         val gson = Gson()
+         openPref(context)
+         val json = sharedPreferences!!.getString(key, "")
 
-        return gson.fromJson(json, dataBeanClass)
-    }
+         return gson.fromJson(json, dataBeanClass)
+     }
 
-    fun saveUser(user: UserModel?) {
-        val userString = Gson().toJson(user)
-        preference.edit().putString(
-            KEY_USER, userString
-        ).apply()
-    }
+     fun saveUser(user: UserModel?) {
+         val userString = Gson().toJson(user)
+         preference.edit().putString(
+             KEY_USER, userString
+         ).apply()
+     }
 
-    fun getUser(): UserModel {
-        return Gson().fromJson(
-            preference.getString(KEY_USER, null),
-            UserModel::class.java
-        )
-    }*/
+     fun getUser(): UserModel {
+         return Gson().fromJson(
+             preference.getString(KEY_USER, null),
+             UserModel::class.java
+         )
+     }*/
 
 }

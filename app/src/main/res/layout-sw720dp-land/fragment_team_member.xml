@@ -39,8 +39,8 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="@string/tv_create_team_member"
-                android:textColor="@color/black"
-                android:textSize="@dimen/_15ssp" />
+                android:textColor="@color/viewTextColor"
+                android:textSize="@dimen/_12ssp" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/btnSave"
@@ -55,7 +55,7 @@
                 android:paddingBottom="@dimen/_10sdp"
                 android:text="@string/save"
                 android:textColor="@color/white"
-                android:textSize="@dimen/_14ssp" />
+                android:textSize="@dimen/_12ssp" />
         </LinearLayout>
 
         <View
@@ -96,8 +96,8 @@
                             android:layout_gravity="center"
                             android:layout_marginBottom="@dimen/_3sdp"
                             android:text="@string/first_name"
-                            android:textColor="@color/black"
-                            android:textSize="@dimen/_11ssp" />
+                            android:textColor="@color/viewTextColor"
+                            android:textSize="@dimen/_12ssp" />
 
                         <androidx.appcompat.widget.AppCompatEditText
                             style="@style/CustomFontSemiBold"
@@ -109,9 +109,9 @@
                             android:imeOptions="actionNext"
                             android:inputType="textCapWords"
                             android:padding="@dimen/_8sdp"
-                            android:textColor="@color/black"
-                            android:textColorHint="@color/hint_color"
-                            android:textSize="@dimen/_13ssp" />
+                            android:textColor="@color/viewTextColor"
+                            android:textColorHint="@color/hint_color_"
+                            android:textSize="@dimen/_12ssp" />
 
                     </LinearLayout>
 
@@ -129,8 +129,8 @@
                             android:layout_gravity="center"
                             android:layout_marginBottom="@dimen/_3sdp"
                             android:text="@string/last_name"
-                            android:textColor="@color/black"
-                            android:textSize="@dimen/_11ssp" />
+                            android:textColor="@color/viewTextColor"
+                            android:textSize="@dimen/_12ssp" />
 
                         <androidx.appcompat.widget.AppCompatEditText
                             style="@style/CustomFontSemiBold"
@@ -142,9 +142,9 @@
                             android:imeOptions="actionNext"
                             android:inputType="textCapWords"
                             android:padding="@dimen/_8sdp"
-                            android:textColor="@color/black"
-                            android:textColorHint="@color/hint_color"
-                            android:textSize="@dimen/_13ssp" />
+                            android:textColor="@color/viewTextColor"
+                            android:textColorHint="@color/hint_color_"
+                            android:textSize="@dimen/_12ssp" />
 
                     </LinearLayout>
                 </LinearLayout>
@@ -162,8 +162,8 @@
                         android:layout_gravity="center"
                         android:layout_marginBottom="@dimen/_3sdp"
                         android:text="@string/tv_hint_email"
-                        android:textColor="@color/black"
-                        android:textSize="@dimen/_11ssp" />
+                        android:textColor="@color/viewTextColor"
+                        android:textSize="@dimen/_12ssp" />
 
                     <androidx.appcompat.widget.AppCompatEditText
                         style="@style/CustomFontSemiBold"
@@ -175,20 +175,20 @@
                         android:imeOptions="actionNext"
                         android:inputType="textCapWords"
                         android:padding="@dimen/_8sdp"
-                        android:textColor="@color/black"
-                        android:textColorHint="@color/hint_color"
-                        android:textSize="@dimen/_13ssp" />
+                        android:textColor="@color/viewTextColor"
+                        android:textColorHint="@color/hint_color_"
+                        android:textSize="@dimen/_12ssp" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontRegularStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_marginTop="@dimen/_3sdp"
+                        android:padding="@dimen/_5sdp"
                         android:gravity="center"
                         android:text="@string/tv_info_email"
-                        android:textColor="@color/cool_grey"
-                        android:textSize="@dimen/_11ssp" />
+                        android:textColor="@color/colorCB"
+                        android:textSize="@dimen/_10ssp" />
 
                 </LinearLayout>
 
@@ -206,8 +206,8 @@
                         android:layout_gravity="center"
                         android:layout_marginBottom="@dimen/_3sdp"
                         android:text="@string/phone"
-                        android:textColor="@color/black"
-                        android:textSize="@dimen/_11ssp" />
+                        android:textColor="@color/viewTextColor"
+                        android:textSize="@dimen/_12ssp" />
 
                     <androidx.appcompat.widget.AppCompatEditText
                         style="@style/CustomFontSemiBold"
@@ -219,9 +219,9 @@
                         android:imeOptions="actionNext"
                         android:inputType="textCapWords"
                         android:padding="@dimen/_8sdp"
-                        android:textColor="@color/black"
-                        android:textColorHint="@color/hint_color"
-                        android:textSize="@dimen/_13ssp" />
+                        android:textColor="@color/viewTextColor"
+                        android:textColorHint="@color/hint_color_"
+                        android:textSize="@dimen/_12ssp" />
 
                 </LinearLayout>
 
@@ -250,8 +250,8 @@
                             android:layout_gravity="center"
                             android:layout_weight="1"
                             android:text="@string/tv_primary_job_title"
-                            android:textColor="@color/black"
-                            android:textSize="@dimen/_13ssp" />
+                            android:textColor="@color/viewTextColor"
+                            android:textSize="@dimen/_12ssp" />
 
                         <androidx.appcompat.widget.AppCompatTextView
                             style="@style/CustomFontSemiBold"
@@ -260,7 +260,7 @@
                             android:layout_gravity="center"
                             android:text="@string/tv_add_job_title"
                             android:textColor="@color/cool_grey"
-                            android:textSize="@dimen/_13ssp" />
+                            android:textSize="@dimen/_12ssp" />
 
                         <androidx.appcompat.widget.AppCompatImageView
                             android:layout_width="wrap_content"
@@ -295,8 +295,8 @@
                             android:layout_gravity="center"
                             android:layout_weight="1"
                             android:text="@string/tv_hourly_rate"
-                            android:textColor="@color/black"
-                            android:textSize="@dimen/_13ssp" />
+                            android:textColor="@color/viewTextColor"
+                            android:textSize="@dimen/_12ssp" />
 
                         <androidx.appcompat.widget.AppCompatTextView
                             style="@style/CustomFontSemiBold"
@@ -305,7 +305,7 @@
                             android:layout_gravity="center"
                             android:text="None"
                             android:textColor="@color/cool_grey"
-                            android:textSize="@dimen/_13ssp" />
+                            android:textSize="@dimen/_12ssp" />
                     </LinearLayout>
                 </LinearLayout>
 
@@ -334,8 +334,8 @@
                             android:layout_gravity="center"
                             android:layout_weight="1"
                             android:text="@string/tv_permission_set"
-                            android:textColor="@color/black"
-                            android:textSize="@dimen/_13ssp" />
+                            android:textColor="@color/viewTextColor"
+                            android:textSize="@dimen/_12ssp" />
 
                         <androidx.appcompat.widget.AppCompatTextView
                             style="@style/CustomFontSemiBold"
@@ -344,7 +344,7 @@
                             android:layout_gravity="center"
                             android:text="@string/tv_team_permissions"
                             android:textColor="@color/cool_grey"
-                            android:textSize="@dimen/_13ssp" />
+                            android:textSize="@dimen/_12ssp" />
 
                         <androidx.appcompat.widget.AppCompatImageView
                             android:layout_width="wrap_content"
@@ -380,8 +380,8 @@
                             android:layout_gravity="center"
                             android:layout_weight="1"
                             android:text="@string/tv_personal_passcode"
-                            android:textColor="@color/black"
-                            android:textSize="@dimen/_13ssp" />
+                            android:textColor="@color/viewTextColor"
+                            android:textSize="@dimen/_12ssp" />
 
                         <androidx.appcompat.widget.AppCompatTextView
                             style="@style/CustomFontSemiBold"
@@ -390,7 +390,7 @@
                             android:layout_gravity="center"
                             android:text="6548"
                             android:textColor="@color/cool_grey"
-                            android:textSize="@dimen/_13ssp" />
+                            android:textSize="@dimen/_12ssp" />
                     </LinearLayout>
                 </LinearLayout>
 
@@ -419,8 +419,8 @@
                             android:layout_gravity="center"
                             android:layout_weight="1"
                             android:text="@string/tv_location"
-                            android:textColor="@color/black"
-                            android:textSize="@dimen/_13ssp" />
+                            android:textColor="@color/viewTextColor"
+                            android:textSize="@dimen/_12ssp" />
 
                         <androidx.appcompat.widget.AppCompatTextView
                             style="@style/CustomFontSemiBold"
@@ -429,7 +429,7 @@
                             android:layout_gravity="center"
                             android:text="Quick Net Soft"
                             android:textColor="@color/cool_grey"
-                            android:textSize="@dimen/_13ssp" />
+                            android:textSize="@dimen/_12ssp" />
 
                         <androidx.appcompat.widget.AppCompatImageView
                             android:layout_width="wrap_content"

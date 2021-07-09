@@ -155,4 +155,5 @@
     <string name="tv_kitchen_receipt_preview">KITCHEN RECEIPT PREVIEW</string>
     <string name="tv_paid_unpaid">PAID/UNPAID</string>
     <string name="tv_printer_kitchen">PRINTER : KITCHEN</string>
+    <string name="select_category">Select Category</string>
 </resources>

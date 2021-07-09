@@ -60,10 +60,10 @@ abstract class BaseDataSource {
     }
 
     private fun showNetworkError(errorBody: String): String {
-
+//                   {"data":{},"type":"Error","status":400,"message":"Invalid Email or Password"}
         try {
             val jsonObject = JSONObject(errorBody.trim())
-            return jsonObject.getString("error")
+            return jsonObject.getString("message")
         } catch (e: Exception) {
             e.printStackTrace()
         }

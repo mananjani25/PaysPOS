@@ -33,7 +33,6 @@ object AlertUtils {
         message: String?
     ): AlertDialog {
         val builder = AlertDialog.Builder(context)
-
         builder.setIcon(0)
         setAlertTitle(context, builder)
         //		builder.setTitle(context.getString(R.string.alert));
@@ -49,7 +48,7 @@ object AlertUtils {
         builder: AlertDialog.Builder
     ) {
         val title = TextView(context)
-        title.setText(context.getString(R.string.app_name))
+        title.text = context.getString(R.string.app_name)
         title.setPadding(15, 10, 15, 0);
         title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30f)
         title.setTypeface(title.getTypeface(), Typeface.BOLD)

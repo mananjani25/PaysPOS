@@ -10,6 +10,7 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.android.pos.R
 import dagger.hilt.android.AndroidEntryPoint
@@ -30,7 +31,12 @@ class MainActivity : AppCompatActivity() {
 
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
-        navController = findNavController(R.id.navHostFrag)
+
+        val navHostFragment = supportFragmentManager
+            .findFragmentById(R.id.navHostFrag) as NavHostFragment
+        navController = navHostFragment.navController
+
+//        navController = findNavController(R.id.navHostFrag) as NavHostFragment
 
         listner = NavController.OnDestinationChangedListener { controller, destination, arguments ->
 

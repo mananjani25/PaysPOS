@@ -41,7 +41,12 @@
 
     <color name="txtColorItem">#7B7B7B</color>
 
-    
+
     <color name="drawerItemUnselected">#8D8D8D</color>
     <color name="drawerItemSelected">#DDDDDD</color>
+    <color name="colorB9">#B9B9B9</color>
+    <color name="colorF4">#F4F3F8</color>
+    <color name="colorE6">#E6E6E6</color>
+    <color name="colorAB">#ABABAB</color>
+    <color name="color13">#131416</color>
 </resources>

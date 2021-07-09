@@ -29,48 +29,62 @@ class LoginViewModel @Inject constructor(
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
 
+    private val _data = MutableLiveData<Event<Boolean?>>()
+    val data: LiveData<Event<Boolean?>> = _data
+
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
     fun submit() {
 
-//        if (TextUtils.isEmpty(loginDetails.value?.emailAddress?.trim())) {
-//            _snackbarText.value = Event(R.string.email_validate)
-//        } else if (!Patterns.EMAIL_ADDRESS.matcher(loginDetails.value?.emailAddress?.trim())
-//                .matches()
-//        ) {
-//            _snackbarText.value = Event(R.string.valid_email_validate)
-//        } else if (TextUtils.isEmpty(loginDetails.value?.password?.trim())) {
-//            _snackbarText.value = Event(R.string.password_validate)
-//        } else {
-//            _showProgress.value = Event(true)
-//
-//            val data = HashMap<String, String>()
-//             data["phone_number"] = loginDetails.value?.emailAddress.toString()
-//             data["country_code"] = "+91"
-//
-//            viewModelScope.launch {
-//                val resource = posRepository.sendOtp(data)
-//                when (resource.status) {
-//                    Status.SUCCESS -> {
-//                        _showProgress.value = Event(false)
-//                        resource.data?.let {
-//                            _snackbarText.value = Event(it.message)
-//                        }
-//                    }
-//
-//                    Status.ERROR -> {
-//                        _snackbarText.value = Event(resource.message)
-//                        _showProgress.value = Event(false)
-//                    }
-//
-//                    Status.LOADING -> {
-//                        _showProgress.value = Event(true)
-//                    }
-//                }
-//            }
-//
-//        }
+        if (TextUtils.isEmpty(loginDetails.value?.emailAddress?.trim())) {
+            _snackbarText.value = Event(R.string.email_validate)
+        } else if (!Patterns.EMAIL_ADDRESS.matcher(loginDetails.value?.emailAddress?.trim())
+                .matches()
+        ) {
+            _snackbarText.value = Event(R.string.valid_email_validate)
+        } else if (TextUtils.isEmpty(loginDetails.value?.password?.trim())) {
+            _snackbarText.value = Event(R.string.password_validate)
+        } else {
+            _showProgress.value = Event(true)
+
+            val data = HashMap<String, String>()
+            data["email"] = loginDetails.value?.emailAddress.toString()
+            data["password"] = loginDetails.value?.password.toString()
+
+            viewModelScope.launch {
+                val resource = posRepository.sendOtp(data)
+                when (resource.status) {
+                    Status.SUCCESS -> {
+                        _showProgress.value = Event(false)
+
+                        resource.data.let {
+                            if (it?.status == 200) {
+                                resource.data?.let {
+                                    _data.value = Event(true)
+                                    prefProvider.setValue("", it.data.authToken)
+                                }
+                            } else {
+                                _snackbarText.value = Event(resource.message)
+                            }
+
+                        }
+
+
+                    }
+
+                    Status.ERROR -> {
+                        _snackbarText.value = Event(resource.message)
+                        _showProgress.value = Event(false)
+                    }
+
+                    Status.LOADING -> {
+                        _showProgress.value = Event(true)
+                    }
+                }
+            }
+
+        }
 
     }
 }

@@ -3,12 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingDefaultResource">
-        <data>
-            <variable
-                name="viewModel"
-                type="com.android.pos.data.model.DashboardItemModel" />
-        </data>
 
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.android.pos.data.model.DashboardItemModel" />
+    </data>
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -19,6 +20,7 @@
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txtTitle"
+            style="@style/CustomFontMediumStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#969AA3"
@@ -28,12 +30,13 @@
             android:paddingEnd="@dimen/_15sdp"
             android:text="@{viewModel.title}"
             android:textColor="#F4F3F8"
-            android:textSize="@dimen/_22ssp"
+            android:textSize="@dimen/_12ssp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="TP" />
 
-        <RelativeLayout
-            android:layout_width="0dp"
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/white"
             android:orientation="horizontal"
@@ -44,15 +47,18 @@
             app:layout_constraintTop_toBottomOf="@+id/txtTitle">
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:layout_marginStart="@dimen/_3sdp"
+                android:layout_weight="1"
+                android:ellipsize="marquee"
                 android:fontFamily="@font/sf_pro_display_medium"
-                android:maxLength="14"
                 android:text="@{viewModel.description}"
-                android:textColor="#131416"
-                android:textSize="@dimen/_6ssp" />
+                android:textColor="@color/color13"
+                android:textSize="@dimen/_8ssp"
+                android:singleLine="true"
+                tools:text="Tax rates can be applied to specific items and will be automatically calculated at purchase.Tax rates can be applied to specific items and will be automatically calculated at purchase. calculated calculated" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:layout_width="wrap_content"
@@ -62,12 +68,13 @@
                 android:layout_marginEnd="@dimen/_3sdp"
                 android:fontFamily="@font/sf_pro_display_semibold"
                 android:gravity="end"
+                tools:text="$10.00"
                 android:text="@{viewModel.price}"
-                android:textColor="#7B7B7B"
-                android:textSize="@dimen/_6ssp" />
+                android:textColor="@color/txtColorItem"
+                android:textSize="@dimen/_8ssp" />
 
 
-        </RelativeLayout>
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
