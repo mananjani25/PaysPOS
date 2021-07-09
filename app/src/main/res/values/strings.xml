@@ -206,4 +206,5 @@
     <string name="tv_transaction_type">Transaction Type</string>
     <string name="tv_additional_tips">Additional Tips</string>
     <string name="tv_customer_details">Customer Details</string>
+    <string name="tv_kitchen_receipt_settings">Kitchen Receipt Settings</string>
 </resources>
