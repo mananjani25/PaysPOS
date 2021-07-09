@@ -4,6 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingDefaultResource">
 
+    <data>
+        <variable
+            name="createCategoryViewModel"
+            type="com.android.pos.ui.fragments.createcategory.CreateCategoryViewModel" />
+    </data>
+
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -45,6 +51,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_weight="0.1"
+                    android:onClick="@{() -> createCategoryViewModel.submit()}"
                     android:background="@color/btnColor"
                     android:gravity="center"
                     android:padding="@dimen/_10sdp"
@@ -73,6 +80,7 @@
                 android:hint="@string/add_category_name"
                 android:padding="@dimen/_10sdp"
                 android:textColor="@color/black"
+                android:text="@={createCategoryViewModel.categoryDetails.categoryName}"
                 android:textColorHint="@color/hintColor"
                 android:textSize="@dimen/_12ssp" />
 

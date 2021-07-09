@@ -6,14 +6,19 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.databinding.CreateItemBinding
 import com.android.pos.databinding.CreateModifierSetBinding
+import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.extensions.liveSnackBar
+import com.google.android.material.snackbar.Snackbar
 
 class CreateModifierSet : Fragment() {
 
     private lateinit var binding: CreateModifierSetBinding
+    private val viewModel by viewModels<CreateModifierViewModel>()
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -21,18 +26,33 @@ class CreateModifierSet : Fragment() {
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.create_modifier_set, container, false)
         binding.lifecycleOwner = this
+        binding.createModifierViewModel = viewModel
+
+        setupSnackbar()
+        observeShowProgress()
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        //  onClick()
     }
 
-    private fun onClick() {
-//        binding.txtSave.setOnClickListener {
-//            findNavController().navigate(R.id.action_createItem_to_createCategory)
-//        }
+    private fun observeShowProgress() {
+
+        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    ProgressUtils.showProgressDialog(requireActivity())
+                } else {
+                    ProgressUtils.dismissProgressDialog()
+                }
+            }
+        })
+
+    }
+
+    private fun setupSnackbar() {
+        binding.root.liveSnackBar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
     }
 }

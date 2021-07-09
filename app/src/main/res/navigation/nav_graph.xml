@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/dashboardCategory">
+    app:startDestination="@id/passcode">
 
 
     <fragment
@@ -102,15 +102,6 @@
     <action
         android:id="@+id/action_global_inventory"
         app:destination="@id/inventory"
-        app:enterAnim="@anim/nav_default_enter_anim" />
-    <fragment
-        android:id="@+id/teamList"
-        android:name="com.android.pos.ui.fragments.team.TeamList"
-        android:label="TeamList"
-        tools:layout="@layout/fragment_team_list" />
-    <action
-        android:id="@+id/action_global_teamList"
-        app:destination="@id/teamList"
         app:enterAnim="@anim/nav_default_enter_anim" />
 
 
