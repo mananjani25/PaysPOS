@@ -54,23 +54,29 @@ class Inventory : Fragment() {
             0 -> {
                 val allItem: Fragment = AllItems()
                 loadFragment(allItem)
+                binding.commonToolbar.txtSetItem.visibility = View.GONE
                 binding.commonToolbar.txtSubTitle.setText("All Items")
             }
             1 -> {
-
+                val category: Fragment = Categories()
+                loadFragment(category)
+                binding.commonToolbar.txtSetItem.visibility = View.VISIBLE
                 binding.commonToolbar.txtSubTitle.setText("Categories")
 
             }
             2 -> {
-
-
+                val modifier : Fragment = Modifiers()
+                loadFragment(modifier)
+                binding.commonToolbar.txtSetItem.visibility = View.VISIBLE
                 binding.commonToolbar.txtSubTitle.setText("Modifiers")
             }
             3 -> {
+                binding.commonToolbar.txtSetItem.visibility = View.VISIBLE
                 binding.commonToolbar.txtSubTitle.setText("Discounts")
 
             }
             4 -> {
+                binding.commonToolbar.txtSetItem.visibility = View.VISIBLE
                 binding.commonToolbar.txtSubTitle.setText("Options")
             }
         }

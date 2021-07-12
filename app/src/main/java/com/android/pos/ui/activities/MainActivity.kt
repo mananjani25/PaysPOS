@@ -58,6 +58,7 @@ class MainActivity : AppCompatActivity() {
             when (it.itemId) {
                 R.id.menuHome -> {
                     disableDrawer()
+                    navController?.navigate(R.id.action_global_dashboardCategory)
                     return@setNavigationItemSelectedListener true
                 }
                 R.id.menuOrders -> {
