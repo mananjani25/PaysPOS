@@ -10,7 +10,9 @@ import com.android.pos.R
 import com.android.pos.data.model.InventoryItemModel
 import com.android.pos.databinding.FragmentInventoryBinding
 import com.android.pos.ui.adapter.InventoryAdapter
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class Inventory : Fragment() {
     private lateinit var binding: FragmentInventoryBinding
     override fun onCreateView(

@@ -15,7 +15,9 @@ import com.android.pos.ui.adapter.CategoryListItemAdapter
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class CreateCategory : Fragment() {
     lateinit var binding: CreateCategoryActivityBinding
     private val viewModel by viewModels<CreateCategoryViewModel>()

@@ -12,7 +12,9 @@ import com.android.pos.data.model.DashboardItemModel
 import com.android.pos.databinding.FragmentDashboardBinding
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.DashboardItemAdapter
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class Dashboard : Fragment() {
     private lateinit var binding: FragmentDashboardBinding
     private var listItem: ArrayList<DashboardItemModel> = arrayListOf()
