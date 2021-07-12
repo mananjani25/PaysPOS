@@ -50,7 +50,7 @@ class DashboardCategory : Fragment() {
         // binding.tabLayout.setupWithViewPager(binding.viewPagerCategory)
         TabLayoutMediator(binding.tabLayout, binding.viewPagerCategory) { tab, position ->
             // binding.tabLayout.getTabAt(position).setText()
-            tab.setText(listTabs.get(position))
+            tab.text = listTabs.get(position)
         }.attach()
 
         binding.layoutMenu.imgDrawer.setOnClickListener {
@@ -97,7 +97,6 @@ class DashboardCategory : Fragment() {
         FragmentStateAdapter(requireActivity()) {
         override fun getItemCount(): Int {
             return tabCount
-
 
         }
 

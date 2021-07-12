@@ -4,6 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingDefaultResource">
 
+    <data>
+
+        <variable
+            name="clockInViewModel"
+            type="com.android.pos.ui.fragments.loginscreen.ClockInOwnerViewModel" />
+    </data>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -40,6 +47,7 @@
             android:fontFamily="@font/sf_pro_display_semibold"
             android:text="@string/tv_clock_in_out"
             android:textColor="#00A3E0"
+            android:onClick="@{() -> clockInViewModel.submit()}"
             android:textSize="@dimen/_10ssp"
             app:layout_constraintBottom_toBottomOf="@+id/txtTitle"
             app:layout_constraintEnd_toEndOf="parent"
@@ -48,8 +56,8 @@
         <View
             android:id="@+id/viewLine"
             android:layout_width="match_parent"
-            android:layout_marginTop="@dimen/_9sdp"
             android:layout_height="1dp"
+            android:layout_marginTop="@dimen/_9sdp"
             android:background="@color/view"
             app:layout_constraintTop_toBottomOf="@+id/txtTitle" />
 

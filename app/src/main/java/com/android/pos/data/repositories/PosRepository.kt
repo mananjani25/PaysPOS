@@ -18,6 +18,12 @@ class PosRepository @Inject constructor(
     suspend fun userLogIn(data: HashMap<String, String>) = apiHelperNew.userLogIn(data)
 
     suspend fun employeeClockIn(data: HashMap<String, String>) = apiHelperNew.employeeClockIn(data)
+
+    suspend fun employeeLogIn(data: HashMap<String, String>) = apiHelperNew.employeeLogIn(data)
+
+    suspend fun employeeClockOut(data: HashMap<String, String>) =
+        apiHelperNew.employeeClockOut(data)
+
     override suspend fun abs() {
 
         appDatabase.characterDao().getCharacter(0)
