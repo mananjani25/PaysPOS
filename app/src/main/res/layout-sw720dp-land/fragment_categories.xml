@@ -19,7 +19,7 @@
             android:hint="@string/search_categories"
             android:imeOptions="actionDone"
             android:inputType="text"
-            android:padding="@dimen/_10sdp"
+            android:padding="@dimen/_5sdp"
             android:textColor="@color/black"
             android:textColorHint="@color/hintColor"
             android:textSize="@dimen/_13ssp" />
@@ -48,10 +48,10 @@
                 android:layout_marginBottom="@dimen/_20sdp"
                 android:background="@drawable/bg_button_border_gray"
                 android:gravity="center"
-                android:padding="@dimen/_10sdp"
+                android:padding="@dimen/_8sdp"
                 android:text="@string/create_category"
                 android:textColor="@color/btnColor"
-                android:textSize="@dimen/_12ssp"
+                android:textSize="@dimen/_8ssp"
                 app:textAllCaps="false" />
 
 

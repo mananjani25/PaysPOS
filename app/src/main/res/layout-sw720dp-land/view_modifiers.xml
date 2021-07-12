@@ -36,7 +36,7 @@
                 android:gravity="start"
                 android:padding="@dimen/_10sdp"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_12ssp"
+                android:textSize="@dimen/_8ssp"
                 tools:text="@{model.title}" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -47,7 +47,7 @@
                 android:gravity="start"
                 android:padding="@dimen/_10sdp"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_12ssp"
+                android:textSize="@dimen/_8ssp"
                 tools:text="@{model.options}" />
 
             <androidx.appcompat.widget.AppCompatImageView

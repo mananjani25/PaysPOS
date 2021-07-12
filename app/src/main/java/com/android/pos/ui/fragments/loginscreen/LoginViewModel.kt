@@ -8,6 +8,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.R
 import com.android.pos.data.model.requestModel.LoginRequestModel
+import com.android.pos.data.remote.Constants.AUTH_TOKEN
+import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
@@ -57,11 +59,12 @@ class LoginViewModel @Inject constructor(
                 when (resource.status) {
                     Status.SUCCESS -> {
                         _showProgress.value = Event(false)
-                        resource.data.let {
-                            if (it?.status == 200) {
+                        resource.data.let { logInResponse ->
+                            if (logInResponse?.status == 200) {
 
                                 resource.data?.let {
-                                    prefProvider.setValue("", it.data.authToken)
+//                                    _data.value = Event(true)
+                                    prefProvider.setValue(AUTH_TOKEN, it.data.authToken)
                                 }
 
                                 defaultTerminalCall()
@@ -93,21 +96,17 @@ class LoginViewModel @Inject constructor(
 
     private fun defaultTerminalCall() {
 
-        val data = HashMap<String, String>()
-        data["uniq_id"] = "123456XXX"
-
-
         viewModelScope.launch {
-            val defaultTerminal = posRepository.getDefaultTerminal(data)
+            val defaultTerminal = posRepository.getDefaultTerminal("qwerty123")
             when (defaultTerminal.status) {
                 Status.SUCCESS -> {
 
-                    defaultTerminal.data.let {
-                        if (it?.status == 200) {
+                    defaultTerminal.data.let { terminalResponse ->
+                        if (terminalResponse?.status == 200) {
 
-                            defaultTerminal.data?.let {
-                                _data.value = Event(true)
-                            }
+                            prefProvider.setValueInt(TERMINAL_ID, terminalResponse.terminalData.id)
+                            _data.value = Event(true)
+
 
                         } else {
                             _snackbarText.value = Event(defaultTerminal.message)

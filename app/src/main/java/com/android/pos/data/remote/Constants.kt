@@ -4,6 +4,10 @@ object Constants {
 
     //Database Name
     const val DATABASE_NAME = "androidPos-db"
+    const val AUTH_TOKEN = "authToken"
+    const val TERMINAL_ID = "terminalId"
+    const val BASE_URL_NEW = "baseUrlNew"
+    const val PASSCODE = "passcode"
 
 
     //Api End Points
