@@ -51,7 +51,7 @@ class DashboardCategory : Fragment() {
         // binding.tabLayout.setupWithViewPager(binding.viewPagerCategory)
         TabLayoutMediator(binding.tabLayout, binding.viewPagerCategory) { tab, position ->
             // binding.tabLayout.getTabAt(position).setText()
-            tab.text = listTabs.get(position)
+            tab.text = listTabs[position]
         }.attach()
 
         binding.layoutMenu.imgDrawer.setOnClickListener {
@@ -88,7 +88,7 @@ class DashboardCategory : Fragment() {
 
     private fun setTabs() {
         for (i in 0 until listTabs.size) {
-            binding.tabLayout.addTab(binding.tabLayout.newTab().setText(listTabs.get(i).toString()))
+            binding.tabLayout.addTab(binding.tabLayout.newTab().setText(listTabs[i]))
         }
 
 
