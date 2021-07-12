@@ -26,16 +26,36 @@ class Inventory : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setAdapter()
+        changePosition(0)
+    }
+
+    private fun changePosition(position: Int) {
+        when (position) {
+            0 -> {
+                var
+            }
+            1 -> {
+
+            }
+            2 -> {
+
+            }
+            3 -> {
+
+            }
+        }
+
+
     }
 
     private fun setAdapter() {
-        val list:ArrayList<InventoryItemModel> = arrayListOf()
-        list.add(InventoryItemModel(0,"All Items"))
-        list.add(InventoryItemModel(0,"Categories"))
-        list.add(InventoryItemModel(0,"Modifiers"))
-        list.add(InventoryItemModel(0,"Discounts"))
-        list.add(InventoryItemModel(0,"Options"))
-        binding.recyclerViewItemsList.adapter = InventoryAdapter(requireContext(),list)
+        val list: ArrayList<InventoryItemModel> = arrayListOf()
+        list.add(InventoryItemModel(0, "All Items"))
+        list.add(InventoryItemModel(0, "Categories"))
+        list.add(InventoryItemModel(0, "Modifiers"))
+        list.add(InventoryItemModel(0, "Discounts"))
+        list.add(InventoryItemModel(0, "Options"))
+        binding.recyclerViewItemsList.adapter = InventoryAdapter(requireContext(), list)
 
 
     }

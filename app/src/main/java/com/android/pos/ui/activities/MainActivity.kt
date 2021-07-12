@@ -54,11 +54,7 @@ class MainActivity : AppCompatActivity() {
 
         }
 
-
-
         nav_view.setNavigationItemSelectedListener {
-
-
             when (it.itemId) {
                 R.id.menuHome -> {
                     closeDrawer()
