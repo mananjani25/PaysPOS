@@ -24,12 +24,12 @@ class PasscodeViewModel @Inject constructor(private val posRepository: PosReposi
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
-    fun submit() {
+    fun submit(passcode: String) {
 
         _showProgress.value = Event(true)
 
         val data = HashMap<String, String>()
-        data["passcode"] = "1111"
+        data["passcode"] = passcode
         data["terminal_id"] = "1"
 
         viewModelScope.launch {

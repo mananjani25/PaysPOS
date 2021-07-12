@@ -57,15 +57,14 @@ class LoginViewModel @Inject constructor(
                 when (resource.status) {
                     Status.SUCCESS -> {
                         _showProgress.value = Event(false)
-
                         resource.data.let {
                             if (it?.status == 200) {
 
-
                                 resource.data?.let {
-                                    _data.value = Event(true)
                                     prefProvider.setValue("", it.data.authToken)
                                 }
+
+                                defaultTerminalCall()
 
 
                             } else {
@@ -89,6 +88,46 @@ class LoginViewModel @Inject constructor(
             }
 
         }
+
+    }
+
+    private fun defaultTerminalCall() {
+
+        val data = HashMap<String, String>()
+        data["uniq_id"] = "123456XXX"
+
+
+        viewModelScope.launch {
+            val defaultTerminal = posRepository.getDefaultTerminal(data)
+            when (defaultTerminal.status) {
+                Status.SUCCESS -> {
+
+                    defaultTerminal.data.let {
+                        if (it?.status == 200) {
+
+                            defaultTerminal.data?.let {
+                                _data.value = Event(true)
+                            }
+
+                        } else {
+                            _snackbarText.value = Event(defaultTerminal.message)
+                        }
+
+                    }
+
+
+                }
+                Status.ERROR -> {
+                    _snackbarText.value = Event(defaultTerminal.message)
+                    _showProgress.value = Event(false)
+                }
+
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
+            }
+        }
+
 
     }
 }

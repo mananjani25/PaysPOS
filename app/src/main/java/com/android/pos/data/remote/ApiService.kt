@@ -4,6 +4,7 @@ package com.android.pos.data.remote
 import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.model.responseModel.LogInResponse
 import com.android.pos.data.remote.Constants.EMPLOYEE_CLOCK_IN
+import com.android.pos.data.remote.Constants.LOGIN_TERMINAL
 import com.android.pos.data.remote.Constants.USERS_LOG_IN
 import retrofit2.http.FieldMap
 import retrofit2.http.FormUrlEncoded
@@ -17,8 +18,8 @@ interface ApiService {
     suspend fun userLogIn(@FieldMap options: HashMap<String, String>): LogInResponse
 
     @FormUrlEncoded
-    @POST(USERS_LOG_IN)
-    suspend fun getDefaultTerminal(@FieldMap options: HashMap<String, String>): LogInResponse
+    @POST(LOGIN_TERMINAL)
+    suspend fun getDefaultTerminal(@FieldMap options: HashMap<String, String>): BaseResponse
 
 
     @FormUrlEncoded

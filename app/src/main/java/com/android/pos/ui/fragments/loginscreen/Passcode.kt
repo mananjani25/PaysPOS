@@ -53,7 +53,7 @@ class Passcode : Fragment() {
             if (it.length == 4) {
 
                 Log.e("passCodeView", it.toString())
-                viewModel.submit()
+                viewModel.submit(it.toString())
 
             }
         }
