@@ -9,8 +9,9 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.databinding.FragmentScheduledShiftBinding
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class ScheduledShifts : Fragment() {
     lateinit var  binding : FragmentScheduledShiftBinding
 
