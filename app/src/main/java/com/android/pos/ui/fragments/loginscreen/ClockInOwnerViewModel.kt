@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class PasscodeViewModel @Inject constructor(private val posRepository: PosRepository) :
+class ClockInOwnerViewModel @Inject constructor(private val posRepository: PosRepository) :
     ViewModel() {
 
     private val _snackbarText = MutableLiveData<Event<Any?>>()
@@ -24,16 +24,16 @@ class PasscodeViewModel @Inject constructor(private val posRepository: PosReposi
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
-    fun submit(passcode: String) {
+    fun submit() {
 
         _showProgress.value = Event(true)
 
         val data = HashMap<String, String>()
-        data["passcode"] = passcode
+        data["passcode"] = "1111"
         data["terminal_id"] = "1"
 
         viewModelScope.launch {
-            val resource = posRepository.employeeClockIn(data)
+            val resource = posRepository.employeeClockOut(data)
             when (resource.status) {
                 Status.SUCCESS -> {
                     _showProgress.value = Event(false)
@@ -41,15 +41,13 @@ class PasscodeViewModel @Inject constructor(private val posRepository: PosReposi
                     resource.data.let {
                         if (it?.status == 200) {
                             resource.data?.let {
-                                employeeLogin(data)
-
+                                _data.value = Event(true)
                             }
                         } else {
                             _snackbarText.value = Event(resource.message)
                         }
 
                     }
-
 
                 }
 
@@ -63,36 +61,7 @@ class PasscodeViewModel @Inject constructor(private val posRepository: PosReposi
                 }
             }
         }
+
     }
 
-    private suspend fun employeeLogin(clockinData: HashMap<String, String>) {
-        val employeeLogin = posRepository.employeeLogIn(clockinData)
-
-        when (employeeLogin.status) {
-            Status.SUCCESS -> {
-                _showProgress.value = Event(false)
-
-                employeeLogin.data.let {
-                    if (it?.status == 200) {
-                        employeeLogin.data?.let {
-                            _data.value = Event(true)
-
-                        }
-                    } else {
-                        _snackbarText.value = Event(employeeLogin.message)
-                    }
-
-                }
-            }
-
-            Status.ERROR -> {
-                _snackbarText.value = Event(employeeLogin.message)
-                _showProgress.value = Event(false)
-            }
-
-            Status.LOADING -> {
-                _showProgress.value = Event(true)
-            }
-        }
-    }
 }
