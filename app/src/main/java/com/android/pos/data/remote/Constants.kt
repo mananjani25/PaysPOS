@@ -5,4 +5,5 @@ object Constants {
 
     const val USERS_LOG_IN = "users/log_in"
     const val EMPLOYEE_CLOCK_IN = "employee_activities/clock_in"
+    const val LOGIN_TERMINAL = "users/login_terminal"
 }

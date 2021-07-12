@@ -16,6 +16,10 @@ interface ApiService {
     @POST(USERS_LOG_IN)
     suspend fun userLogIn(@FieldMap options: HashMap<String, String>): LogInResponse
 
+    @FormUrlEncoded
+    @POST(USERS_LOG_IN)
+    suspend fun getDefaultTerminal(@FieldMap options: HashMap<String, String>): LogInResponse
+
 
     @FormUrlEncoded
     @POST(EMPLOYEE_CLOCK_IN)

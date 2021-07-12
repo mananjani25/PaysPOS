@@ -60,10 +60,14 @@ class LoginViewModel @Inject constructor(
 
                         resource.data.let {
                             if (it?.status == 200) {
+
+
                                 resource.data?.let {
                                     _data.value = Event(true)
                                     prefProvider.setValue("", it.data.authToken)
                                 }
+
+
                             } else {
                                 _snackbarText.value = Event(resource.message)
                             }
