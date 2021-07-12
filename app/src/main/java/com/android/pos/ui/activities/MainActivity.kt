@@ -50,53 +50,53 @@ class MainActivity : AppCompatActivity() {
         nav_view.setupWithNavController(navController!!)
         val imgBack = nav_view.getHeaderView(0).findViewById<ImageView>(R.id.imgBack)
         imgBack.setOnClickListener {
-            closeDrawer()
+            disableDrawer()
 
         }
 
         nav_view.setNavigationItemSelectedListener {
             when (it.itemId) {
                 R.id.menuHome -> {
-                    closeDrawer()
+                    disableDrawer()
                     return@setNavigationItemSelectedListener true
                 }
                 R.id.menuOrders -> {
-                    closeDrawer()
+                    disableDrawer()
                     return@setNavigationItemSelectedListener true
                 }
                 R.id.menuTransactions -> {
-                    closeDrawer()
+                    disableDrawer()
                     return@setNavigationItemSelectedListener true
                 }
                 R.id.menuCashLog -> {
-                    closeDrawer()
+                    disableDrawer()
                     return@setNavigationItemSelectedListener true
                 }
                 R.id.menuReports -> {
-                    closeDrawer()
+                    disableDrawer()
                     return@setNavigationItemSelectedListener true
                 }
 
                 R.id.menuCustomers -> {
-                    closeDrawer()
+                    disableDrawer()
                     return@setNavigationItemSelectedListener true
                 }
                 R.id.menuTeam -> {
-                    closeDrawer()
+                    disableDrawer()
                     navController?.navigate(R.id.action_global_teamList)
                     return@setNavigationItemSelectedListener true
                 }
                 R.id.memuInventory -> {
-                    closeDrawer()
+                    disableDrawer()
                     navController?.navigate(R.id.action_global_inventory)
                     return@setNavigationItemSelectedListener true
                 }
                 R.id.menuSettings -> {
-                    closeDrawer()
+                    disableDrawer()
                     return@setNavigationItemSelectedListener true
                 }
                 R.id.menuSupport -> {
-                    closeDrawer()
+                    disableDrawer()
                     return@setNavigationItemSelectedListener true
                 }
 
@@ -124,12 +124,12 @@ class MainActivity : AppCompatActivity() {
         navController?.removeOnDestinationChangedListener(listner)
     }
 
-    fun openDrawer() {
+    fun enableDrawer() {
         drawer_layout.openDrawer(GravityCompat.START)
 
     }
 
-    fun closeDrawer() {
+    fun disableDrawer() {
         drawer_layout.closeDrawer(GravityCompat.START)
     }
 

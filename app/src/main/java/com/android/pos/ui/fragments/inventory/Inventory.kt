@@ -1,19 +1,23 @@
 package com.android.pos.ui.fragments.inventory
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import com.android.pos.R
 import com.android.pos.data.model.InventoryItemModel
 import com.android.pos.databinding.FragmentInventoryBinding
+import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.InventoryAdapter
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class Inventory : Fragment() {
+    val TAG = this.javaClass.name
     private lateinit var binding: FragmentInventoryBinding
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -27,37 +31,74 @@ class Inventory : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        configureToolbar()
         setAdapter()
         changePosition(0)
+
+
+    }
+
+    private fun configureToolbar() {
+        binding.commonToolbar.imgDrawer.setOnClickListener {
+            (requireActivity() as MainActivity).enableDrawer()
+        }
+
+        binding.commonToolbar.txtTitle.setText("Inventory")
+        binding.commonToolbar.imgOptionMenu.visibility = View.GONE
+        binding.commonToolbar.txtSubTitle.setText("All Items")
+        binding.commonToolbar.imgOptionMenuContainer.visibility = View.GONE
     }
 
     private fun changePosition(position: Int) {
         when (position) {
             0 -> {
-                var
+                val allItem: Fragment = AllItems()
+                loadFragment(allItem)
+                binding.commonToolbar.txtSubTitle.setText("All Items")
             }
             1 -> {
+
+                binding.commonToolbar.txtSubTitle.setText("Categories")
 
             }
             2 -> {
 
+
+                binding.commonToolbar.txtSubTitle.setText("Modifiers")
             }
             3 -> {
+                binding.commonToolbar.txtSubTitle.setText("Discounts")
 
+            }
+            4 -> {
+                binding.commonToolbar.txtSubTitle.setText("Options")
             }
         }
 
 
     }
 
+    private fun loadFragment(frag: Fragment) {
+        val fm: FragmentManager = requireActivity().supportFragmentManager
+        fm.beginTransaction().replace(binding.frameLayout.id, frag).commit()
+
+    }
+
     private fun setAdapter() {
         val list: ArrayList<InventoryItemModel> = arrayListOf()
-        list.add(InventoryItemModel(0, "All Items"))
+        list.add(InventoryItemModel(0, "All Items", true))
         list.add(InventoryItemModel(0, "Categories"))
         list.add(InventoryItemModel(0, "Modifiers"))
         list.add(InventoryItemModel(0, "Discounts"))
         list.add(InventoryItemModel(0, "Options"))
-        binding.recyclerViewItemsList.adapter = InventoryAdapter(requireContext(), list)
+        binding.recyclerViewItemsList.adapter =
+            InventoryAdapter(requireContext(), list, object : InventoryAdapter.InventoryListner {
+                override fun onItemSelect(position: Int) {
+                    Log.e(TAG, "position  $position")
+                    changePosition(position)
+                }
+
+            })
 
 
     }

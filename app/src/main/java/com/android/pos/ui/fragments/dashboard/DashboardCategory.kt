@@ -8,7 +8,6 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.android.pos.R
-import com.android.pos.data.model.CategoryListItemModel
 import com.android.pos.data.model.DashboardItemModel
 import com.android.pos.databinding.FragmentDashboardCategoryBinding
 import com.android.pos.ui.activities.MainActivity
@@ -55,7 +54,7 @@ class DashboardCategory : Fragment() {
         }.attach()
 
         binding.layoutMenu.imgDrawer.setOnClickListener {
-            (requireActivity() as MainActivity).openDrawer()
+            (requireActivity() as MainActivity).enableDrawer()
         }
 
 

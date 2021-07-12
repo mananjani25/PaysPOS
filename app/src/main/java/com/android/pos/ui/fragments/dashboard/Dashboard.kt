@@ -35,7 +35,7 @@ class Dashboard : Fragment() {
 
         setAdapter()
         binding.layoutMenu.imgDrawer.setOnClickListener {
-            (requireActivity() as MainActivity).openDrawer()
+            (requireActivity() as MainActivity).enableDrawer()
         }
 
     }

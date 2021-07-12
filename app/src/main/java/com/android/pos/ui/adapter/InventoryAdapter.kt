@@ -7,7 +7,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.model.InventoryItemModel
 import com.android.pos.databinding.ViewInventoryItemsBinding
 
-class InventoryAdapter(val context: Context, val list: ArrayList<InventoryItemModel>) :
+class InventoryAdapter(
+    val context: Context,
+    val list: ArrayList<InventoryItemModel>,
+    val listner: InventoryListner
+) :
     RecyclerView.Adapter<InventoryAdapter.MyViewHolder>() {
     inner class MyViewHolder(private val binding: ViewInventoryItemsBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -17,6 +21,19 @@ class InventoryAdapter(val context: Context, val list: ArrayList<InventoryItemMo
         }
 
         init {
+            binding.root.setOnClickListener {
+                listner.onItemSelect(layoutPosition)
+                for (i in 0 until list.size) {
+                    if (i == layoutPosition) {
+                        list.get(i).isSelected = true
+                    } else {
+                        list.get(i).isSelected = false
+
+                    }
+                }
+
+                notifyDataSetChanged()
+            }
 
         }
     }
@@ -36,5 +53,9 @@ class InventoryAdapter(val context: Context, val list: ArrayList<InventoryItemMo
 
     override fun getItemCount(): Int {
         return list.size
+    }
+
+    interface InventoryListner {
+        fun onItemSelect(position: Int)
     }
 }
