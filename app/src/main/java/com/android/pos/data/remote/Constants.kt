@@ -1,8 +1,17 @@
 package com.android.pos.data.remote
 
 object Constants {
+
+    //Database Name
     const val DATABASE_NAME = "androidPos-db"
 
+
+    //Api End Points
     const val USERS_LOG_IN = "users/log_in"
     const val EMPLOYEE_CLOCK_IN = "employee_activities/clock_in"
+    const val EMPLOYEE_LOG_IN = "employee_activities/log_in"
+    const val CLOCK_OUT = "employee_activities/clock_out"
+
+    //SharedPref Keys
+
 }
