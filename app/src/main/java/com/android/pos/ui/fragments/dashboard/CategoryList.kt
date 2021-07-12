@@ -14,7 +14,9 @@ import com.android.pos.data.model.DashboardItemModel
 import com.android.pos.databinding.FragmentCategoryItemListBinding
 import com.android.pos.ui.adapter.CategoryItemAdapter
 import com.android.pos.ui.adapter.CategoryListItemAdapter
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class CategoryList : Fragment() {
 
     private lateinit var binding: FragmentCategoryItemListBinding

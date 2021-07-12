@@ -9,8 +9,10 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.databinding.FragmentClockInOwnerBinding
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_clock_in_owner.*
 
+@AndroidEntryPoint
 class ClockInOwner : Fragment() {
     private lateinit var binding: FragmentClockInOwnerBinding
 

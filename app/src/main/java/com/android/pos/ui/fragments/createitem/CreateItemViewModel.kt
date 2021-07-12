@@ -35,7 +35,8 @@ class CreateItemViewModel @Inject constructor(
         } else if (TextUtils.isEmpty(
                 itemDetails.value?.price?.toString()?.trim()
             )
-            && itemDetails.value?.price == 0.0) {
+            && itemDetails.value?.price == 0.0
+        ) {
             _snackbarText.value = Event(R.string.item_price_validate)
         } else if (TextUtils.isEmpty(itemDetails.value?.sku?.trim())) {
             _snackbarText.value = Event(R.string.item_sku_validate)
@@ -43,8 +44,8 @@ class CreateItemViewModel @Inject constructor(
             _showProgress.value = Event(true)
 
             val data = HashMap<String, String>()
-           /* data["email"] = loginDetails.value?.emailAddress.toString()
-            data["password"] = loginDetails.value?.password.toString()*/
+            /* data["email"] = loginDetails.value?.emailAddress.toString()
+             data["password"] = loginDetails.value?.password.toString()*/
 
             viewModelScope.launch {
                 val resource = posRepository.userLogIn(data)

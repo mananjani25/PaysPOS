@@ -14,7 +14,9 @@ import com.android.pos.databinding.CreateModifierSetBinding
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class CreateModifierSet : Fragment() {
 
     private lateinit var binding: CreateModifierSetBinding

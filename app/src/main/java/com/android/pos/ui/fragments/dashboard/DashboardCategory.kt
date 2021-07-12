@@ -13,7 +13,9 @@ import com.android.pos.data.model.DashboardItemModel
 import com.android.pos.databinding.FragmentDashboardCategoryBinding
 import com.android.pos.ui.activities.MainActivity
 import com.google.android.material.tabs.TabLayoutMediator
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class DashboardCategory : Fragment() {
 
     private lateinit var binding: FragmentDashboardCategoryBinding
