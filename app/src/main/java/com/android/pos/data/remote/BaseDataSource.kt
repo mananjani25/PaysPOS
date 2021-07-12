@@ -55,6 +55,7 @@ abstract class BaseDataSource {
             401 -> "$code Unauthorised"
             404 -> "$code Not found"
             400 -> showNetworkError(errorBody!!)
+            410 -> showNetworkError(errorBody!!)
             else -> message
         }
     }
