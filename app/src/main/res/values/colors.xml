@@ -50,4 +50,6 @@
     <color name="colorE6">#E6E6E6</color>
     <color name="colorAB">#ABABAB</color>
     <color name="color13">#131416</color>
+
+    <color name="dividerColor">#41414117</color>
 </resources>

@@ -13,6 +13,7 @@
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@{model.selected ? @color/txt_color_blue : @color/white}"
         android:orientation="vertical">
 
 
@@ -20,17 +21,22 @@
             style="@style/CustomFontSemiBold"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:layout_gravity="start"
+            android:layout_marginStart="@dimen/_20sdp"
+            android:layout_marginEnd="@dimen/_30sdp"
             android:layout_weight="1"
             android:gravity="start"
-            android:paddingStart="@dimen/_20sdp"
             android:paddingTop="@dimen/_10sdp"
             android:paddingEnd="@dimen/_20sdp"
             android:paddingBottom="@dimen/_10sdp"
             android:text="@{model.title}"
-            android:textColor="@color/txtColor"
+            android:textColor="@{model.selected ? @color/white : @color/txtColor}"
             android:textSize="@dimen/_12ssp" />
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/dividerColor" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 </layout>

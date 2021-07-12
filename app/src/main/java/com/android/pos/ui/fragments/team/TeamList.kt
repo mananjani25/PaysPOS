@@ -29,14 +29,22 @@ class TeamList : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        configureToolbar()
         setAdapter()
 
-        binding.layoutTool.imgDrawer.setOnClickListener {
-            (requireActivity() as MainActivity).openDrawer()
-        }
+
         loadTeamDetails()
 
 
+    }
+
+    private fun configureToolbar() {
+        binding.layoutTool.txtTitle.setText("Team")
+        binding.layoutTool.imgDrawer.setOnClickListener {
+            (requireActivity() as MainActivity).enableDrawer()
+        }
+        binding.layoutTool.imgOptionMenu.setImageDrawable(requireContext().resources.getDrawable(R.drawable.plus))
+        binding.layoutTool.imgOptionMenuContainer.visibility = View.GONE
     }
 
     private fun loadTeamDetails() {
