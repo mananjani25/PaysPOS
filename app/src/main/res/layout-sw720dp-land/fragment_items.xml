@@ -5,6 +5,8 @@
     tools:ignore="MissingDefaultResource">
 
     <androidx.appcompat.widget.LinearLayoutCompat
+
+
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
@@ -16,7 +18,7 @@
             android:background="@null"
             android:drawableStart="@drawable/ic_search"
             android:drawablePadding="@dimen/_10sdp"
-            android:hint="@string/search_categories"
+            android:hint="@string/search"
             android:imeOptions="actionDone"
             android:inputType="text"
             android:padding="@dimen/_10sdp"
@@ -49,20 +51,20 @@
                 android:background="@drawable/bg_button_border_gray"
                 android:gravity="center"
                 android:padding="@dimen/_10sdp"
-                android:text="@string/create_category"
+                android:text="@string/create_item"
                 android:textColor="@color/btnColor"
-                android:textSize="@dimen/_12ssp"
+                android:textSize="@dimen/_13ssp"
                 app:textAllCaps="false" />
 
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvCategoriesList"
+                android:id="@+id/rvAllItemList"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:itemCount="5"
-                tools:listitem="@layout/view_category" />
+                tools:listitem="@layout/view_item" />
 
 
         </androidx.appcompat.widget.LinearLayoutCompat>

@@ -4,32 +4,51 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingDefaultResource">
 
-    <androidx.appcompat.widget.LinearLayoutCompat
 
+    <RelativeLayout
+        android:id="@+id/linearCompact"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerViewItemsList"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="0.3"
-            android:orientation="vertical"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            tools:itemCount="5"
-            tools:listitem="@layout/view_inventory_items" />
+        <include
+            android:id="@+id/commonToolbar"
+            layout="@layout/common_toolbar_copy"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
-        <View
-            android:layout_width="1dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/view" />
+            android:layout_below="@+id/commonToolbar"
+            android:orientation="horizontal"
+            android:weightSum="1">
 
-        <FrameLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerViewItemsList"
+                android:layout_width="0sp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.28"
+                android:orientation="vertical"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:itemCount="5"
+                tools:listitem="@layout/view_inventory_items" />
+
+
+            <View
+                android:id="@+id/viewLine"
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@color/dividerColor" />
+
+
+            <FrameLayout
+                android:id="@+id/frameLayout"
+                android:layout_width="0sp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.72"
+                android:orientation="vertical" />
+        </LinearLayout>
 
         <!-- <fragment
              android:layout_width="0dp"
@@ -39,5 +58,5 @@
 
          </fragment>
  -->
-    </androidx.appcompat.widget.LinearLayoutCompat>
+    </RelativeLayout>
 </layout>

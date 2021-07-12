@@ -55,7 +55,7 @@ class DashboardCategory : Fragment() {
         }.attach()
 
         binding.layoutMenu.imgDrawer.setOnClickListener {
-            (requireActivity() as MainActivity).openDrawer()
+            (requireActivity() as MainActivity).enableDrawer()
         }
 
 
