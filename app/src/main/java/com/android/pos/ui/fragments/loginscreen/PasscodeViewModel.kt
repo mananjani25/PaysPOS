@@ -36,7 +36,7 @@ class PasscodeViewModel @Inject constructor(
 
         val data = HashMap<String, String>()
         data["passcode"] = passcode
-        data["terminal_id"] = prefProvider.getValue(TERMINAL_ID, "").toString()
+        data["terminal_id"] = prefProvider.getValueInt(TERMINAL_ID, -1).toString()
 
         viewModelScope.launch {
             val resource = posRepository.employeeClockIn(data)

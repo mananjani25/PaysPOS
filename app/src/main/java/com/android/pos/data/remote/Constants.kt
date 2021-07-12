@@ -16,6 +16,7 @@ object Constants {
     const val LOGIN_TERMINAL = "users/login_terminal"
     const val EMPLOYEE_LOG_IN = "employee_activities/log_in"
     const val CLOCK_OUT = "employee_activities/clock_out"
+    const val SYNC_VENUE_DATA = "locations/sync_data"
 
     //SharedPref Keys
 

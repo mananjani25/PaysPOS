@@ -4,14 +4,13 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.android.pos.data.model.CategoryListItemModel
-import com.android.pos.data.model.DashboardItemModel
+import com.android.pos.data.model.responseModel.VenueDataResponse
 import com.android.pos.databinding.ViewDashboardItemBinding
 
-class CategoryItemAdapter(val context: Context,val list:ArrayList<DashboardItemModel>,val listner:CategoryItemList):RecyclerView.Adapter<CategoryItemAdapter.MyViewHolder>() {
+class CategoryItemAdapter(val context: Context, val list: ArrayList<VenueDataResponse.Data.Category.Item>, val listner:CategoryItemList):RecyclerView.Adapter<CategoryItemAdapter.MyViewHolder>() {
     inner class MyViewHolder(private val binding:ViewDashboardItemBinding):RecyclerView.ViewHolder(binding.root){
 
-        fun bind(item:DashboardItemModel){
+        fun bind(item: VenueDataResponse.Data.Category.Item){
             binding.viewModel = item
             binding.executePendingBindings()
         }
@@ -32,7 +31,7 @@ class CategoryItemAdapter(val context: Context,val list:ArrayList<DashboardItemM
     }
 
     override fun onBindViewHolder(holder: CategoryItemAdapter.MyViewHolder, position: Int) {
-        holder.bind(list.get(position))
+        holder.bind(list[position])
     }
 
     override fun getItemCount(): Int {

@@ -9,12 +9,11 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
-import com.android.pos.data.model.CategoryListItemModel
-import com.android.pos.data.model.DashboardItemModel
+import com.android.pos.data.model.responseModel.VenueDataResponse
 import com.android.pos.databinding.FragmentCategoryItemListBinding
 import com.android.pos.ui.adapter.CategoryItemAdapter
-import com.android.pos.ui.adapter.CategoryListItemAdapter
 import dagger.hilt.android.AndroidEntryPoint
+import java.io.Serializable
 
 @AndroidEntryPoint
 class CategoryList : Fragment() {
@@ -24,9 +23,9 @@ class CategoryList : Fragment() {
 
     companion object {
         private val ITEM_LIST = "item_list"
-        fun newInstance(list: ArrayList<DashboardItemModel>): CategoryList {
+        fun newInstance(list: List<VenueDataResponse.Data.Category.Item>): CategoryList {
             val args: Bundle = Bundle()
-            args.putSerializable(ITEM_LIST, list)
+            args.putSerializable(ITEM_LIST, list as Serializable)
             val fragment = CategoryList()
             fragment.arguments = args
             return fragment
@@ -52,8 +51,8 @@ class CategoryList : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val list: ArrayList<DashboardItemModel> =
-            requireArguments().get(ITEM_LIST) as ArrayList<DashboardItemModel>
+        val list: ArrayList<VenueDataResponse.Data.Category.Item> =
+            requireArguments().get(ITEM_LIST) as ArrayList<VenueDataResponse.Data.Category.Item>
         Log.e("CategoryList", "${list.size}")
 
         binding.recyclerViewItemsList.adapter = CategoryItemAdapter(

@@ -4,10 +4,12 @@ package com.android.pos.data.remote
 import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.model.responseModel.LogInResponse
 import com.android.pos.data.model.responseModel.TerminalResponse
+import com.android.pos.data.model.responseModel.VenueDataResponse
 import com.android.pos.data.remote.Constants.CLOCK_OUT
 import com.android.pos.data.remote.Constants.EMPLOYEE_CLOCK_IN
 import com.android.pos.data.remote.Constants.EMPLOYEE_LOG_IN
 import com.android.pos.data.remote.Constants.LOGIN_TERMINAL
+import com.android.pos.data.remote.Constants.SYNC_VENUE_DATA
 import com.android.pos.data.remote.Constants.USERS_LOG_IN
 import retrofit2.http.*
 
@@ -33,4 +35,7 @@ interface ApiService {
     @FormUrlEncoded
     @POST(CLOCK_OUT)
     suspend fun employeeClockOut(@FieldMap options: HashMap<String, String>): BaseResponse
+
+    @GET(SYNC_VENUE_DATA)
+    suspend fun syncVenueData(): VenueDataResponse
 }
