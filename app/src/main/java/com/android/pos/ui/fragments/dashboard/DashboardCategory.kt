@@ -8,10 +8,10 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.android.pos.R
-import com.android.pos.data.model.CategoryListItemModel
 import com.android.pos.data.model.DashboardItemModel
 import com.android.pos.databinding.FragmentDashboardCategoryBinding
 import com.android.pos.ui.activities.MainActivity
+import com.android.pos.ui.adapter.CategoryViewPagerAdapter
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -82,7 +82,8 @@ class DashboardCategory : Fragment() {
         list.add(DashboardItemModel(0, "TP", "Three Piece...", "15.33"))
         list.add(DashboardItemModel(0, "TP", "Three Piece...", "15.33"))
         list.add(DashboardItemModel(0, "TP", "Three Piece...", "15.33"))
-        binding.viewPagerCategory.adapter = ViewPagerAdapter(list, binding.tabLayout.tabCount)
+
+        binding.viewPagerCategory.adapter = CategoryViewPagerAdapter(requireActivity(),list, binding.tabLayout.tabCount)
 
     }
 
@@ -94,7 +95,7 @@ class DashboardCategory : Fragment() {
 
     }
 
-    inner class ViewPagerAdapter(var list: ArrayList<DashboardItemModel>, var tabCount: Int) :
+    /*inner class ViewPagerAdapter(var list: ArrayList<DashboardItemModel>, var tabCount: Int) :
         FragmentStateAdapter(requireActivity()) {
         override fun getItemCount(): Int {
             return tabCount
@@ -105,5 +106,5 @@ class DashboardCategory : Fragment() {
             return CategoryList.newInstance(list)
         }
 
-    }
+    }*/
 }
