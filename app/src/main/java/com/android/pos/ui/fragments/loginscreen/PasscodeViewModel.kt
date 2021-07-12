@@ -4,7 +4,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.android.pos.data.remote.Constants.PASSCODE
+import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.data.repositories.PosRepository
+import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -12,7 +15,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class PasscodeViewModel @Inject constructor(private val posRepository: PosRepository) :
+class PasscodeViewModel @Inject constructor(
+    private val posRepository: PosRepository,
+    private val prefProvider: PrefProvider
+) :
     ViewModel() {
 
     private val _snackbarText = MutableLiveData<Event<Any?>>()
@@ -24,13 +30,13 @@ class PasscodeViewModel @Inject constructor(private val posRepository: PosReposi
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
-    fun submit() {
+    fun submit(passcode: String) {
 
         _showProgress.value = Event(true)
 
         val data = HashMap<String, String>()
-        data["passcode"] = "1111"
-        data["terminal_id"] = "1"
+        data["passcode"] = passcode
+        data["terminal_id"] = prefProvider.getValue(TERMINAL_ID, "").toString()
 
         viewModelScope.launch {
             val resource = posRepository.employeeClockIn(data)
@@ -41,6 +47,8 @@ class PasscodeViewModel @Inject constructor(private val posRepository: PosReposi
                     resource.data.let {
                         if (it?.status == 200) {
                             resource.data?.let {
+
+                                prefProvider.setValue(PASSCODE, passcode)
                                 employeeLogin(data)
 
                             }

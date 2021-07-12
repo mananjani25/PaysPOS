@@ -8,6 +8,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.R
 import com.android.pos.data.model.requestModel.LoginRequestModel
+import com.android.pos.data.remote.Constants.AUTH_TOKEN
+import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
@@ -57,13 +59,17 @@ class LoginViewModel @Inject constructor(
                 when (resource.status) {
                     Status.SUCCESS -> {
                         _showProgress.value = Event(false)
+                        resource.data.let { logInResponse ->
+                            if (logInResponse?.status == 200) {
 
-                        resource.data.let {
-                            if (it?.status == 200) {
                                 resource.data?.let {
-                                    _data.value = Event(true)
-                                    prefProvider.setValue("", it.data.authToken)
+//                                    _data.value = Event(true)
+                                    prefProvider.setValue(AUTH_TOKEN, it.data.authToken)
                                 }
+
+                                defaultTerminalCall()
+
+
                             } else {
                                 _snackbarText.value = Event(resource.message)
                             }
@@ -85,6 +91,42 @@ class LoginViewModel @Inject constructor(
             }
 
         }
+
+    }
+
+    private fun defaultTerminalCall() {
+
+        viewModelScope.launch {
+            val defaultTerminal = posRepository.getDefaultTerminal("qwerty123")
+            when (defaultTerminal.status) {
+                Status.SUCCESS -> {
+
+                    defaultTerminal.data.let { terminalResponse ->
+                        if (terminalResponse?.status == 200) {
+
+                            prefProvider.setValueInt(TERMINAL_ID, terminalResponse.terminalData.id)
+                            _data.value = Event(true)
+
+
+                        } else {
+                            _snackbarText.value = Event(defaultTerminal.message)
+                        }
+
+                    }
+
+
+                }
+                Status.ERROR -> {
+                    _snackbarText.value = Event(defaultTerminal.message)
+                    _showProgress.value = Event(false)
+                }
+
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
+            }
+        }
+
 
     }
 }
