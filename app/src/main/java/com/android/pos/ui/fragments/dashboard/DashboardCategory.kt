@@ -14,7 +14,6 @@ import androidx.viewpager2.widget.ViewPager2
 import com.android.pos.R
 import com.android.pos.data.model.responseModel.VenueDataResponse
 import com.android.pos.databinding.FragmentDashboardCategoryBinding
-import com.android.pos.databinding.FragmentDashboardCategoryVerticalBinding
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.CategoryViewPagerAdapter
 import com.android.pos.utils.ProgressUtils
@@ -27,9 +26,10 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class DashboardCategory : Fragment() {
 
-    private lateinit var binding: FragmentDashboardCategoryVerticalBinding
+    private lateinit var binding: FragmentDashboardCategoryBinding
     private val viewModel by viewModels<DashBoardCategoryViewModel>()
     private var categoryList: List<VenueDataResponse.Data.Category> = arrayListOf()
+    private  var categoryTabsList: ArrayList<String> = arrayListOf()
     private var isFlag = false
 
     override fun onCreateView(
@@ -39,22 +39,22 @@ class DashboardCategory : Fragment() {
     ): View? {
         binding = DataBindingUtil.inflate(
             inflater,
-            R.layout.fragment_dashboard_category_vertical,
+            R.layout.fragment_dashboard_category,
             container,
             false
         )
 
-       /* binding.layoutMenu.imgOptionMenu.setOnClickListener {
+        /* binding.layoutMenu.imgOptionMenu.setOnClickListener {
 
-            if (isFlag) {
-                isFlag = false
-                binding.tabLayout.rotation = 0F
-            } else {
-                isFlag = true
-                binding.tabLayout.rotation = 270F
+             if (isFlag) {
+                 isFlag = false
+                 binding.tabLayout.rotation = 0F
+             } else {
+                 isFlag = true
+                 binding.tabLayout.rotation = 270F
 
-            }
-        }*/
+             }
+         }*/
 
         binding.lifecycleOwner = this
 
@@ -72,6 +72,7 @@ class DashboardCategory : Fragment() {
         })
         return binding.root
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -95,11 +96,12 @@ class DashboardCategory : Fragment() {
                             categoryList = it.data.categories
                             if (categoryList.isNotEmpty()) {
                                 categoryList.forEach {
-                                    /* categoryTabsList.add(it.name)*/
+                                    categoryTabsList.add(it.name)
                                     binding.tabLayout.addTab(
                                         binding.tabLayout.newTab().setText(it.name)
                                     )
                                     //   itemList.addAll(it.items)
+
 
                                 }
 
