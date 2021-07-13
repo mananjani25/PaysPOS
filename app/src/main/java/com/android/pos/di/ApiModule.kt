@@ -32,7 +32,6 @@ object ApiModule {
     ) = NetworkConnectionInterceptor(app)
 
 
-    @Singleton
     @Provides
     fun getRetrofit(
         networkConnectionInterceptor: NetworkConnectionInterceptor,

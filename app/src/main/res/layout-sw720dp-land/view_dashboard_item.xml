@@ -28,7 +28,7 @@
             android:paddingVertical="@dimen/_10sdp"
             android:paddingStart="@dimen/_15sdp"
             android:paddingEnd="@dimen/_15sdp"
-            android:text="@{viewModel.title}"
+            android:text="@{viewModel.name}"
             android:textColor="#F4F3F8"
             android:textSize="@dimen/_12ssp"
             app:layout_constraintStart_toStartOf="parent"
@@ -55,7 +55,6 @@
                 android:ellipsize="marquee"
                 android:fontFamily="@font/sf_pro_display_medium"
                 android:singleLine="true"
-                android:text="@{viewModel.description}"
                 android:textColor="@color/color13"
                 android:textSize="@dimen/_8ssp"
                 tools:text="Tax rates can be applied to specific items and will be automatically calculated at purchase.Tax rates can be applied to specific items and will be automatically calculated at purchase. calculated calculated" />

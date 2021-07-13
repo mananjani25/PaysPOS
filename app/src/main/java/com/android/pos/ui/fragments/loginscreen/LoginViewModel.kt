@@ -16,6 +16,7 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -66,7 +67,7 @@ class LoginViewModel @Inject constructor(
                                 resource.data?.let {
 //                                    _data.value = Event(true)
                                     prefProvider.setValue(AUTH_TOKEN, it.data.authToken)
-                                    prefProvider.setValue(BASE_URL_NEW,it.data.baseUrl+"/")
+                                    prefProvider.setValue(BASE_URL_NEW, it.data.baseUrl + "/")
                                 }
 
                                 defaultTerminalCall()
@@ -96,9 +97,10 @@ class LoginViewModel @Inject constructor(
 
     }
 
-    private fun defaultTerminalCall() {
+    private suspend fun defaultTerminalCall() {
 
         viewModelScope.launch {
+            delay(1000)
             val defaultTerminal = posRepository.getDefaultTerminal("qwerty123")
             when (defaultTerminal.status) {
                 Status.SUCCESS -> {
@@ -127,8 +129,7 @@ class LoginViewModel @Inject constructor(
                     _showProgress.value = Event(true)
                 }
             }
+
         }
-
-
     }
 }

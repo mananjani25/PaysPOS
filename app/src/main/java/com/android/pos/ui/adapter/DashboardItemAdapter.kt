@@ -18,10 +18,10 @@ class DashboardItemAdapter(
     inner class MyViewHolder(private val binding: ViewDashboardItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(item: DashboardItemModel) {
+       /* fun bind(item: DashboardItemModel) {
             binding.viewModel = item
             binding.executePendingBindings()
-        }
+        }*/
 
         init {
             binding.root.setOnClickListener {
@@ -42,7 +42,7 @@ class DashboardItemAdapter(
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.bind(list[position])
+       // holder.bind(list[position])
 
     }
 
