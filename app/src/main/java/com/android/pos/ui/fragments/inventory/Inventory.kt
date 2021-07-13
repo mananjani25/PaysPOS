@@ -65,17 +65,21 @@ class Inventory : Fragment() {
 
             }
             2 -> {
-                val modifier : Fragment = Modifiers()
+                val modifier: Fragment = Modifiers()
                 loadFragment(modifier)
                 binding.commonToolbar.txtSetItem.visibility = View.VISIBLE
                 binding.commonToolbar.txtSubTitle.setText("Modifiers")
             }
             3 -> {
+                val discount: Fragment = Discounts()
+                loadFragment(discount)
                 binding.commonToolbar.txtSetItem.visibility = View.VISIBLE
                 binding.commonToolbar.txtSubTitle.setText("Discounts")
 
             }
             4 -> {
+                val option:Fragment = Options()
+                loadFragment(option)
                 binding.commonToolbar.txtSetItem.visibility = View.VISIBLE
                 binding.commonToolbar.txtSubTitle.setText("Options")
             }
