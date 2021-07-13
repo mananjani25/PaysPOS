@@ -19,8 +19,8 @@ class DashboardItemAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: DashboardItemModel) {
-            binding.viewModel = item
-            binding.executePendingBindings()
+           // binding.viewModel = item
+           // binding.executePendingBindings()
         }
 
         init {

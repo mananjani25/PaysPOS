@@ -3,14 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingDefaultResource">
+
     <data>
+
         <variable
             name="model"
-            type="com.android.pos.data.model.DiscountListModel" />
+            type="com.android.pos.data.model.OptionListModel" />
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat
-
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -26,13 +27,6 @@
             android:orientation="horizontal">
 
 
-            <androidx.appcompat.widget.AppCompatImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:padding="@dimen/_10sdp"
-                app:srcCompat="@drawable/ic_check_box" />
-
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
                 android:layout_width="0dp"
@@ -42,7 +36,7 @@
                 android:layout_weight="1"
                 android:gravity="start"
                 android:padding="@dimen/_10sdp"
-                android:text="@{model.name}"
+                android:text="@{model.title}"
                 android:textColor="@color/color65"
                 android:textSize="@dimen/_12ssp" />
 
@@ -54,7 +48,7 @@
                 android:layout_marginStart="@dimen/_5sdp"
                 android:gravity="start"
                 android:padding="@dimen/_10sdp"
-                android:text="@{model.discountPercentage}"
+                android:text="@{model.option}"
                 android:textColor="@color/color96"
                 android:textSize="@dimen/_12ssp" />
 
@@ -71,6 +65,7 @@
             android:layout_width="match_parent"
             android:layout_height="0.3dp"
             android:background="@color/view" />
+
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 </layout>

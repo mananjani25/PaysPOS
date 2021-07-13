@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/passcode">
+    app:startDestination="@id/login">
 
 
     <fragment
@@ -102,7 +102,12 @@
         android:id="@+id/inventory"
         android:name="com.android.pos.ui.fragments.inventory.Inventory"
         android:label="Inventory"
-        tools:layout="@layout/fragment_inventory" />
+        tools:layout="@layout/fragment_inventory">
+        <action
+            android:id="@+id/action_inventory_to_createDiscount"
+            app:destination="@id/createDiscount"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+    </fragment>
     <action
         android:id="@+id/action_global_inventory"
         app:destination="@id/inventory"
@@ -119,6 +124,11 @@
         android:id="@+id/action_global_dashboardCategory"
         app:destination="@id/dashboardCategory"
         app:enterAnim="@anim/nav_default_enter_anim" />
+    <fragment
+        android:id="@+id/createDiscount"
+        android:name="com.android.pos.ui.fragments.inventory.CreateDiscount"
+        android:label="CreateDiscount"
+        tools:layout="@layout/fragment_create_discount" />
 
 
 </navigation>

@@ -45,7 +45,6 @@ class DashboardCategory : Fragment() {
     private fun setVenueData() {
         viewModel.venueData.observe(viewLifecycleOwner, {
 
-
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
@@ -55,23 +54,25 @@ class DashboardCategory : Fragment() {
                             if (mList.isNotEmpty()) {
                                 mList.forEach {
                                     categoryTabsList.add(it.name)
-                                    binding.tabLayout.addTab(binding.tabLayout.newTab().setText(it.name))
-                                 //   it.items
+                                    binding.tabLayout.addTab(
+                                        binding.tabLayout.newTab().setText(it.name)
+                                    )
+                                    //   it.items
 
                                 }
-                              //  binding.viewPagerCategory.adapter = CategoryViewPagerAdapter(requireActivity(),it.items, binding.tabLayout.tabCount)
+                                //  binding.viewPagerCategory.adapter = CategoryViewPagerAdapter(requireActivity(),it.items, binding.tabLayout.tabCount)
                             }
 
                         }
                     }
                     Status.ERROR -> {
-                       /* binding.recyclerView.visibility = View.VISIBLE
-                        binding.progressBar.visibility = View.GONE*/
+                        /* binding.recyclerView.visibility = View.VISIBLE
+                         binding.progressBar.visibility = View.GONE*/
 
                     }
                     Status.LOADING -> {
-                       /* binding.progressBar.visibility = View.VISIBLE
-                        binding.recyclerView.visibility = View.GONE*/
+                        /* binding.progressBar.visibility = View.VISIBLE
+                         binding.recyclerView.visibility = View.GONE*/
                     }
                 }
             }
@@ -81,7 +82,7 @@ class DashboardCategory : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-       // setTabs()
+        // setTabs()
         setViewPager()
         // binding.tabLayout.setupWithViewPager(binding.viewPagerCategory)
         TabLayoutMediator(binding.tabLayout, binding.viewPagerCategory) { tab, position ->
@@ -118,8 +119,8 @@ class DashboardCategory : Fragment() {
         list.add(DashboardItemModel(0, "TP", "Three Piece...", "15.33"))
         list.add(DashboardItemModel(0, "TP", "Three Piece...", "15.33"))
 
-       /* binding.viewPagerCategory.adapter =
-            CategoryViewPagerAdapter(requireActivity(), list, binding.tabLayout.tabCount)*/
+        /* binding.viewPagerCategory.adapter =
+             CategoryViewPagerAdapter(requireActivity(), list, binding.tabLayout.tabCount)*/
 
     }
 
