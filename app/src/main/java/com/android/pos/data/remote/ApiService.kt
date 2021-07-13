@@ -1,11 +1,9 @@
 package com.android.pos.data.remote
 
 
-import com.android.pos.data.model.responseModel.BaseResponse
-import com.android.pos.data.model.responseModel.LogInResponse
-import com.android.pos.data.model.responseModel.TerminalResponse
-import com.android.pos.data.model.responseModel.VenueDataResponse
+import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.Constants.CLOCK_OUT
+import com.android.pos.data.remote.Constants.EMPLOYEES
 import com.android.pos.data.remote.Constants.EMPLOYEE_CLOCK_IN
 import com.android.pos.data.remote.Constants.EMPLOYEE_LOG_IN
 import com.android.pos.data.remote.Constants.LOGIN_TERMINAL
@@ -38,4 +36,7 @@ interface ApiService {
 
     @GET(SYNC_VENUE_DATA)
     suspend fun syncVenueData(): VenueDataResponse
+
+    @GET(EMPLOYEES)
+    suspend fun employeesList(): EmployeeResponse
 }

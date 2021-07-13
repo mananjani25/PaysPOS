@@ -47,9 +47,9 @@ class Inventory : Fragment() {
             findNavController().navigate(R.id.action_inventory_to_dashboardCategory)
         }
 
-        binding.commonToolbar.txtTitle.setText("Inventory")
+        binding.commonToolbar.txtTitle.text = "Inventory"
         binding.commonToolbar.imgOptionMenu.visibility = View.GONE
-        binding.commonToolbar.txtSubTitle.setText("All Items")
+        binding.commonToolbar.txtSubTitle.text = "All Items"
         binding.commonToolbar.imgOptionMenuContainer.visibility = View.GONE
     }
 
@@ -59,33 +59,33 @@ class Inventory : Fragment() {
                 val allItem: Fragment = AllItems()
                 loadFragment(allItem)
                 binding.commonToolbar.txtSetItem.visibility = View.GONE
-                binding.commonToolbar.txtSubTitle.setText("All Items")
+                binding.commonToolbar.txtSubTitle.text = "All Items"
             }
             1 -> {
                 val category: Fragment = Categories()
                 loadFragment(category)
                 binding.commonToolbar.txtSetItem.visibility = View.VISIBLE
-                binding.commonToolbar.txtSubTitle.setText("Categories")
+                binding.commonToolbar.txtSubTitle.text = "Categories"
 
             }
             2 -> {
                 val modifier: Fragment = Modifiers()
                 loadFragment(modifier)
                 binding.commonToolbar.txtSetItem.visibility = View.VISIBLE
-                binding.commonToolbar.txtSubTitle.setText("Modifiers")
+                binding.commonToolbar.txtSubTitle.text = "Modifiers"
             }
             3 -> {
                 val discount: Fragment = Discounts()
                 loadFragment(discount)
                 binding.commonToolbar.txtSetItem.visibility = View.VISIBLE
-                binding.commonToolbar.txtSubTitle.setText("Discounts")
+                binding.commonToolbar.txtSubTitle.text = "Discounts"
 
             }
             4 -> {
                 val option: Fragment = Options()
                 loadFragment(option)
                 binding.commonToolbar.txtSetItem.visibility = View.VISIBLE
-                binding.commonToolbar.txtSubTitle.setText("Options")
+                binding.commonToolbar.txtSubTitle.text = "Options"
             }
         }
 

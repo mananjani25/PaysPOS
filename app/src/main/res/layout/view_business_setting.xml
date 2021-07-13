@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -16,13 +17,13 @@
             android:id="@+id/txtTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/sf_pro_display_regular"
+            style="@style/CustomFontRegularStyle"
             android:paddingStart="@dimen/_10sdp"
             android:paddingEnd="@dimen/_10sdp"
             android:paddingTop="@dimen/_3sdp"
             android:paddingBottom="@dimen/_3sdp"
             android:text="@{model.title}"
-            android:textColor="@{model.selected ? @color/txt_color_blue:@color/black}"
+            android:textColor="@{model.selected ? @color/txt_color_blue:@color/color65}"
             android:textSize="@dimen/_10ssp" />
 
     </LinearLayout>
