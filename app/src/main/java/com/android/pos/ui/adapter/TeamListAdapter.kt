@@ -2,36 +2,85 @@ package com.android.pos.ui.adapter
 
 import android.content.Context
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.RecyclerView
+import com.android.pos.R
 import com.android.pos.data.model.TeamListModel
 import com.android.pos.databinding.ViewTeamItemBinding
 
 class TeamListAdapter(val context: Context, val list: ArrayList<TeamListModel>) :
-    RecyclerView.Adapter<TeamListAdapter.MyViewHolder>() {
-    inner class MyViewHolder(private val binding: ViewTeamItemBinding) :
+    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    /*inner class MyViewHolder(private val binding: ViewTeamItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(item: TeamListModel) {
             binding.model = item
             binding.executePendingBindings()
         }
 
+    }*/
+
+    class ViewHolderTitle(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
+
     }
+
+    class ViewHolderMain(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
+    }
+
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): TeamListAdapter.MyViewHolder {
-        val inflater = LayoutInflater.from(context)
-        val binding = ViewTeamItemBinding.inflate(inflater, parent, false)
-        return MyViewHolder(binding)
+    ): RecyclerView.ViewHolder {
+        /*val inflater = LayoutInflater.from(context)
+
+        val binding =
+            ViewTeamItemBinding.inflate(inflater, parent, false)*/
+
+        when (viewType) {
+            0 -> return ViewHolderTitle(
+                LayoutInflater.from(context).inflate(R.layout.view_team_header, parent, false)
+            )
+            else -> return ViewHolderMain(
+                LayoutInflater.from(context).inflate(R.layout.view_team_item, parent, false)
+            )
+        }
+
     }
 
-    override fun onBindViewHolder(holder: TeamListAdapter.MyViewHolder, position: Int) {
-        holder.bind(list[position])
+    abstract class BaseViewHolder<T>(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        abstract fun bind(item: T)
     }
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        when(holder.itemViewType) {
+            0 -> {
+                var holder: ViewHolderTitle = holder as ViewHolderTitle
+                holder.itemView.findViewById<AppCompatTextView>(R.id.txtHeader)
+                    .setText(list.get(position).title)
+            }
+            else ->{
+                (holder as ViewHolderMain).itemView.findViewById<AppCompatTextView>(R.id.tvInitialName).setText(list.get(position).title)
+                (holder as ViewHolderMain).itemView.findViewById<AppCompatTextView>(R.id.txtName).setText(list.get(position).name)
+                (holder as ViewHolderMain).itemView.findViewById<AppCompatTextView>(R.id.txtNumber).setText(list.get(position).email)
+            }
+
+            }
+
+        }
 
     override fun getItemCount(): Int {
         return list.size
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return if (list.get(position).isHeader) {
+            0
+        } else {
+            1
+        }
     }
 }
