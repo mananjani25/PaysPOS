@@ -1,0 +1,39 @@
+package com.android.pos.ui.fragments.settings
+
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import com.android.pos.data.model.HardwareModel
+import com.android.pos.databinding.FragmentHardwareBinding
+import com.android.pos.ui.adapter.HardwareListAdapter
+
+class Hardware : Fragment() {
+    private lateinit var binding: FragmentHardwareBinding
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        binding = FragmentHardwareBinding.inflate(inflater, container, false)
+        binding.lifecycleOwner = this
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setAdapter()
+    }
+
+    private fun setAdapter() {
+        var list: ArrayList<HardwareModel> = arrayListOf()
+        list.add(HardwareModel(0, "Printer"))
+        list.add(HardwareModel(0, "Credit Card Machine"))
+        list.add(HardwareModel(0, "Scan Gun"))
+        list.add(HardwareModel(0, "Terminal"))
+        list.add(HardwareModel(0, "Kitchen Display"))
+        binding.rvHardwareList.adapter = HardwareListAdapter(requireContext(), list)
+    }
+}

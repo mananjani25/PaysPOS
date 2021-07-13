@@ -49,7 +49,6 @@ class Settings : Fragment() {
         }
         binding.commonToolbar.txtHome.setOnClickListener {
             findNavController().navigate(R.id.action_settings_to_dashboardCategory)
-
         }
         binding.commonToolbar.txtSubTitle.setText("Taxes")
 
@@ -75,6 +74,10 @@ class Settings : Fragment() {
             binding.txtEmployee.styleNormal()
             binding.txtReports.styleNormal()
             binding.rvBusiness.visibility = View.GONE
+            val frag:Fragment = Hardware()
+            loadFragment(frag)
+            binding.commonToolbar.txtSubTitle.setText("Hardware")
+
         }
 
         binding.txtSecurity.setOnClickListener {
@@ -131,6 +134,7 @@ class Settings : Fragment() {
         list.add(BusinessSettingModel(0, "Service Charge", false))
         val taxFrag: Fragment = Taxes()
         loadFragment(taxFrag)
+        binding.commonToolbar.txtSubTitle.setText("Taxes")
 
         binding.rvBusiness.visibility = View.VISIBLE
         binding.rvBusiness.adapter = BusinessSettingAdapter(requireContext(), list, object :
