@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity() {
 
         listner = NavController.OnDestinationChangedListener { controller, destination, arguments ->
 
-            if (destination.id == R.id.dashboard || destination.id == R.id.dashboardCategory || destination.id == R.id.teamList) {
+            if (destination.id == R.id.dashboard || destination.id == R.id.dashboardCategory || destination.id == R.id.teamList || destination.id == R.id.settings || destination.id == R.id.inventory) {
                 drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
             } else {
                 drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
@@ -94,6 +94,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.menuSettings -> {
                     disableDrawer()
+                    navController?.navigate(R.id.action_global_settings)
                     return@setNavigationItemSelectedListener true
                 }
                 R.id.menuSupport -> {

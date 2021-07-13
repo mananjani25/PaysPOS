@@ -1,60 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:ignore="MissingDefaultResource">
 
-
     <androidx.appcompat.widget.LinearLayoutCompat
+
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_50sdp"
-        android:layout_marginTop="@dimen/_10sdp"
-        android:layout_marginEnd="@dimen/_50sdp"
-        android:layout_marginBottom="@dimen/_10sdp"
-        android:background="@color/white"
+        android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <androidx.appcompat.widget.AppCompatTextView
-            style="@style/CustomFontBold"
+
+        <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="@dimen/_30sdp"
-            android:layout_marginBottom="@dimen/_5sdp"
-            android:background="@drawable/bg_button_border_gray"
-            android:gravity="center"
-            android:padding="@dimen/_10sdp"
-            android:text="@string/add_service_charge"
-            android:textColor="@color/btnColor"
-            android:textSize="@dimen/_13ssp"
-            app:textAllCaps="false" />
+            android:layout_marginStart="@dimen/_50sdp"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_marginEnd="@dimen/_50sdp"
+            android:layout_marginBottom="@dimen/_10sdp"
+            android:background="@color/white"
+            android:orientation="vertical">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/CustomFontBold"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/_30sdp"
+                android:layout_marginBottom="@dimen/_5sdp"
+                android:background="@drawable/bg_button_border_gray"
+                android:gravity="center"
+                android:padding="@dimen/_10sdp"
+                android:text="@string/add_service_charge"
+                android:textColor="@color/btnColor"
+                android:textSize="@dimen/_13ssp"
+                app:textAllCaps="false" />
 
 
-        <androidx.appcompat.widget.AppCompatTextView
-            style="@style/CustomFontRegularStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:padding="@dimen/_10sdp"
-            android:text="@string/tax_rates_can_be_applied_to_specific_items_and_will_be_automatically_calculated_at_purchase"
-            android:textColor="@color/colorCB"
-            android:textSize="@dimen/_12ssp"
-            app:textAllCaps="false" />
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/CustomFontRegularStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:padding="@dimen/_10sdp"
+                android:text="@string/tax_rates_can_be_applied_to_specific_items_and_will_be_automatically_calculated_at_purchase"
+                android:textColor="@color/colorCB"
+                android:textSize="@dimen/_12ssp"
+                app:textAllCaps="false" />
 
 
-        <!--        <androidx.recyclerview.widget.RecyclerView-->
-        <!--            android:layout_width="match_parent"-->
-        <!--            android:layout_height="match_parent"-->
-        <!--            tools:itemCount="5"-->
-        <!--            tools:listitem="@layout/view_note_item" />-->
+            <!--        <androidx.recyclerview.widget.RecyclerView-->
+            <!--            android:layout_width="match_parent"-->
+            <!--            android:layout_height="match_parent"-->
+            <!--            tools:itemCount="5"-->
+            <!--            tools:listitem="@layout/view_note_item" />-->
+
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
 
     </androidx.appcompat.widget.LinearLayoutCompat>
-
-
-</androidx.appcompat.widget.LinearLayoutCompat>
+</layout>

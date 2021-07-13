@@ -22,7 +22,6 @@
             android:orientation="vertical">
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/txtCreateDiscount"
                 style="@style/CustomFontBold"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -32,20 +31,20 @@
                 android:background="@drawable/bg_button_border_gray"
                 android:gravity="center"
                 android:padding="@dimen/_10sdp"
-                android:text="@string/tv_create_discount"
+                android:text="@string/tv_add_a_new_tip"
                 android:textColor="@color/btnColor"
                 android:textSize="@dimen/_13ssp"
                 app:textAllCaps="false" />
 
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvDiscountList"
+                android:id="@+id/rvTipList"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:itemCount="5"
-                tools:listitem="@layout/view_discount_item" />
+                tools:listitem="@layout/view_tip_item" />
 
 
         </androidx.appcompat.widget.LinearLayoutCompat>
