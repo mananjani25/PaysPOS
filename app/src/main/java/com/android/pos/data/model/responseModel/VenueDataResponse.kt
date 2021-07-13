@@ -25,7 +25,7 @@ data class VenueDataResponse(
             @SerializedName("name")
             val name: String,
             @SerializedName("sort")
-            val sort: Any
+            val sort: Int
         ) {
             data class Item(
                 @SerializedName("cost")

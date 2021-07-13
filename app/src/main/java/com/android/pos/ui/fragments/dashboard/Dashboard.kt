@@ -11,7 +11,6 @@ import com.android.pos.R
 import com.android.pos.data.model.DashboardItemModel
 import com.android.pos.databinding.FragmentDashboardBinding
 import com.android.pos.ui.activities.MainActivity
-import com.android.pos.ui.adapter.DashboardItemAdapter
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -66,15 +65,15 @@ class Dashboard : Fragment() {
         listItem.add(DashboardItemModel(0, "TP", "Three Piece...", "3.50", true))
 
 
-        binding.recyclerViewItemsList.adapter = DashboardItemAdapter(
-            requireContext(),
-            listItem,
-            object : DashboardItemAdapter.DashboardListner {
-                override fun onItemClick() {
-                    findNavController().navigate(R.id.action_dashboard_to_createItem)
-                }
-
-            })
+//        binding.recyclerViewItemsList.adapter = DashboardItemAdapter(
+//            requireContext(),
+//            listItem,
+//            object : DashboardItemAdapter.DashboardListner {
+//                override fun onItemClick() {
+//                    findNavController().navigate(R.id.action_dashboard_to_createItem)
+//                }
+//
+//            })
 
     }
 }

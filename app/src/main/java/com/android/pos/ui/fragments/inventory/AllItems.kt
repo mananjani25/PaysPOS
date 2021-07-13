@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import com.android.pos.R
 import com.android.pos.data.model.AllItemModel
 import com.android.pos.databinding.FragmentItemsBinding
 import com.android.pos.ui.adapter.ItemListAdapter
@@ -25,7 +27,16 @@ class AllItems : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setAdapter()
+        onClick()
     }
+
+    private fun onClick() {
+        binding.txtCreateItem.setOnClickListener {
+            findNavController().navigate(R.id.action_inventory_to_createItem)
+        }
+
+    }
+
 
     private fun setAdapter() {
         var list: ArrayList<AllItemModel> = arrayListOf()

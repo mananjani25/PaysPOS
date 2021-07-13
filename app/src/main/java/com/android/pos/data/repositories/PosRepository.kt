@@ -2,12 +2,9 @@ package com.android.pos.data.repositories
 
 
 import com.android.pos.data.db.AppDatabase
-import com.android.pos.data.db.CharacterDao
 import com.android.pos.data.db.IDataManager
 import com.android.pos.data.remote.ApiHelper
 import com.android.pos.utils.performGetOperationNew
-
-
 import javax.inject.Inject
 
 
@@ -26,13 +23,22 @@ class PosRepository @Inject constructor(
     suspend fun employeeClockOut(data: HashMap<String, String>) =
         apiHelperNew.employeeClockOut(data)
 
-     fun syncVenueData() =
+    fun syncVenueData() =
         performGetOperationNew(networkCall = { apiHelperNew.syncVenueData() })
 
+
+//    fun getCharacters() = performGetOperation(
+//        databaseQuery = { appDatabase.characterDao().getAllCharacters() },
+//        networkCall = { apiHelperNew.syncVenueData() },
+//        saveCallResult = {
+//            val mCategory = it.data.categories
+//            appDatabase.characterDao().insertAll(it.results)
+//        }
+//    )
 
     override suspend fun abs() {
 
         appDatabase.characterDao().getCharacter(0)
     }
-
 }
+

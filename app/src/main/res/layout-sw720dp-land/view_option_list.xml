@@ -8,11 +8,10 @@
 
         <variable
             name="model"
-            type="com.android.pos.data.model.DiscountListModel" />
+            type="com.android.pos.data.model.OptionListModel" />
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat
-
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -28,13 +27,6 @@
             android:orientation="horizontal">
 
 
-            <androidx.appcompat.widget.AppCompatImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:padding="@dimen/_5sdp"
-                app:srcCompat="@drawable/ic_check_box" />
-
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
                 android:layout_width="0dp"
@@ -44,8 +36,8 @@
                 android:layout_weight="1"
                 android:gravity="start"
                 android:padding="@dimen/_8sdp"
-                android:text="@{model.name}"
-                android:textColor="@color/color65"
+                android:text="@{model.title}"
+                android:textColor="@color/txtColor"
                 android:textSize="@dimen/_8ssp" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -56,8 +48,8 @@
                 android:layout_marginStart="@dimen/_5sdp"
                 android:gravity="start"
                 android:padding="@dimen/_8sdp"
-                android:text="@{model.discountPercentage}"
-                android:textColor="@color/color96"
+                android:text="@{model.option}"
+                android:textColor="@color/txtColor"
                 android:textSize="@dimen/_8ssp" />
 
             <androidx.appcompat.widget.AppCompatImageView
@@ -73,6 +65,7 @@
             android:layout_width="match_parent"
             android:layout_height="0.3dp"
             android:background="@color/view" />
+
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 </layout>

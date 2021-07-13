@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/passcode">
+    app:startDestination="@id/dashboardCategory">
 
 
     <fragment
@@ -14,7 +14,9 @@
         <action
             android:id="@+id/action_login_to_scheduledShifts"
             app:destination="@id/scheduledShifts"
-            app:enterAnim="@anim/nav_default_enter_anim" />
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:popUpTo="@id/login"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/clockInOwner"
@@ -102,7 +104,29 @@
         android:id="@+id/inventory"
         android:name="com.android.pos.ui.fragments.inventory.Inventory"
         android:label="Inventory"
-        tools:layout="@layout/fragment_inventory" />
+        tools:layout="@layout/fragment_inventory">
+        <action
+            android:id="@+id/action_inventory_to_createDiscount"
+            app:destination="@id/createDiscount"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_inventory_to_dashboardCategory"
+            app:destination="@id/dashboardCategory"
+            app:popUpTo="@id/inventory"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_inventory_to_createItem"
+            app:destination="@id/createItem"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_inventory_to_createCategory"
+            app:destination="@id/createCategory"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_inventory_to_createIModifierSet"
+            app:destination="@id/createIModifierSet"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+    </fragment>
     <action
         android:id="@+id/action_global_inventory"
         app:destination="@id/inventory"
@@ -119,6 +143,11 @@
         android:id="@+id/action_global_dashboardCategory"
         app:destination="@id/dashboardCategory"
         app:enterAnim="@anim/nav_default_enter_anim" />
+    <fragment
+        android:id="@+id/createDiscount"
+        android:name="com.android.pos.ui.fragments.inventory.CreateDiscount"
+        android:label="CreateDiscount"
+        tools:layout="@layout/fragment_create_discount" />
 
 
 </navigation>

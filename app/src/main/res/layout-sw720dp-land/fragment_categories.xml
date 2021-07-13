@@ -22,7 +22,7 @@
             android:padding="@dimen/_5sdp"
             android:textColor="@color/black"
             android:textColorHint="@color/hintColor"
-            android:textSize="@dimen/_13ssp" />
+            android:textSize="@dimen/_10ssp" />
 
         <View
             android:layout_width="match_parent"
@@ -40,6 +40,7 @@
             android:orientation="vertical">
 
             <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtCreateCategory"
                 style="@style/CustomFontBold"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

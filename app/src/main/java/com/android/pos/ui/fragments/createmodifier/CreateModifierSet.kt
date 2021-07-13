@@ -37,7 +37,9 @@ class CreateModifierSet : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        binding.imgBack.setOnClickListener {
+            findNavController().navigateUp()
+        }
     }
 
     private fun observeShowProgress() {

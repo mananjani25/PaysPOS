@@ -16,7 +16,7 @@
             android:background="@null"
             android:drawableStart="@drawable/ic_search"
             android:drawablePadding="@dimen/_10sdp"
-            android:hint="@string/search_modifiers"
+            android:hint="@string/search_options"
             android:imeOptions="actionDone"
             android:inputType="text"
             android:padding="@dimen/_5sdp"
@@ -29,6 +29,7 @@
             android:layout_height="1dp"
             android:background="@color/view" />
 
+
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -40,7 +41,7 @@
             android:orientation="vertical">
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/txtCreateModifierSet"
+                android:id="@+id/txtCreateDiscount"
                 style="@style/CustomFontBold"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -50,24 +51,22 @@
                 android:background="@drawable/bg_button_border_gray"
                 android:gravity="center"
                 android:padding="@dimen/_8sdp"
-                android:text="@string/create_modifier_set"
+                android:text="@string/create_option"
                 android:textColor="@color/btnColor"
                 android:textSize="@dimen/_8ssp"
                 app:textAllCaps="false" />
 
-
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvModifiersList"
+                android:id="@+id/rvOptonList"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:itemCount="5"
-                tools:listitem="@layout/view_modifiers" />
+                tools:listitem="@layout/view_option_list" />
 
 
         </androidx.appcompat.widget.LinearLayoutCompat>
-
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 </layout>
