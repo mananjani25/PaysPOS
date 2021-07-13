@@ -25,14 +25,16 @@
             android:layout_height="wrap_content"
             android:background="#969AA3"
             android:gravity="center"
+            android:maxLength="2"
             android:paddingVertical="@dimen/_10sdp"
             android:paddingStart="@dimen/_15sdp"
             android:paddingEnd="@dimen/_15sdp"
-            android:text="@{viewModel.title}"
+            android:text="@{viewModel.name}"
             android:textColor="#F4F3F8"
-            android:textSize="@dimen/_12ssp"
+            android:textSize="@dimen/_10ssp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            app:textAllCaps="true"
             tools:text="TP" />
 
         <androidx.appcompat.widget.LinearLayoutCompat
@@ -55,7 +57,7 @@
                 android:ellipsize="marquee"
                 android:fontFamily="@font/sf_pro_display_medium"
                 android:singleLine="true"
-                android:text="@{viewModel.description}"
+                android:text="@{viewModel.name}"
                 android:textColor="@color/color13"
                 android:textSize="@dimen/_8ssp"
                 tools:text="Tax rates can be applied to specific items and will be automatically calculated at purchase.Tax rates can be applied to specific items and will be automatically calculated at purchase. calculated calculated" />
@@ -68,7 +70,7 @@
                 android:layout_marginEnd="@dimen/_3sdp"
                 android:fontFamily="@font/sf_pro_display_semibold"
                 android:gravity="end"
-                android:text="@{viewModel.price}"
+                android:text="@{Integer.toString(viewModel.price)}"
                 android:textColor="@color/txtColorItem"
                 android:textSize="@dimen/_8ssp"
                 tools:text="$10.00" />

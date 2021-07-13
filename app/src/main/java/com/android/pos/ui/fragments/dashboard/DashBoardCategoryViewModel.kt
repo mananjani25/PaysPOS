@@ -9,5 +9,7 @@ import javax.inject.Inject
 class DashBoardCategoryViewModel @Inject constructor(
     private val posRepository: PosRepository
 ) : ViewModel() {
+
     val venueData = posRepository.syncVenueData()
+
 }
