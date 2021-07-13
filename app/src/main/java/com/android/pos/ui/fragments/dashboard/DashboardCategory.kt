@@ -88,7 +88,7 @@ class DashboardCategory : Fragment() {
         TabLayoutMediator(binding.tabLayout, binding.viewPagerCategory) { tab, position ->
             // binding.tabLayout.getTabAt(position).setText()
             tab.text = categoryTabsList[position]
-        }.attach()
+        }
 
         binding.layoutMenu.imgDrawer.setOnClickListener {
             (requireActivity() as MainActivity).enableDrawer()

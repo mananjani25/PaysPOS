@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.model.InventoryItemModel
 import com.android.pos.databinding.FragmentInventoryBinding
@@ -41,6 +42,9 @@ class Inventory : Fragment() {
     private fun configureToolbar() {
         binding.commonToolbar.imgDrawer.setOnClickListener {
             (requireActivity() as MainActivity).enableDrawer()
+        }
+        binding.commonToolbar.txtHome.setOnClickListener {
+            findNavController().navigate(R.id.action_inventory_to_dashboardCategory)
         }
 
         binding.commonToolbar.txtTitle.setText("Inventory")
@@ -78,7 +82,7 @@ class Inventory : Fragment() {
 
             }
             4 -> {
-                val option:Fragment = Options()
+                val option: Fragment = Options()
                 loadFragment(option)
                 binding.commonToolbar.txtSetItem.visibility = View.VISIBLE
                 binding.commonToolbar.txtSubTitle.setText("Options")
