@@ -12,6 +12,8 @@ import com.android.pos.data.model.BusinessSettingModel
 import com.android.pos.databinding.FragmentSettingsBinding
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.BusinessSettingAdapter
+import com.android.pos.utils.extensions.styleBold
+import com.android.pos.utils.extensions.styleNormal
 
 class Settings : Fragment() {
     private lateinit var binding: FragmentSettingsBinding
@@ -28,7 +30,20 @@ class Settings : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        init()
+        onClick()
         setAdapter()
+
+    }
+
+    fun init() {
+        binding.txtBusiness.styleBold()
+        binding.txtHardware.styleNormal()
+        binding.txtSecurity.styleNormal()
+        binding.txtMarketing.styleNormal()
+        binding.txtEmployee.styleNormal()
+        binding.txtReports.styleNormal()
+
         binding.commonToolbar.imgDrawer.setOnClickListener {
             (requireActivity() as MainActivity).enableDrawer()
         }
@@ -36,12 +51,75 @@ class Settings : Fragment() {
             findNavController().navigate(R.id.action_settings_to_dashboardCategory)
 
         }
-
         binding.commonToolbar.txtSubTitle.setText("Taxes")
-        val taxFrag: Fragment = Taxes()
-        loadFragment(taxFrag)
 
     }
+
+    private fun onClick() {
+        binding.txtBusiness.setOnClickListener {
+            binding.txtBusiness.styleBold()
+            binding.txtHardware.styleNormal()
+            binding.txtSecurity.styleNormal()
+            binding.txtMarketing.styleNormal()
+            binding.txtEmployee.styleNormal()
+            binding.txtReports.styleNormal()
+
+            setAdapter()
+
+        }
+        binding.txtHardware.setOnClickListener {
+            binding.txtBusiness.styleNormal()
+            binding.txtHardware.styleBold()
+            binding.txtSecurity.styleNormal()
+            binding.txtMarketing.styleNormal()
+            binding.txtEmployee.styleNormal()
+            binding.txtReports.styleNormal()
+            binding.rvBusiness.visibility = View.GONE
+        }
+
+        binding.txtSecurity.setOnClickListener {
+            binding.txtBusiness.styleNormal()
+            binding.txtHardware.styleNormal()
+            binding.txtSecurity.styleBold()
+            binding.txtMarketing.styleNormal()
+            binding.txtEmployee.styleNormal()
+            binding.txtReports.styleNormal()
+            binding.rvBusiness.visibility = View.GONE
+        }
+
+        binding.txtMarketing.setOnClickListener {
+            binding.txtBusiness.styleNormal()
+            binding.txtHardware.styleNormal()
+            binding.txtSecurity.styleNormal()
+            binding.txtMarketing.styleBold()
+            binding.txtEmployee.styleNormal()
+            binding.txtReports.styleNormal()
+            binding.rvBusiness.visibility = View.GONE
+        }
+
+        binding.txtEmployee.setOnClickListener {
+            binding.txtBusiness.styleNormal()
+            binding.txtHardware.styleNormal()
+            binding.txtSecurity.styleNormal()
+            binding.txtMarketing.styleNormal()
+            binding.txtEmployee.styleBold()
+            binding.txtReports.styleNormal()
+            binding.rvBusiness.visibility = View.GONE
+        }
+        binding.txtReports.setOnClickListener {
+            binding.txtBusiness.styleNormal()
+            binding.txtHardware.styleNormal()
+            binding.txtSecurity.styleNormal()
+            binding.txtMarketing.styleNormal()
+            binding.txtEmployee.styleNormal()
+            binding.txtReports.styleBold()
+            binding.rvBusiness.visibility = View.GONE
+
+        }
+
+
+    }
+
 
     private fun setAdapter() {
         var list: ArrayList<BusinessSettingModel> = arrayListOf()
@@ -51,6 +129,10 @@ class Settings : Fragment() {
         list.add(BusinessSettingModel(0, "Discount", false))
         list.add(BusinessSettingModel(0, "Notes", false))
         list.add(BusinessSettingModel(0, "Service Charge", false))
+        val taxFrag: Fragment = Taxes()
+        loadFragment(taxFrag)
+
+        binding.rvBusiness.visibility = View.VISIBLE
         binding.rvBusiness.adapter = BusinessSettingAdapter(requireContext(), list, object :
             BusinessSettingAdapter.BusinessListInterface {
             override fun onClick(pos: Int) {
@@ -96,6 +178,7 @@ class Settings : Fragment() {
             }
 
         })
+
 
     }
 

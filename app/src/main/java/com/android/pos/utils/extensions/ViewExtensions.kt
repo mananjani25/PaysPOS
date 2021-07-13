@@ -5,10 +5,12 @@ import android.content.Context
 import android.content.res.TypedArray
 import android.graphics.Color
 import android.graphics.PorterDuff
+import android.graphics.Typeface
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
+import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
@@ -27,6 +29,14 @@ import java.io.IOException
 /**
  * Created by Waheed on 04,November,2019
  */
+
+fun TextView.styleNormal() {
+    this.setTypeface(null, Typeface.NORMAL)
+}
+
+fun TextView.styleBold() {
+    this.setTypeface(this.typeface, Typeface.BOLD)
+}
 
 fun View.visible() {
     visibility = View.VISIBLE
@@ -89,6 +99,7 @@ fun View.liveSnackBar(
     })
 }
 
+
 fun View.showAlert(message: String, timeLength: Int) {
     // Snackbar.make(this, snackbarText, timeLength).show()
     AlertUtils.showAlert(context, message)
@@ -110,3 +121,5 @@ fun Context.getRandomMaterialColor(typeColor: String): Int {
 }
 
 class NoInternetException(message: String) : IOException(message)
+
+
