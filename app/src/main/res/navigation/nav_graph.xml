@@ -166,6 +166,18 @@
             android:id="@+id/action_settings_to_newTax"
             app:destination="@id/newTax"
             app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_settings_to_addTip"
+            app:destination="@id/addTip"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_settings_to_createNote"
+            app:destination="@id/createNote"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_settings_to_addServiceCharge"
+            app:destination="@id/addServiceCharge"
+            app:enterAnim="@anim/nav_default_enter_anim" />
     </fragment>
     <action
         android:id="@+id/action_global_settings"
@@ -175,6 +187,18 @@
         android:id="@+id/newTax"
         android:name="com.android.pos.ui.fragments.settings.NewTax"
         android:label="NewTax" />
+    <fragment
+        android:id="@+id/addTip"
+        android:name="com.android.pos.ui.fragments.settings.AddTip"
+        android:label="AddTip" />
+    <fragment
+        android:id="@+id/createNote"
+        android:name="com.android.pos.ui.fragments.settings.CreateNote"
+        android:label="CreateNote" />
+    <fragment
+        android:id="@+id/addServiceCharge"
+        android:name="com.android.pos.ui.fragments.settings.AddServiceCharge"
+        android:label="AddServiceCharge" />
 
 
 </navigation>
