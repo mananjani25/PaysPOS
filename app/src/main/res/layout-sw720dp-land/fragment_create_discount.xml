@@ -89,8 +89,8 @@
                             android:layout_height="wrap_content">
 
                             <androidx.appcompat.widget.AppCompatImageView
-                                android:layout_width="@dimen/_80sdp"
-                                android:layout_height="@dimen/_55sdp"
+                                android:layout_width="@dimen/_70sdp"
+                                android:layout_height="@dimen/_37sdp"
                                 android:layout_gravity="center"
                                 android:background="@color/boxColor"
                                 android:padding="@dimen/_10sdp" />
@@ -102,7 +102,7 @@
                                 android:alpha="0.5"
                                 android:text="@string/plus"
                                 android:textColor="@color/color"
-                                android:textSize="@dimen/_14ssp" />
+                                android:textSize="@dimen/_16ssp" />
 
                         </RelativeLayout>
 
@@ -111,11 +111,11 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:background="@drawable/edt_border_gray"
+                            android:background="@drawable/edt_border_light_gray"
                             android:gravity="center"
-                            android:padding="@dimen/_5sdp"
+                            android:padding="@dimen/_3sdp"
                             android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_9ssp" />
+                            android:textSize="@dimen/_8ssp" />
 
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
@@ -124,7 +124,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/_20sdp"
-                        android:background="@drawable/edt_border_gray"
+                        android:background="@drawable/edt_border_light_gray"
                         android:orientation="vertical">
 
                         <androidx.appcompat.widget.LinearLayoutCompat
@@ -141,10 +141,10 @@
                                 android:hint="@string/discount_name"
                                 android:imeOptions="actionNext"
                                 android:inputType="number"
-                                android:padding="@dimen/_10sdp"
+                                android:padding="@dimen/_8sdp"
                                 android:textColor="@color/black"
                                 android:textColorHint="@color/hintColor"
-                                android:textSize="@dimen/_13ssp" />
+                                android:textSize="@dimen/_8ssp" />
 
                         </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -167,13 +167,13 @@
                                 android:hint="0%"
                                 android:imeOptions="actionNext"
                                 android:inputType="number"
-                                android:paddingStart="@dimen/_20sdp"
-                                android:paddingTop="@dimen/_10sdp"
+                                android:paddingStart="@dimen/_10sdp"
+                                android:paddingTop="@dimen/_8sdp"
                                 android:paddingEnd="@dimen/_20sdp"
-                                android:paddingBottom="@dimen/_10sdp"
+                                android:paddingBottom="@dimen/_8sdp"
                                 android:textColor="@color/black"
                                 android:textColorHint="@color/hintColor"
-                                android:textSize="@dimen/_13ssp" />
+                                android:textSize="@dimen/_8ssp" />
 
                             <androidx.appcompat.widget.SwitchCompat
                                 android:layout_width="wrap_content"
@@ -182,8 +182,6 @@
                                 android:layout_gravity="center"
                                 android:checked="false"
                                 android:padding="@dimen/_10sdp"
-                                android:thumb="@drawable/thumb"
-                                app:srcCompat="@drawable/ic_arrow_forward"
                                 app:thumbTint="@color/btnColor"
                                 app:trackTint="@color/colorE2" />
 
@@ -204,7 +202,7 @@
                     android:padding="@dimen/_10sdp"
                     android:text="@string/leave_the_discount_amount_blank_to_enter_at_the_time_of_sale_n_discount_are_applied_to_the_ticket_before_tax_is_calculated"
                     android:textColor="@color/colorCB"
-                    android:textSize="@dimen/_12ssp"
+                    android:textSize="@dimen/_8ssp"
                     app:textAllCaps="false" />
 
                 <TextView
@@ -212,12 +210,12 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:elevation="@dimen/_10sdp"
-                    android:fontFamily="@font/sf_pro_display_semibold"
+                    style="@style/CustomFontSemiBold"
                     android:gravity="start"
                     android:padding="@dimen/_10sdp"
                     android:text="@string/options"
                     android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_13ssp" />
+                    android:textSize="@dimen/_10ssp" />
 
 
                 <View
@@ -241,7 +239,7 @@
                         android:padding="@dimen/_10sdp"
                         android:text="@string/apply_discount_after_taxes"
                         android:textColor="@color/viewTextColor"
-                        android:textSize="@dimen/_13ssp" />
+                        android:textSize="@dimen/_9ssp" />
 
                     <androidx.appcompat.widget.SwitchCompat
                         android:layout_width="wrap_content"
@@ -271,7 +269,7 @@
                     android:padding="@dimen/_10sdp"
                     android:text="@string/this_should_only_be_used_for_manufacture_discount_and_instant_rebates_learn_more"
                     android:textColor="@color/colorCB"
-                    android:textSize="@dimen/_12ssp"
+                    android:textSize="@dimen/_8ssp"
                     app:textAllCaps="false" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>

@@ -28,12 +28,12 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:elevation="@dimen/_10sdp"
-                android:fontFamily="@font/sf_pro_display_semibold"
+                style="@style/CustomFontSemiBold"
                 android:gravity="start"
                 android:padding="@dimen/_10sdp"
                 android:text="@string/tv_customer_receipt_settings"
                 android:textColor="@color/viewTextColor"
-                android:textSize="@dimen/_13ssp" />
+                android:textSize="@dimen/_10ssp" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:layout_width="wrap_content"
@@ -65,7 +65,7 @@
                 android:padding="@dimen/_10sdp"
                 android:text="@string/tv_kitchen_receipt_settings"
                 android:textColor="@color/viewTextColor"
-                android:textSize="@dimen/_13ssp" />
+                android:textSize="@dimen/_10ssp" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:layout_width="wrap_content"
