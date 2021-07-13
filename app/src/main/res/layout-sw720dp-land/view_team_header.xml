@@ -17,7 +17,7 @@
         android:paddingEnd="@dimen/_5sdp"
         android:paddingBottom="@dimen/_5sdp"
         android:textColor="@color/black"
-        android:textSize="@dimen/_12ssp"
+        android:textSize="@dimen/_8ssp"
         tools:text="A" />
 
 </LinearLayout>

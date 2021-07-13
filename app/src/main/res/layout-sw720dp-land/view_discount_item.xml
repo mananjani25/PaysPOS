@@ -3,7 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingDefaultResource">
+
     <data>
+
         <variable
             name="model"
             type="com.android.pos.data.model.DiscountListModel" />
@@ -30,7 +32,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:padding="@dimen/_10sdp"
+                android:padding="@dimen/_5sdp"
                 app:srcCompat="@drawable/ic_check_box" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -41,10 +43,10 @@
                 android:layout_marginStart="@dimen/_5sdp"
                 android:layout_weight="1"
                 android:gravity="start"
-                android:padding="@dimen/_10sdp"
+                android:padding="@dimen/_8sdp"
                 android:text="@{model.name}"
                 android:textColor="@color/color65"
-                android:textSize="@dimen/_12ssp" />
+                android:textSize="@dimen/_8ssp" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
@@ -53,10 +55,10 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/_5sdp"
                 android:gravity="start"
-                android:padding="@dimen/_10sdp"
+                android:padding="@dimen/_8sdp"
                 android:text="@{model.discountPercentage}"
                 android:textColor="@color/color96"
-                android:textSize="@dimen/_12ssp" />
+                android:textSize="@dimen/_8ssp" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:layout_width="wrap_content"
