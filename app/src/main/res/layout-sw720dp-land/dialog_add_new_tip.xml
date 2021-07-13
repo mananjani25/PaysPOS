@@ -37,7 +37,7 @@
                     android:layout_weight="1"
                     android:gravity="center"
                     android:text="@string/tv_entertainment_tip"
-                    android:textSize="@dimen/_12ssp" />
+                    android:textSize="@dimen/_10ssp" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtSave"
@@ -73,7 +73,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_20sdp"
-                    android:background="@drawable/edt_border_gray"
+                    android:background="@drawable/edt_border_light_gray"
                     android:orientation="vertical">
 
                     <androidx.appcompat.widget.LinearLayoutCompat
@@ -90,7 +90,7 @@
                             android:padding="@dimen/_10sdp"
                             android:text="@string/tv_tip_name"
                             android:textColor="@color/viewTextColor"
-                            android:textSize="@dimen/_14ssp" />
+                            android:textSize="@dimen/_10ssp" />
 
                         <androidx.appcompat.widget.AppCompatEditText
                             style="@style/CustomFontSemiBold"
@@ -103,7 +103,7 @@
                             android:padding="@dimen/_10sdp"
                             android:textColor="@color/black"
                             android:textColorHint="@color/hintColor"
-                            android:textSize="@dimen/_13ssp" />
+                            android:textSize="@dimen/_10ssp" />
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -126,7 +126,7 @@
                             android:padding="@dimen/_10sdp"
                             android:text="@string/percentage"
                             android:textColor="@color/viewTextColor"
-                            android:textSize="@dimen/_14ssp" />
+                            android:textSize="@dimen/_10ssp" />
 
                         <androidx.appcompat.widget.AppCompatEditText
                             style="@style/CustomFontSemiBold"
@@ -142,7 +142,7 @@
                             android:text="0%"
                             android:textColor="@color/black"
                             android:textColorHint="@color/hintColor"
-                            android:textSize="@dimen/_13ssp" />
+                            android:textSize="@dimen/_10ssp" />
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -162,7 +162,7 @@
                     android:padding="@dimen/_8sdp"
                     android:text="Remove Tip"
                     android:textColor="@color/btnColor"
-                    android:textSize="@dimen/_14ssp" />
+                    android:textSize="@dimen/_10ssp" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 

@@ -70,11 +70,11 @@
                 android:layout_marginEnd="@dimen/_3sdp"
                 android:fontFamily="@font/sf_pro_display_semibold"
                 android:gravity="end"
-                android:text="@{Double.toString(viewModel.price)}"
+                android:text="$0.00"
                 android:textColor="@color/txtColorItem"
                 android:textSize="@dimen/_8ssp"
                 tools:text="$10.00" />
-
+            <!--android:text="@{Double.toString(viewModel.price)}"-->
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 

@@ -37,7 +37,7 @@
                     android:layout_weight="1"
                     android:gravity="center"
                     android:text="@string/add_service_charge"
-                    android:textSize="@dimen/_12ssp" />
+                    android:textSize="@dimen/_10ssp" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtSave"
