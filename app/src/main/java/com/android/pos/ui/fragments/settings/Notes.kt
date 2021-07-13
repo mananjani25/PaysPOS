@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import com.android.pos.R
 import com.android.pos.data.model.BusinessSettingModel
 import com.android.pos.databinding.FragmentNotesBinding
 import com.android.pos.ui.adapter.NotesListAdapter
@@ -24,6 +26,10 @@ class Notes : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setAdapter()
+
+        binding.txtCreateNote.setOnClickListener {
+            findNavController().navigate(R.id.action_settings_to_createNote)
+        }
     }
 
     private fun setAdapter() {

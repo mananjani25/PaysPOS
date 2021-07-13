@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.model.DiscountListModel
 import com.android.pos.databinding.FragmentTipsBinding
@@ -25,6 +26,9 @@ class Tips : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setAdapter()
+        binding.txtAddNewTip.setOnClickListener {
+            findNavController().navigate(R.id.action_settings_to_addTip)
+        }
     }
 
     private fun setAdapter() {

@@ -6,17 +6,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.android.pos.databinding.CreateNoteBinding
+import com.android.pos.databinding.DialogAddNewTipBinding
 
-class CreateNote : Fragment() {
-    private lateinit var binding: CreateNoteBinding
-
+class AddTip : Fragment() {
+    private lateinit var binding:DialogAddNewTipBinding
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-         binding = CreateNoteBinding.inflate(inflater, container, false)
+        binding = DialogAddNewTipBinding.inflate(inflater,container,false)
         binding.lifecycleOwner = this
         return binding.root
     }

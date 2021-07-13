@@ -6,17 +6,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.android.pos.databinding.CreateNoteBinding
+import com.android.pos.databinding.DialogAddServiceChargeBinding
 
-class CreateNote : Fragment() {
-    private lateinit var binding: CreateNoteBinding
-
+class AddServiceCharge : Fragment() {
+    private lateinit var binding: DialogAddServiceChargeBinding
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-         binding = CreateNoteBinding.inflate(inflater, container, false)
+        binding = DialogAddServiceChargeBinding.inflate(inflater,container,false)
         binding.lifecycleOwner = this
         return binding.root
     }
@@ -26,6 +25,6 @@ class CreateNote : Fragment() {
         binding.imgBack.setOnClickListener {
             findNavController().navigateUp()
         }
-    }
 
+    }
 }
