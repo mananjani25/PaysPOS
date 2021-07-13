@@ -37,7 +37,7 @@ data class VenueDataResponse(
                 @SerializedName("name")
                 val name: String,
                 @SerializedName("price")
-                val price: Int,
+                val price: Double,
                 @SerializedName("price_type")
                 val priceType: String,
                 @SerializedName("product_code")

@@ -16,7 +16,7 @@
             android:background="@null"
             android:drawableStart="@drawable/ic_search"
             android:drawablePadding="@dimen/_10sdp"
-            android:hint="@string/search_modifiers"
+            android:hint="@string/search_discount"
             android:imeOptions="actionDone"
             android:inputType="text"
             android:padding="@dimen/_5sdp"

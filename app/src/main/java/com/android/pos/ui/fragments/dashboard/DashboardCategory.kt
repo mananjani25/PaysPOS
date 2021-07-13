@@ -12,6 +12,7 @@ import com.android.pos.data.model.responseModel.VenueDataResponse
 import com.android.pos.databinding.FragmentDashboardCategoryBinding
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.CategoryViewPagerAdapter
+import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.statusUtils.Status
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
@@ -48,6 +49,9 @@ class DashboardCategory : Fragment() {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
+
+                        ProgressUtils.dismissProgressDialog()
+
                         resource.data?.let { it ->
 
                             val mList = it.data.categories
@@ -83,8 +87,11 @@ class DashboardCategory : Fragment() {
                         /* binding.recyclerView.visibility = View.VISIBLE
                          binding.progressBar.visibility = View.GONE*/
 
+                        ProgressUtils.dismissProgressDialog()
+
                     }
                     Status.LOADING -> {
+                        ProgressUtils.showProgressDialog(requireActivity())
                         /* binding.progressBar.visibility = View.VISIBLE
                          binding.recyclerView.visibility = View.GONE*/
                     }

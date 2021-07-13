@@ -70,7 +70,7 @@
                 android:layout_marginEnd="@dimen/_3sdp"
                 android:fontFamily="@font/sf_pro_display_semibold"
                 android:gravity="end"
-                android:text="@{Integer.toString(viewModel.price)}"
+                android:text="@{Double.toString(viewModel.price)}"
                 android:textColor="@color/txtColorItem"
                 android:textSize="@dimen/_8ssp"
                 tools:text="$10.00" />
