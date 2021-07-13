@@ -22,132 +22,35 @@
             android:orientation="horizontal"
             android:weightSum="1">
 
-
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.28"
                 android:orientation="vertical">
 
-                <ScrollView
+                <TextView
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/txtBusiness"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/sf_pro_display_regular"
-                            android:padding="@dimen/_10sdp"
-                            android:text="Business"
-                            android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_11ssp" />
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/sf_pro_display_bold"
+                    android:padding="@dimen/_10sdp"
+                    android:text="@string/business"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_10ssp" />
 
 
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:background="@color/dividerColor" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/dividerColor" />
 
-                        <androidx.recyclerview.widget.RecyclerView
-                            android:id="@+id/rvBusiness"
-                            android:visibility="gone"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                            tools:listitem="@layout/view_business_setting" />
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvBusiness"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:listitem="@layout/view_business_setting" />
 
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:background="@color/dividerColor" />
-
-
-                        <TextView
-                            android:id="@+id/txtHardware"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/sf_pro_display_regular"
-                            android:padding="@dimen/_10sdp"
-                            android:text="Hardware"
-                            android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_11ssp"
-                            android:textStyle="normal" />
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:background="@color/dividerColor" />
-
-
-                        <TextView
-                            android:id="@+id/txtSecurity"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/sf_pro_display_regular"
-                            android:padding="@dimen/_10sdp"
-                            android:text="Security"
-                            android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_11ssp"
-                            android:textStyle="normal" />
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:background="@color/dividerColor" />
-
-                        <TextView
-                            android:id="@+id/txtMarketing"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/sf_pro_display_regular"
-                            android:padding="@dimen/_10sdp"
-                            android:text="Marketing"
-                            android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_11ssp"
-                            android:textStyle="normal" />
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:background="@color/dividerColor" />
-
-                        <TextView
-                            android:id="@+id/txtEmployee"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/sf_pro_display_regular"
-                            android:padding="@dimen/_10sdp"
-                            android:text="Employee"
-                            android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_11ssp"
-                            android:textStyle="normal" />
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:background="@color/dividerColor" />
-
-                        <TextView
-                            android:id="@+id/txtReports"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/sf_pro_display_regular"
-                            android:padding="@dimen/_10sdp"
-                            android:text="Reports"
-                            android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_11ssp"
-                            android:textStyle="normal" />
-
-
-                    </LinearLayout>
-                </ScrollView>
 
             </LinearLayout>
 

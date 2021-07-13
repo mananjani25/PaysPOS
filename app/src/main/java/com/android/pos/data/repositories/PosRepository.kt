@@ -26,6 +26,9 @@ class PosRepository @Inject constructor(
     fun syncVenueData() =
         performGetOperationNew(networkCall = { apiHelperNew.syncVenueData() })
 
+    fun employeesList() =
+        performGetOperationNew(networkCall = { apiHelperNew.employeesList() })
+
 
 //    fun getCharacters() = performGetOperation(
 //        databaseQuery = { appDatabase.characterDao().getAllCharacters() },
