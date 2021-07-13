@@ -22,15 +22,13 @@
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabLayout"
-            style="@style/MyTabLayout"
+            style="@style/MyTabLayoutVertical"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:background="@drawable/background_button_menu"
             android:clipToPadding="true"
             android:isScrollContainer="true"
-            android:paddingTop="@dimen/_5sdp"
             app:layout_constraintEnd_toStartOf="@+id/linearMenu"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/layoutMenu"
             app:tabIndicator="@color/txtColor"
             app:tabIndicatorGravity="bottom"
@@ -111,9 +109,10 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/linearMenu"
+            app:layout_constraintEnd_toStartOf="@+id/tabLayout"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tabLayout" />
+            app:layout_constraintTop_toBottomOf="@+id/layoutMenu" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

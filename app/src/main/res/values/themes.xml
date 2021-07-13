@@ -66,6 +66,17 @@
 
     </style>
 
+    <style name="MyTabLayoutVertical" parent="Base.Widget.Design.TabLayout">
+        <item name="tabPaddingStart">10dp</item>
+        <item name="tabPaddingEnd">10dp</item>
+
+        <item name="tabIndicatorColor">@color/txtColor</item>
+        <item name="tabIndicatorHeight">@dimen/_2sdp</item>
+        <item name="tabGravity">fill</item>
+        <item name="android:textSize">@dimen/_18ssp</item>
+
+    </style>
+
     <style name="MyTabTextAppearance" parent="TextAppearance.AppCompat.Button">
         <item name="textAllCaps">false</item>
         <item name="android:textSize">24sp</item>
