@@ -42,11 +42,19 @@ class CreateCategory : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setAdapter()
+        onClick()
+
+
+    }
+
+    private fun onClick() {
 
         binding.txtSave.setOnClickListener {
             findNavController().navigate(R.id.action_createCategory_to_createIModifierSet)
         }
-
+        binding.imgBack.setOnClickListener {
+            findNavController().navigateUp()
+        }
     }
 
     private fun observeShowProgress() {
