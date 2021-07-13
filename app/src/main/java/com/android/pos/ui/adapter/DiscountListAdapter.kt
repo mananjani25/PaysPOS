@@ -28,7 +28,7 @@ class DiscountListAdapter(val context: Context, val list: ArrayList<DiscountList
     }
 
     override fun onBindViewHolder(holder: DiscountListAdapter.MyViewHolder, position: Int) {
-    holder.bind(list.get(position))
+        holder.bind(list.get(position))
     }
 
     override fun getItemCount(): Int {
