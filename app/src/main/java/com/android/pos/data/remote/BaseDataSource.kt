@@ -56,6 +56,7 @@ abstract class BaseDataSource {
             404 -> "$code Not found"
             400 -> showNetworkError(errorBody!!)
             410 -> showNetworkError(errorBody!!)
+            500 -> showNetworkError(errorBody!!)
             else -> message
         }
     }
