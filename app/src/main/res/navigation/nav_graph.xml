@@ -178,6 +178,12 @@
             android:id="@+id/action_settings_to_addServiceCharge"
             app:destination="@id/addServiceCharge"
             app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_settings_to_kitchenReceiptSettings"
+            app:destination="@id/kitchenReceiptSettings" />
+        <action
+            android:id="@+id/action_settings_to_customerReceiptSettings"
+            app:destination="@id/customerReceiptSettings" />
     </fragment>
     <action
         android:id="@+id/action_global_settings"
@@ -199,6 +205,19 @@
         android:id="@+id/addServiceCharge"
         android:name="com.android.pos.ui.fragments.settings.AddServiceCharge"
         android:label="AddServiceCharge" />
+    <fragment
+        android:id="@+id/createTeamMember"
+        android:name="com.android.pos.ui.fragments.team.CreateTeamMember"
+        android:label="CreateTeamMember" />
+    <action android:id="@+id/action_global_createTeamMember" app:destination="@id/createTeamMember" />
+    <fragment
+        android:id="@+id/customerReceiptSettings"
+        android:name="com.android.pos.ui.fragments.settings.CustomerReceiptSettings"
+        android:label="CustomerReceiptSettings" />
+    <fragment
+        android:id="@+id/kitchenReceiptSettings"
+        android:name="com.android.pos.ui.fragments.settings.KitchenReceiptSettings"
+        android:label="KitchenReceiptSettings" />
 
 
 </navigation>

@@ -1,12 +1,16 @@
 package com.android.pos.ui.fragments.dashboard
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
+import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.viewpager2.widget.ViewPager2
 import com.android.pos.R
 import com.android.pos.data.model.responseModel.VenueDataResponse
 import com.android.pos.databinding.FragmentDashboardCategoryBinding
@@ -14,6 +18,8 @@ import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.CategoryViewPagerAdapter
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.statusUtils.Status
+import com.google.android.material.internal.ViewUtils.dpToPx
+import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -22,8 +28,9 @@ class DashboardCategory : Fragment() {
 
     private lateinit var binding: FragmentDashboardCategoryBinding
     private val viewModel by viewModels<DashBoardCategoryViewModel>()
-    private var categoryTabsList: ArrayList<String> = arrayListOf()
-    private var itemList: ArrayList<VenueDataResponse.Data.Category.Item> = arrayListOf()
+    private var categoryList: List<VenueDataResponse.Data.Category> = arrayListOf()
+    private  var categoryTabsList: ArrayList<String> = arrayListOf()
+    private var isFlag = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,11 +44,43 @@ class DashboardCategory : Fragment() {
             false
         )
 
+        /* binding.layoutMenu.imgOptionMenu.setOnClickListener {
+
+             if (isFlag) {
+                 isFlag = false
+                 binding.tabLayout.rotation = 0F
+             } else {
+                 isFlag = true
+                 binding.tabLayout.rotation = 270F
+
+             }
+         }*/
+
         binding.lifecycleOwner = this
 
         setVenueData()
 
+        binding.viewPagerCategory.registerOnPageChangeCallback(object :
+            ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                binding.viewPagerCategory.adapter = CategoryViewPagerAdapter(
+                    requireActivity(),
+                    categoryList[position].items,
+                    binding.tabLayout.tabCount
+                )
+            }
+        })
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.layoutMenu.imgDrawer.setOnClickListener {
+            (requireActivity() as MainActivity).enableDrawer()
+        }
+
+
     }
 
     private fun setVenueData() {
@@ -54,29 +93,23 @@ class DashboardCategory : Fragment() {
 
                         resource.data?.let { it ->
 
-                            val mList = it.data.categories
-                            if (mList.isNotEmpty()) {
-                                mList.forEach {
+                            categoryList = it.data.categories
+                            if (categoryList.isNotEmpty()) {
+                                categoryList.forEach {
                                     categoryTabsList.add(it.name)
                                     binding.tabLayout.addTab(
                                         binding.tabLayout.newTab().setText(it.name)
                                     )
-                                    //   it.items
-                                    itemList.addAll(it.items)
+                                    //   itemList.addAll(it.items)
+
 
                                 }
 
-                                binding.viewPagerCategory.adapter = CategoryViewPagerAdapter(
-                                    requireActivity(),
-                                    itemList,
-                                    binding.tabLayout.tabCount
-                                )
                                 TabLayoutMediator(
                                     binding.tabLayout,
                                     binding.viewPagerCategory
                                 ) { tab, position ->
-                                    // binding.tabLayout.getTabAt(position).setText()
-                                    tab.text = categoryTabsList[position]
+                                    tab.text = categoryList[position].name
                                 }.attach()
                             }
 
@@ -84,28 +117,15 @@ class DashboardCategory : Fragment() {
                         }
                     }
                     Status.ERROR -> {
-                        /* binding.recyclerView.visibility = View.VISIBLE
-                         binding.progressBar.visibility = View.GONE*/
-
                         ProgressUtils.dismissProgressDialog()
 
                     }
                     Status.LOADING -> {
                         ProgressUtils.showProgressDialog(requireActivity())
-                        /* binding.progressBar.visibility = View.VISIBLE
-                         binding.recyclerView.visibility = View.GONE*/
                     }
                 }
             }
         })
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        binding.layoutMenu.imgDrawer.setOnClickListener {
-            (requireActivity() as MainActivity).enableDrawer()
-        }
-
-    }
 }

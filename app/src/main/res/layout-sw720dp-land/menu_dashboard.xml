@@ -76,11 +76,11 @@
         android:layout_height="@dimen/_15sdp"
         android:layout_marginEnd="@dimen/_10sdp"
         android:src="@drawable/ic_search"
-        android:tint="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/edtSearch"
         app:layout_constraintHorizontal_bias="1"
         app:layout_constraintStart_toEndOf="@+id/imgDrawer"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/black" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
