@@ -218,6 +218,11 @@
         android:id="@+id/kitchenReceiptSettings"
         android:name="com.android.pos.ui.fragments.settings.KitchenReceiptSettings"
         android:label="KitchenReceiptSettings" />
+    <fragment
+        android:id="@+id/reports"
+        android:name="com.android.pos.ui.fragments.reports.Reports"
+        tools:layout="@layout/fragment_reports"
+        android:label="Reports" />
 
 
 </navigation>

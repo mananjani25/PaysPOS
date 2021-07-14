@@ -220,4 +220,7 @@
     <string name="create_option">Create Option</string>
     <string name="search_discount">Search Discount</string>
     <string name="business">Business</string>
+    <string name="current_drawer">Current Drawer</string>
+    <string name="sales">Sales</string>
+    <string name="shift_report">Shift Report</string>
 </resources>
