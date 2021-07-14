@@ -46,7 +46,7 @@
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:text="@string/new_modifier_set"
-                    android:textSize="@dimen/_12ssp" />
+                    android:textSize="@dimen/_10ssp" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontSemiBold"
@@ -63,7 +63,7 @@
                     android:paddingBottom="@dimen/_10sdp"
                     android:text="@string/save"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/_12ssp" />
+                    android:textSize="@dimen/_10ssp" />
 
             </RelativeLayout>
 
@@ -86,13 +86,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/_10sdp"
-                    android:background="@drawable/edt_border_gray"
+                    android:background="@drawable/edt_border_light_gray"
                     android:hint="@string/modifier_set_name"
                     android:padding="@dimen/_10sdp"
                     android:text="@={createModifierViewModel.modifierDetails.modifierName}"
                     android:textColor="@color/black"
                     android:textColorHint="@color/hintColor"
-                    android:textSize="@dimen/_12ssp" />
+                    android:textSize="@dimen/_10ssp" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontRegularStyle"
@@ -104,7 +104,7 @@
                     android:padding="@dimen/_10sdp"
                     android:text="@string/to_set_pre_selected_modifiers_or_update_the_minimum_maximum_number_of_modifiers_that_can_be_applied_visit_your_dashboard_if_you_modify_this_set_in_point_of_sale_it_will_only_apply_the_basic_settings_below"
                     android:textColor="@color/colorCB"
-                    android:textSize="@dimen/_10ssp"
+                    android:textSize="@dimen/_8ssp"
                     app:textAllCaps="false" />
 
                 <View
@@ -129,7 +129,7 @@
                         android:gravity="start"
                         android:text="@string/apply_set"
                         android:textColor="@color/viewTextColor"
-                        android:textSize="@dimen/_13ssp" />
+                        android:textSize="@dimen/_10ssp" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontMediumStyle"
@@ -138,7 +138,7 @@
                         android:layout_gravity="center"
                         android:text="0"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_12ssp" />
+                        android:textSize="@dimen/_10ssp" />
 
                     <androidx.appcompat.widget.AppCompatImageView
                         android:layout_width="wrap_content"
@@ -165,12 +165,13 @@
                     android:text="@string/modifiers"
                     android:textColor="@color/txtColor"
                     android:textColorHint="@color/hintColor"
-                    android:textSize="@dimen/_10ssp"
+                    android:textSize="@dimen/_9ssp"
                     app:textAllCaps="true" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    tools:itemCount="5"
                     android:layout_marginBottom="@dimen/_10sdp"
                     tools:listitem="@layout/view_modifiers_remove" />
 

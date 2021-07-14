@@ -126,6 +126,10 @@
             android:id="@+id/action_inventory_to_createIModifierSet"
             app:destination="@id/createIModifierSet"
             app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_inventory_to_createOption"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:destination="@id/createOption" />
     </fragment>
     <action
         android:id="@+id/action_global_inventory"
@@ -235,12 +239,16 @@
             app:destination="@id/dashboardCategory"
             app:popUpTo="@id/reports"
             app:popUpToInclusive="true" />
-        <action
-            android:id="@+id/action_global_reports"
-            app:destination="@id/reports"
-            app:enterAnim="@anim/nav_default_enter_anim" />
 
     </fragment>
+    <action
+        android:id="@+id/action_global_reports"
+        app:destination="@id/reports"
+        app:enterAnim="@anim/nav_default_enter_anim" />
+    <fragment
+        android:id="@+id/createOption"
+        android:name="com.android.pos.ui.fragments.inventory.CreateOption"
+        android:label="CreateOption" />
 
 
 </navigation>

@@ -235,4 +235,7 @@
     <string name="cash_description">Turn on cash management to track the cash that goes in and out of your drawer.</string>
     <string name="other_drawers">Other Drawers</string>
     <string name="turn_on_cash_management">Turn On Cash Management</string>
+    <string name="option_set">Option Set</string>
+    <string name="display_name">Display Name</string>
+    <string name="option_set_title">Option set title</string>
 </resources>

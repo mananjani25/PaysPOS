@@ -3,10 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingDefaultResource">
+
     <data>
+
         <variable
-            type="com.android.pos.data.model.CategoryListItemModel"
-            name="model" />
+            name="model"
+            type="com.android.pos.data.model.CategoryListItemModel" />
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat
@@ -27,8 +29,8 @@
 
 
             <androidx.appcompat.widget.AppCompatImageView
-                android:layout_width="@dimen/_40sdp"
-                android:layout_height="@dimen/_40sdp"
+                android:layout_width="@dimen/_30sdp"
+                android:layout_height="match_parent"
                 android:layout_gravity="center"
                 app:srcCompat="@android:drawable/screen_background_dark_transparent" />
 
@@ -41,7 +43,7 @@
                 android:layout_weight="1"
                 android:gravity="start"
                 android:textColor="@color/viewTextColor"
-                android:textSize="@dimen/_12ssp"
+                android:textSize="@dimen/_10ssp"
                 tools:text="@{model.title}" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -53,7 +55,7 @@
                 android:padding="@dimen/_10sdp"
                 android:text="@{model.type}"
                 android:textColor="@color/hintColor"
-                android:textSize="@dimen/_12ssp" />
+                android:textSize="@dimen/_10ssp" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:layout_width="wrap_content"
