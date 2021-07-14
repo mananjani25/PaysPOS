@@ -43,10 +43,10 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/sf_pro_display_regular"
-                            android:padding="@dimen/_10sdp"
-                            android:text="Business"
+                            android:padding="@dimen/_7sdp"
+                            android:text="@string/business"
                             android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_11ssp" />
+                            android:textSize="@dimen/_10sdp" />
 
 
                         <View
@@ -60,6 +60,7 @@
                             android:layout_height="wrap_content"
                             android:orientation="vertical"
                             android:visibility="gone"
+                            android:layout_marginBottom="@dimen/_3sdp"
                             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                             tools:listitem="@layout/view_business_setting" />
 
@@ -74,10 +75,10 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/sf_pro_display_regular"
-                            android:padding="@dimen/_10sdp"
+                            android:padding="@dimen/_7sdp"
                             android:text="Hardware"
                             android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_11ssp"
+                            android:textSize="@dimen/_10sdp"
                             android:textStyle="normal" />
 
                         <View
@@ -91,10 +92,10 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/sf_pro_display_regular"
-                            android:padding="@dimen/_10sdp"
+                            android:padding="@dimen/_7sdp"
                             android:text="Security"
                             android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_11ssp"
+                            android:textSize="@dimen/_10sdp"
                             android:textStyle="normal" />
 
                         <View
@@ -107,10 +108,10 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/sf_pro_display_regular"
-                            android:padding="@dimen/_10sdp"
+                            android:padding="@dimen/_7sdp"
                             android:text="Marketing"
                             android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_11ssp"
+                            android:textSize="@dimen/_10sdp"
                             android:textStyle="normal" />
 
                         <View
@@ -123,10 +124,10 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/sf_pro_display_regular"
-                            android:padding="@dimen/_10sdp"
+                            android:padding="@dimen/_7sdp"
                             android:text="Employee"
                             android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_11ssp"
+                            android:textSize="@dimen/_10sdp"
                             android:textStyle="normal" />
 
                         <View
@@ -139,10 +140,10 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/sf_pro_display_regular"
-                            android:padding="@dimen/_10sdp"
+                            android:padding="@dimen/_7sdp"
                             android:text="Reports"
                             android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_11ssp"
+                            android:textSize="@dimen/_10sdp"
                             android:textStyle="normal" />
 
 
