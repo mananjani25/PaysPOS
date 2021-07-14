@@ -29,7 +29,8 @@ class DashboardCategory : Fragment() {
     private lateinit var binding: FragmentDashboardCategoryBinding
     private val viewModel by viewModels<DashBoardCategoryViewModel>()
     private var categoryList: List<VenueDataResponse.Data.Category> = arrayListOf()
-    private  var categoryTabsList: ArrayList<String> = arrayListOf()
+    private var itemList: ArrayList<VenueDataResponse.Data.Category.Item> = arrayListOf()
+    private var categoryTabsList: ArrayList<String> = arrayListOf()
     private var isFlag = false
 
     override fun onCreateView(
@@ -60,16 +61,7 @@ class DashboardCategory : Fragment() {
 
         setVenueData()
 
-        binding.viewPagerCategory.registerOnPageChangeCallback(object :
-            ViewPager2.OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                binding.viewPagerCategory.adapter = CategoryViewPagerAdapter(
-                    requireActivity(),
-                    categoryList[position].items,
-                    binding.tabLayout.tabCount
-                )
-            }
-        })
+
         return binding.root
     }
 
@@ -80,6 +72,16 @@ class DashboardCategory : Fragment() {
             (requireActivity() as MainActivity).enableDrawer()
         }
 
+        /*binding.viewPagerCategory.registerOnPageChangeCallback(object :
+            ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                binding.viewPagerCategory.adapter = CategoryViewPagerAdapter(
+                    requireActivity(),
+                    (categoryList[position].items),
+                    binding.tabLayout.tabCount
+                )
+            }
+        })*/
 
     }
 
@@ -100,10 +102,15 @@ class DashboardCategory : Fragment() {
                                     binding.tabLayout.addTab(
                                         binding.tabLayout.newTab().setText(it.name)
                                     )
-                                    //   itemList.addAll(it.items)
-
+                                    itemList.addAll(it.items)
 
                                 }
+
+                                binding.viewPagerCategory.adapter = CategoryViewPagerAdapter(
+                                    requireActivity(),
+                                    itemList,
+                                    binding.tabLayout.tabCount
+                                )
 
                                 TabLayoutMediator(
                                     binding.tabLayout,
