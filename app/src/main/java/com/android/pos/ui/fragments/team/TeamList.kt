@@ -11,17 +11,22 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
 import com.android.pos.R
 import com.android.pos.data.model.TeamListModel
+import com.android.pos.data.model.responseModel.EmployeeResponse
 import com.android.pos.databinding.FragmentTeamListBinding
 import com.android.pos.ui.activities.MainActivity
+import com.android.pos.ui.adapter.TeamsAdapter
 import com.android.pos.ui.adapter.TeamListAdapter
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.statusUtils.Status
+import com.android.pos.utils.sticky_recycler.StickyHeaderLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class TeamList : Fragment() {
     private lateinit var binding: FragmentTeamListBinding
     private val viewModel by viewModels<TeamListViewModel>()
+    var adapter: TeamsAdapter = TeamsAdapter()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -35,13 +40,24 @@ class TeamList : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
+
+        setupStickyLayout()
+
         configureToolbar()
-        setAdapter()
+        //  setAdapter()
         loadTeamDetails()
 
         loadTeams()
 
 
+    }
+
+    private fun setupStickyLayout() {
+        val stickyHeaderLayoutManager = StickyHeaderLayoutManager()
+        binding.rvEmployeeList.layoutManager = stickyHeaderLayoutManager
+        binding.rvEmployeeList.adapter = adapter
+        // adapter.setCallback(this)
     }
 
     private fun loadTeams() {
@@ -53,6 +69,8 @@ class TeamList : Fragment() {
                         ProgressUtils.dismissProgressDialog()
                         it.data?.data?.get(0)?.let { it1 -> Log.e("SUCCESS", it1.name) }
 
+                        if (it.data != null && it.data.data.isNotEmpty())
+                            adapter.setPeople(it.data.data as MutableList<EmployeeResponse.Data>)
                     }
                     Status.ERROR -> {
                         ProgressUtils.dismissProgressDialog()
@@ -66,8 +84,13 @@ class TeamList : Fragment() {
         })
     }
 
+    private fun setData() {
+
+
+    }
+
     private fun configureToolbar() {
-        binding.layoutTool.txtTitle.setText("Team")
+        binding.layoutTool.txtTitle.text = "Team"
         binding.layoutTool.imgDrawer.setOnClickListener {
             (requireActivity() as MainActivity).enableDrawer()
         }
@@ -83,6 +106,8 @@ class TeamList : Fragment() {
     }
 
     private fun setAdapter() {
+
+
         val list: ArrayList<TeamListModel> = arrayListOf()
         list.add(TeamListModel(0, "D", "", "", true))
         list.add(TeamListModel(0, "DM", "David Miller", "davidmiller@gmail.com"))
