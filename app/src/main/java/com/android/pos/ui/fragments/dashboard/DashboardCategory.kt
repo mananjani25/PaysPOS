@@ -2,6 +2,7 @@ package com.android.pos.ui.fragments.dashboard
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -60,8 +61,6 @@ class DashboardCategory : Fragment() {
         binding.lifecycleOwner = this
 
         setVenueData()
-
-
         return binding.root
     }
 
@@ -71,18 +70,6 @@ class DashboardCategory : Fragment() {
         binding.layoutMenu.imgDrawer.setOnClickListener {
             (requireActivity() as MainActivity).enableDrawer()
         }
-
-        /*binding.viewPagerCategory.registerOnPageChangeCallback(object :
-            ViewPager2.OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                binding.viewPagerCategory.adapter = CategoryViewPagerAdapter(
-                    requireActivity(),
-                    (categoryList[position].items),
-                    binding.tabLayout.tabCount
-                )
-            }
-        })*/
-
     }
 
     private fun setVenueData() {
@@ -93,9 +80,9 @@ class DashboardCategory : Fragment() {
 
                         ProgressUtils.dismissProgressDialog()
 
-                        resource.data?.let { it ->
+                        resource.data?.let { category ->
 
-                            categoryList = it.data.categories
+                            categoryList = category.data.categories
                             if (categoryList.isNotEmpty()) {
                                 categoryList.forEach {
                                     categoryTabsList.add(it.name)
@@ -105,12 +92,12 @@ class DashboardCategory : Fragment() {
                                     itemList.addAll(it.items)
 
                                 }
-
                                 binding.viewPagerCategory.adapter = CategoryViewPagerAdapter(
                                     requireActivity(),
-                                    itemList,
+                                    categoryList,
                                     binding.tabLayout.tabCount
                                 )
+
 
                                 TabLayoutMediator(
                                     binding.tabLayout,

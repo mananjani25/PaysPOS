@@ -45,11 +45,6 @@ class CategoryList : Fragment() {
             false
         )
         binding.lifecycleOwner = this
-        return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
 
         val list: ArrayList<VenueDataResponse.Data.Category.Item> =
             requireArguments().get(ITEM_LIST) as ArrayList<VenueDataResponse.Data.Category.Item>
@@ -64,5 +59,13 @@ class CategoryList : Fragment() {
                 }
 
             })
+
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+
     }
 }
