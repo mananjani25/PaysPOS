@@ -8,12 +8,12 @@ import com.android.pos.ui.fragments.dashboard.CategoryList
 
 class CategoryViewPagerAdapter(
     fa: FragmentActivity,
-    val list: List<VenueDataResponse.Data.Category.Item>,
+    val list: List<VenueDataResponse.Data.Category>,
     val tabCount: Int
 ) : FragmentStateAdapter(fa) {
     override fun getItemCount(): Int = tabCount
 
     override fun createFragment(position: Int): Fragment =
-        CategoryList.newInstance(list)
+        CategoryList.newInstance(list[position].items)
 
 }
