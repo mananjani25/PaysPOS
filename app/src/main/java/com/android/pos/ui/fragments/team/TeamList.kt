@@ -9,6 +9,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.model.TeamListModel
 import com.android.pos.data.model.responseModel.EmployeeResponse
@@ -49,6 +50,12 @@ class TeamList : Fragment() {
         loadTeamDetails()
 
         loadTeams()
+
+        binding.layoutTool.imgOptionMenu.setOnClickListener {
+            findNavController().navigate(R.id.action_global_createTeamMember)
+        }
+
+
 
 
     }

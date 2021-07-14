@@ -53,7 +53,7 @@ class CreateCategory : Fragment() {
             findNavController().navigate(R.id.action_createCategory_to_createIModifierSet)
         }
         binding.imgBack.setOnClickListener {
-            findNavController().navigateUp()
+            findNavController().popBackStack()
         }
     }
 

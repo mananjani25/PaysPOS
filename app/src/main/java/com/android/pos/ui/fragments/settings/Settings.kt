@@ -88,6 +88,9 @@ class Settings : Fragment() {
             binding.txtEmployee.styleNormal()
             binding.txtReports.styleNormal()
             binding.rvBusiness.visibility = View.GONE
+            val frag:Fragment = Security()
+            loadFragment(frag)
+            binding.commonToolbar.txtSubTitle.setText("Security")
         }
 
         binding.txtMarketing.setOnClickListener {
@@ -98,6 +101,9 @@ class Settings : Fragment() {
             binding.txtEmployee.styleNormal()
             binding.txtReports.styleNormal()
             binding.rvBusiness.visibility = View.GONE
+            val frag:Fragment = Marketing()
+            loadFragment(frag)
+            binding.commonToolbar.txtSubTitle.setText("Marketing")
         }
 
         binding.txtEmployee.setOnClickListener {
@@ -108,16 +114,19 @@ class Settings : Fragment() {
             binding.txtEmployee.styleBold()
             binding.txtReports.styleNormal()
             binding.rvBusiness.visibility = View.GONE
+            val frag:Fragment = Employee()
+            loadFragment(frag)
+            binding.commonToolbar.txtSubTitle.setText("Employee")
         }
         binding.txtReports.setOnClickListener {
-            binding.txtBusiness.styleNormal()
+            /*binding.txtBusiness.styleNormal()
             binding.txtHardware.styleNormal()
             binding.txtSecurity.styleNormal()
             binding.txtMarketing.styleNormal()
             binding.txtEmployee.styleNormal()
             binding.txtReports.styleBold()
             binding.rvBusiness.visibility = View.GONE
-
+*/
         }
 
 
