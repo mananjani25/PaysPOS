@@ -228,4 +228,8 @@
     <string name="current_drawer">Current Drawer</string>
     <string name="sales">Sales</string>
     <string name="shift_report">Shift Report</string>
+    <string name="no_cash_drawer">No Cash Drawer</string>
+    <string name="cash_description">Turn on cash management to track the cash that goes in and out of your drawer.</string>
+    <string name="other_drawers">Other Drawers</string>
+    <string name="turn_on_cash_management">Turn On Cash Management</string>
 </resources>
