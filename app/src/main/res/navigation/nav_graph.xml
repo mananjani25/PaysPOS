@@ -217,7 +217,11 @@
     <fragment
         android:id="@+id/kitchenReceiptSettings"
         android:name="com.android.pos.ui.fragments.settings.KitchenReceiptSettings"
-        android:label="KitchenReceiptSettings" />
+        android:label="KitchenReceiptSettings">
+        <action
+            android:id="@+id/action_kitchenReceiptSettings_self"
+            app:destination="@id/kitchenReceiptSettings" />
+    </fragment>
 
 
 </navigation>
