@@ -41,7 +41,7 @@
                 android:fontFamily="@font/sf_pro_display_medium"
                 android:text="Settings"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_12ssp" />
+                android:textSize="@dimen/_10ssp" />
 
 
         </RelativeLayout>
@@ -67,7 +67,7 @@
                 android:gravity="center"
                 android:text="David Miller"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_12ssp"
+                android:textSize="@dimen/_10ssp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/txtHome"
                 app:layout_constraintStart_toStartOf="parent"

@@ -40,7 +40,7 @@
                     android:layout_weight="1"
                     android:gravity="start"
                     android:padding="@dimen/_10sdp"
-                    android:text="Loyalty Points"
+                    android:text="@string/loyalty_points"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_10ssp" />
 
@@ -73,7 +73,7 @@
                     android:layout_weight="1"
                     android:gravity="start"
                     android:padding="@dimen/_10sdp"
-                    android:text="Gift Card"
+                    android:text="@string/gift_card"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_10ssp" />
 

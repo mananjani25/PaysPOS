@@ -40,11 +40,11 @@ class TeamListAdapter(val context: Context, val list: ArrayList<TeamListModel>) 
         val binding =
             ViewTeamItemBinding.inflate(inflater, parent, false)*/
 
-        when (viewType) {
-            0 -> return ViewHolderTitle(
+        return when (viewType) {
+            0 -> ViewHolderTitle(
                 LayoutInflater.from(context).inflate(R.layout.view_team_header, parent, false)
             )
-            else -> return ViewHolderMain(
+            else -> ViewHolderMain(
                 LayoutInflater.from(context).inflate(R.layout.view_team_item, parent, false)
             )
         }
@@ -58,7 +58,7 @@ class TeamListAdapter(val context: Context, val list: ArrayList<TeamListModel>) 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when(holder.itemViewType) {
             0 -> {
-                var holder: ViewHolderTitle = holder as ViewHolderTitle
+                val holder: ViewHolderTitle = holder as ViewHolderTitle
                 holder.itemView.findViewById<AppCompatTextView>(R.id.txtHeader)
                     .setText(list.get(position).title)
             }

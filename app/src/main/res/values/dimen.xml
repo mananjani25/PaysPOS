@@ -96,6 +96,6 @@
     <dimen name="_29msp">@dimen/_99ssp</dimen>
 
 
-
+    <dimen name="full_swipe_edge_padding">90dp</dimen>
 
 </resources>

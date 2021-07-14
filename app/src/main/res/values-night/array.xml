@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer-array name="rightColors">
+        <item>@color/color13</item>
+    </integer-array>
+
+    <integer-array name="leftColors">
+        <item>@color/white</item>
+    </integer-array>
+
+    <integer-array name="rightTextColors">
+        <item>@color/white</item>
+    </integer-array>
+
+
+    <integer-array name="rightDrawableColors">
+        <item>@color/gray_rect</item>
+    </integer-array>
+
+    <integer-array name="rightDrawables">
+        <item>@drawable/ic_search</item>
+    </integer-array>
+
+    <string-array name="rightTexts">
+        <item>&#160;Delete&#160;</item>
+    </string-array>
+
+</resources>

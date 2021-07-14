@@ -220,6 +220,11 @@
     <string name="create_option">Create Option</string>
     <string name="search_discount">Search Discount</string>
     <string name="business">Business</string>
+    <string name="lock_screen_after_each_transaction">Lock screen after each transaction</string>
+    <string name="gift_card">Gift Card</string>
+    <string name="loyalty_points">Loyalty Points</string>
+    <string name="user_access_permission">User Access Permission</string>
+    <string name="time_tracking">Time Tracking</string>
     <string name="current_drawer">Current Drawer</string>
     <string name="sales">Sales</string>
     <string name="shift_report">Shift Report</string>
