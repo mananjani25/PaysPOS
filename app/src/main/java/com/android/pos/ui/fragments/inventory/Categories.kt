@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.model.CategoryListModel
@@ -35,6 +36,7 @@ class Categories : Fragment() {
 
     private fun onClick() {
         binding.txtCreateCategory.setOnClickListener {
+           // setFragmentResultListener()
             findNavController().navigate(R.id.action_inventory_to_createCategory)
         }
     }
