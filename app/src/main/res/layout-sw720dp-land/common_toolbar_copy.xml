@@ -47,7 +47,6 @@
                 android:id="@+id/imgOptionMenu"
                 android:layout_width="@dimen/_15sdp"
                 android:layout_height="@dimen/_13sdp"
-
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:layout_gravity="center"
