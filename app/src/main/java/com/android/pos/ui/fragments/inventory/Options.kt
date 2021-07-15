@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import com.android.pos.R
 import com.android.pos.data.model.OptionListModel
 import com.android.pos.databinding.FragmentOptionsBinding
 import com.android.pos.ui.adapter.OptionListAdapter
@@ -24,6 +26,10 @@ class Options : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setAdapter()
+
+        binding.txtCreateOption.setOnClickListener {
+            findNavController().navigate(R.id.action_inventory_to_createOption)
+        }
     }
 
     private fun setAdapter() {

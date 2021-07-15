@@ -11,6 +11,7 @@ import android.widget.TextView
 import com.android.pos.R
 import com.android.pos.data.model.responseModel.EmployeeResponse
 import com.android.pos.utils.CustomSwipeLayout.SwipeLayout
+import com.android.pos.utils.callback.CustomCallback
 import com.android.pos.utils.sticky_recycler.SectioningAdapter
 import java.util.*
 
@@ -22,10 +23,10 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
     private val locale = Locale.getDefault()
 
 
-//    private lateinit var mCallback: CustomCallback
-//    fun setCallback(callback: CustomCallback) {
-//        mCallback = callback
-//    }
+    private lateinit var mCallback: CustomCallback
+    fun setCallback(callback: CustomCallback) {
+        mCallback = callback
+    }
 
     inner class Section {
         var alpha: String? = null
@@ -164,9 +165,9 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
             person.firstName.first().toString() + person.lastName.first().toString()
 
 
-//        ivh.itemView.setOnClickListener {
-//            mCallback.onItemClickListener(it, person)
-//        }
+        ivh.itemView.setOnClickListener {
+            mCallback.onItemClickListener(it, person)
+        }
 
         (ivh.itemView as SwipeLayout).setItemState(SwipeLayout.ITEM_STATE_COLLAPSED, false)
 

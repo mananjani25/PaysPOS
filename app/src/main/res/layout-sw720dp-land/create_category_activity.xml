@@ -83,7 +83,7 @@
                 android:textColor="@color/black"
                 android:text="@={createCategoryViewModel.categoryDetails.categoryName}"
                 android:textColorHint="@color/hintColor"
-                android:textSize="@dimen/_12ssp" />
+                android:textSize="@dimen/_10ssp" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontMediumStyle"

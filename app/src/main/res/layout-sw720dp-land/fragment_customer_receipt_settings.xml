@@ -77,12 +77,12 @@
                         android:padding="@dimen/_5sdp"
                         android:text="@string/tv_select_font_size"
                         android:textColor="@color/viewTextColor"
-                        android:textSize="@dimen/_10ssp" />
+                        android:textSize="@dimen/_8ssp" />
 
                     <androidx.appcompat.widget.LinearLayoutCompat
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/edt_border_gray"
+                        android:background="@drawable/edt_border_light_gray"
                         android:orientation="vertical">
 
                         <androidx.appcompat.widget.LinearLayoutCompat
@@ -97,10 +97,10 @@
                                 android:layout_gravity="center"
                                 android:layout_marginLeft="@dimen/_3sdp"
                                 android:layout_weight="1"
-                                android:padding="@dimen/_10sdp"
+                                android:padding="@dimen/_8sdp"
                                 android:text="@string/tv_small"
                                 android:textColor="@color/viewTextColor"
-                                android:textSize="@dimen/_12ssp" />
+                                android:textSize="@dimen/_10ssp" />
 
                             <androidx.appcompat.widget.AppCompatImageView
                                 android:layout_width="wrap_content"
@@ -128,10 +128,10 @@
                                 android:layout_gravity="center"
                                 android:layout_marginLeft="@dimen/_3sdp"
                                 android:layout_weight="1"
-                                android:padding="@dimen/_10sdp"
+                                android:padding="@dimen/_8sdp"
                                 android:text="@string/tv_medium"
                                 android:textColor="@color/viewTextColor"
-                                android:textSize="@dimen/_12ssp" />
+                                android:textSize="@dimen/_10ssp" />
 
                             <androidx.appcompat.widget.AppCompatImageView
                                 android:layout_width="wrap_content"
@@ -159,10 +159,10 @@
                                 android:layout_gravity="center"
                                 android:layout_marginLeft="@dimen/_3sdp"
                                 android:layout_weight="1"
-                                android:padding="@dimen/_10sdp"
+                                android:padding="@dimen/_8sdp"
                                 android:text="@string/tv_large"
                                 android:textColor="@color/viewTextColor"
-                                android:textSize="@dimen/_12ssp" />
+                                android:textSize="@dimen/_10ssp" />
 
                             <androidx.appcompat.widget.AppCompatImageView
                                 android:layout_width="wrap_content"
@@ -190,7 +190,7 @@
                             android:padding="@dimen/_10sdp"
                             android:text="@string/tv_show_order_id_at_the_top"
                             android:textColor="@color/viewTextColor"
-                            android:textSize="@dimen/_10ssp" />
+                            android:textSize="@dimen/_8ssp" />
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
                     <View
@@ -213,7 +213,7 @@
                             android:padding="@dimen/_10sdp"
                             android:text="@string/tv_order_id"
                             android:textColor="@color/viewTextColor"
-                            android:textSize="@dimen/_12ssp" />
+                            android:textSize="@dimen/_10ssp" />
 
                         <androidx.appcompat.widget.SwitchCompat
                             android:layout_width="wrap_content"
@@ -247,7 +247,7 @@
                             android:padding="@dimen/_10sdp"
                             android:text="@string/tv_show_addons_modifiers"
                             android:textColor="@color/viewTextColor"
-                            android:textSize="@dimen/_10ssp" />
+                            android:textSize="@dimen/_8ssp" />
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
                     <View
@@ -270,7 +270,7 @@
                             android:padding="@dimen/_10sdp"
                             android:text="@string/tv_addons_modifiers"
                             android:textColor="@color/viewTextColor"
-                            android:textSize="@dimen/_12ssp" />
+                            android:textSize="@dimen/_10ssp" />
 
                         <androidx.appcompat.widget.SwitchCompat
                             android:layout_width="wrap_content"
@@ -304,7 +304,7 @@
                             android:padding="@dimen/_10sdp"
                             android:text="@string/tv_show_order_note"
                             android:textColor="@color/viewTextColor"
-                            android:textSize="@dimen/_10ssp" />
+                            android:textSize="@dimen/_8ssp" />
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
                     <View
@@ -327,7 +327,7 @@
                             android:padding="@dimen/_10sdp"
                             android:text="@string/tv_order_note"
                             android:textColor="@color/viewTextColor"
-                            android:textSize="@dimen/_12ssp" />
+                            android:textSize="@dimen/_10ssp" />
 
                         <androidx.appcompat.widget.SwitchCompat
                             android:layout_width="wrap_content"
@@ -361,7 +361,7 @@
                             android:padding="@dimen/_10sdp"
                             android:text="@string/tv_show_split_by_amount"
                             android:textColor="@color/viewTextColor"
-                            android:textSize="@dimen/_10ssp" />
+                            android:textSize="@dimen/_8ssp" />
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
                     <View
@@ -384,7 +384,7 @@
                             android:padding="@dimen/_10sdp"
                             android:text="@string/tv_split_amount"
                             android:textColor="@color/viewTextColor"
-                            android:textSize="@dimen/_12ssp" />
+                            android:textSize="@dimen/_10ssp" />
 
                         <androidx.appcompat.widget.SwitchCompat
                             android:layout_width="wrap_content"
@@ -418,7 +418,7 @@
                             android:padding="@dimen/_10sdp"
                             android:text="@string/tv_order_number"
                             android:textColor="@color/viewTextColor"
-                            android:textSize="@dimen/_10ssp" />
+                            android:textSize="@dimen/_8ssp" />
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
                     <View
@@ -441,7 +441,7 @@
                             android:padding="@dimen/_10sdp"
                             android:text="@string/tv_automatic_rolled_over"
                             android:textColor="@color/viewTextColor"
-                            android:textSize="@dimen/_12ssp" />
+                            android:textSize="@dimen/_10ssp" />
 
                         <androidx.appcompat.widget.SwitchCompat
                             android:layout_width="wrap_content"
@@ -474,7 +474,7 @@
                             android:padding="@dimen/_10sdp"
                             android:text="@string/tv_roll_over_after_number"
                             android:textColor="@color/viewTextColor"
-                            android:textSize="@dimen/_12ssp" />
+                            android:textSize="@dimen/_10ssp" />
 
                         <androidx.appcompat.widget.AppCompatImageView
                             android:layout_width="wrap_content"
@@ -506,7 +506,7 @@
                             android:padding="@dimen/_10sdp"
                             android:text="@string/tv_show_order_type"
                             android:textColor="@color/viewTextColor"
-                            android:textSize="@dimen/_10ssp" />
+                            android:textSize="@dimen/_8ssp" />
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
                     <View
@@ -529,7 +529,7 @@
                             android:padding="@dimen/_10sdp"
                             android:text="@string/tv_order_type"
                             android:textColor="@color/viewTextColor"
-                            android:textSize="@dimen/_12ssp" />
+                            android:textSize="@dimen/_10ssp" />
 
                         <androidx.appcompat.widget.SwitchCompat
                             android:layout_width="wrap_content"
@@ -563,7 +563,7 @@
                             android:padding="@dimen/_10sdp"
                             android:text="@string/tv_show_employee"
                             android:textColor="@color/viewTextColor"
-                            android:textSize="@dimen/_10ssp" />
+                            android:textSize="@dimen/_8ssp" />
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
                     <View
@@ -586,7 +586,7 @@
                             android:padding="@dimen/_10sdp"
                             android:text="@string/tv_employee"
                             android:textColor="@color/viewTextColor"
-                            android:textSize="@dimen/_12ssp" />
+                            android:textSize="@dimen/_10ssp" />
 
                         <androidx.appcompat.widget.SwitchCompat
                             android:layout_width="wrap_content"

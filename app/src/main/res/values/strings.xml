@@ -225,6 +225,9 @@
     <string name="loyalty_points">Loyalty Points</string>
     <string name="user_access_permission">User Access Permission</string>
     <string name="time_tracking">Time Tracking</string>
+    <string name="all_current_and_future_locations">All current and future locations</string>
+    <string name="_4_team_members_that_you_manage_at_business_one">4 team members that you manage at Business One</string>
+    <string name="select_a_team_member_to_view_details">select a team member to view details</string>
     <string name="current_drawer">Current Drawer</string>
     <string name="sales">Sales</string>
     <string name="shift_report">Shift Report</string>

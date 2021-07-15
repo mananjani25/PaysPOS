@@ -15,15 +15,16 @@ import com.android.pos.data.model.TeamListModel
 import com.android.pos.data.model.responseModel.EmployeeResponse
 import com.android.pos.databinding.FragmentTeamListBinding
 import com.android.pos.ui.activities.MainActivity
-import com.android.pos.ui.adapter.TeamsAdapter
 import com.android.pos.ui.adapter.TeamListAdapter
+import com.android.pos.ui.adapter.TeamsAdapter
 import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.callback.CustomCallback
 import com.android.pos.utils.statusUtils.Status
 import com.android.pos.utils.sticky_recycler.StickyHeaderLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class TeamList : Fragment() {
+class TeamList : Fragment(), CustomCallback {
     private lateinit var binding: FragmentTeamListBinding
     private val viewModel by viewModels<TeamListViewModel>()
     var adapter: TeamsAdapter = TeamsAdapter()
@@ -42,11 +43,10 @@ class TeamList : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
 
-
         setupStickyLayout()
 
         configureToolbar()
-        //  setAdapter()
+//        setAdapter()
         loadTeamDetails()
 
         loadTeams()
@@ -56,15 +56,13 @@ class TeamList : Fragment() {
         }
 
 
-
-
     }
 
     private fun setupStickyLayout() {
         val stickyHeaderLayoutManager = StickyHeaderLayoutManager()
         binding.rvEmployeeList.layoutManager = stickyHeaderLayoutManager
         binding.rvEmployeeList.adapter = adapter
-        // adapter.setCallback(this)
+        adapter.setCallback(this)
     }
 
     private fun loadTeams() {
@@ -91,10 +89,6 @@ class TeamList : Fragment() {
         })
     }
 
-    private fun setData() {
-
-
-    }
 
     private fun configureToolbar() {
         binding.layoutTool.txtTitle.text = "Team"
@@ -103,6 +97,18 @@ class TeamList : Fragment() {
         }
         binding.layoutTool.imgOptionMenu.setImageDrawable(requireContext().resources.getDrawable(R.drawable.plus))
         binding.layoutTool.imgOptionMenuContainer.visibility = View.GONE
+    }
+
+    private fun loadTeamDetails(data: EmployeeResponse.Data) {
+
+        val teamDetails = TeamDetails()
+
+        val args = Bundle()
+        args.putParcelable("data", data)
+        teamDetails.arguments = args
+
+        val fm: FragmentManager = requireActivity().supportFragmentManager
+        fm.beginTransaction().replace(binding.frameContainer.id, teamDetails).commit()
     }
 
     private fun loadTeamDetails() {
@@ -125,6 +131,13 @@ class TeamList : Fragment() {
         list.add(TeamListModel(0, "RD", "Robert Doe", "robertdoe@gmail.com"))
 
         binding.rvEmployeeList.adapter = TeamListAdapter(requireContext(), list)
+    }
+
+    override fun onItemClickListener(view: View?, data: EmployeeResponse.Data) {
+
+        Log.e("onItemClickListener", ">>>>")
+
+        loadTeamDetails(data)
     }
 
 }
