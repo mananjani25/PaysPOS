@@ -27,7 +27,7 @@ class DashboardCategory : Fragment() {
 
     private lateinit var binding: FragmentDashboardCategoryBinding
     private val viewModel by viewModels<DashBoardCategoryViewModel>()
-    private var categoryList: List<VenueDataResponse.Data.Category> = arrayListOf()
+    private var categoryList: MutableList<VenueDataResponse.Data.Category> = arrayListOf()
     private var itemList: ArrayList<VenueDataResponse.Data.Category.Item> = arrayListOf()
     private var categoryTabsList: ArrayList<String> = arrayListOf()
     private var isFlag = false
@@ -85,7 +85,7 @@ class DashboardCategory : Fragment() {
 
                         resource.data?.let { category ->
 
-                            categoryList = category.data.categories
+                            categoryList = category.data.categories.toMutableList()
                             if (categoryList.isNotEmpty()) {
                                 categoryList.forEach {
                                     categoryTabsList.add(it.name)

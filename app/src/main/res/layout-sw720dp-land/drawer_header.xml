@@ -19,7 +19,7 @@
         app:tint="#969AA3" />
     <View
         android:layout_width="match_parent"
-        android:layout_height="@dimen/_1sdp"
+        android:layout_height="1dp"
         android:background="#8D8D8D"/>
 
 </LinearLayout>

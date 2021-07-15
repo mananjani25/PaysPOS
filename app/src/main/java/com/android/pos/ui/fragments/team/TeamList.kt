@@ -95,7 +95,7 @@ class TeamList : Fragment(), CustomCallback {
         binding.layoutTool.imgDrawer.setOnClickListener {
             (requireActivity() as MainActivity).enableDrawer()
         }
-        binding.layoutTool.imgOptionMenu.setImageDrawable(requireContext().resources.getDrawable(R.drawable.plus))
+        binding.layoutTool.imgOptionMenu.setImageDrawable(requireContext().resources.getDrawable(R.drawable.ic_add))
         binding.layoutTool.imgOptionMenuContainer.visibility = View.GONE
     }
 

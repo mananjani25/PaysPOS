@@ -10,6 +10,7 @@ import android.widget.Filterable
 import android.widget.TextView
 import com.android.pos.R
 import com.android.pos.data.model.responseModel.EmployeeResponse
+import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.CustomSwipeLayout.SwipeLayout
 import com.android.pos.utils.callback.CustomCallback
 import com.android.pos.utils.sticky_recycler.SectioningAdapter
@@ -96,7 +97,7 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
         var currentSection: Section? = null
         for (person in people) {
 
-            val sss = person.firstName.uppercase(Locale.ROOT)[0]
+            val sss = person.firstName?.uppercase(Locale.ROOT)?.get(0)
             Log.e("alpha 1", sss.toString())
             if (sss != alpha) {
                 if (currentSection != null) {
@@ -157,12 +158,21 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
         val s = sectionSortedList[sectionIndex]
         val ivh = viewHolder as ItemViewHolder
         val person = s.people?.get(itemIndex) as EmployeeResponse.Data
-        ivh.personNameTextView.text = person.firstName + " " + person.lastName
+
+
         //ivh.txtId.text = person.id.toString()
 
-        ivh.personNumberTextView.text = person.phoneNumber
-        ivh.tvInitialName.text =
-            person.firstName.first().toString() + person.lastName.first().toString()
+        ivh.personNumberTextView.text = AlertUtils.usNumberFormat(person.phoneNumber)
+
+        if (person.firstName != null && person.lastName != null) {
+            ivh.personNameTextView.text = person.firstName + " " + person.lastName
+            ivh.tvInitialName.text =
+                person.firstName.first().toString() + person.lastName.first().toString()
+        } else {
+            ivh.personNameTextView.text = person.firstName
+            ivh.tvInitialName.text =
+                person.firstName?.subSequence(0, 2)
+        }
 
 
         ivh.itemView.setOnClickListener {

@@ -22,7 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:padding="@dimen/_5sdp">
+            android:padding="@dimen/_3sdp">
 
             <LinearLayout
                 android:layout_gravity="center"
@@ -38,10 +38,10 @@
                     android:layout_gravity="center"
                     android:background="@drawable/bg_circle_name"
                     android:gravity="center"
-                    android:padding="@dimen/_5sdp"
+                    android:padding="@dimen/_4sdp"
                     android:textAllCaps="true"
                     android:textColor="@color/btnColor"
-                    android:textSize="@dimen/_8ssp"
+                    android:textSize="@dimen/_6ssp"
                      />
             </LinearLayout>
 
@@ -59,7 +59,7 @@
                     android:paddingStart="@dimen/_5sdp"
                     android:paddingEnd="@dimen/_5sdp"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_10ssp" />
+                    android:textSize="@dimen/_7ssp" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtNumber"
@@ -69,7 +69,7 @@
                     android:paddingStart="@dimen/_5sdp"
                     android:paddingEnd="@dimen/_5sdp"
                     android:textColor="@color/colorB9"
-                    android:textSize="@dimen/_8ssp"
+                    android:textSize="@dimen/_6ssp"
                      />
             </LinearLayout>
 

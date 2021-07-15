@@ -34,7 +34,7 @@
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:text="@string/create_option"
-                android:textSize="@dimen/_10ssp" />
+                android:textSize="@dimen/_7ssp" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtSave"
@@ -51,7 +51,7 @@
                 android:paddingBottom="@dimen/_5sdp"
                 android:text="@string/create"
                 android:textColor="@color/white"
-                android:textSize="@dimen/_10ssp" />
+                android:textSize="@dimen/_7ssp" />
 
         </RelativeLayout>
 
@@ -87,7 +87,7 @@
                         android:layout_height="wrap_content"
                         android:text=""
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_9ssp" />
+                        android:textSize="@dimen/_7ssp" />
 
 
                     <androidx.appcompat.widget.AppCompatEditText
@@ -99,10 +99,10 @@
                         android:hint=""
                         android:imeOptions="actionNext"
                         android:inputType="textCapWords"
-                        android:padding="@dimen/_8sdp"
+                        android:padding="@dimen/_5sdp"
                         android:textColor="@color/txtColor"
                         android:textColorHint="@color/hintColor"
-                        android:textSize="@dimen/_9ssp" />
+                        android:textSize="@dimen/_6ssp" />
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -120,7 +120,7 @@
                         android:layout_height="wrap_content"
                         android:text=""
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_9ssp" />
+                        android:textSize="@dimen/_7ssp" />
 
 
                     <androidx.appcompat.widget.AppCompatEditText
@@ -129,13 +129,13 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/_5sdp"
                         android:background="@drawable/edt_border_light_gray"
-                        android:hint="@string/note_title"
+                        android:hint="@string/display_name"
                         android:imeOptions="actionNext"
                         android:inputType="textCapWords"
-                        android:padding="@dimen/_8sdp"
+                        android:padding="@dimen/_5sdp"
                         android:textColor="@color/txtColor"
                         android:textColorHint="@color/hintColor"
-                        android:textSize="@dimen/_9ssp" />
+                        android:textSize="@dimen/_6ssp" />
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -152,7 +152,7 @@
                         android:layout_marginBottom="@dimen/_5sdp"
                         android:text="@string/options"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_9ssp" />
+                        android:textSize="@dimen/_7ssp" />
 
 
                     <View
@@ -175,10 +175,10 @@
                             android:background="@null"
                             android:gravity="start"
                             android:hint="@string/add_options"
-                            android:padding="@dimen/_8sdp"
+                            android:padding="@dimen/_5sdp"
                             android:textColor="@color/txtColor"
                             android:textColorHint="@color/colorC5"
-                            android:textSize="@dimen/_9ssp" />
+                            android:textSize="@dimen/_6ssp" />
 
 
                     </androidx.appcompat.widget.LinearLayoutCompat>

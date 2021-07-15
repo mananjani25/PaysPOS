@@ -56,4 +56,6 @@
 
     <color name="dividerColor">#41414117</color>
     <color name="colorC4">#C4C4C4</color>
+    <color name="colorE3">#E3E3E4</color>
+    <color name="colorF0">#F0F1F3</color>
 </resources>

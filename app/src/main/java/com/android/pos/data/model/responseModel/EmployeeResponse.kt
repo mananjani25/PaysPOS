@@ -15,7 +15,7 @@ data class EmployeeResponse(
         @SerializedName("email")
         val email: String,
         @SerializedName("first_name")
-        val firstName: String,
+        val firstName: String?,
         @SerializedName("id")
         val id: Int,
         @SerializedName("is_active")
@@ -23,7 +23,7 @@ data class EmployeeResponse(
         @SerializedName("is_clocked_in")
         val isClockedIn: Boolean,
         @SerializedName("last_name")
-        val lastName: String,
+        val lastName: String? = "",
         @SerializedName("location_id")
         val locationId: Int,
         @SerializedName("loggedin_terminal_id")
