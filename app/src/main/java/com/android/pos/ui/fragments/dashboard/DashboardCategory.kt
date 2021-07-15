@@ -1,13 +1,10 @@
 package com.android.pos.ui.fragments.dashboard
 
-import android.annotation.SuppressLint
+import android.icu.lang.UCharacter
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.Window
-import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -17,10 +14,9 @@ import com.android.pos.data.model.responseModel.VenueDataResponse
 import com.android.pos.databinding.FragmentDashboardCategoryBinding
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.CategoryViewPagerAdapter
+import com.android.pos.ui.adapter.DashboardItemAdapter
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.statusUtils.Status
-import com.google.android.material.internal.ViewUtils.dpToPx
-import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -46,19 +42,26 @@ class DashboardCategory : Fragment() {
             false
         )
 
-        /* binding.layoutMenu.imgOptionMenu.setOnClickListener {
+        binding.layoutMenu.imgOptionMenu.setOnClickListener {
 
-             if (isFlag) {
-                 isFlag = false
-                 binding.tabLayout.rotation = 0F
-             } else {
-                 isFlag = true
-                 binding.tabLayout.rotation = 270F
-
-             }
-         }*/
+            if (isFlag) {
+                isFlag = false
+            } else {
+                isFlag = false
+                binding.viewPagerCategory.orientation =
+                    ViewPager2.ORIENTATION_VERTICAL
+            }
+        }
 
         binding.lifecycleOwner = this
+
+        binding.viewPagerCategory.registerOnPageChangeCallback(object :
+            ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                //   binding.rvVerticalTab.scrollToPosition(position)
+            }
+        })
 
         setVenueData()
         return binding.root
@@ -85,11 +88,12 @@ class DashboardCategory : Fragment() {
                             categoryList = category.data.categories
                             if (categoryList.isNotEmpty()) {
                                 categoryList.forEach {
+                                    categoryTabsList.clear()
                                     categoryTabsList.add(it.name)
                                     binding.tabLayout.addTab(
                                         binding.tabLayout.newTab().setText(it.name)
                                     )
-                                    itemList.addAll(it.items)
+                                    //  itemList.addAll(it.items)
 
                                 }
                                 binding.viewPagerCategory.adapter = CategoryViewPagerAdapter(
@@ -98,6 +102,16 @@ class DashboardCategory : Fragment() {
                                     binding.tabLayout.tabCount
                                 )
 
+                                /* binding.rvVerticalTab.adapter =
+                                     DashboardItemAdapter(requireActivity(), categoryTabsList,
+                                         object : DashboardItemAdapter.DashboardListner {
+                                             override fun onItemClick(layoutPosition: Int) {
+                                                 binding.viewPagerCategory.currentItem =
+                                                     layoutPosition
+
+                                             }
+
+                                         })*/
 
                                 TabLayoutMediator(
                                     binding.tabLayout,
@@ -121,5 +135,6 @@ class DashboardCategory : Fragment() {
             }
         })
     }
+
 
 }
