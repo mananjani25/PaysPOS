@@ -18,18 +18,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/color"
-            android:padding="@dimen/_10sdp">
+            android:padding="@dimen/_5sdp">
 
             <ImageView
-                android:layout_width="@dimen/_25sdp"
-                android:layout_height="@dimen/_25sdp"
+                android:layout_width="@dimen/_15sdp"
+                android:layout_height="@dimen/_15sdp"
                 android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
                 android:src="@drawable/filter" />
 
             <ImageView
-                android:layout_width="@dimen/_25sdp"
-                android:layout_height="@dimen/_25sdp"
+                android:layout_width="@dimen/_15sdp"
+                android:layout_height="@dimen/_15sdp"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:padding="@dimen/_4sdp"
@@ -48,7 +48,7 @@
                     android:fontFamily="@font/sf_pro_display_bold"
                     android:text="Apr 27, 2021"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_9ssp" />
+                    android:textSize="@dimen/_7ssp" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -56,7 +56,7 @@
                     android:layout_marginTop="@dimen/_3sdp"
                     android:text="All Devices, vs Previous Tuesday"
                     android:textColor="@color/color25"
-                    android:textSize="@dimen/_8ssp" />
+                    android:textSize="@dimen/_6ssp" />
 
             </LinearLayout>
 
@@ -68,10 +68,11 @@
             android:background="#EFF0F0" />
 
         <LinearLayout
+            android:paddingEnd="@dimen/_5sdp"
+            android:paddingStart="@dimen/_5sdp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/color"
-            android:padding="@dimen/_5sdp">
+            android:background="@color/color">
 
             <com.google.android.material.tabs.TabLayout
                 android:id="@+id/tabLayout"
@@ -83,11 +84,10 @@
                 android:background="@color/color"
                 android:clipToPadding="true"
                 android:isScrollContainer="true"
-                android:paddingTop="@dimen/_5sdp"
                 app:tabIndicator="@color/txtColor"
                 app:tabIndicatorGravity="bottom"
                 app:tabMode="scrollable"
-                app:tabPaddingBottom="@dimen/_10sdp"
+                app:tabPaddingBottom="@dimen/_5sdp"
                 app:tabPaddingEnd="@dimen/_5sdp"
                 app:tabPaddingStart="@dimen/_5sdp"
                 app:tabPaddingTop="@dimen/_5sdp"
@@ -112,7 +112,7 @@
                 android:fontFamily="@font/sf_pro_display_bold"
                 android:text="@string/sales_summary"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_8ssp" />
+                android:textSize="@dimen/_6ssp" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -121,7 +121,7 @@
                 android:fontFamily="@font/sf_pro_display_semibold"
                 android:text="@string/show_details"
                 android:textColor="@color/txt_color_blue"
-                android:textSize="@dimen/_8ssp" />
+                android:textSize="@dimen/_6ssp" />
         </RelativeLayout>
 
         <View
@@ -152,7 +152,7 @@
                     android:fontFamily="@font/sf_pro_display_medium"
                     android:text="$0.00"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_12ssp" />
+                    android:textSize="@dimen/_7ssp" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -160,7 +160,7 @@
                     android:fontFamily="@font/sf_pro_display_medium"
                     android:text="Gross Sales"
                     android:textColor="@color/colorB9"
-                    android:textSize="@dimen/_8ssp" />
+                    android:textSize="@dimen/_7ssp" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -168,7 +168,7 @@
                     android:fontFamily="@font/sf_pro_display_semibold"
                     android:text="-100%"
                     android:textColor="@color/colorRed"
-                    android:textSize="@dimen/_8ssp" />
+                    android:textSize="@dimen/_7ssp" />
             </LinearLayout>
 
             <LinearLayout
@@ -183,7 +183,7 @@
                     android:fontFamily="@font/sf_pro_display_medium"
                     android:text="0"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_12ssp" />
+                    android:textSize="@dimen/_7ssp" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -191,7 +191,7 @@
                     android:fontFamily="@font/sf_pro_display_medium"
                     android:text="Sales"
                     android:textColor="@color/colorB9"
-                    android:textSize="@dimen/_8ssp" />
+                    android:textSize="@dimen/_7ssp" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -199,7 +199,7 @@
                     android:fontFamily="@font/sf_pro_display_semibold"
                     android:text="-100%"
                     android:textColor="@color/colorRed"
-                    android:textSize="@dimen/_8ssp" />
+                    android:textSize="@dimen/_7ssp" />
             </LinearLayout>
 
             <LinearLayout
@@ -214,7 +214,7 @@
                     android:fontFamily="@font/sf_pro_display_medium"
                     android:text="$0.00"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_12ssp" />
+                    android:textSize="@dimen/_7ssp" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -222,7 +222,7 @@
                     android:fontFamily="@font/sf_pro_display_medium"
                     android:text="Average Sale"
                     android:textColor="@color/colorB9"
-                    android:textSize="@dimen/_8ssp" />
+                    android:textSize="@dimen/_7ssp" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -230,7 +230,7 @@
                     android:fontFamily="@font/sf_pro_display_semibold"
                     android:text="-100%"
                     android:textColor="@color/colorRed"
-                    android:textSize="@dimen/_8ssp" />
+                    android:textSize="@dimen/_7ssp" />
             </LinearLayout>
 
 
@@ -265,7 +265,7 @@
                     android:fontFamily="@font/sf_pro_display_medium"
                     android:text="$0.00"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_12ssp" />
+                    android:textSize="@dimen/_7ssp" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -273,7 +273,7 @@
                     android:fontFamily="@font/sf_pro_display_medium"
                     android:text="Net Sales"
                     android:textColor="@color/colorB9"
-                    android:textSize="@dimen/_8ssp" />
+                    android:textSize="@dimen/_7ssp" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -281,7 +281,7 @@
                     android:fontFamily="@font/sf_pro_display_semibold"
                     android:text="@string/percantage"
                     android:textColor="@color/colorRed"
-                    android:textSize="@dimen/_8ssp" />
+                    android:textSize="@dimen/_7ssp" />
             </LinearLayout>
 
             <LinearLayout
@@ -296,7 +296,7 @@
                     android:fontFamily="@font/sf_pro_display_medium"
                     android:text="$0.00"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_12ssp" />
+                    android:textSize="@dimen/_7ssp" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -304,7 +304,7 @@
                     android:fontFamily="@font/sf_pro_display_medium"
                     android:text="Returns"
                     android:textColor="@color/colorB9"
-                    android:textSize="@dimen/_8ssp" />
+                    android:textSize="@dimen/_7ssp" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -312,7 +312,7 @@
                     android:fontFamily="@font/sf_pro_display_semibold"
                     android:text="@string/percantage"
                     android:textColor="@color/colorRed"
-                    android:textSize="@dimen/_8ssp" />
+                    android:textSize="@dimen/_7ssp" />
             </LinearLayout>
 
             <LinearLayout
@@ -327,7 +327,7 @@
                     android:fontFamily="@font/sf_pro_display_medium"
                     android:text="$0.00"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_12ssp" />
+                    android:textSize="@dimen/_7ssp" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -335,7 +335,7 @@
                     android:fontFamily="@font/sf_pro_display_medium"
                     android:text="Discount &amp; Comps"
                     android:textColor="@color/colorB9"
-                    android:textSize="@dimen/_8ssp" />
+                    android:textSize="@dimen/_7ssp" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -343,7 +343,7 @@
                     android:fontFamily="@font/sf_pro_display_semibold"
                     android:text="@string/percantage"
                     android:textColor="@color/colorRed"
-                    android:textSize="@dimen/_8ssp" />
+                    android:textSize="@dimen/_7ssp" />
             </LinearLayout>
 
 
