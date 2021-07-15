@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/dashboardCategory">
+    app:startDestination="@id/dashboardCategoryNew">
 
 
     <fragment
@@ -133,8 +133,8 @@
             app:enterAnim="@anim/nav_default_enter_anim" />
         <action
             android:id="@+id/action_inventory_to_createOption"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:destination="@id/createOption" />
+            app:destination="@id/createOption"
+            app:enterAnim="@anim/nav_default_enter_anim" />
     </fragment>
     <action
         android:id="@+id/action_global_inventory"
@@ -254,6 +254,11 @@
         android:id="@+id/createOption"
         android:name="com.android.pos.ui.fragments.inventory.CreateOption"
         android:label="CreateOption" />
+    <fragment
+        android:id="@+id/dashboardCategoryNew"
+        tools:layout="@layout/fragment_dashboard_category_new"
+        android:name="com.android.pos.ui.fragments.dashboard.DashboardCategoryNew"
+        android:label="DashboardCategoryNew" />
 
 
 </navigation>

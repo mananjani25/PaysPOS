@@ -85,7 +85,7 @@
                         style="@style/CustomFontSemiBold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/option_set"
+                        android:text=""
                         android:textColor="@color/txtColor"
                         android:textSize="@dimen/_9ssp" />
 
@@ -96,7 +96,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/_5sdp"
                         android:background="@drawable/edt_border_light_gray"
-                        android:hint="@string/option_set_title"
+                        android:hint=""
                         android:imeOptions="actionNext"
                         android:inputType="textCapWords"
                         android:padding="@dimen/_8sdp"
@@ -118,7 +118,7 @@
                         style="@style/CustomFontSemiBold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/display_name"
+                        android:text=""
                         android:textColor="@color/txtColor"
                         android:textSize="@dimen/_9ssp" />
 

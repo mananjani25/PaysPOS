@@ -238,4 +238,6 @@
     <string name="sales_summary">Sales Summary: Overview</string>
     <string name="show_details">Show Details</string>
     <string name="percantage">-100%</string>
+    <string name="products">Products</string>
+    <string name="keypad">Keypad</string>
 </resources>
