@@ -32,7 +32,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:padding="@dimen/_8sdp"
+                android:padding="@dimen/_5sdp"
                 app:srcCompat="@drawable/ic_check_box" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -44,9 +44,9 @@
                 android:layout_weight="1"
                 android:text="@{model.title}"
                 android:gravity="start"
-                android:padding="@dimen/_10sdp"
+                android:padding="@dimen/_5sdp"
                 android:textColor="@color/viewTextColor"
-                android:textSize="@dimen/_8ssp" />
+                android:textSize="@dimen/_6ssp" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:layout_width="wrap_content"

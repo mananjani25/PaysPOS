@@ -39,10 +39,10 @@
                     android:layout_marginStart="@dimen/_5sdp"
                     android:layout_weight="1"
                     android:gravity="start"
-                    android:padding="@dimen/_10sdp"
+                    android:padding="@dimen/_5sdp"
                     android:text="@string/loyalty_points"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_10ssp" />
+                    android:textSize="@dimen/_7ssp" />
 
 
                 <androidx.appcompat.widget.AppCompatImageView
@@ -72,10 +72,10 @@
                     android:layout_marginStart="@dimen/_5sdp"
                     android:layout_weight="1"
                     android:gravity="start"
-                    android:padding="@dimen/_10sdp"
+                    android:padding="@dimen/_5sdp"
                     android:text="@string/gift_card"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_10ssp" />
+                    android:textSize="@dimen/_7ssp" />
 
 
                 <androidx.appcompat.widget.AppCompatImageView
