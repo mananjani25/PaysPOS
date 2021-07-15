@@ -35,7 +35,6 @@
         android:isScrollContainer="false"
         android:theme="@style/NavigationTheme"
         app:headerLayout="@layout/drawer_header"
-
         app:itemBackground="@android:color/transparent"
         app:itemTextAppearance="@style/DrawerItem"
         app:itemTextColor="@color/drawer_item_text_color_selector"
