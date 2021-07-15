@@ -1,12 +1,10 @@
 package com.android.pos.ui.fragments.dashboard
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.view.Window
+import android.view.*
 import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -33,6 +31,10 @@ class DashboardCategory : Fragment() {
     private var itemList: ArrayList<VenueDataResponse.Data.Category.Item> = arrayListOf()
     private var categoryTabsList: ArrayList<String> = arrayListOf()
     private var isFlag = false
+    override fun onPause() {
+        super.onPause()
+
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -60,12 +62,13 @@ class DashboardCategory : Fragment() {
 
         binding.lifecycleOwner = this
 
-        setVenueData()
+
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setVenueData()
 
         binding.layoutMenu.imgDrawer.setOnClickListener {
             (requireActivity() as MainActivity).enableDrawer()
@@ -115,7 +118,14 @@ class DashboardCategory : Fragment() {
 
                     }
                     Status.LOADING -> {
-                        ProgressUtils.showProgressDialog(requireActivity())
+                        try {
+                            val activity: Activity = requireActivity() as Activity
+                            if (!activity.isFinishing) {
+                                ProgressUtils.showProgressDialog(requireActivity())
+                            }
+                        } catch (ex: Exception) {
+                            ex.printStackTrace()
+                        }
                     }
                 }
             }

@@ -1,5 +1,6 @@
 package com.android.pos.utils
 
+import android.app.Activity
 import android.app.Dialog
 import android.content.Context
 import android.graphics.Color
@@ -31,7 +32,7 @@ object ProgressUtils {
      * Like if you want to do 2 tasks at a time then just call this showProgressDialog with processCount=2 and then call dismissProgressDialog() method at every task finish
      */
     @JvmOverloads
-    fun showProgressDialog(context: Context) {
+    fun showProgressDialog(context: Activity) {
         if (builder == null)
             builder = Dialog(context)
 
@@ -52,31 +53,36 @@ object ProgressUtils {
         )
 
         if (!builder!!.isShowing) {
-            builder!!.show()
+            val activity: Activity = context as Activity
+            if (!activity.isFinishing) {
+                builder!!.show()
+            }
         }
     }
 
     @JvmOverloads
-    fun showProgressDialog(message: String?,context: Context) {
+    fun showProgressDialog(message: String?, context: Context) {
         if (builder == null)
             builder = Dialog(context)
 
         val inflater = LayoutInflater.from(context)
         val dialogView = inflater.inflate(R.layout.view_loading, null)
-        builder!!.setContentView(dialogView)
+        builder?.setContentView(dialogView)
 
-        builder!!.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        builder!!.window?.setBackgroundDrawable(
+        builder?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        builder?.window?.setBackgroundDrawable(
             ColorDrawable(Color.WHITE)
         )
-        builder!!.setCanceledOnTouchOutside(false)
-        builder!!.window?.setLayout(
+        builder?.setCanceledOnTouchOutside(false)
+        builder?.window?.setLayout(
             WindowManager.LayoutParams.WRAP_CONTENT,
             WindowManager.LayoutParams.WRAP_CONTENT
         )
 
-        if (!builder!!.isShowing) {
-            builder!!.show()
+        if (builder != null) {
+            if (!builder!!.isShowing) {
+                builder!!.show()
+            }
         }
     }
 
