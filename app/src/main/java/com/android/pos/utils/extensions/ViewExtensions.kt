@@ -91,8 +91,8 @@ fun View.liveSnackBar(
     snackbarEvent.observe(lifecycleOwner, Observer { event ->
         event.getContentIfNotHandled()?.let {
             when (it) {
-                is Int -> showAlert(context.getString(it), timeLength)
-                is String -> showAlert(it, timeLength)
+                is Int -> showAlert(context.getString(it))
+                is String -> showAlert(it)
             }
 
         }
@@ -100,7 +100,7 @@ fun View.liveSnackBar(
 }
 
 
-fun View.showAlert(message: String, timeLength: Int) {
+fun View.showAlert(message: String?) {
     // Snackbar.make(this, snackbarText, timeLength).show()
     AlertUtils.showAlert(context, message)
 }

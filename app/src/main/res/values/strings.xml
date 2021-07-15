@@ -59,6 +59,12 @@
     <string name="category_name_validate">Please enter Category Name</string>
     <string name="modifier_name_validate">Please enter Modifier Name</string>
 
+    <string name="tax_name_validate">Please enter Tax Name</string>
+    <string name="tax_rate_validate">Please enter valid Tax Rate</string>
+
+    <string name="tip_name_validate">Please enter Tip Name</string>
+    <string name="tip_rate_validate">Please enter valid Tip Rate</string>
+
 
     <string name="tv_personal_info">Personal Info</string>
     <string name="tv_jobs">Jobs</string>

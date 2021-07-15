@@ -7,17 +7,19 @@ import android.view.View
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
+import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.android.pos.R
+import com.android.pos.databinding.ParentActivityBinding
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.parent_activity.*
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
+    private lateinit var binding: ParentActivityBinding
     private var navController: NavController? = null
     private lateinit var listner: NavController.OnDestinationChangedListener
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,7 +29,9 @@ class MainActivity : AppCompatActivity() {
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
             window.statusBarColor = getColor(R.color.txtColorGray)
         }
-        setContentView(R.layout.parent_activity)
+        binding = DataBindingUtil.setContentView(this, R.layout.parent_activity)
+
+        binding.lifecycleOwner = this
 
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
@@ -49,14 +53,14 @@ class MainActivity : AppCompatActivity() {
 
             }
         }
-        nav_view.setupWithNavController(navController!!)
-        val imgBack = nav_view.getHeaderView(0).findViewById<ImageView>(R.id.imgBack)
+        binding.navView.setupWithNavController(navController!!)
+        val imgBack =  binding.navView.getHeaderView(0).findViewById<ImageView>(R.id.imgBack)
         imgBack.setOnClickListener {
             disableDrawer()
 
         }
 
-        nav_view.setNavigationItemSelectedListener {
+        binding.navView.setNavigationItemSelectedListener {
             when (it.itemId) {
                 R.id.menuHome -> {
                     disableDrawer()
@@ -130,17 +134,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun enableDrawer() {
-        drawer_layout.openDrawer(GravityCompat.START)
+       binding.drawerLayout .openDrawer(GravityCompat.START)
 
     }
 
     fun disableDrawer() {
-        drawer_layout.closeDrawer(GravityCompat.START)
+        binding.drawerLayout.closeDrawer(GravityCompat.START)
     }
 
     override fun onBackPressed() {
-        if (drawer_layout.isDrawerOpen(GravityCompat.START)) {
-            drawer_layout.closeDrawer(GravityCompat.START)
+        if ( binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            binding.drawerLayout.closeDrawer(GravityCompat.START)
         } else {
             super.onBackPressed()
         }

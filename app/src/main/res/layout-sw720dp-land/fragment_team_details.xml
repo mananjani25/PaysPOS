@@ -31,7 +31,6 @@
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:layout_width="@dimen/_50sdp"
-
                 android:layout_height="@dimen/_50sdp"
                 app:srcCompat="@drawable/group" />
 

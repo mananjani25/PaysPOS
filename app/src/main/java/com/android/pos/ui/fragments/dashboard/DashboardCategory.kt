@@ -8,13 +8,11 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.viewpager2.widget.ViewPager2
 import com.android.pos.R
 import com.android.pos.data.model.responseModel.VenueDataResponse
 import com.android.pos.databinding.FragmentDashboardCategoryBinding
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.CategoryViewPagerAdapter
-import com.android.pos.ui.adapter.DashboardItemAdapter
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.statusUtils.Status
 import com.google.android.material.tabs.TabLayoutMediator
@@ -42,26 +40,8 @@ class DashboardCategory : Fragment() {
             false
         )
 
-        binding.layoutMenu.imgOptionMenu.setOnClickListener {
-
-            if (isFlag) {
-                isFlag = false
-            } else {
-                isFlag = false
-                binding.viewPagerCategory.orientation =
-                    ViewPager2.ORIENTATION_VERTICAL
-            }
-        }
 
         binding.lifecycleOwner = this
-
-        binding.viewPagerCategory.registerOnPageChangeCallback(object :
-            ViewPager2.OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                super.onPageSelected(position)
-                //   binding.rvVerticalTab.scrollToPosition(position)
-            }
-        })
 
         setVenueData()
         return binding.root
@@ -88,7 +68,6 @@ class DashboardCategory : Fragment() {
                             categoryList = category.data.categories
                             if (categoryList.isNotEmpty()) {
                                 categoryList.forEach {
-                                    categoryTabsList.clear()
                                     categoryTabsList.add(it.name)
                                     binding.tabLayout.addTab(
                                         binding.tabLayout.newTab().setText(it.name)
@@ -101,17 +80,6 @@ class DashboardCategory : Fragment() {
                                     categoryList,
                                     binding.tabLayout.tabCount
                                 )
-
-                                /* binding.rvVerticalTab.adapter =
-                                     DashboardItemAdapter(requireActivity(), categoryTabsList,
-                                         object : DashboardItemAdapter.DashboardListner {
-                                             override fun onItemClick(layoutPosition: Int) {
-                                                 binding.viewPagerCategory.currentItem =
-                                                     layoutPosition
-
-                                             }
-
-                                         })*/
 
                                 TabLayoutMediator(
                                     binding.tabLayout,

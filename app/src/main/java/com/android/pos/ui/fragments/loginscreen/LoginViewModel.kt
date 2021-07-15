@@ -10,6 +10,7 @@ import com.android.pos.R
 import com.android.pos.data.model.requestModel.LoginRequestModel
 import com.android.pos.data.remote.Constants.AUTH_TOKEN
 import com.android.pos.data.remote.Constants.BASE_URL_NEW
+import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
@@ -68,6 +69,7 @@ class LoginViewModel @Inject constructor(
 //                                    _data.value = Event(true)
                                     prefProvider.setValue(AUTH_TOKEN, it.data.authToken)
                                     prefProvider.setValue(BASE_URL_NEW, it.data.baseUrl + "/")
+                                    prefProvider.setValueInt(LOCATION_ID, it.data.locationId)
                                 }
 
                                 defaultTerminalCall()

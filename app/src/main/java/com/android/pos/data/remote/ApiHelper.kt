@@ -1,5 +1,7 @@
 package com.android.pos.data.remote
 
+import com.android.pos.data.model.requestModel.CreateTaxRequestModel
+import com.android.pos.data.model.requestModel.CreateTipRequestModel
 import javax.inject.Inject
 
 class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDataSource() {
@@ -22,4 +24,16 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
 
     suspend fun employeesList() =
         getResult { apiService.employeesList() }
+
+    suspend fun getTaxList() =
+        getResult { apiService.getTaxList() }
+
+    suspend fun createTax(data: CreateTaxRequestModel) =
+        getResult { apiService.createTax(data) }
+
+    suspend fun getTipsList() =
+        getResult { apiService.getTipsList() }
+
+    suspend fun createTips(data: CreateTipRequestModel) =
+        getResult { apiService.createTips(data) }
 }
