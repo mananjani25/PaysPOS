@@ -65,7 +65,7 @@
         android:inputType="text"
         android:textColor="@color/black"
         android:textColorHint="#C4C4C4"
-        android:textSize="@dimen/_6ssp"
+        android:textSize="@dimen/_6mdpi"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/imgCalculator"
         app:layout_constraintTop_toTopOf="parent" />

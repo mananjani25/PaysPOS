@@ -30,7 +30,7 @@
             android:paddingBottom="@dimen/_7sdp"
             android:text="@{model.title}"
             android:textColor="@{model.selected ? @color/white : @color/txtColor}"
-            android:textSize="@dimen/_6ssp" />
+            android:textSize="@dimen/_6mdpi" />
 
         <View
             android:layout_width="match_parent"

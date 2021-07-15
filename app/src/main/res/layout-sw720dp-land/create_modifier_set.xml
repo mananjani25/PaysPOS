@@ -46,7 +46,7 @@
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:text="@string/new_modifier_set"
-                    android:textSize="@dimen/_7ssp" />
+                    android:textSize="@dimen/_7mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontSemiBold"
@@ -63,7 +63,7 @@
                     android:paddingBottom="@dimen/_5sdp"
                     android:text="@string/save"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/_7ssp" />
+                    android:textSize="@dimen/_7mdpi" />
 
             </RelativeLayout>
 
@@ -92,7 +92,7 @@
                     android:text="@={createModifierViewModel.modifierDetails.modifierName}"
                     android:textColor="@color/black"
                     android:textColorHint="@color/hintColor"
-                    android:textSize="@dimen/_6ssp" />
+                    android:textSize="@dimen/_6mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontRegularStyle"
@@ -104,7 +104,7 @@
                     android:padding="@dimen/_5sdp"
                     android:text="@string/to_set_pre_selected_modifiers_or_update_the_minimum_maximum_number_of_modifiers_that_can_be_applied_visit_your_dashboard_if_you_modify_this_set_in_point_of_sale_it_will_only_apply_the_basic_settings_below"
                     android:textColor="@color/colorCB"
-                    android:textSize="@dimen/_6ssp"
+                    android:textSize="@dimen/_6mdpi"
                     app:textAllCaps="false" />
 
                 <View
@@ -129,7 +129,7 @@
                         android:gravity="start"
                         android:text="@string/apply_set"
                         android:textColor="@color/viewTextColor"
-                        android:textSize="@dimen/_6ssp" />
+                        android:textSize="@dimen/_6mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontMediumStyle"
@@ -138,7 +138,7 @@
                         android:layout_gravity="center"
                         android:text="0"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_6ssp" />
+                        android:textSize="@dimen/_6mdpi" />
 
                     <androidx.appcompat.widget.AppCompatImageView
                         android:layout_width="wrap_content"
@@ -165,7 +165,7 @@
                     android:text="@string/modifiers"
                     android:textColor="@color/txtColor"
                     android:textColorHint="@color/hintColor"
-                    android:textSize="@dimen/_6ssp"
+                    android:textSize="@dimen/_6mdpi"
                     app:textAllCaps="true" />
 
                 <androidx.recyclerview.widget.RecyclerView
@@ -206,7 +206,7 @@
                             android:padding="@dimen/_5sdp"
                             android:textColor="@color/txtColor"
                             android:textColorHint="@color/colorC5"
-                            android:textSize="@dimen/_6ssp" />
+                            android:textSize="@dimen/_6mdpi" />
 
                         <androidx.appcompat.widget.AppCompatEditText
                             style="@style/CustomFontSemiBold"
@@ -219,7 +219,7 @@
                             android:hint="@string/_0_00"
                             android:padding="@dimen/_5sdp"
                             android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_6ssp" />
+                            android:textSize="@dimen/_6mdpi" />
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
 

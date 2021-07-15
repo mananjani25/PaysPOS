@@ -37,7 +37,7 @@
                     android:layout_weight="1"
                     android:gravity="center"
                     android:text="@string/add_service_charge"
-                    android:textSize="@dimen/_10ssp" />
+                    android:textSize="@dimen/_10mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtSave"
@@ -51,7 +51,7 @@
                     android:padding="@dimen/_10sdp"
                     android:text="@string/save"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/_12ssp" />
+                    android:textSize="@dimen/_12mdpi" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -91,7 +91,7 @@
                         android:padding="@dimen/_10sdp"
                         android:text="@string/enable_service_charge"
                         android:textColor="@color/viewTextColor"
-                        android:textSize="@dimen/_10ssp" />
+                        android:textSize="@dimen/_10mdpi" />
 
                     <androidx.appcompat.widget.SwitchCompat
                         android:layout_width="wrap_content"
@@ -132,7 +132,7 @@
                             android:padding="@dimen/_10sdp"
                             android:text="@string/service_charge_name"
                             android:textColor="@color/viewTextColor"
-                            android:textSize="@dimen/_10ssp" />
+                            android:textSize="@dimen/_10mdpi" />
 
                         <androidx.appcompat.widget.AppCompatEditText
                             style="@style/CustomFontSemiBold"
@@ -145,7 +145,7 @@
                             android:padding="@dimen/_10sdp"
                             android:textColor="@color/black"
                             android:textColorHint="@color/hintColor"
-                            android:textSize="@dimen/_10ssp" />
+                            android:textSize="@dimen/_10mdpi" />
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -168,7 +168,7 @@
                             android:padding="@dimen/_10sdp"
                             android:text="@string/percentage"
                             android:textColor="@color/viewTextColor"
-                            android:textSize="@dimen/_10ssp" />
+                            android:textSize="@dimen/_10mdpi" />
 
                         <androidx.appcompat.widget.AppCompatEditText
                             style="@style/CustomFontSemiBold"
@@ -184,7 +184,7 @@
                             android:text="0%"
                             android:textColor="@color/black"
                             android:textColorHint="@color/hintColor"
-                            android:textSize="@dimen/_10ssp" />
+                            android:textSize="@dimen/_10mdpi" />
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
 

@@ -26,7 +26,7 @@
         android:padding="@dimen/_2sdp"
         android:text="@string/tap_to_edit"
         android:textColor="@color/txtColor"
-        android:textSize="@dimen/_6ssp" />
+        android:textSize="@dimen/_6mdpi" />
 
 
 </androidx.appcompat.widget.LinearLayoutCompat>

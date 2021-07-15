@@ -44,7 +44,7 @@
                 android:paddingVertical="@dimen/_8sdp"
                 android:text="Take Out"
                 android:textColor="#111214"
-                android:textSize="@dimen/_10ssp" />
+                android:textSize="@dimen/_10mdpi" />
 
 
             <TextView
@@ -61,7 +61,7 @@
                 android:paddingVertical="@dimen/_8sdp"
                 android:text="Dine In"
                 android:textColor="#111214"
-                android:textSize="@dimen/_10ssp" />
+                android:textSize="@dimen/_10mdpi" />
 
 
             <TextView
@@ -78,7 +78,7 @@
                 android:paddingVertical="@dimen/_8sdp"
                 android:text="Open Order"
                 android:textColor="#111214"
-                android:textSize="@dimen/_10ssp" />
+                android:textSize="@dimen/_10mdpi" />
 
         </LinearLayout>
 

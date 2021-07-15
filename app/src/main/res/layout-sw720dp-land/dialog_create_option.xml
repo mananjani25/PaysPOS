@@ -34,7 +34,7 @@
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:text="@string/create_option"
-                android:textSize="@dimen/_7ssp" />
+                android:textSize="@dimen/_7mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtSave"
@@ -51,7 +51,7 @@
                 android:paddingBottom="@dimen/_5sdp"
                 android:text="@string/create"
                 android:textColor="@color/white"
-                android:textSize="@dimen/_7ssp" />
+                android:textSize="@dimen/_7mdpi" />
 
         </RelativeLayout>
 
@@ -87,7 +87,7 @@
                         android:layout_height="wrap_content"
                         android:text=""
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_7ssp" />
+                        android:textSize="@dimen/_7mdpi" />
 
 
                     <androidx.appcompat.widget.AppCompatEditText
@@ -102,7 +102,7 @@
                         android:padding="@dimen/_5sdp"
                         android:textColor="@color/txtColor"
                         android:textColorHint="@color/hintColor"
-                        android:textSize="@dimen/_6ssp" />
+                        android:textSize="@dimen/_6mdpi" />
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -120,7 +120,7 @@
                         android:layout_height="wrap_content"
                         android:text=""
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_7ssp" />
+                        android:textSize="@dimen/_7mdpi" />
 
 
                     <androidx.appcompat.widget.AppCompatEditText
@@ -135,7 +135,7 @@
                         android:padding="@dimen/_5sdp"
                         android:textColor="@color/txtColor"
                         android:textColorHint="@color/hintColor"
-                        android:textSize="@dimen/_6ssp" />
+                        android:textSize="@dimen/_6mdpi" />
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -152,7 +152,7 @@
                         android:layout_marginBottom="@dimen/_5sdp"
                         android:text="@string/options"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_7ssp" />
+                        android:textSize="@dimen/_7mdpi" />
 
 
                     <View
@@ -178,7 +178,7 @@
                             android:padding="@dimen/_5sdp"
                             android:textColor="@color/txtColor"
                             android:textColorHint="@color/colorC5"
-                            android:textSize="@dimen/_6ssp" />
+                            android:textSize="@dimen/_6mdpi" />
 
 
                     </androidx.appcompat.widget.LinearLayoutCompat>

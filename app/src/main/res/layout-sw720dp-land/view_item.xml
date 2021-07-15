@@ -42,7 +42,7 @@
                 android:gravity="start"
                 android:padding="@dimen/_5sdp"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_6ssp"
+                android:textSize="@dimen/_6mdpi"
                 tools:text="@{model.title}" />
 
             <androidx.appcompat.widget.AppCompatTextView

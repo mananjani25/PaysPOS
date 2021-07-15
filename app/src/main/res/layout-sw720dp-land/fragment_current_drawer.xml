@@ -29,7 +29,7 @@
                 android:fontFamily="@font/sf_pro_display_bold"
                 android:text="@string/no_cash_drawer"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_7ssp" />
+                android:textSize="@dimen/_7mdpi" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -38,7 +38,7 @@
                 android:fontFamily="@font/sf_pro_display_regular"
                 android:text="@string/cash_description"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_7ssp" />
+                android:textSize="@dimen/_7mdpi" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -52,7 +52,7 @@
                 android:padding="@dimen/_5sdp"
                 android:text="@string/turn_on_cash_management"
                 android:textColor="@color/txt_color_blue"
-                android:textSize="@dimen/_6ssp" />
+                android:textSize="@dimen/_6mdpi" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -67,7 +67,7 @@
                 android:padding="@dimen/_5sdp"
                 android:text="@string/other_drawers"
                 android:textColor="@color/txt_color_blue"
-                android:textSize="@dimen/_6ssp" />
+                android:textSize="@dimen/_6mdpi" />
         </LinearLayout>
     </ScrollView>
 

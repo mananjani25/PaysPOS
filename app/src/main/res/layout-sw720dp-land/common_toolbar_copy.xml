@@ -45,7 +45,7 @@
                     style="@style/CustomFontMediumStyle"
                     android:text="Team"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_8ssp" />
+                    android:textSize="@dimen/_8mdpi" />
 
                 <ImageView
                     android:id="@+id/imgOptionMenu"
@@ -81,7 +81,7 @@
                     android:gravity="center"
                     android:text="David Miller"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_7ssp"
+                    android:textSize="@dimen/_7mdpi"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/txtHome"
                     app:layout_constraintStart_toStartOf="parent"
@@ -106,7 +106,7 @@
                     android:layout_marginEnd="@dimen/_10sdp"
                     android:text="Home"
                     android:textColor="@color/txt_color_blue"
-                    android:textSize="@dimen/_7ssp"
+                    android:textSize="@dimen/_7mdpi"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/imgOptionMenuContainer"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -119,7 +119,7 @@
                     android:fontFamily="@font/sf_pro_display_semibold"
                     android:text="Set up Item Grid"
                     android:textColor="@color/txt_color_blue"
-                    android:textSize="@dimen/_7ssp"
+                    android:textSize="@dimen/_7mdpi"
                     android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/txtHome"
