@@ -126,6 +126,10 @@
             android:id="@+id/action_inventory_to_createIModifierSet"
             app:destination="@id/createIModifierSet"
             app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_inventory_to_createOption"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:destination="@id/createOption" />
     </fragment>
     <action
         android:id="@+id/action_global_inventory"
@@ -209,7 +213,9 @@
         android:id="@+id/createTeamMember"
         android:name="com.android.pos.ui.fragments.team.CreateTeamMember"
         android:label="CreateTeamMember" />
-    <action android:id="@+id/action_global_createTeamMember" app:destination="@id/createTeamMember" />
+    <action
+        android:id="@+id/action_global_createTeamMember"
+        app:destination="@id/createTeamMember" />
     <fragment
         android:id="@+id/customerReceiptSettings"
         android:name="com.android.pos.ui.fragments.settings.CustomerReceiptSettings"
@@ -217,7 +223,32 @@
     <fragment
         android:id="@+id/kitchenReceiptSettings"
         android:name="com.android.pos.ui.fragments.settings.KitchenReceiptSettings"
-        android:label="KitchenReceiptSettings" />
+        android:label="KitchenReceiptSettings">
+        <action
+            android:id="@+id/action_kitchenReceiptSettings_self"
+            app:destination="@id/kitchenReceiptSettings" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/reports"
+        android:name="com.android.pos.ui.fragments.reports.Reports"
+        android:label="Reports"
+        tools:layout="@layout/fragment_reports">
+        <action
+            android:id="@+id/action_reports_to_dashboardCategory"
+            app:destination="@id/dashboardCategory"
+            app:popUpTo="@id/reports"
+            app:popUpToInclusive="true" />
+
+    </fragment>
+    <action
+        android:id="@+id/action_global_reports"
+        app:destination="@id/reports"
+        app:enterAnim="@anim/nav_default_enter_anim" />
+    <fragment
+        android:id="@+id/createOption"
+        android:name="com.android.pos.ui.fragments.inventory.CreateOption"
+        android:label="CreateOption" />
 
 
 </navigation>

@@ -14,14 +14,53 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white"
         android:layout_marginLeft="@dimen/_15sdp"
         android:layout_marginTop="@dimen/_15sdp"
         android:layout_marginRight="@dimen/_15sdp"
+        android:background="@color/white"
         android:orientation="vertical"
         tools:context=".ui.activity.StartActivity">
 
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="@dimen/_50sdp"
+
+                android:layout_height="@dimen/_50sdp"
+                app:srcCompat="@drawable/group" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/CustomFontSemiBold"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="@dimen/_5sdp"
+                android:gravity="center"
+                android:text="@string/_4_team_members_that_you_manage_at_business_one"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_10ssp" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/CustomFontSemiBold"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="@dimen/_10sdp"
+                android:gravity="center"
+                android:text="@string/select_a_team_member_to_view_details"
+                android:textColor="@color/colorC4"
+                android:textSize="@dimen/_10ssp" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
         <androidx.core.widget.NestedScrollView
+            android:id="@+id/nestedScrollView"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
@@ -54,6 +93,7 @@
                         android:textSize="@dimen/_10ssp" />
 
                     <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtFirstName"
                         style="@style/CustomFontMediumStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -62,7 +102,7 @@
                         android:layout_marginBottom="@dimen/_5sdp"
                         android:text="David"
                         android:textColor="@color/colorB9"
-                        android:textSize="@dimen/_8ssp" />
+                        android:textSize="@dimen/_9ssp" />
 
                     <View
                         android:layout_width="match_parent"
@@ -87,6 +127,7 @@
                         android:textSize="@dimen/_10ssp" />
 
                     <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtLastName"
                         style="@style/CustomFontMediumStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -95,7 +136,7 @@
                         android:layout_marginBottom="@dimen/_5sdp"
                         android:text="Miller"
                         android:textColor="@color/colorB9"
-                        android:textSize="@dimen/_8ssp" />
+                        android:textSize="@dimen/_9ssp" />
 
                     <View
                         android:layout_width="match_parent"
@@ -120,6 +161,7 @@
                         android:textSize="@dimen/_10ssp" />
 
                     <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtEmail"
                         style="@style/CustomFontMediumStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -127,8 +169,8 @@
                         android:layout_marginTop="@dimen/_5sdp"
                         android:layout_marginBottom="@dimen/_5sdp"
                         android:text="david@gmail.com"
-                        android:textColor="@color/colorB9"
-                        android:textSize="@dimen/_8ssp" />
+                        android:textColor="@color/btnColor"
+                        android:textSize="@dimen/_9ssp" />
 
                     <View
                         android:layout_width="match_parent"
@@ -153,6 +195,7 @@
                         android:textSize="@dimen/_10ssp" />
 
                     <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtPhone"
                         style="@style/CustomFontMediumStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -161,7 +204,7 @@
                         android:layout_marginBottom="@dimen/_5sdp"
                         android:text="None"
                         android:textColor="@color/colorB9"
-                        android:textSize="@dimen/_8ssp" />
+                        android:textSize="@dimen/_9ssp" />
 
                     <View
                         android:layout_width="match_parent"
@@ -195,6 +238,7 @@
                         android:textSize="@dimen/_10ssp" />
 
                     <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtJobTitle"
                         style="@style/CustomFontMediumStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -203,7 +247,7 @@
                         android:layout_marginBottom="@dimen/_5sdp"
                         android:text="owner"
                         android:textColor="@color/colorB9"
-                        android:textSize="@dimen/_8ssp" />
+                        android:textSize="@dimen/_9ssp" />
 
                     <View
                         android:layout_width="match_parent"
@@ -228,6 +272,7 @@
                         android:textSize="@dimen/_10ssp" />
 
                     <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtHourlyRate"
                         style="@style/CustomFontMediumStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -236,7 +281,7 @@
                         android:layout_marginBottom="@dimen/_5sdp"
                         android:text="None"
                         android:textColor="@color/colorB9"
-                        android:textSize="@dimen/_8ssp" />
+                        android:textSize="@dimen/_9ssp" />
 
                     <View
                         android:layout_width="match_parent"
@@ -247,7 +292,7 @@
                 </LinearLayout>
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    style="@style/CustomFontRegularStyle"
+                    style="@style/CustomFontSemiBold"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/_10sdp"
@@ -270,6 +315,7 @@
                         android:textSize="@dimen/_10ssp" />
 
                     <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtPermissionSet"
                         style="@style/CustomFontMediumStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -278,7 +324,7 @@
                         android:layout_marginBottom="@dimen/_5sdp"
                         android:text="Owner"
                         android:textColor="@color/colorB9"
-                        android:textSize="@dimen/_8ssp" />
+                        android:textSize="@dimen/_9ssp" />
 
                     <View
                         android:layout_width="match_parent"
@@ -303,6 +349,7 @@
                         android:textSize="@dimen/_10ssp" />
 
                     <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtPersonalPasscode"
                         style="@style/CustomFontMediumStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -311,7 +358,7 @@
                         android:layout_marginBottom="@dimen/_5sdp"
                         android:text="1234"
                         android:textColor="@color/colorB9"
-                        android:textSize="@dimen/_8ssp" />
+                        android:textSize="@dimen/_9ssp" />
 
                     <View
                         android:layout_width="match_parent"
@@ -336,15 +383,16 @@
                         android:textSize="@dimen/_10ssp" />
 
                     <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtLocation"
                         style="@style/CustomFontMediumStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_marginTop="@dimen/_5sdp"
                         android:layout_marginBottom="@dimen/_5sdp"
-                        android:text="All current and future locations"
+                        android:text="@string/all_current_and_future_locations"
                         android:textColor="@color/colorB9"
-                        android:textSize="@dimen/_8ssp" />
+                        android:textSize="@dimen/_9ssp" />
 
                     <View
                         android:layout_width="match_parent"
