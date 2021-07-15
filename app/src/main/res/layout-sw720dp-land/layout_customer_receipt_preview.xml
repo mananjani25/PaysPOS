@@ -14,7 +14,7 @@
         android:padding="@dimen/_5sdp"
         android:text="@string/tv_customer_receipt_preview"
         android:textColor="@color/viewTextColor"
-        android:textSize="@dimen/_8ssp" />
+        android:textSize="@dimen/_8mdpi" />
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -76,7 +76,7 @@
                     android:gravity="center"
                     android:text="www.foodcourt.com"
                     android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_8ssp" />
+                    android:textSize="@dimen/_8mdpi" />
             </androidx.appcompat.widget.LinearLayoutCompat>
 
             <LinearLayout
@@ -345,7 +345,7 @@
                 android:layout_marginBottom="@dimen/_5sdp"
                 android:text="@string/tv_additional_tips"
                 android:textColor="@color/viewTextColor"
-                android:textSize="@dimen/_10ssp" />
+                android:textSize="@dimen/_10mdpi" />
 
             <View
                 android:layout_width="match_parent"
@@ -530,7 +530,7 @@
                 android:layout_marginBottom="@dimen/_5sdp"
                 android:text="@string/tv_customer_details"
                 android:textColor="@color/viewTextColor"
-                android:textSize="@dimen/_10ssp" />
+                android:textSize="@dimen/_10mdpi" />
 
             <View
                 android:layout_width="match_parent"
@@ -552,7 +552,7 @@
                     android:layout_height="wrap_content"
                     android:text="David Miller"
                     android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_10ssp" />
+                    android:textSize="@dimen/_10mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontMediumStyle"
@@ -588,7 +588,7 @@
                     android:gravity="center"
                     android:text="@string/tv_order_note"
                     android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_10ssp" />
+                    android:textSize="@dimen/_10mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontRegularStyle"

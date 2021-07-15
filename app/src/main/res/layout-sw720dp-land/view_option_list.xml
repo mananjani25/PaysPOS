@@ -38,7 +38,7 @@
                 android:padding="@dimen/_6sdp"
                 android:text="@{model.title}"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_6ssp" />
+                android:textSize="@dimen/_6mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
@@ -50,7 +50,7 @@
                 android:padding="@dimen/_5sdp"
                 android:text="@{model.option}"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_6ssp" />
+                android:textSize="@dimen/_6mdpi" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:layout_width="wrap_content"

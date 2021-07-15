@@ -41,7 +41,7 @@
     </style>
 
     <style name="DrawerItem" parent="Widget.AppCompat.ActionButton">
-        <item name="android:textSize">@dimen/_6ssp</item>
+        <item name="android:textSize">@dimen/_6mdpi</item>
         <item name="fontFamily">@font/sf_pro_display_bold</item>
         <item name="android:fontFamily">@font/sf_pro_display_bold</item>
         <item name="android:layout_marginBottom">20dp</item>
@@ -61,13 +61,13 @@
         <item name="tabIndicatorHeight">1dp</item>
         <item name="tabGravity">fill</item>
         <item name="fontFamily">@font/sf_pro_display_medium</item>
-        <item name="android:textSize">@dimen/_6ssp</item>
+        <item name="android:textSize">@dimen/_6mdpi</item>
 
     </style>
 
     <style name="MyTabTextAppearance" parent="TextAppearance.AppCompat">
         <item name="textAllCaps">false</item>
-        <item name="android:textSize">@dimen/_6ssp</item>
+        <item name="android:textSize">@dimen/_6mdpi</item>
         <item name="fontFamily">@font/sf_pro_display_semibold</item>
 
     </style>

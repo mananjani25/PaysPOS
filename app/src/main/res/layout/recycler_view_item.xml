@@ -11,4 +11,4 @@
     app:rightItemColors="@array/rightColors"
     app:rightStrings="@array/rightTexts"
     app:rightTextColors="@array/rightTextColors"
-    app:textSize="@dimen/_8ssp" />
+    app:textSize="@dimen/_8mdpi" />

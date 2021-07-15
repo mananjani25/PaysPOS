@@ -37,7 +37,7 @@
                     android:layout_weight="1"
                     android:gravity="center"
                     android:text="@string/create_discount"
-                    android:textSize="@dimen/_7ssp" />
+                    android:textSize="@dimen/_7mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtSave"
@@ -51,7 +51,7 @@
                     android:padding="@dimen/_5sdp"
                     android:text="@string/save"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/_7ssp" />
+                    android:textSize="@dimen/_7mdpi" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -101,7 +101,7 @@
                                 android:alpha="0.5"
                                 android:text="@string/plus"
                                 android:textColor="@color/color"
-                                android:textSize="@dimen/_10ssp" />
+                                android:textSize="@dimen/_10mdpi" />
 
                         </RelativeLayout>
 
@@ -114,7 +114,7 @@
                             android:gravity="center"
                             android:padding="@dimen/_2sdp"
                             android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_6ssp" />
+                            android:textSize="@dimen/_6mdpi" />
 
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
@@ -143,7 +143,7 @@
                                 android:padding="@dimen/_5sdp"
                                 android:textColor="@color/black"
                                 android:textColorHint="@color/hintColor"
-                                android:textSize="@dimen/_6ssp" />
+                                android:textSize="@dimen/_6mdpi" />
 
                         </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -172,7 +172,7 @@
                                 android:paddingBottom="@dimen/_5sdp"
                                 android:textColor="@color/black"
                                 android:textColorHint="@color/hintColor"
-                                android:textSize="@dimen/_6ssp" />
+                                android:textSize="@dimen/_6mdpi" />
 
                             <androidx.appcompat.widget.SwitchCompat
                                 android:layout_width="wrap_content"
@@ -201,7 +201,7 @@
                     android:padding="@dimen/_5sdp"
                     android:text="@string/leave_the_discount_amount_blank_to_enter_at_the_time_of_sale_n_discount_are_applied_to_the_ticket_before_tax_is_calculated"
                     android:textColor="@color/colorCB"
-                    android:textSize="@dimen/_6ssp"
+                    android:textSize="@dimen/_6mdpi"
                     app:textAllCaps="false" />
 
                 <TextView
@@ -214,7 +214,7 @@
                     android:padding="@dimen/_5sdp"
                     android:text="@string/options"
                     android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_6ssp" />
+                    android:textSize="@dimen/_6mdpi" />
 
 
                 <View
@@ -238,7 +238,7 @@
                         android:padding="@dimen/_5sdp"
                         android:text="@string/apply_discount_after_taxes"
                         android:textColor="@color/viewTextColor"
-                        android:textSize="@dimen/_6ssp" />
+                        android:textSize="@dimen/_6mdpi" />
 
                     <androidx.appcompat.widget.SwitchCompat
                         android:layout_width="wrap_content"
@@ -268,7 +268,7 @@
                     android:padding="@dimen/_5sdp"
                     android:text="@string/this_should_only_be_used_for_manufacture_discount_and_instant_rebates_learn_more"
                     android:textColor="@color/colorCB"
-                    android:textSize="@dimen/_6ssp"
+                    android:textSize="@dimen/_6mdpi"
                     app:textAllCaps="false" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>

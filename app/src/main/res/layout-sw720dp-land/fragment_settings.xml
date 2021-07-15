@@ -46,7 +46,7 @@
                             android:padding="@dimen/_7sdp"
                             android:text="@string/business"
                             android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_6ssp" />
+                            android:textSize="@dimen/_6mdpi" />
 
 
                         <View
@@ -78,7 +78,7 @@
                             android:padding="@dimen/_7sdp"
                             android:text="Hardware"
                             android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_6ssp"
+                            android:textSize="@dimen/_6mdpi"
                             android:textStyle="normal" />
 
                         <View
@@ -95,7 +95,7 @@
                             android:padding="@dimen/_7sdp"
                             android:text="Security"
                             android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_6ssp"
+                            android:textSize="@dimen/_6mdpi"
                             android:textStyle="normal" />
 
                         <View
@@ -111,7 +111,7 @@
                             android:padding="@dimen/_7sdp"
                             android:text="Marketing"
                             android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_6ssp"
+                            android:textSize="@dimen/_6mdpi"
                             android:textStyle="normal" />
 
                         <View
@@ -127,7 +127,7 @@
                             android:padding="@dimen/_7sdp"
                             android:text="Employee"
                             android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_6ssp"
+                            android:textSize="@dimen/_6mdpi"
                             android:textStyle="normal" />
 
                         <View
@@ -143,7 +143,7 @@
                             android:padding="@dimen/_7sdp"
                             android:text="Reports"
                             android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_6ssp"
+                            android:textSize="@dimen/_6mdpi"
                             android:textStyle="normal" />
                         <View
                             android:layout_width="match_parent"

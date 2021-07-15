@@ -45,7 +45,7 @@
                 android:gravity="center"
                 android:text="@string/_4_team_members_that_you_manage_at_business_one"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_7ssp" />
+                android:textSize="@dimen/_7mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
@@ -56,7 +56,7 @@
                 android:gravity="center"
                 android:text="@string/select_a_team_member_to_view_details"
                 android:textColor="@color/colorC4"
-                android:textSize="@dimen/_7ssp" />
+                android:textSize="@dimen/_7mdpi" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -78,7 +78,7 @@
                     android:layout_marginBottom="@dimen/_10sdp"
                     android:text="@string/tv_personal_info"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_8ssp" />
+                    android:textSize="@dimen/_8mdpi" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -92,7 +92,7 @@
                         android:layout_gravity="center"
                         android:text="@string/first_name"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_7ssp" />
+                        android:textSize="@dimen/_7mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtFirstName"
@@ -104,7 +104,7 @@
                         android:layout_marginBottom="@dimen/_3sdp"
                         android:text="David"
                         android:textColor="@color/colorB9"
-                        android:textSize="@dimen/_7ssp" />
+                        android:textSize="@dimen/_7mdpi" />
 
                     <View
                         android:layout_width="match_parent"
@@ -126,7 +126,7 @@
                         android:layout_gravity="center"
                         android:text="@string/last_name"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_7ssp" />
+                        android:textSize="@dimen/_7mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtLastName"
@@ -138,7 +138,7 @@
                         android:layout_marginBottom="@dimen/_3sdp"
                         android:text="Miller"
                         android:textColor="@color/colorB9"
-                        android:textSize="@dimen/_7ssp" />
+                        android:textSize="@dimen/_7mdpi" />
 
                     <View
                         android:layout_width="match_parent"
@@ -160,7 +160,7 @@
                         android:layout_gravity="center"
                         android:text="@string/tv_hint_email"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_7ssp" />
+                        android:textSize="@dimen/_7mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtEmail"
@@ -172,7 +172,7 @@
                         android:layout_marginBottom="@dimen/_3sdp"
                         android:text="david@gmail.com"
                         android:textColor="@color/btnColor"
-                        android:textSize="@dimen/_7ssp" />
+                        android:textSize="@dimen/_7mdpi" />
 
                     <View
                         android:layout_width="match_parent"
@@ -194,7 +194,7 @@
                         android:layout_gravity="center"
                         android:text="@string/phone"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_7ssp" />
+                        android:textSize="@dimen/_7mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtPhone"
@@ -206,7 +206,7 @@
                         android:layout_marginBottom="@dimen/_3sdp"
                         android:text="None"
                         android:textColor="@color/colorB9"
-                        android:textSize="@dimen/_7ssp" />
+                        android:textSize="@dimen/_7mdpi" />
 
                     <View
                         android:layout_width="match_parent"
@@ -223,7 +223,7 @@
                     android:layout_marginBottom="@dimen/_10sdp"
                     android:text="@string/tv_jobs"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_8ssp" />
+                    android:textSize="@dimen/_8mdpi" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -237,7 +237,7 @@
                         android:layout_gravity="center"
                         android:text="@string/tv_primary_job_title"
                         android:textColor="@color/black"
-                        android:textSize="@dimen/_7ssp" />
+                        android:textSize="@dimen/_7mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtJobTitle"
@@ -249,7 +249,7 @@
                         android:layout_marginBottom="@dimen/_3sdp"
                         android:text="owner"
                         android:textColor="@color/colorB9"
-                        android:textSize="@dimen/_7ssp" />
+                        android:textSize="@dimen/_7mdpi" />
 
                     <View
                         android:layout_width="match_parent"
@@ -271,7 +271,7 @@
                         android:layout_gravity="center"
                         android:text="@string/tv_hourly_rate"
                         android:textColor="@color/black"
-                        android:textSize="@dimen/_7ssp" />
+                        android:textSize="@dimen/_7mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtHourlyRate"
@@ -283,7 +283,7 @@
                         android:layout_marginBottom="@dimen/_3sdp"
                         android:text="None"
                         android:textColor="@color/colorB9"
-                        android:textSize="@dimen/_7ssp" />
+                        android:textSize="@dimen/_7mdpi" />
 
                     <View
                         android:layout_width="match_parent"
@@ -300,7 +300,7 @@
                     android:layout_marginBottom="@dimen/_10sdp"
                     android:text="@string/tv_access"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/_8ssp" />
+                    android:textSize="@dimen/_8mdpi" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -314,7 +314,7 @@
                         android:layout_gravity="center"
                         android:text="@string/tv_permission_set"
                         android:textColor="@color/black"
-                        android:textSize="@dimen/_7ssp" />
+                        android:textSize="@dimen/_7mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtPermissionSet"
@@ -326,7 +326,7 @@
                         android:layout_marginBottom="@dimen/_3sdp"
                         android:text="Owner"
                         android:textColor="@color/colorB9"
-                        android:textSize="@dimen/_7ssp" />
+                        android:textSize="@dimen/_7mdpi" />
 
                     <View
                         android:layout_width="match_parent"
@@ -348,7 +348,7 @@
                         android:layout_gravity="center"
                         android:text="@string/tv_personal_passcode"
                         android:textColor="@color/black"
-                        android:textSize="@dimen/_7ssp" />
+                        android:textSize="@dimen/_7mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtPersonalPasscode"
@@ -360,7 +360,7 @@
                         android:layout_marginBottom="@dimen/_3sdp"
                         android:text="1234"
                         android:textColor="@color/colorB9"
-                        android:textSize="@dimen/_7ssp" />
+                        android:textSize="@dimen/_7mdpi" />
 
                     <View
                         android:layout_width="match_parent"
@@ -382,7 +382,7 @@
                         android:layout_gravity="center"
                         android:text="@string/tv_location"
                         android:textColor="@color/black"
-                        android:textSize="@dimen/_7ssp" />
+                        android:textSize="@dimen/_7mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtLocation"
@@ -394,7 +394,7 @@
                         android:layout_marginBottom="@dimen/_3sdp"
                         android:text="@string/all_current_and_future_locations"
                         android:textColor="@color/colorB9"
-                        android:textSize="@dimen/_7ssp" />
+                        android:textSize="@dimen/_7mdpi" />
 
                     <View
                         android:layout_width="match_parent"

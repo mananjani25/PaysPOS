@@ -24,7 +24,7 @@
             android:padding="@dimen/_5sdp"
             android:textColor="@color/black"
             android:textColorHint="@color/hintColor"
-            android:textSize="@dimen/_6ssp" />
+            android:textSize="@dimen/_6mdpi" />
 
         <View
             android:layout_width="match_parent"
@@ -54,7 +54,7 @@
                 android:padding="@dimen/_5sdp"
                 android:text="@string/create_item"
                 android:textColor="@color/btnColor"
-                android:textSize="@dimen/_6ssp"
+                android:textSize="@dimen/_6mdpi"
                 app:textAllCaps="false" />
 
 
