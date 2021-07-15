@@ -232,4 +232,7 @@
     <string name="cash_description">Turn on cash management to track the cash that goes in and out of your drawer.</string>
     <string name="other_drawers">Other Drawers</string>
     <string name="turn_on_cash_management">Turn On Cash Management</string>
+    <string name="sales_summary">Sales Summary: Overview</string>
+    <string name="show_details">Show Details</string>
+    <string name="percantage">-100%</string>
 </resources>

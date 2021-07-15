@@ -36,11 +36,14 @@ class Reports : Fragment() {
 
     }
 
+
     private fun onClick() {
         binding.txtCurrentDrawer.setOnClickListener {
             selectedPosition(0)
         }
         binding.txtSales.setOnClickListener {
+            val frag:Fragment = Sales()
+            loadFragment(frag)
             selectedPosition(1)
         }
         binding.txtShiftReport.setOnClickListener {
