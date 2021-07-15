@@ -180,7 +180,7 @@
                         android:layout_gravity="center"
                         android:text="@string/tv_add_to_inventory"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_12ssp" />
+                        android:textSize="@dimen/_12mdpi" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -202,7 +202,7 @@
                         android:layout_gravity="center"
                         android:text="@string/tv_apply_default_taxes"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_12ssp" />
+                        android:textSize="@dimen/_12mdpi" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -248,7 +248,7 @@
                     android:paddingBottom="@dimen/_15sdp"
                     android:text="@string/tv_add_item"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/_12ssp" />
+                    android:textSize="@dimen/_12mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontBold"
@@ -264,7 +264,7 @@
                     android:paddingBottom="@dimen/_15sdp"
                     android:text="@string/tv_add_create_another"
                     android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_12ssp" />
+                    android:textSize="@dimen/_12mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontBold"
@@ -278,7 +278,7 @@
                     android:paddingBottom="@dimen/_15sdp"
                     android:text="@string/tv_cancel"
                     android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_12ssp" />
+                    android:textSize="@dimen/_12mdpi" />
             </LinearLayout>
         </LinearLayout>
 

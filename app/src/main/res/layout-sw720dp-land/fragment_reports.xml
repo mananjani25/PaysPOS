@@ -33,10 +33,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/sf_pro_display_semibold"
-                    android:padding="@dimen/_10sdp"
+                    android:padding="@dimen/_7sdp"
                     android:text="@string/current_drawer"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_10sdp" />
+                    android:textSize="@dimen/_6sdp" />
 
 
                 <View
@@ -50,10 +50,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/sf_pro_display_semibold"
-                    android:padding="@dimen/_10sdp"
+                    android:padding="@dimen/_7sdp"
                     android:text="@string/sales"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_10sdp" />
+                    android:textSize="@dimen/_6sdp" />
 
                 <View
                     android:layout_width="match_parent"
@@ -66,10 +66,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/sf_pro_display_semibold"
-                    android:padding="@dimen/_10sdp"
+                    android:padding="@dimen/_7sdp"
                     android:text="@string/shift_report"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_10sdp" />
+                    android:textSize="@dimen/_6sdp" />
 
                 <View
                     android:layout_width="match_parent"

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingDefaultResource">
 
@@ -18,8 +17,8 @@
 
             <ImageView
                 android:id="@+id/imgNoMoney"
-                android:layout_width="@dimen/_70sdp"
-                android:layout_height="@dimen/_40sdp"
+                android:layout_width="@dimen/_30sdp"
+                android:layout_height="@dimen/_30sdp"
                 android:layout_gravity="center"
                 android:src="@drawable/no_money" />
 
@@ -30,7 +29,7 @@
                 android:fontFamily="@font/sf_pro_display_bold"
                 android:text="@string/no_cash_drawer"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_12ssp" />
+                android:textSize="@dimen/_7mdpi" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -39,7 +38,7 @@
                 android:fontFamily="@font/sf_pro_display_regular"
                 android:text="@string/cash_description"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_10ssp" />
+                android:textSize="@dimen/_7mdpi" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -47,13 +46,13 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="@dimen/_15sdp"
                 android:background="@drawable/background_drawer_button"
-                android:ems="25"
                 android:fontFamily="@font/sf_pro_display_bold"
                 android:gravity="center"
-                android:padding="@dimen/_10sdp"
+                android:minWidth="@dimen/_180sdp"
+                android:padding="@dimen/_5sdp"
                 android:text="@string/turn_on_cash_management"
                 android:textColor="@color/txt_color_blue"
-                android:textSize="@dimen/_11ssp" />
+                android:textSize="@dimen/_6mdpi" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -62,13 +61,13 @@
                 android:layout_marginTop="@dimen/_10sdp"
                 android:layout_marginBottom="@dimen/_10sdp"
                 android:background="@drawable/background_drawer_button"
-                android:ems="25"
                 android:fontFamily="@font/sf_pro_display_bold"
                 android:gravity="center"
-                android:padding="@dimen/_10sdp"
+                android:minWidth="@dimen/_180sdp"
+                android:padding="@dimen/_5sdp"
                 android:text="@string/other_drawers"
                 android:textColor="@color/txt_color_blue"
-                android:textSize="@dimen/_11ssp" />
+                android:textSize="@dimen/_6mdpi" />
         </LinearLayout>
     </ScrollView>
 

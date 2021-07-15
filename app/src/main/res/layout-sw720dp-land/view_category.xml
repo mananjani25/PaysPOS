@@ -37,7 +37,7 @@
                 android:layout_weight="1"
                 android:gravity="start"
                 android:textColor="@color/viewTextColor"
-                android:textSize="@dimen/_8ssp"
+                android:textSize="@dimen/_6mdpi"
                 tools:text="@{model.category}" />
 
             <androidx.appcompat.widget.AppCompatImageView

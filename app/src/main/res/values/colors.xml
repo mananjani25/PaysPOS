@@ -33,7 +33,7 @@
     <color name="color65">#656565</color>
     <color name="dashBackground">#F3F4F6</color>
     <color name="txt_color_blue">#007AFF</color>
-    
+
     <color name="colorDashBack">#F3F4F6</color>
     <color name="drawerBack">#292E32</color>
 
@@ -41,7 +41,6 @@
     <color name="txtColorGray">#F8F8F8</color>
 
     <color name="txtColorItem">#7B7B7B</color>
-
 
     <color name="drawerItemUnselected">#8D8D8D</color>
     <color name="drawerItemSelected">#DDDDDD</color>
@@ -51,6 +50,12 @@
     <color name="colorAB">#ABABAB</color>
     <color name="color13">#131416</color>
 
+    <color name="color25">#999999</color>
+
+    <color name="colorRed">#E30000</color>
+
     <color name="dividerColor">#41414117</color>
     <color name="colorC4">#C4C4C4</color>
+    <color name="colorE3">#E3E3E4</color>
+    <color name="colorF0">#F0F1F3</color>
 </resources>

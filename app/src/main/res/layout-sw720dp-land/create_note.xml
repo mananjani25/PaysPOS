@@ -35,7 +35,7 @@
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:text="@string/create_note"
-                android:textSize="@dimen/_10ssp" />
+                android:textSize="@dimen/_7mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtSave"
@@ -52,7 +52,7 @@
                 android:paddingBottom="@dimen/_10sdp"
                 android:text="@string/create"
                 android:textColor="@color/white"
-                android:textSize="@dimen/_10ssp"
+                android:textSize="@dimen/_7mdpi"
                  />
 
         </RelativeLayout>
@@ -78,7 +78,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/note_title"
-                android:textSize="@dimen/_10ssp" />
+                android:textSize="@dimen/_6mdpi" />
 
 
             <androidx.appcompat.widget.AppCompatEditText
@@ -93,7 +93,7 @@
                 android:padding="@dimen/_10sdp"
                 android:textColor="@color/txtColor"
                 android:textColorHint="@color/hintColor"
-                android:textSize="@dimen/_10ssp" />
+                android:textSize="@dimen/_6mdpi" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 

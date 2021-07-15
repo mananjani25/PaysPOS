@@ -22,21 +22,20 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="start"
-            android:layout_marginStart="@dimen/_20sdp"
-            android:layout_marginEnd="@dimen/_30sdp"
             android:layout_weight="1"
             android:gravity="start"
-            android:paddingTop="@dimen/_10sdp"
+            android:paddingTop="@dimen/_7sdp"
             android:paddingEnd="@dimen/_20sdp"
-            android:paddingBottom="@dimen/_10sdp"
+            android:paddingStart="@dimen/_20sdp"
+            android:paddingBottom="@dimen/_7sdp"
             android:text="@{model.title}"
             android:textColor="@{model.selected ? @color/white : @color/txtColor}"
-            android:textSize="@dimen/_8ssp" />
+            android:textSize="@dimen/_6mdpi" />
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/dividerColor" />
+            android:background="@color/colorF0" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 </layout>

@@ -93,7 +93,7 @@
                 android:layout_marginRight="@dimen/_5sdp"
                 android:text="@string/tv_info_provider"
                 android:textColor="@color/hint_color"
-                android:textSize="@dimen/_12ssp" />
+                android:textSize="@dimen/_12mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
@@ -105,7 +105,7 @@
                 android:gravity="bottom|center"
                 android:text="@string/tv_pos_2021"
                 android:textColor="@color/black"
-                android:textSize="@dimen/_12ssp" />
+                android:textSize="@dimen/_12mdpi" />
 
         </LinearLayout>
 

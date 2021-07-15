@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import com.android.pos.R
 import com.android.pos.data.model.responseModel.EmployeeResponse
 import com.android.pos.databinding.FragmentTeamDetailsBinding
+import com.android.pos.utils.AlertUtils
 
 class TeamDetails : Fragment() {
 
@@ -47,7 +48,7 @@ class TeamDetails : Fragment() {
         binding.txtFirstName.text = model?.firstName
         binding.txtLastName.text = model?.lastName
         binding.txtEmail.text = model?.email
-        binding.txtPhone.text = model?.phoneNumber
+        binding.txtPhone.text = model?.phoneNumber?.let { AlertUtils.usNumberFormat(it) }
         binding.txtPersonalPasscode.text = model?.passcode
     }
 

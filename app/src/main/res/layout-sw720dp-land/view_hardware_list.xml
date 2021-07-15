@@ -35,10 +35,10 @@
                 android:layout_marginStart="@dimen/_5sdp"
                 android:layout_weight="1"
                 android:gravity="start"
-                android:padding="@dimen/_10sdp"
+                android:padding="@dimen/_5sdp"
                 android:text="@{model.title}"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_10ssp" />
+                android:textSize="@dimen/_7mdpi" />
 
 
             <androidx.appcompat.widget.AppCompatImageView

@@ -48,7 +48,7 @@
                 android:padding="@dimen/_10sdp"
                 android:text="@string/save"
                 android:textColor="@color/white"
-                android:textSize="@dimen/_10ssp" />
+                android:textSize="@dimen/_10mdpi" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -98,7 +98,7 @@
             android:text="@string/take_photo"
             android:textColor="@color/btnColor"
             android:textColorHint="@color/hintColor"
-            android:textSize="@dimen/_12ssp"
+            android:textSize="@dimen/_12mdpi"
             app:textAllCaps="false" />
 
         <androidx.appcompat.widget.AppCompatTextView

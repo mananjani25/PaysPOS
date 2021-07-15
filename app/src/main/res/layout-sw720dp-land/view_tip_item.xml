@@ -32,7 +32,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:padding="@dimen/_10sdp"
+                android:padding="@dimen/_5sdp"
                 app:srcCompat="@drawable/ic_check_box" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -43,10 +43,10 @@
                 android:layout_marginStart="@dimen/_5sdp"
                 android:layout_weight="1"
                 android:gravity="start"
-                android:padding="@dimen/_10sdp"
+                android:padding="@dimen/_5sdp"
                 android:text="@{model.name}"
                 android:textColor="@color/color65"
-                android:textSize="@dimen/_12ssp" />
+                android:textSize="@dimen/_6mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
@@ -58,7 +58,7 @@
                 android:padding="@dimen/_10sdp"
                 android:text="@{model.discountPercentage}"
                 android:textColor="@color/color96"
-                android:textSize="@dimen/_12ssp" />
+                android:textSize="@dimen/_6mdpi" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:layout_width="wrap_content"

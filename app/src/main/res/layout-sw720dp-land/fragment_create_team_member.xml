@@ -27,7 +27,6 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/_5sdp"
-                android:padding="@dimen/_5sdp"
                 android:src="@drawable/ic_cancel_black" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -36,12 +35,12 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_margin="@dimen/_5sdp"
                 android:layout_weight="1"
                 android:gravity="center"
+                android:padding="@dimen/_3sdp"
                 android:text="@string/tv_create_team_member"
                 android:textColor="@color/viewTextColor"
-                android:textSize="@dimen/_10ssp" />
+                android:textSize="@dimen/_7mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/btnSave"
@@ -51,12 +50,12 @@
                 android:background="@drawable/bg_button_border"
                 android:gravity="center"
                 android:paddingLeft="@dimen/_30sdp"
-                android:paddingTop="@dimen/_8ssp"
+                android:paddingTop="@dimen/_5ssp"
                 android:paddingRight="@dimen/_30sdp"
-                android:paddingBottom="@dimen/_8ssp"
+                android:paddingBottom="@dimen/_5ssp"
                 android:text="@string/save"
                 android:textColor="@color/white"
-                android:textSize="@dimen/_10ssp" />
+                android:textSize="@dimen/_7mdpi" />
         </LinearLayout>
 
         <View
@@ -67,9 +66,10 @@
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginLeft="@dimen/_15sdp"
+            android:layout_marginLeft="@dimen/_50sdp"
             android:layout_marginTop="@dimen/_15sdp"
-            android:layout_marginRight="@dimen/_15sdp">
+            android:layout_marginBottom="@dimen/_15sdp"
+            android:layout_marginRight="@dimen/_50sdp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -98,7 +98,7 @@
                             android:layout_marginBottom="@dimen/_3sdp"
                             android:text="@string/first_name"
                             android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_8ssp" />
+                            android:textSize="@dimen/_6mdpi" />
 
                         <androidx.appcompat.widget.AppCompatEditText
                             style="@style/CustomFontSemiBold"
@@ -109,10 +109,10 @@
                             android:hint="@string/first_name"
                             android:imeOptions="actionNext"
                             android:inputType="textCapWords"
-                            android:padding="@dimen/_8ssp"
+                            android:padding="@dimen/_5sdp"
                             android:textColor="@color/txtColor"
                             android:textColorHint="@color/hint_color_"
-                            android:textSize="@dimen/_8ssp" />
+                            android:textSize="@dimen/_6sdp" />
 
                     </LinearLayout>
 
@@ -131,7 +131,7 @@
                             android:layout_marginBottom="@dimen/_3sdp"
                             android:text="@string/last_name"
                             android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_8ssp" />
+                            android:textSize="@dimen/_6sdp" />
 
                         <androidx.appcompat.widget.AppCompatEditText
                             style="@style/CustomFontSemiBold"
@@ -142,10 +142,10 @@
                             android:hint="@string/last_name"
                             android:imeOptions="actionNext"
                             android:inputType="textCapWords"
-                            android:padding="@dimen/_8sdp"
+                            android:padding="@dimen/_5sdp"
                             android:textColor="@color/txtColor"
                             android:textColorHint="@color/hint_color_"
-                            android:textSize="@dimen/_8ssp" />
+                            android:textSize="@dimen/_6sdp" />
 
                     </LinearLayout>
                 </LinearLayout>
@@ -153,7 +153,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_8ssp"
+                    android:layout_marginTop="@dimen/_5sdp"
                     android:orientation="vertical">
 
                     <androidx.appcompat.widget.AppCompatTextView
@@ -164,7 +164,7 @@
                         android:layout_marginBottom="@dimen/_3sdp"
                         android:text="@string/tv_hint_email"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_8ssp" />
+                        android:textSize="@dimen/_6sdp" />
 
                     <androidx.appcompat.widget.AppCompatEditText
                         style="@style/CustomFontSemiBold"
@@ -175,21 +175,21 @@
                         android:hint="@string/tv_hint_email"
                         android:imeOptions="actionNext"
                         android:inputType="textCapWords"
-                        android:padding="@dimen/_8sdp"
+                        android:padding="@dimen/_5sdp"
                         android:textColor="@color/txtColor"
                         android:textColorHint="@color/hint_color_"
-                        android:textSize="@dimen/_8ssp" />
+                        android:textSize="@dimen/_6sdp" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontRegularStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:padding="@dimen/_5sdp"
+                        android:padding="@dimen/_8sdp"
                         android:gravity="center"
                         android:text="@string/tv_info_email"
                         android:textColor="@color/colorCB"
-                        android:textSize="@dimen/_8ssp" />
+                        android:textSize="@dimen/_6sdp" />
 
                 </LinearLayout>
 
@@ -197,7 +197,6 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_8ssp"
                     android:orientation="vertical">
 
                     <androidx.appcompat.widget.AppCompatTextView
@@ -208,7 +207,7 @@
                         android:layout_marginBottom="@dimen/_3sdp"
                         android:text="@string/phone"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_8ssp" />
+                        android:textSize="@dimen/_6sdp" />
 
                     <androidx.appcompat.widget.AppCompatEditText
                         style="@style/CustomFontSemiBold"
@@ -219,21 +218,21 @@
                         android:hint="@string/phone"
                         android:imeOptions="actionNext"
                         android:inputType="textCapWords"
-                        android:padding="@dimen/_8sdp"
+                        android:padding="@dimen/_5sdp"
                         android:textColor="@color/txtColor"
                         android:textColorHint="@color/hint_color_"
-                        android:textSize="@dimen/_8ssp" />
+                        android:textSize="@dimen/_6sdp" />
 
                 </LinearLayout>
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
-                    android:layout_marginTop="@dimen/_8ssp"
-                    android:layout_marginBottom="@dimen/_8ssp"
+                    android:layout_marginTop="@dimen/_15sdp"
                     android:background="@color/gray_rect" />
 
                 <LinearLayout
+
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@color/white"
@@ -252,7 +251,7 @@
                             android:layout_weight="1"
                             android:text="@string/tv_primary_job_title"
                             android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_8ssp" />
+                            android:textSize="@dimen/_6sdp" />
 
                         <androidx.appcompat.widget.AppCompatTextView
                             style="@style/CustomFontSemiBold"
@@ -261,12 +260,12 @@
                             android:layout_gravity="center"
                             android:text="@string/tv_add_job_title"
                             android:textColor="@color/cool_grey"
-                            android:textSize="@dimen/_8ssp" />
+                            android:textSize="@dimen/_6sdp" />
 
                         <androidx.appcompat.widget.AppCompatImageView
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:padding="@dimen/_5sdp"
+                            android:layout_height="wrap_content"
                             android:src="@drawable/ic_arrow_right" />
                     </LinearLayout>
                 </LinearLayout>
@@ -274,8 +273,6 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
-                    android:layout_marginTop="@dimen/_8ssp"
-                    android:layout_marginBottom="@dimen/_8ssp"
                     android:background="@color/gray_rect" />
 
                 <LinearLayout
@@ -297,7 +294,7 @@
                             android:layout_weight="1"
                             android:text="@string/tv_hourly_rate"
                             android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_8ssp" />
+                            android:textSize="@dimen/_6sdp" />
 
                         <androidx.appcompat.widget.AppCompatTextView
                             style="@style/CustomFontSemiBold"
@@ -305,16 +302,15 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:text="None"
+                            android:padding="@dimen/_5sdp"
                             android:textColor="@color/cool_grey"
-                            android:textSize="@dimen/_8ssp" />
+                            android:textSize="@dimen/_6sdp" />
                     </LinearLayout>
                 </LinearLayout>
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
-                    android:layout_marginTop="@dimen/_8ssp"
-                    android:layout_marginBottom="@dimen/_8ssp"
                     android:background="@color/gray_rect" />
 
                 <LinearLayout
@@ -336,7 +332,7 @@
                             android:layout_weight="1"
                             android:text="@string/tv_permission_set"
                             android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_8ssp" />
+                            android:textSize="@dimen/_6sdp" />
 
                         <androidx.appcompat.widget.AppCompatTextView
                             style="@style/CustomFontSemiBold"
@@ -345,7 +341,7 @@
                             android:layout_gravity="center"
                             android:text="@string/tv_team_permissions"
                             android:textColor="@color/cool_grey"
-                            android:textSize="@dimen/_8ssp" />
+                            android:textSize="@dimen/_6sdp" />
 
                         <androidx.appcompat.widget.AppCompatImageView
                             android:layout_width="wrap_content"
@@ -359,8 +355,6 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
-                    android:layout_marginTop="@dimen/_8ssp"
-                    android:layout_marginBottom="@dimen/_8ssp"
                     android:background="@color/gray_rect" />
 
                 <LinearLayout
@@ -382,7 +376,7 @@
                             android:layout_weight="1"
                             android:text="@string/tv_personal_passcode"
                             android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_8ssp" />
+                            android:textSize="@dimen/_6sdp" />
 
                         <androidx.appcompat.widget.AppCompatTextView
                             style="@style/CustomFontSemiBold"
@@ -390,16 +384,15 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:text="6548"
+                            android:padding="@dimen/_5sdp"
                             android:textColor="@color/cool_grey"
-                            android:textSize="@dimen/_8ssp" />
+                            android:textSize="@dimen/_6sdp" />
                     </LinearLayout>
                 </LinearLayout>
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
-                    android:layout_marginTop="@dimen/_8ssp"
-                    android:layout_marginBottom="@dimen/_8ssp"
                     android:background="@color/gray_rect" />
 
                 <LinearLayout
@@ -421,7 +414,7 @@
                             android:layout_weight="1"
                             android:text="@string/tv_location"
                             android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_8ssp" />
+                            android:textSize="@dimen/_6sdp" />
 
                         <androidx.appcompat.widget.AppCompatTextView
                             style="@style/CustomFontSemiBold"
@@ -430,7 +423,7 @@
                             android:layout_gravity="center"
                             android:text="Quick Net Soft"
                             android:textColor="@color/cool_grey"
-                            android:textSize="@dimen/_8ssp" />
+                            android:textSize="@dimen/_6sdp" />
 
                         <androidx.appcompat.widget.AppCompatImageView
                             android:layout_width="wrap_content"
@@ -444,8 +437,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
-                    android:layout_marginTop="@dimen/_8ssp"
-                    android:layout_marginBottom="@dimen/_8ssp"
+                    android:layout_marginBottom="@dimen/_8sdp"
                     android:background="@color/gray_rect" />
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>

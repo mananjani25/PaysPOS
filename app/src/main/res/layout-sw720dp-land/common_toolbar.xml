@@ -29,7 +29,7 @@
         android:fontFamily="@font/sf_pro_display_medium"
         android:text="Team"
         android:textColor="@color/txtColor"
-        android:textSize="@dimen/_12ssp"
+        android:textSize="@dimen/_12mdpi"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/imgDrawer"
         app:layout_constraintTop_toTopOf="parent" />
@@ -64,7 +64,7 @@
         android:fontFamily="@font/sf_pro_display_medium"
         android:text="David Miller"
         android:textColor="@color/txtColor"
-        android:textSize="@dimen/_12ssp"
+        android:textSize="@dimen/_12mdpi"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/txtHome"
         app:layout_constraintStart_toEndOf="@+id/viewLineVertical"
@@ -90,7 +90,7 @@
         android:fontFamily="@font/sf_pro_display_semibold"
         android:text="Home"
         android:textColor="@color/txt_color_blue"
-        android:textSize="@dimen/_10ssp"
+        android:textSize="@dimen/_10mdpi"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/imgOptionMenuContainer"
         app:layout_constraintTop_toTopOf="parent" />

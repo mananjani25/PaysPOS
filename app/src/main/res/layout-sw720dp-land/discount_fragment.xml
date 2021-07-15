@@ -31,10 +31,10 @@
                 android:layout_marginBottom="@dimen/_20sdp"
                 android:background="@drawable/bg_button_border_gray"
                 android:gravity="center"
-                android:padding="@dimen/_8sdp"
+                android:padding="@dimen/_5sdp"
                 android:text="@string/tv_create_discount"
                 android:textColor="@color/btnColor"
-                android:textSize="@dimen/_10ssp"
+                android:textSize="@dimen/_6mdpi"
                 app:textAllCaps="false" />
 
 

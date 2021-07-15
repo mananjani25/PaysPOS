@@ -28,10 +28,10 @@
                 android:layout_weight="1"
                 android:fontFamily="@font/sf_pro_display_regular"
                 android:gravity="start"
-                android:padding="@dimen/_10sdp"
+                android:padding="@dimen/_5sdp"
                 android:text="@string/lock_screen_after_each_transaction"
                 android:textColor="@color/viewTextColor"
-                android:textSize="@dimen/_10ssp" />
+                android:textSize="@dimen/_7mdpi" />
 
             <androidx.appcompat.widget.SwitchCompat
                 android:layout_width="wrap_content"
@@ -39,7 +39,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_gravity="center"
                 android:checked="true"
-                android:padding="@dimen/_10sdp"
+                android:padding="@dimen/_5sdp"
                 app:thumbTint="@color/btnColor"
                 app:trackTint="@color/colorE2" />
         </androidx.appcompat.widget.LinearLayoutCompat>

@@ -7,17 +7,17 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/dashBackground">
+        android:background="@color/colorF4">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewItemsList"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginStart="@dimen/_5sdp"
-            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_5sdp"
             app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
             app:layout_constraintTop_toTopOf="parent"
-            app:spanCount="5"
+            app:spanCount="6"
             tools:listitem="@layout/view_dashboard_item" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -24,7 +24,7 @@
             android:paddingBottom="@dimen/_3sdp"
             android:text="@{model.title}"
             android:textColor="@{model.selected ? @color/txt_color_blue:@color/color65}"
-            android:textSize="@dimen/_8ssp" />
+            android:textSize="@dimen/_6mdpi" />
 
     </LinearLayout>
 </layout>

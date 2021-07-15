@@ -16,7 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="@dimen/_10sdp">
+        android:padding="@dimen/_5sdp">
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="0dp"
@@ -31,7 +31,7 @@
                 android:layout_gravity="center"
                 android:gravity="start"
                 android:textColor="@color/viewTextColor"
-                android:textSize="@dimen/_10ssp"
+                android:textSize="@dimen/_6mdpi"
                 tools:text="Image one" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -41,7 +41,7 @@
                 android:layout_gravity="center"
                 android:gravity="start"
                 android:textColor="@color/colorCB"
-                android:textSize="@dimen/_10ssp"
+                android:textSize="@dimen/_6mdpi"
                 tools:text="Image one" />
         </androidx.appcompat.widget.LinearLayoutCompat>
 
