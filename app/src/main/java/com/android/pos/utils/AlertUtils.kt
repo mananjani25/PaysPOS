@@ -8,12 +8,14 @@ import android.content.Intent
 import android.graphics.Typeface
 import android.net.Uri
 import android.os.Build
+import android.telephony.PhoneNumberUtils
 import android.util.TypedValue
 import android.view.ViewGroup
 import android.widget.*
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import com.android.pos.R
+import java.util.*
 
 
 /**
@@ -384,5 +386,13 @@ object AlertUtils {
 
     fun isEmailValid(email: String): Boolean {
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    }
+
+    fun usNumberFormat(phone: String): String? {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            PhoneNumberUtils.formatNumber(phone, Locale.getDefault().country);
+        } else {
+            PhoneNumberUtils.formatNumber(phone);
+        }
     }
 }

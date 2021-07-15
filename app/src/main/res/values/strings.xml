@@ -238,4 +238,11 @@
     <string name="sales_summary">Sales Summary: Overview</string>
     <string name="show_details">Show Details</string>
     <string name="percantage">-100%</string>
+    <string name="option_set">Option Set</string>
+    <string name="option_set_title">Option set title</string>
+    <string name="display_name">Display name</string>
+    <string name="scan_barcode_or_search">Scan barcode or search</string>
+    <string name="take_out">Take Out</string>
+    <string name="dine_in">Dine In</string>
+    <string name="open_order">Open Order</string>
 </resources>
