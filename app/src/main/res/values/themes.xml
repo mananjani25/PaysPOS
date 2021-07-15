@@ -15,19 +15,19 @@
 
     </style>
 
-    <style name="CustomFontRegularStyle" parent="@android:style/TextAppearance.Medium">
+    <style name="CustomFontRegularStyle" parent="TextAppearance.AppCompat">
         <item name="android:fontFamily">@font/sf_pro_display_regular</item>
     </style>
 
-    <style name="CustomFontMediumStyle" parent="@android:style/TextAppearance.Medium">
+    <style name="CustomFontMediumStyle" parent="TextAppearance.AppCompat">
         <item name="android:fontFamily">@font/sf_pro_display_medium</item>
     </style>
 
-    <style name="CustomFontSemiBold" parent="@android:style/TextAppearance.Medium">
+    <style name="CustomFontSemiBold" parent="TextAppearance.AppCompat">
         <item name="android:fontFamily">@font/sf_pro_display_semibold</item>
     </style>
 
-    <style name="CustomFontBold" parent="@android:style/TextAppearance.Medium">
+    <style name="CustomFontBold" parent="TextAppearance.AppCompat">
         <item name="android:fontFamily">@font/sf_pro_display_bold</item>
     </style>
 
