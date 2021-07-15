@@ -43,7 +43,7 @@
                     android:layout_weight="1"
                     android:gravity="center"
                     android:text="@string/create_category"
-                    android:textSize="@dimen/_10ssp" />
+                    android:textSize="@dimen/_7ssp" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontSemiBold"
@@ -55,10 +55,10 @@
                     android:onClick="@{() -> createCategoryViewModel.submit()}"
                     android:background="@color/btnColor"
                     android:gravity="center"
-                    android:padding="@dimen/_10sdp"
+                    android:padding="@dimen/_5sdp"
                     android:text="@string/save"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/_10ssp" />
+                    android:textSize="@dimen/_7ssp" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -79,11 +79,11 @@
                 android:layout_marginBottom="@dimen/_10sdp"
                 android:background="@drawable/edt_border_light_gray"
                 android:hint="@string/add_category_name"
-                android:padding="@dimen/_10sdp"
+                android:padding="@dimen/_5sdp"
                 android:textColor="@color/black"
                 android:text="@={createCategoryViewModel.categoryDetails.categoryName}"
                 android:textColorHint="@color/hintColor"
-                android:textSize="@dimen/_10ssp" />
+                android:textSize="@dimen/_6ssp" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontMediumStyle"
@@ -96,7 +96,7 @@
                 android:text="@string/assign_item_to_category"
                 android:textColor="@color/txtColor"
                 android:textColorHint="@color/hintColor"
-                android:textSize="@dimen/_9ssp"
+                android:textSize="@dimen/_6ssp"
                 app:textAllCaps="true" />
 
             <androidx.recyclerview.widget.RecyclerView

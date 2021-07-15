@@ -48,7 +48,7 @@
                     android:gravity="center"
                     android:text="@string/create_item"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_12ssp" />
+                    android:textSize="@dimen/_7ssp" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtSave"
@@ -61,12 +61,12 @@
                     android:gravity="center"
                     android:onClick="@{() -> createItemVewModel.submit()}"
                     android:paddingStart="@dimen/_15sdp"
-                    android:paddingTop="@dimen/_10sdp"
+                    android:paddingTop="@dimen/_5sdp"
                     android:paddingEnd="@dimen/_15sdp"
-                    android:paddingBottom="@dimen/_10sdp"
+                    android:paddingBottom="@dimen/_5sdp"
                     android:text="@string/save"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/_12ssp" />
+                    android:textSize="@dimen/_7ssp" />
 
             </RelativeLayout>
 
@@ -86,8 +86,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginTop="@dimen/_20sdp"
-                    android:layout_marginBottom="@dimen/_20sdp"
+                    android:layout_marginTop="@dimen/_15sdp"
+                    android:layout_marginBottom="@dimen/_15sdp"
                     android:background="@drawable/edt_border_light_gray"
                     android:orientation="vertical">
 
@@ -96,8 +96,8 @@
                         android:layout_height="wrap_content">
 
                         <androidx.appcompat.widget.AppCompatImageView
-                            android:layout_width="@dimen/_60sdp"
-                            android:layout_height="@dimen/_45sdp"
+                            android:layout_width="@dimen/_40sdp"
+                            android:layout_height="@dimen/_30sdp"
                             android:layout_gravity="center"
                             android:background="@color/boxColor"
                             android:padding="@dimen/_10sdp" />
@@ -109,7 +109,7 @@
                             android:alpha="0.5"
                             android:text="@string/plus"
                             android:textColor="@color/color"
-                            android:textSize="@dimen/_14ssp" />
+                            android:textSize="@dimen/_6ssp" />
 
                     </RelativeLayout>
 
@@ -123,7 +123,7 @@
                         android:padding="@dimen/_2sdp"
                         android:text="@string/tap_to_edit"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_9ssp" />
+                        android:textSize="@dimen/_6ssp" />
 
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
@@ -134,7 +134,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_50sdp"
-                android:layout_marginTop="@dimen/_10sdp"
                 android:layout_marginEnd="@dimen/_50sdp"
                 android:layout_marginBottom="@dimen/_10sdp"
                 android:background="@color/white"
@@ -149,11 +148,11 @@
                     android:hint="@string/name"
                     android:imeOptions="actionNext"
                     android:inputType="textCapWords"
-                    android:padding="@dimen/_10sdp"
+                    android:padding="@dimen/_5sdp"
                     android:text="@={createItemVewModel.itemDetails.itemName}"
                     android:textColor="@color/black"
                     android:textColorHint="@color/hintColor"
-                    android:textSize="@dimen/_10ssp" />
+                    android:textSize="@dimen/_6ssp" />
 
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
@@ -171,7 +170,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:padding="@dimen/_10sdp">
+                        android:padding="@dimen/_5sdp">
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -183,7 +182,7 @@
                             android:gravity="start"
                             android:text="@string/select_category"
                             android:textColor="@color/viewTextColor"
-                            android:textSize="@dimen/_10ssp" />
+                            android:textSize="@dimen/_6ssp" />
 
                         <androidx.appcompat.widget.AppCompatImageView
                             android:layout_width="wrap_content"
@@ -206,10 +205,10 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:padding="@dimen/_10sdp"
+                        android:padding="@dimen/_5sdp"
                         android:text="@string/options"
                         android:textColor="@color/viewTextColor"
-                        android:textSize="@dimen/_10ssp" />
+                        android:textSize="@dimen/_6ssp" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontBold"
@@ -220,10 +219,10 @@
                         android:layout_marginBottom="@dimen/_5sdp"
                         android:background="@drawable/bg_button_border_gray"
                         android:gravity="center"
-                        android:padding="@dimen/_10sdp"
+                        android:padding="@dimen/_5sdp"
                         android:text="@string/add_options"
                         android:textColor="@color/btnColor"
-                        android:textSize="@dimen/_10ssp"
+                        android:textSize="@dimen/_6ssp"
                         app:textAllCaps="false" />
 
                     <androidx.appcompat.widget.AppCompatTextView
@@ -232,10 +231,10 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:gravity="center"
-                        android:padding="@dimen/_10sdp"
+                        android:padding="@dimen/_5sdp"
                         android:text="@string/add_a_custom_set_of_options_to_an_item_to_create_variations_learn_more"
                         android:textColor="@color/colorCB"
-                        android:textSize="@dimen/_10ssp"
+                        android:textSize="@dimen/_6ssp"
                         app:textAllCaps="false" />
 
                     <androidx.appcompat.widget.AppCompatTextView
@@ -243,10 +242,10 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:padding="@dimen/_10sdp"
+                        android:padding="@dimen/_5sdp"
                         android:text="@string/price_and_inventory"
                         android:textColor="@color/viewTextColor"
-                        android:textSize="@dimen/_10ssp" />
+                        android:textSize="@dimen/_6ssp" />
 
                     <View
                         android:layout_width="match_parent"
@@ -259,7 +258,7 @@
                         android:layout_gravity="center"
                         android:gravity="center"
                         android:orientation="horizontal"
-                        android:padding="@dimen/_10sdp">
+                        android:padding="@dimen/_5sdp">
 
                         <androidx.appcompat.widget.AppCompatTextView
                             style="@style/CustomFontSemiBold"
@@ -270,7 +269,7 @@
                             android:gravity="start"
                             android:text="@string/unit_type"
                             android:textColor="@color/viewTextColor"
-                            android:textSize="@dimen/_10ssp" />
+                            android:textSize="@dimen/_6ssp" />
 
                         <androidx.appcompat.widget.AppCompatTextView
                             style="@style/CustomFontMediumStyle"
@@ -279,14 +278,13 @@
                             android:layout_gravity="center"
                             android:text="@string/per_item"
                             android:textColor="@color/colorC5"
-                            android:textSize="@dimen/_10ssp" />
+                            android:textSize="@dimen/_6ssp" />
 
                         <androidx.appcompat.widget.AppCompatImageView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:layout_marginStart="@dimen/_5sdp"
-                            android:layout_marginTop="@dimen/_2sdp"
                             android:layout_marginEnd="@dimen/_5sdp"
                             android:gravity="center"
                             app:srcCompat="@drawable/ic_arrow_forward" />
@@ -305,10 +303,10 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:gravity="center"
-                    android:padding="@dimen/_10sdp"
+                    android:padding="@dimen/_5sdp"
                     android:text="@string/choose_between_selling_whole_or_decimal_quantities_for_the_item_learn_more"
                     android:textColor="@color/colorCB"
-                    android:textSize="@dimen/_10ssp"
+                    android:textSize="@dimen/_6ssp"
                     app:textAllCaps="false" />
 
                 <androidx.appcompat.widget.LinearLayoutCompat
@@ -328,10 +326,10 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:layout_weight="1"
-                            android:padding="@dimen/_10sdp"
+                            android:padding="@dimen/_5sdp"
                             android:text="@string/price"
                             android:textColor="@color/viewTextColor"
-                            android:textSize="@dimen/_10ssp" />
+                            android:textSize="@dimen/_6ssp" />
 
                         <androidx.appcompat.widget.AppCompatEditText
                             style="@style/CustomFontSemiBold"
@@ -341,11 +339,11 @@
                             android:hint="$0.0"
                             android:imeOptions="actionNext"
                             android:inputType="numberDecimal"
-                            android:padding="@dimen/_10sdp"
+                            android:padding="@dimen/_5sdp"
                             android:text="@={``+createItemVewModel.itemDetails.price}"
                             android:textColor="@color/black"
                             android:textColorHint="@color/hintColor"
-                            android:textSize="@dimen/_10ssp" />
+                            android:textSize="@dimen/_6ssp" />
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -365,10 +363,10 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:layout_weight="1"
-                            android:padding="@dimen/_10sdp"
+                            android:padding="@dimen/_5sdp"
                             android:text="@string/sku"
                             android:textColor="@color/viewTextColor"
-                            android:textSize="@dimen/_10ssp" />
+                            android:textSize="@dimen/_6ssp" />
 
                         <androidx.appcompat.widget.AppCompatEditText
                             style="@style/CustomFontSemiBold"
@@ -378,11 +376,11 @@
                             android:hint="$0.0"
                             android:imeOptions="actionNext"
                             android:inputType="text"
-                            android:padding="@dimen/_10sdp"
+                            android:padding="@dimen/_5sdp"
                             android:text="@={createItemVewModel.itemDetails.sku}"
                             android:textColor="@color/black"
                             android:textColorHint="@color/hintColor"
-                            android:textSize="@dimen/_10ssp" />
+                            android:textSize="@dimen/_6ssp" />
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -402,20 +400,20 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:layout_weight="1"
-                            android:padding="@dimen/_10sdp"
+                            android:padding="@dimen/_5sdp"
                             android:text="@string/stock"
                             android:textColor="@color/viewTextColor"
-                            android:textSize="@dimen/_10ssp" />
+                            android:textSize="@dimen/_6ssp" />
 
                         <androidx.appcompat.widget.AppCompatTextView
                             style="@style/CustomFontBold"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:imeOptions="actionNext"
-                            android:padding="@dimen/_10sdp"
+                            android:padding="@dimen/_5sdp"
                             android:text="@string/receive_stock"
                             android:textColor="@color/btnColor"
-                            android:textSize="@dimen/_10ssp" />
+                            android:textSize="@dimen/_6ssp" />
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -430,10 +428,10 @@
                     android:layout_marginBottom="@dimen/_5sdp"
                     android:background="@drawable/bg_button_border_gray"
                     android:gravity="center"
-                    android:padding="@dimen/_10sdp"
+                    android:padding="@dimen/_5sdp"
                     android:text="@string/add_variation"
                     android:textColor="@color/btnColor"
-                    android:textSize="@dimen/_10ssp"
+                    android:textSize="@dimen/_6ssp"
                     app:textAllCaps="false" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -442,10 +440,10 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:gravity="center"
-                    android:padding="@dimen/_10sdp"
+                    android:padding="@dimen/_5sdp"
                     android:text="@string/leave_the_price_blank_to_enter_at_the_time_of_sale"
                     android:textColor="@color/colorCB"
-                    android:textSize="@dimen/_10ssp"
+                    android:textSize="@dimen/_6ssp"
                     app:textAllCaps="false" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -453,16 +451,17 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:padding="@dimen/_10sdp"
+                    android:padding="@dimen/_5sdp"
                     android:text="@string/modifier_sets"
                     android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_10ssp" />
+                    android:textSize="@dimen/_6ssp" />
 
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/_10sdp"
+                    tools:itemCount="2"
                     tools:listitem="@layout/view_modifier_sets" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -470,10 +469,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:padding="@dimen/_10sdp"
+                    android:padding="@dimen/_5sdp"
                     android:text="@string/description"
                     android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_10ssp" />
+                    android:textSize="@dimen/_6ssp" />
 
                 <androidx.appcompat.widget.AppCompatEditText
                     style="@style/CustomFontMediumStyle"
@@ -485,11 +484,11 @@
                     android:hint="@string/description"
                     android:inputType="textMultiLine"
                     android:minLines="3"
-                    android:padding="@dimen/_10sdp"
+                    android:padding="@dimen/_5sdp"
                     android:text="@={createItemVewModel.itemDetails.description}"
                     android:textColor="@color/black"
                     android:textColorHint="@color/hintColor"
-                    android:textSize="@dimen/_10ssp" />
+                    android:textSize="@dimen/_6ssp" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
