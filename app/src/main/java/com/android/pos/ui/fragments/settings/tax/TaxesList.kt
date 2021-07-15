@@ -19,7 +19,7 @@ import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class Taxes : Fragment() {
+class TaxesList : Fragment() {
 
     private lateinit var binding: FragmentTaxesBinding
     private val viewModel by viewModels<TaxListViewModel>()

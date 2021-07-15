@@ -7,8 +7,8 @@
     <data>
 
         <variable
-            name="model"
-            type="com.android.pos.data.model.DiscountListModel" />
+            name="tipModel"
+            type="com.android.pos.data.model.responseModel.GetTipReponse.Data" />
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat
@@ -44,7 +44,7 @@
                 android:layout_weight="1"
                 android:gravity="start"
                 android:padding="@dimen/_5sdp"
-                android:text="@{model.name}"
+                android:text="@{tipModel.name}"
                 android:textColor="@color/color65"
                 android:textSize="@dimen/_6mdpi" />
 
@@ -56,7 +56,7 @@
                 android:layout_marginStart="@dimen/_5sdp"
                 android:gravity="start"
                 android:padding="@dimen/_10sdp"
-                android:text="@{model.discountPercentage}"
+                android:text="@{``+tipModel.rate}"
                 android:textColor="@color/color96"
                 android:textSize="@dimen/_6mdpi" />
 

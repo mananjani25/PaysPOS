@@ -12,8 +12,8 @@ import com.android.pos.data.model.BusinessSettingModel
 import com.android.pos.databinding.FragmentSettingsBinding
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.BusinessSettingAdapter
-import com.android.pos.ui.fragments.settings.tax.Taxes
-import com.android.pos.ui.fragments.settings.tip.Tips
+import com.android.pos.ui.fragments.settings.tax.TaxesList
+import com.android.pos.ui.fragments.settings.tip.TipsList
 import com.android.pos.utils.extensions.styleBold
 import com.android.pos.utils.extensions.styleNormal
 
@@ -143,7 +143,7 @@ class Settings : Fragment() {
         list.add(BusinessSettingModel(0, "Discount", false))
         list.add(BusinessSettingModel(0, "Notes", false))
         list.add(BusinessSettingModel(0, "Service Charge", false))
-        val taxFrag: Fragment = Taxes()
+        val taxFrag: Fragment = TaxesList()
         loadFragment(taxFrag)
         binding.commonToolbar.txtSubTitle.setText("Taxes")
 
@@ -154,14 +154,14 @@ class Settings : Fragment() {
                 when (pos) {
                     0 -> {
                         binding.commonToolbar.txtSubTitle.setText("Taxes")
-                        val taxFrag: Fragment = Taxes()
+                        val taxFrag: Fragment = TaxesList()
                         loadFragment(taxFrag)
 
 
                     }
                     1 -> {
                         binding.commonToolbar.txtSubTitle.setText("Tips")
-                        val tips: Fragment = Tips()
+                        val tips: Fragment = TipsList()
                         loadFragment(tips)
 
                     }

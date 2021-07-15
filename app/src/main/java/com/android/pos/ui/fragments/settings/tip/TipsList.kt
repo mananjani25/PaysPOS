@@ -9,18 +9,21 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.model.DiscountListModel
+import com.android.pos.data.model.responseModel.GetTipReponse
 import com.android.pos.databinding.FragmentTipsBinding
 import com.android.pos.ui.adapter.DiscountListAdapter
+import com.android.pos.ui.adapter.TipsListAdapter
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class Tips : Fragment() {
+class TipsList : Fragment() {
 
     private lateinit var binding: FragmentTipsBinding
     private val viewModel by viewModels<TipListViewModel>()
+    private lateinit var adapter: TipsListAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -30,7 +33,7 @@ class Tips : Fragment() {
         binding = FragmentTipsBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
 
-       // setUpRecyclerView()
+        setUpRecyclerView()
         getTipListObserver()
         return binding.root
     }
@@ -43,10 +46,10 @@ class Tips : Fragment() {
         }
     }
 
-   /* private fun setUpRecyclerView() {
-        adapter = TaxListAdapter()
+    private fun setUpRecyclerView() {
+        adapter = TipsListAdapter()
         binding.rvTipList.adapter = adapter
-    }*/
+    }
 
     private fun getTipListObserver() {
         viewModel.getTipList.observe(viewLifecycleOwner, {
@@ -57,7 +60,7 @@ class Tips : Fragment() {
                     Status.SUCCESS -> {
                         ProgressUtils.dismissProgressDialog()
                         binding.rvTipList.visibility = View.VISIBLE
-                      /*  resource.data?.let { taxList -> setTaxData(taxList) }*/
+                        resource.data?.let { tipList -> setTipData(tipList.data) }
                     }
                     Status.ERROR -> {
                         ProgressUtils.dismissProgressDialog()
@@ -73,13 +76,13 @@ class Tips : Fragment() {
         })
     }
 
-   /* private fun setTaxData(taxList: List<GetTaxResponse.Data>) {
+    private fun setTipData(tipList: List<GetTipReponse.Data>) {
 
         adapter.apply {
-            addTaxes(taxList)
+            addTips(tipList)
             notifyDataSetChanged()
         }
-    }*/
+    }
 
     private fun setAdapter() {
         var list: ArrayList<DiscountListModel> = arrayListOf()
