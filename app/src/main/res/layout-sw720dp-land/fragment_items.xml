@@ -24,7 +24,7 @@
             android:padding="@dimen/_5sdp"
             android:textColor="@color/black"
             android:textColorHint="@color/hintColor"
-            android:textSize="@dimen/_10ssp" />
+            android:textSize="@dimen/_6ssp" />
 
         <View
             android:layout_width="match_parent"
@@ -47,14 +47,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginTop="@dimen/_20sdp"
-                android:layout_marginBottom="@dimen/_20sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginBottom="@dimen/_10sdp"
                 android:background="@drawable/bg_button_border_gray"
                 android:gravity="center"
-                android:padding="@dimen/_8sdp"
+                android:padding="@dimen/_5sdp"
                 android:text="@string/create_item"
                 android:textColor="@color/btnColor"
-                android:textSize="@dimen/_8ssp"
+                android:textSize="@dimen/_6ssp"
                 app:textAllCaps="false" />
 
 

@@ -34,7 +34,7 @@
                 android:id="@+id/rvEmployeeList"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="0.28"
+                android:layout_weight="0.25"
                 android:orientation="vertical"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/view_team_item" />
@@ -50,7 +50,7 @@
                 android:id="@+id/frameContainer"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="0.72" />
+                android:layout_weight="0.75" />
         </LinearLayout>
     </RelativeLayout>
 
