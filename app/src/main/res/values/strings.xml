@@ -251,4 +251,6 @@
     <string name="take_out">Take Out</string>
     <string name="dine_in">Dine In</string>
     <string name="open_order">Open Order</string>
+    <string name="products">Products</string>
+    <string name="keypad">Keypad</string>
 </resources>

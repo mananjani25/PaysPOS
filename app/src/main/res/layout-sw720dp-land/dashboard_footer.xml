@@ -47,7 +47,7 @@
                     android:fontFamily="@font/sf_pro_display_medium"
                     android:text="Checkout"
                     android:textColor="@color/txt_color_blue"
-                    android:textSize="@dimen/_8ssp" />
+                    android:textSize="@dimen/_8mdpi" />
             </LinearLayout>
 
             <LinearLayout
@@ -71,7 +71,7 @@
                     android:fontFamily="@font/sf_pro_display_medium"
                     android:text="Transactions"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_8ssp" />
+                    android:textSize="@dimen/_8mdpi" />
             </LinearLayout>
 
             <LinearLayout
@@ -95,7 +95,7 @@
                     android:fontFamily="@font/sf_pro_display_medium"
                     android:text="Notification"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_8ssp" />
+                    android:textSize="@dimen/_8mdpi" />
             </LinearLayout>
 
             <LinearLayout
@@ -119,7 +119,7 @@
                     android:fontFamily="@font/sf_pro_display_medium"
                     android:text="More"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_8ssp" />
+                    android:textSize="@dimen/_8mdpi" />
             </LinearLayout>
 
 

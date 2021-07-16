@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/dashboardCategoryNew">
+    app:startDestination="@id/login">
 
 
     <fragment
@@ -19,7 +19,7 @@
             app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_login_to_dashboardCategory"
-            app:destination="@id/dashboardCategory"
+            app:destination="@id/dashboardCategoryNew"
             app:popUpTo="@id/login"
             app:popUpToInclusive="true" />
     </fragment>
@@ -35,7 +35,7 @@
             app:enterAnim="@anim/nav_default_enter_anim" />
         <action
             android:id="@+id/action_clockInOwner_to_dashboardCategory"
-            app:destination="@id/dashboardCategory"
+            app:destination="@id/dashboardCategoryNew"
             app:enterAnim="@anim/nav_default_enter_anim" />
         <action
             android:id="@+id/action_clockInOwner_to_scheduledShifts"
@@ -116,7 +116,7 @@
             app:enterAnim="@anim/nav_default_enter_anim" />
         <action
             android:id="@+id/action_inventory_to_dashboardCategory"
-            app:destination="@id/dashboardCategory"
+            app:destination="@id/dashboardCategoryNew"
             app:popUpTo="@id/inventory"
             app:popUpToInclusive="true" />
         <action
@@ -150,7 +150,7 @@
         app:enterAnim="@anim/nav_default_enter_anim" />
     <action
         android:id="@+id/action_global_dashboardCategory"
-        app:destination="@id/dashboardCategory"
+        app:destination="@id/dashboardCategoryNew"
         app:enterAnim="@anim/nav_default_enter_anim" />
     <fragment
         android:id="@+id/createDiscount"
@@ -164,7 +164,7 @@
         tools:layout="@layout/fragment_settings">
         <action
             android:id="@+id/action_settings_to_dashboardCategory"
-            app:destination="@id/dashboardCategory"
+            app:destination="@id/dashboardCategoryNew"
             app:popUpTo="@id/settings"
             app:popUpToInclusive="true" />
         <action
@@ -241,7 +241,7 @@
         tools:layout="@layout/fragment_reports">
         <action
             android:id="@+id/action_reports_to_dashboardCategory"
-            app:destination="@id/dashboardCategory"
+            app:destination="@id/dashboardCategoryNew"
             app:popUpTo="@id/reports"
             app:popUpToInclusive="true" />
 
@@ -258,7 +258,12 @@
         android:id="@+id/dashboardCategoryNew"
         tools:layout="@layout/fragment_dashboard_category_new"
         android:name="com.android.pos.ui.fragments.dashboard.DashboardCategoryNew"
-        android:label="DashboardCategoryNew" />
+        android:label="DashboardCategoryNew" >
+        <action
+            android:id="@+id/action_dashboardCategoryNew_to_createItem"
+            app:destination="@id/createItem"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+    </fragment>
 
 
 </navigation>
