@@ -61,6 +61,15 @@ class CreateTax : Fragment() {
             }
         })
 
+        viewModel.data.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    findNavController().navigateUp()
+                }
+            }
+        })
+
+
     }
 
     /*private fun navigate() {

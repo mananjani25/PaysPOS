@@ -43,10 +43,10 @@
                 android:layout_marginStart="@dimen/_5sdp"
                 android:layout_weight="1"
                 android:gravity="start"
-                android:padding="@dimen/_8sdp"
+                android:padding="@dimen/_5sdp"
                 android:text="@{taxModel.name}"
                 android:textColor="@color/color65"
-                android:textSize="@dimen/_8ssp" />
+                android:textSize="@dimen/_6mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
@@ -55,10 +55,10 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/_5sdp"
                 android:gravity="start"
-                android:padding="@dimen/_8sdp"
-                android:text="@{``+taxModel.rate}"
+                android:padding="@dimen/_5sdp"
+                android:text="@{``+taxModel.rate+`%`}"
                 android:textColor="@color/color96"
-                android:textSize="@dimen/_8ssp" />
+                android:textSize="@dimen/_6mdpi" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:layout_width="wrap_content"
