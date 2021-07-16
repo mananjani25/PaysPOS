@@ -9,11 +9,14 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
+import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentLoginBinding
+import com.android.pos.di.PrefProvider
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class LoginFragment : Fragment() {
@@ -23,13 +26,22 @@ class LoginFragment : Fragment() {
 
     private val viewModel by viewModels<LoginViewModel>()
 
+
+    @Inject lateinit var prefProvider: PrefProvider
+
+
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
 
-        findNavController().navigate(R.id.action_login_to_dashboardCategory)
+
+        if (!prefProvider.getValue(Constants.AUTH_TOKEN, "").toString().isEmpty()) {
+            findNavController().navigate(R.id.action_login_to_dashboardCategory)
+        }
+        // findNavController().navigate(R.id.action_login_to_dashboardCategory)
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_login, container, false)
 
         binding.lifecycleOwner = this

@@ -132,6 +132,7 @@
 
                         <androidx.appcompat.widget.AppCompatTextView
                             style="@style/CustomFontSemiBold"
+                            android:layout_weight="1"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
@@ -149,7 +150,11 @@
                             android:gravity="end"
                             android:imeOptions="actionNext"
                             android:inputType="textCapWords"
-                            android:padding="@dimen/_5sdp"
+                            android:hint="Sales Tax"
+                            android:paddingStart="@dimen/_20sdp"
+                            android:paddingTop="@dimen/_5sdp"
+                            android:paddingEnd="@dimen/_20sdp"
+                            android:paddingBottom="@dimen/_5sdp"
                             android:text="@={viewModel.createTaxDetails.name}"
                             android:textColor="@color/black"
                             android:textColorHint="@color/hintColor"
@@ -169,6 +174,7 @@
 
                         <androidx.appcompat.widget.AppCompatTextView
                             style="@style/CustomFontSemiBold"
+                            android:layout_weight="1"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
@@ -184,6 +190,7 @@
                             android:layout_weight="1"
                             android:background="@null"
                             android:gravity="end"
+                            android:hint="0%"
                             android:imeOptions="actionDone"
                             android:inputType="numberDecimal"
                             android:paddingStart="@dimen/_20sdp"
