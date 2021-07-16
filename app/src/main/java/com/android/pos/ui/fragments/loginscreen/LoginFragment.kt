@@ -16,6 +16,7 @@ import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class LoginFragment : Fragment() {
@@ -24,7 +25,8 @@ class LoginFragment : Fragment() {
     private lateinit var binding: FragmentLoginBinding
 
     private val viewModel by viewModels<LoginViewModel>()
-    private lateinit var prefProvider: PrefProvider
+    @Inject
+    lateinit var prefProvider: PrefProvider
 
     override fun onCreateView(
         inflater: LayoutInflater,
