@@ -63,7 +63,7 @@ class TaxesList : Fragment() {
     private fun setUpRecyclerView() {
         binding.rvTaxList.adapter = taxListadapter
 
-        /*object : SwipeHelper(activity, binding.rvTaxList) {
+        object : SwipeHelper(activity, binding.rvTaxList) {
             override fun instantiateUnderlayButton(
                 viewHolder: RecyclerView.ViewHolder?,
                 underlayButtons: MutableList<UnderlayButton?>
@@ -96,7 +96,7 @@ class TaxesList : Fragment() {
 
                 })
             }
-        }*/
+        }
     }
 
 
@@ -153,6 +153,7 @@ class TaxesList : Fragment() {
             event.getContentIfNotHandled()?.let {
                 AlertUtils.showAlert(requireActivity(), it.message)
                 taxListUpdateDelete.remove(taxObject)
+                taxListadapter.addTaxes(taxListUpdateDelete)
                 taxListadapter.notifyItemRemoved(position)
                 taxListadapter.notifyItemRangeChanged(position, taxListUpdateDelete.size)
             }
