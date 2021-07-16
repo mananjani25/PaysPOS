@@ -20,7 +20,7 @@
             android:padding="@dimen/_5sdp"
             android:text="Extra Spycies"
             android:textColor="@color/viewTextColor"
-            android:textSize="@dimen/_9ssp" />
+            android:textSize="@dimen/_6mdpi" />
 
         <androidx.appcompat.widget.AppCompatTextView
             style="@style/CustomFontBold"
@@ -30,7 +30,7 @@
             android:padding="@dimen/_5sdp"
             android:text="$1.99"
             android:textColor="@color/viewTextColor"
-            android:textSize="@dimen/_9ssp" />
+            android:textSize="@dimen/_6mdpi" />
 
     </LinearLayout>
 

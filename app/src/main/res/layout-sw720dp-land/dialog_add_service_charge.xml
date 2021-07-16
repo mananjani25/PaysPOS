@@ -37,7 +37,7 @@
                     android:layout_weight="1"
                     android:gravity="center"
                     android:text="@string/add_service_charge"
-                    android:textSize="@dimen/_10mdpi" />
+                    android:textSize="@dimen/_7mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtSave"
@@ -48,10 +48,10 @@
                     android:layout_weight="0.1"
                     android:background="@color/btnColor"
                     android:gravity="center"
-                    android:padding="@dimen/_10sdp"
+                    android:padding="@dimen/_5sdp"
                     android:text="@string/save"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/_12mdpi" />
+                    android:textSize="@dimen/_7mdpi" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -88,10 +88,10 @@
                         android:elevation="@dimen/_10sdp"
                         android:fontFamily="@font/sf_pro_display_semibold"
                         android:gravity="start"
-                        android:padding="@dimen/_10sdp"
+                        android:padding="@dimen/_5sdp"
                         android:text="@string/enable_service_charge"
                         android:textColor="@color/viewTextColor"
-                        android:textSize="@dimen/_10mdpi" />
+                        android:textSize="@dimen/_7mdpi" />
 
                     <androidx.appcompat.widget.SwitchCompat
                         android:layout_width="wrap_content"
@@ -99,7 +99,7 @@
                         android:layout_alignParentEnd="true"
                         android:layout_gravity="center"
                         android:checked="true"
-                        android:padding="@dimen/_10sdp"
+                        android:padding="@dimen/_5sdp"
                         app:srcCompat="@drawable/ic_arrow_forward"
                         app:thumbTint="@color/btnColor"
                         app:trackTint="@color/colorE2" />
@@ -129,10 +129,10 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:layout_weight="1"
-                            android:padding="@dimen/_10sdp"
+                            android:padding="@dimen/_5sdp"
                             android:text="@string/service_charge_name"
                             android:textColor="@color/viewTextColor"
-                            android:textSize="@dimen/_10mdpi" />
+                            android:textSize="@dimen/_6mdpi" />
 
                         <androidx.appcompat.widget.AppCompatEditText
                             style="@style/CustomFontSemiBold"
@@ -142,10 +142,10 @@
                             android:hint="@string/service_charge"
                             android:imeOptions="actionNext"
                             android:inputType="number"
-                            android:padding="@dimen/_10sdp"
+                            android:padding="@dimen/_5sdp"
                             android:textColor="@color/black"
                             android:textColorHint="@color/hintColor"
-                            android:textSize="@dimen/_10mdpi" />
+                            android:textSize="@dimen/_6mdpi" />
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -165,10 +165,10 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:layout_weight="1"
-                            android:padding="@dimen/_10sdp"
+                            android:padding="@dimen/_5sdp"
                             android:text="@string/percentage"
                             android:textColor="@color/viewTextColor"
-                            android:textSize="@dimen/_10mdpi" />
+                            android:textSize="@dimen/_6mdpi" />
 
                         <androidx.appcompat.widget.AppCompatEditText
                             style="@style/CustomFontSemiBold"
@@ -178,13 +178,13 @@
                             android:imeOptions="actionNext"
                             android:inputType="number"
                             android:paddingStart="@dimen/_20sdp"
-                            android:paddingTop="@dimen/_10sdp"
+                            android:paddingTop="@dimen/_5sdp"
                             android:paddingEnd="@dimen/_20sdp"
-                            android:paddingBottom="@dimen/_10sdp"
+                            android:paddingBottom="@dimen/_5sdp"
                             android:text="0%"
                             android:textColor="@color/black"
                             android:textColorHint="@color/hintColor"
-                            android:textSize="@dimen/_10mdpi" />
+                            android:textSize="@dimen/_6mdpi" />
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
 

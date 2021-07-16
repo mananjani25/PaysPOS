@@ -7,14 +7,14 @@
     android:orientation="vertical"
     tools:ignore="MissingDefaultResource">
 
-    <androidx.appcompat.widget.AppCompatTextView
-        style="@style/CustomFontSemiBold"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="@dimen/_5sdp"
-        android:text="@string/tv_customer_receipt_preview"
-        android:textColor="@color/viewTextColor"
-        android:textSize="@dimen/_8mdpi" />
+        <androidx.appcompat.widget.AppCompatTextView
+            style="@style/CustomFontSemiBold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/_5sdp"
+            android:text="@string/tv_customer_receipt_preview"
+            android:textColor="@color/viewTextColor"
+            android:textSize="@dimen/_6mdpi" />
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -47,7 +47,7 @@
                     android:gravity="center"
                     android:text="@string/tv_food_cafe"
                     android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_14ssp" />
+                    android:textSize="@dimen/_7mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontSemiBold"
@@ -56,7 +56,7 @@
                     android:gravity="center"
                     android:text="7450 DW 51 FH AT,Suite 503"
                     android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_9ssp" />
+                    android:textSize="@dimen/_6mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontBold"
@@ -66,7 +66,7 @@
                     android:gravity="center"
                     android:text="(635)987-3354"
                     android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_9ssp" />
+                    android:textSize="@dimen/_7mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontMediumStyle"
@@ -76,7 +76,7 @@
                     android:gravity="center"
                     android:text="www.foodcourt.com"
                     android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_8mdpi" />
+                    android:textSize="@dimen/_6mdpi" />
             </androidx.appcompat.widget.LinearLayoutCompat>
 
             <LinearLayout
@@ -95,7 +95,7 @@
                     android:layout_marginLeft="@dimen/_3sdp"
                     android:text="Order ID: ORD564454"
                     android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_9ssp" />
+                    android:textSize="@dimen/_6mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontSemiBold"
@@ -106,7 +106,7 @@
                     android:gravity="end"
                     android:text="Receipt ID: REC87564454"
                     android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_9ssp" />
+                    android:textSize="@dimen/_6mdpi" />
             </LinearLayout>
 
             <LinearLayout
@@ -123,7 +123,7 @@
                     android:layout_marginLeft="@dimen/_3sdp"
                     android:text="Employee: David Miller"
                     android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_9ssp" />
+                    android:textSize="@dimen/_6mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontSemiBold"
@@ -134,7 +134,7 @@
                     android:gravity="end"
                     android:text="29-Apr-2021 07:15 PM"
                     android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_9ssp" />
+                    android:textSize="@dimen/_6mdpi" />
             </LinearLayout>
 
             <View
@@ -147,7 +147,7 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_margin="@dimen/_10sdp"
+                android:layout_margin="@dimen/_5sdp"
                 tools:itemCount="1"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/view_receipt_item_name" />
@@ -165,7 +165,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/tv_sub_total"
                     android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_9ssp" />
+                    android:textSize="@dimen/_6mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontSemiBold"
@@ -175,7 +175,7 @@
                     android:gravity="end"
                     android:text="$9.99"
                     android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_9ssp" />
+                    android:textSize="@dimen/_6mdpi" />
             </LinearLayout>
 
             <LinearLayout
@@ -191,7 +191,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/tv_refund_amount"
                     android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_9ssp" />
+                    android:textSize="@dimen/_6mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontSemiBold"
@@ -201,7 +201,7 @@
                     android:gravity="end"
                     android:text="$2.99"
                     android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_9ssp" />
+                    android:textSize="@dimen/_6mdpi" />
             </LinearLayout>
 
 
@@ -218,7 +218,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/tv_service_charge"
                     android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_9ssp" />
+                    android:textSize="@dimen/_6mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontSemiBold"
@@ -228,7 +228,7 @@
                     android:gravity="end"
                     android:text="$9.99"
                     android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_9ssp" />
+                    android:textSize="@dimen/_6mdpi" />
             </LinearLayout>
 
             <LinearLayout
@@ -244,7 +244,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/tv_total_discount"
                     android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_9ssp" />
+                    android:textSize="@dimen/_6mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontSemiBold"
@@ -254,7 +254,7 @@
                     android:gravity="end"
                     android:text="$9.99"
                     android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_9ssp" />
+                    android:textSize="@dimen/_6mdpi" />
             </LinearLayout>
 
             <LinearLayout
@@ -270,7 +270,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/tv_cash_discount"
                     android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_9ssp" />
+                    android:textSize="@dimen/_6mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontSemiBold"
@@ -280,7 +280,7 @@
                     android:gravity="end"
                     android:text="$9.99"
                     android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_9ssp" />
+                    android:textSize="@dimen/_6mdpi" />
             </LinearLayout>
 
             <LinearLayout
@@ -296,7 +296,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/tv_total_price"
                     android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_9ssp" />
+                    android:textSize="@dimen/_6mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontSemiBold"
@@ -306,7 +306,7 @@
                     android:gravity="end"
                     android:text="$9.99"
                     android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_9ssp" />
+                    android:textSize="@dimen/_6mdpi" />
             </LinearLayout>
 
             <LinearLayout
@@ -322,7 +322,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/tv_change_amount"
                     android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_9ssp" />
+                    android:textSize="@dimen/_6mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontSemiBold"
@@ -332,7 +332,7 @@
                     android:gravity="end"
                     android:text="$9.99"
                     android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_9ssp" />
+                    android:textSize="@dimen/_6mdpi" />
             </LinearLayout>
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -340,12 +340,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/_7sdp"
-                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_5sdp"
                 android:layout_marginRight="@dimen/_7sdp"
                 android:layout_marginBottom="@dimen/_5sdp"
                 android:text="@string/tv_additional_tips"
                 android:textColor="@color/viewTextColor"
-                android:textSize="@dimen/_10mdpi" />
+                android:textSize="@dimen/_7mdpi" />
 
             <View
                 android:layout_width="match_parent"
@@ -366,7 +366,7 @@
                     android:layout_marginLeft="@dimen/_3sdp"
                     android:text="Entertainment(4.00%)"
                     android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_9ssp" />
+                    android:textSize="@dimen/_6mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontSemiBold"
@@ -377,7 +377,7 @@
                     android:gravity="end"
                     android:text="$9.99"
                     android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_9ssp" />
+                    android:textSize="@dimen/_6mdpi" />
             </LinearLayout>
 
             <LinearLayout
@@ -394,7 +394,7 @@
                     android:layout_marginLeft="@dimen/_3sdp"
                     android:text="Name"
                     android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_9ssp" />
+                    android:textSize="@dimen/_6mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontSemiBold"
@@ -405,7 +405,7 @@
                     android:gravity="end"
                     android:text="$9.99"
                     android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_9ssp" />
+                    android:textSize="@dimen/_6mdpi" />
             </LinearLayout>
 
             <LinearLayout
@@ -422,7 +422,7 @@
                     android:layout_marginLeft="@dimen/_3sdp"
                     android:text="@string/tv_tips"
                     android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_9ssp" />
+                    android:textSize="@dimen/_6mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontSemiBold"
@@ -433,7 +433,7 @@
                     android:gravity="end"
                     android:text="$9.99"
                     android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_9ssp" />
+                    android:textSize="@dimen/_6mdpi" />
             </LinearLayout>
 
             <LinearLayout
@@ -450,7 +450,7 @@
                     android:layout_marginLeft="@dimen/_3sdp"
                     android:text="@string/tv_total"
                     android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_9ssp" />
+                    android:textSize="@dimen/_6mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontSemiBold"
@@ -461,7 +461,7 @@
                     android:gravity="end"
                     android:text="$9.99"
                     android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_9ssp" />
+                    android:textSize="@dimen/_6mdpi" />
             </LinearLayout>
 
             <LinearLayout
@@ -478,7 +478,7 @@
                     android:layout_marginLeft="@dimen/_3sdp"
                     android:text="@string/tv_transaction_id"
                     android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_9ssp" />
+                    android:textSize="@dimen/_6mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontSemiBold"
@@ -489,7 +489,7 @@
                     android:gravity="end"
                     android:text="$9.99"
                     android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_9ssp" />
+                    android:textSize="@dimen/_6mdpi" />
             </LinearLayout>
 
             <LinearLayout
@@ -506,7 +506,7 @@
                     android:layout_marginLeft="@dimen/_3sdp"
                     android:text="@string/tv_transaction_type"
                     android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_9ssp" />
+                    android:textSize="@dimen/_6mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontSemiBold"
@@ -517,7 +517,7 @@
                     android:gravity="end"
                     android:text="$9.99"
                     android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_9ssp" />
+                    android:textSize="@dimen/_6mdpi" />
             </LinearLayout>
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -525,12 +525,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/_7sdp"
-                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_5sdp"
                 android:layout_marginRight="@dimen/_7sdp"
                 android:layout_marginBottom="@dimen/_5sdp"
                 android:text="@string/tv_customer_details"
                 android:textColor="@color/viewTextColor"
-                android:textSize="@dimen/_10mdpi" />
+                android:textSize="@dimen/_7mdpi" />
 
             <View
                 android:layout_width="match_parent"
@@ -552,7 +552,7 @@
                     android:layout_height="wrap_content"
                     android:text="David Miller"
                     android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_10mdpi" />
+                    android:textSize="@dimen/_7mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontMediumStyle"
@@ -561,7 +561,7 @@
                     android:layout_gravity="end"
                     android:text="(635)987-3354"
                     android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_9ssp" />
+                    android:textSize="@dimen/_6mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontMediumStyle"
@@ -569,7 +569,7 @@
                     android:layout_height="wrap_content"
                     android:text="7450 DW 51 FH AT,Suite 503"
                     android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_9ssp" />
+                    android:textSize="@dimen/_6mdpi" />
             </LinearLayout>
 
             <LinearLayout
@@ -588,7 +588,7 @@
                     android:gravity="center"
                     android:text="@string/tv_order_note"
                     android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_10mdpi" />
+                    android:textSize="@dimen/_7mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontRegularStyle"
@@ -597,7 +597,7 @@
                     android:gravity="center"
                     android:text="Sugar Free,No herbs &amp; Spices"
                     android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_9ssp" />
+                    android:textSize="@dimen/_6mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontSemiBold"
@@ -606,7 +606,7 @@
                     android:gravity="center"
                     android:text="www.smartpos.com"
                     android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_9ssp" />
+                    android:textSize="@dimen/_6mdpi" />
             </LinearLayout>
 
         </androidx.appcompat.widget.LinearLayoutCompat>

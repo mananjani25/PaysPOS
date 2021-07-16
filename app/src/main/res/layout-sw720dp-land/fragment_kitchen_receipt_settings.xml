@@ -30,7 +30,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="@string/tv_kitchen_receipt_settings"
-                android:textSize="@dimen/_12mdpi" />
+                android:textSize="@dimen/_7mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtSave"
@@ -41,10 +41,10 @@
                 android:layout_weight="0.1"
                 android:background="@color/btnColor"
                 android:gravity="center"
-                android:padding="@dimen/_10sdp"
+                android:padding="@dimen/_5sdp"
                 android:text="@string/save"
                 android:textColor="@color/white"
-                android:textSize="@dimen/_12mdpi" />
+                android:textSize="@dimen/_7mdpi" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -62,7 +62,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="0.8"
-                android:padding="@dimen/_8sdp"
+                android:padding="@dimen/_5sdp"
                 android:visibility="visible">
 
                 <LinearLayout
@@ -77,12 +77,12 @@
                         android:padding="@dimen/_5sdp"
                         android:text="@string/tv_select_font_size"
                         android:textColor="@color/viewTextColor"
-                        android:textSize="@dimen/_10mdpi" />
+                        android:textSize="@dimen/_6mdpi" />
 
                     <androidx.appcompat.widget.LinearLayoutCompat
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/edt_border_gray"
+                        android:background="@drawable/edt_border_light_gray"
                         android:orientation="vertical">
 
                         <androidx.appcompat.widget.LinearLayoutCompat
@@ -97,10 +97,10 @@
                                 android:layout_gravity="center"
                                 android:layout_marginLeft="@dimen/_3sdp"
                                 android:layout_weight="1"
-                                android:padding="@dimen/_10sdp"
+                                android:padding="@dimen/_5sdp"
                                 android:text="@string/tv_small"
                                 android:textColor="@color/viewTextColor"
-                                android:textSize="@dimen/_12mdpi" />
+                                android:textSize="@dimen/_6mdpi" />
 
                             <androidx.appcompat.widget.AppCompatImageView
                                 android:layout_width="wrap_content"
@@ -128,10 +128,10 @@
                                 android:layout_gravity="center"
                                 android:layout_marginLeft="@dimen/_3sdp"
                                 android:layout_weight="1"
-                                android:padding="@dimen/_10sdp"
+                                android:padding="@dimen/_5sdp"
                                 android:text="@string/tv_medium"
                                 android:textColor="@color/viewTextColor"
-                                android:textSize="@dimen/_12mdpi" />
+                                android:textSize="@dimen/_6mdpi" />
 
                             <androidx.appcompat.widget.AppCompatImageView
                                 android:layout_width="wrap_content"
@@ -159,10 +159,10 @@
                                 android:layout_gravity="center"
                                 android:layout_marginLeft="@dimen/_3sdp"
                                 android:layout_weight="1"
-                                android:padding="@dimen/_10sdp"
+                                android:padding="@dimen/_5sdp"
                                 android:text="@string/tv_large"
                                 android:textColor="@color/viewTextColor"
-                                android:textSize="@dimen/_12mdpi" />
+                                android:textSize="@dimen/_6mdpi" />
 
                             <androidx.appcompat.widget.AppCompatImageView
                                 android:layout_width="wrap_content"
@@ -183,14 +183,14 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:layout_marginTop="@dimen/_8sdp"
+                            android:layout_marginTop="@dimen/_5sdp"
                             android:layout_weight="1"
                             android:fontFamily="@font/sf_pro_display_semibold"
                             android:gravity="start"
-                            android:padding="@dimen/_10sdp"
+                            android:padding="@dimen/_5sdp"
                             android:text="@string/tv_paid_unpaid_status"
                             android:textColor="@color/viewTextColor"
-                            android:textSize="@dimen/_10mdpi" />
+                            android:textSize="@dimen/_6mdpi" />
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
                     <View
@@ -210,10 +210,10 @@
                             android:layout_weight="1"
                             android:fontFamily="@font/sf_pro_display_semibold"
                             android:gravity="start"
-                            android:padding="@dimen/_10sdp"
+                            android:padding="@dimen/_5sdp"
                             android:text="@string/tv_show_paid_unpaid_status"
                             android:textColor="@color/viewTextColor"
-                            android:textSize="@dimen/_12mdpi" />
+                            android:textSize="@dimen/_6mdpi" />
 
                         <androidx.appcompat.widget.SwitchCompat
                             android:layout_width="wrap_content"
@@ -221,7 +221,7 @@
                             android:layout_alignParentEnd="true"
                             android:layout_gravity="center"
                             android:checked="true"
-                            android:padding="@dimen/_10sdp"
+                            android:padding="@dimen/_5sdp"
                             app:thumbTint="@color/btnColor"
                             app:trackTint="@color/colorE2" />
                     </androidx.appcompat.widget.LinearLayoutCompat>
@@ -240,14 +240,14 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:layout_marginTop="@dimen/_8sdp"
+                            android:layout_marginTop="@dimen/_5sdp"
                             android:layout_weight="1"
                             android:fontFamily="@font/sf_pro_display_semibold"
                             android:gravity="start"
-                            android:padding="@dimen/_10sdp"
+                            android:padding="@dimen/_5sdp"
                             android:text="@string/tv_printer_name"
                             android:textColor="@color/viewTextColor"
-                            android:textSize="@dimen/_10mdpi" />
+                            android:textSize="@dimen/_6mdpi" />
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
                     <View
@@ -267,10 +267,10 @@
                             android:layout_weight="1"
                             android:fontFamily="@font/sf_pro_display_semibold"
                             android:gravity="start"
-                            android:padding="@dimen/_10sdp"
+                            android:padding="@dimen/_5sdp"
                             android:text="@string/tv_show_printer_name"
                             android:textColor="@color/viewTextColor"
-                            android:textSize="@dimen/_12mdpi" />
+                            android:textSize="@dimen/_6mdpi" />
 
                         <androidx.appcompat.widget.SwitchCompat
                             android:layout_width="wrap_content"
@@ -278,7 +278,7 @@
                             android:layout_alignParentEnd="true"
                             android:layout_gravity="center"
                             android:checked="true"
-                            android:padding="@dimen/_10sdp"
+                            android:padding="@dimen/_5sdp"
                             app:thumbTint="@color/btnColor"
                             app:trackTint="@color/colorE2" />
                     </androidx.appcompat.widget.LinearLayoutCompat>
@@ -297,14 +297,14 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:layout_marginTop="@dimen/_8sdp"
+                            android:layout_marginTop="@dimen/_5sdp"
                             android:layout_weight="1"
                             android:fontFamily="@font/sf_pro_display_semibold"
                             android:gravity="start"
-                            android:padding="@dimen/_10sdp"
+                            android:padding="@dimen/_5sdp"
                             android:text="@string/tv_table_name"
                             android:textColor="@color/viewTextColor"
-                            android:textSize="@dimen/_10mdpi" />
+                            android:textSize="@dimen/_6mdpi" />
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
                     <View
@@ -324,10 +324,10 @@
                             android:layout_weight="1"
                             android:fontFamily="@font/sf_pro_display_semibold"
                             android:gravity="start"
-                            android:padding="@dimen/_10sdp"
+                            android:padding="@dimen/_5sdp"
                             android:text="@string/tv_show_table_name"
                             android:textColor="@color/viewTextColor"
-                            android:textSize="@dimen/_12mdpi" />
+                            android:textSize="@dimen/_6mdpi" />
 
                         <androidx.appcompat.widget.SwitchCompat
                             android:layout_width="wrap_content"
@@ -335,7 +335,7 @@
                             android:layout_alignParentEnd="true"
                             android:layout_gravity="center"
                             android:checked="true"
-                            android:padding="@dimen/_10sdp"
+                            android:padding="@dimen/_5sdp"
                             app:thumbTint="@color/btnColor"
                             app:trackTint="@color/colorE2" />
                     </androidx.appcompat.widget.LinearLayoutCompat>
@@ -354,14 +354,14 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:layout_marginTop="@dimen/_10sdp"
+                            android:layout_marginTop="@dimen/_5sdp"
                             android:layout_weight="1"
                             android:fontFamily="@font/sf_pro_display_semibold"
                             android:gravity="start"
-                            android:padding="@dimen/_10sdp"
+                            android:padding="@dimen/_5sdp"
                             android:text="@string/tv_table_number"
                             android:textColor="@color/viewTextColor"
-                            android:textSize="@dimen/_10mdpi" />
+                            android:textSize="@dimen/_6mdpi" />
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
                     <View
@@ -381,10 +381,10 @@
                             android:layout_weight="1"
                             android:fontFamily="@font/sf_pro_display_semibold"
                             android:gravity="start"
-                            android:padding="@dimen/_10sdp"
+                            android:padding="@dimen/_5sdp"
                             android:text="@string/tv_show_table_number"
                             android:textColor="@color/viewTextColor"
-                            android:textSize="@dimen/_12mdpi" />
+                            android:textSize="@dimen/_6mdpi" />
 
                         <androidx.appcompat.widget.SwitchCompat
                             android:layout_width="wrap_content"
@@ -392,7 +392,7 @@
                             android:layout_alignParentEnd="true"
                             android:layout_gravity="center"
                             android:checked="true"
-                            android:padding="@dimen/_10sdp"
+                            android:padding="@dimen/_5sdp"
                             app:thumbTint="@color/btnColor"
                             app:trackTint="@color/colorE2" />
                     </androidx.appcompat.widget.LinearLayoutCompat>
@@ -411,7 +411,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:padding="@dimen/_8sdp">
+                android:padding="@dimen/_5sdp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -425,12 +425,12 @@
                         android:padding="@dimen/_5sdp"
                         android:text="@string/tv_kitchen_receipt_preview"
                         android:textColor="@color/viewTextColor"
-                        android:textSize="@dimen/_10mdpi" />
+                        android:textSize="@dimen/_6mdpi" />
 
                     <androidx.appcompat.widget.LinearLayoutCompat
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/edt_border_gray"
+                        android:background="@drawable/edt_border_light_gray"
                         android:orientation="vertical"
                         android:padding="@dimen/_5sdp">
 
@@ -446,7 +446,7 @@
                                 android:gravity="center"
                                 android:text="@string/tv_paid_unpaid"
                                 android:textColor="@color/viewTextColor"
-                                android:textSize="@dimen/_16ssp" />
+                                android:textSize="@dimen/_7mdpi" />
 
                             <androidx.appcompat.widget.AppCompatTextView
                                 style="@style/CustomFontSemiBold"
@@ -455,17 +455,17 @@
                                 android:gravity="center"
                                 android:text="@string/tv_printer_kitchen"
                                 android:textColor="@color/viewTextColor"
-                                android:textSize="@dimen/_12mdpi" />
+                                android:textSize="@dimen/_6mdpi" />
 
                             <androidx.appcompat.widget.AppCompatTextView
                                 style="@style/CustomFontSemiBold"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="@dimen/_10sdp"
+                                android:layout_marginTop="@dimen/_5sdp"
                                 android:gravity="center"
                                 android:text="Order ID: ORD564454"
                                 android:textColor="@color/viewTextColor"
-                                android:textSize="@dimen/_10mdpi" />
+                                android:textSize="@dimen/_6mdpi" />
 
                             <androidx.appcompat.widget.AppCompatTextView
                                 style="@style/CustomFontSemiBold"
@@ -476,7 +476,7 @@
                                 android:gravity="center"
                                 android:text="Receipt ID: REC87564454"
                                 android:textColor="@color/viewTextColor"
-                                android:textSize="@dimen/_10mdpi" />
+                                android:textSize="@dimen/_6mdpi" />
                         </androidx.appcompat.widget.LinearLayoutCompat>
 
                         <View
@@ -499,7 +499,7 @@
                                 android:padding="@dimen/_5sdp"
                                 android:text="Booked By:David Miller"
                                 android:textColor="@color/viewTextColor"
-                                android:textSize="@dimen/_10mdpi" />
+                                android:textSize="@dimen/_6mdpi" />
 
                             <androidx.appcompat.widget.AppCompatTextView
                                 style="@style/CustomFontSemiBold"
@@ -509,7 +509,7 @@
                                 android:padding="@dimen/_5sdp"
                                 android:text="Terminal 02"
                                 android:textColor="@color/viewTextColor"
-                                android:textSize="@dimen/_10mdpi" />
+                                android:textSize="@dimen/_6mdpi" />
 
                         </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -526,7 +526,7 @@
                                 android:gravity="center"
                                 android:text="DINE IN"
                                 android:textColor="@color/viewTextColor"
-                                android:textSize="@dimen/_16ssp" />
+                                android:textSize="@dimen/_7mdpi" />
 
                             <androidx.appcompat.widget.AppCompatTextView
                                 style="@style/CustomFontSemiBold"
@@ -536,17 +536,17 @@
                                 android:gravity="center"
                                 android:text="Main Floor"
                                 android:textColor="@color/viewTextColor"
-                                android:textSize="@dimen/_12mdpi" />
+                                android:textSize="@dimen/_6mdpi" />
 
                             <androidx.appcompat.widget.AppCompatTextView
                                 style="@style/CustomFontSemiBold"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="@dimen/_10sdp"
+                                android:layout_marginTop="@dimen/_5sdp"
                                 android:gravity="center"
                                 android:text="Order Time: 11-May-2021 4:30 PM"
                                 android:textColor="@color/viewTextColor"
-                                android:textSize="@dimen/_10mdpi" />
+                                android:textSize="@dimen/_6mdpi" />
 
                             <androidx.appcompat.widget.AppCompatTextView
                                 style="@style/CustomFontSemiBold"
@@ -556,7 +556,7 @@
                                 android:gravity="center"
                                 android:text="Print Time: 11-May-2021 4:30 PM"
                                 android:textColor="@color/viewTextColor"
-                                android:textSize="@dimen/_10mdpi" />
+                                android:textSize="@dimen/_6mdpi" />
                         </androidx.appcompat.widget.LinearLayoutCompat>
 
                         <View
@@ -576,11 +576,11 @@
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
                                 android:layout_marginLeft="@dimen/_3sdp"
-                                android:paddingTop="@dimen/_10sdp"
-                                android:paddingBottom="@dimen/_10sdp"
+                                android:paddingTop="@dimen/_5sdp"
+                                android:paddingBottom="@dimen/_5sdp"
                                 android:text="Number of Guest(s): 2"
                                 android:textColor="@color/viewTextColor"
-                                android:textSize="@dimen/_10mdpi" />
+                                android:textSize="@dimen/_6mdpi" />
 
                         </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -596,7 +596,7 @@
                             android:layout_marginLeft="@dimen/_3sdp"
                             android:text="David Miller"
                             android:textColor="@color/viewTextColor"
-                            android:textSize="@dimen/_12mdpi" />
+                            android:textSize="@dimen/_6mdpi" />
 
                         <androidx.appcompat.widget.AppCompatTextView
                             style="@style/CustomFontMediumStyle"
@@ -605,23 +605,23 @@
                             android:layout_marginLeft="@dimen/_3sdp"
                             android:text="(635)987-3354"
                             android:textColor="@color/viewTextColor"
-                            android:textSize="@dimen/_10mdpi" />
+                            android:textSize="@dimen/_6mdpi" />
 
                         <androidx.appcompat.widget.AppCompatTextView
                             style="@style/CustomFontMediumStyle"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="@dimen/_3sdp"
-                            android:layout_marginTop="@dimen/_10sdp"
+                            android:layout_marginTop="@dimen/_5sdp"
                             android:text="7450 DW 51 FH AT,Suite 503"
                             android:textColor="@color/viewTextColor"
-                            android:textSize="@dimen/_10mdpi" />
+                            android:textSize="@dimen/_6mdpi" />
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_margin="@dimen/_10sdp"
+                        android:layout_margin="@dimen/_5sdp"
                         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                         tools:listitem="@layout/view_guest_item" />
 

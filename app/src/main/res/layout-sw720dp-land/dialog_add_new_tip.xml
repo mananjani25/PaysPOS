@@ -44,7 +44,7 @@
                     android:layout_weight="1"
                     android:gravity="center"
                     android:text="@string/tv_entertainment_tip"
-                    android:textSize="@dimen/_10mdpi" />
+                    android:textSize="@dimen/_7mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtSave"
@@ -56,10 +56,10 @@
                     android:background="@color/btnColor"
                     android:gravity="center"
                     android:onClick="@{() -> viewModel.submit()}"
-                    android:padding="@dimen/_10sdp"
+                    android:padding="@dimen/_5sdp"
                     android:text="@string/save"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/_12mdpi" />
+                    android:textSize="@dimen/_7mdpi" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -80,7 +80,7 @@
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_20sdp"
+                    android:layout_marginTop="@dimen/_10sdp"
                     android:background="@drawable/edt_border_light_gray"
                     android:orientation="vertical">
 
@@ -94,10 +94,10 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:padding="@dimen/_10sdp"
+                            android:padding="@dimen/_5sdp"
                             android:text="@string/tv_tip_name"
                             android:textColor="@color/viewTextColor"
-                            android:textSize="@dimen/_10mdpi" />
+                            android:textSize="@dimen/_6mdpi" />
 
                         <androidx.appcompat.widget.AppCompatEditText
                             style="@style/CustomFontSemiBold"
@@ -109,11 +109,11 @@
                             android:hint="@string/tv_entertainment"
                             android:imeOptions="actionNext"
                             android:inputType="textCapWords"
-                            android:padding="@dimen/_10sdp"
+                            android:padding="@dimen/_5sdp"
                             android:text="@={viewModel.createTipDetails.name}"
                             android:textColor="@color/black"
                             android:textColorHint="@color/hintColor"
-                            android:textSize="@dimen/_10mdpi" />
+                            android:textSize="@dimen/_6mdpi" />
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -132,10 +132,10 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:padding="@dimen/_10sdp"
+                            android:padding="@dimen/_5sdp"
                             android:text="@string/percentage"
                             android:textColor="@color/viewTextColor"
-                            android:textSize="@dimen/_10mdpi" />
+                            android:textSize="@dimen/_6mdpi" />
 
                         <androidx.appcompat.widget.AppCompatEditText
                             style="@style/CustomFontSemiBold"
@@ -147,13 +147,13 @@
                             android:imeOptions="actionDone"
                             android:inputType="numberDecimal"
                             android:paddingStart="@dimen/_20sdp"
-                            android:paddingTop="@dimen/_10sdp"
+                            android:paddingTop="@dimen/_5sdp"
                             android:paddingEnd="@dimen/_20sdp"
-                            android:paddingBottom="@dimen/_10sdp"
+                            android:paddingBottom="@dimen/_5sdp"
                             android:text="@={``+viewModel.createTipDetails.rate}"
                             android:textColor="@color/black"
                             android:textColorHint="@color/hintColor"
-                            android:textSize="@dimen/_10mdpi" />
+                            android:textSize="@dimen/_6mdpi" />
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -169,11 +169,11 @@
                     android:layout_marginTop="@dimen/_10sdp"
                     android:background="@drawable/background_button_tip"
                     android:gravity="center"
-                    android:minWidth="@dimen/_325sdp"
-                    android:padding="@dimen/_8sdp"
-                    android:text="Remove Tip"
+                    android:minWidth="@dimen/_300sdp"
+                    android:padding="@dimen/_5sdp"
+                    android:text="@string/remove_tip"
                     android:textColor="@color/btnColor"
-                    android:textSize="@dimen/_10mdpi" />
+                    android:textSize="@dimen/_6mdpi" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 

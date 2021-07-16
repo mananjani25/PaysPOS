@@ -19,7 +19,7 @@
             android:padding="@dimen/_5sdp"
             android:text="1x Chicken Meals"
             android:textColor="@color/viewTextColor"
-            android:textSize="@dimen/_9ssp" />
+            android:textSize="@dimen/_6mdpi" />
 
         <androidx.appcompat.widget.AppCompatTextView
             style="@style/CustomFontBold"
@@ -30,7 +30,7 @@
             android:text="$9.99"
             android:padding="@dimen/_5sdp"
             android:textColor="@color/viewTextColor"
-            android:textSize="@dimen/_9ssp" />
+            android:textSize="@dimen/_6mdpi" />
 
         <View
             android:layout_width="match_parent"

@@ -7,13 +7,19 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.model.responseModel.VenueDataResponse
 import com.android.pos.databinding.ViewDashboardItemBinding
 
-class CategoryItemAdapter(val context: Context, val list: ArrayList<VenueDataResponse.Data.Category.Item>, val listner:CategoryItemList):RecyclerView.Adapter<CategoryItemAdapter.MyViewHolder>() {
-    inner class MyViewHolder(private val binding:ViewDashboardItemBinding):RecyclerView.ViewHolder(binding.root){
+class CategoryItemAdapter(
+    val context: Context,
+    var list: ArrayList<VenueDataResponse.Data.Category.Item>,
+    val listner: CategoryItemList
+) : RecyclerView.Adapter<CategoryItemAdapter.MyViewHolder>() {
+    inner class MyViewHolder(private val binding: ViewDashboardItemBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(item: VenueDataResponse.Data.Category.Item){
+        fun bind(item: VenueDataResponse.Data.Category.Item) {
             binding.viewModel = item
             binding.executePendingBindings()
         }
+
         init {
 
             binding.root.setOnClickListener {
@@ -21,23 +27,26 @@ class CategoryItemAdapter(val context: Context, val list: ArrayList<VenueDataRes
             }
         }
     }
+
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
     ): CategoryItemAdapter.MyViewHolder {
         val inflater = LayoutInflater.from(context)
-        val binding = ViewDashboardItemBinding.inflate(inflater,parent,false)
+        val binding = ViewDashboardItemBinding.inflate(inflater, parent, false)
         return MyViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: CategoryItemAdapter.MyViewHolder, position: Int) {
         holder.bind(list[position])
+
     }
 
     override fun getItemCount(): Int {
         return list.size
     }
-    interface CategoryItemList{
+
+    interface CategoryItemList {
         fun onClick()
     }
 }
