@@ -229,8 +229,7 @@
     <fragment
         android:id="@+id/kitchenReceiptSettings"
         android:name="com.android.pos.ui.fragments.settings.KitchenReceiptSettings"
-        android:label="KitchenReceiptSettings">
-    </fragment>
+        android:label="KitchenReceiptSettings"></fragment>
 
     <fragment
         android:id="@+id/reports"
@@ -262,6 +261,12 @@
             app:destination="@id/createItem"
             app:enterAnim="@anim/nav_default_enter_anim" />
     </fragment>
+    <action
+        android:id="@+id/action_global_login"
+        app:destination="@id/login"
+        app:enterAnim="@anim/nav_default_enter_anim"
+        app:popUpTo="@id/nav_graph"
+        app:popUpToInclusive="true" />
 
 
 </navigation>

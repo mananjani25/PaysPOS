@@ -12,16 +12,22 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.android.pos.R
+import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.ParentActivityBinding
+import com.android.pos.di.PrefProvider
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ParentActivityBinding
     private var navController: NavController? = null
     private lateinit var listner: NavController.OnDestinationChangedListener
+    @Inject
+    lateinit var prefProvider: PrefProvider
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -54,7 +60,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
         binding.navView.setupWithNavController(navController!!)
-        val imgBack =  binding.navView.getHeaderView(0).findViewById<ImageView>(R.id.imgBack)
+        val imgBack = binding.navView.getHeaderView(0).findViewById<ImageView>(R.id.imgBack)
         imgBack.setOnClickListener {
             disableDrawer()
 
@@ -109,6 +115,13 @@ class MainActivity : AppCompatActivity() {
                     return@setNavigationItemSelectedListener true
                 }
 
+                R.id.menuLogout -> {
+                    logout()
+                    disableDrawer()
+                    return@setNavigationItemSelectedListener true
+
+                }
+
             }
 
             return@setNavigationItemSelectedListener false
@@ -123,6 +136,13 @@ class MainActivity : AppCompatActivity() {
 //         passCodeView.setTypeFace(typeface)
     }
 
+    private fun logout() {
+        prefProvider.setValue(Constants.AUTH_TOKEN,"")
+        navController?.navigate(R.id.action_global_login)
+
+
+    }
+
     override fun onResume() {
         super.onResume()
         navController?.addOnDestinationChangedListener(listner)
@@ -134,7 +154,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun enableDrawer() {
-       binding.drawerLayout .openDrawer(GravityCompat.START)
+        binding.drawerLayout.openDrawer(GravityCompat.START)
 
     }
 
@@ -143,7 +163,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if ( binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+        if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
             binding.drawerLayout.closeDrawer(GravityCompat.START)
         } else {
             super.onBackPressed()
