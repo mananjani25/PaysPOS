@@ -37,5 +37,9 @@
         <item
             android:id="@+id/menuSupport"
             android:title="Support" />
+
+        <item
+            android:id="@+id/menuLogout"
+            android:title="Logout" />
     </group>
 </menu>
