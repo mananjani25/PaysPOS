@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -74,7 +75,9 @@ class TaxesList : Fragment() {
                     0,
                     Color.parseColor("#2997cc")
                 ) { pos ->
+
                     taxListadapter.getItem(pos)
+                    findNavController().navigate(R.id.action_settings_to_newTax)
                 })
 
                 underlayButtons.add(UnderlayButton(
@@ -152,10 +155,19 @@ class TaxesList : Fragment() {
         viewModel.data.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
                 AlertUtils.showAlert(requireActivity(), it.message)
+                var adapter = binding.rvTaxList.adapter as TaxListAdapter
+                var list = adapter.taxList
+                list.remove(taxObject)
+                adapter.taxList = list
+                adapter.notifyDataSetChanged()
+
+                /*adapter.notifyItemRemoved(position)
+                adapter.notifyItemRangeChanged(position, taxListUpdateDelete.size)
+
                 taxListUpdateDelete.remove(taxObject)
                 taxListadapter.addTaxes(taxListUpdateDelete)
                 taxListadapter.notifyItemRemoved(position)
-                taxListadapter.notifyItemRangeChanged(position, taxListUpdateDelete.size)
+                taxListadapter.notifyItemRangeChanged(position, taxListUpdateDelete.size)*/
             }
         })
 
