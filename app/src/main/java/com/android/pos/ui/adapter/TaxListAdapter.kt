@@ -35,6 +35,10 @@ class TaxListAdapter : RecyclerView.Adapter<TaxListAdapter.MyViewHolder>() {
         }
     }
 
+    fun getItem(position:Int): GetTaxResponse.Data {
+        return taxList[position]
+    }
+
     inner class MyViewHolder(val tipItemBinding: ViewTaxItemBinding) :
         RecyclerView.ViewHolder(tipItemBinding.root)
 }

@@ -31,6 +31,12 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun createTax(data: CreateTaxRequestModel) =
         getResult { apiService.createTax(data) }
 
+    suspend fun updateTax(data: CreateTaxRequestModel) =
+        getResult { apiService.updateTax(data) }
+
+    suspend fun deleteTax(data: Int) =
+        getResult { apiService.deleteTax(data) }
+
     suspend fun getTipsList() =
         getResult { apiService.getTipsList() }
 

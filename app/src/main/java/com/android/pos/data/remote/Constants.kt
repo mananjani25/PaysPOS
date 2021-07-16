@@ -22,9 +22,9 @@ object Constants {
     const val SYNC_VENUE_DATA = "locations/sync_data"
     const val EMPLOYEES = "employees"
 
-    const val GET_TAXES = "taxes"
-    const val TAX_UPDATE = "taxes/{id}"
-    //const val TAX_DELETE = "taxes/{id}"
+    const val TAXES = "taxes"
+    const val TAX_UPDATE_DELETE = "taxes/{id}"
 
-    const val GET_TIPS = "tip_settings"
+    const val TIPS = "tip_settings"
+    const val TIPS_UPDATE_DELETE = "tip_settings/{id}"
 }

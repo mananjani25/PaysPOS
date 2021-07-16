@@ -39,6 +39,10 @@ class PosRepository @Inject constructor(
 
     suspend fun createTax(data: CreateTaxRequestModel) = apiHelperNew.createTax(data)
 
+    suspend fun updateTax(data: CreateTaxRequestModel) = apiHelperNew.updateTax(data)
+
+    suspend fun deleteTax(data: Int) = apiHelperNew.deleteTax(data)
+
     fun getTipList() =
         performGetOperationNew(networkCall = { apiHelperNew.getTipsList() })
 

@@ -8,10 +8,12 @@ import com.android.pos.data.remote.Constants.CLOCK_OUT
 import com.android.pos.data.remote.Constants.EMPLOYEES
 import com.android.pos.data.remote.Constants.EMPLOYEE_CLOCK_IN
 import com.android.pos.data.remote.Constants.EMPLOYEE_LOG_IN
-import com.android.pos.data.remote.Constants.GET_TAXES
-import com.android.pos.data.remote.Constants.GET_TIPS
 import com.android.pos.data.remote.Constants.LOGIN_TERMINAL
 import com.android.pos.data.remote.Constants.SYNC_VENUE_DATA
+import com.android.pos.data.remote.Constants.TAXES
+import com.android.pos.data.remote.Constants.TAX_UPDATE_DELETE
+import com.android.pos.data.remote.Constants.TIPS
+import com.android.pos.data.remote.Constants.TIPS_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.USERS_LOG_IN
 import retrofit2.http.*
 
@@ -44,15 +46,37 @@ interface ApiService {
     @GET(EMPLOYEES)
     suspend fun employeesList(): EmployeeResponse
 
-    @GET(GET_TAXES)
+    @GET(TAXES)
     suspend fun getTaxList(): GetTaxResponse
 
-    @POST(GET_TAXES)
+    @POST(TAXES)
     suspend fun createTax(@Body createTax: CreateTaxRequestModel): CreateTaxResponse
 
-    @GET(GET_TIPS)
+    @PUT(TAX_UPDATE_DELETE)
+    suspend  fun updateTax(
+        /* @Path("id") taxId: String?,*/
+        @Body createTax: CreateTaxRequestModel
+    ): CreateTaxResponse
+
+    @DELETE(TAX_UPDATE_DELETE)
+    suspend  fun deleteTax(
+        @Path("id") taxId: Int,
+    ): CreateTaxResponse
+
+    @GET(TIPS)
     suspend fun getTipsList(): GetTipReponse
 
-    @POST(GET_TIPS)
+    @POST(TIPS)
     suspend fun createTips(@Body createTip: CreateTipRequestModel): CreateTipResponse
+
+    @PUT(TIPS_UPDATE_DELETE)
+    suspend fun updateTip(
+        @Path("id") tipId: String?,
+        @Body createTax: CreateTipRequestModel
+    ): CreateTipResponse
+
+    @DELETE(TIPS_UPDATE_DELETE)
+    suspend fun deleteTip(
+        @Path("id") tipId: String?
+    ): BaseResponse
 }

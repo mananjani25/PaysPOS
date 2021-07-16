@@ -66,6 +66,10 @@
     <string name="tip_rate_validate">Please enter valid Tip Rate</string>
 
 
+    <string name="delete_tax_message">Are you sure want to Delete Tax</string>
+    <string name="delete_tip_message">Are you sure want to Delete Tip</string>
+
+
     <string name="tv_personal_info">Personal Info</string>
     <string name="tv_jobs">Jobs</string>
     <string name="tv_primary_job_title">Primary job title</string>

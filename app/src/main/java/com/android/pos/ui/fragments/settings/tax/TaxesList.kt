@@ -1,6 +1,8 @@
 package com.android.pos.ui.fragments.settings.tax
 
+import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,21 +11,29 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.model.responseModel.GetTaxResponse
 import com.android.pos.databinding.FragmentTaxesBinding
 import com.android.pos.ui.adapter.TaxListAdapter
+import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.SwipeHelper
+import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.statusUtils.Status
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class TaxesList : Fragment() {
 
+    private var position: Int = -1
+    private lateinit var taxListUpdateDelete: ArrayList<GetTaxResponse.Data>
     private lateinit var binding: FragmentTaxesBinding
     private val viewModel by viewModels<TaxListViewModel>()
-    private lateinit var adapter: TaxListAdapter
+    private var taxListadapter = TaxListAdapter()
+    private lateinit var taxObject: GetTaxResponse.Data
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -35,6 +45,9 @@ class TaxesList : Fragment() {
 
         setUpRecyclerView()
         getTaxListObserver()
+        setupSnackbar()
+        observeShowProgress()
+        deleteTax()
         return binding.root
     }
 
@@ -48,8 +61,42 @@ class TaxesList : Fragment() {
 
 
     private fun setUpRecyclerView() {
-        adapter = TaxListAdapter()
-        binding.rvTaxList.adapter = adapter
+        binding.rvTaxList.adapter = taxListadapter
+
+        /*object : SwipeHelper(activity, binding.rvTaxList) {
+            override fun instantiateUnderlayButton(
+                viewHolder: RecyclerView.ViewHolder?,
+                underlayButtons: MutableList<UnderlayButton?>
+            ) {
+
+                underlayButtons.add(UnderlayButton(
+                    "Edit",
+                    0,
+                    Color.parseColor("#2997cc")
+                ) { pos ->
+                    taxListadapter.getItem(pos)
+                })
+
+                underlayButtons.add(UnderlayButton(
+                    "Delete",
+                    0,
+                    Color.parseColor("#FF3C30")
+                ) { pos ->
+
+                    position = pos
+                    activity?.let {
+                        AlertUtils.showConfirmAlert(
+                            it, getString(R.string.delete_tax_message)
+                        ) { _, _ ->
+                            taxObject = taxListadapter.getItem(pos)
+                            viewModel.delete(taxListadapter.getItem(pos).id)
+                        }
+                    }
+
+
+                })
+            }
+        }*/
     }
 
 
@@ -78,11 +125,41 @@ class TaxesList : Fragment() {
         })
     }
 
-    private fun setTaxData(taxList: List<GetTaxResponse.Data>) {
+    private fun observeShowProgress() {
 
-        adapter.apply {
+        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    ProgressUtils.showProgressDialog(requireActivity())
+                } else {
+                    ProgressUtils.dismissProgressDialog()
+                }
+            }
+        })
+
+    }
+
+    private fun setTaxData(taxList: List<GetTaxResponse.Data>) {
+        taxListUpdateDelete = taxList as ArrayList<GetTaxResponse.Data>
+        taxListadapter.apply {
             addTaxes(taxList)
             notifyDataSetChanged()
         }
     }
+
+    private fun deleteTax() {
+
+        viewModel.data.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+                AlertUtils.showAlert(requireActivity(), it.message)
+                taxListUpdateDelete.remove(taxObject)
+                taxListadapter.notifyItemRemoved(position)
+                taxListadapter.notifyItemRangeChanged(position, taxListUpdateDelete.size)
+            }
+        })
+
+    }
+
+    private fun setupSnackbar() =
+        binding.root.liveSnackBar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
 }

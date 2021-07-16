@@ -241,7 +241,7 @@ public abstract class SwipeHelper extends ItemTouchHelper.SimpleCallback {
 
             // Draw Text
             p.setColor(Color.WHITE);
-            p.setTextSize(33f);
+            p.setTextSize(20f);
 
             Rect r = new Rect();
             float cHeight = rect.height();
