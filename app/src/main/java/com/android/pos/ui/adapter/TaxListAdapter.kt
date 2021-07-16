@@ -9,7 +9,7 @@ import com.android.pos.databinding.ViewTaxItemBinding
 
 class TaxListAdapter : RecyclerView.Adapter<TaxListAdapter.MyViewHolder>() {
 
-    private val taxList = ArrayList<GetTaxResponse.Data>()
+     var taxList = ArrayList<GetTaxResponse.Data>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaxListAdapter.MyViewHolder {
         val inflater = LayoutInflater.from(parent.context)
