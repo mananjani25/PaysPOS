@@ -26,12 +26,12 @@
             android:gravity="center"
             android:text="@{model.title}"
             android:textColor="@color/drawerItemUnselected"
-            android:textSize="@dimen/_10mdpi" />
+            android:textSize="@dimen/_6mdpi" />
 
         <View
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            android:layout_marginTop="@dimen/_5sdp"
+            android:layout_marginTop="@dimen/_3sdp"
             android:background="@color/txtColor"
             android:visibility="@{model.isSelected ? View.VISIBLE : View.GONE}" />
 
