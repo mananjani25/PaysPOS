@@ -14,7 +14,7 @@
         android:text="Soup"
         android:padding="@dimen/_5sdp"
         android:textColor="@color/viewTextColor"
-        android:textSize="@dimen/_14ssp" />
+        android:textSize="@dimen/_6mdpi" />
 
     <View
         android:layout_width="match_parent"

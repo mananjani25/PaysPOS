@@ -44,7 +44,7 @@
                     android:layout_weight="1"
                     android:gravity="center"
                     android:text="@string/tv_new_tax"
-                    android:textSize="@dimen/_12mdpi" />
+                    android:textSize="@dimen/_7mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtSave"
@@ -56,10 +56,10 @@
                     android:background="@color/btnColor"
                     android:gravity="center"
                     android:onClick="@{() -> viewModel.submit()}"
-                    android:padding="@dimen/_10sdp"
+                    android:padding="@dimen/_5sdp"
                     android:text="@string/save"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/_12mdpi" />
+                    android:textSize="@dimen/_7mdpi" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -96,10 +96,10 @@
                         android:elevation="@dimen/_10sdp"
                         android:fontFamily="@font/sf_pro_display_semibold"
                         android:gravity="start"
-                        android:padding="@dimen/_10sdp"
+                        android:padding="@dimen/_5sdp"
                         android:text="@string/tv_enable_default_tax"
                         android:textColor="@color/viewTextColor"
-                        android:textSize="@dimen/_10mdpi" />
+                        android:textSize="@dimen/_6mdpi" />
 
                     <androidx.appcompat.widget.SwitchCompat
                         android:layout_width="wrap_content"
@@ -107,7 +107,7 @@
                         android:layout_alignParentEnd="true"
                         android:layout_gravity="center"
                         android:checked="true"
-                        android:padding="@dimen/_10sdp"
+                        android:padding="@dimen/_5sdp"
                         app:srcCompat="@drawable/ic_arrow_forward"
                         app:thumbTint="@color/btnColor"
                         app:trackTint="@color/colorE2" />
@@ -136,10 +136,10 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:padding="@dimen/_10sdp"
+                            android:padding="@dimen/_5sdp"
                             android:text="@string/name"
                             android:textColor="@color/viewTextColor"
-                            android:textSize="@dimen/_10mdpi" />
+                            android:textSize="@dimen/_6mdpi" />
 
                         <androidx.appcompat.widget.AppCompatEditText
                             style="@style/CustomFontSemiBold"
@@ -150,11 +150,11 @@
                             android:gravity="end"
                             android:imeOptions="actionNext"
                             android:inputType="textCapWords"
-                            android:padding="@dimen/_10sdp"
+                            android:padding="@dimen/_5sdp"
                             android:text="@={viewModel.createTaxDetails.name}"
                             android:textColor="@color/black"
                             android:textColorHint="@color/hintColor"
-                            android:textSize="@dimen/_10mdpi" />
+                            android:textSize="@dimen/_6mdpi" />
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -173,10 +173,10 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:padding="@dimen/_10sdp"
+                            android:padding="@dimen/_5sdp"
                             android:text="@string/percentage"
                             android:textColor="@color/viewTextColor"
-                            android:textSize="@dimen/_10mdpi" />
+                            android:textSize="@dimen/_6mdpi" />
 
                         <androidx.appcompat.widget.AppCompatEditText
                             style="@style/CustomFontSemiBold"
@@ -188,13 +188,13 @@
                             android:imeOptions="actionDone"
                             android:inputType="numberDecimal"
                             android:paddingStart="@dimen/_20sdp"
-                            android:paddingTop="@dimen/_10sdp"
+                            android:paddingTop="@dimen/_5sdp"
                             android:paddingEnd="@dimen/_20sdp"
-                            android:paddingBottom="@dimen/_10sdp"
+                            android:paddingBottom="@dimen/_5sdp"
                             android:text="@={``+viewModel.createTaxDetails.rate}"
                             android:textColor="@color/black"
                             android:textColorHint="@color/hintColor"
-                            android:textSize="@dimen/_10mdpi" />
+                            android:textSize="@dimen/_6mdpi" />
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -221,10 +221,10 @@
                         android:elevation="@dimen/_10sdp"
                         android:fontFamily="@font/sf_pro_display_semibold"
                         android:gravity="start"
-                        android:padding="@dimen/_10sdp"
+                        android:padding="@dimen/_5sdp"
                         android:text="@string/item_pricing"
                         android:textColor="@color/viewTextColor"
-                        android:textSize="@dimen/_10mdpi" />
+                        android:textSize="@dimen/_6mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontSemiBold"
@@ -233,7 +233,7 @@
                         android:layout_gravity="center"
                         android:text="@string/tv_add_tax_to_price"
                         android:textColor="@color/cool_grey"
-                        android:textSize="@dimen/_10mdpi" />
+                        android:textSize="@dimen/_6mdpi" />
 
                     <androidx.appcompat.widget.AppCompatImageView
                         android:layout_width="wrap_content"
@@ -265,10 +265,11 @@
                         android:elevation="@dimen/_10sdp"
                         android:fontFamily="@font/sf_pro_display_semibold"
                         android:gravity="start"
-                        android:padding="@dimen/_10sdp"
+                        android:layout_marginBottom="@dimen/_5sdp"
+                        android:padding="@dimen/_5sdp"
                         android:text="@string/tv_apply_tax_to"
                         android:textColor="@color/viewTextColor"
-                        android:textSize="@dimen/_10mdpi" />
+                        android:textSize="@dimen/_6mdpi" />
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
                 <View
@@ -289,10 +290,10 @@
                         android:elevation="@dimen/_10sdp"
                         android:fontFamily="@font/sf_pro_display_semibold"
                         android:gravity="start"
-                        android:padding="@dimen/_10sdp"
+                        android:padding="@dimen/_5sdp"
                         android:text="@string/tv_custom_amount"
                         android:textColor="@color/viewTextColor"
-                        android:textSize="@dimen/_10mdpi" />
+                        android:textSize="@dimen/_6mdpi" />
 
                     <androidx.appcompat.widget.SwitchCompat
                         android:layout_width="wrap_content"
@@ -300,7 +301,7 @@
                         android:layout_alignParentEnd="true"
                         android:layout_gravity="center"
                         android:checked="true"
-                        android:padding="@dimen/_10sdp"
+                        android:padding="@dimen/_5sdp"
                         app:thumbTint="@color/btnColor"
                         app:trackTint="@color/colorE2" />
                 </androidx.appcompat.widget.LinearLayoutCompat>
@@ -323,10 +324,10 @@
                         android:elevation="@dimen/_10sdp"
                         android:fontFamily="@font/sf_pro_display_semibold"
                         android:gravity="start"
-                        android:padding="@dimen/_10sdp"
+                        android:padding="@dimen/_5sdp"
                         android:text="@string/tv_items"
                         android:textColor="@color/viewTextColor"
-                        android:textSize="@dimen/_10mdpi" />
+                        android:textSize="@dimen/_6mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontSemiBold"
@@ -335,7 +336,7 @@
                         android:layout_gravity="center"
                         android:text="@string/tv_all_items"
                         android:textColor="@color/cool_grey"
-                        android:textSize="@dimen/_10mdpi" />
+                        android:textSize="@dimen/_6mdpi" />
 
                     <androidx.appcompat.widget.AppCompatImageView
                         android:layout_width="wrap_content"

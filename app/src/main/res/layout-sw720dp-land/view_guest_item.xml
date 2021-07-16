@@ -14,7 +14,7 @@
         android:padding="@dimen/_5sdp"
         android:text="Guest 1"
         android:textColor="@color/viewTextColor"
-        android:textSize="@dimen/_14ssp" />
+        android:textSize="@dimen/_6mdpi" />
 
     <View
         android:layout_width="match_parent"
