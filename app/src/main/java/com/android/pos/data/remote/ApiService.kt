@@ -81,8 +81,6 @@ interface ApiService {
     suspend fun deleteTip(
         @Path("id") tipId: Int
     ): CreateTipResponse
-        @Path("id") tipId: String?
-    ): BaseResponse
 
     @GET(NOTES)
     suspend fun getNoteList(): NoteResponse
