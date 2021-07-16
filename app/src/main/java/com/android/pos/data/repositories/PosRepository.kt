@@ -27,7 +27,6 @@ class PosRepository @Inject constructor(
     suspend fun employeeClockOut(data: HashMap<String, String>) =
         apiHelperNew.employeeClockOut(data)
 
-
     fun syncVenueData() =
         performGetOperationNew(networkCall = { apiHelperNew.syncVenueData() })
 

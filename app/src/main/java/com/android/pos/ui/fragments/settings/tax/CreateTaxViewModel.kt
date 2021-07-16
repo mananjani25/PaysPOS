@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.android.pos.R
 import com.android.pos.data.model.requestModel.CreateTaxRequestModel
 import com.android.pos.data.model.responseModel.CreateTaxResponse
+import com.android.pos.data.model.responseModel.GetTaxResponse
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
@@ -49,6 +50,10 @@ class CreateTaxViewModel @Inject constructor(
         this.isEdit = isEdit
     }
 
+    fun setTaxData(taxData: GetTaxResponse.TaxData) {
+        createTaxDetails.value?.name = taxData.name
+        createTaxDetails.value?.rate = taxData.rate
+    }
 
     fun submit() {
         val value = createTaxDetails.value
@@ -81,7 +86,7 @@ class CreateTaxViewModel @Inject constructor(
 
             viewModelScope.launch {
                 if (isEdit) {
-                    resource = posRepository.updateTax(taxId,taxData)
+                    resource = posRepository.updateTax(taxId, taxData)
                 } else {
                     resource = posRepository.createTax(taxData)
                 }
@@ -116,4 +121,6 @@ class CreateTaxViewModel @Inject constructor(
         }
 
     }
+
+
 }

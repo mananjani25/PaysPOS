@@ -36,9 +36,7 @@ class CreateTip : Fragment() {
         if (isEdit) {
             tipData = arguments?.getParcelable("tipObject")!!
 
-            viewModel.createTipDetails.value?.name = tipData.name
-            viewModel.createTipDetails.value?.rate = tipData.rate.toDouble()
-
+            viewModel.setTipData(tipData)
             viewModel.isEditData(isEdit,tipData.id)
         }
 

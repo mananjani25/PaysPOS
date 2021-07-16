@@ -27,7 +27,7 @@ data class GetTaxResponse(
         @SerializedName("name")
         val name: String,
         @SerializedName("rate")
-        val rate: Int,
+        val rate: Double,
         @SerializedName("tax_type")
         val taxType: String,
         @SerializedName("updated_at")

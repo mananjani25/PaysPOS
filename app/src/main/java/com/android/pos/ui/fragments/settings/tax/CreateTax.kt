@@ -44,9 +44,7 @@ class CreateTax : Fragment() {
         if (isEdit) {
             taxData = arguments?.getParcelable("taxObject")!!
 
-            viewModel.createTaxDetails.value?.name = taxData.name
-            viewModel.createTaxDetails.value?.rate = taxData.rate.toDouble()
-
+            viewModel.setTaxData(taxData)
             viewModel.isEditData(isEdit,taxData.id)
         }
 

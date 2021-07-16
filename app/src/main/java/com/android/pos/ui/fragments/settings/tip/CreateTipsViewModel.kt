@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.android.pos.R
 import com.android.pos.data.model.requestModel.CreateTipRequestModel
 import com.android.pos.data.model.responseModel.CreateTipResponse
+import com.android.pos.data.model.responseModel.GetTipReponse
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
@@ -43,6 +44,12 @@ class CreateTipsViewModel @Inject constructor(
     private lateinit var tipData: CreateTipRequestModel
 
     private lateinit var resource: Resource<CreateTipResponse>
+
+
+    fun setTipData(tipData: GetTipReponse.Data) {
+        createTipDetails.value?.name = tipData.name
+        createTipDetails.value?.rate = tipData.rate
+    }
 
     fun isEditData(isEdit: Boolean, tipId: Int) {
         this.tipId = tipId
