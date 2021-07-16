@@ -24,8 +24,8 @@ class CreateTax : Fragment() {
 
     private val viewModel by viewModels<CreateTaxViewModel>()
 
-    var isEdit:Boolean=false
-    private lateinit var taxData:GetTaxResponse.Data
+    var isEdit: Boolean = false
+    private lateinit var taxData: GetTaxResponse.TaxData
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,12 +38,22 @@ class CreateTax : Fragment() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
+
+        isEdit = arguments?.getBoolean("isEdit")!!
+
+        if (isEdit) {
+            taxData = arguments?.getParcelable("taxObject")!!
+
+            viewModel.createTaxDetails.value?.name = taxData.name
+            viewModel.createTaxDetails.value?.rate = taxData.rate.toDouble()
+
+            viewModel.isEditData(isEdit,taxData.id)
+        }
+
         setupSnackbar()
         observeShowProgress()
         // navigate()
 
-       /* isEdit= arguments?.getBoolean("isEdit")!!
-        taxData = arguments?.getParcelable<GetTaxResponse.Data>("taxObject")!!*/
 
         return binding.root
     }

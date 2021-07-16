@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.android.pos.data.model.responseModel.GetTipReponse
 import com.android.pos.databinding.DialogAddNewTipBinding
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
@@ -18,6 +19,9 @@ class CreateTip : Fragment() {
     private lateinit var binding: DialogAddNewTipBinding
     private val viewModel by viewModels<CreateTipsViewModel>()
 
+    var isEdit: Boolean = false
+    private lateinit var tipData: GetTipReponse.Data
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -26,6 +30,17 @@ class CreateTip : Fragment() {
         binding = DialogAddNewTipBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
+
+        isEdit = arguments?.getBoolean("isEdit")!!
+
+        if (isEdit) {
+            tipData = arguments?.getParcelable("tipObject")!!
+
+            viewModel.createTipDetails.value?.name = tipData.name
+            viewModel.createTipDetails.value?.rate = tipData.rate.toDouble()
+
+            viewModel.isEditData(isEdit,tipData.id)
+        }
 
         setupSnackbar()
         observeShowProgress()

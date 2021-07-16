@@ -8,7 +8,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class GetTaxResponse(
     @SerializedName("data")
-    val `data`: List<Data>,
+    val `data`: List<TaxData>,
     @SerializedName("message")
     val message: String,
     @SerializedName("status")
@@ -17,7 +17,7 @@ data class GetTaxResponse(
     val type: String
 ) : Parcelable {
     @Parcelize
-    data class Data(
+    data class TaxData(
         @SerializedName("created_at")
         val createdAt: String,
         @SerializedName("id")

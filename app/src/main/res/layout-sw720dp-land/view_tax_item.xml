@@ -8,7 +8,7 @@
 
         <variable
             name="taxModel"
-            type="com.android.pos.data.model.responseModel.GetTaxResponse.Data" />
+            type="com.android.pos.data.model.responseModel.GetTaxResponse.TaxData" />
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat

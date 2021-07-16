@@ -7,10 +7,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.R
 import com.android.pos.data.model.requestModel.CreateTaxRequestModel
+import com.android.pos.data.model.responseModel.CreateTaxResponse
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
+import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -34,6 +36,20 @@ class CreateTaxViewModel @Inject constructor(
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
+    private var taxId: Int = -1
+
+    private var isEdit: Boolean = false
+
+    private lateinit var taxData: CreateTaxRequestModel
+
+    private lateinit var resource: Resource<CreateTaxResponse>
+
+    fun isEditData(isEdit: Boolean, taxId: Int) {
+        this.taxId = taxId
+        this.isEdit = isEdit
+    }
+
+
     fun submit() {
         val value = createTaxDetails.value
         if (TextUtils.isEmpty(value?.name?.trim())) {
@@ -47,14 +63,29 @@ class CreateTaxViewModel @Inject constructor(
         } else {
             _showProgress.value = Event(true)
 
-            val data = CreateTaxRequestModel().apply {
-                name = value!!.name
-                rate = value.rate
-                locationId = prefProvider.getValueInt(LOCATION_ID, -1)
+            if (isEdit) {
+                taxData = CreateTaxRequestModel().apply {
+                    id = taxId
+                    name = value!!.name
+                    rate = value.rate
+                    locationId = prefProvider.getValueInt(LOCATION_ID, -1)
+                }
+            } else {
+                taxData = CreateTaxRequestModel().apply {
+                    name = value!!.name
+                    rate = value.rate
+                    locationId = prefProvider.getValueInt(LOCATION_ID, -1)
+                }
             }
 
+
             viewModelScope.launch {
-                val resource = posRepository.createTax(data)
+                if (isEdit) {
+                    resource = posRepository.updateTax(taxId,taxData)
+                } else {
+                    resource = posRepository.createTax(taxData)
+                }
+
                 when (resource.status) {
                     Status.SUCCESS -> {
                         _showProgress.value = Event(false)

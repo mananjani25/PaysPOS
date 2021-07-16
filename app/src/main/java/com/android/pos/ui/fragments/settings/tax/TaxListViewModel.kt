@@ -32,9 +32,6 @@ class TaxListViewModel @Inject constructor(
     fun delete(id: Int) {
         _showProgress.value = Event(true)
 
-        /*val data = HashMap<String, String>()
-        data["id"] = id.toString()*/
-
         viewModelScope.launch {
             val resource = posRepository.deleteTax(id)
             when (resource.status) {

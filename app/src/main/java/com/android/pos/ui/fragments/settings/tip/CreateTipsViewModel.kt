@@ -7,10 +7,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.R
 import com.android.pos.data.model.requestModel.CreateTipRequestModel
+import com.android.pos.data.model.responseModel.CreateTipResponse
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
+import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -34,6 +36,19 @@ class CreateTipsViewModel @Inject constructor(
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
+    private var tipId: Int = -1
+
+    private var isEdit: Boolean = false
+
+    private lateinit var tipData: CreateTipRequestModel
+
+    private lateinit var resource: Resource<CreateTipResponse>
+
+    fun isEditData(isEdit: Boolean, tipId: Int) {
+        this.tipId = tipId
+        this.isEdit = isEdit
+    }
+
     fun submit() {
         val value = createTipDetails.value
         if (TextUtils.isEmpty(value?.name?.trim())) {
@@ -47,14 +62,29 @@ class CreateTipsViewModel @Inject constructor(
         } else {
             _showProgress.value = Event(true)
 
-            val data = CreateTipRequestModel().apply {
-                name = value!!.name
-                rate = value.rate
-                locationId = prefProvider.getValueInt(LOCATION_ID, -1)
+            if (isEdit) {
+                tipData = CreateTipRequestModel().apply {
+                    id = tipId
+                    name = value!!.name
+                    rate = value.rate
+                    locationId = prefProvider.getValueInt(LOCATION_ID, -1)
+                }
+            } else {
+                tipData = CreateTipRequestModel().apply {
+                    name = value!!.name
+                    rate = value.rate
+                    locationId = prefProvider.getValueInt(LOCATION_ID, -1)
+                }
             }
 
+
             viewModelScope.launch {
-                val resource = posRepository.createTips(data)
+                if (isEdit) {
+                    resource = posRepository.updateTip(tipId, tipData)
+                } else {
+                    resource = posRepository.createTips(tipData)
+                }
+
                 when (resource.status) {
                     Status.SUCCESS -> {
                         _showProgress.value = Event(false)
@@ -85,4 +115,6 @@ class CreateTipsViewModel @Inject constructor(
         }
 
     }
+
+
 }

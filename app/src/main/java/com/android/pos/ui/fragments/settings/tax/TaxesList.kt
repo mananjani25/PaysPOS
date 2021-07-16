@@ -30,11 +30,11 @@ import dagger.hilt.android.AndroidEntryPoint
 class TaxesList : Fragment() {
 
     private var position: Int = -1
-    private lateinit var taxListUpdateDelete: ArrayList<GetTaxResponse.Data>
+    private lateinit var taxListUpdateDelete: ArrayList<GetTaxResponse.TaxData>
     private lateinit var binding: FragmentTaxesBinding
     private val viewModel by viewModels<TaxListViewModel>()
     private var taxListadapter = TaxListAdapter()
-    private lateinit var taxObject: GetTaxResponse.Data
+    private lateinit var taxObject: GetTaxResponse.TaxData
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -70,19 +70,21 @@ class TaxesList : Fragment() {
                 underlayButtons: MutableList<UnderlayButton?>
             ) {
 
-                /*underlayButtons.add(UnderlayButton(
+                underlayButtons.add(UnderlayButton(
                     "Edit",
                     0,
                     Color.parseColor("#2997cc")
                 ) { pos ->
 
-                    taxObject= taxListadapter.getItem(pos)
+                    taxObject = taxListadapter.getItem(pos)
                     val bundle = Bundle()
-                    bundle.putBoolean("isEdit",true)
+                    bundle.putBoolean("isEdit", true)
                     bundle.putParcelable("taxObject", taxObject)
-                    findNavController().navigate(R.id.action_settings_to_newTax)
 
-                })*/
+               //     var bundle= bundleOf()
+                    findNavController().navigate(R.id.action_settings_to_newTax, bundle)
+
+                })
 
                 underlayButtons.add(UnderlayButton(
                     "Delete",
@@ -146,8 +148,8 @@ class TaxesList : Fragment() {
 
     }
 
-    private fun setTaxData(taxList: List<GetTaxResponse.Data>) {
-        taxListUpdateDelete = taxList as ArrayList<GetTaxResponse.Data>
+    private fun setTaxData(taxList: List<GetTaxResponse.TaxData>) {
+        taxListUpdateDelete = taxList as ArrayList<GetTaxResponse.TaxData>
         taxListadapter.apply {
             addTaxes(taxList)
             notifyDataSetChanged()
@@ -158,12 +160,12 @@ class TaxesList : Fragment() {
 
         viewModel.data.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
-               /* AlertUtils.showAlert(requireActivity(), it.message)
-                var adapter = binding.rvTaxList.adapter as TaxListAdapter
-                var list = adapter.taxList
-                list.remove(taxObject)
-                adapter.taxList = list
-                adapter.notifyDataSetChanged()*/
+                /* AlertUtils.showAlert(requireActivity(), it.message)
+                 var adapter = binding.rvTaxList.adapter as TaxListAdapter
+                 var list = adapter.taxList
+                 list.remove(taxObject)
+                 adapter.taxList = list
+                 adapter.notifyDataSetChanged()*/
 
                 AlertUtils.showAlert(requireActivity(), it.message)
                 taxListUpdateDelete.remove(taxObject)
@@ -171,12 +173,6 @@ class TaxesList : Fragment() {
                 taxListadapter.notifyItemRemoved(position)
                 taxListadapter.notifyItemRangeChanged(position, taxListUpdateDelete.size)
 
-
-
-               /* taxListUpdateDelete.remove(taxObject)
-                taxListadapter.addTaxes(taxListUpdateDelete)
-                taxListadapter.notifyItemRemoved(position)
-                taxListadapter.notifyItemRangeChanged(position, taxListUpdateDelete.size)*/
             }
         })
 

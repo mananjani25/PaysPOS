@@ -1,5 +1,6 @@
 package com.android.pos.ui.fragments.settings.tip
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,23 +8,31 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.model.DiscountListModel
 import com.android.pos.data.model.responseModel.GetTipReponse
 import com.android.pos.databinding.FragmentTipsBinding
 import com.android.pos.ui.adapter.DiscountListAdapter
 import com.android.pos.ui.adapter.TipsListAdapter
+import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.SwipeHelper
+import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.statusUtils.Status
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class TipsList : Fragment() {
 
+    private var position: Int = -1
     private lateinit var binding: FragmentTipsBinding
     private val viewModel by viewModels<TipListViewModel>()
-    private lateinit var adapter: TipsListAdapter
+    private var tipListadapter = TipsListAdapter()
+    private lateinit var tipObject: GetTipReponse.Data
+    private lateinit var tipListUpdateDelete: ArrayList<GetTipReponse.Data>
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -35,26 +44,69 @@ class TipsList : Fragment() {
 
         setUpRecyclerView()
         getTipListObserver()
+        setupSnackbar()
+        observeShowProgress()
+        deleteTip()
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-     //   setAdapter()
+        //   setAdapter()
         binding.txtAddNewTip.setOnClickListener {
             findNavController().navigate(R.id.action_settings_to_addTip)
         }
     }
 
     private fun setUpRecyclerView() {
-        adapter = TipsListAdapter()
-        binding.rvTipList.adapter = adapter
+        binding.rvTipList.adapter = tipListadapter
+
+        object : SwipeHelper(activity, binding.rvTipList) {
+            override fun instantiateUnderlayButton(
+                viewHolder: RecyclerView.ViewHolder?,
+                underlayButtons: MutableList<UnderlayButton?>
+            ) {
+
+                underlayButtons.add(UnderlayButton(
+                    "Edit",
+                    0,
+                    Color.parseColor("#2997cc")
+                ) { pos ->
+
+                    tipObject = tipListadapter.getItem(pos)
+                    val bundle = Bundle()
+                    bundle.putBoolean("isEdit", true)
+                    bundle.putParcelable("tipObject", tipObject)
+
+                    //     var bundle= bundleOf()
+                    findNavController().navigate(R.id.action_settings_to_addTip, bundle)
+
+                })
+
+                underlayButtons.add(UnderlayButton(
+                    "Delete",
+                    0,
+                    Color.parseColor("#FF3C30")
+                ) { pos ->
+
+                    position = pos
+                    activity?.let {
+                        AlertUtils.showConfirmAlert(
+                            it, getString(R.string.delete_tip_message)
+                        ) { _, _ ->
+                            tipObject = tipListadapter.getItem(pos)
+                            viewModel.delete(tipListadapter.getItem(pos).id)
+                        }
+                    }
+
+
+                })
+            }
+        }
     }
 
     private fun getTipListObserver() {
         viewModel.getTipList.observe(viewLifecycleOwner, {
-
-
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
@@ -76,20 +128,50 @@ class TipsList : Fragment() {
         })
     }
 
-    private fun setTipData(tipList: List<GetTipReponse.Data>) {
+    private fun observeShowProgress() {
 
-        adapter.apply {
+        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    ProgressUtils.showProgressDialog(requireActivity())
+                } else {
+                    ProgressUtils.dismissProgressDialog()
+                }
+            }
+        })
+
+    }
+
+    private fun setTipData(tipList: List<GetTipReponse.Data>) {
+        tipListUpdateDelete = tipList as ArrayList<GetTipReponse.Data>
+        tipListadapter.apply {
             addTips(tipList)
             notifyDataSetChanged()
         }
     }
 
-    private fun setAdapter() {
-        var list: ArrayList<DiscountListModel> = arrayListOf()
-        list.add(DiscountListModel(0, "Entertainment", "3.45%", false))
-        list.add(DiscountListModel(0, "Tip One", "3.45%", false))
-        list.add(DiscountListModel(0, "Entertainment Tip Two", "3.45%", false))
-        list.add(DiscountListModel(0, "Tip Three", "3.45%", false))
-        binding.rvTipList.adapter = DiscountListAdapter(requireContext(), list)
+    private fun deleteTip() {
+
+        viewModel.data.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+                /* AlertUtils.showAlert(requireActivity(), it.message)
+                 var adapter = binding.rvTaxList.adapter as TaxListAdapter
+                 var list = adapter.taxList
+                 list.remove(taxObject)
+                 adapter.taxList = list
+                 adapter.notifyDataSetChanged()*/
+
+                AlertUtils.showAlert(requireActivity(), it.message)
+                tipListUpdateDelete.remove(tipObject)
+                tipListadapter.addTips(tipListUpdateDelete)
+                tipListadapter.notifyItemRemoved(position)
+                tipListadapter.notifyItemRangeChanged(position, tipListUpdateDelete.size)
+
+            }
+        })
+
     }
+
+    private fun setupSnackbar() =
+        binding.root.liveSnackBar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
 }
