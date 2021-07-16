@@ -19,6 +19,7 @@ import com.android.pos.ui.adapter.TeamListAdapter
 import com.android.pos.ui.adapter.TeamsAdapter
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.CustomCallback
+import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.statusUtils.Status
 import com.android.pos.utils.sticky_recycler.StickyHeaderLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
@@ -47,7 +48,7 @@ class TeamList : Fragment(), CustomCallback {
 
         configureToolbar()
 //        setAdapter()
-        loadTeamDetails()
+        loadTeamDetails(null)
 
         loadTeams()
 
@@ -79,6 +80,7 @@ class TeamList : Fragment(), CustomCallback {
                     }
                     Status.ERROR -> {
                         ProgressUtils.dismissProgressDialog()
+                        binding.root.showAlert(resource.message)
 
                     }
                     Status.LOADING -> {
@@ -99,7 +101,7 @@ class TeamList : Fragment(), CustomCallback {
         binding.layoutTool.imgOptionMenuContainer.visibility = View.GONE
     }
 
-    private fun loadTeamDetails(data: EmployeeResponse.Data) {
+    private fun loadTeamDetails(data: EmployeeResponse.Data?) {
 
         val teamDetails = TeamDetails()
 

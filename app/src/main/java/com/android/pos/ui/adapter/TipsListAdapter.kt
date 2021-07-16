@@ -1,4 +1,42 @@
 package com.android.pos.ui.adapter
 
-class TipsListAdapter {
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
+import com.android.pos.data.model.responseModel.GetTipReponse
+import com.android.pos.databinding.ViewTipItemBinding
+
+class TipsListAdapter : RecyclerView.Adapter<TipsListAdapter.MyViewHolder>() {
+
+    private val tipList = ArrayList<GetTipReponse.Data>()
+
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ): TipsListAdapter.MyViewHolder {
+        val inflater = LayoutInflater.from(parent.context)
+        val binding = ViewTipItemBinding.inflate(inflater, parent, false)
+
+        return MyViewHolder(binding)
+    }
+
+    override fun onBindViewHolder(holder: TipsListAdapter.MyViewHolder, position: Int) {
+        val itemBinding = holder.tipItemBinding
+        itemBinding.tipModel = tipList[position]
+
+        itemBinding.executePendingBindings()
+    }
+
+    override fun getItemCount() = tipList.size
+
+    fun addTips(tipList: List<GetTipReponse.Data>) {
+
+        this.tipList.apply {
+            clear()
+            addAll(tipList)
+        }
+    }
+
+    inner class MyViewHolder(val tipItemBinding: ViewTipItemBinding) :
+        RecyclerView.ViewHolder(tipItemBinding.root)
 }

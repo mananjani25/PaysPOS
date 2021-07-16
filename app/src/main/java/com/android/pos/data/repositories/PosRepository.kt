@@ -3,6 +3,8 @@ package com.android.pos.data.repositories
 
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.db.IDataManager
+import com.android.pos.data.model.requestModel.CreateTaxRequestModel
+import com.android.pos.data.model.requestModel.CreateTipRequestModel
 import com.android.pos.data.remote.ApiHelper
 import com.android.pos.utils.performGetOperationNew
 import javax.inject.Inject
@@ -12,7 +14,9 @@ class PosRepository @Inject constructor(
     private val appDatabase: AppDatabase,
     private val apiHelperNew: ApiHelper
 ) : IDataManager {
+
     suspend fun userLogIn(data: HashMap<String, String>) = apiHelperNew.userLogIn(data)
+
     suspend fun getDefaultTerminal(uniq_id: String) =
         apiHelperNew.getDefaultTerminal(uniq_id)
 
@@ -23,11 +27,22 @@ class PosRepository @Inject constructor(
     suspend fun employeeClockOut(data: HashMap<String, String>) =
         apiHelperNew.employeeClockOut(data)
 
+
     fun syncVenueData() =
         performGetOperationNew(networkCall = { apiHelperNew.syncVenueData() })
 
     fun employeesList() =
         performGetOperationNew(networkCall = { apiHelperNew.employeesList() })
+
+    fun getTaxList() =
+        performGetOperationNew(networkCall = { apiHelperNew.getTaxList() })
+
+    suspend fun createTax(data: CreateTaxRequestModel) = apiHelperNew.createTax(data)
+
+    fun getTipList() =
+        performGetOperationNew(networkCall = { apiHelperNew.getTipsList() })
+
+    suspend fun createTips(data: CreateTipRequestModel) = apiHelperNew.createTips(data)
 
 
 //    fun getCharacters() = performGetOperation(

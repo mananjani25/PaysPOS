@@ -1,11 +1,15 @@
 package com.android.pos.data.remote
 
 
+import com.android.pos.data.model.requestModel.CreateTaxRequestModel
+import com.android.pos.data.model.requestModel.CreateTipRequestModel
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.Constants.CLOCK_OUT
 import com.android.pos.data.remote.Constants.EMPLOYEES
 import com.android.pos.data.remote.Constants.EMPLOYEE_CLOCK_IN
 import com.android.pos.data.remote.Constants.EMPLOYEE_LOG_IN
+import com.android.pos.data.remote.Constants.GET_TAXES
+import com.android.pos.data.remote.Constants.GET_TIPS
 import com.android.pos.data.remote.Constants.LOGIN_TERMINAL
 import com.android.pos.data.remote.Constants.SYNC_VENUE_DATA
 import com.android.pos.data.remote.Constants.USERS_LOG_IN
@@ -39,4 +43,16 @@ interface ApiService {
 
     @GET(EMPLOYEES)
     suspend fun employeesList(): EmployeeResponse
+
+    @GET(GET_TAXES)
+    suspend fun getTaxList(): GetTaxResponse
+
+    @POST(GET_TAXES)
+    suspend fun createTax(@Body createTax: CreateTaxRequestModel): CreateTaxResponse
+
+    @GET(GET_TIPS)
+    suspend fun getTipsList(): GetTipReponse
+
+    @POST(GET_TIPS)
+    suspend fun createTips(@Body createTip: CreateTipRequestModel): CreateTipResponse
 }

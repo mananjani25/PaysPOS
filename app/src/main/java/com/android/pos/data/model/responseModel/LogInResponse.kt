@@ -19,9 +19,9 @@ data class LogInResponse(
         @SerializedName("id")
         val id: Int,
         @SerializedName("location_id")
-        val locationId: Any,
+        val locationId: Int,
         @SerializedName("location_name")
-        val locationName: Any,
+        val locationName: String,
         @SerializedName("updated_at")
         val updatedAt: String,
         @SerializedName("user_name")

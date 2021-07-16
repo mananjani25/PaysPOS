@@ -4,6 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingDefaultResource">
 
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.android.pos.ui.fragments.settings.tax.CreateTaxViewModel" />
+    </data>
+
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -48,6 +55,7 @@
                     android:layout_weight="0.1"
                     android:background="@color/btnColor"
                     android:gravity="center"
+                    android:onClick="@{() -> viewModel.submit()}"
                     android:padding="@dimen/_10sdp"
                     android:text="@string/save"
                     android:textColor="@color/white"
@@ -125,10 +133,9 @@
 
                         <androidx.appcompat.widget.AppCompatTextView
                             style="@style/CustomFontSemiBold"
-                            android:layout_width="0dp"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:layout_weight="1"
                             android:padding="@dimen/_10sdp"
                             android:text="@string/name"
                             android:textColor="@color/viewTextColor"
@@ -136,13 +143,15 @@
 
                         <androidx.appcompat.widget.AppCompatEditText
                             style="@style/CustomFontSemiBold"
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:layout_weight="1"
                             android:background="@null"
-                            android:hint="@string/tv_sales_tax"
+                            android:gravity="end"
                             android:imeOptions="actionNext"
-                            android:inputType="number"
+                            android:inputType="textCapWords"
                             android:padding="@dimen/_10sdp"
+                            android:text="@={viewModel.createTaxDetails.name}"
                             android:textColor="@color/black"
                             android:textColorHint="@color/hintColor"
                             android:textSize="@dimen/_10mdpi" />
@@ -161,10 +170,9 @@
 
                         <androidx.appcompat.widget.AppCompatTextView
                             style="@style/CustomFontSemiBold"
-                            android:layout_width="0dp"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:layout_weight="1"
                             android:padding="@dimen/_10sdp"
                             android:text="@string/percentage"
                             android:textColor="@color/viewTextColor"
@@ -172,16 +180,18 @@
 
                         <androidx.appcompat.widget.AppCompatEditText
                             style="@style/CustomFontSemiBold"
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:layout_weight="1"
                             android:background="@null"
-                            android:imeOptions="actionNext"
-                            android:inputType="number"
+                            android:gravity="end"
+                            android:imeOptions="actionDone"
+                            android:inputType="numberDecimal"
                             android:paddingStart="@dimen/_20sdp"
                             android:paddingTop="@dimen/_10sdp"
                             android:paddingEnd="@dimen/_20sdp"
                             android:paddingBottom="@dimen/_10sdp"
-                            android:text="0%"
+                            android:text="@={``+viewModel.createTaxDetails.rate}"
                             android:textColor="@color/black"
                             android:textColorHint="@color/hintColor"
                             android:textSize="@dimen/_10mdpi" />

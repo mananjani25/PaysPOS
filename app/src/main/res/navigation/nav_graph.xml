@@ -200,11 +200,11 @@
         app:enterAnim="@anim/nav_default_enter_anim" />
     <fragment
         android:id="@+id/newTax"
-        android:name="com.android.pos.ui.fragments.settings.NewTax"
+        android:name="com.android.pos.ui.fragments.settings.tax.CreateTax"
         android:label="NewTax" />
     <fragment
         android:id="@+id/addTip"
-        android:name="com.android.pos.ui.fragments.settings.AddTip"
+        android:name="com.android.pos.ui.fragments.settings.tip.CreateTip"
         android:label="AddTip" />
     <fragment
         android:id="@+id/createNote"

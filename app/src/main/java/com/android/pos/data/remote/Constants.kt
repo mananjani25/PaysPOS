@@ -4,10 +4,13 @@ object Constants {
 
     //Database Name
     const val DATABASE_NAME = "androidPos-db"
+
+    //SharedPref Keys
     const val AUTH_TOKEN = "authToken"
     const val TERMINAL_ID = "terminalId"
     const val BASE_URL_NEW = "baseUrlNew"
     const val PASSCODE = "passcode"
+    const val LOCATION_ID = "locationId"
 
 
     //Api End Points
@@ -19,6 +22,9 @@ object Constants {
     const val SYNC_VENUE_DATA = "locations/sync_data"
     const val EMPLOYEES = "employees"
 
-    //SharedPref Keys
+    const val GET_TAXES = "taxes"
+    const val TAX_UPDATE = "taxes/{id}"
+    //const val TAX_DELETE = "taxes/{id}"
 
+    const val GET_TIPS = "tip_settings"
 }

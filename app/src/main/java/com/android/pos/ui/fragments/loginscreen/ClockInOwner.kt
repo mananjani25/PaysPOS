@@ -12,7 +12,6 @@ import com.android.pos.R
 import com.android.pos.databinding.FragmentClockInOwnerBinding
 import com.android.pos.utils.ProgressUtils
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.fragment_clock_in_owner.*
 
 @AndroidEntryPoint
 class ClockInOwner : Fragment() {
