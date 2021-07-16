@@ -70,15 +70,19 @@ class TaxesList : Fragment() {
                 underlayButtons: MutableList<UnderlayButton?>
             ) {
 
-                underlayButtons.add(UnderlayButton(
+                /*underlayButtons.add(UnderlayButton(
                     "Edit",
                     0,
                     Color.parseColor("#2997cc")
                 ) { pos ->
 
-                    taxListadapter.getItem(pos)
+                    taxObject= taxListadapter.getItem(pos)
+                    val bundle = Bundle()
+                    bundle.putBoolean("isEdit",true)
+                    bundle.putParcelable("taxObject", taxObject)
                     findNavController().navigate(R.id.action_settings_to_newTax)
-                })
+
+                })*/
 
                 underlayButtons.add(UnderlayButton(
                     "Delete",
@@ -154,17 +158,22 @@ class TaxesList : Fragment() {
 
         viewModel.data.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
-                AlertUtils.showAlert(requireActivity(), it.message)
+               /* AlertUtils.showAlert(requireActivity(), it.message)
                 var adapter = binding.rvTaxList.adapter as TaxListAdapter
                 var list = adapter.taxList
                 list.remove(taxObject)
                 adapter.taxList = list
-                adapter.notifyDataSetChanged()
+                adapter.notifyDataSetChanged()*/
 
-                /*adapter.notifyItemRemoved(position)
-                adapter.notifyItemRangeChanged(position, taxListUpdateDelete.size)
-
+                AlertUtils.showAlert(requireActivity(), it.message)
                 taxListUpdateDelete.remove(taxObject)
+                taxListadapter.addTaxes(taxListUpdateDelete)
+                taxListadapter.notifyItemRemoved(position)
+                taxListadapter.notifyItemRangeChanged(position, taxListUpdateDelete.size)
+
+
+
+               /* taxListUpdateDelete.remove(taxObject)
                 taxListadapter.addTaxes(taxListUpdateDelete)
                 taxListadapter.notifyItemRemoved(position)
                 taxListadapter.notifyItemRangeChanged(position, taxListUpdateDelete.size)*/

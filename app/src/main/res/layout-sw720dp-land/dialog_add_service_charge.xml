@@ -98,11 +98,10 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_gravity="center"
-                        android:checked="true"
+                        android:checked="false"
                         android:padding="@dimen/_5sdp"
                         app:srcCompat="@drawable/ic_arrow_forward"
-                        app:thumbTint="@color/btnColor"
-                        app:trackTint="@color/colorE2" />
+                        app:theme="@style/AppTheme" />
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
                 <View

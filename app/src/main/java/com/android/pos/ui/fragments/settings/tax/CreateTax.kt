@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
+import com.android.pos.data.model.responseModel.GetTaxResponse
 import com.android.pos.databinding.DialogCreateNewTaxBinding
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
@@ -22,6 +23,9 @@ class CreateTax : Fragment() {
     private lateinit var binding: DialogCreateNewTaxBinding
 
     private val viewModel by viewModels<CreateTaxViewModel>()
+
+    var isEdit:Boolean=false
+    private lateinit var taxData:GetTaxResponse.Data
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -36,7 +40,10 @@ class CreateTax : Fragment() {
 
         setupSnackbar()
         observeShowProgress()
-       // navigate()
+        // navigate()
+
+       /* isEdit= arguments?.getBoolean("isEdit")!!
+        taxData = arguments?.getParcelable<GetTaxResponse.Data>("taxObject")!!*/
 
         return binding.root
     }

@@ -1,8 +1,11 @@
 package com.android.pos.data.model.responseModel
 
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class GetTaxResponse(
     @SerializedName("data")
     val `data`: List<Data>,
@@ -12,7 +15,8 @@ data class GetTaxResponse(
     val status: Int,
     @SerializedName("type")
     val type: String
-) {
+) : Parcelable {
+    @Parcelize
     data class Data(
         @SerializedName("created_at")
         val createdAt: String,
@@ -25,8 +29,8 @@ data class GetTaxResponse(
         @SerializedName("rate")
         val rate: Int,
         @SerializedName("tax_type")
-        val taxType: Any,
+        val taxType: String,
         @SerializedName("updated_at")
         val updatedAt: String
-    )
+    ) : Parcelable
 }

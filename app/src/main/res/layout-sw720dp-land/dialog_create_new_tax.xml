@@ -106,11 +106,10 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_gravity="center"
-                        android:checked="true"
+                        android:checked="false"
                         android:padding="@dimen/_5sdp"
                         app:srcCompat="@drawable/ic_arrow_forward"
-                        app:thumbTint="@color/btnColor"
-                        app:trackTint="@color/colorE2" />
+                        app:theme="@style/AppTheme" />
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
                 <View
@@ -261,11 +260,11 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_marginTop="@dimen/_10sdp"
+                        android:layout_marginBottom="@dimen/_5sdp"
                         android:layout_weight="1"
                         android:elevation="@dimen/_10sdp"
                         android:fontFamily="@font/sf_pro_display_semibold"
                         android:gravity="start"
-                        android:layout_marginBottom="@dimen/_5sdp"
                         android:padding="@dimen/_5sdp"
                         android:text="@string/tv_apply_tax_to"
                         android:textColor="@color/viewTextColor"
@@ -300,10 +299,9 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_gravity="center"
-                        android:checked="true"
+                        android:checked="false"
                         android:padding="@dimen/_5sdp"
-                        app:thumbTint="@color/btnColor"
-                        app:trackTint="@color/colorE2" />
+                        app:theme="@style/AppTheme" />
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
                 <View

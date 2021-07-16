@@ -72,4 +72,15 @@
 
     </style>
 
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        ...
+        <!-- Active thumb color & Active track color(30% transparency) -->
+        <item name="colorControlActivated">@color/btnColor</item>
+        <!-- Inactive thumb color -->
+        <item name="colorSwitchThumbNormal">@color/boxColor</item>
+        <!-- Inactive track color(30% transparency) -->
+        <item name="android:colorForeground">@color/boxColor</item>
+        ...
+    </style>
+
 </resources>
