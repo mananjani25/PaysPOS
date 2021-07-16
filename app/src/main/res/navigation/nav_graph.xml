@@ -193,6 +193,7 @@
         <action
             android:id="@+id/action_settings_to_customerReceiptSettings"
             app:destination="@id/customerReceiptSettings" />
+
     </fragment>
     <action
         android:id="@+id/action_global_settings"
@@ -253,9 +254,9 @@
         android:label="CreateOption" />
     <fragment
         android:id="@+id/dashboardCategoryNew"
-        tools:layout="@layout/fragment_dashboard_category_new"
         android:name="com.android.pos.ui.fragments.dashboard.DashboardCategoryNew"
-        android:label="DashboardCategoryNew" >
+        android:label="DashboardCategoryNew"
+        tools:layout="@layout/fragment_dashboard_category_new">
         <action
             android:id="@+id/action_dashboardCategoryNew_to_createItem"
             app:destination="@id/createItem"

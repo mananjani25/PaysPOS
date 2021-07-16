@@ -25,7 +25,7 @@
             android:layout_gravity="center"
             android:gravity="center"
             android:text="@{model.title}"
-            android:textColor="@color/drawerItemUnselected"
+            android:textColor="@{model.isSelected ? @color/txtColor : @color/drawerItemUnselected}"
             android:textSize="@dimen/_6mdpi" />
 
         <View
