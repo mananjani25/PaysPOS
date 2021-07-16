@@ -7,8 +7,8 @@
 
     <data>
         <variable
-            name="model"
-            type="com.android.pos.data.model.BusinessSettingModel" />
+            name="noteModel"
+            type="com.android.pos.data.model.responseModel.NoteResponse.Data" />
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat
@@ -42,7 +42,7 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/_5sdp"
                 android:layout_weight="1"
-                android:text="@{model.title}"
+                android:text="@{noteModel.name}"
                 android:gravity="start"
                 android:padding="@dimen/_5sdp"
                 android:textColor="@color/viewTextColor"

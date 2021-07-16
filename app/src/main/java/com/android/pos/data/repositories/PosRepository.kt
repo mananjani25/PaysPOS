@@ -58,6 +58,11 @@ class PosRepository @Inject constructor(
 //        }
 //    )
 
+    fun getNoteList() =
+        performGetOperationNew(networkCall = { apiHelperNew.getNoteList() })
+
+    suspend fun deleteNote(data: Int) = apiHelperNew.deleteNote(data)
+
     override suspend fun abs() {
 
         appDatabase.characterDao().getCharacter(0)

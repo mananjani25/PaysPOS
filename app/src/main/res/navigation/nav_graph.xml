@@ -209,7 +209,7 @@
         android:label="AddTip" />
     <fragment
         android:id="@+id/createNote"
-        android:name="com.android.pos.ui.fragments.settings.CreateNote"
+        android:name="com.android.pos.ui.fragments.settings.notes.CreateNote"
         android:label="CreateNote" />
     <fragment
         android:id="@+id/addServiceCharge"
