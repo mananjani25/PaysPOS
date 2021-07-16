@@ -9,6 +9,8 @@ import com.android.pos.data.remote.Constants.EMPLOYEES
 import com.android.pos.data.remote.Constants.EMPLOYEE_CLOCK_IN
 import com.android.pos.data.remote.Constants.EMPLOYEE_LOG_IN
 import com.android.pos.data.remote.Constants.LOGIN_TERMINAL
+import com.android.pos.data.remote.Constants.NOTES
+import com.android.pos.data.remote.Constants.NOTE_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.SYNC_VENUE_DATA
 import com.android.pos.data.remote.Constants.TAXES
 import com.android.pos.data.remote.Constants.TAX_UPDATE_DELETE
@@ -79,4 +81,14 @@ interface ApiService {
     suspend fun deleteTip(
         @Path("id") tipId: Int
     ): CreateTipResponse
+        @Path("id") tipId: String?
+    ): BaseResponse
+
+    @GET(NOTES)
+    suspend fun getNoteList(): NoteResponse
+
+    @DELETE(NOTE_UPDATE_DELETE)
+    suspend fun deleteNote(
+        @Path("id") noteId: Int,
+    ): BaseResponse
 }

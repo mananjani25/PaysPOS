@@ -48,4 +48,10 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
 
     suspend fun deleteTip(tipId: Int) =
         getResult { apiService.deleteTip(tipId) }
+
+    suspend fun getNoteList() =
+        getResult { apiService.getNoteList() }
+
+    suspend fun deleteNote(data: Int) =
+        getResult { apiService.deleteNote(data) }
 }
