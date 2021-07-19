@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.android.pos.R
 import com.android.pos.data.model.responseModel.GetTipReponse
 import com.android.pos.databinding.DialogAddNewTipBinding
 import com.android.pos.utils.ProgressUtils
@@ -34,6 +35,7 @@ class CreateTip : Fragment() {
         isEdit = arguments?.getBoolean("isEdit")!!
 
         if (isEdit) {
+            binding.txtSave.text = getString(R.string.update)
             tipData = arguments?.getParcelable("tipObject")!!
 
             viewModel.setTipData(tipData)

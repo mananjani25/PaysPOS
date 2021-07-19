@@ -30,4 +30,5 @@ object Constants {
 
     const val NOTES = "dynamic_notes"
     const val NOTE_UPDATE_DELETE = "dynamic_notes/{id}"
+
 }

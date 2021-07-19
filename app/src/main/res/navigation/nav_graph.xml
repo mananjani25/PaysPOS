@@ -220,7 +220,12 @@
     <fragment
         android:id="@+id/createNote"
         android:name="com.android.pos.ui.fragments.settings.notes.CreateNote"
-        android:label="CreateNote" />
+        android:label="CreateNote">
+        <argument
+            android:name="isEdit"
+            app:argType="boolean"
+            android:defaultValue="false" />
+    </fragment>
     <fragment
         android:id="@+id/addServiceCharge"
         android:name="com.android.pos.ui.fragments.settings.AddServiceCharge"
