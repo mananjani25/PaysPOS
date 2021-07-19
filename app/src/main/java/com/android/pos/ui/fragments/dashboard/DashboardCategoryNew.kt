@@ -7,9 +7,13 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
+import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.view.marginBottom
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.pos.R
 import com.android.pos.data.model.CategoryTabModel
 import com.android.pos.data.model.responseModel.VenueDataResponse
@@ -17,13 +21,10 @@ import com.android.pos.databinding.FragmentDashboardCategoryNewBinding
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.CategoryItemAdapter
 import com.android.pos.ui.adapter.CategoryTabAdapter
-import com.android.pos.ui.adapter.CategoryViewPagerAdapter
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.statusUtils.Status
-import com.google.android.material.tabs.TabLayoutMediator
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
-import okhttp3.internal.notify
 
 @AndroidEntryPoint
 class DashboardCategoryNew : Fragment() {
@@ -54,6 +55,173 @@ class DashboardCategoryNew : Fragment() {
 
         setVenueData()
         configureDrawer()
+        onClick()
+    }
+
+    private fun onClick() {
+        binding.layoutMenu.switchDesign.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                verticalTabList()
+
+            } else {
+                horizontalTabList()
+            }
+
+        }
+
+    }
+
+    private fun horizontalTabList() {
+        val params = binding.rvTabLayout.layoutParams
+        params.height = LinearLayout.LayoutParams.WRAP_CONTENT
+        params.width = 0
+        binding.rvTabLayout.layoutParams = params
+        binding.rvTabLayout.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+
+        val set: ConstraintSet = ConstraintSet()
+        set.clone(binding.constraintParent)
+
+        //Category TabList Horizontal View Set
+        set.connect(
+            binding.rvTabLayout.id,
+            ConstraintSet.START,
+            binding.root.id,
+            ConstraintSet.START
+        )
+        set.connect(
+            binding.rvTabLayout.id,
+            ConstraintSet.END,
+            binding.linearMenu.id,
+            ConstraintSet.START
+        )
+        set.connect(
+            binding.rvTabLayout.id,
+            ConstraintSet.TOP,
+            binding.viewLine.id,
+            ConstraintSet.BOTTOM
+        )
+        set.connect(
+            binding.rvTabLayout.id,
+            ConstraintSet.BOTTOM,
+            binding.root.id,
+            ConstraintSet.BOTTOM
+        )
+        set.setVerticalBias(binding.rvTabLayout.id, 0F)
+
+
+
+        //CategoryList RecyclerView View Set
+        val params1 = binding.rvTabLayout.layoutParams
+        params1.height = 0
+        params1.width = LinearLayout.LayoutParams.WRAP_CONTENT
+        binding.rvTabLayout.layoutParams = params1
+
+        set.connect(
+            binding.rvPagerCategory.id,
+            ConstraintSet.TOP,
+            binding.rvTabLayout.id,
+            ConstraintSet.BOTTOM
+        )
+        set.connect(
+            binding.rvPagerCategory.id,
+            ConstraintSet.START,
+            binding.root.id,
+            ConstraintSet.START
+        )
+        set.connect(
+            binding.rvPagerCategory.id,
+            ConstraintSet.BOTTOM,
+            binding.root.findViewById<View>(R.id.footer).id,
+            ConstraintSet.TOP
+        )
+        set.connect(
+            binding.rvPagerCategory.id,
+            ConstraintSet.END,
+            binding.linearMenu.id,
+            ConstraintSet.START
+        )
+
+        set.applyTo(binding.constraintParent)
+
+    }
+
+    private fun verticalTabList() {
+        var params: ViewGroup.LayoutParams = binding.rvTabLayout.layoutParams
+        params.height = 0
+        params.width = LinearLayout.LayoutParams.WRAP_CONTENT
+        binding.rvTabLayout.layoutParams = params
+        binding.rvTabLayout.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+
+
+        val set: ConstraintSet = ConstraintSet()
+        set.clone(binding.constraintParent)
+
+        //Category TabList REcyclerViewTab View Set
+        set.connect(
+            binding.rvTabLayout.id,
+            ConstraintSet.END,
+            binding.linearMenu.id,
+            ConstraintSet.START
+        )
+        set.connect(
+            binding.rvTabLayout.id,
+            ConstraintSet.TOP,
+            binding.root.findViewById<View>(R.id.layoutMenu).id,
+            ConstraintSet.BOTTOM
+        )
+        set.connect(
+            binding.rvTabLayout.id,
+            ConstraintSet.BOTTOM,
+            binding.root.findViewById<View>(R.id.footer).id,
+            ConstraintSet.TOP
+        )
+        set.connect(
+            binding.rvTabLayout.id,
+            ConstraintSet.START,
+            binding.rvPagerCategory.id,
+            ConstraintSet.END
+        )
+
+
+
+        //CategoryList REcyclerView View Set
+        val params1 = binding.rvTabLayout.layoutParams
+        params1.height = 0
+        params1.width = LinearLayout.LayoutParams.WRAP_CONTENT
+        binding.rvTabLayout.layoutParams = params1
+
+
+
+        set.connect(
+            binding.rvPagerCategory.id,
+            ConstraintSet.START,
+            binding.constraintParent.id,
+            ConstraintSet.START
+        )
+        set.connect(
+            binding.rvPagerCategory.id,
+            ConstraintSet.TOP,
+            binding.root.findViewById<View>(R.id.layoutMenu).id,
+            ConstraintSet.BOTTOM
+        )
+        set.connect(
+            binding.rvPagerCategory.id,
+            ConstraintSet.BOTTOM,
+            binding.root.findViewById<View>(R.id.footer).id,
+            ConstraintSet.TOP
+        )
+        set.connect(
+            binding.rvPagerCategory.id,
+            ConstraintSet.END,
+            binding.rvTabLayout.id,
+            ConstraintSet.START
+        )
+
+
+        set.applyTo(binding.constraintParent)
+
     }
 
     private fun configureDrawer() {
@@ -75,6 +243,7 @@ class DashboardCategoryNew : Fragment() {
 
                             categoryList = category.data.categories.toMutableList()
 
+                            tabList.clear()
                             for (i in 0 until categoryList.size) {
 
                                 if (i == 0) {
@@ -110,30 +279,62 @@ class DashboardCategoryNew : Fragment() {
                                                 var listCategories =
                                                     (binding.rvPagerCategory?.adapter as CategoryItemAdapter).list
                                                 listCategories.clear()
+                                                listCategories.add(
+                                                    0,
+                                                    VenueDataResponse.Data.Category.Item(
+                                                        0,
+                                                        0,
+                                                        "",
+                                                        "",
+                                                        0.0,
+                                                        "",
+                                                        "",
+                                                        0,
+                                                        ""
+                                                    )
+                                                )
+
                                                 Log.e(
                                                     TAG,
                                                     "categoryListData  ${categoryList.get(pos).items}"
                                                 )
+
                                                 listCategories.addAll(categoryList.get(pos).items)
                                                 (binding.rvPagerCategory?.adapter as CategoryItemAdapter).list =
                                                     listCategories
-                                                if (listCategories.isNotEmpty()) {
-                                                    binding.rvPagerCategory?.adapter?.notifyDataSetChanged()
-                                                } else {
-                                                    (binding.rvPagerCategory?.adapter as CategoryItemAdapter).list?.clear()
-                                                    binding.rvPagerCategory?.adapter?.notifyDataSetChanged()
-                                                }
+
+                                                binding.rvPagerCategory?.adapter?.notifyDataSetChanged()
+
 
                                             }
                                         })
                                     itemList.clear()
-                                    Log.e("CatList", "${Gson().toJson(categoryList.get(0).items)}")
+                                    itemList.add(
+                                        0,
+                                        VenueDataResponse.Data.Category.Item(
+                                            0,
+                                            0,
+                                            "",
+                                            "",
+                                            0.0,
+                                            "",
+                                            "",
+                                            0,
+                                            ""
+                                        )
+                                    )
+
                                     itemList.addAll(categoryList.get(0).items)
 
+                                    Log.e("CatList", "${Gson().toJson(categoryList.get(0).items)}")
                                     binding.rvPagerCategory.adapter =
                                         CategoryItemAdapter(requireContext(), itemList, object :
                                             CategoryItemAdapter.CategoryItemList {
                                             override fun onClick() {
+
+                                            }
+
+                                            override fun onClickedCreateItem() {
                                                 findNavController().navigate(R.id.action_dashboardCategoryNew_to_createItem)
                                             }
 
