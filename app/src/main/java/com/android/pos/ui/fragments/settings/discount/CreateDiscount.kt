@@ -4,15 +4,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CompoundButton
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.android.pos.R
 import com.android.pos.data.model.responseModel.GetDiscountResponse
 import com.android.pos.databinding.FragmentCreateDiscountBinding
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+
 
 @AndroidEntryPoint
 class CreateDiscount : Fragment() {
@@ -31,20 +34,31 @@ class CreateDiscount : Fragment() {
         binding = FragmentCreateDiscountBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
+        binding.createDiscountFragment = this
 
 
         isEdit = arguments?.getBoolean("isEdit")!!
 
-         if (isEdit) {
-             discountData = arguments?.getParcelable("discountObject")!!
+        if (isEdit) {
+            discountData = arguments?.getParcelable("discountObject")!!
 
-             viewModel.setDiscountData(discountData)
-             viewModel.isEditData(isEdit, discountData.id)
-         }
+            viewModel.setDiscountData(discountData)
+
+            if (discountData.discountType == getString(R.string.disc_percentage)) {
+                binding.swtDiscountType.isChecked = true
+                binding.swtDiscountType.text = getString(R.string.disc_percentage)
+            } else {
+                binding.swtDiscountType.isChecked = false
+                binding.swtDiscountType.text = getString(R.string.disc_amount)
+            }
+
+            viewModel.isEditData(isEdit, discountData.id)
+        }
 
         setupSnackbar()
         observeShowProgress()
         navigate()
+
         return binding.root
     }
 
@@ -59,6 +73,17 @@ class CreateDiscount : Fragment() {
             findNavController().navigateUp()
         }
     }
+
+    fun saveGender(isChecked: Boolean) {
+        if (isChecked) {
+            binding.swtDiscountType.text = getString(R.string.disc_percentage)
+            viewModel.discountType(getString(R.string.disc_percentage))
+        } else {
+            binding.swtDiscountType.text = getString(R.string.disc_amount)
+            viewModel.discountType(getString(R.string.disc_amount))
+        }
+    }
+
 
     private fun observeShowProgress() {
 

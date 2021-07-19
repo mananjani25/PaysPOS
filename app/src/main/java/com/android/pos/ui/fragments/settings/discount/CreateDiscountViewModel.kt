@@ -38,7 +38,7 @@ class CreateDiscountViewModel @Inject constructor(
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
     private var discountId: Int = -1
-
+    private var discountTypeViewModel: String = "Percentage"
     private var isEdit: Boolean = false
 
     private lateinit var discountData: CreateDiscountRequestModel
@@ -50,10 +50,15 @@ class CreateDiscountViewModel @Inject constructor(
         this.isEdit = isEdit
     }
 
+
+    fun discountType(discountType: String) {
+        this.discountTypeViewModel = discountType
+    }
+
     fun setDiscountData(discountData: GetDiscountResponse.Data) {
         createDiscountDetails.value?.name = discountData.name
         createDiscountDetails.value?.percentage = discountData.percentage
-        createDiscountDetails.value?.discountType = discountData.discountType
+        discountTypeViewModel = discountData.discountType
     }
 
     fun submit() {
@@ -74,7 +79,7 @@ class CreateDiscountViewModel @Inject constructor(
                     discount = CreateDiscountRequestModel.Discount().apply {
                         name = value!!.name
                         percentage = value.percentage
-                        discountType = "Percentage"    /*[Percentage Amount]*/
+                        discountType = discountTypeViewModel    /*[Percentage Amount]*/
                         locationId = prefProvider.getValueInt(LOCATION_ID, -1)
                     }
                 }
@@ -83,7 +88,7 @@ class CreateDiscountViewModel @Inject constructor(
                     discount = CreateDiscountRequestModel.Discount().apply {
                         name = value!!.name
                         percentage = value.percentage
-                        discountType = "Percentage"    /*[Percentage Amount]*/
+                        discountType = discountTypeViewModel    /*[Percentage Amount]*/
                         locationId = prefProvider.getValueInt(LOCATION_ID, -1)
                     }
 

@@ -7,6 +7,10 @@
     <data>
 
         <variable
+            name="createDiscountFragment"
+            type="com.android.pos.ui.fragments.settings.discount.CreateDiscount" />
+
+        <variable
             name="viewModel"
             type="com.android.pos.ui.fragments.settings.discount.CreateDiscountViewModel" />
     </data>
@@ -185,14 +189,17 @@
                                 android:textSize="@dimen/_6mdpi" />
 
                             <androidx.appcompat.widget.SwitchCompat
+                                android:id="@+id/swtDiscountType"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_alignParentEnd="true"
                                 android:layout_gravity="center"
-                                android:checked="false"
+                                android:checked="true"
+                                android:onCheckedChanged="@{(button, bool)-> createDiscountFragment.saveGender(bool)}"
                                 android:padding="@dimen/_5sdp"
-                                app:thumbTint="@color/btnColor"
-                                app:trackTint="@color/colorE2" />
+                                android:text="@string/disc_percentage"
+                                android:textSize="@dimen/_6mdpi"
+                                app:theme="@style/AppTheme" />
 
                         </androidx.appcompat.widget.LinearLayoutCompat>
 

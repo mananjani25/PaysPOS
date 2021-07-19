@@ -261,4 +261,6 @@
     <string name="products">Products</string>
     <string name="keypad">Keypad</string>
     <string name="remove_tip">Remove Tip</string>
+    <string name="disc_percentage">Percentage</string>
+    <string name="disc_amount">Amount</string>
 </resources>
