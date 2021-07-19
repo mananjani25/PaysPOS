@@ -19,7 +19,7 @@ class TaxListAdapter : RecyclerView.Adapter<TaxListAdapter.MyViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: TaxListAdapter.MyViewHolder, position: Int) {
-        val itemBinding = holder.tipItemBinding
+        val itemBinding = holder.taxItemBinding
         itemBinding.taxModel = taxList[position]
 
         itemBinding.executePendingBindings()
@@ -39,6 +39,6 @@ class TaxListAdapter : RecyclerView.Adapter<TaxListAdapter.MyViewHolder>() {
         return taxList[position]
     }
 
-    inner class MyViewHolder(val tipItemBinding: ViewTaxItemBinding) :
-        RecyclerView.ViewHolder(tipItemBinding.root)
+    inner class MyViewHolder(val taxItemBinding: ViewTaxItemBinding) :
+        RecyclerView.ViewHolder(taxItemBinding.root)
 }

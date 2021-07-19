@@ -1,4 +1,4 @@
-package com.android.pos.ui.fragments.settings.tip
+package com.android.pos.ui.fragments.settings.discount
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,38 +7,40 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.android.pos.data.model.responseModel.GetTipReponse
-import com.android.pos.databinding.DialogAddNewTipBinding
+import com.android.pos.data.model.responseModel.GetDiscountResponse
+import com.android.pos.databinding.FragmentCreateDiscountBinding
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class CreateTip : Fragment() {
-    private lateinit var binding: DialogAddNewTipBinding
-    private val viewModel by viewModels<CreateTipsViewModel>()
+class CreateDiscount : Fragment() {
+
+    private lateinit var binding: FragmentCreateDiscountBinding
+    private val viewModel by viewModels<CreateDiscountViewModel>()
 
     var isEdit: Boolean = false
-    private lateinit var tipData: GetTipReponse.Data
+    private lateinit var discountData: GetDiscountResponse.Data
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = DialogAddNewTipBinding.inflate(inflater, container, false)
+        binding = FragmentCreateDiscountBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
+
         isEdit = arguments?.getBoolean("isEdit")!!
 
-        if (isEdit) {
-            tipData = arguments?.getParcelable("tipObject")!!
+         if (isEdit) {
+             discountData = arguments?.getParcelable("discountObject")!!
 
-            viewModel.setTipData(tipData)
-            viewModel.isEditData(isEdit,tipData.id)
-        }
+             viewModel.setDiscountData(discountData)
+             viewModel.isEditData(isEdit, discountData.id)
+         }
 
         setupSnackbar()
         observeShowProgress()
@@ -48,6 +50,11 @@ class CreateTip : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        onCLick()
+
+    }
+
+    private fun onCLick() {
         binding.imgBack.setOnClickListener {
             findNavController().navigateUp()
         }
@@ -64,9 +71,7 @@ class CreateTip : Fragment() {
                 }
             }
         })
-
     }
-
 
     private fun navigate() {
 
@@ -77,12 +82,10 @@ class CreateTip : Fragment() {
                 }
             }
         })
-
     }
 
     private fun setupSnackbar() {
         binding.root.liveSnackBar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
 
     }
-
 }
