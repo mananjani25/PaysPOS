@@ -1,8 +1,8 @@
 package com.android.pos.utils.callback
 
 import android.view.View
-import com.android.pos.data.model.responseModel.EmployeeResponse
+import com.android.pos.data.model.responseModel.EmployeeListResponse
 
 interface CustomCallback {
-    fun onItemClickListener(view: View?, data: EmployeeResponse.Data)
+    fun onItemClickListener(view: View?, data: EmployeeListResponse.Data.Employee)
 }

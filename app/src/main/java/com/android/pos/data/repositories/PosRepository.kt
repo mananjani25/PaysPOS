@@ -31,15 +31,16 @@ class PosRepository @Inject constructor(
     fun syncVenueData() =
         performGetOperationNew(networkCall = { apiHelperNew.syncVenueData() })
 
-    fun employeesList() =
-        performGetOperationNew(networkCall = { apiHelperNew.employeesList() })
+    fun employeesList(locationId: Int) =
+        performGetOperationNew(networkCall = { apiHelperNew.employeesList(locationId) })
 
     fun getTaxList() =
         performGetOperationNew(networkCall = { apiHelperNew.getTaxList() })
 
     suspend fun createTax(data: CreateTaxRequestModel) = apiHelperNew.createTax(data)
 
-    suspend fun updateTax(taxId: Int, data: CreateTaxRequestModel) = apiHelperNew.updateTax(taxId,data)
+    suspend fun updateTax(taxId: Int, data: CreateTaxRequestModel) =
+        apiHelperNew.updateTax(taxId, data)
 
     suspend fun deleteTax(data: Int) = apiHelperNew.deleteTax(data)
 

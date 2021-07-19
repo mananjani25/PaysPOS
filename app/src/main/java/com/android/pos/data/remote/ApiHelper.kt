@@ -23,8 +23,8 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun syncVenueData() =
         getResult { apiService.syncVenueData() }
 
-    suspend fun employeesList() =
-        getResult { apiService.employeesList() }
+    suspend fun employeesList(locationId: Int) =
+        getResult { apiService.employeesList(locationId) }
 
     suspend fun getTaxList() =
         getResult { apiService.getTaxList() }
@@ -33,7 +33,7 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
         getResult { apiService.createTax(data) }
 
     suspend fun updateTax(taxId: Int, data: CreateTaxRequestModel) =
-        getResult { apiService.updateTax(taxId,data) }
+        getResult { apiService.updateTax(taxId, data) }
 
     suspend fun deleteTax(data: Int) =
         getResult { apiService.deleteTax(data) }

@@ -47,7 +47,7 @@ interface ApiService {
     suspend fun syncVenueData(): VenueDataResponse
 
     @GET(EMPLOYEES)
-    suspend fun employeesList(): EmployeeResponse
+    suspend fun employeesList(@Query("location_id") location_id: Int): EmployeeListResponse
 
     @GET(TAXES)
     suspend fun getTaxList(): GetTaxResponse
