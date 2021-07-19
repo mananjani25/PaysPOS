@@ -228,7 +228,7 @@
         android:label="CreateNote" />
     <fragment
         android:id="@+id/addServiceCharge"
-        android:name="com.android.pos.ui.fragments.settings.AddServiceCharge"
+        android:name="com.android.pos.ui.fragments.settings.servicecharge.AddServiceCharge"
         android:label="AddServiceCharge" />
     <fragment
         android:id="@+id/createTeamMember"

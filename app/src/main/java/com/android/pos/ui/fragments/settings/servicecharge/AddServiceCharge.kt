@@ -1,4 +1,4 @@
-package com.android.pos.ui.fragments.settings
+package com.android.pos.ui.fragments.settings.servicecharge
 
 import android.os.Bundle
 import android.view.LayoutInflater
