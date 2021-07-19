@@ -19,8 +19,9 @@ object Constants {
     const val LOGIN_TERMINAL = "users/login_terminal"
     const val EMPLOYEE_LOG_IN = "employee_activities/log_in"
     const val CLOCK_OUT = "employee_activities/clock_out"
-    const val SYNC_VENUE_DATA = "locations/sync_data"
     const val EMPLOYEES = "employees"
+
+    const val SYNC_VENUE_DATA = "locations/sync_data"
 
     const val TAXES = "taxes"
     const val TAX_UPDATE_DELETE = "taxes/{id}"
@@ -28,6 +29,10 @@ object Constants {
     const val TIPS = "tip_settings"
     const val TIPS_UPDATE_DELETE = "tip_settings/{id}"
 
+    const val DISCOUNTS = "discounts"
+    const val DISCOUNTS_UPDATE_DELETE = "discounts/{id}"
+
     const val NOTES = "dynamic_notes"
     const val NOTE_UPDATE_DELETE = "dynamic_notes/{id}"
+
 }

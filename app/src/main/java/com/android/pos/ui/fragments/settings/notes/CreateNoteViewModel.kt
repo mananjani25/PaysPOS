@@ -1,4 +1,4 @@
-package com.android.pos.ui.fragments.settings.tax
+package com.android.pos.ui.fragments.settings.notes
 
 import android.text.TextUtils
 import androidx.lifecycle.LiveData
@@ -6,9 +6,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.R
-import com.android.pos.data.model.requestModel.CreateTaxRequestModel
-import com.android.pos.data.model.responseModel.CreateTaxResponse
+import com.android.pos.data.model.requestModel.CreateNoteRequest
+import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.model.responseModel.GetTaxResponse
+import com.android.pos.data.model.responseModel.NoteResponse
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
@@ -21,12 +22,12 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class CreateTaxViewModel @Inject constructor(
+class CreateNoteViewModel @Inject constructor(
     private val posRepository: PosRepository,
     private val prefProvider: PrefProvider
 ) : ViewModel() {
 
-    val createTaxDetails = MutableLiveData(CreateTaxRequestModel())
+    val createNoteDetails = MutableLiveData(CreateNoteRequest())
 
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
@@ -41,54 +42,48 @@ class CreateTaxViewModel @Inject constructor(
 
     private var isEdit: Boolean = false
 
-    private lateinit var taxData: CreateTaxRequestModel
+    private lateinit var noteData: CreateNoteRequest
 
-    private lateinit var resource: Resource<CreateTaxResponse>
+    private lateinit var resource: Resource<BaseResponse>
 
     fun isEditData(isEdit: Boolean, taxId: Int) {
         this.taxId = taxId
         this.isEdit = isEdit
     }
 
-    fun setTaxData(taxData: GetTaxResponse.TaxData) {
-        createTaxDetails.value?.name = taxData.name
-        createTaxDetails.value?.rate = taxData.rate
+    fun setNoteData(noteData: NoteResponse.Data) {
+        createNoteDetails.value?.note!!.name = noteData.name
+
     }
 
     fun submit() {
-        val value = createTaxDetails.value
-        if (TextUtils.isEmpty(value?.name?.trim())) {
+        val value = createNoteDetails.value
+        if (TextUtils.isEmpty(value?.note!!.name.trim())) {
             _snackbarText.value = Event(R.string.tax_name_validate)
-        } else if (TextUtils.isEmpty(
-                value?.rate?.toString()?.trim()
-            )
-            && value?.rate == 0.0
-        ) {
-            _snackbarText.value = Event(R.string.tax_rate_validate)
         } else {
             _showProgress.value = Event(true)
 
             if (isEdit) {
-                taxData = CreateTaxRequestModel().apply {
-                    id = taxId
-                    name = value!!.name
-                    rate = value.rate
-                    locationId = prefProvider.getValueInt(LOCATION_ID, -1)
+                noteData = CreateNoteRequest().apply {
+                    note.name = value.note.name
+                    note.isActive = true
+                    note.locationId = prefProvider.getValueInt(LOCATION_ID, -1)
                 }
             } else {
-                taxData = CreateTaxRequestModel().apply {
-                    name = value!!.name
-                    rate = value.rate
-                    locationId = prefProvider.getValueInt(LOCATION_ID, -1)
+                noteData = CreateNoteRequest().apply {
+
+                    note.name = value.note.name
+                    note.isActive = true
+                    note.locationId = prefProvider.getValueInt(LOCATION_ID, -1)
                 }
             }
 
 
             viewModelScope.launch {
                 if (isEdit) {
-                    resource = posRepository.updateTax(taxId, taxData)
+                    resource = posRepository.updateNote(taxId, noteData)
                 } else {
-                    resource = posRepository.createTax(taxData)
+                    resource = posRepository.createNote(noteData)
                 }
 
                 when (resource.status) {
@@ -121,4 +116,6 @@ class CreateTaxViewModel @Inject constructor(
         }
 
     }
+
+
 }

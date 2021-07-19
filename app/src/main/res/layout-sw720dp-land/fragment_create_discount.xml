@@ -4,6 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingDefaultResource">
 
+    <data>
+
+        <variable
+            name="createDiscountFragment"
+            type="com.android.pos.ui.fragments.settings.discount.CreateDiscount" />
+
+        <variable
+            name="viewModel"
+            type="com.android.pos.ui.fragments.settings.discount.CreateDiscountViewModel" />
+    </data>
+
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -48,6 +59,7 @@
                     android:layout_weight="0.1"
                     android:background="@color/btnColor"
                     android:gravity="center"
+                    android:onClick="@{() -> viewModel.submit()}"
                     android:padding="@dimen/_5sdp"
                     android:text="@string/save"
                     android:textColor="@color/white"
@@ -139,8 +151,9 @@
                                 android:background="@null"
                                 android:hint="@string/discount_name"
                                 android:imeOptions="actionNext"
-                                android:inputType="number"
+                                android:inputType="textCapWords"
                                 android:padding="@dimen/_5sdp"
+                                android:text="@={viewModel.createDiscountDetails.name}"
                                 android:textColor="@color/black"
                                 android:textColorHint="@color/hintColor"
                                 android:textSize="@dimen/_6mdpi" />
@@ -164,25 +177,29 @@
                                 android:layout_weight="1"
                                 android:background="@null"
                                 android:hint="0%"
-                                android:imeOptions="actionNext"
-                                android:inputType="number"
+                                android:imeOptions="actionDone"
+                                android:inputType="numberDecimal"
                                 android:paddingStart="@dimen/_5sdp"
                                 android:paddingTop="@dimen/_5sdp"
                                 android:paddingEnd="@dimen/_20sdp"
                                 android:paddingBottom="@dimen/_5sdp"
+                                android:text="@={``+viewModel.createDiscountDetails.percentage}"
                                 android:textColor="@color/black"
                                 android:textColorHint="@color/hintColor"
                                 android:textSize="@dimen/_6mdpi" />
 
                             <androidx.appcompat.widget.SwitchCompat
+                                android:id="@+id/swtDiscountType"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_alignParentEnd="true"
                                 android:layout_gravity="center"
-                                android:checked="false"
+                                android:checked="true"
+                                android:onCheckedChanged="@{(button, bool)-> createDiscountFragment.saveGender(bool)}"
                                 android:padding="@dimen/_5sdp"
-                                app:thumbTint="@color/btnColor"
-                                app:trackTint="@color/colorE2" />
+                                android:text="@string/disc_percentage"
+                                android:textSize="@dimen/_6mdpi"
+                                app:theme="@style/AppTheme" />
 
                         </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -205,11 +222,11 @@
                     app:textAllCaps="false" />
 
                 <TextView
+                    style="@style/CustomFontSemiBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:elevation="@dimen/_10sdp"
-                    style="@style/CustomFontSemiBold"
                     android:gravity="start"
                     android:padding="@dimen/_5sdp"
                     android:text="@string/options"

@@ -12,7 +12,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.model.TeamListModel
-import com.android.pos.data.model.responseModel.EmployeeResponse
+import com.android.pos.data.model.responseModel.EmployeeListResponse
 import com.android.pos.databinding.FragmentTeamListBinding
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.TeamListAdapter
@@ -62,8 +62,9 @@ class TeamList : Fragment(), CustomCallback {
     private fun setupStickyLayout() {
         val stickyHeaderLayoutManager = StickyHeaderLayoutManager()
         binding.rvEmployeeList.layoutManager = stickyHeaderLayoutManager
-        binding.rvEmployeeList.adapter = adapter
         adapter.setCallback(this)
+        binding.rvEmployeeList.adapter = adapter
+
     }
 
     private fun loadTeams() {
@@ -73,10 +74,9 @@ class TeamList : Fragment(), CustomCallback {
                 when (resource.status) {
                     Status.SUCCESS -> {
                         ProgressUtils.dismissProgressDialog()
-                        it.data?.data?.get(0)?.let { it1 -> Log.e("SUCCESS", it1.name) }
 
-                        if (it.data != null && it.data.data.isNotEmpty())
-                            adapter.setPeople(it.data.data as MutableList<EmployeeResponse.Data>)
+                        if (it.data != null && it.data.data.employees.isNotEmpty())
+                            adapter.setPeople(it.data.data.employees as MutableList<EmployeeListResponse.Data.Employee>)
                     }
                     Status.ERROR -> {
                         ProgressUtils.dismissProgressDialog()
@@ -101,7 +101,7 @@ class TeamList : Fragment(), CustomCallback {
         binding.layoutTool.imgOptionMenuContainer.visibility = View.GONE
     }
 
-    private fun loadTeamDetails(data: EmployeeResponse.Data?) {
+    private fun loadTeamDetails(data: EmployeeListResponse.Data.Employee?) {
 
         val teamDetails = TeamDetails()
 
@@ -135,7 +135,7 @@ class TeamList : Fragment(), CustomCallback {
         binding.rvEmployeeList.adapter = TeamListAdapter(requireContext(), list)
     }
 
-    override fun onItemClickListener(view: View?, data: EmployeeResponse.Data) {
+    override fun onItemClickListener(view: View?, data: EmployeeListResponse.Data.Employee) {
 
         Log.e("onItemClickListener", ">>>>")
 

@@ -43,14 +43,14 @@ class CreateTax : Fragment() {
 
         if (isEdit) {
             taxData = arguments?.getParcelable("taxObject")!!
-
+            binding.txtSave.text = getString(R.string.update)
             viewModel.setTaxData(taxData)
-            viewModel.isEditData(isEdit,taxData.id)
+            viewModel.isEditData(isEdit, taxData.id)
         }
 
         setupSnackbar()
         observeShowProgress()
-        // navigate()
+        navigate()
 
 
         return binding.root
@@ -75,6 +75,9 @@ class CreateTax : Fragment() {
                 }
             }
         })
+    }
+
+    private fun navigate() {
 
         viewModel.data.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
@@ -83,21 +86,7 @@ class CreateTax : Fragment() {
                 }
             }
         })
-
-
     }
-
-    /*private fun navigate() {
-
-        viewModel.data.observe(viewLifecycleOwner, { event ->
-            event.getContentIfNotHandled()?.let {
-                if (it) {
-                    findNavController().navigate(R.id.action_login_to_scheduledShifts)
-                }
-            }
-        })
-
-    }*/
 
     private fun setupSnackbar() {
         binding.root.liveSnackBar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
