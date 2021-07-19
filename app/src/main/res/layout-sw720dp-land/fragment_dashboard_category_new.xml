@@ -5,6 +5,7 @@
     tools:ignore="MissingDefaultResource">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintParent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/colorDashBack">
@@ -35,7 +36,9 @@
             android:layout_height="wrap_content"
             android:background="@color/white"
             android:orientation="horizontal"
-            android:padding="@dimen/_5sdp"
+            android:paddingStart="@dimen/_5sdp"
+            android:paddingTop="@dimen/_5sdp"
+            android:paddingEnd="@dimen/_5sdp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintEnd_toStartOf="@+id/linearMenu"
             app:layout_constraintStart_toStartOf="parent"
@@ -126,6 +129,7 @@
             android:layout_height="1dp"
             android:background="@color/dividerColor"
             app:layout_constraintBottom_toTopOf="@+id/footer" />
+
 
         <include
             android:id="@+id/footer"

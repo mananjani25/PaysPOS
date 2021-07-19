@@ -5,9 +5,10 @@
     tools:ignore="MissingDefaultResource">
 
     <RelativeLayout
-        android:background="@color/white"
+        android:id="@+id/relParent"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@color/white">
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
@@ -83,6 +84,15 @@
             android:layout_toStartOf="@+id/edtSearch"
             android:src="@drawable/ic_search"
             app:tint="@color/black" />
+
+        <Switch
+            android:id="@+id/switchDesign"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="@dimen/_5sdp"
+            android:layout_toStartOf="@+id/imgSearch"
+            android:checked="false" />
 
 
     </RelativeLayout>
