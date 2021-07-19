@@ -11,6 +11,7 @@ object Constants {
     const val BASE_URL_NEW = "baseUrlNew"
     const val PASSCODE = "passcode"
     const val LOCATION_ID = "locationId"
+    const val EMAIL = "email"
 
 
     //Api End Points
@@ -34,5 +35,6 @@ object Constants {
 
     const val NOTES = "dynamic_notes"
     const val NOTE_UPDATE_DELETE = "dynamic_notes/{id}"
+    const val LOGOUT = "users/log_out"
 
 }

@@ -22,7 +22,6 @@ class CategoryTabAdapter(
         }
 
         init {
-
             binding.root.setOnClickListener {
                 listner.onTabSelected(layoutPosition)
                 for (i in 0 until list.size) {

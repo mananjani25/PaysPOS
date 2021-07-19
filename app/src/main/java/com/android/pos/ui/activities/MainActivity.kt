@@ -5,10 +5,13 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
@@ -16,9 +19,15 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.android.pos.R
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.repositories.PosRepository
 import com.android.pos.databinding.ParentActivityBinding
 import com.android.pos.di.PrefProvider
+import com.android.pos.ui.fragments.loginscreen.LoginViewModel
+import com.android.pos.utils.Event
+import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -29,6 +38,10 @@ class MainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var prefProvider: PrefProvider
+
+    @Inject
+    lateinit var repo: PosRepository
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -117,8 +130,8 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 R.id.menuLogout -> {
-                    logout()
-                    disableDrawer()
+                    logoutAPI()
+
                     return@setNavigationItemSelectedListener true
 
                 }
@@ -140,8 +153,6 @@ class MainActivity : AppCompatActivity() {
     private fun logout() {
         prefProvider.setValue(Constants.AUTH_TOKEN, "")
         navController?.navigate(R.id.action_global_login)
-
-
     }
 
     override fun onResume() {
@@ -176,4 +187,44 @@ class MainActivity : AppCompatActivity() {
         return super.onSupportNavigateUp()
     }
 
+    fun logoutAPI() {
+
+
+        lifecycleScope.launch {
+
+
+            val data = HashMap<String, String>()
+            data["email"] = prefProvider.getValue(Constants.EMAIL, "").toString()
+            val resource = repo.logout(data)
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    resource.data?.let { it ->
+                        if (it?.status == 200) {
+                            clearPreferances()
+                            disableDrawer()
+                            ProgressUtils.dismissProgressDialog()
+                            logout()
+                        }
+
+                    }
+
+
+                }
+                Status.LOADING -> {
+                    ProgressUtils.showProgressDialog(this@MainActivity)
+
+                }
+                Status.ERROR -> {
+
+                    ProgressUtils.dismissProgressDialog()
+
+                }
+
+            }
+        }
+    }
+
+    private fun clearPreferances() {
+        prefProvider.setClear()
+    }
 }

@@ -10,6 +10,7 @@ import com.android.pos.R
 import com.android.pos.data.model.requestModel.LoginRequestModel
 import com.android.pos.data.remote.Constants.AUTH_TOKEN
 import com.android.pos.data.remote.Constants.BASE_URL_NEW
+import com.android.pos.data.remote.Constants.EMAIL
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.data.repositories.PosRepository
@@ -39,6 +40,7 @@ class LoginViewModel @Inject constructor(
 
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
+
 
     fun submit() {
 
@@ -70,6 +72,7 @@ class LoginViewModel @Inject constructor(
                                     prefProvider.setValue(AUTH_TOKEN, it.data.authToken)
                                     prefProvider.setValue(BASE_URL_NEW, it.data.baseUrl + "/")
                                     prefProvider.setValueInt(LOCATION_ID, it.data.locationId)
+                                    prefProvider.setValue(EMAIL, it.data.email)
                                 }
 
                                 defaultTerminalCall()

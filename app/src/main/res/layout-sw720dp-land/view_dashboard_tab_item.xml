@@ -12,11 +12,12 @@
             type="com.android.pos.data.model.CategoryTabModel" />
     </data>
 
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/_5sdp"
         android:layout_marginEnd="@dimen/_12sdp"
+        android:layout_marginBottom="@dimen/_4sdp"
         android:orientation="vertical">
 
         <TextView
@@ -31,7 +32,9 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="2dp"
+            android:layout_gravity="center"
             android:layout_marginTop="@dimen/_3sdp"
+            android:layout_marginBottom="@dimen/_3sdp"
             android:background="@color/txtColor"
             android:visibility="@{model.isSelected ? View.VISIBLE : View.GONE}" />
 

@@ -66,6 +66,8 @@ class PosRepository @Inject constructor(
 
     suspend fun deleteDiscount(data: Int) = apiHelperNew.deleteDiscount(data)
 
+    suspend fun logout(data: HashMap<String, String>) = apiHelperNew.logOut(data)
+
 
 //    fun getCharacters() = performGetOperation(
 //        databaseQuery = { appDatabase.characterDao().getAllCharacters() },
