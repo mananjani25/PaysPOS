@@ -1,8 +1,11 @@
 package com.android.pos.data.model.responseModel
 
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class GetTipReponse(
     @SerializedName("data")
     val `data`: List<Data>,
@@ -31,6 +34,6 @@ data class GetTipReponse(
         val sort: Int,
         @SerializedName("updated_at")
         val updatedAt: String,
-        var isChecked:Boolean = true
+        var isChecked: Boolean = true
     ) : Parcelable
 }
