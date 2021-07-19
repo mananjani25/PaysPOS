@@ -3,10 +3,7 @@ package com.android.pos.data.repositories
 
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.db.IDataManager
-import com.android.pos.data.model.requestModel.CreateNoteRequest
-import com.android.pos.data.model.requestModel.CreateDiscountRequestModel
-import com.android.pos.data.model.requestModel.CreateTaxRequestModel
-import com.android.pos.data.model.requestModel.CreateTipRequestModel
+import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.remote.ApiHelper
 import com.android.pos.utils.performGetOperationNew
 import javax.inject.Inject
@@ -85,6 +82,10 @@ class PosRepository @Inject constructor(
 
     suspend fun updateNote(taxId: Int, data: CreateNoteRequest) =
         apiHelperNew.updateNote(taxId, data)
+
+    suspend fun createEmployee(data: CreateEmployeeRequestModel) = apiHelperNew.createEmployee(data)
+    suspend fun updateEmployee(taxId: Int, data: CreateEmployeeRequestModel) =
+        apiHelperNew.updateEmployee(taxId, data)
 
     override suspend fun abs() {
 

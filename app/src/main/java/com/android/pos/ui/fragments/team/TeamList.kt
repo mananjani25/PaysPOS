@@ -5,27 +5,28 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
+import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
-import com.android.pos.data.model.TeamListModel
 import com.android.pos.data.model.responseModel.EmployeeListResponse
 import com.android.pos.databinding.FragmentTeamListBinding
 import com.android.pos.ui.activities.MainActivity
-import com.android.pos.ui.adapter.TeamListAdapter
 import com.android.pos.ui.adapter.TeamsAdapter
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.CustomCallback
+import com.android.pos.utils.callback.OperationCallback
 import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.statusUtils.Status
 import com.android.pos.utils.sticky_recycler.StickyHeaderLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class TeamList : Fragment(), CustomCallback {
+class TeamList : Fragment(), CustomCallback, OperationCallback {
     private lateinit var binding: FragmentTeamListBinding
     private val viewModel by viewModels<TeamListViewModel>()
     var adapter: TeamsAdapter = TeamsAdapter()
@@ -50,6 +51,7 @@ class TeamList : Fragment(), CustomCallback {
         loadTeams()
 
         binding.layoutTool.imgOptionMenu.setOnClickListener {
+
             findNavController().navigate(R.id.action_global_createTeamMember)
         }
 
@@ -60,6 +62,7 @@ class TeamList : Fragment(), CustomCallback {
         val stickyHeaderLayoutManager = StickyHeaderLayoutManager()
         binding.rvEmployeeList.layoutManager = stickyHeaderLayoutManager
         adapter.setCallback(this)
+        adapter.setOperationCallback(this)
         binding.rvEmployeeList.adapter = adapter
 
     }
@@ -115,6 +118,14 @@ class TeamList : Fragment(), CustomCallback {
         Log.e("onItemClickListener", ">>>>")
 
         loadTeamDetails(data)
+    }
+
+    override fun onItemClickListener(employee: EmployeeListResponse.Data.Employee) {
+        Log.e("onItem ", ">>>> ${employee.firstName}")
+
+        val bundle = bundleOf("data" to employee)
+        findNavController().navigate(R.id.action_global_createTeamMember, bundle)
+
     }
 
 }

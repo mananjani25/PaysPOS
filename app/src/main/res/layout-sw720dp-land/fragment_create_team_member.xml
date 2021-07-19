@@ -4,12 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingDefaultResource">
 
-    <!--<data>
+    <data>
 
         <variable
             name="viewModel"
-            type="com.android.pos.ui.fragments.loginscreen.MobileNumberViewModel" />
-    </data>-->
+            type="com.android.pos.ui.fragments.team.CreateTeamViewModel" />
+    </data>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -54,6 +54,7 @@
                 android:paddingRight="@dimen/_30sdp"
                 android:paddingBottom="@dimen/_5ssp"
                 android:text="@string/save"
+                android:onClick="@{() -> viewModel.submit()}"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_7mdpi" />
         </LinearLayout>
@@ -110,6 +111,7 @@
                             android:imeOptions="actionNext"
                             android:inputType="textCapWords"
                             android:padding="@dimen/_5sdp"
+                            android:text="@={viewModel.createTaxDetails.firstName}"
                             android:textColor="@color/txtColor"
                             android:textColorHint="@color/hint_color_"
                             android:textSize="@dimen/_6sdp" />
@@ -143,6 +145,7 @@
                             android:imeOptions="actionNext"
                             android:inputType="textCapWords"
                             android:padding="@dimen/_5sdp"
+                            android:text="@={viewModel.createTaxDetails.lastName}"
                             android:textColor="@color/txtColor"
                             android:textColorHint="@color/hint_color_"
                             android:textSize="@dimen/_6sdp" />

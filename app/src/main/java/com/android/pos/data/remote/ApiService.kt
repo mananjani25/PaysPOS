@@ -1,15 +1,13 @@
 package com.android.pos.data.remote
 
 
-import com.android.pos.data.model.requestModel.CreateNoteRequest
-import com.android.pos.data.model.requestModel.CreateDiscountRequestModel
-import com.android.pos.data.model.requestModel.CreateTaxRequestModel
-import com.android.pos.data.model.requestModel.CreateTipRequestModel
+import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.Constants.CLOCK_OUT
 import com.android.pos.data.remote.Constants.DISCOUNTS
 import com.android.pos.data.remote.Constants.DISCOUNTS_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.EMPLOYEES
+import com.android.pos.data.remote.Constants.EMPLOYEES_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.EMPLOYEE_CLOCK_IN
 import com.android.pos.data.remote.Constants.EMPLOYEE_LOG_IN
 import com.android.pos.data.remote.Constants.LOGIN_TERMINAL
@@ -119,5 +117,14 @@ interface ApiService {
     suspend fun updateNote(
         @Path("id") taxId: Int,
         @Body createTax: CreateNoteRequest
+    ): BaseResponse
+
+    @POST(EMPLOYEES)
+    suspend fun createEmployee(@Body createEmployeeRequestModel: CreateEmployeeRequestModel): BaseResponse
+
+    @PUT(EMPLOYEES_UPDATE_DELETE)
+    suspend fun updateEmployee(
+        @Path("id") taxId: Int,
+        @Body createEmployeeRequestModel: CreateEmployeeRequestModel
     ): BaseResponse
 }

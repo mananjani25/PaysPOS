@@ -68,6 +68,8 @@ abstract class BaseDataSource {
             return jsonObject.getString("message")
         } catch (e: Exception) {
             e.printStackTrace()
+            val jsonObject = JSONObject(errorBody.trim())
+            return jsonObject.getString("error")
         }
 
         return ""
