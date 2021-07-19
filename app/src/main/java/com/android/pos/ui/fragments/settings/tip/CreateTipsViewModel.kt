@@ -11,6 +11,7 @@ import com.android.pos.data.model.responseModel.CreateTipResponse
 import com.android.pos.data.model.responseModel.GetTipReponse
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.repositories.PosRepository
+import com.android.pos.data.repositories.TipDiscountRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Resource
@@ -22,7 +23,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CreateTipsViewModel @Inject constructor(
-    private val posRepository: PosRepository,
+    private val tipDiscountRepository: TipDiscountRepository,
     private val prefProvider: PrefProvider
 ) : ViewModel() {
 
@@ -87,9 +88,9 @@ class CreateTipsViewModel @Inject constructor(
 
             viewModelScope.launch {
                 if (isEdit) {
-                    resource = posRepository.updateTip(tipId, tipData)
+                    resource = tipDiscountRepository.updateTip(tipId, tipData)
                 } else {
-                    resource = posRepository.createTips(tipData)
+                    resource = tipDiscountRepository.createTips(tipData)
                 }
 
                 when (resource.status) {

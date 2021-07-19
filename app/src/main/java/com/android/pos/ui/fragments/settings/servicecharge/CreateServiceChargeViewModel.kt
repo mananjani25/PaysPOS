@@ -10,6 +10,7 @@ import com.android.pos.data.model.requestModel.CreateServiceChargeRequestModel
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.repositories.PosRepository
+import com.android.pos.data.repositories.TaxServiceChargeRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Resource
@@ -21,7 +22,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CreateServiceChargeViewModel @Inject constructor(
-    private val posRepository: PosRepository,
+    private val taxServiceChargeRepository: TaxServiceChargeRepository,
     private val prefProvider: PrefProvider
 ) : ViewModel() {
 
@@ -98,9 +99,9 @@ class CreateServiceChargeViewModel @Inject constructor(
 
             viewModelScope.launch {
                 if (isEdit) {
-                    resource = posRepository.updateServiceCharge(serviceChargeId, serviceChargeData)
+                    resource = taxServiceChargeRepository.updateServiceCharge(serviceChargeId, serviceChargeData)
                 } else {
-                    resource = posRepository.createServiceCharge(serviceChargeData)
+                    resource = taxServiceChargeRepository.createServiceCharge(serviceChargeData)
                 }
 
                 when (resource.status) {

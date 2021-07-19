@@ -14,17 +14,7 @@ class PosRepository @Inject constructor(
     private val apiHelperNew: ApiHelper
 ) : IDataManager {
 
-    suspend fun userLogIn(data: HashMap<String, String>) = apiHelperNew.userLogIn(data)
 
-    suspend fun getDefaultTerminal(uniq_id: String) =
-        apiHelperNew.getDefaultTerminal(uniq_id)
-
-    suspend fun employeeClockIn(data: HashMap<String, String>) = apiHelperNew.employeeClockIn(data)
-
-    suspend fun employeeLogIn(data: HashMap<String, String>) = apiHelperNew.employeeLogIn(data)
-
-    suspend fun employeeClockOut(data: HashMap<String, String>) =
-        apiHelperNew.employeeClockOut(data)
 
     fun syncVenueData() =
         performGetOperationNew(networkCall = { apiHelperNew.syncVenueData() })
@@ -32,47 +22,11 @@ class PosRepository @Inject constructor(
     fun employeesList(locationId: Int) =
         performGetOperationNew(networkCall = { apiHelperNew.employeesList(locationId) })
 
-    fun getTaxList() =
-        performGetOperationNew(networkCall = { apiHelperNew.getTaxList() })
-
-    suspend fun createTax(data: CreateTaxRequestModel) = apiHelperNew.createTax(data)
-
-    suspend fun updateTax(taxId: Int, data: CreateTaxRequestModel) =
-        apiHelperNew.updateTax(taxId, data)
-
-    suspend fun deleteTax(data: Int) = apiHelperNew.deleteTax(data)
-
-    fun getTipList() =
-        performGetOperationNew(networkCall = { apiHelperNew.getTipsList() })
-
-    suspend fun createTips(data: CreateTipRequestModel) = apiHelperNew.createTips(data)
-
-    suspend fun updateTip(taxId: Int, data: CreateTipRequestModel) =
-        apiHelperNew.updateTip(taxId, data)
-
-    suspend fun deleteTip(data: Int) = apiHelperNew.deleteTip(data)
 
 
-    fun getDiscountsList() =
-        performGetOperationNew(networkCall = { apiHelperNew.getDiscountsList() })
 
-    suspend fun createDiscount(data: CreateDiscountRequestModel) = apiHelperNew.createDiscount(data)
 
-    suspend fun updateDiscount(discountId: Int, data: CreateDiscountRequestModel) =
-        apiHelperNew.updateDiscount(discountId, data)
 
-    suspend fun deleteDiscount(data: Int) = apiHelperNew.deleteDiscount(data)
-
-    fun getServiceChargeList() =
-        performGetOperationNew(networkCall = { apiHelperNew.getServiceChargeList() })
-
-    suspend fun createServiceCharge(data: CreateServiceChargeRequestModel) =
-        apiHelperNew.createServiceCharge(data)
-
-    suspend fun updateServiceCharge(discountId: Int, data: CreateServiceChargeRequestModel) =
-        apiHelperNew.updateServiceCharge(discountId, data)
-
-    suspend fun deleteServiceCharge(data: Int) = apiHelperNew.deleteServiceCharge(data)
 
 
 //    fun getCharacters() = performGetOperation(

@@ -11,6 +11,7 @@ import com.android.pos.data.model.responseModel.CreateTaxResponse
 import com.android.pos.data.model.responseModel.GetTaxResponse
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.repositories.PosRepository
+import com.android.pos.data.repositories.TaxServiceChargeRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Resource
@@ -22,7 +23,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CreateTaxViewModel @Inject constructor(
-    private val posRepository: PosRepository,
+    private val taxServiceChargeRepository: TaxServiceChargeRepository,
     private val prefProvider: PrefProvider
 ) : ViewModel() {
 
@@ -86,9 +87,9 @@ class CreateTaxViewModel @Inject constructor(
 
             viewModelScope.launch {
                 if (isEdit) {
-                    resource = posRepository.updateTax(taxId, taxData)
+                    resource = taxServiceChargeRepository.updateTax(taxId, taxData)
                 } else {
-                    resource = posRepository.createTax(taxData)
+                    resource = taxServiceChargeRepository.createTax(taxData)
                 }
 
                 when (resource.status) {

@@ -11,6 +11,7 @@ import com.android.pos.data.model.requestModel.CreateTaxRequestModel
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.repositories.PosRepository
+import com.android.pos.data.repositories.TipDiscountRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Resource
@@ -22,7 +23,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CreateDiscountViewModel @Inject constructor(
-    private val posRepository: PosRepository,
+    private val tipDiscountRepository: TipDiscountRepository,
     private val prefProvider: PrefProvider
 ) : ViewModel() {
 
@@ -99,9 +100,9 @@ class CreateDiscountViewModel @Inject constructor(
 
             viewModelScope.launch {
                 if (isEdit) {
-                    resource = posRepository.updateDiscount(discountId, discountData)
+                    resource = tipDiscountRepository.updateDiscount(discountId, discountData)
                 } else {
-                    resource = posRepository.createDiscount(discountData)
+                    resource = tipDiscountRepository.createDiscount(discountData)
                 }
 
                 when (resource.status) {

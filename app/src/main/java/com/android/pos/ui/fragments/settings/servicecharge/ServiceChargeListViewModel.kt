@@ -8,6 +8,7 @@ import com.android.pos.data.model.responseModel.CreateDiscountResponse
 import com.android.pos.data.model.responseModel.CreateServiceChargeResponse
 import com.android.pos.data.model.responseModel.CreateTaxResponse
 import com.android.pos.data.repositories.PosRepository
+import com.android.pos.data.repositories.TaxServiceChargeRepository
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,7 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ServiceChargeListViewModel @Inject constructor(
-    private val posRepository: PosRepository
+    private val taxServiceChargeRepository: TaxServiceChargeRepository
 ) : ViewModel() {
 
     private val _snackbarText = MutableLiveData<Event<Any?>>()
@@ -29,20 +30,20 @@ class ServiceChargeListViewModel @Inject constructor(
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
 
-    val getDiscountList = posRepository.getServiceChargeList()
+    val getDiscountList = taxServiceChargeRepository.getServiceChargeList()
 
     fun delete(id: Int) {
         _showProgress.value = Event(true)
 
         viewModelScope.launch {
-            val resource = posRepository.deleteServiceCharge(id)
+            val resource = taxServiceChargeRepository.deleteServiceCharge(id)
             when (resource.status) {
                 Status.SUCCESS -> {
                     _showProgress.value = Event(false)
 
                     resource.data.let {
                         if (it?.status == 200) {
-                            resource.data?.let {createTaxResponse->
+                            resource.data?.let { createTaxResponse ->
                                 _data.value = Event(createTaxResponse)
                             }
                         } else {

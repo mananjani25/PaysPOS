@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.android.pos.data.remote.Constants.PASSCODE
 import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.data.repositories.PosRepository
+import com.android.pos.data.repositories.UserRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Status
@@ -16,7 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PasscodeViewModel @Inject constructor(
-    private val posRepository: PosRepository,
+    private val userRepository: UserRepository,
     private val prefProvider: PrefProvider
 ) :
     ViewModel() {
@@ -39,7 +40,7 @@ class PasscodeViewModel @Inject constructor(
         data["terminal_id"] = prefProvider.getValueInt(TERMINAL_ID, -1).toString()
 
         viewModelScope.launch {
-            val resource = posRepository.employeeClockIn(data)
+            val resource = userRepository.employeeClockIn(data)
             when (resource.status) {
                 Status.SUCCESS -> {
                     _showProgress.value = Event(false)
@@ -74,7 +75,7 @@ class PasscodeViewModel @Inject constructor(
     }
 
     private suspend fun employeeLogin(clockinData: HashMap<String, String>) {
-        val employeeLogin = posRepository.employeeLogIn(clockinData)
+        val employeeLogin = userRepository.employeeLogIn(clockinData)
 
         when (employeeLogin.status) {
             Status.SUCCESS -> {
