@@ -78,7 +78,7 @@ class Notes : Fragment() {
                     position = pos
                     activity?.let {
                         AlertUtils.showConfirmAlert(
-                            it, getString(R.string.delete_tax_message)
+                            it, getString(R.string.delete_note_message)
                         ) { _, _ ->
                             noteObject = noteListadapter.getItem(pos)
                             viewModel.delete(noteListadapter.getItem(pos).id)
@@ -87,6 +87,23 @@ class Notes : Fragment() {
 
 
                 })
+
+                underlayButtons.add(UnderlayButton(
+                    "Edit",
+                    0,
+                    Color.parseColor("#2997cc")
+                ) { pos ->
+
+                    noteObject = noteListadapter.getItem(pos)
+                    val bundle = Bundle()
+                    bundle.putBoolean("isEdit", true)
+                    bundle.putParcelable("taxObject", noteObject)
+
+                    //     var bundle= bundleOf()
+                    findNavController().navigate(R.id.action_settings_to_createNote, bundle)
+
+                })
+
             }
         }
     }

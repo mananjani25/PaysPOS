@@ -43,7 +43,7 @@ class CreateTax : Fragment() {
 
         if (isEdit) {
             taxData = arguments?.getParcelable("taxObject")!!
-
+            binding.txtSave.text = getString(R.string.update)
             viewModel.setTaxData(taxData)
             viewModel.isEditData(isEdit, taxData.id)
         }

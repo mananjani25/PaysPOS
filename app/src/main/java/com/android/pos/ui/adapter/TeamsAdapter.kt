@@ -7,9 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
+import android.widget.LinearLayout
 import android.widget.TextView
 import com.android.pos.R
-import com.android.pos.data.model.responseModel.EmployeeResponse
+import com.android.pos.data.model.responseModel.EmployeeListResponse
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.CustomSwipeLayout.SwipeLayout
 import com.android.pos.utils.callback.CustomCallback
@@ -21,6 +22,7 @@ import java.util.*
  * first letter of the last name.
  */
 class TeamsAdapter : SectioningAdapter(), Filterable {
+    private var isSelectedPos: Int = -1
     private val locale = Locale.getDefault()
 
 
@@ -32,8 +34,8 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
     inner class Section {
         var alpha: String? = null
 
-        var people: MutableList<EmployeeResponse.Data?>? =
-            emptyList<EmployeeResponse.Data>().toMutableList()
+        var people: MutableList<EmployeeListResponse.Data.Employee?>? =
+            emptyList<EmployeeListResponse.Data.Employee>().toMutableList()
     }
 
     inner class ItemViewHolder internal constructor(itemView: View) :
@@ -45,6 +47,9 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
         var personNameTextView: TextView = itemView.findViewById(R.id.txtName)
         var personNumberTextView: TextView = itemView.findViewById(R.id.txtNumber)
         var tvInitialName: TextView = itemView.findViewById(R.id.tvInitialName)
+        var layout: LinearLayout = itemView.findViewById(R.id.layout)
+
+
         //var txtId: TextView = itemView.findViewById(R.id.txtId)
 
 
@@ -74,7 +79,7 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
 
     }
 
-    private var people: MutableList<EmployeeResponse.Data>? = null
+    private var people: MutableList<EmployeeListResponse.Data.Employee>? = null
 
     private val sections = emptyList<Section>().toMutableList()
     private var sectionSortedList = emptyList<Section>().toMutableList()
@@ -83,11 +88,11 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
         return sectionSortedList
     }
 
-    fun getPeople(): List<EmployeeResponse.Data?>? {
+    fun getPeople(): List<EmployeeListResponse.Data.Employee?>? {
         return people
     }
 
-    fun setPeople(people: MutableList<EmployeeResponse.Data>) {
+    fun setPeople(people: MutableList<EmployeeListResponse.Data.Employee>) {
         this.people = people
         sections.clear()
         sectionSortedList.clear()
@@ -157,7 +162,7 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
     ) {
         val s = sectionSortedList[sectionIndex]
         val ivh = viewHolder as ItemViewHolder
-        val person = s.people?.get(itemIndex) as EmployeeResponse.Data
+        val person = s.people?.get(itemIndex) as EmployeeListResponse.Data.Employee
 
 
         //ivh.txtId.text = person.id.toString()
@@ -174,13 +179,20 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
                 person.firstName?.subSequence(0, 2)
         }
 
+        if (isSelectedPos == ivh.layoutPosition) {
+            ivh.layout.background = ivh.itemView.context.getDrawable(R.color.btnColorDark_)
+        } else ivh.layout.background = ivh.itemView.context.getDrawable(R.color.white)
 
-        ivh.itemView.setOnClickListener {
-            mCallback.onItemClickListener(it, person)
-        }
+
 
         (ivh.itemView as SwipeLayout).setItemState(SwipeLayout.ITEM_STATE_COLLAPSED, false)
 
+        viewHolder.itemView.setOnClickListener {
+            mCallback.onItemClickListener(it, person)
+
+            isSelectedPos = ivh.layoutPosition
+            notifyDataSetChanged()
+        }
     }
 
     @SuppressLint("SetTextI18n")

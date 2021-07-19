@@ -1,5 +1,6 @@
 package com.android.pos.data.remote
 
+import com.android.pos.data.model.requestModel.CreateNoteRequest
 import com.android.pos.data.model.requestModel.CreateDiscountRequestModel
 import com.android.pos.data.model.requestModel.CreateTaxRequestModel
 import com.android.pos.data.model.requestModel.CreateTipRequestModel
@@ -23,8 +24,8 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun syncVenueData() =
         getResult { apiService.syncVenueData() }
 
-    suspend fun employeesList() =
-        getResult { apiService.employeesList() }
+    suspend fun employeesList(locationId: Int) =
+        getResult { apiService.employeesList(locationId) }
 
     suspend fun getTaxList() =
         getResult { apiService.getTaxList() }
@@ -33,7 +34,7 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
         getResult { apiService.createTax(data) }
 
     suspend fun updateTax(taxId: Int, data: CreateTaxRequestModel) =
-        getResult { apiService.updateTax(taxId,data) }
+        getResult { apiService.updateTax(taxId, data) }
 
     suspend fun deleteTax(data: Int) =
         getResult { apiService.deleteTax(data) }
@@ -45,7 +46,7 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
         getResult { apiService.createTips(data) }
 
     suspend fun updateTip(tipId: Int, data: CreateTipRequestModel) =
-        getResult { apiService.updateTip(tipId,data) }
+        getResult { apiService.updateTip(tipId, data) }
 
     suspend fun deleteTip(tipId: Int) =
         getResult { apiService.deleteTip(tipId) }
@@ -67,4 +68,10 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
 
     suspend fun deleteNote(data: Int) =
         getResult { apiService.deleteNote(data) }
+
+    suspend fun createNote(data: CreateNoteRequest) =
+        getResult { apiService.createNote(data) }
+
+    suspend fun updateNote(taxId: Int, data: CreateNoteRequest) =
+        getResult { apiService.updateNote(taxId, data) }
 }

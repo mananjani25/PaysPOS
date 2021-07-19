@@ -35,16 +35,16 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="0.25"
+                android:nestedScrollingEnabled="false"
                 android:orientation="vertical"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/view_team_item" />
 
             <View
                 android:id="@+id/view"
-                android:layout_width="1dp"
+                android:layout_width="0.5dp"
                 android:layout_height="match_parent"
-                android:background="@color/dividerColor"
-                android:elevation="@dimen/_4sdp" />
+                android:background="@color/dividerColor" />
 
             <FrameLayout
                 android:id="@+id/frameContainer"

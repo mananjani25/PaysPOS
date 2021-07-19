@@ -1,6 +1,7 @@
 package com.android.pos.data.remote
 
 
+import com.android.pos.data.model.requestModel.CreateNoteRequest
 import com.android.pos.data.model.requestModel.CreateDiscountRequestModel
 import com.android.pos.data.model.requestModel.CreateTaxRequestModel
 import com.android.pos.data.model.requestModel.CreateTipRequestModel
@@ -49,7 +50,7 @@ interface ApiService {
     suspend fun syncVenueData(): VenueDataResponse
 
     @GET(EMPLOYEES)
-    suspend fun employeesList(): EmployeeResponse
+    suspend fun employeesList(@Query("location_id") location_id: Int): EmployeeListResponse
 
     @GET(TAXES)
     suspend fun getTaxList(): GetTaxResponse
@@ -109,5 +110,14 @@ interface ApiService {
     @DELETE(NOTE_UPDATE_DELETE)
     suspend fun deleteNote(
         @Path("id") noteId: Int,
+    ): BaseResponse
+
+    @POST(NOTES)
+    suspend fun createNote(@Body createTax: CreateNoteRequest): BaseResponse
+
+    @PUT(NOTE_UPDATE_DELETE)
+    suspend fun updateNote(
+        @Path("id") taxId: Int,
+        @Body createTax: CreateNoteRequest
     ): BaseResponse
 }

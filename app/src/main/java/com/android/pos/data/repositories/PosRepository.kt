@@ -3,6 +3,7 @@ package com.android.pos.data.repositories
 
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.db.IDataManager
+import com.android.pos.data.model.requestModel.CreateNoteRequest
 import com.android.pos.data.model.requestModel.CreateDiscountRequestModel
 import com.android.pos.data.model.requestModel.CreateTaxRequestModel
 import com.android.pos.data.model.requestModel.CreateTipRequestModel
@@ -31,8 +32,8 @@ class PosRepository @Inject constructor(
     fun syncVenueData() =
         performGetOperationNew(networkCall = { apiHelperNew.syncVenueData() })
 
-    fun employeesList() =
-        performGetOperationNew(networkCall = { apiHelperNew.employeesList() })
+    fun employeesList(locationId: Int) =
+        performGetOperationNew(networkCall = { apiHelperNew.employeesList(locationId) })
 
     fun getTaxList() =
         performGetOperationNew(networkCall = { apiHelperNew.getTaxList() })
@@ -79,6 +80,11 @@ class PosRepository @Inject constructor(
         performGetOperationNew(networkCall = { apiHelperNew.getNoteList() })
 
     suspend fun deleteNote(data: Int) = apiHelperNew.deleteNote(data)
+
+    suspend fun createNote(data: CreateNoteRequest) = apiHelperNew.createNote(data)
+
+    suspend fun updateNote(taxId: Int, data: CreateNoteRequest) =
+        apiHelperNew.updateNote(taxId, data)
 
     override suspend fun abs() {
 

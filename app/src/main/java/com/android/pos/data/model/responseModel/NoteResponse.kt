@@ -1,8 +1,11 @@
 package com.android.pos.data.model.responseModel
 
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.android.parcel.Parcelize
 
+@Parcelize
 data class NoteResponse(
     @SerializedName("data")
     val `data`: List<Data>,
@@ -12,7 +15,8 @@ data class NoteResponse(
     val status: Int,
     @SerializedName("type")
     val type: String
-) {
+) : Parcelable {
+    @Parcelize
     data class Data(
         @SerializedName("created_at")
         val createdAt: String,
@@ -28,5 +32,5 @@ data class NoteResponse(
         val sort: Int,
         @SerializedName("updated_at")
         val updatedAt: String
-    )
+    ) : Parcelable
 }
