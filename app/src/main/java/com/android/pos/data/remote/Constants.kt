@@ -27,4 +27,7 @@ object Constants {
 
     const val TIPS = "tip_settings"
     const val TIPS_UPDATE_DELETE = "tip_settings/{id}"
+
+    const val NOTES = "dynamic_notes"
+    const val NOTE_UPDATE_DELETE = "dynamic_notes/{id}"
 }

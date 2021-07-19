@@ -202,14 +202,24 @@
     <fragment
         android:id="@+id/newTax"
         android:name="com.android.pos.ui.fragments.settings.tax.CreateTax"
-        android:label="NewTax" />
+        android:label="NewTax" >
+        <argument
+            android:name="isEdit"
+            app:argType="boolean"
+            android:defaultValue="false" />
+    </fragment>
     <fragment
         android:id="@+id/addTip"
         android:name="com.android.pos.ui.fragments.settings.tip.CreateTip"
-        android:label="AddTip" />
+        android:label="AddTip" >
+        <argument
+            android:name="isEdit"
+            app:argType="boolean"
+            android:defaultValue="false" />
+    </fragment>
     <fragment
         android:id="@+id/createNote"
-        android:name="com.android.pos.ui.fragments.settings.CreateNote"
+        android:name="com.android.pos.ui.fragments.settings.notes.CreateNote"
         android:label="CreateNote" />
     <fragment
         android:id="@+id/addServiceCharge"

@@ -1,4 +1,4 @@
-package com.android.pos.ui.fragments.settings.tip
+package com.android.pos.ui.fragments.settings.notes
 
 import android.graphics.Color
 import android.os.Bundle
@@ -10,11 +10,12 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
-import com.android.pos.data.model.DiscountListModel
-import com.android.pos.data.model.responseModel.GetTipReponse
-import com.android.pos.databinding.FragmentTipsBinding
-import com.android.pos.ui.adapter.DiscountListAdapter
-import com.android.pos.ui.adapter.TipsListAdapter
+import com.android.pos.data.model.BusinessSettingModel
+import com.android.pos.data.model.responseModel.GetTaxResponse
+import com.android.pos.data.model.responseModel.NoteResponse
+import com.android.pos.databinding.FragmentNotesBinding
+import com.android.pos.ui.adapter.NotesListAdapter
+import com.android.pos.ui.fragments.settings.tax.TaxListViewModel
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.SwipeHelper
@@ -25,63 +26,48 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class TipsList : Fragment() {
+class Notes : Fragment() {
+    private lateinit var binding: FragmentNotesBinding
 
+    private var noteListadapter = NotesListAdapter()
+    private lateinit var noteObject: NoteResponse.Data
+    private val viewModel by viewModels<NoteListViewModel>()
     private var position: Int = -1
-    private lateinit var binding: FragmentTipsBinding
-    private val viewModel by viewModels<TipListViewModel>()
-    private var tipListadapter = TipsListAdapter()
-    private lateinit var tipObject: GetTipReponse.Data
-    private lateinit var tipListUpdateDelete: ArrayList<GetTipReponse.Data>
+    private lateinit var noteListUpdateDelete: ArrayList<NoteResponse.Data>
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentTipsBinding.inflate(inflater, container, false)
-        binding.lifecycleOwner = this
+        binding = FragmentNotesBinding.inflate(inflater, container, false)
 
         setUpRecyclerView()
-        getTipListObserver()
+        getTaxListObserver()
         setupSnackbar()
         observeShowProgress()
-        deleteTip()
+        deleteTax()
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        //   setAdapter()
-        binding.txtAddNewTip.setOnClickListener {
-            findNavController().navigate(R.id.action_settings_to_addTip)
+
+
+        binding.txtCreateNote.setOnClickListener {
+            findNavController().navigate(R.id.action_settings_to_createNote)
         }
     }
 
-    private fun setUpRecyclerView() {
-        binding.rvTipList.adapter = tipListadapter
 
-        object : SwipeHelper(activity, binding.rvTipList) {
+    private fun setUpRecyclerView() {
+        binding.rvNoteLise.adapter = noteListadapter
+
+        object : SwipeHelper(activity, binding.rvNoteLise) {
             override fun instantiateUnderlayButton(
                 viewHolder: RecyclerView.ViewHolder?,
                 underlayButtons: MutableList<UnderlayButton?>
             ) {
-
-                underlayButtons.add(UnderlayButton(
-                    "Edit",
-                    0,
-                    Color.parseColor("#2997cc")
-                ) { pos ->
-
-                    tipObject = tipListadapter.getItem(pos)
-                    val bundle = Bundle()
-                    bundle.putBoolean("isEdit", true)
-                    bundle.putParcelable("tipObject", tipObject)
-
-                    //     var bundle= bundleOf()
-                    findNavController().navigate(R.id.action_settings_to_addTip, bundle)
-
-                })
 
                 underlayButtons.add(UnderlayButton(
                     "Delete",
@@ -92,10 +78,10 @@ class TipsList : Fragment() {
                     position = pos
                     activity?.let {
                         AlertUtils.showConfirmAlert(
-                            it, getString(R.string.delete_tip_message)
+                            it, getString(R.string.delete_tax_message)
                         ) { _, _ ->
-                            tipObject = tipListadapter.getItem(pos)
-                            viewModel.delete(tipListadapter.getItem(pos).id)
+                            noteObject = noteListadapter.getItem(pos)
+                            viewModel.delete(noteListadapter.getItem(pos).id)
                         }
                     }
 
@@ -105,23 +91,26 @@ class TipsList : Fragment() {
         }
     }
 
-    private fun getTipListObserver() {
-        viewModel.getTipList.observe(viewLifecycleOwner, {
+
+    private fun getTaxListObserver() {
+        viewModel.getTaxList.observe(viewLifecycleOwner, {
+
+
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
                         ProgressUtils.dismissProgressDialog()
-                        binding.rvTipList.visibility = View.VISIBLE
-                        resource.data?.let { tipList -> setTipData(tipList.data) }
+                        binding.rvNoteLise.visibility = View.VISIBLE
+                        resource.data?.let { taxList -> setTaxData(taxList.data) }
                     }
                     Status.ERROR -> {
                         ProgressUtils.dismissProgressDialog()
-                        binding.rvTipList.visibility = View.VISIBLE
+                        binding.rvNoteLise.visibility = View.VISIBLE
                         binding.root.showAlert(resource.message)
                     }
                     Status.LOADING -> {
                         ProgressUtils.showProgressDialog(requireActivity())
-                        binding.rvTipList.visibility = View.GONE
+                        binding.rvNoteLise.visibility = View.GONE
                     }
                 }
             }
@@ -142,31 +131,23 @@ class TipsList : Fragment() {
 
     }
 
-    private fun setTipData(tipList: List<GetTipReponse.Data>) {
-        tipListUpdateDelete = tipList as ArrayList<GetTipReponse.Data>
-        tipListadapter.apply {
-            addTips(tipList)
+    private fun setTaxData(taxList: List<NoteResponse.Data>) {
+        noteListUpdateDelete = taxList as ArrayList<NoteResponse.Data>
+        noteListadapter.apply {
+            addNotes(taxList)
             notifyDataSetChanged()
         }
     }
 
-    private fun deleteTip() {
+    private fun deleteTax() {
 
         viewModel.data.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
-                /* AlertUtils.showAlert(requireActivity(), it.message)
-                 var adapter = binding.rvTaxList.adapter as TaxListAdapter
-                 var list = adapter.taxList
-                 list.remove(taxObject)
-                 adapter.taxList = list
-                 adapter.notifyDataSetChanged()*/
-
                 AlertUtils.showAlert(requireActivity(), it.message)
-                tipListUpdateDelete.remove(tipObject)
-                tipListadapter.addTips(tipListUpdateDelete)
-                tipListadapter.notifyItemRemoved(position)
-                tipListadapter.notifyItemRangeChanged(position, tipListUpdateDelete.size)
-
+                noteListUpdateDelete.remove(noteObject)
+                noteListadapter.addNotes(noteListUpdateDelete)
+                noteListadapter.notifyItemRemoved(position)
+                noteListadapter.notifyItemRangeChanged(position, noteListUpdateDelete.size)
             }
         })
 

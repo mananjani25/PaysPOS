@@ -12,7 +12,8 @@ data class GetTipReponse(
     val status: Int,
     @SerializedName("type")
     val type: String
-) {
+) : Parcelable {
+    @Parcelize
     data class Data(
         @SerializedName("created_at")
         val createdAt: String,
@@ -31,5 +32,5 @@ data class GetTipReponse(
         @SerializedName("updated_at")
         val updatedAt: String,
         var isChecked:Boolean = true
-    )
+    ) : Parcelable
 }

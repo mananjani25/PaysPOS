@@ -9,6 +9,8 @@ import com.android.pos.data.remote.Constants.EMPLOYEES
 import com.android.pos.data.remote.Constants.EMPLOYEE_CLOCK_IN
 import com.android.pos.data.remote.Constants.EMPLOYEE_LOG_IN
 import com.android.pos.data.remote.Constants.LOGIN_TERMINAL
+import com.android.pos.data.remote.Constants.NOTES
+import com.android.pos.data.remote.Constants.NOTE_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.SYNC_VENUE_DATA
 import com.android.pos.data.remote.Constants.TAXES
 import com.android.pos.data.remote.Constants.TAX_UPDATE_DELETE
@@ -53,13 +55,13 @@ interface ApiService {
     suspend fun createTax(@Body createTax: CreateTaxRequestModel): CreateTaxResponse
 
     @PUT(TAX_UPDATE_DELETE)
-    suspend  fun updateTax(
-        /* @Path("id") taxId: String?,*/
+    suspend fun updateTax(
+        @Path("id") taxId: Int,
         @Body createTax: CreateTaxRequestModel
     ): CreateTaxResponse
 
     @DELETE(TAX_UPDATE_DELETE)
-    suspend  fun deleteTax(
+    suspend fun deleteTax(
         @Path("id") taxId: Int,
     ): CreateTaxResponse
 
@@ -71,12 +73,20 @@ interface ApiService {
 
     @PUT(TIPS_UPDATE_DELETE)
     suspend fun updateTip(
-        @Path("id") tipId: String?,
+        @Path("id") tipId: Int,
         @Body createTax: CreateTipRequestModel
     ): CreateTipResponse
 
     @DELETE(TIPS_UPDATE_DELETE)
     suspend fun deleteTip(
-        @Path("id") tipId: String?
+        @Path("id") tipId: Int
+    ): CreateTipResponse
+
+    @GET(NOTES)
+    suspend fun getNoteList(): NoteResponse
+
+    @DELETE(NOTE_UPDATE_DELETE)
+    suspend fun deleteNote(
+        @Path("id") noteId: Int,
     ): BaseResponse
 }

@@ -37,6 +37,10 @@ class TipsListAdapter : RecyclerView.Adapter<TipsListAdapter.MyViewHolder>() {
         }
     }
 
+    fun getItem(position:Int): GetTipReponse.Data {
+        return tipList[position]
+    }
+
     inner class MyViewHolder(val tipItemBinding: ViewTipItemBinding) :
         RecyclerView.ViewHolder(tipItemBinding.root){
 

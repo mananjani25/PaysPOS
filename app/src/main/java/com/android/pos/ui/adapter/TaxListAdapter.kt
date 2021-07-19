@@ -9,7 +9,7 @@ import com.android.pos.databinding.ViewTaxItemBinding
 
 class TaxListAdapter : RecyclerView.Adapter<TaxListAdapter.MyViewHolder>() {
 
-     var taxList = ArrayList<GetTaxResponse.Data>()
+     var taxList = ArrayList<GetTaxResponse.TaxData>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaxListAdapter.MyViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -27,7 +27,7 @@ class TaxListAdapter : RecyclerView.Adapter<TaxListAdapter.MyViewHolder>() {
 
     override fun getItemCount()=taxList.size
 
-    fun addTaxes(taxList: List<GetTaxResponse.Data>) {
+    fun addTaxes(taxList: List<GetTaxResponse.TaxData>) {
 
         this.taxList.apply {
             clear()
@@ -35,7 +35,7 @@ class TaxListAdapter : RecyclerView.Adapter<TaxListAdapter.MyViewHolder>() {
         }
     }
 
-    fun getItem(position:Int): GetTaxResponse.Data {
+    fun getItem(position:Int): GetTaxResponse.TaxData {
         return taxList[position]
     }
 
