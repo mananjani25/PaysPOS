@@ -1,13 +1,14 @@
-package com.android.pos.ui.fragments.settings.discount
+package com.android.pos.ui.fragments.settings.servicecharge
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.data.model.responseModel.CreateDiscountResponse
+import com.android.pos.data.model.responseModel.CreateServiceChargeResponse
 import com.android.pos.data.model.responseModel.CreateTaxResponse
 import com.android.pos.data.repositories.PosRepository
-import com.android.pos.data.repositories.TipDiscountRepository
+import com.android.pos.data.repositories.TaxServiceChargeRepository
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,34 +16,34 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class DiscountListViewModel @Inject constructor(
-    private val tipDiscountRepository: TipDiscountRepository
+class ServiceChargeListViewModel @Inject constructor(
+    private val taxServiceChargeRepository: TaxServiceChargeRepository
 ) : ViewModel() {
 
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
 
-    private val _data = MutableLiveData<Event<CreateDiscountResponse?>>()
-    val data: LiveData<Event<CreateDiscountResponse?>> = _data
+    private val _data = MutableLiveData<Event<CreateServiceChargeResponse?>>()
+    val data: LiveData<Event<CreateServiceChargeResponse?>> = _data
 
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
 
-    val getDiscountList = tipDiscountRepository.getDiscountsList()
+    val getDiscountList = taxServiceChargeRepository.getServiceChargeList()
 
     fun delete(id: Int) {
         _showProgress.value = Event(true)
 
         viewModelScope.launch {
-            val resource = tipDiscountRepository.deleteDiscount(id)
+            val resource = taxServiceChargeRepository.deleteServiceCharge(id)
             when (resource.status) {
                 Status.SUCCESS -> {
                     _showProgress.value = Event(false)
 
                     resource.data.let {
                         if (it?.status == 200) {
-                            resource.data?.let {createTaxResponse->
+                            resource.data?.let { createTaxResponse ->
                                 _data.value = Event(createTaxResponse)
                             }
                         } else {

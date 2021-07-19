@@ -13,6 +13,8 @@ import com.android.pos.data.remote.Constants.EMPLOYEE_LOG_IN
 import com.android.pos.data.remote.Constants.LOGIN_TERMINAL
 import com.android.pos.data.remote.Constants.NOTES
 import com.android.pos.data.remote.Constants.NOTE_UPDATE_DELETE
+import com.android.pos.data.remote.Constants.SERVICE_CHARGE
+import com.android.pos.data.remote.Constants.SERVICE_CHARGE_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.SYNC_VENUE_DATA
 import com.android.pos.data.remote.Constants.TAXES
 import com.android.pos.data.remote.Constants.TAX_UPDATE_DELETE
@@ -100,6 +102,24 @@ interface ApiService {
     suspend fun deleteDiscount(
         @Path("id") discountId: Int
     ): CreateDiscountResponse
+
+
+    @GET(SERVICE_CHARGE)
+    suspend fun getServiceChargeList(): GetServiceChargeResponse
+
+    @POST(SERVICE_CHARGE)
+    suspend fun createServiceCharge(@Body createDiscount: CreateServiceChargeRequestModel): CreateServiceChargeResponse
+
+    @PUT(SERVICE_CHARGE_UPDATE_DELETE)
+    suspend fun updateServiceCharge(
+        @Path("id") discountId: Int,
+        @Body createDiscount: CreateServiceChargeRequestModel
+    ): CreateServiceChargeResponse
+
+    @DELETE(SERVICE_CHARGE_UPDATE_DELETE)
+    suspend fun deleteServiceCharge(
+        @Path("id") discountId: Int
+    ): CreateServiceChargeResponse
 
 
     @GET(NOTES)

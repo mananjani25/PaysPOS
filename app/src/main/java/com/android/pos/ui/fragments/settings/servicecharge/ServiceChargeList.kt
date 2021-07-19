@@ -1,20 +1,19 @@
-package com.android.pos.ui.fragments.settings.discount
+package com.android.pos.ui.fragments.settings.servicecharge
 
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
-import com.android.pos.data.model.DiscountListModel
-import com.android.pos.data.model.responseModel.GetDiscountResponse
-import com.android.pos.databinding.DiscountFragmentBinding
-import com.android.pos.databinding.FragmentDiscountBinding
-import com.android.pos.ui.adapter.DiscountListAdapter
+import com.android.pos.data.model.responseModel.GetServiceChargeResponse
+import com.android.pos.databinding.ServiceChargeFragmentBinding
+import com.android.pos.ui.adapter.ServiceChargeListAdapter
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.SwipeHelper
@@ -25,52 +24,45 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class DiscountList : Fragment() {
+class ServiceChargeList : Fragment() {
 
-    private lateinit var binding: DiscountFragmentBinding
+    private lateinit var binding: ServiceChargeFragmentBinding
 
     private var position: Int = -1
-    private lateinit var discountListUpdateDelete: ArrayList<GetDiscountResponse.Data>
-    private val viewModel by viewModels<DiscountListViewModel>()
-    private var discountListadapter = DiscountListAdapter()
-    private lateinit var discountObject: GetDiscountResponse.Data
-
+    private lateinit var discountListUpdateDelete: ArrayList<GetServiceChargeResponse.Data>
+    private val viewModel by viewModels<ServiceChargeListViewModel>()
+    private var serviceChargeListadapter = ServiceChargeListAdapter()
+    private lateinit var serviceChargeObject: GetServiceChargeResponse.Data
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = DiscountFragmentBinding.inflate(inflater, container, false)
+
+        binding = ServiceChargeFragmentBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
 
         setUpRecyclerView()
         getTaxListObserver()
         setupSnackbar()
         observeShowProgress()
-        deleteDiscount()
+        deleteServiceCharge()
 
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        //setAdapter()
-        onClick()
-
-    }
-
-    private fun onClick() {
-        binding.txtCreateDiscount.setOnClickListener {
-            findNavController().navigate(R.id.action_settings_to_createDiscount)
+        view.findViewById<AppCompatTextView>(R.id.txtAddServiceCharge).setOnClickListener {
+            findNavController().navigate(R.id.action_settings_to_addServiceCharge)
         }
     }
 
     private fun setUpRecyclerView() {
-        binding.rvDiscountList.adapter = discountListadapter
+        binding.rvServiceCharge.adapter = serviceChargeListadapter
 
-        object : SwipeHelper(activity, binding.rvDiscountList) {
+        object : SwipeHelper(activity, binding.rvServiceCharge) {
             override fun instantiateUnderlayButton(
                 viewHolder: RecyclerView.ViewHolder?,
                 underlayButtons: MutableList<UnderlayButton?>
@@ -82,13 +74,16 @@ class DiscountList : Fragment() {
                     Color.parseColor("#2997cc")
                 ) { pos ->
 
-                    discountObject = discountListadapter.getItem(pos)
+                    serviceChargeObject = serviceChargeListadapter.getItem(pos)
                     val bundle = Bundle()
                     bundle.putBoolean("isEdit", true)
-                    bundle.putParcelable("discountObject", discountObject)
+                    bundle.putParcelable("serviceChargeObject", serviceChargeObject)
 
                     //     var bundle= bundleOf()
-                    findNavController().navigate(R.id.action_settings_to_createDiscount, bundle)
+                    findNavController().navigate(
+                        R.id.action_settings_to_addServiceCharge,
+                        bundle
+                    )
 
                 })
 
@@ -101,10 +96,10 @@ class DiscountList : Fragment() {
                     position = pos
                     activity?.let {
                         AlertUtils.showConfirmAlert(
-                            it, getString(R.string.delete_discount_message)
+                            it, getString(R.string.delete_service_charge_message)
                         ) { _, _ ->
-                            discountObject = discountListadapter.getItem(pos)
-                            viewModel.delete(discountListadapter.getItem(pos).id)
+                            serviceChargeObject = serviceChargeListadapter.getItem(pos)
+                            viewModel.delete(serviceChargeListadapter.getItem(pos).id)
                         }
                     }
 
@@ -122,17 +117,17 @@ class DiscountList : Fragment() {
                 when (resource.status) {
                     Status.SUCCESS -> {
                         ProgressUtils.dismissProgressDialog()
-                        binding.rvDiscountList.visibility = View.VISIBLE
+                        binding.rvServiceCharge.visibility = View.VISIBLE
                         resource.data?.let { taxList -> setTaxData(taxList.data) }
                     }
                     Status.ERROR -> {
                         ProgressUtils.dismissProgressDialog()
-                        binding.rvDiscountList.visibility = View.VISIBLE
+                        binding.rvServiceCharge.visibility = View.VISIBLE
                         binding.root.showAlert(resource.message)
                     }
                     Status.LOADING -> {
                         ProgressUtils.showProgressDialog(requireActivity())
-                        binding.rvDiscountList.visibility = View.GONE
+                        binding.rvServiceCharge.visibility = View.GONE
                     }
                 }
             }
@@ -153,15 +148,15 @@ class DiscountList : Fragment() {
 
     }
 
-    private fun setTaxData(taxList: List<GetDiscountResponse.Data>) {
-        discountListUpdateDelete = taxList as ArrayList<GetDiscountResponse.Data>
-        discountListadapter.apply {
-            addDiscount(taxList)
+    private fun setTaxData(taxList: List<GetServiceChargeResponse.Data>) {
+        discountListUpdateDelete = taxList as ArrayList<GetServiceChargeResponse.Data>
+        serviceChargeListadapter.apply {
+            addServiceCharge(taxList)
             notifyDataSetChanged()
         }
     }
 
-    private fun deleteDiscount() {
+    private fun deleteServiceCharge() {
 
         viewModel.data.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
@@ -173,10 +168,13 @@ class DiscountList : Fragment() {
                  adapter.notifyDataSetChanged()*/
 
                 AlertUtils.showAlert(requireActivity(), it.message)
-                discountListUpdateDelete.remove(discountObject)
-                discountListadapter.addDiscount(discountListUpdateDelete)
-                discountListadapter.notifyItemRemoved(position)
-                discountListadapter.notifyItemRangeChanged(position, discountListUpdateDelete.size)
+                discountListUpdateDelete.remove(serviceChargeObject)
+                serviceChargeListadapter.addServiceCharge(discountListUpdateDelete)
+                serviceChargeListadapter.notifyItemRemoved(position)
+                serviceChargeListadapter.notifyItemRangeChanged(
+                    position,
+                    discountListUpdateDelete.size
+                )
 
             }
         })
@@ -185,15 +183,5 @@ class DiscountList : Fragment() {
 
     private fun setupSnackbar() =
         binding.root.liveSnackBar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
-
-
-    /*private fun setAdapter() {
-        val list: ArrayList<DiscountListModel> = arrayListOf()
-        list.add(DiscountListModel(0, "Staff Meal", "20%", false))
-        list.add(DiscountListModel(0, "Military", "15%", false))
-        list.add(DiscountListModel(0, "Senior Citizen", "25%", false))
-        binding.rvDiscountList.adapter = DiscountListAdapter(requireContext(), list)
-
-    }*/
 
 }

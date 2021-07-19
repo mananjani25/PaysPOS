@@ -36,4 +36,7 @@ object Constants {
     const val NOTES = "dynamic_notes"
     const val NOTE_UPDATE_DELETE = "dynamic_notes/{id}"
 
+    const val SERVICE_CHARGE = "service_charges"
+    const val SERVICE_CHARGE_UPDATE_DELETE = "service_charges/{id}"
+
 }
