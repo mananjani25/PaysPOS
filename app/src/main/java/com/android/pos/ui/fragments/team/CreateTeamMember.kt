@@ -11,7 +11,9 @@ import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.databinding.FragmentCreateTeamMemberBinding
 import com.android.pos.databinding.FragmentTeamDetailsBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class CreateTeamMember : Fragment() {
 
     override fun onAttach(context: Context) {

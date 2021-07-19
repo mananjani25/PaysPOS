@@ -45,11 +45,8 @@ class TeamList : Fragment(), CustomCallback {
 
 
         setupStickyLayout()
-
         configureToolbar()
-//        setAdapter()
         loadTeamDetails(null)
-
         loadTeams()
 
         binding.layoutTool.imgOptionMenu.setOnClickListener {
@@ -111,28 +108,6 @@ class TeamList : Fragment(), CustomCallback {
 
         val fm: FragmentManager = requireActivity().supportFragmentManager
         fm.beginTransaction().replace(binding.frameContainer.id, teamDetails).commit()
-    }
-
-    private fun loadTeamDetails() {
-
-        val teamDetails = TeamDetails()
-        val fm: FragmentManager = requireActivity().supportFragmentManager
-        fm.beginTransaction().replace(binding.frameContainer.id, teamDetails).commit()
-    }
-
-    private fun setAdapter() {
-
-
-        val list: ArrayList<TeamListModel> = arrayListOf()
-        list.add(TeamListModel(0, "D", "", "", true))
-        list.add(TeamListModel(0, "DM", "David Miller", "davidmiller@gmail.com"))
-        list.add(TeamListModel(0, "DD", "Devin Doe", "devindoe@gmail.com"))
-        list.add(TeamListModel(0, "K", "", "", true))
-        list.add(TeamListModel(0, "KM", "Krisha Miller", "krishamiller@gmail.com"))
-        list.add(TeamListModel(0, "R", "", "", true))
-        list.add(TeamListModel(0, "RD", "Robert Doe", "robertdoe@gmail.com"))
-
-        binding.rvEmployeeList.adapter = TeamListAdapter(requireContext(), list)
     }
 
     override fun onItemClickListener(view: View?, data: EmployeeListResponse.Data.Employee) {

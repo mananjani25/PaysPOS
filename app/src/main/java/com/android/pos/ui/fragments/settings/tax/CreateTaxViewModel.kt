@@ -85,10 +85,10 @@ class CreateTaxViewModel @Inject constructor(
 
 
             viewModelScope.launch {
-                if (isEdit) {
-                    resource = posRepository.updateTax(taxId, taxData)
+                resource = if (isEdit) {
+                    posRepository.updateTax(taxId, taxData)
                 } else {
-                    resource = posRepository.createTax(taxData)
+                    posRepository.createTax(taxData)
                 }
 
                 when (resource.status) {
