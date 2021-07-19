@@ -58,6 +58,10 @@ class CategoryList : Fragment() {
                     findNavController().navigate(R.id.action_dashboardCategory_to_createItem)
                 }
 
+                override fun onClickedCreateItem() {
+
+                }
+
             })
 
         return binding.root

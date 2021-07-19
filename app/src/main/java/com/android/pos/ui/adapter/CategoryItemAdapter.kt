@@ -5,13 +5,14 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.model.responseModel.VenueDataResponse
+import com.android.pos.databinding.ViewCreateItemBinding
 import com.android.pos.databinding.ViewDashboardItemBinding
 
 class CategoryItemAdapter(
     val context: Context,
     var list: ArrayList<VenueDataResponse.Data.Category.Item>,
     val listner: CategoryItemList
-) : RecyclerView.Adapter<CategoryItemAdapter.MyViewHolder>() {
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     inner class MyViewHolder(private val binding: ViewDashboardItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
@@ -21,24 +22,45 @@ class CategoryItemAdapter(
         }
 
         init {
-
             binding.root.setOnClickListener {
                 listner.onClick()
             }
         }
     }
 
+    inner class CustomItemHolder(private val binding: ViewCreateItemBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        init {
+            binding.root.setOnClickListener {
+                listner.onClickedCreateItem()
+            }
+
+        }
+    }
+
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): CategoryItemAdapter.MyViewHolder {
-        val inflater = LayoutInflater.from(context)
-        val binding = ViewDashboardItemBinding.inflate(inflater, parent, false)
-        return MyViewHolder(binding)
+    ): RecyclerView.ViewHolder {
+
+        if (viewType == 0) {
+            val binding = ViewCreateItemBinding.inflate(LayoutInflater.from(context), parent, false)
+            return CustomItemHolder(binding)
+
+        } else {
+            val binding =
+                ViewDashboardItemBinding.inflate(LayoutInflater.from(context), parent, false)
+            return MyViewHolder(binding)
+        }
     }
 
-    override fun onBindViewHolder(holder: CategoryItemAdapter.MyViewHolder, position: Int) {
-        holder.bind(list[position])
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+
+        if (position == 0) {
+            (holder as CustomItemHolder)
+        } else {
+            (holder as MyViewHolder).bind(list[position])
+        }
 
     }
 
@@ -48,5 +70,16 @@ class CategoryItemAdapter(
 
     interface CategoryItemList {
         fun onClick()
+        fun onClickedCreateItem()
+    }
+
+    override fun getItemViewType(position: Int): Int {
+
+        return if (position == 0) {
+            0
+        } else {
+            1
+        }
+
     }
 }
