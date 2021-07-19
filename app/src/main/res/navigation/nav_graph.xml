@@ -156,11 +156,11 @@
         android:id="@+id/createDiscount"
         android:name="com.android.pos.ui.fragments.settings.discount.CreateDiscount"
         android:label="CreateDiscount"
-        tools:layout="@layout/fragment_create_discount" >
+        tools:layout="@layout/fragment_create_discount">
         <argument
             android:name="isEdit"
-            app:argType="boolean"
-            android:defaultValue="false" />
+            android:defaultValue="false"
+            app:argType="boolean" />
     </fragment>
     <fragment
         android:id="@+id/settings"
@@ -207,20 +207,20 @@
     <fragment
         android:id="@+id/newTax"
         android:name="com.android.pos.ui.fragments.settings.tax.CreateTax"
-        android:label="NewTax" >
+        android:label="NewTax">
         <argument
             android:name="isEdit"
-            app:argType="boolean"
-            android:defaultValue="false" />
+            android:defaultValue="false"
+            app:argType="boolean" />
     </fragment>
     <fragment
         android:id="@+id/addTip"
         android:name="com.android.pos.ui.fragments.settings.tip.CreateTip"
-        android:label="AddTip" >
+        android:label="AddTip">
         <argument
             android:name="isEdit"
-            app:argType="boolean"
-            android:defaultValue="false" />
+            android:defaultValue="false"
+            app:argType="boolean" />
     </fragment>
     <fragment
         android:id="@+id/createNote"
@@ -228,13 +228,18 @@
         android:label="CreateNote">
         <argument
             android:name="isEdit"
-            app:argType="boolean"
-            android:defaultValue="false" />
+            android:defaultValue="false"
+            app:argType="boolean" />
     </fragment>
     <fragment
         android:id="@+id/addServiceCharge"
-        android:name="com.android.pos.ui.fragments.settings.servicecharge.AddServiceCharge"
-        android:label="AddServiceCharge" />
+        android:name="com.android.pos.ui.fragments.settings.servicecharge.CreateServiceCharge"
+        android:label="AddServiceCharge">
+        <argument
+            android:name="isEdit"
+            android:defaultValue="false"
+            app:argType="boolean" />
+    </fragment>
     <fragment
         android:id="@+id/createTeamMember"
         android:name="com.android.pos.ui.fragments.team.CreateTeamMember"

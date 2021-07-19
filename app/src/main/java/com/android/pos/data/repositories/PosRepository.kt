@@ -3,10 +3,7 @@ package com.android.pos.data.repositories
 
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.db.IDataManager
-import com.android.pos.data.model.requestModel.CreateNoteRequest
-import com.android.pos.data.model.requestModel.CreateDiscountRequestModel
-import com.android.pos.data.model.requestModel.CreateTaxRequestModel
-import com.android.pos.data.model.requestModel.CreateTipRequestModel
+import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.remote.ApiHelper
 import com.android.pos.utils.performGetOperationNew
 import javax.inject.Inject
@@ -65,6 +62,17 @@ class PosRepository @Inject constructor(
         apiHelperNew.updateDiscount(discountId, data)
 
     suspend fun deleteDiscount(data: Int) = apiHelperNew.deleteDiscount(data)
+
+    fun getServiceChargeList() =
+        performGetOperationNew(networkCall = { apiHelperNew.getServiceChargeList() })
+
+    suspend fun createServiceCharge(data: CreateServiceChargeRequestModel) =
+        apiHelperNew.createServiceCharge(data)
+
+    suspend fun updateServiceCharge(discountId: Int, data: CreateServiceChargeRequestModel) =
+        apiHelperNew.updateServiceCharge(discountId, data)
+
+    suspend fun deleteServiceCharge(data: Int) = apiHelperNew.deleteServiceCharge(data)
 
 
 //    fun getCharacters() = performGetOperation(

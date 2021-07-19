@@ -195,7 +195,7 @@
                                 android:layout_alignParentEnd="true"
                                 android:layout_gravity="center"
                                 android:checked="true"
-                                android:onCheckedChanged="@{(button, bool)-> createDiscountFragment.saveGender(bool)}"
+                                android:onCheckedChanged="@{(button, bool)-> createDiscountFragment.discountType(bool)}"
                                 android:padding="@dimen/_5sdp"
                                 android:text="@string/disc_percentage"
                                 android:textSize="@dimen/_6mdpi"

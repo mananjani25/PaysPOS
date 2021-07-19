@@ -1,58 +1,49 @@
-package com.android.pos.ui.fragments.settings.discount
+package com.android.pos.ui.fragments.settings.servicecharge
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CompoundButton
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.android.pos.R
-import com.android.pos.data.model.responseModel.GetDiscountResponse
-import com.android.pos.databinding.FragmentCreateDiscountBinding
+import com.android.pos.data.model.responseModel.GetServiceChargeResponse
+import com.android.pos.databinding.DialogAddServiceChargeBinding
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 
-
 @AndroidEntryPoint
-class CreateDiscount : Fragment() {
+class CreateServiceCharge : Fragment() {
+    private lateinit var binding: DialogAddServiceChargeBinding
 
-    private lateinit var binding: FragmentCreateDiscountBinding
-    private val viewModel by viewModels<CreateDiscountViewModel>()
+    private val viewModel by viewModels<CreateServiceChargeViewModel>()
 
     var isEdit: Boolean = false
-    private lateinit var discountData: GetDiscountResponse.Data
+    private lateinit var serviceChargeData: GetServiceChargeResponse.Data
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentCreateDiscountBinding.inflate(inflater, container, false)
+        binding = DialogAddServiceChargeBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
-        binding.viewModel = viewModel
-        binding.createDiscountFragment = this
 
+        binding.viewModel = viewModel
+        binding.createServiceChargeFragment = this
 
         isEdit = arguments?.getBoolean("isEdit")!!
 
         if (isEdit) {
-            discountData = arguments?.getParcelable("discountObject")!!
+            serviceChargeData = arguments?.getParcelable("serviceChargeObject")!!
 
-            viewModel.setDiscountData(discountData)
+            viewModel.setDiscountData(serviceChargeData)
 
-            if (discountData.discountType == getString(R.string.disc_percentage)) {
-                binding.swtDiscountType.isChecked = true
-                binding.swtDiscountType.text = getString(R.string.disc_percentage)
-            } else {
-                binding.swtDiscountType.isChecked = false
-                binding.swtDiscountType.text = getString(R.string.disc_amount)
-            }
+            binding.swtEnableCharge.isChecked = serviceChargeData.isEnabled
 
-            viewModel.isEditData(isEdit, discountData.id)
+            viewModel.isEditData(isEdit, serviceChargeData.id)
         }
 
         setupSnackbar()
@@ -64,26 +55,19 @@ class CreateDiscount : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        onCLick()
-
-    }
-
-    private fun onCLick() {
         binding.imgBack.setOnClickListener {
             findNavController().navigateUp()
         }
+
     }
 
-    fun discountType(isChecked: Boolean) {
+    fun enableSerCharge(isChecked: Boolean) {
         if (isChecked) {
-            binding.swtDiscountType.text = getString(R.string.disc_percentage)
-            viewModel.discountType(getString(R.string.disc_percentage))
+            viewModel.enableSerCharge(isChecked)
         } else {
-            binding.swtDiscountType.text = getString(R.string.disc_amount)
-            viewModel.discountType(getString(R.string.disc_amount))
+            viewModel.enableSerCharge(isChecked)
         }
     }
-
 
     private fun observeShowProgress() {
 
