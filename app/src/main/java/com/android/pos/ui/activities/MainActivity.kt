@@ -26,6 +26,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ParentActivityBinding
     private var navController: NavController? = null
     private lateinit var listner: NavController.OnDestinationChangedListener
+
     @Inject
     lateinit var prefProvider: PrefProvider
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -137,7 +138,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun logout() {
-        prefProvider.setValue(Constants.AUTH_TOKEN,"")
+        prefProvider.setValue(Constants.AUTH_TOKEN, "")
         navController?.navigate(R.id.action_global_login)
 
 

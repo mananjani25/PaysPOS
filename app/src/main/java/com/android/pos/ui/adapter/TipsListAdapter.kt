@@ -38,5 +38,16 @@ class TipsListAdapter : RecyclerView.Adapter<TipsListAdapter.MyViewHolder>() {
     }
 
     inner class MyViewHolder(val tipItemBinding: ViewTipItemBinding) :
-        RecyclerView.ViewHolder(tipItemBinding.root)
-}
+        RecyclerView.ViewHolder(tipItemBinding.root){
+
+            init {
+
+                tipItemBinding.imgCheckBox.setOnClickListener {
+                    tipList.get(layoutPosition).isChecked =  !tipList.get(layoutPosition).isChecked
+                    notifyDataSetChanged()
+
+                }
+
+            }
+
+    }}

@@ -26,10 +26,8 @@ class LoginFragment : Fragment() {
 
     private val viewModel by viewModels<LoginViewModel>()
 
-
-    @Inject lateinit var prefProvider: PrefProvider
-
-
+    @Inject
+    lateinit var prefProvider: PrefProvider
 
     override fun onCreateView(
         inflater: LayoutInflater,

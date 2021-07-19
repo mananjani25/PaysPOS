@@ -229,7 +229,7 @@
     <fragment
         android:id="@+id/kitchenReceiptSettings"
         android:name="com.android.pos.ui.fragments.settings.KitchenReceiptSettings"
-        android:label="KitchenReceiptSettings"></fragment>
+        android:label="KitchenReceiptSettings" />
 
     <fragment
         android:id="@+id/reports"
