@@ -1,4 +1,4 @@
-package com.android.pos.ui.fragments.settings.tax
+package com.android.pos.ui.fragments.settings.discount
 
 import android.text.TextUtils
 import androidx.lifecycle.LiveData
@@ -6,9 +6,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.R
+import com.android.pos.data.model.requestModel.CreateDiscountRequestModel
 import com.android.pos.data.model.requestModel.CreateTaxRequestModel
-import com.android.pos.data.model.responseModel.CreateTaxResponse
-import com.android.pos.data.model.responseModel.GetTaxResponse
+import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
@@ -21,12 +21,12 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class CreateTaxViewModel @Inject constructor(
+class CreateDiscountViewModel @Inject constructor(
     private val posRepository: PosRepository,
     private val prefProvider: PrefProvider
 ) : ViewModel() {
 
-    val createTaxDetails = MutableLiveData(CreateTaxRequestModel())
+    val createDiscountDetails = MutableLiveData(CreateDiscountRequestModel.Discount())
 
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
@@ -37,58 +37,71 @@ class CreateTaxViewModel @Inject constructor(
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
-    private var taxId: Int = -1
-
+    private var discountId: Int = -1
+    private var discountTypeViewModel: String = "Percentage"
     private var isEdit: Boolean = false
 
-    private lateinit var taxData: CreateTaxRequestModel
+    private lateinit var discountData: CreateDiscountRequestModel
 
-    private lateinit var resource: Resource<CreateTaxResponse>
+    private lateinit var resource: Resource<CreateDiscountResponse>
 
-    fun isEditData(isEdit: Boolean, taxId: Int) {
-        this.taxId = taxId
+    fun isEditData(isEdit: Boolean, discountId: Int) {
+        this.discountId = discountId
         this.isEdit = isEdit
     }
 
-    fun setTaxData(taxData: GetTaxResponse.TaxData) {
-        createTaxDetails.value?.name = taxData.name
-        createTaxDetails.value?.rate = taxData.rate
+
+    fun discountType(discountType: String) {
+        this.discountTypeViewModel = discountType
+    }
+
+    fun setDiscountData(discountData: GetDiscountResponse.Data) {
+        createDiscountDetails.value?.name = discountData.name
+        createDiscountDetails.value?.percentage = discountData.percentage
+        discountTypeViewModel = discountData.discountType
     }
 
     fun submit() {
-        val value = createTaxDetails.value
+        val value = createDiscountDetails.value
         if (TextUtils.isEmpty(value?.name?.trim())) {
-            _snackbarText.value = Event(R.string.tax_name_validate)
+            _snackbarText.value = Event(R.string.discount_name_validate)
         } else if (TextUtils.isEmpty(
-                value?.rate?.toString()?.trim()
+                value?.percentage?.toString()?.trim()
             )
-            && value?.rate == 0.0
+            && value?.percentage == 0.0
         ) {
-            _snackbarText.value = Event(R.string.tax_rate_validate)
+            _snackbarText.value = Event(R.string.discount_rate_validate)
         } else {
             _showProgress.value = Event(true)
 
             if (isEdit) {
-                taxData = CreateTaxRequestModel().apply {
-                    id = taxId
-                    name = value!!.name
-                    rate = value.rate
-                    locationId = prefProvider.getValueInt(LOCATION_ID, -1)
+                discountData = CreateDiscountRequestModel().apply {
+                    discount = CreateDiscountRequestModel.Discount().apply {
+                        name = value!!.name
+                        percentage = value.percentage
+                        discountType = discountTypeViewModel    /*[Percentage Amount]*/
+                        locationId = prefProvider.getValueInt(LOCATION_ID, -1)
+                    }
                 }
             } else {
-                taxData = CreateTaxRequestModel().apply {
-                    name = value!!.name
-                    rate = value.rate
-                    locationId = prefProvider.getValueInt(LOCATION_ID, -1)
+                discountData = CreateDiscountRequestModel().apply {
+                    discount = CreateDiscountRequestModel.Discount().apply {
+                        name = value!!.name
+                        percentage = value.percentage
+                        discountType = discountTypeViewModel    /*[Percentage Amount]*/
+                        locationId = prefProvider.getValueInt(LOCATION_ID, -1)
+                    }
+
+
                 }
             }
 
 
             viewModelScope.launch {
                 if (isEdit) {
-                    resource = posRepository.updateTax(taxId, taxData)
+                    resource = posRepository.updateDiscount(discountId, discountData)
                 } else {
-                    resource = posRepository.createTax(taxData)
+                    resource = posRepository.createDiscount(discountData)
                 }
 
                 when (resource.status) {
@@ -99,7 +112,6 @@ class CreateTaxViewModel @Inject constructor(
 
                                 resource.data?.let {
                                     _data.value = Event(true)
-
                                 }
                             } else {
                                 _snackbarText.value = Event(resource.message)

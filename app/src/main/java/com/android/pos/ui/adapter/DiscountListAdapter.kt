@@ -5,34 +5,48 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.model.DiscountListModel
+import com.android.pos.data.model.responseModel.GetDiscountResponse
 import com.android.pos.databinding.ViewDiscountItemBinding
 
-class DiscountListAdapter(val context: Context, val list: ArrayList<DiscountListModel>) :
+class DiscountListAdapter() :
     RecyclerView.Adapter<DiscountListAdapter.MyViewHolder>() {
 
-    inner class MyViewHolder(private val binding: ViewDiscountItemBinding) :
-        RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: DiscountListModel) {
-            binding.model = item
-            binding.executePendingBindings()
-        }
-    }
+    var discountList = ArrayList<GetDiscountResponse.Data>()
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
     ): DiscountListAdapter.MyViewHolder {
-        val binding = ViewDiscountItemBinding.inflate(LayoutInflater.from(context), parent, false)
+        val inflater = LayoutInflater.from(parent.context)
+        val binding = ViewDiscountItemBinding.inflate(inflater, parent, false)
+
         return MyViewHolder(binding)
 
     }
 
     override fun onBindViewHolder(holder: DiscountListAdapter.MyViewHolder, position: Int) {
-        holder.bind(list.get(position))
+        val itemBinding = holder.discountItemBinding
+        itemBinding.discountModel = discountList[position]
+
+        itemBinding.executePendingBindings()
     }
 
-    override fun getItemCount(): Int {
-        return list.size
+    override fun getItemCount() = discountList.size
+
+
+    fun addDiscount(discountList: List<GetDiscountResponse.Data>) {
+
+        this.discountList.apply {
+            clear()
+            addAll(discountList)
+        }
     }
+
+    fun getItem(position: Int): GetDiscountResponse.Data {
+        return discountList[position]
+    }
+
+    inner class MyViewHolder(val discountItemBinding: ViewDiscountItemBinding) :
+        RecyclerView.ViewHolder(discountItemBinding.root)
 
 }

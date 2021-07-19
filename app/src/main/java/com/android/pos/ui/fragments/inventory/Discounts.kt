@@ -27,18 +27,18 @@ class Discounts : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setAdapter()
+      //  setAdapter()
         onClick()
     }
 
-    private fun setAdapter() {
+  /*  private fun setAdapter() {
         val list: ArrayList<DiscountListModel> = arrayListOf()
         list.add(DiscountListModel(0, "Discount 1", "20%", false))
         list.add(DiscountListModel(0, "Discount 2", "15%", false))
         list.add(DiscountListModel(0, "Discount 3", "25%", false))
         binding.rvDiscountList.adapter = DiscountListAdapter(requireContext(), list)
 
-    }
+    }*/
 
     private fun onClick() {
         binding.txtCreateDiscount.setOnClickListener {

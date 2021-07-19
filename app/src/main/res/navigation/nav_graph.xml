@@ -154,9 +154,14 @@
         app:enterAnim="@anim/nav_default_enter_anim" />
     <fragment
         android:id="@+id/createDiscount"
-        android:name="com.android.pos.ui.fragments.inventory.CreateDiscount"
+        android:name="com.android.pos.ui.fragments.settings.discount.CreateDiscount"
         android:label="CreateDiscount"
-        tools:layout="@layout/fragment_create_discount" />
+        tools:layout="@layout/fragment_create_discount" >
+        <argument
+            android:name="isEdit"
+            app:argType="boolean"
+            android:defaultValue="false" />
+    </fragment>
     <fragment
         android:id="@+id/settings"
         android:name="com.android.pos.ui.fragments.settings.Settings"

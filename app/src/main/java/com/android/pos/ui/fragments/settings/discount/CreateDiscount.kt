@@ -1,59 +1,89 @@
-package com.android.pos.ui.fragments.settings.tip
+package com.android.pos.ui.fragments.settings.discount
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CompoundButton
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
-import com.android.pos.data.model.responseModel.GetTipReponse
-import com.android.pos.databinding.DialogAddNewTipBinding
+import com.android.pos.data.model.responseModel.GetDiscountResponse
+import com.android.pos.databinding.FragmentCreateDiscountBinding
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 
+
 @AndroidEntryPoint
-class CreateTip : Fragment() {
-    private lateinit var binding: DialogAddNewTipBinding
-    private val viewModel by viewModels<CreateTipsViewModel>()
+class CreateDiscount : Fragment() {
+
+    private lateinit var binding: FragmentCreateDiscountBinding
+    private val viewModel by viewModels<CreateDiscountViewModel>()
 
     var isEdit: Boolean = false
-    private lateinit var tipData: GetTipReponse.Data
+    private lateinit var discountData: GetDiscountResponse.Data
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = DialogAddNewTipBinding.inflate(inflater, container, false)
+        binding = FragmentCreateDiscountBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
+        binding.createDiscountFragment = this
+
 
         isEdit = arguments?.getBoolean("isEdit")!!
 
         if (isEdit) {
-            binding.txtSave.text = getString(R.string.update)
-            tipData = arguments?.getParcelable("tipObject")!!
+            discountData = arguments?.getParcelable("discountObject")!!
 
-            viewModel.setTipData(tipData)
-            viewModel.isEditData(isEdit,tipData.id)
+            viewModel.setDiscountData(discountData)
+
+            if (discountData.discountType == getString(R.string.disc_percentage)) {
+                binding.swtDiscountType.isChecked = true
+                binding.swtDiscountType.text = getString(R.string.disc_percentage)
+            } else {
+                binding.swtDiscountType.isChecked = false
+                binding.swtDiscountType.text = getString(R.string.disc_amount)
+            }
+
+            viewModel.isEditData(isEdit, discountData.id)
         }
 
         setupSnackbar()
         observeShowProgress()
         navigate()
+
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        onCLick()
+
+    }
+
+    private fun onCLick() {
         binding.imgBack.setOnClickListener {
             findNavController().navigateUp()
         }
     }
+
+    fun saveGender(isChecked: Boolean) {
+        if (isChecked) {
+            binding.swtDiscountType.text = getString(R.string.disc_percentage)
+            viewModel.discountType(getString(R.string.disc_percentage))
+        } else {
+            binding.swtDiscountType.text = getString(R.string.disc_amount)
+            viewModel.discountType(getString(R.string.disc_amount))
+        }
+    }
+
 
     private fun observeShowProgress() {
 
@@ -66,9 +96,7 @@ class CreateTip : Fragment() {
                 }
             }
         })
-
     }
-
 
     private fun navigate() {
 
@@ -79,12 +107,10 @@ class CreateTip : Fragment() {
                 }
             }
         })
-
     }
 
     private fun setupSnackbar() {
         binding.root.liveSnackBar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
 
     }
-
 }

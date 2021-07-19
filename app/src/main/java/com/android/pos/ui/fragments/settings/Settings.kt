@@ -12,6 +12,7 @@ import com.android.pos.data.model.BusinessSettingModel
 import com.android.pos.databinding.FragmentSettingsBinding
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.BusinessSettingAdapter
+import com.android.pos.ui.fragments.settings.discount.DiscountList
 import com.android.pos.ui.fragments.settings.notes.Notes
 import com.android.pos.ui.fragments.settings.tax.TaxesList
 import com.android.pos.ui.fragments.settings.tip.TipsList
@@ -173,7 +174,7 @@ class Settings : Fragment() {
                     }
                     3 -> {
                         binding.commonToolbar.txtSubTitle.setText("Discount")
-                        val discount: Fragment = Discount()
+                        val discount: Fragment = DiscountList()
                         loadFragment(discount)
 
                     }

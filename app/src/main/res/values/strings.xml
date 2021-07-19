@@ -65,6 +65,9 @@
     <string name="tip_name_validate">Please enter Tip Name</string>
     <string name="tip_rate_validate">Please enter valid Tip Rate</string>
 
+    <string name="discount_name_validate">Please enter Discount Name</string>
+    <string name="discount_rate_validate">Please enter valid Discount Rate</string>
+
 
     <string name="delete_tax_message">Are you sure want to Delete Tax?</string>
     <string name="delete_tip_message">Are you sure want to Delete Tip?</string>
@@ -260,4 +263,6 @@
     <string name="keypad">Keypad</string>
     <string name="remove_tip">Remove Tip</string>
     <string name="update">Update</string>
+    <string name="disc_percentage">Percentage</string>
+    <string name="disc_amount">Amount</string>
 </resources>

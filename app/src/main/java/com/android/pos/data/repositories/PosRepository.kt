@@ -4,6 +4,7 @@ package com.android.pos.data.repositories
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.db.IDataManager
 import com.android.pos.data.model.requestModel.CreateNoteRequest
+import com.android.pos.data.model.requestModel.CreateDiscountRequestModel
 import com.android.pos.data.model.requestModel.CreateTaxRequestModel
 import com.android.pos.data.model.requestModel.CreateTipRequestModel
 import com.android.pos.data.remote.ApiHelper
@@ -49,9 +50,21 @@ class PosRepository @Inject constructor(
 
     suspend fun createTips(data: CreateTipRequestModel) = apiHelperNew.createTips(data)
 
-    suspend fun updateTip(taxId: Int, data: CreateTipRequestModel) = apiHelperNew.updateTip(taxId,data)
+    suspend fun updateTip(taxId: Int, data: CreateTipRequestModel) =
+        apiHelperNew.updateTip(taxId, data)
 
     suspend fun deleteTip(data: Int) = apiHelperNew.deleteTip(data)
+
+
+    fun getDiscountsList() =
+        performGetOperationNew(networkCall = { apiHelperNew.getDiscountsList() })
+
+    suspend fun createDiscount(data: CreateDiscountRequestModel) = apiHelperNew.createDiscount(data)
+
+    suspend fun updateDiscount(discountId: Int, data: CreateDiscountRequestModel) =
+        apiHelperNew.updateDiscount(discountId, data)
+
+    suspend fun deleteDiscount(data: Int) = apiHelperNew.deleteDiscount(data)
 
 
 //    fun getCharacters() = performGetOperation(

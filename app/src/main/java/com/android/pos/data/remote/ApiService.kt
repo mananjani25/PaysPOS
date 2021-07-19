@@ -2,10 +2,13 @@ package com.android.pos.data.remote
 
 
 import com.android.pos.data.model.requestModel.CreateNoteRequest
+import com.android.pos.data.model.requestModel.CreateDiscountRequestModel
 import com.android.pos.data.model.requestModel.CreateTaxRequestModel
 import com.android.pos.data.model.requestModel.CreateTipRequestModel
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.Constants.CLOCK_OUT
+import com.android.pos.data.remote.Constants.DISCOUNTS
+import com.android.pos.data.remote.Constants.DISCOUNTS_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.EMPLOYEES
 import com.android.pos.data.remote.Constants.EMPLOYEE_CLOCK_IN
 import com.android.pos.data.remote.Constants.EMPLOYEE_LOG_IN
@@ -75,13 +78,31 @@ interface ApiService {
     @PUT(TIPS_UPDATE_DELETE)
     suspend fun updateTip(
         @Path("id") tipId: Int,
-        @Body createTax: CreateTipRequestModel
+        @Body createTip: CreateTipRequestModel
     ): CreateTipResponse
 
     @DELETE(TIPS_UPDATE_DELETE)
     suspend fun deleteTip(
         @Path("id") tipId: Int
     ): CreateTipResponse
+
+    @GET(DISCOUNTS)
+    suspend fun getDiscountsList(): GetDiscountResponse
+
+    @POST(DISCOUNTS)
+    suspend fun createDiscount(@Body createDiscount: CreateDiscountRequestModel): CreateDiscountResponse
+
+    @PUT(DISCOUNTS_UPDATE_DELETE)
+    suspend fun updateDiscount(
+        @Path("id") discountId: Int,
+        @Body createDiscount: CreateDiscountRequestModel
+    ): CreateDiscountResponse
+
+    @DELETE(DISCOUNTS_UPDATE_DELETE)
+    suspend fun deleteDiscount(
+        @Path("id") discountId: Int
+    ): CreateDiscountResponse
+
 
     @GET(NOTES)
     suspend fun getNoteList(): NoteResponse
