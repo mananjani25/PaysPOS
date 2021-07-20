@@ -66,7 +66,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
         viewModel.data.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
 
-                AlertUtils.showAlert(requireActivity(), it.message)
+                AlertUtils.showCustomAlert(requireActivity(), it.message)
 
                 adapter.removeItem(empObject)
 

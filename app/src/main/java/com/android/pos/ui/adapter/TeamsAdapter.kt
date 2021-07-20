@@ -62,7 +62,6 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
 
         override fun onSwipeItemClick(left: Boolean, p1: Int) {
 
-
             AlertUtils.showConfirmAlert(
                 itemView.context, itemView.context.getString(R.string.delete_employee_message)
             ) { _, _ ->

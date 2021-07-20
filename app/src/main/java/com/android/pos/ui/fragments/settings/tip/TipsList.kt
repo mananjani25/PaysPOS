@@ -18,6 +18,7 @@ import com.android.pos.ui.adapter.TipsListAdapter
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.SwipeHelper
+import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.statusUtils.Status
@@ -90,16 +91,20 @@ class TipsList : Fragment() {
                 ) { pos ->
 
                     position = pos
-                    activity?.let {
-                        AlertUtils.showConfirmAlert(
-                            it, getString(R.string.delete_tip_message)
-                        ) { _, _ ->
+
+                    alert(
+                        getString(R.string.app_name),
+                        getString(R.string.delete_tax_message)
+                    ) {
+                        positiveButton(getString(R.string.delete_discount_message)) {
+                            // Do positive stuff here
                             tipObject = tipListadapter.getItem(pos)
                             viewModel.delete(tipListadapter.getItem(pos).id)
                         }
+                        negativeButton(R.string.tv_cancel) {
+                            // Do negative stuff here
+                        }
                     }
-
-
                 })
             }
         }
@@ -161,7 +166,7 @@ class TipsList : Fragment() {
                  adapter.taxList = list
                  adapter.notifyDataSetChanged()*/
 
-                AlertUtils.showAlert(requireActivity(), it.message)
+                AlertUtils.showCustomAlert(requireActivity(), it.message)
                 tipListUpdateDelete.remove(tipObject)
                 tipListadapter.addTips(tipListUpdateDelete)
                 tipListadapter.notifyItemRemoved(position)
