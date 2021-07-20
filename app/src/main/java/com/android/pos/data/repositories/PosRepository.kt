@@ -26,7 +26,7 @@ class PosRepository @Inject constructor(
 
 
 
-
+    suspend fun logout(data:HashMap<String,String>) = apiHelperNew.logOut(data)
 
 
 //    fun getCharacters() = performGetOperation(

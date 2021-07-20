@@ -1,9 +1,14 @@
 package com.android.pos.ui.activities
 
+import android.app.Activity
+import android.app.Dialog
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.WindowManager
 import android.widget.ImageView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -32,6 +37,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
+    private var builder: Dialog? = null
     private lateinit var binding: ParentActivityBinding
     private var navController: NavController? = null
     private lateinit var listner: NavController.OnDestinationChangedListener
@@ -189,20 +195,19 @@ class MainActivity : AppCompatActivity() {
 
     fun logoutAPI() {
 
+        showDialog()
 
         lifecycleScope.launch {
-
-
             val data = HashMap<String, String>()
             data["email"] = prefProvider.getValue(Constants.EMAIL, "").toString()
             val resource = repo.logout(data)
             when (resource.status) {
                 Status.SUCCESS -> {
                     resource.data?.let { it ->
+                        dismissDialog()
                         if (it?.status == 200) {
                             clearPreferances()
                             disableDrawer()
-                            ProgressUtils.dismissProgressDialog()
                             logout()
                         }
 
@@ -211,12 +216,11 @@ class MainActivity : AppCompatActivity() {
 
                 }
                 Status.LOADING -> {
-                    ProgressUtils.showProgressDialog(this@MainActivity)
+
 
                 }
                 Status.ERROR -> {
-
-                    ProgressUtils.dismissProgressDialog()
+                    dismissDialog()
 
                 }
 
@@ -226,5 +230,38 @@ class MainActivity : AppCompatActivity() {
 
     private fun clearPreferances() {
         prefProvider.setClear()
+    }
+
+    private fun showDialog() {
+        if (builder == null) {
+            builder = Dialog(this@MainActivity)
+        }
+        val inflater = LayoutInflater.from(this)
+        val dialogView = inflater.inflate(R.layout.view_loading, null)
+        builder?.setContentView(dialogView)
+        builder?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        builder?.window?.setBackgroundDrawable(
+            ColorDrawable(Color.WHITE)
+        )
+        builder?.setCanceledOnTouchOutside(false)
+        builder?.setCancelable(false)
+        builder?.window?.setLayout(
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            WindowManager.LayoutParams.WRAP_CONTENT
+        )
+
+        if (!builder!!.isShowing) {
+            if (!this.isFinishing) {
+                builder!!.show()
+            }
+        }
+
+    }
+
+    private fun dismissDialog() {
+        if (builder != null && builder!!.isShowing) {
+            builder?.dismiss()
+        }
+
     }
 }
