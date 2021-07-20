@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -47,6 +48,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
 
         setupStickyLayout()
         configureToolbar()
+        observeShowProgress()
         loadTeamDetails(null)
         loadTeams()
         deleteEmployee()
@@ -82,6 +84,20 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
 
     }
 
+    private fun observeShowProgress() {
+
+        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    ProgressUtils.showProgressDialog(requireActivity())
+                } else {
+                    ProgressUtils.dismissProgressDialog()
+                }
+            }
+        })
+
+    }
+
     private fun loadTeams() {
 
         viewModel.employeeData.observe(viewLifecycleOwner, {
@@ -109,11 +125,19 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
 
     private fun configureToolbar() {
         binding.layoutTool.txtTitle.text = "Team"
+        binding.layoutTool.txtSubTitle.text = ""
+        binding.layoutTool.txtEdit.visibility = View.GONE
         binding.layoutTool.imgDrawer.setOnClickListener {
             (requireActivity() as MainActivity).enableDrawer()
         }
         binding.layoutTool.imgOptionMenu.setImageDrawable(requireContext().resources.getDrawable(R.drawable.ic_add))
         binding.layoutTool.imgOptionMenuContainer.visibility = View.GONE
+
+        binding.layoutTool.txtEdit.setOnClickListener {
+
+            val bundle = bundleOf("data" to empObject)
+            findNavController().navigate(R.id.action_global_createTeamMember, bundle)
+        }
     }
 
     private fun loadTeamDetails(data: EmployeeListResponse.Data.Employee?) {
@@ -131,15 +155,21 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
     override fun onItemClickListener(view: View?, data: EmployeeListResponse.Data.Employee) {
 
         Log.e("onItemClickListener", ">>>>")
+        binding.layoutTool.txtEdit.visibility = View.VISIBLE
 
+        if (data.firstName != null && data.lastName != null) {
+            binding.layoutTool.txtSubTitle.text = data.firstName + " " + data.lastName.toString()
+        } else {
+            binding.layoutTool.txtSubTitle.text = data.firstName
+
+        }
+        empObject = data
         loadTeamDetails(data)
     }
 
     override fun onItemClickListener(employee: EmployeeListResponse.Data.Employee) {
         Log.e("onItem ", ">>>> ${employee.firstName}")
 
-//        val bundle = bundleOf("data" to employee)
-//        findNavController().navigate(R.id.action_global_createTeamMember, bundle)
         empObject = employee
         viewModel.delete(employee.id)
 

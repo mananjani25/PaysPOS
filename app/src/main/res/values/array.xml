@@ -2,32 +2,32 @@
 <resources>
     <integer-array name="rightColors">
         <item>@color/colorE9</item>
-        <item>@color/colorE9</item>
+<!--        <item>@color/colorE9</item>-->
     </integer-array>
 
     <integer-array name="leftColors">
         <item>@color/white</item>
-        <item>@color/white</item>
+        <!--        <item>@color/white</item>-->
     </integer-array>
 
     <integer-array name="rightTextColors">
         <item>@color/white</item>
-        <item>@color/white</item>
+        <!--        <item>@color/white</item>-->
     </integer-array>
 
 
     <integer-array name="rightDrawableColors">
         <item>@color/colorE9</item>
-        <item>@color/colorE9</item>
+        <!--        <item>@color/colorE9</item>-->
     </integer-array>
 
     <integer-array name="rightDrawables">
         <item>@drawable/ic_search</item>
-        <item>@drawable/ic_search</item>
+        <!--        <item>@drawable/ic_search</item>-->
     </integer-array>
 
     <string-array name="rightTexts">
-        <item>&#160;Update&#160;</item>
+        <!--        <item>&#160;Update&#160;</item>-->
         <item>&#160;Delete&#160;</item>
     </string-array>
 
