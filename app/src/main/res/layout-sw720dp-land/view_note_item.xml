@@ -6,13 +6,13 @@
     tools:ignore="MissingDefaultResource">
 
     <data>
+
         <variable
             name="noteModel"
             type="com.android.pos.data.model.responseModel.NoteResponse.Data" />
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat
-
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -29,11 +29,12 @@
 
 
             <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/imgCheckBox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:padding="@dimen/_5sdp"
-                app:srcCompat="@drawable/ic_check_box" />
+                android:src="@{noteModel.isChecked ? @drawable/ic_check_box_unchecked: @drawable/ic_check_box}" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
@@ -42,9 +43,9 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/_5sdp"
                 android:layout_weight="1"
-                android:text="@{noteModel.name}"
                 android:gravity="start"
                 android:padding="@dimen/_5sdp"
+                android:text="@{noteModel.name}"
                 android:textColor="@color/viewTextColor"
                 android:textSize="@dimen/_6mdpi" />
 
