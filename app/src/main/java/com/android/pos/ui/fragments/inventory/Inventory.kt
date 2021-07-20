@@ -49,7 +49,7 @@ class Inventory : Fragment() {
             ?.observe(viewLifecycleOwner) { it ->
                 Log.e(TAG, "InventoryLifeCycler  " + it)
                 when (it) {
-                    CREATEITEM ->{
+                    CREATEITEM -> {
                         changePosition(0)
                         setAdapter(0)
                     }
@@ -58,11 +58,11 @@ class Inventory : Fragment() {
                         changePosition(1)
                         setAdapter(1)
                     }
-                    CREATEMODIFIER ->{
+                    CREATEMODIFIER -> {
                         changePosition(2)
                         setAdapter(2)
                     }
-                    CREATEDISCOUNT ->{
+                    CREATEDISCOUNT -> {
                         changePosition(3)
                         setAdapter(3)
                     }
@@ -75,7 +75,6 @@ class Inventory : Fragment() {
                 }
 
             }
-
 
 
     }
