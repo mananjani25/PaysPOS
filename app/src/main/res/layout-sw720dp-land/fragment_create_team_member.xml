@@ -179,6 +179,7 @@
                         android:imeOptions="actionNext"
                         android:inputType="textCapWords"
                         android:padding="@dimen/_5sdp"
+                        android:text="@={viewModel.createTaxDetails.email}"
                         android:textColor="@color/txtColor"
                         android:textColorHint="@color/hint_color_"
                         android:textSize="@dimen/_6sdp" />
@@ -222,6 +223,7 @@
                         android:imeOptions="actionNext"
                         android:inputType="textCapWords"
                         android:padding="@dimen/_5sdp"
+                        android:text="@={viewModel.createTaxDetails.phoneNumber}"
                         android:textColor="@color/txtColor"
                         android:textColorHint="@color/hint_color_"
                         android:textSize="@dimen/_6sdp" />
@@ -299,14 +301,18 @@
                             android:textColor="@color/txtColor"
                             android:textSize="@dimen/_6sdp" />
 
-                        <androidx.appcompat.widget.AppCompatTextView
+                        <androidx.appcompat.widget.AppCompatEditText
                             style="@style/CustomFontSemiBold"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:text="None"
+                            android:hint="None"
+                            android:imeOptions="actionNext"
+                            android:inputType="numberDecimal"
                             android:padding="@dimen/_5sdp"
-                            android:textColor="@color/cool_grey"
+                            android:background="@null"
+                            android:textColor="@color/txtColor"
+                            android:textColorHint="@color/cool_grey"
                             android:textSize="@dimen/_6sdp" />
                     </LinearLayout>
                 </LinearLayout>
@@ -381,14 +387,19 @@
                             android:textColor="@color/txtColor"
                             android:textSize="@dimen/_6sdp" />
 
-                        <androidx.appcompat.widget.AppCompatTextView
+                        <androidx.appcompat.widget.AppCompatEditText
                             style="@style/CustomFontSemiBold"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:text="6548"
+                            android:hint="6548"
+                            android:background="@null"
+                            android:inputType="number"
+                            android:maxLength="4"
                             android:padding="@dimen/_5sdp"
-                            android:textColor="@color/cool_grey"
+                            android:text="@={viewModel.createTaxDetails.passcode}"
+                            android:textColor="@color/txtColor"
+                            android:textColorHint="@color/cool_grey"
                             android:textSize="@dimen/_6sdp" />
                     </LinearLayout>
                 </LinearLayout>

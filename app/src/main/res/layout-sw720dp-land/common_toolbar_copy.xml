@@ -68,9 +68,9 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_gravity="center"
-                android:layout_weight="0.72"
+                android:layout_weight="0.75"
                 android:orientation="horizontal">
 
                 <TextView
@@ -79,7 +79,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/sf_pro_display_medium"
                     android:gravity="center"
-                    android:text="David Miller"
+                    tools:text="David Miller"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_7mdpi"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -90,7 +90,7 @@
                 <ImageView
                     android:id="@+id/imgOptionMenuContainer"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_marginEnd="@dimen/_5sdp"
                     android:src="@drawable/ic_dot_menu"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -102,13 +102,29 @@
                     android:id="@+id/txtHome"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_marginEnd="@dimen/_10sdp"
                     android:text="Home"
+                    android:gravity="center"
                     android:textColor="@color/txt_color_blue"
                     android:textSize="@dimen/_7mdpi"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/imgOptionMenuContainer"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/txtEdit"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="@dimen/_10sdp"
+                    android:text="Edit"
+                    android:padding="@dimen/_5sdp"
+                    android:visibility="gone"
+                    android:textColor="@color/txt_color_blue"
+                    android:textSize="@dimen/_7mdpi"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/txtHome"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
@@ -122,7 +138,7 @@
                     android:textSize="@dimen/_7mdpi"
                     android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/txtHome"
+                    app:layout_constraintEnd_toStartOf="@+id/txtEdit"
                     app:layout_constraintTop_toTopOf="parent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>

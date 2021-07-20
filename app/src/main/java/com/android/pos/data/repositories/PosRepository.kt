@@ -52,6 +52,8 @@ class PosRepository @Inject constructor(
     suspend fun updateEmployee(taxId: Int, data: CreateEmployeeRequestModel) =
         apiHelperNew.updateEmployee(taxId, data)
 
+    suspend fun deleteEmployee(data: Int) = apiHelperNew.deleteEmployee(data)
+
     override suspend fun abs() {
 
         appDatabase.characterDao().getCharacter(0)

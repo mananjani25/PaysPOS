@@ -58,7 +58,7 @@
                     android:paddingStart="@dimen/_5sdp"
                     android:paddingEnd="@dimen/_5sdp"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_7mdpi" />
+                    android:textSize="@dimen/_6mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtNumber"
