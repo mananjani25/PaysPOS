@@ -69,8 +69,9 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
 
                 val employee = itemView.tag as EmployeeListResponse.Data.Employee
 
-                operationCallback.onItemClickListener(employee)
-
+                //operationCallback.onItemClickListener(employee)
+//                sectionSortedList.remove(employee)
+//                notifyAllSectionsDataSetChanged()
 
             }
 
@@ -94,8 +95,15 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
         return sectionSortedList
     }
 
-    fun getPeople(): List<EmployeeListResponse.Data.Employee?>? {
+    fun getPeople(): MutableList<EmployeeListResponse.Data.Employee>? {
         return people
+    }
+
+    fun removeItem(empObject: EmployeeListResponse.Data.Employee) {
+
+        people?.remove(empObject)
+        notifyDataSetChanged()
+
     }
 
     fun setPeople(people: MutableList<EmployeeListResponse.Data.Employee>) {
@@ -196,10 +204,15 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
         (ivh.itemView as SwipeLayout).setItemState(SwipeLayout.ITEM_STATE_COLLAPSED, false)
 
         viewHolder.itemView.setOnClickListener {
-            mCallback.onItemClickListener(it, person)
 
-            isSelectedPos = ivh.layoutPosition
-            notifyDataSetChanged()
+            people?.remove(person)
+            people?.let { it1 -> setPeople(it1) }
+
+
+//            mCallback.onItemClickListener(it, person)
+//
+//            isSelectedPos = ivh.layoutPosition
+//            notifyDataSetChanged()
         }
     }
 

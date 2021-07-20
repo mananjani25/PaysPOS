@@ -147,4 +147,10 @@ interface ApiService {
         @Path("id") taxId: Int,
         @Body createEmployeeRequestModel: CreateEmployeeRequestModel
     ): BaseResponse
+
+    @DELETE(EMPLOYEES_UPDATE_DELETE)
+    suspend fun deleteEmployee(
+        @Path("id") noteId: Int,
+    ): BaseResponse
+
 }

@@ -5,18 +5,17 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
-import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.model.responseModel.EmployeeListResponse
 import com.android.pos.databinding.FragmentTeamListBinding
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.TeamsAdapter
+import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.CustomCallback
 import com.android.pos.utils.callback.OperationCallback
@@ -30,6 +29,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
     private lateinit var binding: FragmentTeamListBinding
     private val viewModel by viewModels<TeamListViewModel>()
     var adapter: TeamsAdapter = TeamsAdapter()
+    private lateinit var empObject: EmployeeListResponse.Data.Employee
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -49,6 +49,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
         configureToolbar()
         loadTeamDetails(null)
         loadTeams()
+        deleteEmployee()
 
         binding.layoutTool.imgOptionMenu.setOnClickListener {
 
@@ -56,6 +57,20 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
         }
 
 
+    }
+
+    private fun deleteEmployee() {
+
+        viewModel.data.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+
+                AlertUtils.showAlert(requireActivity(), it.message)
+
+                adapter.removeItem(empObject)
+
+
+            }
+        })
     }
 
     private fun setupStickyLayout() {
@@ -123,8 +138,10 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
     override fun onItemClickListener(employee: EmployeeListResponse.Data.Employee) {
         Log.e("onItem ", ">>>> ${employee.firstName}")
 
-        val bundle = bundleOf("data" to employee)
-        findNavController().navigate(R.id.action_global_createTeamMember, bundle)
+//        val bundle = bundleOf("data" to employee)
+//        findNavController().navigate(R.id.action_global_createTeamMember, bundle)
+        empObject = employee
+        viewModel.delete(employee.id)
 
     }
 
