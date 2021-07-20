@@ -50,11 +50,11 @@
 
                 <androidx.appcompat.widget.AppCompatEditText
                     android:id="@+id/edtEmail"
-                    android:fontFamily="@font/sf_pro_display_semibold"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:background="@null"
+                    android:fontFamily="@font/sf_pro_display_semibold"
                     android:hint="@string/tv_hint_email"
                     android:imeOptions="actionNext"
                     android:inputType="textEmailAddress"
@@ -99,9 +99,9 @@
                 android:background="@drawable/bg_button_border"
                 android:gravity="center"
                 android:minWidth="@dimen/_200sdp"
+                android:onClick="@{() -> loginViewModel.submit()}"
                 android:padding="@dimen/_5sdp"
                 android:text="@string/tv_login"
-                android:onClick="@{() -> loginViewModel.submit()}"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_6mdpi" />
 
@@ -123,11 +123,11 @@
             style="@style/CustomFontMediumStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
             android:layout_alignParentBottom="true"
             android:layout_centerInParent="true"
-            android:padding="@dimen/_5sdp"
+            android:layout_gravity="center"
             android:gravity="bottom|center"
+            android:padding="@dimen/_5sdp"
             android:text="@string/tv_pos_2021"
             android:textColor="@color/txtColor"
             android:textSize="@dimen/_6mdpi" />

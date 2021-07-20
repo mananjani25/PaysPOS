@@ -1,7 +1,14 @@
 package com.android.pos.data.model.responseModel
 
 
+import android.graphics.drawable.Drawable
+import android.widget.ImageView
+import androidx.databinding.BindingAdapter
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.Target
 import com.google.gson.annotations.SerializedName
+
 
 data class VenueDataResponse(
     @SerializedName("data")
@@ -45,8 +52,29 @@ data class VenueDataResponse(
                 @SerializedName("quantity")
                 val quantity: Int,
                 @SerializedName("sku")
-                val sku: String
+                val sku: String,
+                @SerializedName("image_url")
+                val imgUrl: String
+
+
             )
+        }
+    }
+
+    object companion {
+        @BindingAdapter("profileImage")
+        @JvmStatic
+        fun loadImage(view: ImageView, imageUrl: String?) {
+            if (imageUrl.isNullOrBlank() || imageUrl.trim()
+                    .equals("") || imageUrl.isNullOrEmpty()
+            ) {
+                return
+
+            } else {
+                Glide.with(view.getContext())
+                    .load(imageUrl).apply(RequestOptions().centerCrop())
+                    .into(view)
+            }
         }
     }
 }

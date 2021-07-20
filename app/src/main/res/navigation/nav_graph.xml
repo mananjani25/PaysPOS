@@ -93,6 +93,7 @@
     <fragment
         android:id="@+id/createIModifierSet"
         android:name="com.android.pos.ui.fragments.createmodifier.CreateModifierSet"
+        tools:layout="@layout/create_modifier_set"
         android:label="CreateIModifierSet">
 
     </fragment>
@@ -122,7 +123,8 @@
         <action
             android:id="@+id/action_inventory_to_createItem"
             app:destination="@id/createItem"
-            app:enterAnim="@anim/nav_default_enter_anim" />
+            app:enterAnim="@anim/nav_default_enter_anim"
+             />
         <action
             android:id="@+id/action_inventory_to_createCategory"
             app:destination="@id/createCategory"
@@ -292,6 +294,11 @@
         app:enterAnim="@anim/nav_default_enter_anim"
         app:popUpTo="@id/nav_graph"
         app:popUpToInclusive="true" />
+    <fragment
+        android:id="@+id/modifiers"
+        android:name="com.android.pos.ui.fragments.inventory.Modifiers"
+        android:label="Modifiers"
+        tools:layout="@layout/fragment_modifiers" />
 
 
 </navigation>

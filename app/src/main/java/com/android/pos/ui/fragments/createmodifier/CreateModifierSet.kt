@@ -9,8 +9,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
+import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.CreateItemBinding
 import com.android.pos.databinding.CreateModifierSetBinding
+import com.android.pos.ui.activities.MainActivity
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
 import com.google.android.material.snackbar.Snackbar
@@ -38,7 +40,12 @@ class CreateModifierSet : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.imgBack.setOnClickListener {
-            findNavController().navigateUp()
+            val navControll = findNavController()
+            navControll.previousBackStackEntry?.savedStateHandle?.set(
+                Constants.KEY,
+                Constants.CREATEMODIFIER
+            )
+            navControll.popBackStack()
         }
     }
 

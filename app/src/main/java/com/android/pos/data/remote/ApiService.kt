@@ -11,6 +11,7 @@ import com.android.pos.data.remote.Constants.EMPLOYEES_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.EMPLOYEE_CLOCK_IN
 import com.android.pos.data.remote.Constants.EMPLOYEE_LOG_IN
 import com.android.pos.data.remote.Constants.LOGIN_TERMINAL
+import com.android.pos.data.remote.Constants.LOGOUT
 import com.android.pos.data.remote.Constants.NOTES
 import com.android.pos.data.remote.Constants.NOTE_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.SERVICE_CHARGE
@@ -138,6 +139,11 @@ interface ApiService {
         @Path("id") taxId: Int,
         @Body createTax: CreateNoteRequest
     ): BaseResponse
+
+    @FormUrlEncoded
+    @POST(LOGOUT)
+    suspend fun userLogOut(@FieldMap option:HashMap<String,String>):BaseResponse
+
 
     @POST(EMPLOYEES)
     suspend fun createEmployee(@Body createEmployeeRequestModel: CreateEmployeeRequestModel): BaseResponse

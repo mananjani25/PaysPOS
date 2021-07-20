@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentCreateDiscountBinding
 
 class CreateDiscount : Fragment() {
@@ -30,7 +31,12 @@ class CreateDiscount : Fragment() {
 
     private fun onCLick() {
         binding.imgBack.setOnClickListener {
-            findNavController().navigateUp()
+            val navControll = findNavController()
+            navControll.previousBackStackEntry?.savedStateHandle?.set(
+                Constants.KEY,
+                Constants.CREATEDISCOUNT
+            )
+            navControll.popBackStack()
         }
     }
 }

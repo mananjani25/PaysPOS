@@ -4,12 +4,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.model.CategoryListItemModel
+import com.android.pos.data.remote.Constants.CREATECATEGORY
+import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.databinding.CreateCategoryActivityBinding
 import com.android.pos.ui.adapter.CategoryListItemAdapter
 import com.android.pos.utils.ProgressUtils
@@ -53,7 +57,10 @@ class CreateCategory : Fragment() {
             findNavController().navigate(R.id.action_createCategory_to_createIModifierSet)
         }
         binding.imgBack.setOnClickListener {
-            findNavController().popBackStack()
+            val navControll = findNavController()
+            navControll.previousBackStackEntry?.savedStateHandle?.set(KEY,CREATECATEGORY)
+            navControll.popBackStack()
+           // findNavController().popBackStack()
         }
     }
 

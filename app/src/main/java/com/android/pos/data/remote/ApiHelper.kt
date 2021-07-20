@@ -84,6 +84,10 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun updateNote(taxId: Int, data: CreateNoteRequest) =
         getResult { apiService.updateNote(taxId, data) }
 
+    suspend fun logOut(data: HashMap<String, String>) = getResult {
+        apiService.userLogOut(data)
+    }
+
     suspend fun createEmployee(data: CreateEmployeeRequestModel) =
         getResult { apiService.createEmployee(data) }
 

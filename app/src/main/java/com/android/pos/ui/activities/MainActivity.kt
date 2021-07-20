@@ -1,14 +1,22 @@
 package com.android.pos.ui.activities
 
+import android.app.Activity
+import android.app.Dialog
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.WindowManager
 import android.widget.ImageView
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
@@ -16,19 +24,30 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.android.pos.R
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.repositories.PosRepository
 import com.android.pos.databinding.ParentActivityBinding
 import com.android.pos.di.PrefProvider
+import com.android.pos.ui.fragments.loginscreen.LoginViewModel
+import com.android.pos.utils.Event
+import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
+    private var builder: Dialog? = null
     private lateinit var binding: ParentActivityBinding
     private var navController: NavController? = null
     private lateinit var listner: NavController.OnDestinationChangedListener
 
     @Inject
     lateinit var prefProvider: PrefProvider
+
+    @Inject
+    lateinit var repo: PosRepository
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -117,8 +136,8 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 R.id.menuLogout -> {
-                    logout()
-                    disableDrawer()
+                    logoutAPI()
+
                     return@setNavigationItemSelectedListener true
 
                 }
@@ -140,8 +159,6 @@ class MainActivity : AppCompatActivity() {
     private fun logout() {
         prefProvider.setValue(Constants.AUTH_TOKEN, "")
         navController?.navigate(R.id.action_global_login)
-
-
     }
 
     override fun onResume() {
@@ -176,4 +193,75 @@ class MainActivity : AppCompatActivity() {
         return super.onSupportNavigateUp()
     }
 
+    fun logoutAPI() {
+
+        showDialog()
+
+        lifecycleScope.launch {
+            val data = HashMap<String, String>()
+            data["email"] = prefProvider.getValue(Constants.EMAIL, "").toString()
+            val resource = repo.logout(data)
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    resource.data?.let { it ->
+                        dismissDialog()
+                        if (it?.status == 200) {
+                            clearPreferances()
+                            disableDrawer()
+                            logout()
+                        }
+
+                    }
+
+
+                }
+                Status.LOADING -> {
+
+
+                }
+                Status.ERROR -> {
+                    dismissDialog()
+
+                }
+
+            }
+        }
+    }
+
+    private fun clearPreferances() {
+        prefProvider.setClear()
+    }
+
+    private fun showDialog() {
+        if (builder == null) {
+            builder = Dialog(this@MainActivity)
+        }
+        val inflater = LayoutInflater.from(this)
+        val dialogView = inflater.inflate(R.layout.view_loading, null)
+        builder?.setContentView(dialogView)
+        builder?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        builder?.window?.setBackgroundDrawable(
+            ColorDrawable(Color.WHITE)
+        )
+        builder?.setCanceledOnTouchOutside(false)
+        builder?.setCancelable(false)
+        builder?.window?.setLayout(
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            WindowManager.LayoutParams.WRAP_CONTENT
+        )
+
+        if (!builder!!.isShowing) {
+            if (!this.isFinishing) {
+                builder!!.show()
+            }
+        }
+
+    }
+
+    private fun dismissDialog() {
+        if (builder != null && builder!!.isShowing) {
+            builder?.dismiss()
+        }
+
+    }
 }
