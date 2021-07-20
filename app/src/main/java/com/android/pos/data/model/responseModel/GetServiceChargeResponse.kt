@@ -31,6 +31,7 @@ data class GetServiceChargeResponse(
         @SerializedName("percentage")
         val percentage: Double,
         @SerializedName("updated_at")
-        val updatedAt: String
+        val updatedAt: String,
+        var isChecked:Boolean = true
     ) : Parcelable
 }

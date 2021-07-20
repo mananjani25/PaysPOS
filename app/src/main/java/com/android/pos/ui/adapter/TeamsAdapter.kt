@@ -15,6 +15,7 @@ import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.CustomSwipeLayout.SwipeLayout
 import com.android.pos.utils.callback.CustomCallback
 import com.android.pos.utils.callback.OperationCallback
+import com.android.pos.utils.extensions.getColorCompat
 import com.android.pos.utils.sticky_recycler.SectioningAdapter
 import java.util.*
 
@@ -63,14 +64,11 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
 
 
             AlertUtils.showConfirmAlert(
-                itemView.context, itemView.context.getString(R.string.delete_note_message)
+                itemView.context, itemView.context.getString(R.string.delete_employee_message)
             ) { _, _ ->
 
-
                 val employee = itemView.tag as EmployeeListResponse.Data.Employee
-
                 operationCallback.onItemClickListener(employee)
-
 
             }
 
@@ -94,8 +92,15 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
         return sectionSortedList
     }
 
-    fun getPeople(): List<EmployeeListResponse.Data.Employee?>? {
+    fun getPeople(): MutableList<EmployeeListResponse.Data.Employee>? {
         return people
+    }
+
+    fun removeItem(empObject: EmployeeListResponse.Data.Employee) {
+
+        people?.remove(empObject)
+        people?.let { it1 -> setPeople(it1) }
+
     }
 
     fun setPeople(people: MutableList<EmployeeListResponse.Data.Employee>) {
@@ -188,18 +193,26 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
         ivh.itemView.tag = person
 
         if (isSelectedPos == ivh.layoutPosition) {
-            ivh.layout.background = ivh.itemView.context.getDrawable(R.color.btnColorDark_)
-        } else ivh.layout.background = ivh.itemView.context.getDrawable(R.color.white)
+            ivh.layout.background = ivh.itemView.context.getDrawable(R.color.txt_color_blue)
+            ivh.personNameTextView.setTextColor(ivh.itemView.context.getColorCompat(R.color.white))
+            ivh.personNumberTextView.setTextColor(ivh.itemView.context.getColorCompat(R.color.white))
+        } else {
+            ivh.personNameTextView.setTextColor(ivh.itemView.context.getColorCompat(R.color.txtColor))
+            ivh.personNumberTextView.setTextColor(ivh.itemView.context.getColorCompat(R.color.colorB9))
+            ivh.layout.background = ivh.itemView.context.getDrawable(R.color.white)
+        }
 
 
 
         (ivh.itemView as SwipeLayout).setItemState(SwipeLayout.ITEM_STATE_COLLAPSED, false)
 
         viewHolder.itemView.setOnClickListener {
-            mCallback.onItemClickListener(it, person)
-
             isSelectedPos = ivh.layoutPosition
             notifyDataSetChanged()
+
+            mCallback.onItemClickListener(it, person)
+
+
         }
     }
 

@@ -10,13 +10,13 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
-import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.model.responseModel.EmployeeListResponse
 import com.android.pos.databinding.FragmentTeamListBinding
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.TeamsAdapter
+import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.CustomCallback
 import com.android.pos.utils.callback.OperationCallback
@@ -30,6 +30,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
     private lateinit var binding: FragmentTeamListBinding
     private val viewModel by viewModels<TeamListViewModel>()
     var adapter: TeamsAdapter = TeamsAdapter()
+    private lateinit var empObject: EmployeeListResponse.Data.Employee
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -47,8 +48,10 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
 
         setupStickyLayout()
         configureToolbar()
+      //  observeShowProgress()
         loadTeamDetails(null)
         loadTeams()
+        deleteEmployee()
 
         binding.layoutTool.imgOptionMenu.setOnClickListener {
 
@@ -58,12 +61,40 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
 
     }
 
+    private fun deleteEmployee() {
+
+        viewModel.data.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+
+                AlertUtils.showAlert(requireActivity(), it.message)
+
+                adapter.removeItem(empObject)
+
+
+            }
+        })
+    }
+
     private fun setupStickyLayout() {
         val stickyHeaderLayoutManager = StickyHeaderLayoutManager()
         binding.rvEmployeeList.layoutManager = stickyHeaderLayoutManager
         adapter.setCallback(this)
         adapter.setOperationCallback(this)
         binding.rvEmployeeList.adapter = adapter
+
+    }
+
+    private fun observeShowProgress() {
+
+        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    ProgressUtils.showProgressDialog(requireActivity())
+                } else {
+                    ProgressUtils.dismissProgressDialog()
+                }
+            }
+        })
 
     }
 
@@ -94,11 +125,19 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
 
     private fun configureToolbar() {
         binding.layoutTool.txtTitle.text = "Team"
+        binding.layoutTool.txtSubTitle.text = ""
+        binding.layoutTool.txtEdit.visibility = View.GONE
         binding.layoutTool.imgDrawer.setOnClickListener {
             (requireActivity() as MainActivity).enableDrawer()
         }
         binding.layoutTool.imgOptionMenu.setImageDrawable(requireContext().resources.getDrawable(R.drawable.ic_add))
         binding.layoutTool.imgOptionMenuContainer.visibility = View.GONE
+
+        binding.layoutTool.txtEdit.setOnClickListener {
+
+            val bundle = bundleOf("data" to empObject)
+            findNavController().navigate(R.id.action_global_createTeamMember, bundle)
+        }
     }
 
     private fun loadTeamDetails(data: EmployeeListResponse.Data.Employee?) {
@@ -116,15 +155,23 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
     override fun onItemClickListener(view: View?, data: EmployeeListResponse.Data.Employee) {
 
         Log.e("onItemClickListener", ">>>>")
+        binding.layoutTool.txtEdit.visibility = View.VISIBLE
 
+        if (data.firstName != null && data.lastName != null) {
+            binding.layoutTool.txtSubTitle.text = data.firstName + " " + data.lastName.toString()
+        } else {
+            binding.layoutTool.txtSubTitle.text = data.firstName
+
+        }
+        empObject = data
         loadTeamDetails(data)
     }
 
     override fun onItemClickListener(employee: EmployeeListResponse.Data.Employee) {
         Log.e("onItem ", ">>>> ${employee.firstName}")
 
-        val bundle = bundleOf("data" to employee)
-        findNavController().navigate(R.id.action_global_createTeamMember, bundle)
+        empObject = employee
+        viewModel.delete(employee.id)
 
     }
 

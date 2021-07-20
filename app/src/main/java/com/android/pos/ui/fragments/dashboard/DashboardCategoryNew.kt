@@ -291,6 +291,7 @@ class DashboardCategoryNew : Fragment() {
                                                         "",
                                                         0,
                                                         "",
+                                                        "",
                                                         ""
                                                     )
                                                 )
@@ -321,6 +322,7 @@ class DashboardCategoryNew : Fragment() {
                                             "",
                                             "",
                                             0,
+                                            "",
                                             "",
                                             ""
                                         )
