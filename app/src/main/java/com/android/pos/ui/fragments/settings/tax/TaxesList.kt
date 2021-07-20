@@ -20,6 +20,7 @@ import com.android.pos.ui.adapter.TaxListAdapter
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.SwipeHelper
+import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.statusUtils.Status
@@ -81,7 +82,7 @@ class TaxesList : Fragment() {
                     bundle.putBoolean("isEdit", true)
                     bundle.putParcelable("taxObject", taxObject)
 
-               //     var bundle= bundleOf()
+                    //     var bundle= bundleOf()
                     findNavController().navigate(R.id.action_settings_to_newTax, bundle)
 
                 })
@@ -93,15 +94,20 @@ class TaxesList : Fragment() {
                 ) { pos ->
 
                     position = pos
-                    activity?.let {
-                        AlertUtils.showConfirmAlert(
-                            it, getString(R.string.delete_tax_message)
-                        ) { _, _ ->
+
+                    alert(
+                        getString(R.string.app_name),
+                        getString(R.string.delete_tax_message)
+                    ) {
+                        positiveButton(getString(R.string.tv_delete)) {
+                            // Do positive stuff here
                             taxObject = taxListadapter.getItem(pos)
                             viewModel.delete(taxListadapter.getItem(pos).id)
                         }
+                        negativeButton(R.string.tv_cancel) {
+                            // Do negative stuff here
+                        }
                     }
-
 
                 })
             }
@@ -167,7 +173,8 @@ class TaxesList : Fragment() {
                  adapter.taxList = list
                  adapter.notifyDataSetChanged()*/
 
-                AlertUtils.showAlert(requireActivity(), it.message)
+
+                AlertUtils.showCustomAlert(requireActivity(), it.message)
                 taxListUpdateDelete.remove(taxObject)
                 taxListadapter.addTaxes(taxListUpdateDelete)
                 taxListadapter.notifyItemRemoved(position)
