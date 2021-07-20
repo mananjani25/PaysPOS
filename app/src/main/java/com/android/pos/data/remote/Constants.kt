@@ -41,4 +41,13 @@ object Constants {
     const val SERVICE_CHARGE = "service_charges"
     const val SERVICE_CHARGE_UPDATE_DELETE = "service_charges/{id}"
 
+
+    const val CREATECATEGORY = "create_category"
+    const val CREATEMODIFIER = "create_modifier"
+    const val CREATEDISCOUNT = "create_discount"
+    const val CREATEOPTION = "create_option"
+    const val CREATEITEM = "create_item"
+
+    const val KEY = "key"
+
 }
