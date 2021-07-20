@@ -49,6 +49,14 @@ class ServiceChargeListAdapter() :
     }
 
     inner class MyViewHolder(val discountItemBinding: ViewServiceChargeItemBinding) :
-        RecyclerView.ViewHolder(discountItemBinding.root)
+        RecyclerView.ViewHolder(discountItemBinding.root){
+
+            init {
+                discountItemBinding.imgCheckBox.setOnClickListener {
+                    serviceChargeList[layoutPosition].isChecked = !serviceChargeList[layoutPosition].isChecked
+                    notifyDataSetChanged()
+                }
+            }
+        }
 
 }

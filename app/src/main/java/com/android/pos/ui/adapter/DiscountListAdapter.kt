@@ -47,6 +47,16 @@ class DiscountListAdapter() :
     }
 
     inner class MyViewHolder(val discountItemBinding: ViewDiscountItemBinding) :
-        RecyclerView.ViewHolder(discountItemBinding.root)
+        RecyclerView.ViewHolder(discountItemBinding.root) {
+
+        init {
+
+            discountItemBinding.imgCheckBox.setOnClickListener {
+                discountList[layoutPosition].isChecked = !discountList[layoutPosition].isChecked
+                notifyDataSetChanged()
+            }
+        }
+    }
+
 
 }

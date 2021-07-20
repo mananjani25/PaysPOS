@@ -45,6 +45,15 @@ class NotesListAdapter() :
     }
 
     inner class MyViewHolder(val noteItemBinding: ViewNoteItemBinding) :
-        RecyclerView.ViewHolder(noteItemBinding.root)
+        RecyclerView.ViewHolder(noteItemBinding.root) {
+
+        init {
+                noteItemBinding.imgCheckBox.setOnClickListener {
+                    noteList[layoutPosition].isChecked = !noteList[layoutPosition].isChecked
+                    notifyDataSetChanged()
+                }
+
+        }
+    }
 
 }

@@ -31,6 +31,7 @@ data class NoteResponse(
         @SerializedName("sort")
         val sort: Int,
         @SerializedName("updated_at")
-        val updatedAt: String
+        val updatedAt: String,
+        var isChecked: Boolean = true
     ) : Parcelable
 }
