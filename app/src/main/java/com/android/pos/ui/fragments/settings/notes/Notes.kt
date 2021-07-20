@@ -82,7 +82,7 @@ class Notes : Fragment() {
                         getString(R.string.app_name),
                         getString(R.string.delete_tax_message)
                     ) {
-                        positiveButton(getString(R.string.delete_discount_message)) {
+                        positiveButton(getString(R.string.tv_delete)) {
                             // Do positive stuff here
                             noteObject = noteListadapter.getItem(pos)
                             viewModel.delete(noteListadapter.getItem(pos).id)

@@ -105,7 +105,7 @@ class DiscountList : Fragment() {
                         getString(R.string.app_name),
                         getString(R.string.delete_tax_message)
                     ) {
-                        positiveButton(getString(R.string.delete_discount_message)) {
+                        positiveButton(getString(R.string.tv_delete)) {
                             // Do positive stuff here
                             discountObject = discountListadapter.getItem(pos)
                             viewModel.delete(discountListadapter.getItem(pos).id)

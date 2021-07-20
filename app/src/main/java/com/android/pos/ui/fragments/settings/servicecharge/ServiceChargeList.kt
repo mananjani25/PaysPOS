@@ -100,7 +100,7 @@ class ServiceChargeList : Fragment() {
                         getString(R.string.app_name),
                         getString(R.string.delete_tax_message)
                     ) {
-                        positiveButton(getString(R.string.delete_discount_message)) {
+                        positiveButton(getString(R.string.tv_delete)) {
                             // Do positive stuff here
                             serviceChargeObject = serviceChargeListadapter.getItem(pos)
                             viewModel.delete(serviceChargeListadapter.getItem(pos).id)

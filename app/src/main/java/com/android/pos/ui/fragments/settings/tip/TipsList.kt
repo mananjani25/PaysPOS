@@ -96,7 +96,7 @@ class TipsList : Fragment() {
                         getString(R.string.app_name),
                         getString(R.string.delete_tax_message)
                     ) {
-                        positiveButton(getString(R.string.delete_discount_message)) {
+                        positiveButton(getString(R.string.tv_delete)) {
                             // Do positive stuff here
                             tipObject = tipListadapter.getItem(pos)
                             viewModel.delete(tipListadapter.getItem(pos).id)
