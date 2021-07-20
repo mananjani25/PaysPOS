@@ -48,7 +48,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
 
         setupStickyLayout()
         configureToolbar()
-        observeShowProgress()
+      //  observeShowProgress()
         loadTeamDetails(null)
         loadTeams()
         deleteEmployee()
