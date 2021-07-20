@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.data.model.responseModel.CreateTipResponse
 import com.android.pos.data.repositories.PosRepository
+import com.android.pos.data.repositories.TipDiscountRepository
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TipListViewModel @Inject constructor(
-    private val posRepository: PosRepository
+    private val tipDiscountRepository: TipDiscountRepository
 ) : ViewModel() {
 
     private val _snackbarText = MutableLiveData<Event<Any?>>()
@@ -26,14 +27,14 @@ class TipListViewModel @Inject constructor(
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
-    val getTipList = posRepository.getTipList()
+    val getTipList = tipDiscountRepository.getTipList()
 
 
     fun delete(id: Int) {
         _showProgress.value = Event(true)
 
         viewModelScope.launch {
-            val resource = posRepository.deleteTip(id)
+            val resource = tipDiscountRepository.deleteTip(id)
             when (resource.status) {
                 Status.SUCCESS -> {
                     _showProgress.value = Event(false)

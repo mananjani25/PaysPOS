@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.android.pos.data.remote.Constants.PASSCODE
 import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.data.repositories.PosRepository
+import com.android.pos.data.repositories.UserRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Status
@@ -16,7 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ClockInOwnerViewModel @Inject constructor(
-    private val posRepository: PosRepository,
+    private val userRepository: UserRepository,
     private val prefProvider: PrefProvider
 ) :
     ViewModel() {
@@ -39,7 +40,7 @@ class ClockInOwnerViewModel @Inject constructor(
         data["terminal_id"] = prefProvider.getValue(TERMINAL_ID, "").toString()
 
         viewModelScope.launch {
-            val resource = posRepository.employeeClockOut(data)
+            val resource = userRepository.employeeClockOut(data)
             when (resource.status) {
                 Status.SUCCESS -> {
                     _showProgress.value = Event(false)

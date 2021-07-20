@@ -1,21 +1,21 @@
 package com.android.pos.data.remote
 
 
-import com.android.pos.data.model.requestModel.CreateNoteRequest
-import com.android.pos.data.model.requestModel.CreateDiscountRequestModel
-import com.android.pos.data.model.requestModel.CreateTaxRequestModel
-import com.android.pos.data.model.requestModel.CreateTipRequestModel
+import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.Constants.CLOCK_OUT
 import com.android.pos.data.remote.Constants.DISCOUNTS
 import com.android.pos.data.remote.Constants.DISCOUNTS_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.EMPLOYEES
+import com.android.pos.data.remote.Constants.EMPLOYEES_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.EMPLOYEE_CLOCK_IN
 import com.android.pos.data.remote.Constants.EMPLOYEE_LOG_IN
 import com.android.pos.data.remote.Constants.LOGIN_TERMINAL
 import com.android.pos.data.remote.Constants.LOGOUT
 import com.android.pos.data.remote.Constants.NOTES
 import com.android.pos.data.remote.Constants.NOTE_UPDATE_DELETE
+import com.android.pos.data.remote.Constants.SERVICE_CHARGE
+import com.android.pos.data.remote.Constants.SERVICE_CHARGE_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.SYNC_VENUE_DATA
 import com.android.pos.data.remote.Constants.TAXES
 import com.android.pos.data.remote.Constants.TAX_UPDATE_DELETE
@@ -105,6 +105,24 @@ interface ApiService {
     ): CreateDiscountResponse
 
 
+    @GET(SERVICE_CHARGE)
+    suspend fun getServiceChargeList(): GetServiceChargeResponse
+
+    @POST(SERVICE_CHARGE)
+    suspend fun createServiceCharge(@Body createDiscount: CreateServiceChargeRequestModel): CreateServiceChargeResponse
+
+    @PUT(SERVICE_CHARGE_UPDATE_DELETE)
+    suspend fun updateServiceCharge(
+        @Path("id") discountId: Int,
+        @Body createDiscount: CreateServiceChargeRequestModel
+    ): CreateServiceChargeResponse
+
+    @DELETE(SERVICE_CHARGE_UPDATE_DELETE)
+    suspend fun deleteServiceCharge(
+        @Path("id") discountId: Int
+    ): CreateServiceChargeResponse
+
+
     @GET(NOTES)
     suspend fun getNoteList(): NoteResponse
 
@@ -126,4 +144,13 @@ interface ApiService {
     @POST(LOGOUT)
     suspend fun userLogOut(@FieldMap option:HashMap<String,String>):BaseResponse
 
+
+    @POST(EMPLOYEES)
+    suspend fun createEmployee(@Body createEmployeeRequestModel: CreateEmployeeRequestModel): BaseResponse
+
+    @PUT(EMPLOYEES_UPDATE_DELETE)
+    suspend fun updateEmployee(
+        @Path("id") taxId: Int,
+        @Body createEmployeeRequestModel: CreateEmployeeRequestModel
+    ): BaseResponse
 }

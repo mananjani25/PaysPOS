@@ -14,6 +14,7 @@ import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.BusinessSettingAdapter
 import com.android.pos.ui.fragments.settings.discount.DiscountList
 import com.android.pos.ui.fragments.settings.notes.Notes
+import com.android.pos.ui.fragments.settings.servicecharge.ServiceChargeList
 import com.android.pos.ui.fragments.settings.tax.TaxesList
 import com.android.pos.ui.fragments.settings.tip.TipsList
 import com.android.pos.utils.extensions.styleBold
@@ -186,7 +187,7 @@ class Settings : Fragment() {
                     }
                     5 -> {
                         binding.commonToolbar.txtSubTitle.setText("Service Charge")
-                        val service: Fragment = ServiceCharge()
+                        val service: Fragment = ServiceChargeList()
                         loadFragment(service)
                     }
 

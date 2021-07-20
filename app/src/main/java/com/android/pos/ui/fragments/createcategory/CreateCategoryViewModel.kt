@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.android.pos.R
 import com.android.pos.data.model.requestModel.CreateCategoryRequestModel
 import com.android.pos.data.repositories.PosRepository
+import com.android.pos.data.repositories.UserRepository
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,7 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CreateCategoryViewModel @Inject constructor(
-    private val posRepository: PosRepository
+    private val userRepository: UserRepository
 ) :
     ViewModel() {
 
@@ -40,7 +41,7 @@ class CreateCategoryViewModel @Inject constructor(
              data["password"] = loginDetails.value?.password.toString()*/
 
             viewModelScope.launch {
-                val resource = posRepository.userLogIn(data)
+                val resource = userRepository.userLogIn(data)
                 when (resource.status) {
                     Status.SUCCESS -> {
                         _showProgress.value = Event(false)

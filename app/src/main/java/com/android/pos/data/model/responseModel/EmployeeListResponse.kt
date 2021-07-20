@@ -40,7 +40,7 @@ data class EmployeeListResponse(
             @SerializedName("passcode")
             val passcode: String,
             @SerializedName("phone_number")
-            val phoneNumber: String,
+            val phoneNumber: String?,
             @SerializedName("updated_at")
             val updatedAt: String
         ) : Parcelable

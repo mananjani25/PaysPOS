@@ -63,6 +63,18 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun deleteDiscount(discountId: Int) =
         getResult { apiService.deleteDiscount(discountId) }
 
+    suspend fun getServiceChargeList() =
+        getResult { apiService.getServiceChargeList() }
+
+    suspend fun createServiceCharge(data: CreateServiceChargeRequestModel) =
+        getResult { apiService.createServiceCharge(data) }
+
+    suspend fun updateServiceCharge(serviceChargeId: Int, data: CreateServiceChargeRequestModel) =
+        getResult { apiService.updateServiceCharge(serviceChargeId, data) }
+
+    suspend fun deleteServiceCharge(serviceChargeId: Int) =
+        getResult { apiService.deleteServiceCharge(serviceChargeId) }
+
     suspend fun getNoteList() =
         getResult { apiService.getNoteList() }
 
@@ -78,4 +90,10 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun logOut(data: HashMap<String, String>) = getResult {
         apiService.userLogOut(data)
     }
+
+    suspend fun createEmployee(data: CreateEmployeeRequestModel) =
+        getResult { apiService.createEmployee(data) }
+
+    suspend fun updateEmployee(taxId: Int, data: CreateEmployeeRequestModel) =
+        getResult { apiService.updateEmployee(taxId, data) }
 }

@@ -1,4 +1,4 @@
-package com.android.pos.ui.fragments.settings.tip
+package com.android.pos.ui.fragments.team
 
 import android.text.TextUtils
 import androidx.lifecycle.LiveData
@@ -6,12 +6,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.R
-import com.android.pos.data.model.requestModel.CreateTipRequestModel
-import com.android.pos.data.model.responseModel.CreateTipResponse
-import com.android.pos.data.model.responseModel.GetTipReponse
+import com.android.pos.data.model.requestModel.CreateEmployeeRequestModel
+import com.android.pos.data.model.responseModel.BaseResponse
+import com.android.pos.data.model.responseModel.EmployeeListResponse
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.repositories.PosRepository
-import com.android.pos.data.repositories.TipDiscountRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Resource
@@ -20,14 +19,18 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-
 @HiltViewModel
-class CreateTipsViewModel @Inject constructor(
-    private val tipDiscountRepository: TipDiscountRepository,
+class CreateTeamViewModel @Inject constructor(
+    private val posRepository: PosRepository,
     private val prefProvider: PrefProvider
 ) : ViewModel() {
 
-    val createTipDetails = MutableLiveData(CreateTipRequestModel())
+    private lateinit var createEmployeeData: CreateEmployeeRequestModel
+
+    val locationId = prefProvider.getValueInt(LOCATION_ID, 0)
+    private var taxId: Int = -1
+
+    private var isEdit: Boolean = false
 
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
@@ -38,60 +41,64 @@ class CreateTipsViewModel @Inject constructor(
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
-    private var tipId: Int = -1
+    val createTaxDetails = MutableLiveData(CreateEmployeeRequestModel())
+    private lateinit var resource: Resource<BaseResponse>
 
-    private var isEdit: Boolean = false
+    fun setTaxData(employeeModel: EmployeeListResponse.Data.Employee) {
 
-    private lateinit var tipData: CreateTipRequestModel
+        createTaxDetails.value?.firstName = employeeModel.firstName
+        createTaxDetails.value?.lastName = employeeModel.lastName
+        createTaxDetails.value?.email = employeeModel.email
+        createTaxDetails.value?.phoneNumber = employeeModel.phoneNumber.toString()
+        createTaxDetails.value?.locationId = employeeModel.locationId
+        createTaxDetails.value?.passcode = employeeModel.passcode
+        createTaxDetails.value?.isActive = employeeModel.isActive
 
-    private lateinit var resource: Resource<CreateTipResponse>
-
-
-    fun setTipData(tipData: GetTipReponse.Data) {
-        createTipDetails.value?.name = tipData.name
-        createTipDetails.value?.rate = tipData.rate
     }
 
-    fun isEditData(isEdit: Boolean, tipId: Int) {
-        this.tipId = tipId
+    fun isEditData(isEdit: Boolean, taxId: Int) {
+        this.taxId = taxId
         this.isEdit = isEdit
     }
 
+
     fun submit() {
-        val value = createTipDetails.value
-        if (TextUtils.isEmpty(value?.name?.trim())) {
-            _snackbarText.value = Event(R.string.tip_name_validate)
+
+
+        val value = createTaxDetails.value
+        if (TextUtils.isEmpty(value?.firstName?.trim())) {
+            _snackbarText.value = Event(R.string.first_name_validate)
         } else if (TextUtils.isEmpty(
-                value?.rate?.toString()?.trim()
+                value?.lastName?.trim()
             )
-            && value?.rate == 0.0
         ) {
-            _snackbarText.value = Event(R.string.tip_rate_validate)
+            _snackbarText.value = Event(R.string.last_name_validate)
         } else {
             _showProgress.value = Event(true)
 
-            if (isEdit) {
-                tipData = CreateTipRequestModel().apply {
-                    id = tipId
-                    name = value!!.name
-                    rate = value.rate
-                    locationId = prefProvider.getValueInt(LOCATION_ID, -1)
-                }
-            } else {
-                tipData = CreateTipRequestModel().apply {
-                    name = value!!.name
-                    rate = value.rate
-                    locationId = prefProvider.getValueInt(LOCATION_ID, -1)
-                }
+
+            createEmployeeData = CreateEmployeeRequestModel().apply {
+                if (isEdit) id = taxId
+                firstName = value!!.firstName
+                lastName = value.lastName
+                phoneNumber = value.phoneNumber
+                email = value.email
+                locationId = prefProvider.getValueInt(LOCATION_ID, -1)
+                passcode = value.passcode
+                isActive = true
             }
 
 
             viewModelScope.launch {
-                if (isEdit) {
-                    resource = tipDiscountRepository.updateTip(tipId, tipData)
+
+                resource = if (isEdit) {
+                    posRepository.updateEmployee(taxId, createEmployeeData)
                 } else {
-                    resource = tipDiscountRepository.createTips(tipData)
+                    posRepository.createEmployee(createEmployeeData)
                 }
+
+                resource = posRepository.createEmployee(createEmployeeData)
+
 
                 when (resource.status) {
                     Status.SUCCESS -> {

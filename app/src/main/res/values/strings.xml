@@ -69,9 +69,12 @@
     <string name="discount_rate_validate">Please enter valid Discount Rate</string>
 
 
+
     <string name="delete_tax_message">Are you sure want to Delete Tax?</string>
     <string name="delete_tip_message">Are you sure want to Delete Tip?</string>
     <string name="delete_note_message">Are you sure want to Delete Note?</string>
+    <string name="delete_discount_message">Are you sure want to Delete Discount?</string>
+    <string name="delete_service_charge_message">Are you sure want to Delete Service Charge?</string>
 
 
     <string name="tv_personal_info">Personal Info</string>
@@ -265,4 +268,7 @@
     <string name="update">Update</string>
     <string name="disc_percentage">Percentage</string>
     <string name="disc_amount">Amount</string>
+
+    <string name="first_name_validate">Please Enter First Name</string>
+    <string name="last_name_validate">Please Enter Last Name</string>
 </resources>

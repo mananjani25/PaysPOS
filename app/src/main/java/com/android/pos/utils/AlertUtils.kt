@@ -389,6 +389,9 @@ object AlertUtils {
     }
 
     fun usNumberFormat(phone: String): String? {
+
+        if (phone.isEmpty()) return ""
+
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             PhoneNumberUtils.formatNumber(phone, Locale.getDefault().country);
         } else {

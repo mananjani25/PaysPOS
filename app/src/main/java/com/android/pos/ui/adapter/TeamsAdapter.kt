@@ -14,6 +14,7 @@ import com.android.pos.data.model.responseModel.EmployeeListResponse
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.CustomSwipeLayout.SwipeLayout
 import com.android.pos.utils.callback.CustomCallback
+import com.android.pos.utils.callback.OperationCallback
 import com.android.pos.utils.sticky_recycler.SectioningAdapter
 import java.util.*
 
@@ -29,6 +30,11 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
     private lateinit var mCallback: CustomCallback
     fun setCallback(callback: CustomCallback) {
         mCallback = callback
+    }
+
+    private lateinit var operationCallback: OperationCallback
+    fun setOperationCallback(callback: OperationCallback) {
+        operationCallback = callback
     }
 
     inner class Section {
@@ -56,17 +62,17 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
         override fun onSwipeItemClick(left: Boolean, p1: Int) {
 
 
-//            AlertUtils.showConfirmAlert(
-//                itemView.context, itemView.context.getString(R.string.delete_customer_message)
-//            ) { _, _ ->
-//
-//                val id = txtId.text.toString().trim().toInt()
-////                val data = DataManager(itemView.context).customerById(id)
-////                if (data != null) {
-////                    mCallback.onItemClickListener(null, data)
-////                }
-//
-//            }
+            AlertUtils.showConfirmAlert(
+                itemView.context, itemView.context.getString(R.string.delete_note_message)
+            ) { _, _ ->
+
+
+                val employee = itemView.tag as EmployeeListResponse.Data.Employee
+
+                operationCallback.onItemClickListener(employee)
+
+
+            }
 
         }
 
@@ -167,7 +173,7 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
 
         //ivh.txtId.text = person.id.toString()
 
-        ivh.personNumberTextView.text = AlertUtils.usNumberFormat(person.phoneNumber)
+        ivh.personNumberTextView.text = person.phoneNumber?.let { AlertUtils.usNumberFormat(it) }
 
         if (person.firstName != null && person.lastName != null) {
             ivh.personNameTextView.text = person.firstName + " " + person.lastName
@@ -178,6 +184,8 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
             ivh.tvInitialName.text =
                 person.firstName?.subSequence(0, 2)
         }
+
+        ivh.itemView.tag = person
 
         if (isSelectedPos == ivh.layoutPosition) {
             ivh.layout.background = ivh.itemView.context.getDrawable(R.color.btnColorDark_)

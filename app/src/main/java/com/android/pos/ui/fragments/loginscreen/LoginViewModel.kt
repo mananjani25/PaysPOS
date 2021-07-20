@@ -14,6 +14,7 @@ import com.android.pos.data.remote.Constants.EMAIL
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.data.repositories.PosRepository
+import com.android.pos.data.repositories.UserRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Status
@@ -25,7 +26,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val posRepository: PosRepository,
+    private val userRepository: UserRepository,
     private val prefProvider: PrefProvider
 ) :
     ViewModel() {
@@ -60,7 +61,7 @@ class LoginViewModel @Inject constructor(
             data["password"] = loginDetails.value?.password.toString()
 
             viewModelScope.launch {
-                val resource = posRepository.userLogIn(data)
+                val resource = userRepository.userLogIn(data)
                 when (resource.status) {
                     Status.SUCCESS -> {
                         _showProgress.value = Event(false)
@@ -106,7 +107,7 @@ class LoginViewModel @Inject constructor(
 
         viewModelScope.launch {
             delay(1000)
-            val defaultTerminal = posRepository.getDefaultTerminal("qwerty123")
+            val defaultTerminal = userRepository.getDefaultTerminal("qwerty123")
             when (defaultTerminal.status) {
                 Status.SUCCESS -> {
 
