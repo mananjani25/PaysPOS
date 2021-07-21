@@ -4,18 +4,24 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.android.pos.data.dao.CategoryDao
+import com.android.pos.data.dao.DBItemDao
+import com.android.pos.data.entities.TbCategory
+import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.CharacterModel
 import com.android.pos.data.remote.Constants.DATABASE_NAME
 
 
 @Database(
-    entities = [CharacterModel::class],
-    version = 1
+    entities = [CharacterModel::class, TbCategory::class, TbItem::class],
+    version = 2
 )
 
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun characterDao(): CharacterDao
+    abstract fun categoryDao(): CategoryDao
+    abstract fun itemDao(): DBItemDao
 
     companion object {
         @Volatile

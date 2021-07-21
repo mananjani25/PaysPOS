@@ -1,14 +1,17 @@
 package com.android.pos.data.repositories
 
+import androidx.lifecycle.LiveData
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.db.IDataManager
+import com.android.pos.data.entities.TbCategory
 import com.android.pos.data.remote.ApiHelper
+import com.android.pos.utils.statusUtils.Resource
 import javax.inject.Inject
 
 class UserRepository @Inject constructor(
     private val appDatabase: AppDatabase,
     private val apiHelperNew: ApiHelper
-) : IDataManager {
+) {
 
     suspend fun userLogIn(data: HashMap<String, String>) = apiHelperNew.userLogIn(data)
 
@@ -22,8 +25,5 @@ class UserRepository @Inject constructor(
     suspend fun employeeClockOut(data: HashMap<String, String>) =
         apiHelperNew.employeeClockOut(data)
 
-    override suspend fun abs() {
-        TODO("Not yet implemented")
-    }
 
 }
