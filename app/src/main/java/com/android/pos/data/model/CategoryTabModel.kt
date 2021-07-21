@@ -4,5 +4,6 @@ data class CategoryTabModel(
     val id: Int,
     val title: String,
     var isSelected: Boolean,
-    val position: Int
+    val position: Int,
+    
 )
