@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.android.pos.data.model.responseModel.BaseResponse
+import com.android.pos.data.remote.Constants.IS_CLOCKOUT
 import com.android.pos.data.remote.Constants.PASSCODE
 import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.data.repositories.PosRepository
@@ -25,8 +27,8 @@ class PasscodeViewModel @Inject constructor(
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
 
-    private val _data = MutableLiveData<Event<Boolean?>>()
-    val data: LiveData<Event<Boolean?>> = _data
+    private val _data = MutableLiveData<Event<BaseResponse>>()
+    val data: LiveData<Event<BaseResponse>> = _data
 
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
@@ -48,12 +50,13 @@ class PasscodeViewModel @Inject constructor(
                 val resource = userRepository.employeeClockOut(data)
                 when (resource.status) {
                     Status.SUCCESS -> {
+                        prefProvider.setValueboolean(IS_CLOCKOUT, true)
                         _showProgress.value = Event(false)
 
                         resource.data.let {
                             if (it?.status == 200) {
                                 resource.data?.let {
-                                    _data.value = Event(false)
+                                    _data.value =  Event(it)
                                 }
                             } else {
                                 _snackbarText.value = Event(resource.message)
@@ -125,7 +128,7 @@ class PasscodeViewModel @Inject constructor(
                 employeeLogin.data.let {
                     if (it?.status == 200) {
                         employeeLogin.data?.let {
-                            _data.value = Event(true)
+                            _data.value = Event(it)
 
                         }
                     } else {
