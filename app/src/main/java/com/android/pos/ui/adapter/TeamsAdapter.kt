@@ -9,12 +9,14 @@ import android.widget.Filter
 import android.widget.Filterable
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.fragment.app.FragmentActivity
 import com.android.pos.R
 import com.android.pos.data.model.responseModel.EmployeeListResponse
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.CustomSwipeLayout.SwipeLayout
 import com.android.pos.utils.callback.CustomCallback
 import com.android.pos.utils.callback.OperationCallback
+import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.getColorCompat
 import com.android.pos.utils.sticky_recycler.SectioningAdapter
 import java.util.*
@@ -26,6 +28,7 @@ import java.util.*
 class TeamsAdapter : SectioningAdapter(), Filterable {
     private var isSelectedPos: Int = -1
     private val locale = Locale.getDefault()
+    private lateinit var requireActivity: FragmentActivity
 
 
     private lateinit var mCallback: CustomCallback
@@ -62,15 +65,28 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
 
         override fun onSwipeItemClick(left: Boolean, p1: Int) {
 
+            requireActivity.alert(
+                requireActivity.getString(R.string.app_name),
+                requireActivity.getString(R.string.delete_tax_message)
+            ) {
+                positiveButton(requireActivity.getString(R.string.tv_delete)) {
+                    // Do positive stuff here
+                    val employee = itemView.tag as EmployeeListResponse.Data.Employee
+                    operationCallback.onItemClickListener(employee)
+                }
+                negativeButton(R.string.tv_cancel) {
+                    // Do negative stuff here
+                }
+            }
 
-            AlertUtils.showConfirmAlert(
+            /*AlertUtils.showConfirmAlert(
                 itemView.context, itemView.context.getString(R.string.delete_employee_message)
             ) { _, _ ->
 
                 val employee = itemView.tag as EmployeeListResponse.Data.Employee
                 operationCallback.onItemClickListener(employee)
 
-            }
+            }*/
 
         }
 
@@ -96,15 +112,22 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
         return people
     }
 
-    fun removeItem(empObject: EmployeeListResponse.Data.Employee) {
+    fun removeItem(
+        empObject: EmployeeListResponse.Data.Employee,
+        requireActivity: FragmentActivity
+    ) {
 
         people?.remove(empObject)
-        people?.let { it1 -> setPeople(it1) }
+        people?.let { it1 -> setPeople(it1, requireActivity) }
 
     }
 
-    fun setPeople(people: MutableList<EmployeeListResponse.Data.Employee>) {
+    fun setPeople(
+        people: MutableList<EmployeeListResponse.Data.Employee>,
+        requireActivity: FragmentActivity
+    ) {
         this.people = people
+        this.requireActivity = requireActivity
         sections.clear()
         sectionSortedList.clear()
 

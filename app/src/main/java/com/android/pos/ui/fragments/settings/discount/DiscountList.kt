@@ -18,6 +18,7 @@ import com.android.pos.ui.adapter.DiscountListAdapter
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.SwipeHelper
+import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.statusUtils.Status
@@ -99,16 +100,20 @@ class DiscountList : Fragment() {
                 ) { pos ->
 
                     position = pos
-                    activity?.let {
-                        AlertUtils.showConfirmAlert(
-                            it, getString(R.string.delete_discount_message)
-                        ) { _, _ ->
+
+                    alert(
+                        getString(R.string.app_name),
+                        getString(R.string.delete_tax_message)
+                    ) {
+                        positiveButton(getString(R.string.tv_delete)) {
+                            // Do positive stuff here
                             discountObject = discountListadapter.getItem(pos)
                             viewModel.delete(discountListadapter.getItem(pos).id)
                         }
+                        negativeButton(R.string.tv_cancel) {
+                            // Do negative stuff here
+                        }
                     }
-
-
                 })
             }
         }
@@ -172,7 +177,7 @@ class DiscountList : Fragment() {
                  adapter.taxList = list
                  adapter.notifyDataSetChanged()*/
 
-                AlertUtils.showAlert(requireActivity(), it.message)
+                AlertUtils.showCustomAlert(requireActivity(), it.message)
                 discountListUpdateDelete.remove(discountObject)
                 discountListadapter.addDiscount(discountListUpdateDelete)
                 discountListadapter.notifyItemRemoved(position)
