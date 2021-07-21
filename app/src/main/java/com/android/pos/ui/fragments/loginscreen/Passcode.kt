@@ -13,6 +13,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.databinding.FragmentPasscodeBinding
+import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
 import com.google.android.material.snackbar.Snackbar
@@ -23,6 +24,7 @@ class Passcode : Fragment() {
 
     private lateinit var binding: FragmentPasscodeBinding
     private val viewModel by viewModels<PasscodeViewModel>()
+    var isDashboard: Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -33,6 +35,12 @@ class Passcode : Fragment() {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_passcode, container, false)
         binding.lifecycleOwner = this
         binding.passcodeViewModel = viewModel
+        isDashboard = arguments?.getBoolean("isDashboard")!!
+
+        if (isDashboard) {
+            binding.tvWelcomeTag.text = getString(R.string.tv_clock_out)
+            viewModel.isDashboardData(isDashboard)
+        }
 
         setupSnackbar()
         observeShowProgress()
@@ -78,7 +86,13 @@ class Passcode : Fragment() {
 
         viewModel.data.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
-                if (it) {
+                if (isDashboard) {
+                    isDashboard = false
+                    viewModel.isDashboardData(isDashboard)
+                    binding.passCodeView.setPassCode("")
+                    binding.tvWelcomeTag.text = getString(R.string.tv_clock_in)
+                    AlertUtils.showCustomAlert(requireActivity(), it.message)
+                } else {
                     findNavController().navigate(R.id.action_passcode_to_clockInOwner)
                 }
             }

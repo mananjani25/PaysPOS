@@ -2,26 +2,35 @@ package com.android.pos.ui.fragments.dashboard
 
 import android.app.Activity
 import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.LinearLayout
+import android.widget.PopupMenu
+import android.widget.PopupWindow
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.view.marginBottom
+import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.pos.R
 import com.android.pos.data.model.CategoryTabModel
 import com.android.pos.data.model.responseModel.VenueDataResponse
 import com.android.pos.data.remote.Constants.HORIZONTAL
+import com.android.pos.data.remote.Constants.VERTICAL
 import com.android.pos.databinding.FragmentDashboardCategoryNewBinding
+import com.android.pos.databinding.PopupDashboardBinding
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.CategoryItemAdapter
 import com.android.pos.ui.adapter.CategoryTabAdapter
 import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.statusUtils.Status
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
@@ -47,6 +56,22 @@ class DashboardCategoryNew : Fragment() {
     ): View? {
         binding = FragmentDashboardCategoryNewBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
+
+        binding.footer.imgClock.setOnClickListener {
+            alert(
+                getString(R.string.app_name),
+                getString(R.string.clockout_message)
+            ) {
+                positiveButton(getString(android.R.string.ok)) {
+                    val bundle = Bundle()
+                    bundle.putBoolean("isDashboard", true)
+                    findNavController().navigate(R.id.action_dashboardCategoryNew_to_passcode,bundle)
+                }
+                negativeButton(R.string.tv_cancel) {
+                    // Do negative stuff here
+                }
+            }
+        }
         return binding.root
     }
 
@@ -59,14 +84,9 @@ class DashboardCategoryNew : Fragment() {
     }
 
     private fun onClick() {
-        binding.layoutMenu.switchDesign.setOnCheckedChangeListener { buttonView, isChecked ->
-            if (isChecked) {
-                verticalTabList()
-
-            } else {
-                horizontalTabList()
-            }
-
+        binding.layoutMenu.imgOptionMenu.setOnClickListener {
+            showPopup(binding.viewPopup)
+            // showInfoDialog(binding.layoutMenu.imgOptionMenu, requireActivity())
         }
 
     }
@@ -78,6 +98,16 @@ class DashboardCategoryNew : Fragment() {
         binding.rvTabLayout.layoutParams = params
         binding.rvTabLayout.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+
+        var tabList = (binding.rvTabLayout.adapter as CategoryTabAdapter).list
+
+        for (i in 0 until tabList.size) {
+            tabList.get(i).type = HORIZONTAL
+
+        }
+        (binding.rvTabLayout.adapter as CategoryTabAdapter).list = tabList
+        binding.rvTabLayout?.adapter?.notifyDataSetChanged()
+
 
         val set: ConstraintSet = ConstraintSet()
         set.clone(binding.constraintParent)
@@ -110,6 +140,7 @@ class DashboardCategoryNew : Fragment() {
         set.setVerticalBias(binding.rvTabLayout.id, 0F)
 
 
+        binding.rvPagerCategory.layoutManager = GridLayoutManager(requireContext(),5)
         //CategoryList RecyclerView View Set
         val params1 = binding.rvTabLayout.layoutParams
         params1.height = 0
@@ -149,9 +180,20 @@ class DashboardCategoryNew : Fragment() {
         var params: ViewGroup.LayoutParams = binding.rvTabLayout.layoutParams
         params.height = 0
         params.width = LinearLayout.LayoutParams.WRAP_CONTENT
+
+
         binding.rvTabLayout.layoutParams = params
         binding.rvTabLayout.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+
+        var tabList = (binding.rvTabLayout.adapter as CategoryTabAdapter).list
+
+        for (i in 0 until tabList.size) {
+            tabList.get(i).type = VERTICAL
+
+        }
+        (binding.rvTabLayout.adapter as CategoryTabAdapter).list = tabList
+        binding.rvTabLayout?.adapter?.notifyDataSetChanged()
 
 
         val set: ConstraintSet = ConstraintSet()
@@ -190,6 +232,7 @@ class DashboardCategoryNew : Fragment() {
         params1.width = LinearLayout.LayoutParams.WRAP_CONTENT
         binding.rvTabLayout.layoutParams = params1
 
+        binding.rvPagerCategory.layoutManager = GridLayoutManager(requireContext(),3)
 
 
         set.connect(
@@ -227,30 +270,28 @@ class DashboardCategoryNew : Fragment() {
             (requireActivity() as MainActivity).enableDrawer()
         }
 
+
     }
 
     private fun setVenueData() {
 
-
-        viewModel.venueDataLocal.observe(viewLifecycleOwner,
-            {
-                when (it.status) {
-                    Status.SUCCESS -> {
-                        val tbCategory = it.data
-                        if (tbCategory != null) {
-                            Log.e("venueDataLocal", "SUCCESS" + tbCategory.size)
-
-                        }
-                    }
-                    Status.ERROR ->
-                        Log.e("venueDataLocal", "ERROR")
-
-                    Status.LOADING -> Log.e("venueDataLocal", "LOADING")
-
-                }
-            })
-
-
+        //        viewModel.venueDataLocal.observe(viewLifecycleOwner,
+//            {
+//                when (it.status) {
+//                    Status.SUCCESS -> {
+//                        val tbCategory = it.data
+//                        if (tbCategory != null) {
+//                            Log.e("venueDataLocal", "SUCCESS" + tbCategory.size)
+//
+//                        }
+//                    }
+//                    Status.ERROR ->
+//                        Log.e("venueDataLocal", "ERROR")
+//
+//                    Status.LOADING -> Log.e("venueDataLocal", "LOADING")
+//
+//                }
+//            })
         viewModel.venueData.observe(viewLifecycleOwner, {
             it?.let { resource ->
                 when (resource.status) {
@@ -383,6 +424,89 @@ class DashboardCategoryNew : Fragment() {
                 }
             }
         })
+    }
+
+
+    fun showInfoDialog(
+        anchorView: View,
+        activity: Activity
+    ): PopupWindow {
+
+        val popWindow = PopupWindow(activity)
+        val binding: PopupDashboardBinding =
+            PopupDashboardBinding.inflate(
+                LayoutInflater.from(activity),
+                activity.window.decorView.findViewById(R.id.content),
+                true
+            )
+
+
+
+        binding.txtHorizontal.setOnClickListener {
+            popWindow.dismiss()
+            horizontalTabList()
+        }
+        binding.txtVertical.setOnClickListener {
+            popWindow.dismiss()
+            verticalTabList()
+        }
+        popWindow.height = ViewGroup.LayoutParams.WRAP_CONTENT
+        (activity.getSystemService(Context.WINDOW_SERVICE) as WindowManager)
+        val root = activity.window.decorView.rootView as ViewGroup
+        applyDim(root, 0.5f)
+        popWindow.contentView = binding.root
+        popWindow.isOutsideTouchable = true
+        popWindow.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        popWindow.isFocusable = true
+        /* popWindow.showAsDropDown(
+             anchorView,
+             -(anchorView.x.toInt() - (anchorView.width / 2)),
+             (anchorView.height) - 20
+         )
+
+ */        popWindow.showAsDropDown(anchorView, -(anchorView.width), (anchorView.height) - 20)
+
+        popWindow.setOnDismissListener {
+            clearDim(root)
+
+        }
+        return popWindow
+    }
+
+    fun applyDim(parent: ViewGroup, dimAmount: Float) {
+        val dim: Drawable = ColorDrawable(Color.BLACK)
+        dim.setBounds(0, 0, parent.width, parent.height)
+        dim.alpha = (255 * dimAmount).toInt()
+        val overlay = parent.overlay
+        overlay.add(dim)
+    }
+
+    fun clearDim(parent: ViewGroup) {
+        val overlay = parent.overlay
+        overlay.clear()
+    }
+
+    private fun showPopup(view: View) {
+
+        val contextThemeWrapper = ContextThemeWrapper(activity, R.style.PopupMenuOverlapAnchor)
+        val popup = PopupMenu(contextThemeWrapper, view)
+        val inflater: MenuInflater = popup.menuInflater
+        inflater.inflate(R.menu.tab_category_menu, popup.menu)
+
+        popup.setOnMenuItemClickListener { item ->
+            when (item?.itemId) {
+                R.id.menuVertical -> {
+                    verticalTabList()
+                    true
+                }
+                R.id.menuHorizontal -> {
+                    horizontalTabList()
+                    true
+                }
+                else -> false
+            }
+        }
+        popup.show()
     }
 
 }

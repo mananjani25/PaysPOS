@@ -10,6 +10,8 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.AUTH_TOKEN
+import com.android.pos.data.remote.Constants.IS_CLOCKOUT
 import com.android.pos.databinding.FragmentLoginBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.ProgressUtils
@@ -36,8 +38,13 @@ class LoginFragment : Fragment() {
     ): View? {
 
 
-        if (!prefProvider.getValue(Constants.AUTH_TOKEN, "").toString().isEmpty()) {
-            findNavController().navigate(R.id.action_login_to_dashboardCategory)
+        if (!prefProvider.getValue(AUTH_TOKEN, "").toString().isEmpty()) {
+            if (prefProvider.getValueboolean(IS_CLOCKOUT, false)) {
+                findNavController().navigate(R.id.action_login_to_scheduledShifts)
+            } else {
+                findNavController().navigate(R.id.action_login_to_dashboardCategory)
+            }
+
         }
         // findNavController().navigate(R.id.action_login_to_dashboardCategory)
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_login, container, false)
