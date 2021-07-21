@@ -29,8 +29,10 @@
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:layout_width="@dimen/_20sdp"
+                profileImage="@{model.imageUrl != null ? model.imageUrl : null}"
                 android:layout_height="@dimen/_20sdp"
                 android:layout_gravity="center"
+                android:scaleType="centerCrop"
                 app:srcCompat="@android:drawable/screen_background_dark_transparent" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -53,9 +55,9 @@
                 android:layout_marginStart="@dimen/_5sdp"
                 android:layout_marginEnd="@dimen/_10sdp"
                 android:alpha="0.5"
+                android:text="@{@string/symbole +``+String.format(@string/format,model.price)}"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_6sdp"
-                android:text="@{@string/symbole +``+String.format(@string/format,model.price)}" />
+                android:textSize="@dimen/_6sdp" />
         </androidx.appcompat.widget.LinearLayoutCompat>
 
         <View

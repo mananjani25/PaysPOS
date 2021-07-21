@@ -12,8 +12,6 @@ import android.widget.LinearLayout
 import android.widget.PopupMenu
 import android.widget.PopupWindow
 import androidx.constraintlayout.widget.ConstraintSet
-import androidx.core.view.marginBottom
-import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -72,7 +70,10 @@ class DashboardCategoryNew : Fragment() {
                 positiveButton(getString(android.R.string.ok)) {
                     val bundle = Bundle()
                     bundle.putBoolean("isDashboard", true)
-                    findNavController().navigate(R.id.action_dashboardCategoryNew_to_passcode,bundle)
+                    findNavController().navigate(
+                        R.id.action_dashboardCategoryNew_to_passcode,
+                        bundle
+                    )
                 }
                 negativeButton(R.string.tv_cancel) {
                     // Do negative stuff here
@@ -283,23 +284,25 @@ class DashboardCategoryNew : Fragment() {
 
     private fun setVenueData() {
 
-        //        viewModel.venueDataLocal.observe(viewLifecycleOwner,
-//            {
-//                when (it.status) {
-//                    Status.SUCCESS -> {
-//                        val tbCategory = it.data
-//                        if (tbCategory != null) {
-//                            Log.e("venueDataLocal", "SUCCESS" + tbCategory.size)
-//
-//                        }
-//                    }
-//                    Status.ERROR ->
-//                        Log.e("venueDataLocal", "ERROR")
-//
-//                    Status.LOADING -> Log.e("venueDataLocal", "LOADING")
-//
-//                }
-//            })
+        viewModel.venueDataLocal.observe(viewLifecycleOwner,
+            {
+                when (it.status) {
+                    Status.SUCCESS -> {
+                        val tbCategory = it.data
+                        if (tbCategory != null) {
+                            Log.e("venueDataLocal", "SUCCESS" + tbCategory.size)
+
+                        }
+                    }
+                    Status.ERROR ->
+                        Log.e("venueDataLocal", "ERROR")
+
+                    Status.LOADING -> Log.e("venueDataLocal", "LOADING")
+
+                }
+            })
+
+
         viewModel.venueData.observe(viewLifecycleOwner, {
             it?.let { resource ->
                 when (resource.status) {

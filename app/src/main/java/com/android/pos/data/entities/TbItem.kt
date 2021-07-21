@@ -9,8 +9,10 @@ import com.android.pos.data.typeconvert.TypeConvertersTax
 @Entity(tableName = "TbItem")
 class TbItem {
 
-    @PrimaryKey(autoGenerate = true)
+
     var id: Int = 0
+
+    @PrimaryKey
     var itemId: Int = 0
     var categoryId: Int = 0
     var cost: Double = 0.0
