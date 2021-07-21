@@ -62,8 +62,6 @@ class DashboardCategoryNew : Fragment() {
         binding = FragmentDashboardCategoryNewBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
 
-        prefProvider.setValueboolean(IS_CLOCKOUT, false)
-
         binding.footer.imgClock.setOnClickListener {
             alert(
                 getString(R.string.app_name),
