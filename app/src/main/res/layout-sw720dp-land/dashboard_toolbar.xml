@@ -85,14 +85,6 @@
             android:src="@drawable/ic_search"
             app:tint="@color/black" />
 
-        <Switch
-            android:id="@+id/switchDesign"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginEnd="@dimen/_5sdp"
-            android:layout_toStartOf="@+id/imgSearch"
-            android:checked="false" />
 
 
     </RelativeLayout>

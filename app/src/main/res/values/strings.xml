@@ -273,4 +273,6 @@
     <string name="first_name_validate">Please Enter First Name</string>
     <string name="last_name_validate">Please Enter Last Name</string>
     <string name="tv_delete">Delete</string>
+    <string name="horizontal">Horizontal</string>
+    <string name="vertical">Vertical</string>
 </resources>

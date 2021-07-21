@@ -2,14 +2,20 @@ package com.android.pos.ui.fragments.dashboard
 
 import android.app.Activity
 import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.LinearLayout
+import android.widget.PopupWindow
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.marginBottom
+import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -18,7 +24,9 @@ import com.android.pos.R
 import com.android.pos.data.model.CategoryTabModel
 import com.android.pos.data.model.responseModel.VenueDataResponse
 import com.android.pos.data.remote.Constants.HORIZONTAL
+import com.android.pos.data.remote.Constants.VERTICAL
 import com.android.pos.databinding.FragmentDashboardCategoryNewBinding
+import com.android.pos.databinding.PopupDashboardBinding
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.CategoryItemAdapter
 import com.android.pos.ui.adapter.CategoryTabAdapter
@@ -60,14 +68,8 @@ class DashboardCategoryNew : Fragment() {
     }
 
     private fun onClick() {
-        binding.layoutMenu.switchDesign.setOnCheckedChangeListener { buttonView, isChecked ->
-            if (isChecked) {
-                verticalTabList()
-
-            } else {
-                horizontalTabList()
-            }
-
+        binding.layoutMenu.imgOptionMenu.setOnClickListener {
+            showInfoDialog(binding.layoutMenu.imgOptionMenu, requireActivity())
         }
 
     }
@@ -79,6 +81,16 @@ class DashboardCategoryNew : Fragment() {
         binding.rvTabLayout.layoutParams = params
         binding.rvTabLayout.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+
+        var tabList = (binding.rvTabLayout.adapter as CategoryTabAdapter).list
+
+        for (i in 0 until tabList.size) {
+            tabList.get(i).type = HORIZONTAL
+
+        }
+        (binding.rvTabLayout.adapter as CategoryTabAdapter).list = tabList
+        binding.rvTabLayout?.adapter?.notifyDataSetChanged()
+
 
         val set: ConstraintSet = ConstraintSet()
         set.clone(binding.constraintParent)
@@ -150,10 +162,20 @@ class DashboardCategoryNew : Fragment() {
         var params: ViewGroup.LayoutParams = binding.rvTabLayout.layoutParams
         params.height = 0
         params.width = LinearLayout.LayoutParams.WRAP_CONTENT
+
+
         binding.rvTabLayout.layoutParams = params
         binding.rvTabLayout.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
 
+        var tabList = (binding.rvTabLayout.adapter as CategoryTabAdapter).list
+
+        for (i in 0 until tabList.size) {
+            tabList.get(i).type = VERTICAL
+
+        }
+        (binding.rvTabLayout.adapter as CategoryTabAdapter).list = tabList
+        binding.rvTabLayout?.adapter?.notifyDataSetChanged()
 
         val set: ConstraintSet = ConstraintSet()
         set.clone(binding.constraintParent)
@@ -227,6 +249,7 @@ class DashboardCategoryNew : Fragment() {
         binding.layoutMenu.txtKeypad.setOnClickListener {
             (requireActivity() as MainActivity).enableDrawer()
         }
+
 
     }
 
@@ -363,6 +386,66 @@ class DashboardCategoryNew : Fragment() {
                 }
             }
         })
+    }
+
+
+    fun showInfoDialog(
+        anchorView: View,
+        activity: Activity
+    ): PopupWindow {
+
+        val popWindow = PopupWindow(activity)
+        val binding: PopupDashboardBinding =
+            PopupDashboardBinding.inflate(
+                LayoutInflater.from(activity),
+                activity.window.decorView.findViewById(R.id.content),
+                true
+            )
+
+
+
+        binding.txtHorizontal.setOnClickListener {
+            popWindow.dismiss()
+            horizontalTabList()
+        }
+        binding.txtVertical.setOnClickListener {
+            popWindow.dismiss()
+            verticalTabList()
+        }
+        popWindow.height = ViewGroup.LayoutParams.WRAP_CONTENT
+        (activity.getSystemService(Context.WINDOW_SERVICE) as WindowManager)
+        val root = activity.window.decorView.rootView as ViewGroup
+        applyDim(root, 0.5f)
+        popWindow.contentView = binding.root
+        popWindow.isOutsideTouchable = true
+        popWindow.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        popWindow.isFocusable = true
+        /* popWindow.showAsDropDown(
+             anchorView,
+             -(anchorView.x.toInt() - (anchorView.width / 2)),
+             (anchorView.height) - 20
+         )
+
+ */        popWindow.showAsDropDown(anchorView, -(anchorView.width), (anchorView.height) - 20)
+
+        popWindow.setOnDismissListener {
+            clearDim(root)
+
+        }
+        return popWindow
+    }
+
+    fun applyDim(parent: ViewGroup, dimAmount: Float) {
+        val dim: Drawable = ColorDrawable(Color.BLACK)
+        dim.setBounds(0, 0, parent.width, parent.height)
+        dim.alpha = (255 * dimAmount).toInt()
+        val overlay = parent.overlay
+        overlay.add(dim)
+    }
+
+    fun clearDim(parent: ViewGroup) {
+        val overlay = parent.overlay
+        overlay.clear()
     }
 
 }

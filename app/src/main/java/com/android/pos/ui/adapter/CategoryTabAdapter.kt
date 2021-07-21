@@ -4,15 +4,42 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewbinding.ViewBinding
 import com.android.pos.data.model.CategoryTabModel
+import com.android.pos.data.remote.Constants.VERTICAL
 import com.android.pos.databinding.ViewDashboardTabItemBinding
+import com.android.pos.databinding.ViewTabVerticalBinding
 
 class CategoryTabAdapter(
     val context: Context,
-    val list: ArrayList<CategoryTabModel>,
+    var list: ArrayList<CategoryTabModel>,
     val listner: TabListner
 ) :
-    RecyclerView.Adapter<CategoryTabAdapter.MyViewHolder>() {
+    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+    inner class MyTabVerticalHolder(private val binding: ViewTabVerticalBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        fun bind(item: CategoryTabModel) {
+            binding.model = item
+            binding.executePendingBindings()
+        }
+
+        init {
+            binding.root.setOnClickListener {
+                listner.onTabSelected(layoutPosition)
+                for (i in 0 until list.size) {
+                    if (i == layoutPosition) {
+                        list.get(i).isSelected = true
+                    } else {
+                        list.get(i).isSelected = false
+                    }
+                }
+
+                notifyDataSetChanged()
+            }
+        }
+
+    }
 
     inner class MyViewHolder(private val binding: ViewDashboardTabItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -40,14 +67,39 @@ class CategoryTabAdapter(
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): CategoryTabAdapter.MyViewHolder {
-        val binding =
-            ViewDashboardTabItemBinding.inflate(LayoutInflater.from(context), parent, false)
-        return MyViewHolder(binding)
+    ): RecyclerView.ViewHolder {
+
+        if (viewType == 0) {
+
+            return MyTabVerticalHolder(
+                ViewTabVerticalBinding.inflate(
+                    LayoutInflater.from(context),
+                    parent,
+                    false
+                )
+            )
+
+        } else {
+
+            return MyViewHolder(
+                ViewDashboardTabItemBinding.inflate(
+                    LayoutInflater.from(context),
+                    parent,
+                    false
+                )
+            )
+        }
+
+
     }
 
-    override fun onBindViewHolder(holder: CategoryTabAdapter.MyViewHolder, position: Int) {
-        holder.bind(list[position])
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+
+        if (getItemViewType(position) == 0) {
+            (holder as MyTabVerticalHolder).bind(list[position])
+        } else {
+            (holder as MyViewHolder).bind(list[position])
+        }
     }
 
     override fun getItemCount(): Int {
@@ -56,5 +108,14 @@ class CategoryTabAdapter(
 
     interface TabListner {
         fun onTabSelected(pos: Int)
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return if (list.get(position).type == VERTICAL) {
+            0
+        } else {
+            1
+        }
+
     }
 }
