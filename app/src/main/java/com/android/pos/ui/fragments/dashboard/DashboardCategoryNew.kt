@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.pos.R
 import com.android.pos.data.model.CategoryTabModel
 import com.android.pos.data.model.responseModel.VenueDataResponse
+import com.android.pos.data.remote.Constants.HORIZONTAL
 import com.android.pos.databinding.FragmentDashboardCategoryNewBinding
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.CategoryItemAdapter
@@ -110,7 +111,6 @@ class DashboardCategoryNew : Fragment() {
         set.setVerticalBias(binding.rvTabLayout.id, 0F)
 
 
-
         //CategoryList RecyclerView View Set
         val params1 = binding.rvTabLayout.layoutParams
         params1.height = 0
@@ -183,7 +183,6 @@ class DashboardCategoryNew : Fragment() {
             binding.rvPagerCategory.id,
             ConstraintSet.END
         )
-
 
 
         //CategoryList REcyclerView View Set
