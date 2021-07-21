@@ -34,13 +34,13 @@ class Passcode : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        val callback: OnBackPressedCallback =
-            object : OnBackPressedCallback(true /* enabled by default */) {
+        /*val callback: OnBackPressedCallback =
+            object : OnBackPressedCallback(true *//* enabled by default *//*) {
                 override fun handleOnBackPressed() {
                     // Handle the back button event
                 }
             }
-        requireActivity().onBackPressedDispatcher.addCallback(requireActivity(), callback)
+        requireActivity().onBackPressedDispatcher.addCallback(requireActivity(), callback)*/
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_passcode, container, false)
         binding.lifecycleOwner = this

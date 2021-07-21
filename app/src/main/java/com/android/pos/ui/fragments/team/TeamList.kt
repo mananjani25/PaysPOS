@@ -71,7 +71,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
 
                 AlertUtils.showCustomAlert(requireActivity(), it.message)
 
-                adapter.removeItem(empObject,requireActivity())
+                adapter.removeItem(empObject, requireActivity())
 
 
             }
@@ -109,8 +109,11 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
                     Status.SUCCESS -> {
                         ProgressUtils.dismissProgressDialog()
 
-                        if (it.data != null && it.data.data.employees.isNotEmpty())
-                            adapter.setPeople(it.data.data.employees as MutableList<EmployeeListResponse.Data.Employee>,requireActivity())
+                        if (resource.data != null && resource.data.data.employees.isNotEmpty())
+                            adapter.setPeople(
+                                resource.data.data.employees as MutableList<EmployeeListResponse.Data.Employee>,
+                                requireActivity()
+                            )
                     }
                     Status.ERROR -> {
                         ProgressUtils.dismissProgressDialog()

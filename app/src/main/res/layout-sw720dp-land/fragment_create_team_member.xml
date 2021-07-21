@@ -49,12 +49,12 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_button_border"
                 android:gravity="center"
+                android:onClick="@{() -> viewModel.submit()}"
                 android:paddingLeft="@dimen/_30sdp"
                 android:paddingTop="@dimen/_5ssp"
                 android:paddingRight="@dimen/_30sdp"
                 android:paddingBottom="@dimen/_5ssp"
                 android:text="@string/save"
-                android:onClick="@{() -> viewModel.submit()}"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_7mdpi" />
         </LinearLayout>
@@ -69,8 +69,8 @@
             android:layout_height="match_parent"
             android:layout_marginLeft="@dimen/_50sdp"
             android:layout_marginTop="@dimen/_15sdp"
-            android:layout_marginBottom="@dimen/_15sdp"
-            android:layout_marginRight="@dimen/_50sdp">
+            android:layout_marginRight="@dimen/_50sdp"
+            android:layout_marginBottom="@dimen/_15sdp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -189,8 +189,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:padding="@dimen/_8sdp"
                         android:gravity="center"
+                        android:padding="@dimen/_8sdp"
                         android:text="@string/tv_info_email"
                         android:textColor="@color/colorCB"
                         android:textSize="@dimen/_6sdp" />
@@ -221,7 +221,7 @@
                         android:background="@drawable/edt_border_light_gray"
                         android:hint="@string/phone"
                         android:imeOptions="actionNext"
-                        android:inputType="textCapWords"
+                        android:inputType="number"
                         android:padding="@dimen/_5sdp"
                         android:text="@={viewModel.createTaxDetails.phoneNumber}"
                         android:textColor="@color/txtColor"
@@ -269,8 +269,8 @@
 
                         <androidx.appcompat.widget.AppCompatImageView
                             android:layout_width="wrap_content"
-                            android:padding="@dimen/_5sdp"
                             android:layout_height="wrap_content"
+                            android:padding="@dimen/_5sdp"
                             android:src="@drawable/ic_arrow_right" />
                     </LinearLayout>
                 </LinearLayout>
@@ -306,11 +306,11 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
+                            android:background="@null"
                             android:hint="None"
                             android:imeOptions="actionNext"
                             android:inputType="numberDecimal"
                             android:padding="@dimen/_5sdp"
-                            android:background="@null"
                             android:textColor="@color/txtColor"
                             android:textColorHint="@color/cool_grey"
                             android:textSize="@dimen/_6sdp" />
@@ -392,8 +392,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:hint="6548"
                             android:background="@null"
+                            android:hint="6548"
                             android:inputType="number"
                             android:maxLength="4"
                             android:padding="@dimen/_5sdp"
