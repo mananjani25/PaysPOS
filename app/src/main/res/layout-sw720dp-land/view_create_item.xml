@@ -18,7 +18,7 @@
             android:background="@color/txtColor"
             android:gravity="center"
             android:orientation="vertical"
-            android:paddingVertical="@dimen/_14sdp"
+            android:paddingVertical="@dimen/_12sdp"
             android:paddingStart="@dimen/_10sdp"
             android:paddingEnd="@dimen/_10sdp"
             app:layout_constraintStart_toStartOf="parent"
@@ -41,7 +41,7 @@
             android:paddingBottom="@dimen/_3sdp"
             android:text="Custom Item"
             android:textColor="@color/txtColorItem"
-            android:textSize="@dimen/_5sdp"
+            android:textSize="@dimen/_5mdpi"
             app:layout_constraintEnd_toEndOf="@+id/txtTitle"
             app:layout_constraintStart_toStartOf="@+id/txtTitle"
             app:layout_constraintTop_toBottomOf="@+id/txtTitle" />

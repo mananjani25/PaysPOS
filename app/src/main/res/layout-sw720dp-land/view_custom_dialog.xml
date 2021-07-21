@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
     android:gravity="center"
@@ -13,22 +13,22 @@
         style="@style/CustomFontSemiBold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_15sdp"
+        android:layout_marginTop="@dimen/_10sdp"
         android:gravity="center"
         android:text="Unsaved Changes"
         android:textColor="@color/black"
-        android:textSize="@dimen/_12mdpi" />
+        android:textSize="@dimen/_7mdpi" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvMessage"
         style="@style/CustomFontRegularStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_8sdp"
-        android:layout_marginBottom="@dimen/_15sdp"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:layout_marginBottom="@dimen/_10sdp"
         android:gravity="center"
         android:text="Do you want to delete?"
-        android:textSize="@dimen/_8mdpi" />
+        android:textSize="@dimen/_6mdpi" />
 
     <View
         android:layout_width="match_parent"
@@ -48,7 +48,7 @@
             android:layout_gravity="center"
             android:layout_weight="1"
             android:gravity="center"
-            android:padding="@dimen/_12sdp"
+            android:padding="@dimen/_5sdp"
             android:text="@string/tv_cancel"
             android:textColor="@color/btnColorDark"
             android:textSize="@dimen/_7mdpi" />
@@ -62,7 +62,7 @@
             android:layout_weight="1"
             android:background="@color/colorE9"
             android:gravity="center"
-            android:padding="@dimen/_12sdp"
+            android:padding="@dimen/_5sdp"
             android:text="@string/save"
             android:textColor="@color/white"
             android:textSize="@dimen/_7mdpi" />

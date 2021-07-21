@@ -85,7 +85,8 @@ class DashboardCategoryNew : Fragment() {
 
     private fun onClick() {
         binding.layoutMenu.imgOptionMenu.setOnClickListener {
-            showPopup(binding.viewPopup)
+//            showPopup(binding.viewPopup)
+            showPopup(binding.layoutMenu.imgOptionMenu)
             // showInfoDialog(binding.layoutMenu.imgOptionMenu, requireActivity())
         }
 
@@ -140,7 +141,7 @@ class DashboardCategoryNew : Fragment() {
         set.setVerticalBias(binding.rvTabLayout.id, 0F)
 
 
-        binding.rvPagerCategory.layoutManager = GridLayoutManager(requireContext(),5)
+        binding.rvPagerCategory.layoutManager = GridLayoutManager(requireContext(), 8)
         //CategoryList RecyclerView View Set
         val params1 = binding.rvTabLayout.layoutParams
         params1.height = 0
@@ -232,7 +233,7 @@ class DashboardCategoryNew : Fragment() {
         params1.width = LinearLayout.LayoutParams.WRAP_CONTENT
         binding.rvTabLayout.layoutParams = params1
 
-        binding.rvPagerCategory.layoutManager = GridLayoutManager(requireContext(),3)
+        binding.rvPagerCategory.layoutManager = GridLayoutManager(requireContext(), 6)
 
 
         set.connect(
