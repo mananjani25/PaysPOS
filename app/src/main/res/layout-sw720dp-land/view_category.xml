@@ -8,7 +8,7 @@
 
         <variable
             name="model"
-            type="com.android.pos.data.model.CategoryListModel" />
+            type="com.android.pos.data.entities.TbCategory" />
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat
@@ -38,7 +38,7 @@
                 android:gravity="start"
                 android:textColor="@color/viewTextColor"
                 android:textSize="@dimen/_6mdpi"
-                tools:text="@{model.category}" />
+                tools:text="@{model.name}" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:layout_width="wrap_content"

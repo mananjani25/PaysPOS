@@ -1,17 +1,20 @@
 package com.android.pos.data.repositories
 
+import androidx.lifecycle.LiveData
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.db.IDataManager
+import com.android.pos.data.entities.TbCategory
 import com.android.pos.data.model.requestModel.CreateDiscountRequestModel
 import com.android.pos.data.model.requestModel.CreateTipRequestModel
 import com.android.pos.data.remote.ApiHelper
 import com.android.pos.utils.performGetOperationNew
+import com.android.pos.utils.statusUtils.Resource
 import javax.inject.Inject
 
 class TipDiscountRepository @Inject constructor(
     private val appDatabase: AppDatabase,
     private val apiHelperNew: ApiHelper
-) : IDataManager {
+) {
 
 
     fun getTipList() =
@@ -35,8 +38,5 @@ class TipDiscountRepository @Inject constructor(
 
     suspend fun deleteDiscount(data: Int) = apiHelperNew.deleteDiscount(data)
 
-    override suspend fun abs() {
-        TODO("Not yet implemented")
-    }
 
 }

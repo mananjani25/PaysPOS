@@ -6,16 +6,18 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.setFragmentResultListener
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
-import com.android.pos.data.model.CategoryListModel
 import com.android.pos.databinding.FragmentCategoriesBinding
 import com.android.pos.ui.adapter.CategoriesListAdapter
-import com.android.pos.ui.adapter.CategoryItemAdapter
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class Categories : Fragment() {
+    private lateinit var adapter: CategoriesListAdapter
     private lateinit var binding: FragmentCategoriesBinding
+    private val viewModel by viewModels<CategoriesViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -32,20 +34,30 @@ class Categories : Fragment() {
 
         setAdapter()
         onClick()
+
+        categoriesObserver()
+    }
+
+    private fun categoriesObserver() {
+
+        viewModel.categories.observe(viewLifecycleOwner, {
+
+            it.data?.let { it1 -> adapter.add(it1) }
+
+        })
     }
 
     private fun onClick() {
         binding.txtCreateCategory.setOnClickListener {
-           // setFragmentResultListener()
+            // setFragmentResultListener()
             findNavController().navigate(R.id.action_inventory_to_createCategory)
         }
     }
 
     private fun setAdapter() {
-        var list: ArrayList<CategoryListModel> = arrayListOf()
-        list.add(CategoryListModel(0, "Category One"))
-        list.add(CategoryListModel(0, "Category Two"))
-        binding.rvCategoriesList.adapter = CategoriesListAdapter(requireContext(), list)
+
+        adapter = CategoriesListAdapter(requireContext(), arrayListOf())
+        binding.rvCategoriesList.adapter
 
     }
 }

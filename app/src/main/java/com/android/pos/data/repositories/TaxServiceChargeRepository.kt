@@ -1,17 +1,20 @@
 package com.android.pos.data.repositories
 
+import androidx.lifecycle.LiveData
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.db.IDataManager
+import com.android.pos.data.entities.TbCategory
 import com.android.pos.data.model.requestModel.CreateServiceChargeRequestModel
 import com.android.pos.data.model.requestModel.CreateTaxRequestModel
 import com.android.pos.data.remote.ApiHelper
 import com.android.pos.utils.performGetOperationNew
+import com.android.pos.utils.statusUtils.Resource
 import javax.inject.Inject
 
 class TaxServiceChargeRepository @Inject constructor(
     private val appDatabase: AppDatabase,
     private val apiHelperNew: ApiHelper
-) : IDataManager {
+) {
 
     fun getTaxList() =
         performGetOperationNew(networkCall = { apiHelperNew.getTaxList() })
@@ -33,9 +36,5 @@ class TaxServiceChargeRepository @Inject constructor(
         apiHelperNew.updateServiceCharge(discountId, data)
 
     suspend fun deleteServiceCharge(data: Int) = apiHelperNew.deleteServiceCharge(data)
-
-    override suspend fun abs() {
-        TODO("Not yet implemented")
-    }
 
 }

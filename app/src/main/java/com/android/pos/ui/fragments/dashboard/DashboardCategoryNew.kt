@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.constraintlayout.widget.ConstraintSet
-import androidx.core.view.marginBottom
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -248,6 +247,27 @@ class DashboardCategoryNew : Fragment() {
     }
 
     private fun setVenueData() {
+
+
+//        viewModel.venueDataLocal.observe(viewLifecycleOwner,
+//            {
+//                when (it.status) {
+//                    Status.SUCCESS -> {
+//                        val tbCategory = it.data
+//                        if (tbCategory != null) {
+//                            Log.e("venueDataLocal", "SUCCESS" + tbCategory.size)
+//
+//                        }
+//                    }
+//                    Status.ERROR ->
+//                        Log.e("venueDataLocal", "ERROR")
+//
+//                    Status.LOADING -> Log.e("venueDataLocal", "LOADING")
+//
+//                }
+//            })
+
+
         viewModel.venueData.observe(viewLifecycleOwner, {
             it?.let { resource ->
                 when (resource.status) {

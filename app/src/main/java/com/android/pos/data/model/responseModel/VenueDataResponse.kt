@@ -54,9 +54,9 @@ data class VenueDataResponse(
                 @SerializedName("sku")
                 val sku: String,
                 @SerializedName("original_image_url")
-                val imgUrl: String,
+                val imgUrl: String?,
                 @SerializedName("thumb_image_url")
-                val thumpImgUrl: String
+                val thumpImgUrl: String?
 
 
             )
