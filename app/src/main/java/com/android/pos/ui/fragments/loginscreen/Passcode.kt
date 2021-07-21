@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.core.content.res.ResourcesCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -18,6 +19,7 @@ import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+
 
 @AndroidEntryPoint
 class Passcode : Fragment() {
@@ -32,6 +34,14 @@ class Passcode : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
+        val callback: OnBackPressedCallback =
+            object : OnBackPressedCallback(true /* enabled by default */) {
+                override fun handleOnBackPressed() {
+                    // Handle the back button event
+                }
+            }
+        requireActivity().onBackPressedDispatcher.addCallback(requireActivity(), callback)
+
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_passcode, container, false)
         binding.lifecycleOwner = this
         binding.passcodeViewModel = viewModel
@@ -41,6 +51,7 @@ class Passcode : Fragment() {
             binding.tvWelcomeTag.text = getString(R.string.tv_clock_out)
             viewModel.isDashboardData(isDashboard)
         }
+
 
         setupSnackbar()
         observeShowProgress()
@@ -92,6 +103,7 @@ class Passcode : Fragment() {
                     binding.passCodeView.setPassCode("")
                     binding.tvWelcomeTag.text = getString(R.string.tv_clock_in)
                     AlertUtils.showCustomAlert(requireActivity(), it.message)
+
                 } else {
                     findNavController().navigate(R.id.action_passcode_to_clockInOwner)
                 }
