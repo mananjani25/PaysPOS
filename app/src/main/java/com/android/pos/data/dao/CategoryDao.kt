@@ -2,6 +2,7 @@ package com.android.pos.data.dao
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import com.android.pos.data.entities.CategoryWithInventory
 import com.android.pos.data.entities.TbCategory
 
 
@@ -44,9 +45,9 @@ interface CategoryDao {
     @Query("UPDATE TbCategory SET isHide = :sort WHERE  TbCategory.id = :id")
     fun updateSorting(id: Int, sort: Int?): Int
 
-//    @Transaction
-//    @Query("SELECT * FROM TbCategory")
-//    fun categoryWithInventory(): List<CategoryWithInventory?>?
+    @Transaction
+    @Query("SELECT * FROM TbCategory")
+    fun categoryWithInventory(): LiveData<List<CategoryWithInventory?>>?
 
     @Query("SELECT * FROM TbCategory WHERE TbCategory.id IN (:userIds)")
     fun categoryByIds(userIds: IntArray): List<TbCategory?>?

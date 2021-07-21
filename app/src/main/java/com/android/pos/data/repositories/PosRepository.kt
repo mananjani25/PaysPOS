@@ -3,8 +3,12 @@ package com.android.pos.data.repositories
 
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.db.IDataManager
-import com.android.pos.data.model.requestModel.*
+import com.android.pos.data.entities.TbCategory
+import com.android.pos.data.entities.TbItem
+import com.android.pos.data.model.requestModel.CreateEmployeeRequestModel
+import com.android.pos.data.model.requestModel.CreateNoteRequest
 import com.android.pos.data.remote.ApiHelper
+import com.android.pos.utils.performGetOperation
 import com.android.pos.utils.performGetOperationNew
 import javax.inject.Inject
 
@@ -15,7 +19,6 @@ class PosRepository @Inject constructor(
 ) : IDataManager {
 
 
-
     fun syncVenueData() =
         performGetOperationNew(networkCall = { apiHelperNew.syncVenueData() })
 
@@ -23,20 +26,47 @@ class PosRepository @Inject constructor(
         performGetOperationNew(networkCall = { apiHelperNew.employeesList(locationId) })
 
 
+    suspend fun logout(data: HashMap<String, String>) = apiHelperNew.logOut(data)
 
 
+    fun getCharacters() = performGetOperation(
+        databaseQuery = { appDatabase.categoryDao().categoryWithInventory()!! },
+        networkCall = { apiHelperNew.syncVenueData() },
+        saveCallResult = { response ->
+            val mCategory = response.data.categories
+            val categoryModelList = ArrayList<TbCategory>()
+            val inventoryModelList = ArrayList<TbItem>()
+            mCategory.forEach { category ->
+                val model = TbCategory().apply {
+                    createdAt = ""
+                    id = category.id
+                    isHide = false
+                    name = category.name
+                    sort = category.sort
+                    updatedAt = ""
+                }
+                categoryModelList.add(model)
 
-    suspend fun logout(data:HashMap<String,String>) = apiHelperNew.logOut(data)
+                category.items.forEach {
 
+                    val items = TbItem().apply {
+                        itemId = it.id
+                        categoryId = category.id
+                        name = it.name
+                        imageUrl = it.imgUrl.toString()
+                        kitchenName = it.kitchenName
+                        price = it.price
+                        productCode = it.productCode
+                    }
 
-//    fun getCharacters() = performGetOperation(
-//        databaseQuery = { appDatabase.characterDao().getAllCharacters() },
-//        networkCall = { apiHelperNew.syncVenueData() },
-//        saveCallResult = {
-//            val mCategory = it.data.categories
-//            appDatabase.characterDao().insertAll(it.results)
-//        }
-//    )
+                    inventoryModelList.add(items)
+                }
+            }
+
+            appDatabase.categoryDao().addAll(categoryModelList)
+            appDatabase.itemDao().addAllItem(inventoryModelList)
+        }
+    )
 
     fun getNoteList() =
         performGetOperationNew(networkCall = { apiHelperNew.getNoteList() })
