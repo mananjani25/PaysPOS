@@ -76,6 +76,7 @@
     <string name="delete_discount_message">Are you sure want to Delete Discount?</string>
     <string name="delete_service_charge_message">Are you sure want to Delete Service Charge?</string>
     <string name="delete_employee_message">Are you sure want to Delete Employee?</string>
+    <string name="clockout_message">Are you sure want to Clockout?</string>
 
 
     <string name="tv_personal_info">Personal Info</string>

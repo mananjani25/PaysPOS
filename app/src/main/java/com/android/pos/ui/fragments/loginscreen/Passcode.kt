@@ -23,6 +23,7 @@ class Passcode : Fragment() {
 
     private lateinit var binding: FragmentPasscodeBinding
     private val viewModel by viewModels<PasscodeViewModel>()
+    var isDashboard: Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -33,6 +34,11 @@ class Passcode : Fragment() {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_passcode, container, false)
         binding.lifecycleOwner = this
         binding.passcodeViewModel = viewModel
+        isDashboard = arguments?.getBoolean("isDashboard")!!
+
+        if (isDashboard) {
+            viewModel.isDashboardData(isDashboard)
+        }
 
         setupSnackbar()
         observeShowProgress()
@@ -80,6 +86,8 @@ class Passcode : Fragment() {
             event.getContentIfNotHandled()?.let {
                 if (it) {
                     findNavController().navigate(R.id.action_passcode_to_clockInOwner)
+                }else{
+                    findNavController().navigateUp()
                 }
             }
         })

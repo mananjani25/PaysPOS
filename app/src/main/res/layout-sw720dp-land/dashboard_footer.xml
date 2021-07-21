@@ -23,7 +23,6 @@
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:layout_marginEnd="@dimen/_5sdp"
-            android:onClick="@{() -> viewModel.submit()}"
             android:src="@drawable/clock"
             app:tint="@color/txt_color_blue" />
 

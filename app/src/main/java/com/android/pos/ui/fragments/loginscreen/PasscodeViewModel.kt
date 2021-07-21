@@ -31,47 +31,88 @@ class PasscodeViewModel @Inject constructor(
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
+    private var isDashboard: Boolean = false
+
+    fun isDashboardData(isDashboard: Boolean) {
+        this.isDashboard = isDashboard
+    }
+
     fun submit(passcode: String) {
-
         _showProgress.value = Event(true)
+        if (isDashboard) {
+            val data = HashMap<String, String>()
+            data["passcode"] = prefProvider.getValue(PASSCODE, "").toString()
+            data["terminal_id"] = prefProvider.getValueInt(TERMINAL_ID, -1).toString()
 
-        val data = HashMap<String, String>()
-        data["passcode"] = passcode
-        data["terminal_id"] = prefProvider.getValueInt(TERMINAL_ID, -1).toString()
+            viewModelScope.launch {
+                val resource = userRepository.employeeClockOut(data)
+                when (resource.status) {
+                    Status.SUCCESS -> {
+                        _showProgress.value = Event(false)
 
-        viewModelScope.launch {
-            val resource = userRepository.employeeClockIn(data)
-            when (resource.status) {
-                Status.SUCCESS -> {
-                    _showProgress.value = Event(false)
-
-                    resource.data.let {
-                        if (it?.status == 200) {
-                            resource.data?.let {
-
-                                prefProvider.setValue(PASSCODE, passcode)
-                                employeeLogin(data)
-
+                        resource.data.let {
+                            if (it?.status == 200) {
+                                resource.data?.let {
+                                    _data.value = Event(false)
+                                }
+                            } else {
+                                _snackbarText.value = Event(resource.message)
                             }
-                        } else {
-                            _snackbarText.value = Event(resource.message)
+
                         }
 
                     }
 
+                    Status.ERROR -> {
+                        _snackbarText.value = Event(resource.message)
+                        _showProgress.value = Event(false)
+                    }
 
+                    Status.LOADING -> {
+                        _showProgress.value = Event(true)
+                    }
                 }
+            }
+        } else {
+            val data = HashMap<String, String>()
+            data["passcode"] = passcode
+            data["terminal_id"] = prefProvider.getValueInt(TERMINAL_ID, -1).toString()
 
-                Status.ERROR -> {
-                    _snackbarText.value = Event(resource.message)
-                    _showProgress.value = Event(false)
-                }
+            viewModelScope.launch {
+                val resource = userRepository.employeeClockIn(data)
+                when (resource.status) {
+                    Status.SUCCESS -> {
+                        _showProgress.value = Event(false)
 
-                Status.LOADING -> {
-                    _showProgress.value = Event(true)
+                        resource.data.let {
+                            if (it?.status == 200) {
+                                resource.data?.let {
+
+                                    prefProvider.setValue(PASSCODE, passcode)
+                                    employeeLogin(data)
+
+                                }
+                            } else {
+                                _snackbarText.value = Event(resource.message)
+                            }
+
+                        }
+
+
+                    }
+
+                    Status.ERROR -> {
+                        _snackbarText.value = Event(resource.message)
+                        _showProgress.value = Event(false)
+                    }
+
+                    Status.LOADING -> {
+                        _showProgress.value = Event(true)
+                    }
                 }
             }
         }
+
     }
 
     private suspend fun employeeLogin(clockinData: HashMap<String, String>) {
