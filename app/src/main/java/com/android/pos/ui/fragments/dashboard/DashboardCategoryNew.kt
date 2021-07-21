@@ -47,6 +47,7 @@ class DashboardCategoryNew : Fragment() {
     ): View? {
         binding = FragmentDashboardCategoryNewBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
+        binding.footer.viewModel = viewModel
         return binding.root
     }
 

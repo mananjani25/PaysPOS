@@ -12,4 +12,8 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     val venueData = posRepository.syncVenueData()
 
+    fun submit() {
+
+    }
+
 }
