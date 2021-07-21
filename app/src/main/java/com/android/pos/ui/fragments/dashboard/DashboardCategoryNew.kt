@@ -58,6 +58,7 @@ class DashboardCategoryNew : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        prefProvider.setValueboolean(IS_CLOCKOUT, false)
         binding = FragmentDashboardCategoryNewBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
 

@@ -36,7 +36,9 @@
         <action
             android:id="@+id/action_clockInOwner_to_dashboardCategory"
             app:destination="@id/dashboardCategoryNew"
-            app:enterAnim="@anim/nav_default_enter_anim" />
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:popUpTo="@id/clockInOwner"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_clockInOwner_to_scheduledShifts"
             app:destination="@id/scheduledShifts"
@@ -50,7 +52,9 @@
         <action
             android:id="@+id/action_scheduledShifts_to_passcode"
             app:destination="@id/passcode"
-            app:enterAnim="@anim/nav_default_enter_anim" />
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:popUpTo="@id/scheduledShifts"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/passcode"
@@ -60,7 +64,9 @@
         <action
             android:id="@+id/action_passcode_to_clockInOwner"
             app:destination="@id/clockInOwner"
-            app:enterAnim="@anim/nav_default_enter_anim" />
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:popUpTo="@id/passcode"
+            app:popUpToInclusive="true" />
         <argument
             android:name="isDashboard"
             android:defaultValue="false"
