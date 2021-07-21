@@ -64,7 +64,7 @@ class CreateTipsViewModel @Inject constructor(
         } else if (TextUtils.isEmpty(
                 value?.rate?.toString()?.trim()
             )
-            && value?.rate == 0.0
+            || value?.rate == 0.0
         ) {
             _snackbarText.value = Event(R.string.tip_rate_validate)
         } else {

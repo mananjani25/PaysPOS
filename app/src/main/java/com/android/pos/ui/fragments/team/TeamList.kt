@@ -44,7 +44,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
         configureToolbar()
         //  observeShowProgress()
         loadTeamDetails(null)
-        loadTeams()
+
         deleteEmployee()
 
         return binding.root
@@ -101,6 +101,10 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
 
     }
 
+    override fun onResume() {
+        super.onResume()
+        loadTeams()
+    }
     private fun loadTeams() {
 
         viewModel.employeeData.observe(viewLifecycleOwner, {

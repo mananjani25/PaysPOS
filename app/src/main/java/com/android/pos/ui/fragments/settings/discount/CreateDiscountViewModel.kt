@@ -69,7 +69,7 @@ class CreateDiscountViewModel @Inject constructor(
         } else if (TextUtils.isEmpty(
                 value?.percentage?.toString()?.trim()
             )
-            && value?.percentage == 0.0
+            || value?.percentage == 0.0
         ) {
             _snackbarText.value = Event(R.string.discount_rate_validate)
         } else {

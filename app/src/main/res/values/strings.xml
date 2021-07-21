@@ -68,6 +68,9 @@
     <string name="discount_name_validate">Please enter Discount Name</string>
     <string name="discount_rate_validate">Please enter valid Discount Rate</string>
 
+    <string name="sercharge_name_validate">Please enter Service Charge Name</string>
+    <string name="sercharge_rate_validate">Please enter valid Service Charge Rate</string>
+
 
 
     <string name="delete_tax_message">Are you sure want to Delete Tax?</string>

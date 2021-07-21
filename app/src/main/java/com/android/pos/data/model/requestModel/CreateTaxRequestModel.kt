@@ -7,11 +7,11 @@ data class CreateTaxRequestModel(
     @SerializedName("id")
     var id: Int? = null,
     @SerializedName("location_id")
-    var locationId: Int=-1,
+    var locationId: Int = -1,
     @SerializedName("name")
-    var name: String="",
+    var name: String = "",
     @SerializedName("rate")
-    var rate: Double=0.0,
+    var rate: Double = 0.0,
     @SerializedName("tax_type")
-    var taxType: String=""
+    var taxType: String = ""
 )
