@@ -15,9 +15,26 @@
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/background_tab_vertical">
+        android:layout_width="@dimen/_110sdp"
+        android:layout_height="wrap_content">
+
+        <View
+            android:id="@+id/viewStart"
+            android:layout_width="1dp"
+            android:layout_height="0dp"
+            android:background="@color/dividerColor"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/viewTop"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:background="@color/dividerColor"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
 
         <TextView
@@ -27,14 +44,35 @@
             android:layout_gravity="center"
             android:layout_weight="1.9"
             android:gravity="center"
+            android:lines="1"
+            android:maxLength="15"
+            android:maxLines="1"
             android:padding="@dimen/_7sdp"
             android:text="@{model.title}"
             android:textColor="@{model.isSelected ? @color/txtColor : @color/drawerItemUnselected}"
             android:textSize="@dimen/_6mdpi"
+            app:layout_constraintBottom_toTopOf="@+id/viewBottom"
             app:layout_constraintEnd_toStartOf="@+id/viewLine"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintStart_toEndOf="@+id/viewStart"
+            app:layout_constraintTop_toBottomOf="@+id/viewTop" />
 
+        <View
+            android:id="@+id/viewBottom"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:background="@color/dividerColor"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <View
+            android:id="@+id/viewEnd"
+            android:layout_width="1dp"
+            android:layout_height="0dp"
+            android:visibility="@{model.isSelected ? View.INVISIBLE : View.VISIBLE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <View
             android:id="@+id/viewLine"

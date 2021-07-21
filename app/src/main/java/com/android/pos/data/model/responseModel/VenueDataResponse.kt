@@ -74,7 +74,7 @@ data class VenueDataResponse(
 
             } else {
                 Glide.with(view.getContext())
-                    .load(imageUrl).apply(RequestOptions().centerCrop())
+                    .load(imageUrl).centerCrop()
                     .into(view)
             }
         }

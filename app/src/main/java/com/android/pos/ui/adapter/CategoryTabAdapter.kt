@@ -2,6 +2,7 @@ package com.android.pos.ui.adapter
 
 import android.content.Context
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
@@ -22,6 +23,13 @@ class CategoryTabAdapter(
         fun bind(item: CategoryTabModel) {
             binding.model = item
             binding.executePendingBindings()
+            if (layoutPosition == 0){
+                binding.viewTop.visibility = View.VISIBLE
+            }
+            else{
+                binding.viewTop.visibility = View.GONE
+            }
+
         }
 
         init {
@@ -37,6 +45,8 @@ class CategoryTabAdapter(
 
                 notifyDataSetChanged()
             }
+
+
         }
 
     }
@@ -96,6 +106,7 @@ class CategoryTabAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
         if (getItemViewType(position) == 0) {
+
             (holder as MyTabVerticalHolder).bind(list[position])
         } else {
             (holder as MyViewHolder).bind(list[position])

@@ -35,6 +35,8 @@ class CategoryItemAdapter(
                 listner.onClickedCreateItem()
             }
 
+
+
         }
     }
 
