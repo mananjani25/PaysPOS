@@ -97,8 +97,6 @@ class CreateTeamViewModel @Inject constructor(
                     posRepository.createEmployee(createEmployeeData)
                 }
 
-                resource = posRepository.createEmployee(createEmployeeData)
-
 
                 when (resource.status) {
                     Status.SUCCESS -> {
