@@ -21,7 +21,7 @@
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvMessage"
-        style="@style/CustomFontRegularStyle"
+        style="@style/CustomFontMediumStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_5sdp"

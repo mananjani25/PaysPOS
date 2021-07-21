@@ -39,6 +39,14 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_team_list, container, false)
         binding.lifecycleOwner = this
+
+        setupStickyLayout()
+        configureToolbar()
+        //  observeShowProgress()
+        loadTeamDetails(null)
+        loadTeams()
+        deleteEmployee()
+
         return binding.root
     }
 
@@ -46,12 +54,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
         super.onViewCreated(view, savedInstanceState)
 
 
-        setupStickyLayout()
-        configureToolbar()
-      //  observeShowProgress()
-        loadTeamDetails(null)
-        loadTeams()
-        deleteEmployee()
+
 
         binding.layoutTool.imgOptionMenu.setOnClickListener {
 

@@ -4,6 +4,7 @@ package com.android.pos.data.model.responseModel
 import android.graphics.drawable.Drawable
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
+import com.android.pos.R
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
@@ -67,14 +68,14 @@ data class VenueDataResponse(
         @BindingAdapter("profileImage")
         @JvmStatic
         fun loadImage(view: ImageView, imageUrl: String?) {
-            if (imageUrl.isNullOrBlank() || imageUrl.trim()
-                    .equals("") || imageUrl.isNullOrEmpty()
+            if (imageUrl.isNullOrBlank() || imageUrl.trim() == "" || imageUrl.isNullOrEmpty()
             ) {
                 return
 
             } else {
-                Glide.with(view.getContext())
+                Glide.with(view.context)
                     .load(imageUrl).centerCrop()
+                    .placeholder(android.R.drawable.screen_background_dark_transparent)
                     .into(view)
             }
         }
