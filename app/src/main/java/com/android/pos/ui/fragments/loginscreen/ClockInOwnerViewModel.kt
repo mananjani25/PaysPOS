@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.android.pos.data.remote.Constants.IS_CLOCKOUT
 import com.android.pos.data.remote.Constants.PASSCODE
 import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.data.repositories.PosRepository
@@ -32,12 +33,11 @@ class ClockInOwnerViewModel @Inject constructor(
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
     fun submit() {
-
         _showProgress.value = Event(true)
 
         val data = HashMap<String, String>()
         data["passcode"] = prefProvider.getValue(PASSCODE, "").toString()
-        data["terminal_id"] = prefProvider.getValue(TERMINAL_ID, "").toString()
+        data["terminal_id"] = prefProvider.getValueInt(TERMINAL_ID, -1).toString()
 
         viewModelScope.launch {
             val resource = userRepository.employeeClockOut(data)
@@ -48,7 +48,9 @@ class ClockInOwnerViewModel @Inject constructor(
                     resource.data.let {
                         if (it?.status == 200) {
                             resource.data?.let {
+                                prefProvider.setValueboolean(IS_CLOCKOUT, true)
                                 _data.value = Event(true)
+
                             }
                         } else {
                             _snackbarText.value = Event(resource.message)

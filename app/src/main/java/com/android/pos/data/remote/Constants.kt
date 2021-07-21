@@ -12,6 +12,7 @@ object Constants {
     const val PASSCODE = "passcode"
     const val LOCATION_ID = "locationId"
     const val EMAIL = "email"
+    const val IS_CLOCKOUT = "isClockout"
 
 
     //Api End Points

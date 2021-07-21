@@ -30,6 +30,7 @@ import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.CategoryItemAdapter
 import com.android.pos.ui.adapter.CategoryTabAdapter
 import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.statusUtils.Status
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
@@ -55,6 +56,22 @@ class DashboardCategoryNew : Fragment() {
     ): View? {
         binding = FragmentDashboardCategoryNewBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
+
+        binding.footer.imgClock.setOnClickListener {
+            alert(
+                getString(R.string.app_name),
+                getString(R.string.clockout_message)
+            ) {
+                positiveButton(getString(android.R.string.ok)) {
+                    val bundle = Bundle()
+                    bundle.putBoolean("isDashboard", true)
+                    findNavController().navigate(R.id.action_dashboardCategoryNew_to_passcode,bundle)
+                }
+                negativeButton(R.string.tv_cancel) {
+                    // Do negative stuff here
+                }
+            }
+        }
         return binding.root
     }
 

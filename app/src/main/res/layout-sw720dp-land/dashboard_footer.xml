@@ -3,7 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingDefaultResource">
+    <data>
 
+        <variable
+            name="viewModel"
+            type="com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel" />
+    </data>
     <RelativeLayout
         android:id="@+id/relParent"
         android:layout_width="match_parent"

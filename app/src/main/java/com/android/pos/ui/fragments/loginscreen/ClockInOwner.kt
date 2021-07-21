@@ -45,6 +45,7 @@ class ClockInOwner : Fragment() {
         viewModel.showProgress.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
+
                     ProgressUtils.showProgressDialog(requireActivity())
                 } else {
                     ProgressUtils.dismissProgressDialog()

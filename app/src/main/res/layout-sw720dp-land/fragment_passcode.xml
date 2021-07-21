@@ -47,7 +47,7 @@
                     android:layout_gravity="center"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:text="@string/tv_clock_in_out"
+                    android:text="@string/tv_clock_in"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_8mdpi" />
 
@@ -73,9 +73,9 @@
 
             <in.arjsna.passcodeview.PassCodeView
                 android:id="@+id/passCodeView"
-                android:layout_gravity="center"
                 android:layout_width="@dimen/_250sdp"
                 android:layout_height="match_parent"
+                android:layout_gravity="center"
                 android:padding="@dimen/_25sdp"
                 app:digit_size="@dimen/_10sdp"
                 app:digits="4"
