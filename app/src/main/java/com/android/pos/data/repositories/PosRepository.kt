@@ -1,6 +1,7 @@
 package com.android.pos.data.repositories
 
 
+import androidx.lifecycle.LiveData
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.db.IDataManager
 import com.android.pos.data.entities.TbCategory
@@ -9,7 +10,9 @@ import com.android.pos.data.model.requestModel.CreateEmployeeRequestModel
 import com.android.pos.data.model.requestModel.CreateNoteRequest
 import com.android.pos.data.remote.ApiHelper
 import com.android.pos.utils.performGetOperation
+import com.android.pos.utils.performGetOperationDatabase
 import com.android.pos.utils.performGetOperationNew
+import com.android.pos.utils.statusUtils.Resource
 import javax.inject.Inject
 
 
@@ -87,6 +90,13 @@ class PosRepository @Inject constructor(
     override suspend fun abs() {
 
         appDatabase.characterDao().getCharacter(0)
+    }
+
+//   fun getCategoryList() =
+//        performGetOperationDatabase(databaseQuery = { appDatabase.categoryDao().all()!! })
+
+    override fun categoryList(): LiveData<Resource<List<TbCategory>>> {
+        return performGetOperationDatabase(databaseQuery = { appDatabase.categoryDao().all()!! })
     }
 }
 

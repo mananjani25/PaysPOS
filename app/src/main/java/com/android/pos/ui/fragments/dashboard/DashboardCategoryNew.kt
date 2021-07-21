@@ -230,7 +230,7 @@ class DashboardCategoryNew : Fragment() {
 
     private fun setVenueData() {
 
-//
+
 //        viewModel.venueDataLocal.observe(viewLifecycleOwner,
 //            {
 //                when (it.status) {

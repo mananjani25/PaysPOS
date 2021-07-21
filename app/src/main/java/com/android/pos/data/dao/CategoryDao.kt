@@ -18,8 +18,8 @@ interface CategoryDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addAll(categoryModel: List<TbCategory>)
 
-    @get:Query("select * from TbCategory where TbCategory.isHide = 0 ORDER BY TbCategory.sort ASC")
-    val all: LiveData<List<TbCategory?>>?
+    @Query("select * from TbCategory")
+    fun all(): LiveData<List<TbCategory>>?
 
     @get:Query("select * from TbCategory where TbCategory.isHide = 1 ORDER BY TbCategory.sort ASC")
     val allHideCategory: LiveData<List<TbCategory?>>?
