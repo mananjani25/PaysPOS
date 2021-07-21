@@ -50,4 +50,7 @@ object Constants {
 
     const val KEY = "key"
 
+    const val VERTICAL = "vertical"
+    const val HORIZONTAL = "horizontal"
+
 }

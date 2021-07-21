@@ -28,7 +28,7 @@
             android:background="#969AA3"
             android:gravity="center"
             android:maxLength="2"
-            android:paddingVertical="@dimen/_10sdp"
+            android:paddingVertical="@dimen/_14sdp"
             android:paddingStart="@dimen/_15sdp"
             android:paddingEnd="@dimen/_15sdp"
             android:text="@{viewModel.name}"
