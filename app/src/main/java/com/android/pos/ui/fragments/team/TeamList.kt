@@ -66,9 +66,9 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
         viewModel.data.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
 
-                AlertUtils.showAlert(requireActivity(), it.message)
+                AlertUtils.showCustomAlert(requireActivity(), it.message)
 
-                adapter.removeItem(empObject)
+                adapter.removeItem(empObject,requireActivity())
 
 
             }
@@ -107,7 +107,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
                         ProgressUtils.dismissProgressDialog()
 
                         if (it.data != null && it.data.data.employees.isNotEmpty())
-                            adapter.setPeople(it.data.data.employees as MutableList<EmployeeListResponse.Data.Employee>)
+                            adapter.setPeople(it.data.data.employees as MutableList<EmployeeListResponse.Data.Employee>,requireActivity())
                     }
                     Status.ERROR -> {
                         ProgressUtils.dismissProgressDialog()

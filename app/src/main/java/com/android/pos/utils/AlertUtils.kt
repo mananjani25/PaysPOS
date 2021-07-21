@@ -10,8 +10,11 @@ import android.net.Uri
 import android.os.Build
 import android.telephony.PhoneNumberUtils
 import android.util.TypedValue
+import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import com.android.pos.R
@@ -397,5 +400,30 @@ object AlertUtils {
         } else {
             PhoneNumberUtils.formatNumber(phone);
         }
+    }
+
+    fun showCustomAlert(
+        context: Context,
+        message: String?
+    ) {
+        val dialogView = LayoutInflater.from(context).inflate(R.layout.view_custom_dialog, null)
+        val customDialog = AlertDialog.Builder(context)
+            .setView(dialogView)
+            .show()
+        val tvTitle = dialogView.findViewById<AppCompatTextView>(R.id.tvTitle)
+        val tvSubTitle = dialogView.findViewById<AppCompatTextView>(R.id.tvMessage)
+
+        tvTitle.text = context.getString(R.string.app_name)
+        tvSubTitle.text = message
+
+        val btSave = dialogView.findViewById<AppCompatTextView>(R.id.tvSave)
+        btSave.text = context.getString(android.R.string.ok)
+        btSave.setBackgroundColor(ContextCompat.getColor(context, R.color.btnColorDark))
+        btSave.setOnClickListener {
+            customDialog.dismiss()
+        }
+        val btDismiss = dialogView.findViewById<AppCompatTextView>(R.id.tvCancel)
+        btDismiss.visibility = View.GONE
+
     }
 }
