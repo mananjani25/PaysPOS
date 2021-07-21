@@ -273,4 +273,7 @@
     <string name="first_name_validate">Please Enter First Name</string>
     <string name="last_name_validate">Please Enter Last Name</string>
     <string name="tv_delete">Delete</string>
+    <string name="symbole">$</string>
+    <string name="format">%.2f</string>
+
 </resources>

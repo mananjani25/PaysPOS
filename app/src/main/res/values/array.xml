@@ -22,7 +22,7 @@
     </integer-array>
 
     <integer-array name="rightDrawables">
-        <item>@drawable/ic_search</item>
+        <item>@drawable/ic_add</item>
         <!--        <item>@drawable/ic_search</item>-->
     </integer-array>
 

@@ -5,15 +5,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
-import com.android.pos.data.model.AllItemModel
+import com.android.pos.data.entities.TbItem
 import com.android.pos.databinding.FragmentItemsBinding
 import com.android.pos.ui.adapter.ItemListAdapter
+import com.android.pos.utils.statusUtils.Status
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class AllItems : Fragment() {
-    private lateinit var binding: FragmentItemsBinding
 
+    private lateinit var adapter: ItemListAdapter
+    private lateinit var binding: FragmentItemsBinding
+    private val viewModel by viewModels<ItemsViewModel>()
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -28,6 +34,7 @@ class AllItems : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setAdapter()
         onClick()
+        categoriesObserver()
     }
 
     private fun onClick() {
@@ -37,13 +44,35 @@ class AllItems : Fragment() {
 
     }
 
+    private fun categoriesObserver() {
+
+        viewModel.items.observe(viewLifecycleOwner, {
+
+            it?.let { resource ->
+                when (resource.status) {
+                    Status.SUCCESS -> {
+                        binding.rvAllItemList.visibility = View.VISIBLE
+                        binding.progressCircular.visibility = View.GONE
+                        it.data?.let { it1 -> adapter.add(it1 as List<TbItem>) }
+                    }
+                    Status.ERROR -> {
+                        binding.rvAllItemList.visibility = View.GONE
+                        binding.progressCircular.visibility = View.GONE
+                    }
+                    Status.LOADING -> {
+                        binding.rvAllItemList.visibility = View.GONE
+                        binding.progressCircular.visibility = View.VISIBLE
+                    }
+                }
+            }
+
+
+        })
+    }
+
 
     private fun setAdapter() {
-        var list: ArrayList<AllItemModel> = arrayListOf()
-        list.add(AllItemModel(0, "Chicken", "Variable", ""))
-        list.add(AllItemModel(0, "Chicken Biriyani", "Variable", ""))
-        list.add(AllItemModel(0, "Chicken Handi", "$10.12", ""))
-        list.add(AllItemModel(0, "Butter Chicken", "$15.10", ""))
-        binding.rvAllItemList.adapter = ItemListAdapter(requireContext(), list)
+        adapter = ItemListAdapter()
+        binding.rvAllItemList.adapter = adapter
     }
 }

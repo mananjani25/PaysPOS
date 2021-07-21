@@ -16,11 +16,11 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class CategoriesViewModel @Inject constructor(
+class ItemsViewModel @Inject constructor(
     private val posRepository: PosRepository,
 ) : ViewModel() {
 
-    val categories = posRepository.getCategoryList()
+    val items = posRepository.getItemsList()
 
 
 }

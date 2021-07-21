@@ -15,7 +15,7 @@ interface DBItemDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addAllItem(elementsBeanList: List<TbItem>)
 
-    @get:Query("select * from TbItem where TbItem.isHide = 0 ORDER BY TbItem.sort ASC")
+    @get:Query("select * from TbItem")
     val allItem: LiveData<List<TbItem?>>?
 
     @Query("select * from TbItem where TbItem.categoryId  = :id AND TbItem.isHide = 0 ORDER BY TbItem.sort ASC")

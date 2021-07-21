@@ -8,6 +8,7 @@
     <dimen name="_8mdpi">@dimen/_8ssp</dimen>
     <dimen name="_10mdpi">@dimen/_10ssp</dimen>
     <dimen name="_12mdpi">@dimen/_12ssp</dimen>
+    <dimen name="_5mdpi">@dimen/_5ssp</dimen>
 
 
     <dimen name="full_swipe_edge_padding">90dp</dimen>

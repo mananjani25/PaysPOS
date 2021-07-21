@@ -92,11 +92,11 @@ class PosRepository @Inject constructor(
         appDatabase.characterDao().getCharacter(0)
     }
 
-//   fun getCategoryList() =
-//        performGetOperationDatabase(databaseQuery = { appDatabase.categoryDao().all()!! })
+    fun getCategoryList() =
+        performGetOperationDatabase(databaseQuery = { appDatabase.categoryDao().all() })
 
-    override fun categoryList(): LiveData<Resource<List<TbCategory>>> {
-        return performGetOperationDatabase(databaseQuery = { appDatabase.categoryDao().all()!! })
-    }
+
+    fun getItemsList() =
+        performGetOperationDatabase(databaseQuery = { appDatabase.itemDao().allItem!! })
 }
 

@@ -11,6 +11,7 @@ import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.databinding.FragmentCategoriesBinding
 import com.android.pos.ui.adapter.CategoriesListAdapter
+import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -42,22 +43,38 @@ class Categories : Fragment() {
 
         viewModel.categories.observe(viewLifecycleOwner, {
 
-            it.data?.let { it1 -> adapter.add(it1) }
+            it?.let { resource ->
+                when (resource.status) {
+                    Status.SUCCESS -> {
+                        binding.rvCategoriesList.visibility = View.VISIBLE
+                        binding.progressCircular.visibility = View.GONE
+                        it.data?.let { it1 -> adapter.add(it1) }
+                    }
+                    Status.ERROR -> {
+                        binding.rvCategoriesList.visibility = View.GONE
+                        binding.progressCircular.visibility = View.GONE
+                    }
+                    Status.LOADING -> {
+                        binding.rvCategoriesList.visibility = View.GONE
+                        binding.progressCircular.visibility = View.VISIBLE
+                    }
+                }
+            }
+
 
         })
     }
 
     private fun onClick() {
         binding.txtCreateCategory.setOnClickListener {
-            // setFragmentResultListener()
             findNavController().navigate(R.id.action_inventory_to_createCategory)
         }
     }
 
     private fun setAdapter() {
 
-        adapter = CategoriesListAdapter(requireContext(), arrayListOf())
-        binding.rvCategoriesList.adapter
+        adapter = CategoriesListAdapter()
+        binding.rvCategoriesList.adapter = adapter
 
     }
 }

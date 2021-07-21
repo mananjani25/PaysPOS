@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.android.pos.data.entities.CategoryWithInventory
 import com.android.pos.data.entities.TbCategory
+import com.android.pos.utils.statusUtils.Resource
 
 
 /**
@@ -19,7 +20,7 @@ interface CategoryDao {
     fun addAll(categoryModel: List<TbCategory>)
 
     @Query("select * from TbCategory")
-    fun all(): LiveData<List<TbCategory>>?
+    fun all(): LiveData<List<TbCategory>>
 
     @get:Query("select * from TbCategory where TbCategory.isHide = 1 ORDER BY TbCategory.sort ASC")
     val allHideCategory: LiveData<List<TbCategory?>>?
