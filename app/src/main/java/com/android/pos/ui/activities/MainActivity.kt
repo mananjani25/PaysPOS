@@ -30,6 +30,8 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.ui.fragments.loginscreen.LoginViewModel
 import com.android.pos.utils.Event
 import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.extensions.AlertDialogHelper
+import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -136,7 +138,9 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 R.id.menuLogout -> {
-                    logoutAPI()
+
+                    alertLogout()
+                    //logoutAPI()
 
                     return@setNavigationItemSelectedListener true
 
@@ -155,6 +159,24 @@ class MainActivity : AppCompatActivity() {
 //             ResourcesCompat.getFont(this, R.font.sf_pro_display_regular)
 //         passCodeView.setTypeFace(typeface)
     }
+
+    private fun alertLogout() {
+        alert("Logout","Are You Sure.Want to Logout?",{
+            this.positiveButton("Logout",{
+                logoutAPI()
+
+            })
+
+            this.negativeButton("Cancel",{
+
+
+            })
+
+        })
+    }
+
+
+
 
     private fun logout() {
         prefProvider.setValue(Constants.AUTH_TOKEN, "")

@@ -6,18 +6,22 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.core.content.res.ResourcesCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.android.pos.MainApplication
 import com.android.pos.R
 import com.android.pos.databinding.FragmentPasscodeBinding
+import com.android.pos.ui.activities.MainActivity
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+
 
 @AndroidEntryPoint
 class Passcode : Fragment() {
@@ -25,6 +29,7 @@ class Passcode : Fragment() {
     private lateinit var binding: FragmentPasscodeBinding
     private val viewModel by viewModels<PasscodeViewModel>()
     var isDashboard: Boolean = false
+    var isClockOut: Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -32,6 +37,19 @@ class Passcode : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
+        val callback: OnBackPressedCallback =
+            object : OnBackPressedCallback(true /* enabled by default */) {
+                override fun handleOnBackPressed() {
+                    if (isClockOut) {
+                        (requireActivity() as MainActivity).finish()
+
+                    } else {
+                        findNavController().navigateUp()
+
+                    }
+                }
+            }
+        requireActivity().onBackPressedDispatcher.addCallback(this, callback)
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_passcode, container, false)
         binding.lifecycleOwner = this
         binding.passcodeViewModel = viewModel
@@ -88,6 +106,7 @@ class Passcode : Fragment() {
             event.getContentIfNotHandled()?.let {
                 if (isDashboard) {
                     isDashboard = false
+                    isClockOut = true
                     viewModel.isDashboardData(isDashboard)
                     binding.passCodeView.setPassCode("")
                     binding.tvWelcomeTag.text = getString(R.string.tv_clock_in)

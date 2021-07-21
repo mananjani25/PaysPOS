@@ -23,9 +23,11 @@ import com.android.pos.R
 import com.android.pos.data.model.CategoryTabModel
 import com.android.pos.data.model.responseModel.VenueDataResponse
 import com.android.pos.data.remote.Constants.HORIZONTAL
+import com.android.pos.data.remote.Constants.IS_CLOCKOUT
 import com.android.pos.data.remote.Constants.VERTICAL
 import com.android.pos.databinding.FragmentDashboardCategoryNewBinding
 import com.android.pos.databinding.PopupDashboardBinding
+import com.android.pos.di.PrefProvider
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.CategoryItemAdapter
 import com.android.pos.ui.adapter.CategoryTabAdapter
@@ -34,6 +36,7 @@ import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.statusUtils.Status
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class DashboardCategoryNew : Fragment() {
@@ -45,6 +48,9 @@ class DashboardCategoryNew : Fragment() {
     private var itemList: ArrayList<VenueDataResponse.Data.Category.Item> = arrayListOf()
     private var categoryTabsList: ArrayList<String> = arrayListOf()
     private var tabList: ArrayList<CategoryTabModel> = arrayListOf()
+
+    @Inject
+    lateinit var prefProvider: PrefProvider
     override fun onAttach(context: Context) {
         super.onAttach(context)
     }
@@ -54,6 +60,7 @@ class DashboardCategoryNew : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        prefProvider.setValueboolean(IS_CLOCKOUT, false)
         binding = FragmentDashboardCategoryNewBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
 
