@@ -3,12 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingDefaultResource">
+
     <data>
 
         <variable
             name="viewModel"
             type="com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel" />
     </data>
+
     <RelativeLayout
         android:id="@+id/relParent"
         android:layout_width="match_parent"
@@ -41,12 +43,14 @@
                 android:orientation="horizontal">
 
                 <ImageView
+                    android:id="@+id/imgCalculator"
                     android:layout_width="@dimen/_10sdp"
                     android:layout_height="@dimen/_10sdp"
                     android:src="@drawable/calculator"
                     app:tint="@color/txt_color_blue" />
 
                 <TextView
+                    android:id="@+id/txtCheckOut"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/_3sdp"
@@ -105,6 +109,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/linearMore"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -113,12 +118,14 @@
                 android:orientation="horizontal">
 
                 <ImageView
+                    android:id="@+id/imgMore"
                     android:layout_width="@dimen/_10sdp"
                     android:layout_height="@dimen/_10sdp"
                     android:src="@drawable/menu"
                     app:tint="@color/txtColor" />
 
                 <TextView
+                    android:id="@+id/txtMore"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/_3sdp"

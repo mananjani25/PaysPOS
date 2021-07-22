@@ -300,6 +300,10 @@
             android:id="@+id/action_dashboardCategoryNew_to_passcode"
             app:destination="@id/passcode"
             app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_dashboardCategoryNew_to_menuPOS"
+            app:destination="@id/menuPOS"
+            app:enterAnim="@anim/nav_default_enter_anim" />
 
     </fragment>
     <action
@@ -313,6 +317,15 @@
         android:name="com.android.pos.ui.fragments.inventory.Modifiers"
         android:label="Modifiers"
         tools:layout="@layout/fragment_modifiers" />
+    <fragment
+        android:id="@+id/baseFragment"
+        android:name="com.android.pos.ui.fragments.BaseFragment"
+        android:label="BaseFragment" />
+    <fragment
+        android:id="@+id/menuPOS"
+        android:name="com.android.pos.ui.fragments.posmenu.MenuPOS"
+        android:label="MenuPOS"
+        tools:layout="@layout/menu_pos" />
 
 
 </navigation>

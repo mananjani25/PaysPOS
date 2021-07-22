@@ -5,7 +5,7 @@
     <string name="tv_hint_email">Email Address</string>
     <string name="tv_hint_password">Password</string>
     <string name="tv_login">Login</string>
-    <string name="tv_info_provider">If you forgot password, please contact your sales provider</string>
+    <string name="tv_info_provider">If you forgot password, please <font color='#00A3E0'>contact</font> your sales provider</string>
     <string name="tv_pos_2021">&#169; POS 2021</string>
     <string name="save">Save</string>
     <string name="add_category_name">Add Category Name</string>
@@ -70,7 +70,6 @@
 
     <string name="sercharge_name_validate">Please enter Service Charge Name</string>
     <string name="sercharge_rate_validate">Please enter valid Service Charge Rate</string>
-
 
 
     <string name="delete_tax_message">Are you sure want to Delete Tax?</string>
@@ -283,4 +282,8 @@
     <string name="horizontal">Horizontal</string>
     <string name="vertical">Vertical</string>
     <string name="tv_clock_out">Clock Out</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="business_name">Business Name</string>
+    <string name="welcome_back">Welcome back</string>
+    <string name="forgot_password">Forgot Password?</string>
 </resources>
