@@ -11,7 +11,7 @@ import com.android.pos.data.remote.Constants.VERTICAL
 import com.android.pos.databinding.ViewDashboardTabItemBinding
 import com.android.pos.databinding.ViewTabVerticalBinding
 
-class CategoryTabAdapter(
+class CategoryTabAdapter1(
     val context: Context,
     var list: ArrayList<CategoryTabModel>,
     val listner: TabListner
@@ -23,10 +23,9 @@ class CategoryTabAdapter(
         fun bind(item: CategoryTabModel) {
             binding.model = item
             binding.executePendingBindings()
-            if (layoutPosition == 0){
+            if (layoutPosition == 0) {
                 binding.viewTop.visibility = View.VISIBLE
-            }
-            else{
+            } else {
                 binding.viewTop.visibility = View.GONE
             }
 
