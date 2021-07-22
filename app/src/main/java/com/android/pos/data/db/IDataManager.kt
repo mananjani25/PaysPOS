@@ -8,5 +8,5 @@ import com.android.pos.utils.statusUtils.Resource
 interface IDataManager {
 
     suspend fun abs()
-//    fun categoryList(): LiveData<Resource<List<TbCategory>>>
+
 }

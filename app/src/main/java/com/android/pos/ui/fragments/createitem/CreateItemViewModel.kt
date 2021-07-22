@@ -6,10 +6,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.R
+import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.requestModel.CreateItemRequestModel
+import com.android.pos.data.model.responseModel.BaseResponse
+import com.android.pos.data.model.responseModel.CreateDiscountResponse
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.UserRepository
 import com.android.pos.utils.Event
+import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -17,11 +21,14 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CreateItemViewModel @Inject constructor(
-    private val userRepository: UserRepository
+    private val posRepository: PosRepository
 ) :
     ViewModel() {
 
-    val itemDetails = MutableLiveData(CreateItemRequestModel())
+    private var itemId: Int? = null
+    private var isEdit: Boolean = false
+    var itemDetails = MutableLiveData(CreateItemRequestModel())
+    private lateinit var itemData: CreateItemRequestModel
 
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
@@ -29,27 +36,56 @@ class CreateItemViewModel @Inject constructor(
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
-    fun submit() {
+    fun setData(itemObject: TbItem) {
+        isEdit = true
+        itemId = itemObject.itemId
+        itemDetails.value?.itemName = itemObject.name
+        itemDetails.value?.price = itemObject.price
+        itemDetails.value?.sku = ""
+        itemDetails.value?.description = itemObject.shortDescription
+    }
 
-        if (TextUtils.isEmpty(itemDetails.value?.itemName?.trim())) {
+    fun submit() {
+        val value = itemDetails.value
+        if (TextUtils.isEmpty(value?.itemName?.trim())) {
             _snackbarText.value = Event(R.string.item_name_validate)
         } else if (TextUtils.isEmpty(
-                itemDetails.value?.price?.toString()?.trim()
+                value?.price?.toString()?.trim()
             )
-            && itemDetails.value?.price == 0.0
+            && value?.price == 0.0
         ) {
             _snackbarText.value = Event(R.string.item_price_validate)
-        } else if (TextUtils.isEmpty(itemDetails.value?.sku?.trim())) {
+        } else if (TextUtils.isEmpty(value?.sku?.trim())) {
             _snackbarText.value = Event(R.string.item_sku_validate)
         } else {
             _showProgress.value = Event(true)
 
-            val data = HashMap<String, String>()
-            /* data["email"] = loginDetails.value?.emailAddress.toString()
-             data["password"] = loginDetails.value?.password.toString()*/
+
+            if (isEdit) {
+                itemData = CreateItemRequestModel().apply {
+                    id = itemId
+                    itemName = value!!.itemName
+                    price = value.price
+                    sku = ""
+                    description = value.description
+                }
+
+            } else {
+                itemData = CreateItemRequestModel().apply {
+                    itemName = value!!.itemName
+                    price = value.price
+                    sku = ""
+                    description = value.description
+
+                }
+            }
 
             viewModelScope.launch {
-                val resource = userRepository.userLogIn(data)
+                val resource: Resource<BaseResponse> = if (isEdit) {
+                    posRepository.updateItem(itemId!!, itemData)
+                } else {
+                    posRepository.createItem(itemData)
+                }
                 when (resource.status) {
                     Status.SUCCESS -> {
                         _showProgress.value = Event(false)
@@ -80,5 +116,6 @@ class CreateItemViewModel @Inject constructor(
         }
 
     }
+
 
 }

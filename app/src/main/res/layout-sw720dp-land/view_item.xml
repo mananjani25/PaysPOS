@@ -11,59 +11,67 @@
             type="com.android.pos.data.entities.TbItem" />
     </data>
 
-    <androidx.appcompat.widget.LinearLayoutCompat
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:background="?attr/selectableItemBackground">
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/view" />
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/view" />
 
-            <androidx.appcompat.widget.AppCompatImageView
-                android:layout_width="@dimen/_20sdp"
-                profileImage="@{model.imageUrl != null ? model.imageUrl : null}"
-                android:layout_height="@dimen/_20sdp"
-                android:layout_gravity="center"
-                android:scaleType="centerCrop"
-                app:srcCompat="@android:drawable/screen_background_dark_transparent" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                style="@style/CustomFontSemiBold"
-                android:layout_width="0dp"
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_weight="1"
-                android:gravity="start"
-                android:padding="@dimen/_5sdp"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_6mdpi"
-                tools:text="@{model.name}" />
+                android:orientation="horizontal">
 
-            <androidx.appcompat.widget.AppCompatTextView
-                style="@style/CustomFontSemiBold"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/_5sdp"
-                android:layout_marginEnd="@dimen/_10sdp"
-                android:alpha="0.5"
-                android:text="@{@string/symbole +``+String.format(@string/format,model.price)}"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_6sdp" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    profileImage="@{model.imageUrl != null ? model.imageUrl : null}"
+                    android:layout_width="@dimen/_20sdp"
+                    android:layout_height="@dimen/_20sdp"
+                    android:layout_gravity="center"
+                    android:scaleType="centerCrop"
+                    app:srcCompat="@android:drawable/screen_background_dark_transparent" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:gravity="start"
+                    android:padding="@dimen/_5sdp"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_6mdpi"
+                    tools:text="@{model.name}" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:layout_marginEnd="@dimen/_10sdp"
+                    android:alpha="0.5"
+                    android:text="@{@string/symbole +``+String.format(@string/format,model.price)}"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_6sdp" />
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.3dp"
+                android:background="@color/view" />
+
         </androidx.appcompat.widget.LinearLayoutCompat>
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.3dp"
-            android:background="@color/view" />
-
-    </androidx.appcompat.widget.LinearLayoutCompat>
+    </FrameLayout>
 </layout>

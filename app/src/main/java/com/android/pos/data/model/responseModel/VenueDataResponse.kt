@@ -75,7 +75,7 @@ data class VenueDataResponse(
             } else {
                 Glide.with(view.context)
                     .load(imageUrl).centerCrop()
-                    .placeholder(android.R.drawable.screen_background_dark_transparent)
+                    .placeholder(R.drawable.ic_item_placeholder)
                     .into(view)
             }
         }

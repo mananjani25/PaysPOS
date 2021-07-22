@@ -47,7 +47,7 @@ class Inventory : Fragment() {
         setAdapter(0)
         findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<String>(KEY)
             ?.observe(viewLifecycleOwner) { it ->
-                Log.e(TAG, "InventoryLifeCycler  " + it)
+                Log.e(TAG, "InventoryLifeCycler  $it")
                 when (it) {
                     CREATEITEM -> {
                         changePosition(0)

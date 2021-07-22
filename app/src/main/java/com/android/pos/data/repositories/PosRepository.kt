@@ -1,12 +1,12 @@
 package com.android.pos.data.repositories
 
 
-import androidx.lifecycle.LiveData
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.db.IDataManager
 import com.android.pos.data.entities.TbCategory
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.requestModel.CreateEmployeeRequestModel
+import com.android.pos.data.model.requestModel.CreateItemRequestModel
 import com.android.pos.data.model.requestModel.CreateNoteRequest
 import com.android.pos.data.remote.ApiHelper
 import com.android.pos.utils.performGetOperation
@@ -98,5 +98,14 @@ class PosRepository @Inject constructor(
 
     fun getItemsList() =
         performGetOperationDatabase(databaseQuery = { appDatabase.itemDao().allItem!! })
+
+    suspend fun deleteItem(itemId: Int) = apiHelperNew.deleteItem(itemId)
+
+    suspend fun itemHide(itemId: Int, data: HashMap<String, String>) =
+        apiHelperNew.hideItem(itemId, data)
+
+    suspend fun createItem(data: CreateItemRequestModel) = apiHelperNew.createItem(data)
+    suspend fun updateItem(id: Int, data: CreateItemRequestModel) =
+        apiHelperNew.updateItem(id, data)
 }
 

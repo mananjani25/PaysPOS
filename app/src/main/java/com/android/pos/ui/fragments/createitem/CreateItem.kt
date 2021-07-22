@@ -9,6 +9,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
+import com.android.pos.data.entities.TbItem
+import com.android.pos.data.model.responseModel.GetDiscountResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.CreateItemBinding
 import com.android.pos.utils.ProgressUtils
@@ -19,6 +21,8 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class CreateItem : Fragment() {
 
+    private var isEdit: Boolean = false
+    private lateinit var itemObject: TbItem
     private lateinit var binding: CreateItemBinding
     private val viewModel by viewModels<CreateItemViewModel>()
     override fun onCreateView(
@@ -30,9 +34,20 @@ class CreateItem : Fragment() {
         binding.lifecycleOwner = this
         binding.createItemVewModel = viewModel
 
+        isEdit = arguments?.getBoolean("isEdit")!!
+        setupData()
         setupSnackbar()
         observeShowProgress()
         return binding.root
+    }
+
+    private fun setupData() {
+
+        if (isEdit) {
+            binding.txtSave.text = getString(R.string.update)
+            itemObject = arguments?.getParcelable("itemObject")!!
+            viewModel.setData(itemObject)
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
