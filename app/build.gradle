@@ -57,6 +57,7 @@ dependencies {
     //sdp and ssp
     implementation 'com.intuit.ssp:ssp-android:1.0.6'
     implementation 'com.intuit.sdp:sdp-android:1.0.6'
+
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
     //Navigation
@@ -104,6 +105,10 @@ dependencies {
 
     //passcode
     implementation project(path: ':passcodeview')
+
+    //Masking
+    implementation 'com.github.santalu:mask-edittext:1.1.1'
+
 
 
     testImplementation 'junit:junit:4.+'

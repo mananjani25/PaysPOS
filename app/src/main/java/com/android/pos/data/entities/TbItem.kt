@@ -15,6 +15,7 @@ class TbItem {
     @PrimaryKey
     var itemId: Int = 0
     var categoryId: Int = 0
+    var categoryName:String=""
     var cost: Double = 0.0
     var createdAt: String = ""
     var imageUrl: String = ""

@@ -4,13 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
+import com.android.pos.data.entities.TbCategory
 import com.android.pos.data.model.CategoryListItemModel
 import com.android.pos.data.remote.Constants.CREATECATEGORY
 import com.android.pos.data.remote.Constants.KEY
@@ -18,6 +17,7 @@ import com.android.pos.databinding.CreateCategoryActivityBinding
 import com.android.pos.ui.adapter.CategoryListItemAdapter
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
+import com.android.pos.utils.statusUtils.Status
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -26,6 +26,9 @@ class CreateCategory : Fragment() {
     lateinit var binding: CreateCategoryActivityBinding
     private val viewModel by viewModels<CreateCategoryViewModel>()
     private var listCategory: ArrayList<CategoryListItemModel> = arrayListOf()
+    var isEdit: Boolean = false
+    private lateinit var categoryData: TbCategory
+    private var adapter = CategoryListItemAdapter()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,8 +40,19 @@ class CreateCategory : Fragment() {
         binding.lifecycleOwner = this
         binding.createCategoryViewModel = viewModel
 
+        isEdit = arguments?.getBoolean("isEdit")!!
+
+        if (isEdit) {
+            categoryData = arguments?.getParcelable("categoryObject")!!
+            binding.txtSave.text = getString(R.string.update)
+            viewModel.categoryData(categoryData)
+            viewModel.isEditData(isEdit, categoryData.id)
+        }
+
         setupSnackbar()
         observeShowProgress()
+        getInventoryListObserver()
+
         return binding.root
     }
 
@@ -47,7 +61,6 @@ class CreateCategory : Fragment() {
 
         setAdapter()
         onClick()
-
 
     }
 
@@ -58,9 +71,9 @@ class CreateCategory : Fragment() {
         }
         binding.imgBack.setOnClickListener {
             val navControll = findNavController()
-            navControll.previousBackStackEntry?.savedStateHandle?.set(KEY,CREATECATEGORY)
+            navControll.previousBackStackEntry?.savedStateHandle?.set(KEY, CREATECATEGORY)
             navControll.popBackStack()
-           // findNavController().popBackStack()
+            // findNavController().popBackStack()
         }
     }
 
@@ -86,12 +99,33 @@ class CreateCategory : Fragment() {
 
     }
 
-    private fun setAdapter() {
-        listCategory.add(CategoryListItemModel(0, "Chicken", "Food", ""))
-        listCategory.add(CategoryListItemModel(0, "Chicken Biryani", "Biryani", ""))
+    private fun getInventoryListObserver() {
 
-        binding.recyclerViewItemsList.adapter =
-            CategoryListItemAdapter(requireContext(), listCategory)
+        viewModel.getInventory?.observe(viewLifecycleOwner, {
+
+            it?.let { resource ->
+                when (resource.status) {
+                    Status.SUCCESS -> {
+                        binding.recyclerViewItemsList.visibility = View.VISIBLE
+                        it.data?.let { it1 -> adapter.add(it1) }
+                    }
+                    Status.ERROR -> {
+                        binding.recyclerViewItemsList.visibility = View.GONE
+                    }
+                    Status.LOADING -> {
+                        binding.recyclerViewItemsList.visibility = View.GONE
+                    }
+                }
+            }
+
+
+        })
+    }
+
+    private fun setAdapter() {
+        /* listCategory.add(CategoryListItemModel(0, "Chicken", "Food", ""))
+         listCategory.add(CategoryListItemModel(0, "Chicken Biryani", "Biryani", ""))*/
+        binding.recyclerViewItemsList.adapter = adapter
 
 
     }

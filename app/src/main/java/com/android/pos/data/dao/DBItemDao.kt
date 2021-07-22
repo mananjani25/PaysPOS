@@ -18,7 +18,7 @@ interface DBItemDao {
     @get:Query("select * from TbItem")
     val allItem: LiveData<List<TbItem?>>?
 
-    @Query("select * from TbItem where TbItem.categoryId  = :id AND TbItem.isHide = 0 ORDER BY TbItem.sort ASC")
+    @Query("select * from TbItem where TbItem.categoryId  = :id")
     fun getItemList(id: Int?): LiveData<List<TbItem?>>?
 
     @Query("SELECT * from TbItem where TbItem.id  = :id LIMIT 1")

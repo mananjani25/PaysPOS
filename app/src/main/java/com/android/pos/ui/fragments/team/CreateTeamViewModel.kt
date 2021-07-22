@@ -44,12 +44,13 @@ class CreateTeamViewModel @Inject constructor(
     val createTaxDetails = MutableLiveData(CreateEmployeeRequestModel())
     private lateinit var resource: Resource<BaseResponse>
 
+
     fun setTaxData(employeeModel: EmployeeListResponse.Data.Employee) {
 
         createTaxDetails.value?.firstName = employeeModel.firstName
         createTaxDetails.value?.lastName = employeeModel.lastName
         createTaxDetails.value?.email = employeeModel.email
-        createTaxDetails.value?.phoneNumber = employeeModel.phoneNumber.toString()
+        createTaxDetails.value?.phoneNumber = employeeModel.phoneNumber.toString().replace(("[\\D]").toRegex(), "")
         createTaxDetails.value?.locationId = employeeModel.locationId
         createTaxDetails.value?.passcode = employeeModel.passcode
         createTaxDetails.value?.isActive = employeeModel.isActive

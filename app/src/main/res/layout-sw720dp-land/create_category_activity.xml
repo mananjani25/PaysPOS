@@ -109,6 +109,7 @@
                 android:orientation="vertical"
                 android:layout_marginBottom="@dimen/_10sdp"
                 tools:listitem="@layout/view_assign_item_to_category" />
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </layout>

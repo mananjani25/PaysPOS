@@ -10,6 +10,7 @@
         android:orientation="vertical">
 
         <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/etSearch"
             style="@style/CustomFontRegularStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -58,11 +59,11 @@
             <ProgressBar
                 android:id="@+id/progress_circular"
                 style="@style/Widget.AppCompat.ProgressBar"
-                android:layout_weight="1"
-                android:visibility="gone"
-                android:layout_gravity="center"
                 android:layout_width="wrap_content"
-                android:layout_height="0dp" />
+                android:layout_height="0dp"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:visibility="gone" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvCategoriesList"
