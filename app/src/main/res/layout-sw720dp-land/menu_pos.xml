@@ -1,0 +1,520 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingDefaultResource">
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white">
+
+        <RelativeLayout
+            android:id="@+id/relPosHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/imgClose"
+                android:layout_width="@dimen/_15sdp"
+                android:layout_height="@dimen/_15sdp"
+                android:layout_gravity="center"
+                android:layout_margin="@dimen/_7sdp"
+                android:src="@drawable/ic_cancel_black" />
+
+            <TextView
+                android:id="@+id/txtSignOut"
+                style="@style/CustomFontSemiBold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="@dimen/_7sdp"
+                android:text="@string/sign_out"
+                android:textColor="@color/btnColorDark_"
+                android:textSize="@dimen/_8mdpi" />
+
+
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/txtWlcBack"
+            style="@style/CustomFontMediumStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:text="@string/welcome_back"
+            android:textColor="@color/txtColor"
+            android:textSize="@dimen/_10mdpi"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.35"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/relPosHeader" />
+
+        <TextView
+            android:id="@+id/txtBusinessName"
+            style="@style/CustomFontMediumStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_7sdp"
+            android:text="@string/business_name"
+            android:textColor="@color/txtColor"
+            android:textSize="@dimen/_8mdpi"
+            app:layout_constraintStart_toStartOf="@+id/txtWlcBack"
+            app:layout_constraintTop_toBottomOf="@+id/txtWlcBack" />
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/linearParent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_15sdp"
+            android:orientation="horizontal"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/txtBusinessName"
+            app:layout_constraintTop_toBottomOf="@+id/txtBusinessName">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraintFirst"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/linearHome"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingStart="@dimen/_5sdp"
+                    android:paddingEnd="@dimen/_50sdp"
+                    android:paddingBottom="@dimen/_7sdp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:layout_width="@dimen/_12sdp"
+                        android:layout_height="@dimen/_12sdp"
+                        android:src="@drawable/ic_home_icon" />
+
+                    <TextView
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="@dimen/_7sdp"
+                        android:gravity="center"
+                        android:text="Home"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_7mdpi" />
+
+
+                </LinearLayout>
+
+                <View
+                    android:id="@+id/viewLineHome"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:background="@color/dividerMenu"
+                    app:layout_constraintEnd_toEndOf="@+id/linearHome"
+                    app:layout_constraintStart_toStartOf="@+id/linearHome"
+                    app:layout_constraintTop_toBottomOf="@+id/linearHome" />
+
+
+                <LinearLayout
+                    android:id="@+id/linearOrders"
+                    android:layout_width="0sp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:orientation="horizontal"
+                    android:paddingStart="@dimen/_5sdp"
+                    android:paddingBottom="@dimen/_7sdp"
+                    app:layout_constraintEnd_toEndOf="@+id/viewLineHome"
+                    app:layout_constraintStart_toStartOf="@+id/viewLineHome"
+                    app:layout_constraintTop_toBottomOf="@+id/viewLineHome">
+
+                    <ImageView
+                        android:layout_width="@dimen/_12sdp"
+                        android:layout_height="@dimen/_12sdp"
+                        android:src="@drawable/ic_orders" />
+
+                    <TextView
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="@dimen/_7sdp"
+                        android:gravity="center"
+                        android:text="Orders"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_7mdpi" />
+
+
+                </LinearLayout>
+
+                <View
+                    android:id="@+id/viewLineOrders"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:background="@color/dividerMenu"
+                    app:layout_constraintEnd_toEndOf="@+id/linearOrders"
+                    app:layout_constraintStart_toStartOf="@+id/linearOrders"
+                    app:layout_constraintTop_toBottomOf="@+id/linearOrders" />
+
+                <LinearLayout
+                    android:id="@+id/linearTransaction"
+                    android:layout_width="0sp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:orientation="horizontal"
+                    android:paddingStart="@dimen/_5sdp"
+                    android:paddingBottom="@dimen/_7sdp"
+                    app:layout_constraintEnd_toEndOf="@+id/viewLineOrders"
+                    app:layout_constraintStart_toStartOf="@+id/viewLineOrders"
+                    app:layout_constraintTop_toBottomOf="@+id/viewLineOrders">
+
+                    <ImageView
+                        android:layout_width="@dimen/_12sdp"
+                        android:layout_height="@dimen/_12sdp"
+                        android:src="@drawable/ic_transaction" />
+
+                    <TextView
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="@dimen/_7sdp"
+                        android:gravity="center"
+                        android:text="Transactions"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_7mdpi" />
+
+
+                </LinearLayout>
+
+                <View
+                    android:id="@+id/viewLineTran"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:background="@color/dividerMenu"
+                    app:layout_constraintEnd_toEndOf="@+id/linearTransaction"
+                    app:layout_constraintStart_toStartOf="@+id/linearTransaction"
+                    app:layout_constraintTop_toBottomOf="@+id/linearTransaction" />
+
+                <LinearLayout
+                    android:id="@+id/linearCash"
+                    android:layout_width="0sp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:orientation="horizontal"
+                    android:paddingStart="@dimen/_5sdp"
+                    android:paddingBottom="@dimen/_7sdp"
+                    app:layout_constraintEnd_toEndOf="@+id/viewLineTran"
+                    app:layout_constraintStart_toStartOf="@+id/viewLineTran"
+                    app:layout_constraintTop_toBottomOf="@+id/viewLineTran">
+
+                    <ImageView
+                        android:layout_width="@dimen/_12sdp"
+                        android:layout_height="@dimen/_12sdp"
+                        android:src="@drawable/ic_payment_history" />
+
+                    <TextView
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="@dimen/_7sdp"
+                        android:gravity="center"
+                        android:text="Cash Log"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_7mdpi" />
+
+
+                </LinearLayout>
+
+                <View
+                    android:id="@+id/viewLineCash"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:background="@color/dividerMenu"
+                    app:layout_constraintEnd_toEndOf="@+id/linearCash"
+                    app:layout_constraintStart_toStartOf="@+id/linearCash"
+                    app:layout_constraintTop_toBottomOf="@+id/linearCash" />
+
+
+                <LinearLayout
+                    android:id="@+id/linearReports"
+                    android:layout_width="0sp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:orientation="horizontal"
+                    android:paddingStart="@dimen/_5sdp"
+                    android:paddingBottom="@dimen/_7sdp"
+                    app:layout_constraintEnd_toEndOf="@+id/viewLineCash"
+                    app:layout_constraintStart_toStartOf="@+id/viewLineCash"
+                    app:layout_constraintTop_toBottomOf="@+id/viewLineCash">
+
+                    <ImageView
+                        android:layout_width="@dimen/_12sdp"
+                        android:layout_height="@dimen/_12sdp"
+                        android:src="@drawable/ic_reports" />
+
+                    <TextView
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="@dimen/_7sdp"
+                        android:gravity="center"
+                        android:text="Reports"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_7mdpi" />
+
+
+                </LinearLayout>
+
+                <View
+                    android:id="@+id/viewLineReports"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:background="@color/dividerMenu"
+                    app:layout_constraintEnd_toEndOf="@+id/linearReports"
+                    app:layout_constraintStart_toStartOf="@+id/linearReports"
+                    app:layout_constraintTop_toBottomOf="@+id/linearReports" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraintSecond"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/linearCust"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingStart="@dimen/_5sdp"
+                    android:paddingEnd="@dimen/_50sdp"
+                    android:paddingBottom="@dimen/_7sdp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:layout_width="@dimen/_12sdp"
+                        android:layout_height="@dimen/_12sdp"
+                        android:src="@drawable/ic_groups" />
+
+                    <TextView
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="@dimen/_7sdp"
+                        android:gravity="center"
+                        android:text="Customers"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_7mdpi" />
+
+
+                </LinearLayout>
+
+                <View
+                    android:id="@+id/viewLineCust"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:background="@color/dividerMenu"
+                    app:layout_constraintEnd_toEndOf="@+id/linearCust"
+                    app:layout_constraintStart_toStartOf="@+id/linearCust"
+                    app:layout_constraintTop_toBottomOf="@+id/linearCust" />
+
+
+                <LinearLayout
+                    android:id="@+id/linearTeam"
+                    android:layout_width="0sp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:orientation="horizontal"
+                    android:paddingStart="@dimen/_5sdp"
+                    android:paddingBottom="@dimen/_7sdp"
+                    app:layout_constraintEnd_toEndOf="@+id/viewLineCust"
+                    app:layout_constraintStart_toStartOf="@+id/viewLineCust"
+                    app:layout_constraintTop_toBottomOf="@+id/viewLineCust">
+
+                    <ImageView
+                        android:layout_width="@dimen/_12sdp"
+                        android:layout_height="@dimen/_12sdp"
+                        android:src="@drawable/ic_groups" />
+
+                    <TextView
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="@dimen/_7sdp"
+                        android:gravity="center"
+                        android:text="Team"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_7mdpi" />
+
+
+                </LinearLayout>
+
+                <View
+                    android:id="@+id/viewLineTeam"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:background="@color/dividerMenu"
+                    app:layout_constraintEnd_toEndOf="@+id/linearTeam"
+                    app:layout_constraintStart_toStartOf="@+id/linearTeam"
+                    app:layout_constraintTop_toBottomOf="@+id/linearTeam" />
+
+                <LinearLayout
+                    android:id="@+id/linearInventory"
+                    android:layout_width="0sp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:orientation="horizontal"
+                    android:paddingStart="@dimen/_5sdp"
+                    android:paddingBottom="@dimen/_7sdp"
+                    app:layout_constraintEnd_toEndOf="@+id/viewLineTeam"
+                    app:layout_constraintStart_toStartOf="@+id/viewLineTeam"
+                    app:layout_constraintTop_toBottomOf="@+id/viewLineTeam">
+
+                    <ImageView
+                        android:layout_width="@dimen/_12sdp"
+                        android:layout_height="@dimen/_12sdp"
+                        android:src="@drawable/ic_inventory" />
+
+                    <TextView
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="@dimen/_7sdp"
+                        android:gravity="center"
+                        android:text="Inventory"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_7mdpi" />
+
+
+                </LinearLayout>
+
+                <View
+                    android:id="@+id/viewLineInv"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:background="@color/dividerMenu"
+                    app:layout_constraintEnd_toEndOf="@+id/linearInventory"
+                    app:layout_constraintStart_toStartOf="@+id/linearInventory"
+                    app:layout_constraintTop_toBottomOf="@+id/linearInventory" />
+
+                <LinearLayout
+                    android:id="@+id/linearSetting"
+                    android:layout_width="0sp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:orientation="horizontal"
+                    android:paddingStart="@dimen/_5sdp"
+                    android:paddingBottom="@dimen/_7sdp"
+                    app:layout_constraintEnd_toEndOf="@+id/viewLineInv"
+                    app:layout_constraintStart_toStartOf="@+id/viewLineInv"
+                    app:layout_constraintTop_toBottomOf="@+id/viewLineInv">
+
+                    <ImageView
+                        android:layout_width="@dimen/_12sdp"
+                        android:layout_height="@dimen/_12sdp"
+                        android:src="@drawable/ic_settings" />
+
+                    <TextView
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="@dimen/_7sdp"
+                        android:gravity="center"
+                        android:text="Settings"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_7mdpi" />
+
+
+                </LinearLayout>
+
+                <View
+                    android:id="@+id/viewLineSetting"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:background="@color/dividerMenu"
+                    app:layout_constraintEnd_toEndOf="@+id/linearSetting"
+                    app:layout_constraintStart_toStartOf="@+id/linearSetting"
+                    app:layout_constraintTop_toBottomOf="@+id/linearSetting" />
+
+
+                <LinearLayout
+                    android:id="@+id/linearSupport"
+                    android:layout_width="0sp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:orientation="horizontal"
+                    android:paddingStart="@dimen/_5sdp"
+                    android:paddingBottom="@dimen/_7sdp"
+                    app:layout_constraintEnd_toEndOf="@+id/viewLineSetting"
+                    app:layout_constraintStart_toStartOf="@+id/viewLineSetting"
+                    app:layout_constraintTop_toBottomOf="@+id/viewLineSetting">
+
+                    <ImageView
+                        android:layout_width="@dimen/_12sdp"
+                        android:layout_height="@dimen/_12sdp"
+                        android:src="@drawable/ic_headset" />
+
+                    <TextView
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="@dimen/_7sdp"
+                        android:gravity="center"
+                        android:text="Support"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_7mdpi" />
+
+
+                </LinearLayout>
+
+                <View
+                    android:id="@+id/viewLineSupport"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:background="@color/dividerMenu"
+                    app:layout_constraintEnd_toEndOf="@+id/linearSupport"
+                    app:layout_constraintStart_toStartOf="@+id/linearSupport"
+                    app:layout_constraintTop_toBottomOf="@+id/linearSupport" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/dividerColor"
+            app:layout_constraintBottom_toTopOf="@+id/footer"
+            app:layout_constraintTop_toBottomOf="@+id/linearParent"
+            app:layout_constraintVertical_bias="1" />
+
+        <include
+            android:id="@+id/footer"
+            layout="@layout/dashboard_footer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

@@ -28,7 +28,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/tv_pos"
                 android:textColor="@color/black"
-                android:textSize="@dimen/_12mdpi"
+                android:textSize="@dimen/_16mdpi"
                 android:textStyle="bold" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -70,21 +70,39 @@
                     android:background="@color/view" />
 
 
-                <androidx.appcompat.widget.AppCompatEditText
-                    android:id="@+id/edtPassword"
-                    style="@style/CustomFontSemiBold"
+                <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:background="@null"
-                    android:hint="@string/tv_hint_password"
-                    android:imeOptions="actionDone"
-                    android:inputType="textPassword"
-                    android:padding="@dimen/_5sdp"
-                    android:text="@={loginViewModel.loginDetails.password}"
-                    android:textColor="@color/black"
-                    android:textColorHint="@color/hint_color_"
-                    android:textSize="@dimen/_6mdpi" />
+                    android:layout_height="wrap_content">
+
+                    <androidx.appcompat.widget.AppCompatEditText
+                        android:id="@+id/edtPassword"
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_toStartOf="@+id/txtForgotPass"
+                        android:background="@null"
+                        android:hint="@string/tv_hint_password"
+                        android:imeOptions="actionDone"
+                        android:inputType="textPassword"
+                        android:padding="@dimen/_5sdp"
+                        android:text="@={loginViewModel.loginDetails.password}"
+                        android:textColor="@color/black"
+                        android:textColorHint="@color/hint_color_"
+                        android:textSize="@dimen/_7mdpi" />
+
+                    <TextView
+                        android:id="@+id/txtForgotPass"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginEnd="@dimen/_2sdp"
+                        android:fontFamily="@font/sf_pro_display_medium"
+                        android:text="@string/forgot_password"
+                        android:textColor="@color/txt_color_blue"
+                        android:textSize="@dimen/_6mdpi" />
+                </RelativeLayout>
 
 
             </androidx.appcompat.widget.LinearLayoutCompat>
