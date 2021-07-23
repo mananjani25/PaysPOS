@@ -1,5 +1,6 @@
 package com.android.pos.ui.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Filter
@@ -10,10 +11,11 @@ import com.android.pos.databinding.ViewItemBinding
 import java.util.*
 import kotlin.collections.ArrayList
 
-class ItemListAdapter() :
+class ItemListAdapter(private val isChoose: Boolean) :
     RecyclerView.Adapter<ItemListAdapter.MyViewHolder>(), Filterable {
     var itemsList = ArrayList<TbItem>()
     var filterList = ArrayList<TbItem>()
+    var selectedItemList = ArrayList<TbItem>()
 
     inner class MyViewHolder(private val binding: ViewItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -21,8 +23,54 @@ class ItemListAdapter() :
         fun bind(item: TbItem) {
             binding.model = item
             binding.executePendingBindings()
+
         }
+
+        init {
+            binding.ivCheck.setOnClickListener {
+                filterList[layoutPosition].isChecked = !filterList[layoutPosition].isChecked
+
+                if (!filterList.get(layoutPosition).isChecked) {
+                    selectedItemList.add(filterList.get(layoutPosition))
+                } else {
+                    selectedItemList.remove(filterList.get(layoutPosition))
+                }
+                Log.d("selectedItemList", "::" + selectedItemList.size)
+                notifyDataSetChanged()
+            }
+        }
+
+
+
+
+
     }
+
+    /*private fun isAllItemsChecked(): Boolean {
+            for (selectItem in itemsList) {
+                if (!selectItem.isChecked) {
+                    return false
+                }
+            }
+            return true
+        }*/
+
+    fun selectAll(isChecked: Boolean) {
+        selectedItemList.clear()
+        if (isChecked) {
+            for (selectItem in filterList) {
+                selectItem.isChecked = true
+                selectedItemList.add(selectItem)
+            }
+        } else {
+            for (selectItem in filterList) {
+                selectItem.isChecked = false
+                selectedItemList.remove(selectItem)
+            }
+        }
+        notifyDataSetChanged()
+    }
+
 
     override fun onCreateViewHolder(
         parent: ViewGroup,

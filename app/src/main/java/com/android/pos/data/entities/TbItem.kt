@@ -14,7 +14,7 @@ class TbItem : Parcelable {
 
     var itemId: Int = 0
     var categoryId: Int = 0
-    var categoryName:String=""
+    var categoryName: String = ""
     var cost: Double = 0.0
     var createdAt: String = ""
     var imageUrl: String? = null
@@ -31,6 +31,7 @@ class TbItem : Parcelable {
     var itemQuantity: Int = 0
     var isManualSales: Boolean = false
     var taxes: List<TaxModel>? = null
+    var isChecked: Boolean = false
 
 
 }

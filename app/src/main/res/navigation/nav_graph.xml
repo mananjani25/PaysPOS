@@ -24,8 +24,8 @@
             app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_login_to_forgotPasswordFragment"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:destination="@id/forgotPasswordFragment" />
+            app:destination="@id/forgotPasswordFragment"
+            app:enterAnim="@anim/nav_default_enter_anim" />
     </fragment>
     <fragment
         android:id="@+id/clockInOwner"
@@ -101,7 +101,8 @@
             app:enterAnim="@anim/nav_default_enter_anim" />
         <action
             android:id="@+id/action_createItem_to_categoriesDialog"
-            app:destination="@id/categoriesDialog" />
+            app:destination="@id/categoriesDialog"
+            app:enterAnim="@anim/nav_default_enter_anim" />
     </fragment>
     <fragment
         android:id="@+id/createCategory"
@@ -112,8 +113,8 @@
             app:destination="@id/createIModifierSet" />
         <argument
             android:name="isEdit"
-            app:argType="boolean"
-            android:defaultValue="false" />
+            android:defaultValue="false"
+            app:argType="boolean" />
     </fragment>
     <fragment
         android:id="@+id/createIModifierSet"
@@ -238,6 +239,9 @@
             android:name="isEdit"
             android:defaultValue="false"
             app:argType="boolean" />
+        <action
+            android:id="@+id/action_newTax_to_itemDialog"
+            app:destination="@id/itemDialog" />
     </fragment>
     <fragment
         android:id="@+id/addTip"
@@ -349,6 +353,10 @@
         android:id="@+id/categoriesDialog"
         android:name="com.android.pos.ui.dialog.CategoriesDialog"
         android:label="CategoriesDialog" />
+    <dialog
+        android:id="@+id/itemDialog"
+        android:name="com.android.pos.ui.dialog.ItemDialog"
+        android:label="ItemDialog" />
 
 
 </navigation>

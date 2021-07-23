@@ -52,7 +52,9 @@ class CreateTax : Fragment() {
         observeShowProgress()
         navigate()
 
-
+        binding.llAllItemsDialog.setOnClickListener {
+            findNavController().navigate(R.id.action_newTax_to_itemDialog)
+        }
         return binding.root
     }
 
