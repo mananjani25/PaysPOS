@@ -22,6 +22,9 @@ object Constants {
     const val LOGIN_TERMINAL = "users/login_terminal"
     const val EMPLOYEE_LOG_IN = "employee_activities/log_in"
     const val CLOCK_OUT = "employee_activities/clock_out"
+    const val LOGOUT = "users/log_out"
+    const val FORGOT_PASSWORD = "users/forgot_password"
+
     const val EMPLOYEES = "employees"
     const val EMPLOYEES_UPDATE_DELETE = "employees/{id}"
 
@@ -38,7 +41,6 @@ object Constants {
 
     const val NOTES = "dynamic_notes"
     const val NOTE_UPDATE_DELETE = "dynamic_notes/{id}"
-    const val LOGOUT = "users/log_out"
 
     const val SERVICE_CHARGE = "service_charges"
     const val SERVICE_CHARGE_UPDATE_DELETE = "service_charges/{id}"
@@ -56,4 +58,14 @@ object Constants {
     const val HORIZONTAL = "horizontal"
 
     const val ITEM_UPDATE_DELETE = "item/{id}"
+
+    const val SETTING_KEY = "setting_key"
+    const val CREATE_TAX = "create_tax"
+    const val CREATE_TIP = "create_tip"
+    const val ORDER_RECEIPTS = "order_receipts"
+
+    const val CREATE_NOTES = "create_notes"
+    const val ADD_SERVICE_CHARGE = "add_service_charge"
+
+
 }

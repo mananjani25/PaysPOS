@@ -8,6 +8,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.data.model.responseModel.GetServiceChargeResponse
+import com.android.pos.data.remote.Constants.ADD_SERVICE_CHARGE
+import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.databinding.DialogAddServiceChargeBinding
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
@@ -56,7 +58,9 @@ class CreateServiceCharge : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.imgBack.setOnClickListener {
-            findNavController().navigateUp()
+            val navController = findNavController()
+            navController.previousBackStackEntry?.savedStateHandle?.set(KEY, ADD_SERVICE_CHARGE)
+            navController.popBackStack()
         }
 
     }

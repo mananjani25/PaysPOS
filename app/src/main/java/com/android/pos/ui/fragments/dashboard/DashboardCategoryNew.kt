@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.pos.R
 import com.android.pos.data.entities.CategoryWithInventory
 import com.android.pos.data.entities.TbItem
+import com.android.pos.data.model.CategorySearchData
 import com.android.pos.data.model.CategoryTabModel
 import com.android.pos.data.model.responseModel.VenueDataResponse
 import com.android.pos.data.remote.Constants.HORIZONTAL
@@ -30,6 +31,7 @@ import com.android.pos.databinding.PopupDashboardBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.CategoryItemAdapter1
+import com.android.pos.ui.adapter.CategorySearchAdapter
 import com.android.pos.ui.adapter.CategoryTabAdapter1
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.alert
@@ -50,11 +52,15 @@ class DashboardCategoryNew : Fragment() {
     private var itemList1: ArrayList<TbItem?> = arrayListOf()
     private var categoryTabsList: ArrayList<String> = arrayListOf()
     private var tabList: ArrayList<CategoryTabModel> = arrayListOf()
+    private lateinit var searchAdapter: CategorySearchAdapter
+    private lateinit var searchList: ArrayList<CategorySearchData>
 
     @Inject
     lateinit var prefProvider: PrefProvider
     override fun onAttach(context: Context) {
         super.onAttach(context)
+
+
     }
 
     override fun onCreateView(
@@ -93,6 +99,28 @@ class DashboardCategoryNew : Fragment() {
         setVenueData()
         configureDrawer()
         onClick()
+        searchCategory()
+    }
+
+    private fun searchCategory() {
+        searchList = arrayListOf()
+        searchList.add(CategorySearchData(0, "Apple", ""))
+        searchList.add(CategorySearchData(0, "Banana", ""))
+        searchList.add(CategorySearchData(0, "Cherry", ""))
+        searchList.add(CategorySearchData(0, "Grape", ""))
+        searchList.add(CategorySearchData(0, "Kiwi", ""))
+        searchList.add(CategorySearchData(0, "Mango", ""))
+        searchList.add(CategorySearchData(0, "Pear", ""))
+        searchList.add(CategorySearchData(0, "Applocam", ""))
+        searchAdapter =
+            CategorySearchAdapter(requireActivity(), R.layout.search_category_item, searchList)
+        binding.layoutMenu.autoSearch.threshold = 1
+        binding.layoutMenu.autoSearch.setAdapter(searchAdapter)
+        binding.layoutMenu.autoSearch.setOnItemClickListener { parent, view, position, id ->
+            val model: CategorySearchData = parent.getItemAtPosition(position) as CategorySearchData
+            binding.layoutMenu.autoSearch.setText(model.title)
+
+        }
     }
 
     private fun onClick() {
@@ -292,7 +320,6 @@ class DashboardCategoryNew : Fragment() {
     }
 
     private fun setVenueData() {
-
         viewModel.venueDataLocal.observe(viewLifecycleOwner,
             {
                 when (it.status) {

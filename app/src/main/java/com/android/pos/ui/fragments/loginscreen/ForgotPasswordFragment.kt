@@ -1,75 +1,56 @@
-package com.android.pos.ui.fragments.settings.tax
+package com.android.pos.ui.fragments.loginscreen
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.widget.AppCompatImageView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
-import com.android.pos.data.model.responseModel.GetTaxResponse
-import com.android.pos.data.remote.Constants.CREATE_TAX
-import com.android.pos.data.remote.Constants.SETTING_KEY
-import com.android.pos.databinding.DialogCreateNewTaxBinding
+import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.AUTH_TOKEN
+import com.android.pos.data.remote.Constants.IS_CLOCKOUT
+import com.android.pos.databinding.FragmentForgotPasswordBinding
+import com.android.pos.databinding.FragmentLoginBinding
+import com.android.pos.di.PrefProvider
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
-class CreateTax : Fragment() {
+class ForgotPasswordFragment : Fragment() {
 
-    private lateinit var binding: DialogCreateNewTaxBinding
 
-    private val viewModel by viewModels<CreateTaxViewModel>()
+    private lateinit var binding: FragmentForgotPasswordBinding
 
-    var isEdit: Boolean = false
-    private lateinit var taxData: GetTaxResponse.TaxData
+    private val viewModel by viewModels<ForgotPasswordViewModel>()
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
         binding =
-            DataBindingUtil.inflate(inflater, R.layout.dialog_create_new_tax, container, false)
+            DataBindingUtil.inflate(inflater, R.layout.fragment_forgot_password, container, false)
 
         binding.lifecycleOwner = this
-        binding.viewModel = viewModel
-
-
-        isEdit = arguments?.getBoolean("isEdit")!!
-
-        if (isEdit) {
-            taxData = arguments?.getParcelable("taxObject")!!
-            binding.txtSave.text = getString(R.string.update)
-            viewModel.setTaxData(taxData)
-            viewModel.isEditData(isEdit, taxData.id)
-        }
+        binding.loginViewModel = viewModel
 
         setupSnackbar()
         observeShowProgress()
         navigate()
-
 
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        view.findViewById<AppCompatImageView>(R.id.imgBack).setOnClickListener {
-            val navController = findNavController()
-            navController.previousBackStackEntry?.savedStateHandle?.set(
-                SETTING_KEY,
-                CREATE_TAX
-            )
-            navController.popBackStack()
-            //findNavController().navigateUp()
-        }
     }
 
     private fun observeShowProgress() {
@@ -83,6 +64,7 @@ class CreateTax : Fragment() {
                 }
             }
         })
+
     }
 
     private fun navigate() {
@@ -94,10 +76,12 @@ class CreateTax : Fragment() {
                 }
             }
         })
+
     }
 
     private fun setupSnackbar() {
         binding.root.liveSnackBar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
-
     }
+
+
 }

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingDefaultResource">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/_4sdp">
+
+        <ImageView
+            android:id="@+id/imgCategory"
+            android:layout_width="@dimen/_12sdp"
+            android:layout_height="@dimen/_12sdp" />
+
+
+        <TextView
+            android:id="@+id/txtCategoryName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_5sdp"
+            android:fontFamily="@font/sf_pro_display_medium"
+            android:lines="1"
+            android:maxLines="1"
+            android:text="Snacks"
+            android:textColor="@color/txtColor"
+            android:textSize="@dimen/_8mdpi" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</layout>

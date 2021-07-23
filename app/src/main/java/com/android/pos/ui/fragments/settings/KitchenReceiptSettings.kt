@@ -8,6 +8,9 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
+import com.android.pos.data.remote.Constants.KEY
+import com.android.pos.data.remote.Constants.ORDER_RECEIPTS
+import com.android.pos.data.remote.Constants.SETTING_KEY
 import com.android.pos.databinding.FragmentKitchenReceiptSettingsBinding
 
 class KitchenReceiptSettings : Fragment() {
@@ -23,7 +26,9 @@ class KitchenReceiptSettings : Fragment() {
         binding.lifecycleOwner = this
 
         binding.ivBack.setOnClickListener {
-            findNavController().navigateUp()
+            val navController = findNavController()
+            navController.previousBackStackEntry?.savedStateHandle?.set(KEY,ORDER_RECEIPTS)
+            navController.popBackStack()
         }
 
         return binding.root

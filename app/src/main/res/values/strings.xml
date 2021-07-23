@@ -289,4 +289,5 @@
     <string name="business_name">Business Name</string>
     <string name="welcome_back">Welcome back</string>
     <string name="forgot_password">Forgot Password?</string>
+    <string name="tv_submit">Submit</string>
 </resources>

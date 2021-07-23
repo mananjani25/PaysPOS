@@ -25,5 +25,10 @@ class UserRepository @Inject constructor(
     suspend fun employeeClockOut(data: HashMap<String, String>) =
         apiHelperNew.employeeClockOut(data)
 
+    suspend fun forgotPassword(data: HashMap<String, String>) =
+        apiHelperNew.forgotPassword(data)
+
+    suspend fun logout(data: HashMap<String, String>) = apiHelperNew.logOut(data)
+
 
 }
