@@ -4,6 +4,6 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 object TimeFormatUtils {
-    fun showCurrentTime() = SimpleDateFormat("HH:mm a", Locale.getDefault()).format(Date())
+    fun showCurrentTime() = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date())
 
 }

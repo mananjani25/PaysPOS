@@ -53,10 +53,10 @@ class AllItems : Fragment() {
         itemsObserver()
         deleteObserver()
         setupHelper()
-        serachFilter()
+        searchFilter()
     }
 
-    private fun serachFilter() {
+    private fun searchFilter() {
 
         binding.edtSearch.addTextChangedListener(object : TextWatcher {
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {

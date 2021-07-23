@@ -9,11 +9,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.entities.TbCategory
 import com.android.pos.databinding.ViewCategoryBinding
-import com.android.pos.utils.statusUtils.Resource
 import java.util.*
 import kotlin.collections.ArrayList
 
-class CategoriesListAdapter(private val isChoose: Boolean)  :
+class CategoriesListAdapter(private val isChoose: Boolean) :
     RecyclerView.Adapter<CategoriesListAdapter.MyViewHolder>(), Filterable {
     var categoryList = ArrayList<TbCategory>()
     private var mpos: Int = -2
@@ -26,22 +25,27 @@ class CategoriesListAdapter(private val isChoose: Boolean)  :
             binding.model = item
             binding.executePendingBindings()
 
-            if (isChoose && mpos == layoutPosition) {
-                binding.imageCheck.setImageResource(R.drawable.ic_remove_circle)
-            } else binding.imageCheck.setImageResource(R.drawable.ic_outline_circle)
-        }
-
-        init {
-
             if (isChoose) {
-                binding.imageCheck.setImageResource(R.drawable.ic_outline_circle)
-                binding.imageCheck.setOnClickListener {
-                    mpos = layoutPosition
-                    notifyDataSetChanged()
+                if (mpos == layoutPosition) {
+                    binding.imageCheck.setImageResource(R.drawable.ic_outline_radio_button_checked)
+                } else {
+                    binding.imageCheck.setImageResource(R.drawable.ic_outline_circle)
                 }
             } else {
                 binding.imageCheck.setImageResource(R.drawable.ic_arrow_forward)
             }
+        }
+
+        init {
+
+
+            binding.imageCheck.setOnClickListener {
+                if (isChoose) {
+                    mpos = layoutPosition
+                    notifyDataSetChanged()
+                }
+            }
+
         }
 
     }
@@ -123,7 +127,7 @@ class CategoriesListAdapter(private val isChoose: Boolean)  :
         return false
     }
 
-    fun getItem(position: Int): TbCategory? {
+    fun getItem(position: Int): TbCategory {
         return filterList[position]
     }
 
@@ -131,5 +135,21 @@ class CategoriesListAdapter(private val isChoose: Boolean)  :
         this.categoryList = categoryModel as ArrayList<TbCategory>
         this.filterList = categoryModel
         notifyDataSetChanged()
+    }
+
+    fun getData(): TbCategory? {
+        if (mpos == -2) {
+            return null
+        }
+        return filterList[mpos]
+    }
+
+    fun getPos(): Int {
+        return mpos
+    }
+
+    fun setPos(selectedId: Int) {
+        mpos = selectedId
+
     }
 }

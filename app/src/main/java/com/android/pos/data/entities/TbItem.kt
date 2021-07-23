@@ -17,7 +17,7 @@ class TbItem : Parcelable {
     var categoryName:String=""
     var cost: Double = 0.0
     var createdAt: String = ""
-    var imageUrl: String = ""
+    var imageUrl: String? = null
     var isHide: Boolean = false
     var kitchenName: String = ""
     var modifierGroupIds: String = ""

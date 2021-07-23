@@ -1,4 +1,4 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <string name="app_name">POS Android</string>
     <string name="tv_pos">POS</string>
     <string name="tv_Info">Enterprise Cloud Point of Sale</string>
@@ -289,5 +289,5 @@
     <string name="business_name">Business Name</string>
     <string name="welcome_back">Welcome back</string>
     <string name="forgot_password">Forgot Password?</string>
-   <!-- <string name="scan_barcode_or_search" tools:ignore="DuplicateDefinition">Scan barcode or search</string>-->
+    <string name="tv_submit">Submit</string>
 </resources>

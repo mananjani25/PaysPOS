@@ -17,9 +17,9 @@
                 android:id="@+id/imgBack"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:padding="@dimen/_5sdp"
                 android:layout_centerVertical="true"
                 android:layout_gravity="center"
-                android:layout_marginStart="@dimen/_10sdp"
                 app:srcCompat="@drawable/ic_cancel_black"
                 app:tint="@color/viewTextColor" />
 
@@ -36,6 +36,7 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
+                android:id="@+id/txtDone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
@@ -62,6 +63,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@null"
+            android:id="@+id/edtSearch"
             android:drawableStart="@drawable/ic_search"
             android:drawablePadding="@dimen/_10sdp"
             android:hint="@string/search_categories"

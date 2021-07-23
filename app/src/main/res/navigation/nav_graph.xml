@@ -22,6 +22,10 @@
             app:destination="@id/dashboardCategoryNew"
             app:popUpTo="@id/login"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_login_to_forgotPasswordFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:destination="@id/forgotPasswordFragment" />
     </fragment>
     <fragment
         android:id="@+id/clockInOwner"
@@ -337,6 +341,10 @@
         android:name="com.android.pos.ui.fragments.posmenu.MenuPOS"
         android:label="MenuPOS"
         tools:layout="@layout/menu_pos" />
+    <fragment
+        android:id="@+id/forgotPasswordFragment"
+        android:name="com.android.pos.ui.fragments.loginscreen.ForgotPasswordFragment"
+        android:label="ForgotPasswordFragment" />
     <dialog
         android:id="@+id/categoriesDialog"
         android:name="com.android.pos.ui.dialog.CategoriesDialog"
