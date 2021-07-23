@@ -11,6 +11,7 @@ import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
+import com.android.pos.data.entities.TbCategory
 import com.android.pos.databinding.DialogCategoriesBinding
 import com.android.pos.ui.adapter.CategoriesListAdapter
 import com.android.pos.ui.fragments.inventory.CategoriesViewModel
