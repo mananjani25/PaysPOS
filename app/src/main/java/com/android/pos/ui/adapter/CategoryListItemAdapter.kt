@@ -1,20 +1,21 @@
 package com.android.pos.ui.adapter
 
-import android.content.Context
-import android.text.Layout
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.android.pos.data.model.CategoryListItemModel
+import com.android.pos.data.entities.CategoryWithInventory
+import com.android.pos.data.entities.TbItem
 import com.android.pos.databinding.ViewAssignItemToCategoryBinding
 
-class CategoryListItemAdapter(val context: Context, val list: ArrayList<CategoryListItemModel>) :
+class CategoryListItemAdapter :
     RecyclerView.Adapter<CategoryListItemAdapter.MyViewHolder>() {
+
+    var inventory = ArrayList<TbItem>()
 
     inner class MyViewHolder(private val binding: ViewAssignItemToCategoryBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(item: CategoryListItemModel) {
+        fun bind(item: TbItem) {
             binding.model = item
             binding.executePendingBindings()
 
@@ -25,18 +26,28 @@ class CategoryListItemAdapter(val context: Context, val list: ArrayList<Category
         parent: ViewGroup,
         viewType: Int
     ): CategoryListItemAdapter.MyViewHolder {
-        val inflater = LayoutInflater.from(context)
+        val inflater = LayoutInflater.from(parent.context)
         val binding = ViewAssignItemToCategoryBinding.inflate(inflater, parent, false)
         return MyViewHolder(binding)
 
     }
 
     override fun onBindViewHolder(holder: CategoryListItemAdapter.MyViewHolder, position: Int) {
-        holder.bind(list[position])
+        holder.bind(inventory[position])
 
     }
 
     override fun getItemCount(): Int {
-        return list.size
+        return inventory.size
     }
+
+    fun add(inventory: List<TbItem?>) {
+        this.inventory = inventory as ArrayList<TbItem>
+    }
+
+    /* fun add(categoryModel: List<TbCategory>) {
+         this.categoryList = categoryModel as ArrayList<TbCategory>
+         this.filterList = categoryModel
+         notifyDataSetChanged()
+     }*/
 }

@@ -213,20 +213,23 @@
                         android:textColor="@color/txtColor"
                         android:textSize="@dimen/_6sdp" />
 
-                    <androidx.appcompat.widget.AppCompatEditText
+                    <com.santalu.maskedittext.MaskEditText
+                        android:id="@+id/edtMobileNumber"
                         style="@style/CustomFontSemiBold"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
                         android:background="@drawable/edt_border_light_gray"
-                        android:hint="@string/phone"
+                        android:hint="(201) 555-0123"
                         android:imeOptions="actionNext"
                         android:inputType="number"
+                        android:maxLength="20"
                         android:padding="@dimen/_5sdp"
                         android:text="@={viewModel.createTaxDetails.phoneNumber}"
                         android:textColor="@color/txtColor"
                         android:textColorHint="@color/hint_color_"
-                        android:textSize="@dimen/_6sdp" />
+                        android:textSize="@dimen/_6sdp"
+                        app:met_mask="(###) ###-####" />
+
 
                 </LinearLayout>
 

@@ -12,7 +12,6 @@ import com.android.pos.data.remote.ApiHelper
 import com.android.pos.utils.performGetOperation
 import com.android.pos.utils.performGetOperationDatabase
 import com.android.pos.utils.performGetOperationNew
-import com.android.pos.utils.statusUtils.Resource
 import javax.inject.Inject
 
 
@@ -25,14 +24,7 @@ class PosRepository @Inject constructor(
     fun syncVenueData() =
         performGetOperationNew(networkCall = { apiHelperNew.syncVenueData() })
 
-    fun employeesList(locationId: Int) =
-        performGetOperationNew(networkCall = { apiHelperNew.employeesList(locationId) })
-
-
-    suspend fun logout(data: HashMap<String, String>) = apiHelperNew.logOut(data)
-
-
-    fun getCharacters() = performGetOperation(
+    fun venueDataLocal() = performGetOperation(
         databaseQuery = { appDatabase.categoryDao().categoryWithInventory()!! },
         networkCall = { apiHelperNew.syncVenueData() },
         saveCallResult = { response ->
@@ -55,6 +47,7 @@ class PosRepository @Inject constructor(
                     val items = TbItem().apply {
                         itemId = it.id
                         categoryId = category.id
+                        categoryName = category.name
                         name = it.name
                         imageUrl = it.imgUrl.toString()
                         kitchenName = it.kitchenName
@@ -71,6 +64,21 @@ class PosRepository @Inject constructor(
         }
     )
 
+    fun getCategoryList() =
+        performGetOperationDatabase(databaseQuery = { appDatabase.categoryDao().all() })
+
+    suspend fun deleteCategory(catId: Int) = appDatabase.categoryDao().deleteCategoryById(catId)
+
+
+    fun getItemsList() =
+        performGetOperationDatabase(databaseQuery = { appDatabase.itemDao().allItem!! })
+
+    fun getInventory(catId: Int) =
+        performGetOperationDatabase(databaseQuery = { appDatabase.itemDao().getItemList(catId)!! })
+
+
+
+
     fun getNoteList() =
         performGetOperationNew(networkCall = { apiHelperNew.getNoteList() })
 
@@ -81,23 +89,27 @@ class PosRepository @Inject constructor(
     suspend fun updateNote(taxId: Int, data: CreateNoteRequest) =
         apiHelperNew.updateNote(taxId, data)
 
+
+    fun employeesList(locationId: Int) =
+        performGetOperationNew(networkCall = { apiHelperNew.employeesList(locationId) })
+
     suspend fun createEmployee(data: CreateEmployeeRequestModel) = apiHelperNew.createEmployee(data)
+
     suspend fun updateEmployee(taxId: Int, data: CreateEmployeeRequestModel) =
         apiHelperNew.updateEmployee(taxId, data)
 
     suspend fun deleteEmployee(data: Int) = apiHelperNew.deleteEmployee(data)
+
+
+    suspend fun logout(data: HashMap<String, String>) = apiHelperNew.logOut(data)
+
+
 
     override suspend fun abs() {
 
         appDatabase.characterDao().getCharacter(0)
     }
 
-    fun getCategoryList() =
-        performGetOperationDatabase(databaseQuery = { appDatabase.categoryDao().all() })
-
-
-    fun getItemsList() =
-        performGetOperationDatabase(databaseQuery = { appDatabase.itemDao().allItem!! })
 
     suspend fun deleteItem(itemId: Int) = apiHelperNew.deleteItem(itemId)
 

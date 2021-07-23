@@ -81,6 +81,9 @@
     <string name="clockout_message">Are you sure want to Clockout?</string>
     <string name="delete_item_message">Are you sure want to Delete Item?</string>
 
+    <string name="delete_category_message">Are you sure you want to delete category?</string>
+
+
     <string name="tv_personal_info">Personal Info</string>
     <string name="tv_jobs">Jobs</string>
     <string name="tv_primary_job_title">Primary job title</string>

@@ -9,14 +9,22 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
+import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.USERNAME
 import com.android.pos.databinding.FragmentClockInOwnerBinding
+import com.android.pos.di.PrefProvider
 import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.TimeFormatUtils
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class ClockInOwner : Fragment() {
     private lateinit var binding: FragmentClockInOwnerBinding
     private val viewModel by viewModels<ClockInOwnerViewModel>()
+
+    @Inject
+    lateinit var prefProvider: PrefProvider
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -30,6 +38,9 @@ class ClockInOwner : Fragment() {
 
         observeShowProgress()
         navigate()
+
+        binding.txtTitle.text = prefProvider.getValue(USERNAME, "")
+        binding.txtTime.text = TimeFormatUtils.showCurrentTime()
 
         return binding.root
     }

@@ -38,7 +38,7 @@ interface CategoryDao {
     fun categoryById(id: Int?, id1: Int?): TbCategory?
 
     @Query("DELETE FROM TbCategory where TbCategory.id  = :id")
-    fun deleteCategoryById(id: Int?)
+    suspend fun deleteCategoryById(id: Int?)
 
     @Query("DELETE FROM TbCategory")
     fun delete()

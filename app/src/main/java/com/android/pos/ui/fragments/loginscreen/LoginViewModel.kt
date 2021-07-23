@@ -13,6 +13,7 @@ import com.android.pos.data.remote.Constants.BASE_URL_NEW
 import com.android.pos.data.remote.Constants.EMAIL
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.remote.Constants.TERMINAL_ID
+import com.android.pos.data.remote.Constants.USERNAME
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.UserRepository
 import com.android.pos.di.PrefProvider
@@ -74,6 +75,7 @@ class LoginViewModel @Inject constructor(
                                     prefProvider.setValue(BASE_URL_NEW, it.data.baseUrl + "/")
                                     prefProvider.setValueInt(LOCATION_ID, it.data.locationId)
                                     prefProvider.setValue(EMAIL, it.data.email)
+                                    prefProvider.setValue(USERNAME, it.data.userName)
                                 }
 
                                 defaultTerminalCall()

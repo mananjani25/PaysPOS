@@ -8,7 +8,7 @@
 
         <variable
             name="model"
-            type="com.android.pos.data.model.CategoryListItemModel" />
+            type="com.android.pos.data.entities.TbItem" />
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat
@@ -44,7 +44,7 @@
                 android:gravity="start"
                 android:textColor="@color/viewTextColor"
                 android:textSize="@dimen/_6mdpi"
-                tools:text="@{model.title}" />
+                tools:text="@{model.name}" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
@@ -53,7 +53,7 @@
                 android:layout_gravity="center"
                 android:gravity="start"
                 android:padding="@dimen/_5sdp"
-                android:text="@{model.type}"
+                android:text="@{model.categoryName}"
                 android:textColor="@color/hintColor"
                 android:textSize="@dimen/_6mdpi" />
 
