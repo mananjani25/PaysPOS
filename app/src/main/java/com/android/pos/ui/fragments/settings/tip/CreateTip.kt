@@ -9,6 +9,9 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.model.responseModel.GetTipReponse
+import com.android.pos.data.remote.Constants.CREATE_TIP
+import com.android.pos.data.remote.Constants.KEY
+import com.android.pos.data.remote.Constants.SETTING_KEY
 import com.android.pos.databinding.DialogAddNewTipBinding
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
@@ -51,7 +54,9 @@ class CreateTip : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.imgBack.setOnClickListener {
-            findNavController().navigateUp()
+            val controller = findNavController()
+            controller.previousBackStackEntry?.savedStateHandle?.set(KEY, CREATE_TIP)
+            controller.popBackStack()
         }
     }
 

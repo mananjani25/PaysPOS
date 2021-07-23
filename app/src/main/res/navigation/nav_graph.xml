@@ -101,8 +101,10 @@
             app:enterAnim="@anim/nav_default_enter_anim" />
         <action
             android:id="@+id/action_createItem_to_categoriesDialog"
-            app:destination="@id/categoriesDialog"
-            app:enterAnim="@anim/nav_default_enter_anim" />
+            app:destination="@id/categoriesDialog" />
+        <action
+            android:id="@+id/action_createItem_to_itemEditTitleDialog"
+            app:destination="@id/itemEditTitleDialog" />
     </fragment>
     <fragment
         android:id="@+id/createCategory"
@@ -353,6 +355,10 @@
         android:id="@+id/categoriesDialog"
         android:name="com.android.pos.ui.dialog.CategoriesDialog"
         android:label="CategoriesDialog" />
+    <fragment
+        android:id="@+id/itemEditTitleDialog"
+        android:name="com.android.pos.ui.dialog.ItemEditTitleDialog"
+        android:label="ItemEditTitleDialog" />
     <dialog
         android:id="@+id/itemDialog"
         android:name="com.android.pos.ui.dialog.ItemDialog"

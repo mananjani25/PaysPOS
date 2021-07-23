@@ -3,7 +3,7 @@ package com.android.pos.data.entities
 import androidx.room.Embedded
 import androidx.room.Relation
 
-data class CategoryWithInventory(
+data class  CategoryWithInventory(
 
     @Embedded var category: TbCategory,
     @Relation(

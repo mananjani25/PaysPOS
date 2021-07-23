@@ -88,4 +88,13 @@
         <item name="android:dropDownVerticalOffset">0dp</item>
         <item name="android:dropDownHorizontalOffset">0dp</item>
     </style>
+
+    <style name="DayBreakDialogTheme" parent="@android:style/Theme.Dialog">
+        <item name="android:layout_width">335dp</item>
+        <item name="android:windowMinWidthMajor">335dp</item>
+        <item name="android:windowMinWidthMinor">335dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
 </resources>

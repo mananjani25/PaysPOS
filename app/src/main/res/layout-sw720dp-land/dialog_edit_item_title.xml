@@ -1,19 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/white"
-    android:orientation="vertical"
     tools:ignore="MissingDefaultResource">
 
-    <LinearLayout
+
+    <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/white"
-        android:orientation="vertical"
-        >
+        android:orientation="vertical">
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
@@ -22,10 +18,11 @@
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:layout_width="wrap_content"
+                android:id="@+id/imgBack"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:padding="@dimen/_10sdp"
-                app:srcCompat="@android:drawable/ic_menu_add" />
+                android:padding="@dimen/_5sdp"
+                app:srcCompat="@drawable/ic_cancel_black" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
@@ -35,20 +32,21 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="@string/edit_item_title"
-                android:textSize="@dimen/_14ssp" />
+                android:textSize="@dimen/_7mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
+                android:id="@+id/txtSave"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_weight="0.1"
                 android:background="@color/btnColor"
                 android:gravity="center"
-                android:padding="@dimen/_10sdp"
+                android:padding="@dimen/_5sdp"
                 android:text="@string/save"
                 android:textColor="@color/white"
-                android:textSize="@dimen/_10mdpi" />
+                android:textSize="@dimen/_7mdpi" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -57,70 +55,89 @@
             android:layout_height="1dp"
             android:background="@color/view" />
 
-        <include layout="@layout/label_box" />
-
-        <androidx.appcompat.widget.AppCompatTextView
-            style="@style/CustomFontSemiBold"
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/_50sdp"
-            android:layout_marginTop="@dimen/_10sdp"
-            android:layout_marginEnd="@dimen/_50sdp"
-            android:layout_marginBottom="@dimen/_5sdp"
-            android:text="@string/choose_color"
-            android:textColor="@color/txtColor"
-            android:textColorHint="@color/hintColor"
-            android:textSize="@dimen/_9ssp"
-            app:textAllCaps="true" />
+            android:layout_height="wrap_content">
 
 
-        <GridView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/_50sdp"
-            android:layout_marginEnd="@dimen/_50sdp"
-            android:layout_marginBottom="@dimen/_10sdp"
-            android:numColumns="5"
-            tools:listitem="@layout/color_box" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/white"
+                android:orientation="vertical">
 
-        <androidx.appcompat.widget.AppCompatTextView
-            style="@style/CustomFontBold"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginStart="@dimen/_50sdp"
-            android:layout_marginTop="@dimen/_10sdp"
-            android:layout_marginEnd="@dimen/_50sdp"
-            android:layout_marginBottom="@dimen/_5sdp"
-            android:background="@drawable/bg_button_border_gray"
-            android:gravity="center"
-            android:padding="@dimen/_10sdp"
-            android:text="@string/take_photo"
-            android:textColor="@color/btnColor"
-            android:textColorHint="@color/hintColor"
-            android:textSize="@dimen/_12mdpi"
-            app:textAllCaps="false" />
 
-        <androidx.appcompat.widget.AppCompatTextView
-            style="@style/CustomFontMediumStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/_50sdp"
-            android:layout_marginTop="@dimen/_10sdp"
-            android:layout_marginEnd="@dimen/_50sdp"
-            android:layout_marginBottom="@dimen/_5sdp"
-            android:text="@string/choose_image"
-            android:textColor="@color/txtColor"
-            android:textColorHint="@color/hintColor"
-            android:textSize="@dimen/_9ssp"
-            app:textAllCaps="true" />
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_50sdp"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:layout_marginEnd="@dimen/_50sdp"
+                    android:layout_marginBottom="@dimen/_5sdp"
+                    android:orientation="vertical">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/_50sdp"
-            android:layout_marginEnd="@dimen/_50sdp"
-            android:layout_marginBottom="@dimen/_10sdp"
-            tools:listitem="@layout/view_choose_images" />
-    </LinearLayout>
-</androidx.core.widget.NestedScrollView>
+
+                    <include layout="@layout/label_box" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/choose_color"
+                        android:textColor="@color/txtColor"
+                        android:textColorHint="@color/hintColor"
+                        android:textSize="@dimen/_7mdpi"
+                        app:textAllCaps="true" />
+
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvColors"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/_10sdp"
+                        android:numColumns="1"
+                        android:paddingTop="@dimen/_5sdp"
+                        tools:itemCount="1"
+                        tools:listitem="@layout/color_box" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontBold"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="@dimen/_10sdp"
+                        android:layout_marginBottom="@dimen/_5sdp"
+                        android:background="@drawable/bg_button_border_gray"
+                        android:gravity="center"
+                        android:padding="@dimen/_5sdp"
+                        android:text="@string/take_photo"
+                        android:textColor="@color/btnColor"
+                        android:textColorHint="@color/hintColor"
+                        android:textSize="@dimen/_7mdpi"
+                        app:textAllCaps="false" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontMediumStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_10sdp"
+                        android:layout_marginBottom="@dimen/_5sdp"
+                        android:text="@string/choose_image"
+                        android:textColor="@color/txtColor"
+                        android:textColorHint="@color/hintColor"
+                        android:textSize="@dimen/_7mdpi"
+                        app:textAllCaps="true" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/_10sdp"
+                        tools:itemCount="2"
+                        tools:listitem="@layout/view_choose_images" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+    </androidx.appcompat.widget.LinearLayoutCompat>
+</layout>

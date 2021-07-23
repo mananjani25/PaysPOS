@@ -1,6 +1,7 @@
 package com.android.pos.ui.fragments.settings
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +10,15 @@ import androidx.fragment.app.FragmentManager
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.model.BusinessSettingModel
+import com.android.pos.data.remote.Constants.ADD_SERVICE_CHARGE
+import com.android.pos.data.remote.Constants.CREATEDISCOUNT
+import com.android.pos.data.remote.Constants.CREATE_NOTES
+import com.android.pos.data.remote.Constants.CREATE_TAX
+import com.android.pos.data.remote.Constants.CREATE_TIP
+import com.android.pos.data.remote.Constants.KEY
+import com.android.pos.data.remote.Constants.ORDER_RECEIPTS
+import com.android.pos.data.remote.Constants.SERVICE_CHARGE
+import com.android.pos.data.remote.Constants.SETTING_KEY
 import com.android.pos.databinding.FragmentSettingsBinding
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.BusinessSettingAdapter
@@ -37,7 +47,7 @@ class Settings : Fragment() {
 
         init()
         onClick()
-        setAdapter()
+        setAdapter(0)
 
     }
 
@@ -57,6 +67,81 @@ class Settings : Fragment() {
         }
         binding.commonToolbar.txtSubTitle.setText("Taxes")
 
+        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<String>(KEY)
+            ?.observe(viewLifecycleOwner) { it ->
+                Log.e("Settings","Settings $it")
+                when (it) {
+                    CREATE_TAX -> {
+                        binding.txtBusiness.styleBold()
+                        binding.txtHardware.styleNormal()
+                        binding.txtSecurity.styleNormal()
+                        binding.txtMarketing.styleNormal()
+                        binding.txtEmployee.styleNormal()
+                        binding.txtReports.styleNormal()
+                        setAdapter(0)
+
+
+                    }
+                    CREATE_TIP -> {
+                        binding.txtBusiness.styleBold()
+                        binding.txtHardware.styleNormal()
+                        binding.txtSecurity.styleNormal()
+                        binding.txtMarketing.styleNormal()
+                        binding.txtEmployee.styleNormal()
+                        binding.txtReports.styleNormal()
+                        setAdapter(1)
+
+                    }
+                    ORDER_RECEIPTS -> {
+                        binding.txtBusiness.styleBold()
+                        binding.txtHardware.styleNormal()
+                        binding.txtSecurity.styleNormal()
+                        binding.txtMarketing.styleNormal()
+                        binding.txtEmployee.styleNormal()
+                        binding.txtReports.styleNormal()
+                        setAdapter(2)
+
+                    }
+                    CREATEDISCOUNT -> {
+
+                        binding.txtBusiness.styleBold()
+                        binding.txtHardware.styleNormal()
+                        binding.txtSecurity.styleNormal()
+                        binding.txtMarketing.styleNormal()
+                        binding.txtEmployee.styleNormal()
+                        binding.txtReports.styleNormal()
+                        setAdapter(3)
+
+                    }
+                    CREATE_NOTES -> {
+
+                        binding.txtBusiness.styleBold()
+                        binding.txtHardware.styleNormal()
+                        binding.txtSecurity.styleNormal()
+                        binding.txtMarketing.styleNormal()
+                        binding.txtEmployee.styleNormal()
+                        binding.txtReports.styleNormal()
+                        setAdapter(4)
+
+                    }
+                    ADD_SERVICE_CHARGE -> {
+
+                        binding.txtBusiness.styleBold()
+                        binding.txtHardware.styleNormal()
+                        binding.txtSecurity.styleNormal()
+                        binding.txtMarketing.styleNormal()
+                        binding.txtEmployee.styleNormal()
+                        binding.txtReports.styleNormal()
+                        setAdapter(5)
+
+                    }
+
+
+                }
+
+
+            }
+
     }
 
     private fun onClick() {
@@ -68,7 +153,7 @@ class Settings : Fragment() {
             binding.txtEmployee.styleNormal()
             binding.txtReports.styleNormal()
 
-            setAdapter()
+            setAdapter(0)
 
         }
         binding.txtHardware.setOnClickListener {
@@ -79,7 +164,7 @@ class Settings : Fragment() {
             binding.txtEmployee.styleNormal()
             binding.txtReports.styleNormal()
             binding.rvBusiness.visibility = View.GONE
-            val frag:Fragment = Hardware()
+            val frag: Fragment = Hardware()
             loadFragment(frag)
             binding.commonToolbar.txtSubTitle.setText("Hardware")
 
@@ -93,7 +178,7 @@ class Settings : Fragment() {
             binding.txtEmployee.styleNormal()
             binding.txtReports.styleNormal()
             binding.rvBusiness.visibility = View.GONE
-            val frag:Fragment = Security()
+            val frag: Fragment = Security()
             loadFragment(frag)
             binding.commonToolbar.txtSubTitle.setText("Security")
         }
@@ -106,7 +191,7 @@ class Settings : Fragment() {
             binding.txtEmployee.styleNormal()
             binding.txtReports.styleNormal()
             binding.rvBusiness.visibility = View.GONE
-            val frag:Fragment = Marketing()
+            val frag: Fragment = Marketing()
             loadFragment(frag)
             binding.commonToolbar.txtSubTitle.setText("Marketing")
         }
@@ -119,7 +204,7 @@ class Settings : Fragment() {
             binding.txtEmployee.styleBold()
             binding.txtReports.styleNormal()
             binding.rvBusiness.visibility = View.GONE
-            val frag:Fragment = Employee()
+            val frag: Fragment = Employee()
             loadFragment(frag)
             binding.commonToolbar.txtSubTitle.setText("Employee")
         }
@@ -138,17 +223,63 @@ class Settings : Fragment() {
     }
 
 
-    private fun setAdapter() {
+    private fun setAdapter(selectedPos: Int) {
         var list: ArrayList<BusinessSettingModel> = arrayListOf()
-        list.add(BusinessSettingModel(0, "Taxes", true))
+        list.add(BusinessSettingModel(0, "Taxes", false))
         list.add(BusinessSettingModel(0, "Tips", false))
         list.add(BusinessSettingModel(0, "Order Receipts", false))
         list.add(BusinessSettingModel(0, "Discount", false))
         list.add(BusinessSettingModel(0, "Notes", false))
         list.add(BusinessSettingModel(0, "Service Charge", false))
-        val taxFrag: Fragment = TaxesList()
-        loadFragment(taxFrag)
-        binding.commonToolbar.txtSubTitle.setText("Taxes")
+        for (i in 0 until list.size) {
+            if (selectedPos == i) {
+                list[i].isSelected = true
+            } else {
+                list[i].isSelected = false
+            }
+
+        }
+
+        when (selectedPos) {
+            0 -> {
+                binding.commonToolbar.txtSubTitle.setText("Taxes")
+                val taxFrag: Fragment = TaxesList()
+                loadFragment(taxFrag)
+            }
+            1 -> {
+                binding.commonToolbar.txtSubTitle.setText("Tips")
+                val tips: Fragment = TipsList()
+                loadFragment(tips)
+
+            }
+            2 -> {
+                binding.commonToolbar.txtSubTitle.setText("Order Receipts")
+                val orderReceipts = OrderReceipt()
+                loadFragment(orderReceipts)
+            }
+            3 -> {
+                binding.commonToolbar.txtSubTitle.setText("Discount")
+                val discount: Fragment = DiscountList()
+                loadFragment(discount)
+
+
+            }
+            4 -> {
+
+                binding.commonToolbar.txtSubTitle.setText("Notes")
+                val notes: Fragment = Notes()
+                loadFragment(notes)
+
+            }
+            5 -> {
+                binding.commonToolbar.txtSubTitle.setText("Service Charge")
+                val service: Fragment = ServiceChargeList()
+                loadFragment(service)
+
+            }
+        }
+
+
 
         binding.rvBusiness.visibility = View.VISIBLE
         binding.rvBusiness.adapter = BusinessSettingAdapter(requireContext(), list, object :

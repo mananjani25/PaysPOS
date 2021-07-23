@@ -66,6 +66,7 @@ class CategoriesDialog : DialogFragment(), View.OnClickListener {
                     Status.SUCCESS -> {
                         binding.rvCategoriesList.visibility = View.VISIBLE
                         binding.progressCircular.visibility = View.GONE
+
                         it.data?.let { it1 -> adapter.add(it1) }
                     }
                     Status.ERROR -> {

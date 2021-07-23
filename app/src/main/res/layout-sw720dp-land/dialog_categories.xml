@@ -61,6 +61,7 @@
         <androidx.appcompat.widget.AppCompatEditText
             style="@style/CustomFontRegularStyle"
             android:layout_width="match_parent"
+            android:visibility="gone"
             android:layout_height="wrap_content"
             android:background="@null"
             android:id="@+id/edtSearch"
