@@ -166,7 +166,7 @@
                         android:layout_height="1dp"
                         android:background="@color/view" />
 
-                    <RelativeLayout
+                    <LinearLayout
                         android:id="@+id/relativeCategory"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -174,26 +174,34 @@
                         android:padding="@dimen/_5sdp">
 
                         <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerVertical="true"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
                             android:layout_gravity="center"
-                            android:elevation="@dimen/_10sdp"
+                            android:layout_weight="1"
                             android:fontFamily="@font/sf_pro_display_semibold"
                             android:gravity="start"
                             android:text="@string/select_category"
                             android:textColor="@color/viewTextColor"
                             android:textSize="@dimen/_6mdpi" />
 
+                        <TextView
+                            android:id="@+id/txtCategoryName"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center"
+                            android:fontFamily="@font/sf_pro_display_semibold"
+                            android:gravity="start"
+                            android:textColor="@color/colorC5"
+                            android:textSize="@dimen/_6mdpi" />
+
                         <androidx.appcompat.widget.AppCompatImageView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_alignParentEnd="true"
                             android:layout_gravity="center"
                             android:layout_marginStart="@dimen/_5sdp"
                             android:layout_marginEnd="@dimen/_5sdp"
                             app:srcCompat="@drawable/ic_arrow_forward" />
-                    </RelativeLayout>
+                    </LinearLayout>
 
                     <View
                         android:layout_width="match_parent"
