@@ -2,11 +2,15 @@ package com.android.pos.utils.extensions
 
 import android.app.Activity
 import android.content.Context
+import android.content.res.Resources
+import android.graphics.Rect
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import com.android.pos.R
 
@@ -148,4 +152,15 @@ class AlertDialogHelper(context: Context?, title: CharSequence?, message: CharSe
         }
     }
 
+
+    /**
+     * Call this method (in onActivityCreated or later)
+     * to make the dialog near-full screen.
+     */
+    fun DialogFragment.setFullScreen() {
+        dialog?.window?.setLayout(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+    }
 }

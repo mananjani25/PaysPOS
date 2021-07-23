@@ -132,8 +132,18 @@ class CategoriesListAdapter(private val isChoose: Boolean) :
     }
 
     fun add(categoryModel: List<TbCategory>) {
-        this.categoryList = categoryModel as ArrayList<TbCategory>
-        this.filterList = categoryModel
+
+        if (isChoose) {
+            categoryList.add(0, TbCategory().apply {
+                name = "None"
+            })
+            filterList.add(0, TbCategory().apply {
+                name = "None"
+            })
+        }
+
+        categoryList.addAll(categoryModel)
+        filterList.addAll(categoryModel)
         notifyDataSetChanged()
     }
 
@@ -150,6 +160,11 @@ class CategoriesListAdapter(private val isChoose: Boolean) :
 
     fun setPos(selectedId: Int) {
         mpos = selectedId
+
+    }
+
+    fun addItem() {
+
 
     }
 }

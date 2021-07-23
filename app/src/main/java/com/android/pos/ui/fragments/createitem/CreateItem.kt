@@ -1,7 +1,6 @@
 package com.android.pos.ui.fragments.createitem
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,7 +20,7 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class CreateItem : Fragment() {
+class CreateItem : Fragment(), View.OnClickListener {
 
     private var selectedId: Int = -2
     private var isEdit: Boolean = false
@@ -52,21 +51,18 @@ class CreateItem : Fragment() {
             viewModel.setData(itemObject)
         }
 
-        binding.relativeCategory.setOnClickListener {
-            val bundle = Bundle().apply {
-                putInt("selectedId", selectedId)
-            }
-            findNavController().navigate(R.id.action_createItem_to_categoriesDialog, bundle)
-        }
+        binding.chooseCategory.setOnClickListener(this)
+        binding.imgEdit.setOnClickListener(this)
 
         setFragmentResultListener("request_key") { requestKey: String, bundle: Bundle ->
             val result = bundle.getParcelable<TbCategory>("data")
             selectedId = bundle.getInt("selectedId")
             if (result != null) {
-                Log.e("result", result.name)
-                binding.txtCategoryName.text = result.name
+                if (result.name == "None") {
+                    binding.txtCategoryName.text = ""
+                } else
+                    binding.txtCategoryName.text = result.name
             }
-            // do something with the result
         }
     }
 
@@ -103,5 +99,20 @@ class CreateItem : Fragment() {
         binding.root.liveSnackBar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
 
 
+    }
+
+    override fun onClick(v: View?) {
+        when (v?.id) {
+            R.id.chooseCategory -> {
+                val bundle = Bundle().apply {
+                    putInt("selectedId", selectedId)
+                }
+                findNavController().navigate(R.id.action_createItem_to_categoriesDialog, bundle)
+            }
+
+            R.id.imgEdit -> {
+                findNavController().navigate(R.id.action_createItem_to_itemEditTitleDialog)
+            }
+        }
     }
 }

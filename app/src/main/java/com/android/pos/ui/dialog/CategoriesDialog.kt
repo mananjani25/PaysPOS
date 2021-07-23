@@ -11,7 +11,6 @@ import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
-import com.android.pos.data.entities.TbCategory
 import com.android.pos.databinding.DialogCategoriesBinding
 import com.android.pos.ui.adapter.CategoriesListAdapter
 import com.android.pos.ui.fragments.inventory.CategoriesViewModel
@@ -67,6 +66,7 @@ class CategoriesDialog : DialogFragment(), View.OnClickListener {
                     Status.SUCCESS -> {
                         binding.rvCategoriesList.visibility = View.VISIBLE
                         binding.progressCircular.visibility = View.GONE
+
                         it.data?.let { it1 -> adapter.add(it1) }
                     }
                     Status.ERROR -> {
