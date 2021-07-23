@@ -238,7 +238,7 @@ class AllItems : Fragment() {
     }
 
     private fun setAdapter() {
-        adapter = ItemListAdapter(true)
+        adapter = ItemListAdapter(false)
         binding.rvAllItemList.adapter = adapter
     }
 

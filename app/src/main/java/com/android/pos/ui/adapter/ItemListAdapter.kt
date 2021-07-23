@@ -2,6 +2,7 @@ package com.android.pos.ui.adapter
 
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
@@ -24,24 +25,26 @@ class ItemListAdapter(private val isChoose: Boolean) :
             binding.model = item
             binding.executePendingBindings()
 
+            if (isChoose) {
+                binding.ivCheck.visibility = View.VISIBLE
+            } else {
+                binding.ivCheck.visibility = View.GONE
+            }
+
         }
 
         init {
             binding.ivCheck.setOnClickListener {
                 filterList[layoutPosition].isChecked = !filterList[layoutPosition].isChecked
 
-                if (!filterList.get(layoutPosition).isChecked) {
+                if (filterList.get(layoutPosition).isChecked) {
                     selectedItemList.add(filterList.get(layoutPosition))
                 } else {
                     selectedItemList.remove(filterList.get(layoutPosition))
                 }
-                Log.d("selectedItemList", "::" + selectedItemList.size)
                 notifyDataSetChanged()
             }
         }
-
-
-
 
 
     }
@@ -69,6 +72,11 @@ class ItemListAdapter(private val isChoose: Boolean) :
             }
         }
         notifyDataSetChanged()
+    }
+
+    fun selectedItemList(): ArrayList<TbItem> {
+
+        return selectedItemList
     }
 
 

@@ -21,7 +21,6 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ItemDialog : DialogFragment(), View.OnClickListener {
-    private var selectedId: Int = 0
     private lateinit var adapter: ItemListAdapter
     private lateinit var binding: DialogItemsBinding
     private val viewModel by viewModels<ItemsViewModel>()
@@ -121,6 +120,7 @@ class ItemDialog : DialogFragment(), View.OnClickListener {
             }
             R.id.txtDone -> {
 
+                adapter.selectedItemList()
                 /* val chooseModel = adapter.getData()
                  selectedId = adapter.getPos()
                  if (chooseModel != null) {
