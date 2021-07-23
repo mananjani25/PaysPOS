@@ -11,6 +11,7 @@ import com.android.pos.data.remote.Constants.EMPLOYEES_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.EMPLOYEE_CLOCK_IN
 import com.android.pos.data.remote.Constants.EMPLOYEE_LOG_IN
 import com.android.pos.data.remote.Constants.FORGOT_PASSWORD
+import com.android.pos.data.remote.Constants.ITEM_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.LOGIN_TERMINAL
 import com.android.pos.data.remote.Constants.LOGOUT
 import com.android.pos.data.remote.Constants.NOTES
@@ -163,4 +164,21 @@ interface ApiService {
         @Path("id") noteId: Int,
     ): BaseResponse
 
+    @DELETE(ITEM_UPDATE_DELETE)
+    suspend fun deleteItem(
+        @Path("id") noteId: Int,
+    ): BaseResponse
+
+    @FormUrlEncoded
+    @POST(CLOCK_OUT)
+    suspend fun hideItem(@FieldMap options: HashMap<String, String>): BaseResponse
+
+    @POST(EMPLOYEES)
+    suspend fun createItem(@Body createItemRequestModel: CreateItemRequestModel): BaseResponse
+
+    @PUT(NOTE_UPDATE_DELETE)
+    suspend fun updateItem(
+        @Path("id") id: Int,
+        @Body updateItem: CreateItemRequestModel
+    ): BaseResponse
 }

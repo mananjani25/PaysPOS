@@ -99,10 +99,10 @@ class CreateDiscountViewModel @Inject constructor(
 
 
             viewModelScope.launch {
-                if (isEdit) {
-                    resource = tipDiscountRepository.updateDiscount(discountId, discountData)
+                resource = if (isEdit) {
+                    tipDiscountRepository.updateDiscount(discountId, discountData)
                 } else {
-                    resource = tipDiscountRepository.createDiscount(discountData)
+                    tipDiscountRepository.createDiscount(discountData)
                 }
 
                 when (resource.status) {

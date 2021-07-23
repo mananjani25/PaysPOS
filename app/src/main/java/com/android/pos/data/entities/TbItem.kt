@@ -1,24 +1,23 @@
 package com.android.pos.data.entities
 
+import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.android.pos.data.typeconvert.TypeConvertersTax
+import kotlinx.parcelize.Parcelize
 
 @TypeConverters(TypeConvertersTax::class)
-@Entity(tableName = "TbItem")
-class TbItem {
+@Entity(tableName = "TbItem", primaryKeys = ["itemId", "categoryId"])
+@Parcelize
+class TbItem : Parcelable {
 
-
-    var id: Int = 0
-
-    @PrimaryKey
     var itemId: Int = 0
     var categoryId: Int = 0
     var categoryName:String=""
     var cost: Double = 0.0
     var createdAt: String = ""
-    var imageUrl: String = ""
+    var imageUrl: String? = null
     var isHide: Boolean = false
     var kitchenName: String = ""
     var modifierGroupIds: String = ""

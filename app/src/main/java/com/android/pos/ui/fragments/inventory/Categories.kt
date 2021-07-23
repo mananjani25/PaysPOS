@@ -89,7 +89,7 @@ class Categories : Fragment() {
 
     private fun setAdapter() {
 
-        adapter = CategoriesListAdapter()
+        adapter = CategoriesListAdapter(false)
         binding.rvCategoriesList.adapter = adapter
 
         object : SwipeHelper(activity, binding.rvCategoriesList) {

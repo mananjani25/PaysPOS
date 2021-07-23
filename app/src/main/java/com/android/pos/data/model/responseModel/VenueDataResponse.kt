@@ -68,14 +68,13 @@ data class VenueDataResponse(
         @BindingAdapter("profileImage")
         @JvmStatic
         fun loadImage(view: ImageView, imageUrl: String?) {
-            if (imageUrl.isNullOrBlank() || imageUrl.trim() == "" || imageUrl.isNullOrEmpty()
+            if (imageUrl.isNullOrBlank() || imageUrl.trim() == "" || imageUrl.trim() == "null" || imageUrl.isNullOrEmpty()
             ) {
                 return
 
             } else {
                 Glide.with(view.context)
                     .load(imageUrl).centerCrop()
-                    .placeholder(android.R.drawable.screen_background_dark_transparent)
                     .into(view)
             }
         }

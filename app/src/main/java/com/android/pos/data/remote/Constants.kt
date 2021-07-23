@@ -57,4 +57,5 @@ object Constants {
     const val VERTICAL = "vertical"
     const val HORIZONTAL = "horizontal"
 
+    const val ITEM_UPDATE_DELETE = "item/{id}"
 }

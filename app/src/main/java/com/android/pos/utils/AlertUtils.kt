@@ -18,6 +18,7 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import com.android.pos.R
+import java.nio.file.Files.delete
 import java.util.*
 
 
@@ -424,6 +425,36 @@ object AlertUtils {
         }
         val btDismiss = dialogView.findViewById<AppCompatTextView>(R.id.tvCancel)
         btDismiss.visibility = View.GONE
+
+    }
+
+    fun showCustomAlertWithListener(
+        context: Context,
+        message: String?,
+        listener: DialogInterface.OnClickListener?
+    ) {
+        val dialogView = LayoutInflater.from(context).inflate(R.layout.view_custom_dialog, null)
+        val customDialog = AlertDialog.Builder(context)
+            .setView(dialogView)
+            .show()
+        val tvTitle = dialogView.findViewById<AppCompatTextView>(R.id.tvTitle)
+        val tvSubTitle = dialogView.findViewById<AppCompatTextView>(R.id.tvMessage)
+
+        tvTitle.text = context.getString(R.string.app_name)
+        tvSubTitle.text = message
+
+        val btSave = dialogView.findViewById<AppCompatTextView>(R.id.tvSave)
+        btSave.text = context.getString(R.string.tv_delete)
+        btSave.setBackgroundColor(ContextCompat.getColor(context, R.color.colorRed))
+        btSave.setOnClickListener {
+            customDialog.dismiss()
+            listener?.onClick(customDialog, 0)
+        }
+        val btDismiss = dialogView.findViewById<AppCompatTextView>(R.id.tvCancel)
+        btDismiss.visibility = View.VISIBLE
+        btDismiss.setOnClickListener {
+            customDialog.dismiss()
+        }
 
     }
 }

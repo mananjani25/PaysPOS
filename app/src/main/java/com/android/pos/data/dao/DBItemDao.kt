@@ -1,7 +1,10 @@
 package com.android.pos.data.dao
 
 import androidx.lifecycle.LiveData
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
 import com.android.pos.data.entities.TbItem
 
 /**
@@ -15,13 +18,13 @@ interface DBItemDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addAllItem(elementsBeanList: List<TbItem>)
 
-    @get:Query("select * from TbItem")
+    @get:Query("select * from TbItem where TbItem.isHide = 0 GROUP by TbItem.itemId ORDER BY TbItem.sort ASC ")
     val allItem: LiveData<List<TbItem?>>?
 
     @Query("select * from TbItem where TbItem.categoryId  = :id")
     fun getItemList(id: Int?): LiveData<List<TbItem?>>?
 
-    @Query("SELECT * from TbItem where TbItem.id  = :id LIMIT 1")
+    @Query("SELECT * from TbItem where TbItem.itemId  = :id LIMIT 1")
     fun itemById(id: Int?): TbItem?
 
     @Query("SELECT * from TbItem LIMIT 1")
@@ -33,8 +36,8 @@ interface DBItemDao {
     @Query("SELECT * from TbItem where TbItem.itemId  = :id")
     fun itemId(id: Int?): List<TbItem?>?
 
-    @Query("DELETE FROM TbItem where TbItem.id  = :id")
-    fun deleteItem(id: Int?)
+    @Query("DELETE FROM TbItem where TbItem.itemId  = :id")
+    suspend fun deleteItem(id: Int?)
 
     @Query("DELETE FROM TbItem")
     fun deleteItemTbl()
