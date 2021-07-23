@@ -19,10 +19,10 @@
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/imgClose"
-                android:layout_width="@dimen/_15sdp"
-                android:layout_height="@dimen/_15sdp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_margin="@dimen/_7sdp"
+                android:padding="@dimen/_5sdp"
                 android:src="@drawable/ic_cancel_black" />
 
             <TextView
@@ -32,10 +32,11 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:layout_marginEnd="@dimen/_7sdp"
+                android:layout_marginEnd="@dimen/_5sdp"
+                android:padding="@dimen/_5sdp"
                 android:text="@string/sign_out"
                 android:textColor="@color/btnColorDark_"
-                android:textSize="@dimen/_8mdpi" />
+                android:textSize="@dimen/_6mdpi" />
 
 
         </RelativeLayout>
@@ -62,7 +63,7 @@
             android:layout_marginTop="@dimen/_7sdp"
             android:text="@string/business_name"
             android:textColor="@color/txtColor"
-            android:textSize="@dimen/_8mdpi"
+            android:textSize="@dimen/_6mdpi"
             app:layout_constraintStart_toStartOf="@+id/txtWlcBack"
             app:layout_constraintTop_toBottomOf="@+id/txtWlcBack" />
 
@@ -95,8 +96,8 @@
                     app:layout_constraintTop_toTopOf="parent">
 
                     <ImageView
-                        android:layout_width="@dimen/_12sdp"
-                        android:layout_height="@dimen/_12sdp"
+                        android:layout_width="@dimen/_10sdp"
+                        android:layout_height="@dimen/_10sdp"
                         android:src="@drawable/ic_home_icon" />
 
                     <TextView
@@ -108,7 +109,7 @@
                         android:gravity="center"
                         android:text="Home"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_7mdpi" />
+                        android:textSize="@dimen/_6mdpi" />
 
 
                 </LinearLayout>
@@ -117,7 +118,7 @@
                     android:id="@+id/viewLineHome"
                     android:layout_width="0dp"
                     android:layout_height="1dp"
-                    android:background="@color/dividerMenu"
+                    android:background="@color/background"
                     app:layout_constraintEnd_toEndOf="@+id/linearHome"
                     app:layout_constraintStart_toStartOf="@+id/linearHome"
                     app:layout_constraintTop_toBottomOf="@+id/linearHome" />
@@ -136,8 +137,8 @@
                     app:layout_constraintTop_toBottomOf="@+id/viewLineHome">
 
                     <ImageView
-                        android:layout_width="@dimen/_12sdp"
-                        android:layout_height="@dimen/_12sdp"
+                        android:layout_width="@dimen/_10sdp"
+                        android:layout_height="@dimen/_10sdp"
                         android:src="@drawable/ic_orders" />
 
                     <TextView
@@ -149,7 +150,7 @@
                         android:gravity="center"
                         android:text="Orders"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_7mdpi" />
+                        android:textSize="@dimen/_6mdpi" />
 
 
                 </LinearLayout>
@@ -158,7 +159,7 @@
                     android:id="@+id/viewLineOrders"
                     android:layout_width="0dp"
                     android:layout_height="1dp"
-                    android:background="@color/dividerMenu"
+                    android:background="@color/background"
                     app:layout_constraintEnd_toEndOf="@+id/linearOrders"
                     app:layout_constraintStart_toStartOf="@+id/linearOrders"
                     app:layout_constraintTop_toBottomOf="@+id/linearOrders" />
@@ -176,8 +177,8 @@
                     app:layout_constraintTop_toBottomOf="@+id/viewLineOrders">
 
                     <ImageView
-                        android:layout_width="@dimen/_12sdp"
-                        android:layout_height="@dimen/_12sdp"
+                        android:layout_width="@dimen/_10sdp"
+                        android:layout_height="@dimen/_10sdp"
                         android:src="@drawable/ic_transaction" />
 
                     <TextView
@@ -189,7 +190,7 @@
                         android:gravity="center"
                         android:text="Transactions"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_7mdpi" />
+                        android:textSize="@dimen/_6mdpi" />
 
 
                 </LinearLayout>
@@ -198,7 +199,7 @@
                     android:id="@+id/viewLineTran"
                     android:layout_width="0dp"
                     android:layout_height="1dp"
-                    android:background="@color/dividerMenu"
+                    android:background="@color/background"
                     app:layout_constraintEnd_toEndOf="@+id/linearTransaction"
                     app:layout_constraintStart_toStartOf="@+id/linearTransaction"
                     app:layout_constraintTop_toBottomOf="@+id/linearTransaction" />
@@ -216,8 +217,8 @@
                     app:layout_constraintTop_toBottomOf="@+id/viewLineTran">
 
                     <ImageView
-                        android:layout_width="@dimen/_12sdp"
-                        android:layout_height="@dimen/_12sdp"
+                        android:layout_width="@dimen/_10sdp"
+                        android:layout_height="@dimen/_10sdp"
                         android:src="@drawable/ic_payment_history" />
 
                     <TextView
@@ -229,7 +230,7 @@
                         android:gravity="center"
                         android:text="Cash Log"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_7mdpi" />
+                        android:textSize="@dimen/_6mdpi" />
 
 
                 </LinearLayout>
@@ -238,7 +239,7 @@
                     android:id="@+id/viewLineCash"
                     android:layout_width="0dp"
                     android:layout_height="1dp"
-                    android:background="@color/dividerMenu"
+                    android:background="@color/background"
                     app:layout_constraintEnd_toEndOf="@+id/linearCash"
                     app:layout_constraintStart_toStartOf="@+id/linearCash"
                     app:layout_constraintTop_toBottomOf="@+id/linearCash" />
@@ -257,8 +258,8 @@
                     app:layout_constraintTop_toBottomOf="@+id/viewLineCash">
 
                     <ImageView
-                        android:layout_width="@dimen/_12sdp"
-                        android:layout_height="@dimen/_12sdp"
+                        android:layout_width="@dimen/_10sdp"
+                        android:layout_height="@dimen/_10sdp"
                         android:src="@drawable/ic_reports" />
 
                     <TextView
@@ -270,7 +271,7 @@
                         android:gravity="center"
                         android:text="Reports"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_7mdpi" />
+                        android:textSize="@dimen/_6mdpi" />
 
 
                 </LinearLayout>
@@ -279,7 +280,7 @@
                     android:id="@+id/viewLineReports"
                     android:layout_width="0dp"
                     android:layout_height="1dp"
-                    android:background="@color/dividerMenu"
+                    android:background="@color/background"
                     app:layout_constraintEnd_toEndOf="@+id/linearReports"
                     app:layout_constraintStart_toStartOf="@+id/linearReports"
                     app:layout_constraintTop_toBottomOf="@+id/linearReports" />
@@ -306,8 +307,8 @@
                     app:layout_constraintTop_toTopOf="parent">
 
                     <ImageView
-                        android:layout_width="@dimen/_12sdp"
-                        android:layout_height="@dimen/_12sdp"
+                        android:layout_width="@dimen/_10sdp"
+                        android:layout_height="@dimen/_10sdp"
                         android:src="@drawable/ic_groups" />
 
                     <TextView
@@ -319,7 +320,7 @@
                         android:gravity="center"
                         android:text="Customers"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_7mdpi" />
+                        android:textSize="@dimen/_6mdpi" />
 
 
                 </LinearLayout>
@@ -328,7 +329,7 @@
                     android:id="@+id/viewLineCust"
                     android:layout_width="0dp"
                     android:layout_height="1dp"
-                    android:background="@color/dividerMenu"
+                    android:background="@color/background"
                     app:layout_constraintEnd_toEndOf="@+id/linearCust"
                     app:layout_constraintStart_toStartOf="@+id/linearCust"
                     app:layout_constraintTop_toBottomOf="@+id/linearCust" />
@@ -347,8 +348,8 @@
                     app:layout_constraintTop_toBottomOf="@+id/viewLineCust">
 
                     <ImageView
-                        android:layout_width="@dimen/_12sdp"
-                        android:layout_height="@dimen/_12sdp"
+                        android:layout_width="@dimen/_10sdp"
+                        android:layout_height="@dimen/_10sdp"
                         android:src="@drawable/ic_groups" />
 
                     <TextView
@@ -360,7 +361,7 @@
                         android:gravity="center"
                         android:text="Team"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_7mdpi" />
+                        android:textSize="@dimen/_6mdpi" />
 
 
                 </LinearLayout>
@@ -369,7 +370,7 @@
                     android:id="@+id/viewLineTeam"
                     android:layout_width="0dp"
                     android:layout_height="1dp"
-                    android:background="@color/dividerMenu"
+                    android:background="@color/background"
                     app:layout_constraintEnd_toEndOf="@+id/linearTeam"
                     app:layout_constraintStart_toStartOf="@+id/linearTeam"
                     app:layout_constraintTop_toBottomOf="@+id/linearTeam" />
@@ -387,8 +388,8 @@
                     app:layout_constraintTop_toBottomOf="@+id/viewLineTeam">
 
                     <ImageView
-                        android:layout_width="@dimen/_12sdp"
-                        android:layout_height="@dimen/_12sdp"
+                        android:layout_width="@dimen/_10sdp"
+                        android:layout_height="@dimen/_10sdp"
                         android:src="@drawable/ic_inventory" />
 
                     <TextView
@@ -400,7 +401,7 @@
                         android:gravity="center"
                         android:text="Inventory"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_7mdpi" />
+                        android:textSize="@dimen/_6mdpi" />
 
 
                 </LinearLayout>
@@ -409,7 +410,7 @@
                     android:id="@+id/viewLineInv"
                     android:layout_width="0dp"
                     android:layout_height="1dp"
-                    android:background="@color/dividerMenu"
+                    android:background="@color/background"
                     app:layout_constraintEnd_toEndOf="@+id/linearInventory"
                     app:layout_constraintStart_toStartOf="@+id/linearInventory"
                     app:layout_constraintTop_toBottomOf="@+id/linearInventory" />
@@ -427,8 +428,8 @@
                     app:layout_constraintTop_toBottomOf="@+id/viewLineInv">
 
                     <ImageView
-                        android:layout_width="@dimen/_12sdp"
-                        android:layout_height="@dimen/_12sdp"
+                        android:layout_width="@dimen/_10sdp"
+                        android:layout_height="@dimen/_10sdp"
                         android:src="@drawable/ic_settings" />
 
                     <TextView
@@ -440,7 +441,7 @@
                         android:gravity="center"
                         android:text="Settings"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_7mdpi" />
+                        android:textSize="@dimen/_6mdpi" />
 
 
                 </LinearLayout>
@@ -449,7 +450,7 @@
                     android:id="@+id/viewLineSetting"
                     android:layout_width="0dp"
                     android:layout_height="1dp"
-                    android:background="@color/dividerMenu"
+                    android:background="@color/background"
                     app:layout_constraintEnd_toEndOf="@+id/linearSetting"
                     app:layout_constraintStart_toStartOf="@+id/linearSetting"
                     app:layout_constraintTop_toBottomOf="@+id/linearSetting" />
@@ -468,8 +469,8 @@
                     app:layout_constraintTop_toBottomOf="@+id/viewLineSetting">
 
                     <ImageView
-                        android:layout_width="@dimen/_12sdp"
-                        android:layout_height="@dimen/_12sdp"
+                        android:layout_width="@dimen/_10sdp"
+                        android:layout_height="@dimen/_10sdp"
                         android:src="@drawable/ic_headset" />
 
                     <TextView
@@ -481,7 +482,7 @@
                         android:gravity="center"
                         android:text="Support"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_7mdpi" />
+                        android:textSize="@dimen/_6mdpi" />
 
 
                 </LinearLayout>
@@ -490,7 +491,7 @@
                     android:id="@+id/viewLineSupport"
                     android:layout_width="0dp"
                     android:layout_height="1dp"
-                    android:background="@color/dividerMenu"
+                    android:background="@color/background"
                     app:layout_constraintEnd_toEndOf="@+id/linearSupport"
                     app:layout_constraintStart_toStartOf="@+id/linearSupport"
                     app:layout_constraintTop_toBottomOf="@+id/linearSupport" />

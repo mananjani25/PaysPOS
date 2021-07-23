@@ -49,7 +49,7 @@ class PosRepository @Inject constructor(
                         categoryId = category.id
                         categoryName = category.name
                         name = it.name
-                        imageUrl = it.imgUrl.toString()
+                        imageUrl = it.imgUrl
                         kitchenName = it.kitchenName
                         price = it.price
                         productCode = it.productCode

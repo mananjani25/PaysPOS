@@ -297,6 +297,7 @@ class DashboardCategoryNew : Fragment() {
             {
                 when (it.status) {
                     Status.SUCCESS -> {
+                        ProgressUtils.dismissProgressDialog()
                         val tbCategory = it.data
                         if (tbCategory != null) {
                             Log.e("venueDataLocal", "SUCCESS" + tbCategory.size)
@@ -396,9 +397,9 @@ class DashboardCategoryNew : Fragment() {
                         }
                     }
                     Status.ERROR ->
-                        Log.e("venueDataLocal", "ERROR")
+                        ProgressUtils.dismissProgressDialog()
 
-                    Status.LOADING -> Log.e("venueDataLocal", "LOADING")
+                    Status.LOADING -> ProgressUtils.showProgressDialog(requireActivity())
 
                 }
             })
