@@ -58,8 +58,8 @@
             android:src="@drawable/ic_dot_menu"
             app:tint="#111214" />
 
-        <androidx.appcompat.widget.AppCompatEditText
-            android:id="@+id/edtSearch"
+        <AutoCompleteTextView
+            android:id="@+id/autoSearch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
@@ -68,7 +68,7 @@
             android:background="@null"
             android:ems="10"
             android:fontFamily="@font/sf_pro_display_regular"
-            android:hint="Scan barcode or search"
+            android:hint="@string/scan_barcode_or_search"
             android:imeOptions="actionDone"
             android:inputType="text"
             android:textColor="@color/black"
@@ -81,10 +81,9 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginEnd="@dimen/_10sdp"
-            android:layout_toStartOf="@+id/edtSearch"
+            android:layout_toStartOf="@+id/autoSearch"
             android:src="@drawable/ic_search"
             app:tint="@color/black" />
-
 
 
     </RelativeLayout>

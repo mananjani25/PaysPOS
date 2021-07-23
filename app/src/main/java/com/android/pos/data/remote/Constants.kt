@@ -56,4 +56,14 @@ object Constants {
     const val HORIZONTAL = "horizontal"
 
     const val ITEM_UPDATE_DELETE = "item/{id}"
+
+    const val SETTING_KEY = "setting_key"
+    const val CREATE_TAX = "create_tax"
+    const val CREATE_TIP = "create_tip"
+    const val ORDER_RECEIPTS = "order_receipts"
+
+    const val CREATE_NOTES = "create_notes"
+    const val ADD_SERVICE_CHARGE = "add_service_charge"
+
+
 }

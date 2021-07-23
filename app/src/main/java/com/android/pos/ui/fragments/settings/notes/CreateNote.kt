@@ -10,6 +10,8 @@ import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.model.responseModel.GetTaxResponse
 import com.android.pos.data.model.responseModel.NoteResponse
+import com.android.pos.data.remote.Constants.CREATE_NOTES
+import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.databinding.CreateNoteBinding
 import com.android.pos.ui.fragments.settings.tax.CreateTaxViewModel
 import com.android.pos.utils.ProgressUtils
@@ -53,7 +55,9 @@ class CreateNote : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.imgBack.setOnClickListener {
-            findNavController().navigateUp()
+            val navController = findNavController()
+            navController.previousBackStackEntry?.savedStateHandle?.set(KEY, CREATE_NOTES)
+            navController.popBackStack()
         }
     }
 

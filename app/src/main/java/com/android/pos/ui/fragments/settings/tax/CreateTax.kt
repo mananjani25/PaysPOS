@@ -11,6 +11,8 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.model.responseModel.GetTaxResponse
+import com.android.pos.data.remote.Constants.CREATE_TAX
+import com.android.pos.data.remote.Constants.SETTING_KEY
 import com.android.pos.databinding.DialogCreateNewTaxBinding
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
@@ -60,7 +62,13 @@ class CreateTax : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         view.findViewById<AppCompatImageView>(R.id.imgBack).setOnClickListener {
-            findNavController().navigateUp()
+            val navController = findNavController()
+            navController.previousBackStackEntry?.savedStateHandle?.set(
+                SETTING_KEY,
+                CREATE_TAX
+            )
+            navController.popBackStack()
+            //findNavController().navigateUp()
         }
     }
 
