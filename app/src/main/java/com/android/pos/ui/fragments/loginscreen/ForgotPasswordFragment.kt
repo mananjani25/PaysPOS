@@ -12,6 +12,7 @@ import com.android.pos.R
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.AUTH_TOKEN
 import com.android.pos.data.remote.Constants.IS_CLOCKOUT
+import com.android.pos.databinding.FragmentForgotPasswordBinding
 import com.android.pos.databinding.FragmentLoginBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.ProgressUtils
@@ -21,15 +22,13 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class LoginFragment : Fragment() {
+class ForgotPasswordFragment : Fragment() {
 
 
-    private lateinit var binding: FragmentLoginBinding
+    private lateinit var binding: FragmentForgotPasswordBinding
 
-    private val viewModel by viewModels<LoginViewModel>()
+    private val viewModel by viewModels<ForgotPasswordViewModel>()
 
-    @Inject
-    lateinit var prefProvider: PrefProvider
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,17 +36,8 @@ class LoginFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-
-        if (!prefProvider.getValue(AUTH_TOKEN, "").toString().isEmpty()) {
-            if (prefProvider.getValueboolean(IS_CLOCKOUT, false)) {
-                findNavController().navigate(R.id.action_login_to_scheduledShifts)
-            } else {
-                findNavController().navigate(R.id.action_login_to_dashboardCategory)
-            }
-
-        }
-
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_login, container, false)
+        binding =
+            DataBindingUtil.inflate(inflater, R.layout.fragment_forgot_password, container, false)
 
         binding.lifecycleOwner = this
         binding.loginViewModel = viewModel
@@ -56,19 +46,11 @@ class LoginFragment : Fragment() {
         observeShowProgress()
         navigate()
 
-        binding.txtForgotPass.setOnClickListener {
-            findNavController().navigate(R.id.action_login_to_forgotPasswordFragment)
-        }
-
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-//
-//        binding.txtSignIn.setOnClickListener {
-//            findNavController().navigate(R.id.action_login_to_scheduledShifts)
-//        }
     }
 
     private fun observeShowProgress() {
@@ -90,7 +72,7 @@ class LoginFragment : Fragment() {
         viewModel.data.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
-                    findNavController().navigate(R.id.action_login_to_scheduledShifts)
+                    findNavController().navigateUp()
                 }
             }
         })

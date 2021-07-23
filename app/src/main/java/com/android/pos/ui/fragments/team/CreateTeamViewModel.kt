@@ -1,6 +1,7 @@
 package com.android.pos.ui.fragments.team
 
 import android.text.TextUtils
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -50,7 +51,8 @@ class CreateTeamViewModel @Inject constructor(
         createTaxDetails.value?.firstName = employeeModel.firstName
         createTaxDetails.value?.lastName = employeeModel.lastName
         createTaxDetails.value?.email = employeeModel.email
-        createTaxDetails.value?.phoneNumber = employeeModel.phoneNumber.toString().replace(("[\\D]").toRegex(), "")
+        createTaxDetails.value?.phoneNumber =
+            employeeModel.phoneNumber.toString()
         createTaxDetails.value?.locationId = employeeModel.locationId
         createTaxDetails.value?.passcode = employeeModel.passcode
         createTaxDetails.value?.isActive = employeeModel.isActive
@@ -82,7 +84,7 @@ class CreateTeamViewModel @Inject constructor(
                 if (isEdit) id = taxId
                 firstName = value!!.firstName
                 lastName = value.lastName
-                phoneNumber = value.phoneNumber
+                phoneNumber = value.phoneNumber.replace(("[\\D]").toRegex(), "")
                 email = value.email
                 locationId = prefProvider.getValueInt(LOCATION_ID, -1)
                 passcode = value.passcode

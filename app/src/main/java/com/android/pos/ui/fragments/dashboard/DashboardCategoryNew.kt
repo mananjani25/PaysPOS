@@ -55,6 +55,8 @@ class DashboardCategoryNew : Fragment() {
     lateinit var prefProvider: PrefProvider
     override fun onAttach(context: Context) {
         super.onAttach(context)
+
+
     }
 
     override fun onCreateView(

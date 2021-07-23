@@ -18,6 +18,9 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun employeeClockOut(data: HashMap<String, String>) =
         getResult { apiService.employeeClockOut(data) }
 
+    suspend fun forgotPassword(data: HashMap<String, String>) =
+        getResult { apiService.forgotPassword(data) }
+
     suspend fun syncVenueData() =
         getResult { apiService.syncVenueData() }
 

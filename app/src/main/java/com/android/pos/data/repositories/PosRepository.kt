@@ -100,7 +100,7 @@ class PosRepository @Inject constructor(
     suspend fun deleteEmployee(data: Int) = apiHelperNew.deleteEmployee(data)
 
 
-    suspend fun logout(data: HashMap<String, String>) = apiHelperNew.logOut(data)
+
     
 
 

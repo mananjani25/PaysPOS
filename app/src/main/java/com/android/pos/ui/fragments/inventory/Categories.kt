@@ -98,15 +98,14 @@ class Categories : Fragment() {
                 underlayButtons: MutableList<UnderlayButton?>
             ) {
 
-                /* underlayButtons.add(UnderlayButton(
+                 underlayButtons.add(UnderlayButton(
                      "Hide",
                      0,
                      Color.parseColor("#2997cc")
                  ) { pos ->
-                     //  gotoActivity(true, pos)
-                     hideCategoryCall(pos)
+                    // hideCategoryCall(pos)
 
-                 })*/
+                 })
                 underlayButtons.add(UnderlayButton(
                     "Edit",
                     0,

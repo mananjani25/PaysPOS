@@ -24,7 +24,11 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.android.pos.R
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.IS_CLOCKOUT
+import com.android.pos.data.remote.Constants.PASSCODE
+import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.data.repositories.PosRepository
+import com.android.pos.data.repositories.UserRepository
 import com.android.pos.databinding.ParentActivityBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.fragments.loginscreen.LoginViewModel
@@ -48,7 +52,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var prefProvider: PrefProvider
 
     @Inject
-    lateinit var repo: PosRepository
+    lateinit var repo: UserRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -161,21 +165,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun alertLogout() {
-        alert("Logout","Are You Sure.Want to Logout?",{
-            this.positiveButton("Logout",{
+        alert("Logout", "Are You Sure want to Logout?") {
+            this.positiveButton("Logout") {
                 logoutAPI()
 
-            })
+            }
 
-            this.negativeButton("Cancel",{
+            this.negativeButton("Cancel") {
 
 
-            })
+            }
 
-        })
+        }
     }
-
-
 
 
     private fun logout() {
@@ -220,33 +222,60 @@ class MainActivity : AppCompatActivity() {
         showDialog()
 
         lifecycleScope.launch {
-            val data = HashMap<String, String>()
-            data["email"] = prefProvider.getValue(Constants.EMAIL, "").toString()
-            val resource = repo.logout(data)
-            when (resource.status) {
+            val dataClockout = HashMap<String, String>()
+            dataClockout["passcode"] = prefProvider.getValue(PASSCODE, "").toString()
+            dataClockout["terminal_id"] = prefProvider.getValueInt(TERMINAL_ID, -1).toString()
+
+            val resourceClockout = repo.employeeClockOut(dataClockout)
+            when (resourceClockout.status) {
                 Status.SUCCESS -> {
-                    resource.data?.let { it ->
-                        dismissDialog()
+                    prefProvider.setValueboolean(IS_CLOCKOUT, true)
+                    resourceClockout.data.let {
                         if (it?.status == 200) {
-                            clearPreferances()
-                            disableDrawer()
-                            logout()
+                            resourceClockout.data?.let {
+                                val data = HashMap<String, String>()
+                                data["email"] =
+                                    prefProvider.getValue(Constants.EMAIL, "").toString()
+                                val resource = repo.logout(data)
+                                when (resource.status) {
+                                    Status.SUCCESS -> {
+                                        resource.data?.let { it ->
+                                            dismissDialog()
+                                            if (it?.status == 200) {
+                                                clearPreferances()
+                                                disableDrawer()
+                                                logout()
+                                            }
+
+                                        }
+                                    }
+                                    Status.LOADING -> {
+
+
+                                    }
+                                    Status.ERROR -> {
+                                        dismissDialog()
+
+                                    }
+
+                                }
+                            }
+                        } else {
                         }
 
                     }
 
-
                 }
-                Status.LOADING -> {
 
-
-                }
                 Status.ERROR -> {
                     dismissDialog()
-
                 }
 
+                Status.LOADING -> {
+                }
             }
+
+
         }
     }
 

@@ -10,6 +10,7 @@ import com.android.pos.data.remote.Constants.EMPLOYEES
 import com.android.pos.data.remote.Constants.EMPLOYEES_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.EMPLOYEE_CLOCK_IN
 import com.android.pos.data.remote.Constants.EMPLOYEE_LOG_IN
+import com.android.pos.data.remote.Constants.FORGOT_PASSWORD
 import com.android.pos.data.remote.Constants.LOGIN_TERMINAL
 import com.android.pos.data.remote.Constants.LOGOUT
 import com.android.pos.data.remote.Constants.NOTES
@@ -46,6 +47,14 @@ interface ApiService {
     @FormUrlEncoded
     @POST(CLOCK_OUT)
     suspend fun employeeClockOut(@FieldMap options: HashMap<String, String>): BaseResponse
+
+    @FormUrlEncoded
+    @POST(FORGOT_PASSWORD)
+    suspend fun forgotPassword(@FieldMap option:HashMap<String,String>):BaseResponse
+
+    @FormUrlEncoded
+    @POST(LOGOUT)
+    suspend fun userLogOut(@FieldMap option:HashMap<String,String>):BaseResponse
 
     @GET(SYNC_VENUE_DATA)
     suspend fun syncVenueData(): VenueDataResponse
@@ -139,11 +148,6 @@ interface ApiService {
         @Path("id") taxId: Int,
         @Body createTax: CreateNoteRequest
     ): BaseResponse
-
-    @FormUrlEncoded
-    @POST(LOGOUT)
-    suspend fun userLogOut(@FieldMap option:HashMap<String,String>):BaseResponse
-
 
     @POST(EMPLOYEES)
     suspend fun createEmployee(@Body createEmployeeRequestModel: CreateEmployeeRequestModel): BaseResponse
