@@ -48,6 +48,11 @@ class CreateItem : Fragment() {
             itemObject = arguments?.getParcelable("itemObject")!!
             viewModel.setData(itemObject)
         }
+
+        binding.relativeCategory.setOnClickListener {
+
+            findNavController().navigate(R.id.action_createItem_to_categoriesDialog)
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

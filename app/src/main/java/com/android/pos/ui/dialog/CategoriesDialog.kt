@@ -1,23 +1,23 @@
-package com.android.pos.ui.fragments.inventory
+package com.android.pos.ui.dialog
 
+import android.graphics.Point
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
 import com.android.pos.R
-import com.android.pos.databinding.FragmentCategoriesBinding
+import com.android.pos.databinding.DialogCategoriesBinding
 import com.android.pos.ui.adapter.CategoriesListAdapter
+import com.android.pos.ui.fragments.inventory.CategoriesViewModel
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 
+
 @AndroidEntryPoint
-class Categories : Fragment() {
+class CategoriesDialog : DialogFragment() {
     private lateinit var adapter: CategoriesListAdapter
-    private lateinit var binding: FragmentCategoriesBinding
+    private lateinit var binding: DialogCategoriesBinding
     private val viewModel by viewModels<CategoriesViewModel>()
 
     override fun onCreateView(
@@ -25,17 +25,30 @@ class Categories : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_categories, container, false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.dialog_categories, container, false)
         binding.lifecycleOwner = this
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        val window: Window? = dialog!!.window
+        val size = Point()
+
+        val display: Display = window?.windowManager?.defaultDisplay!!
+        display.getSize(size)
+
+        val width: Int = size.x
+
+        window.setLayout((width * 0.50).toInt(), WindowManager.LayoutParams.MATCH_PARENT)
+        window.setGravity(Gravity.CENTER)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         setAdapter()
-        onClick()
-
         categoriesObserver()
     }
 
@@ -65,15 +78,10 @@ class Categories : Fragment() {
         })
     }
 
-    private fun onClick() {
-        binding.txtCreateCategory.setOnClickListener {
-            findNavController().navigate(R.id.action_inventory_to_createCategory)
-        }
-    }
 
     private fun setAdapter() {
 
-        adapter = CategoriesListAdapter(false)
+        adapter = CategoriesListAdapter(true)
         binding.rvCategoriesList.adapter = adapter
 
     }
