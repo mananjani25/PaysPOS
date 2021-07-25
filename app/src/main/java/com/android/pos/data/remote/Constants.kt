@@ -45,27 +45,27 @@ object Constants {
     const val SERVICE_CHARGE = "service_charges"
     const val SERVICE_CHARGE_UPDATE_DELETE = "service_charges/{id}"
 
+    const val ITEM_UPDATE_DELETE = "item/{id}"
 
+
+    const val VERTICAL = "vertical"
+    const val HORIZONTAL = "horizontal"
+
+    const val KEY = "key"
     const val CREATECATEGORY = "create_category"
     const val CREATEMODIFIER = "create_modifier"
     const val CREATEDISCOUNT = "create_discount"
     const val CREATEOPTION = "create_option"
     const val CREATEITEM = "create_item"
 
-    const val KEY = "key"
-
-    const val VERTICAL = "vertical"
-    const val HORIZONTAL = "horizontal"
-
-    const val ITEM_UPDATE_DELETE = "item/{id}"
-
     const val SETTING_KEY = "setting_key"
     const val CREATE_TAX = "create_tax"
     const val CREATE_TIP = "create_tip"
     const val ORDER_RECEIPTS = "order_receipts"
-
     const val CREATE_NOTES = "create_notes"
     const val ADD_SERVICE_CHARGE = "add_service_charge"
 
+    const val DIALOG_KEY = "dialog_key"
+    const val DIALOG_KEY_TAX = "dialog_key_tax"
 
 }

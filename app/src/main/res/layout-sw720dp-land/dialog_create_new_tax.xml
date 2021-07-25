@@ -7,6 +7,10 @@
     <data>
 
         <variable
+            name="createTaxFragment"
+            type="com.android.pos.ui.fragments.settings.tax.CreateTax" />
+
+        <variable
             name="viewModel"
             type="com.android.pos.ui.fragments.settings.tax.CreateTaxViewModel" />
     </data>
@@ -102,11 +106,13 @@
                         android:textSize="@dimen/_6mdpi" />
 
                     <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/swtEnableTax"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_gravity="center"
                         android:checked="false"
+                        android:onCheckedChanged="@{(button, bool)-> createTaxFragment.enableTax(bool)}"
                         android:padding="@dimen/_5sdp"
                         app:srcCompat="@drawable/ic_arrow_forward"
                         app:theme="@style/AppTheme" />
@@ -216,6 +222,7 @@
 
 
                 <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/llItemPricing"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
@@ -234,11 +241,11 @@
                         android:textSize="@dimen/_6mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvItemPricing"
                         style="@style/CustomFontSemiBold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:text="@string/tv_add_tax_to_price"
                         android:textColor="@color/cool_grey"
                         android:textSize="@dimen/_6mdpi" />
 
@@ -337,6 +344,7 @@
                         android:textSize="@dimen/_6mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/itemsCount"
                         style="@style/CustomFontSemiBold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

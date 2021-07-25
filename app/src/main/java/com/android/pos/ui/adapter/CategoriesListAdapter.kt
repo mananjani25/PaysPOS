@@ -29,7 +29,7 @@ class CategoriesListAdapter(private val isChoose: Boolean) :
                 if (mpos == layoutPosition) {
                     binding.imageCheck.setImageResource(R.drawable.ic_outline_radio_button_checked)
                 } else {
-                    binding.imageCheck.setImageResource(R.drawable.ic_outline_circle)
+                    binding.imageCheck.setImageResource(R.drawable.ic_uncheck_circle)
                 }
             } else {
                 binding.imageCheck.setImageResource(R.drawable.ic_arrow_forward)

@@ -53,14 +53,14 @@ class CreateServiceChargeViewModel @Inject constructor(
     }
 
 
-    fun enableSerCharge(enableSerCharge: Boolean) {
-        this.enableSerChargeViewModel = enableSerCharge
-    }
-
     fun setDiscountData(discountData: GetServiceChargeResponse.Data) {
         createServiceChargeDetails.value?.name = discountData.name
         createServiceChargeDetails.value?.percentage = discountData.percentage
         enableSerChargeViewModel = discountData.isEnabled
+    }
+
+    fun enableSerCharge(enableSerCharge: Boolean) {
+        this.enableSerChargeViewModel = enableSerCharge
     }
 
     fun submit() {

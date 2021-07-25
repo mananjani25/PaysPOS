@@ -9,12 +9,15 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
+import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.TbItem
+import com.android.pos.data.remote.Constants.DIALOG_KEY
 import com.android.pos.databinding.DialogItemsBinding
 import com.android.pos.ui.adapter.ItemListAdapter
 import com.android.pos.ui.fragments.inventory.ItemsViewModel
+import com.android.pos.utils.extensions.setNavigationResult
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -119,18 +122,8 @@ class ItemDialog : DialogFragment(), View.OnClickListener {
                 dismiss()
             }
             R.id.txtDone -> {
-
-                adapter.selectedItemList()
-                /* val chooseModel = adapter.getData()
-                 selectedId = adapter.getPos()
-                 if (chooseModel != null) {
-                     val result = Bundle().apply {
-                         putParcelable("data", chooseModel)
-                         putInt("selectedId", selectedId)
-                     }
-                     setFragmentResult("request_key", result)
-                 }
-                 findNavController().navigateUp()*/
+                setNavigationResult(DIALOG_KEY,adapter.selectedItemList())
+                findNavController().popBackStack()
             }
             R.id.txtTaxAll -> {
                 adapter.selectAll(true)

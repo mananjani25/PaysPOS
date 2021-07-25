@@ -31,6 +31,16 @@ data class GetTaxResponse(
         @SerializedName("tax_type")
         val taxType: String,
         @SerializedName("updated_at")
-        val updatedAt: String
+        val updatedAt: String,
+        @SerializedName("is_active")
+        val isActive: Boolean,
+        @SerializedName("is_default")
+        val isDefault: String,
+        @SerializedName("is_custom_amount")
+        val isCustomAmount: String,
+        @SerializedName("item_pricing")
+        val itemPricing: String,
+        @SerializedName("item_ids")
+        val itemIds: List<Int>
     ) : Parcelable
 }
