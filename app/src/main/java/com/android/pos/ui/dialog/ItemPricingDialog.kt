@@ -21,8 +21,9 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class ItemPricingDialog : DialogFragment(), View.OnClickListener {
     private lateinit var binding: DialogItemPricingBinding
-    private var ADD_INCLUDE_TAX: Int = 0
-
+    private var ADD_INCLUDE_TAX: String = ""
+    var isEdit: Boolean = false
+    var itemPricing: String = ""
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,6 +38,22 @@ class ItemPricingDialog : DialogFragment(), View.OnClickListener {
         binding.txtDone.setOnClickListener(this)
         binding.llAddTax.setOnClickListener(this)
         binding.llIncludeTax.setOnClickListener(this)
+
+        isEdit = arguments?.getBoolean("isEdit")!!
+
+
+
+        if (isEdit) {
+            itemPricing = arguments?.getString("itemPricing")!!
+            if (itemPricing == "Add Tax To Item Price") {
+                binding.ivAddTax.setImageResource(R.drawable.ic_outline_radio_button_checked)
+                binding.ivIncludeTax.setImageResource(R.drawable.ic_uncheck_circle)
+
+            } else if (itemPricing == "Include Tax in Item Price") {
+                binding.ivIncludeTax.setImageResource(R.drawable.ic_outline_radio_button_checked)
+                binding.ivAddTax.setImageResource(R.drawable.ic_uncheck_circle)
+            }
+        }
 
         return binding.root
     }
@@ -57,12 +74,12 @@ class ItemPricingDialog : DialogFragment(), View.OnClickListener {
                 findNavController().popBackStack()
             }
             R.id.llAddTax -> {
-                ADD_INCLUDE_TAX = 0
+                ADD_INCLUDE_TAX = "Add Tax To Item Price"
                 binding.ivAddTax.setImageResource(R.drawable.ic_outline_radio_button_checked)
                 binding.ivIncludeTax.setImageResource(R.drawable.ic_uncheck_circle)
             }
             R.id.llIncludeTax -> {
-                ADD_INCLUDE_TAX = 1
+                ADD_INCLUDE_TAX = "Include Tax in Item Price"
                 binding.ivIncludeTax.setImageResource(R.drawable.ic_outline_radio_button_checked)
                 binding.ivAddTax.setImageResource(R.drawable.ic_uncheck_circle)
             }

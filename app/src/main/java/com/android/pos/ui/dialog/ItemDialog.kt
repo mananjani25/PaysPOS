@@ -7,9 +7,7 @@ import android.text.TextWatcher
 import android.view.*
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
-import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.TbItem
@@ -27,6 +25,7 @@ class ItemDialog : DialogFragment(), View.OnClickListener {
     private lateinit var adapter: ItemListAdapter
     private lateinit var binding: DialogItemsBinding
     private val viewModel by viewModels<ItemsViewModel>()
+    var isEdit: Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,6 +39,7 @@ class ItemDialog : DialogFragment(), View.OnClickListener {
 
         setAdapter()
         categoriesObserver()
+        isEdit = arguments?.getBoolean("isEdit")!!
 
 
         return binding.root
@@ -47,7 +47,6 @@ class ItemDialog : DialogFragment(), View.OnClickListener {
 
     override fun onResume() {
         super.onResume()
-
         val window: Window? = dialog!!.window
         val size = Point()
         val display: Display = window?.windowManager?.defaultDisplay!!
@@ -71,6 +70,11 @@ class ItemDialog : DialogFragment(), View.OnClickListener {
                         binding.rvItemList.visibility = View.VISIBLE
                         binding.progressCircular.visibility = View.GONE
                         it.data?.let { it1 -> adapter.add(it1 as List<TbItem>) }
+
+                        if (isEdit) {
+                            var itemIds = arguments?.getIntegerArrayList("itemIds")!!
+                            adapter.selectedItemFromEdit(itemIds)
+                        }
                     }
                     Status.ERROR -> {
                         binding.rvItemList.visibility = View.GONE
@@ -122,7 +126,7 @@ class ItemDialog : DialogFragment(), View.OnClickListener {
                 dismiss()
             }
             R.id.txtDone -> {
-                setNavigationResult(DIALOG_KEY,adapter.selectedItemList())
+                setNavigationResult(DIALOG_KEY, adapter.selectedItemList())
                 findNavController().popBackStack()
             }
             R.id.txtTaxAll -> {

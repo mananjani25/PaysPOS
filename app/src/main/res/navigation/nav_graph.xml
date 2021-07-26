@@ -381,11 +381,21 @@
     <dialog
         android:id="@+id/itemDialog"
         android:name="com.android.pos.ui.dialog.ItemDialog"
-        android:label="ItemDialog" />
+        android:label="ItemDialog">
+        <argument
+            android:name="isEdit"
+            android:defaultValue="false"
+            app:argType="boolean" />
+    </dialog>
     <dialog
         android:id="@+id/itemPricingDialog"
         android:name="com.android.pos.ui.dialog.ItemPricingDialog"
-        android:label="ItemPricingDialog" />
+        android:label="ItemPricingDialog">
+        <argument
+            android:name="isEdit"
+            android:defaultValue="false"
+            app:argType="boolean" />
+    </dialog>
     <fragment
         android:id="@+id/customer"
         android:name="com.android.pos.ui.fragments.customer.Customer"

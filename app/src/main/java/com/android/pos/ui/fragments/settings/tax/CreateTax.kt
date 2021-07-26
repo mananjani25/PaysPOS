@@ -34,6 +34,7 @@ class CreateTax : Fragment() {
     var isEdit: Boolean = false
     private lateinit var taxData: GetTaxResponse.TaxData
 
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -54,13 +55,10 @@ class CreateTax : Fragment() {
             binding.txtSave.text = getString(R.string.update)
             viewModel.setTaxData(taxData)
 
-            /*if (taxData.itemPricing == 0) {
-                binding.tvItemPricing.text =
-            }*/
-
             binding.itemsCount.setText("" + taxData.itemIds.size + " Items")
+            binding.tvItemPricing.text = taxData.itemPricing
 
-            binding.swtEnableTax.isChecked = taxData.isActive
+            binding.swtEnableTax.isChecked = taxData.isDefault
             viewModel.isEditData(isEdit, taxData.id)
         }
 
@@ -69,13 +67,25 @@ class CreateTax : Fragment() {
         navigate()
 
         binding.llAllItemsDialog.setOnClickListener {
-            findNavController().navigate(R.id.action_newTax_to_itemDialog)
+            if (isEdit) {
+                val bundle = Bundle()
+                bundle.putBoolean("isEdit", true)
+                //itemIds.clear()
+                itemIds = taxData.itemIds
+                bundle.putIntegerArrayList("itemIds", itemIds)
+                findNavController().navigate(R.id.action_newTax_to_itemDialog, bundle)
+            } else {
+                findNavController().navigate(R.id.action_newTax_to_itemDialog)
+            }
         }
 
         binding.llItemPricing.setOnClickListener {
             if (isEdit) {
                 //bundle have to sent for item ids
-                findNavController().navigate(R.id.action_newTax_to_itemPricingDialog)
+                val bundle = Bundle()
+                bundle.putBoolean("isEdit", true)
+                bundle.putString("itemPricing", taxData.itemPricing)
+                findNavController().navigate(R.id.action_newTax_to_itemPricingDialog, bundle)
             } else {
                 findNavController().navigate(R.id.action_newTax_to_itemPricingDialog)
             }
@@ -96,13 +106,13 @@ class CreateTax : Fragment() {
             }
         }
 
-        val resultDialogKeyTax = getNavigationResultLiveData<Int>(DIALOG_KEY_TAX)
+        val resultDialogKeyTax = getNavigationResultLiveData<String>(DIALOG_KEY_TAX)
 
         resultDialogKeyTax?.observe(viewLifecycleOwner) { itemPricing ->
 
-            if (itemPricing == 0) {
+            if (itemPricing == "Add Tax To Item Price") {
                 binding.tvItemPricing.text = getString(R.string.tv_add_tax_to_item_price)
-            } else if (itemPricing == 1) {
+            } else if (itemPricing == "Include Tax in Item Price") {
                 binding.tvItemPricing.text = getString(R.string.tv_include_tax_in_item_price)
             }
 
