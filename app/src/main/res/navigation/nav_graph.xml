@@ -386,6 +386,11 @@
         android:id="@+id/itemPricingDialog"
         android:name="com.android.pos.ui.dialog.ItemPricingDialog"
         android:label="ItemPricingDialog" />
+    <fragment
+        android:id="@+id/customer"
+        android:name="com.android.pos.ui.fragments.customer.Customer"
+        android:label="Customer"
+        tools:layout="@layout/fragment_customer" />
 
 
 </navigation>

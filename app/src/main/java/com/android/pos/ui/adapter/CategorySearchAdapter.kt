@@ -11,6 +11,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.android.pos.R
 import com.android.pos.data.model.CategorySearchData
+import com.bumptech.glide.Glide
 import javax.inject.Inject
 
 class CategorySearchAdapter @Inject constructor(
@@ -32,8 +33,10 @@ class CategorySearchAdapter @Inject constructor(
                 val model: CategorySearchData = getItem(position)
                 val txtCategory: TextView = view.findViewById(R.id.txtCategoryName)
                 val imgCategory: ImageView = view.findViewById(R.id.imgCategory)
+                val txtCat: TextView = view.findViewById(R.id.txtCat)
                 txtCategory.setText(model.title)
-
+                txtCat.setText("in " + model.categoryName)
+                Glide.with(mcon).load(model.imgUrl).centerCrop().into(imgCategory)
             }
 
         } catch (e: Exception) {

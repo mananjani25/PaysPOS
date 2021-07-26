@@ -188,13 +188,22 @@ class DashboardCategoryNew : Fragment() {
         searchList = arrayListOf()
         Log.e(TAG, "categoryList1  ${categoryList1.size}")
 
+
         for (i in 0 until categoryList1.size) {
             for (j in 0 until categoryList1.get(i).inventoryLists!!.size) {
+
+                /* var imgPath = ""
+                 if (categoryList1.get(i).inventoryLists?.get(j)?.imageUrl != null || categoryList1.get(i).inventoryLists?.get(j)?.imageUrl != ""){
+                     imgPath = categoryList1.get(i).inventoryLists?.get(j)?.imageUrl.toString()
+                 }
+                 else {
+                     imgPath =""
+                 }*/
                 searchList.add(
                     CategorySearchData(
                         categoryList1.get(i).inventoryLists!!.get(j)!!.itemId,
                         categoryList1.get(i).inventoryLists!!.get(j)!!.name,
-                        "",
+                        categoryList1.get(i).inventoryLists?.get(j)?.imageUrl.toString(),
                         categoryList1.get(i).category.name,
                         categoryList1.get(i).category.id
                     )
@@ -289,10 +298,6 @@ class DashboardCategoryNew : Fragment() {
             findNavController().navigate(R.id.action_dashboardCategoryNew_to_settings)
             dialog.dismiss()
         }
-
-
-
-
 
         imgCalculator.setColorFilter(resources.getColor(R.color.txtColor))
         txtCheckOut.setTextColor(resources.getColor(R.color.txtColor))

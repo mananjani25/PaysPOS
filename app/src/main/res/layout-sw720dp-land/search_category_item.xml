@@ -11,22 +11,40 @@
 
         <ImageView
             android:id="@+id/imgCategory"
-            android:layout_width="@dimen/_12sdp"
-            android:layout_height="@dimen/_12sdp" />
+            android:layout_width="@dimen/_15sdp"
+            android:layout_height="@dimen/_18sdp" />
 
 
-        <TextView
-            android:id="@+id/txtCategoryName"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/_5sdp"
-            android:fontFamily="@font/sf_pro_display_medium"
-            android:lines="1"
-            android:maxLines="1"
-            android:text="Snacks"
-            android:textColor="@color/txtColor"
-            android:textSize="@dimen/_8mdpi" />
+            android:layout_height="wrap_content">
 
+            <TextView
+                android:id="@+id/txtCategoryName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:fontFamily="@font/sf_pro_display_medium"
+                android:lines="1"
+                android:maxLines="1"
+                android:text="SnacksSnacksSnacksSnacks"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_8mdpi" />
+
+            <TextView
+                android:id="@+id/txtCat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/txtCategoryName"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:fontFamily="@font/sf_pro_display_regular"
+                android:lines="1"
+                android:maxLines="1"
+                android:text="in Snacks"
+                android:textColor="@color/cool_grey"
+                android:textSize="@dimen/_6ssp" />
+
+        </RelativeLayout>
     </androidx.appcompat.widget.LinearLayoutCompat>
 
 </layout>
