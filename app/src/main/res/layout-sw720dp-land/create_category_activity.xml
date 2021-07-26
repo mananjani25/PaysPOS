@@ -80,6 +80,7 @@
                 android:background="@drawable/edt_border_light_gray"
                 android:hint="@string/add_category_name"
                 android:padding="@dimen/_5sdp"
+                android:imeOptions="actionDone"
                 android:textColor="@color/black"
                 android:text="@={createCategoryViewModel.categoryDetails.categoryName}"
                 android:textColorHint="@color/hintColor"

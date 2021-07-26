@@ -68,4 +68,6 @@ object Constants {
     const val DIALOG_KEY = "dialog_key"
     const val DIALOG_KEY_TAX = "dialog_key_tax"
 
+    const val CATEGORY_UPDATE_DELETE = "categories/{id}"
+    const val HIDE_CATEGORY = "categories/{id}/active"
 }

@@ -10,6 +10,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.TbCategory
+import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.CategoryListItemModel
 import com.android.pos.data.remote.Constants.CREATECATEGORY
 import com.android.pos.data.remote.Constants.KEY
@@ -101,7 +102,8 @@ class CreateCategory : Fragment() {
 
     private fun getInventoryListObserver() {
 
-        viewModel.getInventory?.observe(viewLifecycleOwner, {
+
+        viewModel.items.observe(viewLifecycleOwner, {
 
             it?.let { resource ->
                 when (resource.status) {
@@ -114,17 +116,17 @@ class CreateCategory : Fragment() {
                     }
                     Status.LOADING -> {
                         binding.recyclerViewItemsList.visibility = View.GONE
+
                     }
                 }
             }
 
 
         })
+
     }
 
     private fun setAdapter() {
-        /* listCategory.add(CategoryListItemModel(0, "Chicken", "Food", ""))
-         listCategory.add(CategoryListItemModel(0, "Chicken Biryani", "Biryani", ""))*/
         binding.recyclerViewItemsList.adapter = adapter
 
 

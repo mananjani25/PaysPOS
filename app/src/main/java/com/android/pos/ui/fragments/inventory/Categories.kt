@@ -17,9 +17,10 @@ import androidx.recyclerview.widget.ItemTouchHelper.DOWN
 import androidx.recyclerview.widget.ItemTouchHelper.UP
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
-import com.android.pos.data.entities.TbCategory
 import com.android.pos.databinding.FragmentCategoriesBinding
 import com.android.pos.ui.adapter.CategoriesListAdapter
+import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.SwipeHelper
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.statusUtils.Status
@@ -53,6 +54,8 @@ class Categories : Fragment() {
         onClick()
 
         categoriesObserver()
+        observeShowProgress()
+        deleteObserve()
     }
 
     private fun categoriesObserver() {
@@ -81,6 +84,32 @@ class Categories : Fragment() {
         })
     }
 
+
+    private fun observeShowProgress() {
+
+        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    ProgressUtils.showProgressDialog(requireActivity())
+                } else {
+                    ProgressUtils.dismissProgressDialog()
+                }
+            }
+        })
+
+    }
+
+    private fun deleteObserve() {
+
+        viewModel.data.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+
+                AlertUtils.showCustomAlert(requireActivity(), it.message)
+            }
+        })
+
+    }
+
     private fun onClick() {
         binding.txtCreateCategory.setOnClickListener {
             findNavController().navigate(R.id.action_inventory_to_createCategory)
@@ -98,14 +127,26 @@ class Categories : Fragment() {
                 underlayButtons: MutableList<UnderlayButton?>
             ) {
 
-                 underlayButtons.add(UnderlayButton(
-                     "Hide",
-                     0,
-                     Color.parseColor("#2997cc")
-                 ) { pos ->
+                underlayButtons.add(UnderlayButton(
+                    "Hide",
+                    0,
+                    Color.parseColor("#2997cc")
+                ) { pos ->
                     // hideCategoryCall(pos)
 
-                 })
+                    alert(
+                        getString(R.string.app_name),
+                        getString(R.string.hide_category_message)
+                    ) {
+                        positiveButton(getString(R.string.deactivate)) {
+                            viewModel.deleteCategory(adapter.getItem(pos).id, true)
+                        }
+                        negativeButton(R.string.tv_cancel) {
+                            // Do negative stuff here
+                        }
+                    }
+
+                })
                 underlayButtons.add(UnderlayButton(
                     "Edit",
                     0,
@@ -114,7 +155,10 @@ class Categories : Fragment() {
                     val bundle = Bundle()
                     bundle.putBoolean("isEdit", true)
                     bundle.putParcelable("categoryObject", adapter.getItem(pos))
-                    findNavController().navigate(R.id.action_inventory_to_createCategory,bundle)
+                    findNavController().navigate(
+                        R.id.action_inventory_to_createCategory,
+                        bundle
+                    )
 
 
                 })
@@ -130,7 +174,7 @@ class Categories : Fragment() {
                         getString(R.string.delete_category_message)
                     ) {
                         positiveButton(getString(R.string.tv_delete)) {
-                            viewModel.deleteCategory(adapter.getItem(pos)?.id!!)
+                            viewModel.deleteCategory(adapter.getItem(pos).id, false)
                         }
                         negativeButton(R.string.tv_cancel) {
                             // Do negative stuff here
@@ -232,6 +276,7 @@ class Categories : Fragment() {
 
 
     }
+
     private fun reallyMoved(oldPos: Int, newPos: Int, categoryIdOld: Int?) {
         if (categoryIdOld != null) {
             //  reorderCall(categoryIdOld, oldPos, newPos)

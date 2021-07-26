@@ -41,6 +41,9 @@ class CreateCategoryViewModel @Inject constructor(
     val getInventory: LiveData<Resource<List<TbItem?>>> = _getInventory
 
 
+    val items = posRepository.getItemsList()
+
+
     fun isEditData(isEdit: Boolean, catId: Int) {
         this.isEdit = isEdit
         this.catId.value = catId
