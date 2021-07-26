@@ -396,7 +396,6 @@
             android:defaultValue="false"
             app:argType="boolean" />
     </dialog>
-        android:label="ItemPricingDialog" />
     <fragment
         android:id="@+id/customer"
         android:name="com.android.pos.ui.fragments.customer.Customer"
