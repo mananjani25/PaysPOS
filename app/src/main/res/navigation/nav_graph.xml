@@ -328,6 +328,22 @@
             android:id="@+id/action_dashboardCategoryNew_to_menuPOS"
             app:destination="@id/menuPOS"
             app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_dashboardCategoryNew_to_inventory"
+            app:destination="@id/inventory"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_dashboardCategoryNew_to_teamList"
+            app:destination="@id/teamList"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_dashboardCategoryNew_to_settings"
+            app:destination="@id/settings"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_dashboardCategoryNew_to_reports"
+            app:destination="@id/reports"
+            app:enterAnim="@anim/nav_default_enter_anim" />
 
     </fragment>
     <action
@@ -380,5 +396,12 @@
             android:defaultValue="false"
             app:argType="boolean" />
     </dialog>
+        android:label="ItemPricingDialog" />
+    <fragment
+        android:id="@+id/customer"
+        android:name="com.android.pos.ui.fragments.customer.Customer"
+        android:label="Customer"
+        tools:layout="@layout/fragment_customer" />
+
 
 </navigation>

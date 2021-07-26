@@ -1,4 +1,3 @@
-
 package com.android.pos.ui.adapter
 
 import android.app.Activity
@@ -12,6 +11,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.android.pos.R
 import com.android.pos.data.model.CategorySearchData
+import com.bumptech.glide.Glide
 import javax.inject.Inject
 
 class CategorySearchAdapter @Inject constructor(
@@ -33,8 +33,10 @@ class CategorySearchAdapter @Inject constructor(
                 val model: CategorySearchData = getItem(position)
                 val txtCategory: TextView = view.findViewById(R.id.txtCategoryName)
                 val imgCategory: ImageView = view.findViewById(R.id.imgCategory)
+                val txtCat: TextView = view.findViewById(R.id.txtCat)
                 txtCategory.setText(model.title)
-
+                txtCat.setText("in " + model.categoryName)
+                Glide.with(mcon).load(model.imgUrl).centerCrop().into(imgCategory)
             }
 
         } catch (e: Exception) {
@@ -82,12 +84,11 @@ class CategorySearchAdapter @Inject constructor(
 
                 }
                 val filterResult = FilterResults()
-                filterResult.values= suggestions
+                filterResult.values = suggestions
                 filterResult.count = suggestions.size
                 filterResult
 
-            }
-            else{
+            } else {
                 FilterResults()
             }
 
@@ -97,7 +98,8 @@ class CategorySearchAdapter @Inject constructor(
             if (results != null && results.count > 0) {
                 clear()
 
-                val filteredList: ArrayList<CategorySearchData> = results.values as ArrayList<CategorySearchData>
+                val filteredList: ArrayList<CategorySearchData> =
+                    results.values as ArrayList<CategorySearchData>
                 if (results != null && results.count > 0) {
                     clear()
                     for (c in filteredList) {

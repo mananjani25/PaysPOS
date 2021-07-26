@@ -1,6 +1,7 @@
 package com.android.pos.ui.fragments.dashboard
 
 import android.app.Activity
+import android.app.Dialog
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -11,10 +12,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.*
-import android.widget.Filter
-import android.widget.LinearLayout
-import android.widget.PopupMenu
-import android.widget.PopupWindow
+import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.Fragment
@@ -104,11 +102,11 @@ class DashboardCategoryNew : Fragment() {
         setVenueData()
         configureDrawer()
         onClick()
-        searchItem()
-        //searchCategory()
+        //searchItem()
+
     }
 
-    private fun searchItem() {
+    /*private fun searchItem() {
         binding.layoutMenu.autoSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 
@@ -129,7 +127,7 @@ class DashboardCategoryNew : Fragment() {
             }
 
         })
-    }
+    }*/
 
 
     private fun searchbyKey(searchKey: String) {
@@ -150,12 +148,9 @@ class DashboardCategoryNew : Fragment() {
 
                     return@filter true
 
-                }
-                else{
+                } else {
                     return@filter false
                 }
-
-
 
 
             }
@@ -189,24 +184,50 @@ class DashboardCategoryNew : Fragment() {
 
 
     private fun searchCategory() {
-        /* searchList = arrayListOf()
-         searchList.add(CategorySearchData(0, "Apple", ""))
-         searchList.add(CategorySearchData(0, "Banana", ""))
-         searchList.add(CategorySearchData(0, "Cherry", ""))
-         searchList.add(CategorySearchData(0, "Grape", ""))
-         searchList.add(CategorySearchData(0, "Kiwi", ""))
-         searchList.add(CategorySearchData(0, "Mango", ""))
-         searchList.add(CategorySearchData(0, "Pear", ""))
-         searchList.add(CategorySearchData(0, "Applocam", ""))
-         searchAdapter =
-             CategorySearchAdapter(requireActivity(), R.layout.search_category_item, searchList)
-         binding.layoutMenu.autoSearch.threshold = 1
-         binding.layoutMenu.autoSearch.setAdapter(searchAdapter)
-         binding.layoutMenu.autoSearch.setOnItemClickListener { parent, view, position, id ->
-             val model: CategorySearchData = parent.getItemAtPosition(position) as CategorySearchData
-             binding.layoutMenu.autoSearch.setText(model.title)
 
-         }*/
+        searchList = arrayListOf()
+        Log.e(TAG, "categoryList1  ${categoryList1.size}")
+
+
+        for (i in 0 until categoryList1.size) {
+            for (j in 0 until categoryList1.get(i).inventoryLists!!.size) {
+
+                /* var imgPath = ""
+                 if (categoryList1.get(i).inventoryLists?.get(j)?.imageUrl != null || categoryList1.get(i).inventoryLists?.get(j)?.imageUrl != ""){
+                     imgPath = categoryList1.get(i).inventoryLists?.get(j)?.imageUrl.toString()
+                 }
+                 else {
+                     imgPath =""
+                 }*/
+                searchList.add(
+                    CategorySearchData(
+                        categoryList1.get(i).inventoryLists!!.get(j)!!.itemId,
+                        categoryList1.get(i).inventoryLists!!.get(j)!!.name,
+                        categoryList1.get(i).inventoryLists?.get(j)?.imageUrl.toString(),
+                        categoryList1.get(i).category.name,
+                        categoryList1.get(i).category.id
+                    )
+                )
+            }
+
+        }
+
+        Log.e(TAG, "searchList  ${Gson().toJson(searchList)}")
+        searchAdapter =
+            CategorySearchAdapter(
+                requireActivity(),
+                R.layout.search_category_item,
+                searchList
+            )
+        binding.layoutMenu.autoSearch.threshold = 3
+        binding.layoutMenu.autoSearch.setAdapter(searchAdapter)
+        binding.layoutMenu.autoSearch.setOnItemClickListener { parent, view, position, id ->
+            val model: CategorySearchData = parent.getItemAtPosition(position) as CategorySearchData
+            binding.layoutMenu.autoSearch.setText(model.title)
+            resetTabbySearch(model)
+
+
+        }
     }
 
     private fun onClick() {
@@ -217,9 +238,88 @@ class DashboardCategoryNew : Fragment() {
         }
 
         binding.footer.linearMore.setOnClickListener {
-            findNavController().navigate(R.id.action_dashboardCategoryNew_to_menuPOS)
+            dialogPOSMenu()
+            //findNavController().navigate(R.id.action_dashboardCategoryNew_to_menuPOS)
 
         }
+
+    }
+
+    private fun dialogPOSMenu() {
+
+        val dialog: Dialog = Dialog(requireContext(), android.R.style.Theme_Light)
+
+        dialog.window?.requestFeature(Window.FEATURE_NO_TITLE)
+
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.WHITE))
+        dialog.window?.setLayout(
+            WindowManager.LayoutParams.MATCH_PARENT,
+            WindowManager.LayoutParams.MATCH_PARENT
+        )
+        dialog.setContentView(R.layout.menu_pos)
+        dialog.setCanceledOnTouchOutside(false)
+
+        val imgClose: ImageView = dialog.findViewById(R.id.imgClose)
+        val footerView: View = dialog.findViewById(R.id.footer)
+
+        val imgCalculator: ImageView = footerView.findViewById(R.id.imgCalculator)
+        val txtCheckOut: TextView = footerView.findViewById(R.id.txtCheckOut)
+
+        val imgMore: ImageView = footerView.findViewById(R.id.imgMore)
+        val txtMore: TextView = footerView.findViewById(R.id.txtMore)
+        val linearMore: LinearLayout = footerView.findViewById(R.id.linearMore)
+        val linearHome: LinearLayout = dialog.findViewById(R.id.linearHome)
+        val linearOrders: LinearLayout = dialog.findViewById(R.id.linearOrders)
+        val linearTransaction: LinearLayout = dialog.findViewById(R.id.linearTransaction)
+        val linearCash: LinearLayout = dialog.findViewById(R.id.linearCash)
+        val linearReports: LinearLayout = dialog.findViewById(R.id.linearReports)
+        val linearCust: LinearLayout = dialog.findViewById(R.id.linearCust)
+        val linearTeam: LinearLayout = dialog.findViewById(R.id.linearTeam)
+        val linearInventory: LinearLayout = dialog.findViewById(R.id.linearInventory)
+        val linearSetting: LinearLayout = dialog.findViewById(R.id.linearSetting)
+        val linearSupport: LinearLayout = dialog.findViewById(R.id.linearSupport)
+
+        linearHome.setOnClickListener {
+            closeDialog(dialog)
+        }
+        linearReports.setOnClickListener {
+            findNavController().navigate(R.id.action_dashboardCategoryNew_to_reports)
+            dialog.dismiss()
+        }
+        linearTeam.setOnClickListener {
+            findNavController().navigate(R.id.action_dashboardCategoryNew_to_teamList)
+            dialog.dismiss()
+        }
+        linearInventory.setOnClickListener {
+            findNavController().navigate(R.id.action_dashboardCategoryNew_to_inventory)
+            dialog.dismiss()
+        }
+        linearSetting.setOnClickListener {
+            findNavController().navigate(R.id.action_dashboardCategoryNew_to_settings)
+            dialog.dismiss()
+        }
+
+        imgCalculator.setColorFilter(resources.getColor(R.color.txtColor))
+        txtCheckOut.setTextColor(resources.getColor(R.color.txtColor))
+        imgMore.setColorFilter(resources.getColor(R.color.txt_color_blue))
+        txtMore.setTextColor(resources.getColor(R.color.txt_color_blue))
+
+        imgClose.setOnClickListener {
+            closeDialog(dialog)
+        }
+
+
+
+
+        dialog.show()
+
+
+    }
+
+    fun closeDialog(dialog: Dialog?) {
+
+        dialog?.dismiss()
+
 
     }
 
@@ -423,7 +523,7 @@ class DashboardCategoryNew : Fragment() {
                                 if (i == 0) {
                                     tabList.add(
                                         CategoryTabModel(
-                                            0,
+                                            categoryList1.get(i).category.id,
                                             categoryList1.get(i).category.name,
                                             true,
                                             0
@@ -432,7 +532,7 @@ class DashboardCategoryNew : Fragment() {
                                 } else {
                                     tabList.add(
                                         CategoryTabModel(
-                                            0,
+                                            categoryList1.get(i).category.id,
                                             categoryList1.get(i).category.name,
                                             false,
                                             0
@@ -492,6 +592,7 @@ class DashboardCategoryNew : Fragment() {
                                         "CatList",
                                         "${Gson().toJson(categoryList1.get(0).inventoryLists)}"
                                     )
+                                    searchCategory()
                                     binding.rvPagerCategory.adapter =
                                         CategoryItemAdapter1(requireContext(), itemList1, object :
                                             CategoryItemAdapter1.CategoryItemList {
@@ -735,4 +836,41 @@ class DashboardCategoryNew : Fragment() {
         popup.show()
     }
 
+
+    fun resetTabbySearch(model: CategorySearchData) {
+        var tabPos = -1
+        var tabList = (binding.rvTabLayout.adapter as CategoryTabAdapter1).list
+        Log.e(TAG, "searchTabList  ${Gson().toJson(tabList)}")
+        Log.e(TAG, "searchmodel  ${Gson().toJson(model)}")
+        for (i in 0 until tabList.size) {
+
+            if (tabList.get(i).id == model.categoryID) {
+                tabList.get(i).isSelected = true
+                tabPos = i
+            } else {
+                tabList.get(i).isSelected = false
+            }
+
+        }
+
+        // (binding.rvTabLayout.adapter as CategoryTabAdapter1).list.clear()
+        (binding.rvTabLayout.adapter as CategoryTabAdapter1).list = tabList
+        binding.rvTabLayout.adapter?.notifyDataSetChanged()
+
+        var listCategry = arrayListOf<TbItem?>()
+        listCategry.add(
+            0,
+            TbItem()
+        )
+        categoryList1[tabPos].inventoryLists?.let { it1 ->
+            listCategry.addAll(
+                it1
+            )
+        }
+        (binding.rvPagerCategory.adapter as CategoryItemAdapter1).list.clear()
+        (binding.rvPagerCategory.adapter as CategoryItemAdapter1).list = listCategry
+        binding.rvPagerCategory.adapter?.notifyDataSetChanged()
+
+
+    }
 }
