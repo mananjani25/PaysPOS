@@ -1,6 +1,7 @@
 package com.android.pos.ui.fragments.dashboard
 
 import android.app.Activity
+import android.app.Dialog
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -11,10 +12,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.*
-import android.widget.Filter
-import android.widget.LinearLayout
-import android.widget.PopupMenu
-import android.widget.PopupWindow
+import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.Fragment
@@ -190,13 +188,22 @@ class DashboardCategoryNew : Fragment() {
         searchList = arrayListOf()
         Log.e(TAG, "categoryList1  ${categoryList1.size}")
 
+
         for (i in 0 until categoryList1.size) {
             for (j in 0 until categoryList1.get(i).inventoryLists!!.size) {
+
+                /* var imgPath = ""
+                 if (categoryList1.get(i).inventoryLists?.get(j)?.imageUrl != null || categoryList1.get(i).inventoryLists?.get(j)?.imageUrl != ""){
+                     imgPath = categoryList1.get(i).inventoryLists?.get(j)?.imageUrl.toString()
+                 }
+                 else {
+                     imgPath =""
+                 }*/
                 searchList.add(
                     CategorySearchData(
                         categoryList1.get(i).inventoryLists!!.get(j)!!.itemId,
                         categoryList1.get(i).inventoryLists!!.get(j)!!.name,
-                        "",
+                        categoryList1.get(i).inventoryLists?.get(j)?.imageUrl.toString(),
                         categoryList1.get(i).category.name,
                         categoryList1.get(i).category.id
                     )
@@ -231,9 +238,88 @@ class DashboardCategoryNew : Fragment() {
         }
 
         binding.footer.linearMore.setOnClickListener {
-            findNavController().navigate(R.id.action_dashboardCategoryNew_to_menuPOS)
+            dialogPOSMenu()
+            //findNavController().navigate(R.id.action_dashboardCategoryNew_to_menuPOS)
 
         }
+
+    }
+
+    private fun dialogPOSMenu() {
+
+        val dialog: Dialog = Dialog(requireContext(), android.R.style.Theme_Light)
+
+        dialog.window?.requestFeature(Window.FEATURE_NO_TITLE)
+
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.WHITE))
+        dialog.window?.setLayout(
+            WindowManager.LayoutParams.MATCH_PARENT,
+            WindowManager.LayoutParams.MATCH_PARENT
+        )
+        dialog.setContentView(R.layout.menu_pos)
+        dialog.setCanceledOnTouchOutside(false)
+
+        val imgClose: ImageView = dialog.findViewById(R.id.imgClose)
+        val footerView: View = dialog.findViewById(R.id.footer)
+
+        val imgCalculator: ImageView = footerView.findViewById(R.id.imgCalculator)
+        val txtCheckOut: TextView = footerView.findViewById(R.id.txtCheckOut)
+
+        val imgMore: ImageView = footerView.findViewById(R.id.imgMore)
+        val txtMore: TextView = footerView.findViewById(R.id.txtMore)
+        val linearMore: LinearLayout = footerView.findViewById(R.id.linearMore)
+        val linearHome: LinearLayout = dialog.findViewById(R.id.linearHome)
+        val linearOrders: LinearLayout = dialog.findViewById(R.id.linearOrders)
+        val linearTransaction: LinearLayout = dialog.findViewById(R.id.linearTransaction)
+        val linearCash: LinearLayout = dialog.findViewById(R.id.linearCash)
+        val linearReports: LinearLayout = dialog.findViewById(R.id.linearReports)
+        val linearCust: LinearLayout = dialog.findViewById(R.id.linearCust)
+        val linearTeam: LinearLayout = dialog.findViewById(R.id.linearTeam)
+        val linearInventory: LinearLayout = dialog.findViewById(R.id.linearInventory)
+        val linearSetting: LinearLayout = dialog.findViewById(R.id.linearSetting)
+        val linearSupport: LinearLayout = dialog.findViewById(R.id.linearSupport)
+
+        linearHome.setOnClickListener {
+            closeDialog(dialog)
+        }
+        linearReports.setOnClickListener {
+            findNavController().navigate(R.id.action_dashboardCategoryNew_to_reports)
+            dialog.dismiss()
+        }
+        linearTeam.setOnClickListener {
+            findNavController().navigate(R.id.action_dashboardCategoryNew_to_teamList)
+            dialog.dismiss()
+        }
+        linearInventory.setOnClickListener {
+            findNavController().navigate(R.id.action_dashboardCategoryNew_to_inventory)
+            dialog.dismiss()
+        }
+        linearSetting.setOnClickListener {
+            findNavController().navigate(R.id.action_dashboardCategoryNew_to_settings)
+            dialog.dismiss()
+        }
+
+        imgCalculator.setColorFilter(resources.getColor(R.color.txtColor))
+        txtCheckOut.setTextColor(resources.getColor(R.color.txtColor))
+        imgMore.setColorFilter(resources.getColor(R.color.txt_color_blue))
+        txtMore.setTextColor(resources.getColor(R.color.txt_color_blue))
+
+        imgClose.setOnClickListener {
+            closeDialog(dialog)
+        }
+
+
+
+
+        dialog.show()
+
+
+    }
+
+    fun closeDialog(dialog: Dialog?) {
+
+        dialog?.dismiss()
+
 
     }
 
@@ -761,20 +847,17 @@ class DashboardCategoryNew : Fragment() {
             if (tabList.get(i).id == model.categoryID) {
                 tabList.get(i).isSelected = true
                 tabPos = i
-            }
-            else{
+            } else {
                 tabList.get(i).isSelected = false
             }
 
-
-
         }
 
-       // (binding.rvTabLayout.adapter as CategoryTabAdapter1).list.clear()
+        // (binding.rvTabLayout.adapter as CategoryTabAdapter1).list.clear()
         (binding.rvTabLayout.adapter as CategoryTabAdapter1).list = tabList
         binding.rvTabLayout.adapter?.notifyDataSetChanged()
 
-         var listCategry = arrayListOf<TbItem?>()
+        var listCategry = arrayListOf<TbItem?>()
         listCategry.add(
             0,
             TbItem()
@@ -787,7 +870,6 @@ class DashboardCategoryNew : Fragment() {
         (binding.rvPagerCategory.adapter as CategoryItemAdapter1).list.clear()
         (binding.rvPagerCategory.adapter as CategoryItemAdapter1).list = listCategry
         binding.rvPagerCategory.adapter?.notifyDataSetChanged()
-
 
 
     }
