@@ -60,4 +60,16 @@
     <color name="colorF0">#F0F1F3</color>
 
     <color name="dividerMenu">#B7B7B7</color>
+
+
+    <color name="colorF2">#F21170</color>
+    <color name="colorFA">#FA9905</color>
+    <color name="color72">#72147E</color>
+    <color name="colorFF">#FF5200</color>
+    <color name="color23">#23049D</color>
+    <color name="colorAA">#AA2EE6</color>
+    <color name="colorF7">#FF79CD</color>
+    <color name="colorFD">#FFDF6B</color>
+    <color name="colorD8">#D8F8B7</color>
+    <color name="colorF9">#FF9A8C</color>
 </resources>

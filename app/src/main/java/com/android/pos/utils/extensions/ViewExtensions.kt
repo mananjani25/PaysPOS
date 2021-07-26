@@ -21,6 +21,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.Event
 import com.google.android.material.snackbar.Snackbar
@@ -118,6 +119,16 @@ fun Context.getRandomMaterialColor(typeColor: String): Int {
         colors.recycle()
     }
     return returnColor
+}
+
+fun <T> Fragment.getNavigationResult(key: String = "result") =
+    findNavController().currentBackStackEntry?.savedStateHandle?.get<T>(key)
+
+fun <T> Fragment.getNavigationResultLiveData(key: String = "result") =
+    findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<T>(key)
+
+fun <T> Fragment.setNavigationResult(key: String = "result",result: T ) {
+    findNavController().previousBackStackEntry?.savedStateHandle?.set(key, result)
 }
 
 class NoInternetException(message: String) : IOException(message)

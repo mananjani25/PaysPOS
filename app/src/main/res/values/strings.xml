@@ -290,4 +290,9 @@
     <string name="welcome_back">Welcome back</string>
     <string name="forgot_password">Forgot Password?</string>
     <string name="tv_submit">Submit</string>
+    <string name="tv_tax_all">Tax All</string>
+    <string name="tv_exempt_all">Exempt All</string>
+    <string name="tv_add_tax_to_item_price">Add Tax to Item Price</string>
+    <string name="tv_include_tax_in_item_price">Include Tax in Item Price</string>
+    <string name="tv_done">Done</string>
 </resources>

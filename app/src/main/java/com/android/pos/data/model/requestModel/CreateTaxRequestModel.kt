@@ -13,5 +13,15 @@ data class CreateTaxRequestModel(
     @SerializedName("rate")
     var rate: Double = 0.0,
     @SerializedName("tax_type")
-    var taxType: String = ""
+    var taxType: String = "",
+    @SerializedName("is_active")
+    var isActive: Boolean = false,
+    @SerializedName("is_default")
+    var isDefault: Boolean = false,
+    @SerializedName("is_custom_amount")
+    var isCustomAmount: Boolean = false,
+    @SerializedName("item_pricing")
+    var itemPricing: Int = -1,
+    @SerializedName("item_ids")
+    var itemIds: ArrayList<Int>? = null
 )

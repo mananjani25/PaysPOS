@@ -10,11 +10,15 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
+import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.responseModel.GetTaxResponse
 import com.android.pos.data.remote.Constants.CREATE_TAX
+import com.android.pos.data.remote.Constants.DIALOG_KEY
+import com.android.pos.data.remote.Constants.DIALOG_KEY_TAX
 import com.android.pos.data.remote.Constants.SETTING_KEY
 import com.android.pos.databinding.DialogCreateNewTaxBinding
 import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.extensions.getNavigationResultLiveData
 import com.android.pos.utils.extensions.liveSnackBar
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -25,6 +29,7 @@ class CreateTax : Fragment() {
     private lateinit var binding: DialogCreateNewTaxBinding
 
     private val viewModel by viewModels<CreateTaxViewModel>()
+    private var itemIds = ArrayList<Int>()
 
     var isEdit: Boolean = false
     private lateinit var taxData: GetTaxResponse.TaxData
@@ -39,6 +44,7 @@ class CreateTax : Fragment() {
 
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
+        binding.createTaxFragment = this
 
 
         isEdit = arguments?.getBoolean("isEdit")!!
@@ -47,6 +53,14 @@ class CreateTax : Fragment() {
             taxData = arguments?.getParcelable("taxObject")!!
             binding.txtSave.text = getString(R.string.update)
             viewModel.setTaxData(taxData)
+
+            /*if (taxData.itemPricing == 0) {
+                binding.tvItemPricing.text =
+            }*/
+
+            binding.itemsCount.setText("" + taxData.itemIds.size + " Items")
+
+            binding.swtEnableTax.isChecked = taxData.isActive
             viewModel.isEditData(isEdit, taxData.id)
         }
 
@@ -54,7 +68,46 @@ class CreateTax : Fragment() {
         observeShowProgress()
         navigate()
 
+        binding.llAllItemsDialog.setOnClickListener {
+            findNavController().navigate(R.id.action_newTax_to_itemDialog)
+        }
 
+        binding.llItemPricing.setOnClickListener {
+            if (isEdit) {
+                //bundle have to sent for item ids
+                findNavController().navigate(R.id.action_newTax_to_itemPricingDialog)
+            } else {
+                findNavController().navigate(R.id.action_newTax_to_itemPricingDialog)
+            }
+
+        }
+
+        val resultDialogKey = getNavigationResultLiveData<ArrayList<TbItem>>(DIALOG_KEY)
+
+        resultDialogKey?.observe(viewLifecycleOwner) {
+            if (it.size > 0) {
+                binding.itemsCount.text = "" + it.size + " Items"
+            } else {
+                binding.itemsCount.text = "No Items"
+            }
+
+            it.forEach {
+                itemIds.add(it.itemId)
+            }
+        }
+
+        val resultDialogKeyTax = getNavigationResultLiveData<Int>(DIALOG_KEY_TAX)
+
+        resultDialogKeyTax?.observe(viewLifecycleOwner) { itemPricing ->
+
+            if (itemPricing == 0) {
+                binding.tvItemPricing.text = getString(R.string.tv_add_tax_to_item_price)
+            } else if (itemPricing == 1) {
+                binding.tvItemPricing.text = getString(R.string.tv_include_tax_in_item_price)
+            }
+
+            viewModel.setItemIds(itemIds, itemPricing)
+        }
         return binding.root
     }
 
@@ -69,6 +122,14 @@ class CreateTax : Fragment() {
             )
             navController.popBackStack()
             //findNavController().navigateUp()
+        }
+    }
+
+    fun enableTax(isChecked: Boolean) {
+        if (isChecked) {
+            viewModel.enableTax(isChecked)
+        } else {
+            viewModel.enableTax(isChecked)
         }
     }
 

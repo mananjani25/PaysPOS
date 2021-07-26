@@ -14,7 +14,7 @@ import com.android.pos.data.remote.Constants.DATABASE_NAME
 
 @Database(
     entities = [CharacterModel::class, TbCategory::class, TbItem::class],
-    version = 1
+    version = 2
 )
 
 abstract class AppDatabase : RoomDatabase() {

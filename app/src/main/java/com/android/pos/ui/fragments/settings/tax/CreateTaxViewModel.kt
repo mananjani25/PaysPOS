@@ -10,7 +10,6 @@ import com.android.pos.data.model.requestModel.CreateTaxRequestModel
 import com.android.pos.data.model.responseModel.CreateTaxResponse
 import com.android.pos.data.model.responseModel.GetTaxResponse
 import com.android.pos.data.remote.Constants.LOCATION_ID
-import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.TaxServiceChargeRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
@@ -39,8 +38,12 @@ class CreateTaxViewModel @Inject constructor(
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
     private var taxId: Int = -1
+    private var itemPricingViewModel: Int = -1
 
     private var isEdit: Boolean = false
+
+    private var enableTaxViewModel: Boolean = false
+    private var itemIdsViewModel = ArrayList<Int>()
 
     private lateinit var taxData: CreateTaxRequestModel
 
@@ -54,6 +57,16 @@ class CreateTaxViewModel @Inject constructor(
     fun setTaxData(taxData: GetTaxResponse.TaxData) {
         createTaxDetails.value?.name = taxData.name
         createTaxDetails.value?.rate = taxData.rate
+        enableTaxViewModel = taxData.isActive
+    }
+
+    fun setItemIds(itemIds: ArrayList<Int>, itemPricing: Int) {
+        this.itemIdsViewModel = itemIds
+        this.itemPricingViewModel = itemPricing
+    }
+
+    fun enableTax(enableTax: Boolean) {
+        this.enableTaxViewModel = enableTax
     }
 
     fun submit() {
@@ -65,20 +78,26 @@ class CreateTaxViewModel @Inject constructor(
         } else {
             _showProgress.value = Event(true)
 
-            if (isEdit) {
+
+            taxData = CreateTaxRequestModel().apply {
+                if (isEdit) id = taxId
+                name = value!!.name
+                rate = value.rate
+                isActive = enableTaxViewModel
+                itemIds = itemIdsViewModel
+                itemPricing = itemPricingViewModel
+                locationId = prefProvider.getValueInt(LOCATION_ID, -1)
+
+            } /*else {
                 taxData = CreateTaxRequestModel().apply {
-                    id = taxId
                     name = value!!.name
                     rate = value.rate
+                    isActive = enableTaxViewModel
+                    itemIds = itemIdsViewModel
+                    itemPricing = itemPricingViewModel
                     locationId = prefProvider.getValueInt(LOCATION_ID, -1)
                 }
-            } else {
-                taxData = CreateTaxRequestModel().apply {
-                    name = value!!.name
-                    rate = value.rate
-                    locationId = prefProvider.getValueInt(LOCATION_ID, -1)
-                }
-            }
+            }*/
 
 
             viewModelScope.launch {

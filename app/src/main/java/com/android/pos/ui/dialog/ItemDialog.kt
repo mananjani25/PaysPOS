@@ -9,34 +9,38 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
+import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
-import com.android.pos.databinding.DialogCategoriesBinding
-import com.android.pos.ui.adapter.CategoriesListAdapter
-import com.android.pos.ui.fragments.inventory.CategoriesViewModel
+import com.android.pos.data.entities.TbItem
+import com.android.pos.data.remote.Constants.DIALOG_KEY
+import com.android.pos.databinding.DialogItemsBinding
+import com.android.pos.ui.adapter.ItemListAdapter
+import com.android.pos.ui.fragments.inventory.ItemsViewModel
+import com.android.pos.utils.extensions.setNavigationResult
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
-class CategoriesDialog : DialogFragment(), View.OnClickListener {
-    private var selectedId: Int = 0
-    private lateinit var adapter: CategoriesListAdapter
-    private lateinit var binding: DialogCategoriesBinding
-    private val viewModel by viewModels<CategoriesViewModel>()
+class ItemDialog : DialogFragment(), View.OnClickListener {
+    private lateinit var adapter: ItemListAdapter
+    private lateinit var binding: DialogItemsBinding
+    private val viewModel by viewModels<ItemsViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = DataBindingUtil.inflate(inflater, R.layout.dialog_categories, container, false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.dialog_items, container, false)
         binding.lifecycleOwner = this
 
-        selectedId = arguments?.getInt("selectedId", -2)!!
+//        selectedId = arguments?.getInt("selectedId", -2)!!
 
         setAdapter()
         categoriesObserver()
+
 
         return binding.root
     }
@@ -59,22 +63,21 @@ class CategoriesDialog : DialogFragment(), View.OnClickListener {
 
     private fun categoriesObserver() {
 
-        viewModel.categories.observe(viewLifecycleOwner, {
+        viewModel.items.observe(viewLifecycleOwner, {
 
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
-                        binding.rvCategoriesList.visibility = View.VISIBLE
+                        binding.rvItemList.visibility = View.VISIBLE
                         binding.progressCircular.visibility = View.GONE
-
-                        it.data?.let { it1 -> adapter.add(it1) }
+                        it.data?.let { it1 -> adapter.add(it1 as List<TbItem>) }
                     }
                     Status.ERROR -> {
-                        binding.rvCategoriesList.visibility = View.GONE
+                        binding.rvItemList.visibility = View.GONE
                         binding.progressCircular.visibility = View.GONE
                     }
                     Status.LOADING -> {
-                        binding.rvCategoriesList.visibility = View.GONE
+                        binding.rvItemList.visibility = View.GONE
                         binding.progressCircular.visibility = View.VISIBLE
                     }
                 }
@@ -87,11 +90,13 @@ class CategoriesDialog : DialogFragment(), View.OnClickListener {
 
     private fun setAdapter() {
 
-        adapter = CategoriesListAdapter(true)
-        adapter.setPos(selectedId)
-        binding.rvCategoriesList.adapter = adapter
+        adapter = ItemListAdapter(true)
+        //adapter.setPos(selectedId)
+        binding.rvItemList.adapter = adapter
         binding.imgBack.setOnClickListener(this)
         binding.txtDone.setOnClickListener(this)
+        binding.txtTaxAll.setOnClickListener(this)
+        binding.txtExemptAll.setOnClickListener(this)
 
         binding.edtSearch.addTextChangedListener(object : TextWatcher {
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
@@ -117,17 +122,15 @@ class CategoriesDialog : DialogFragment(), View.OnClickListener {
                 dismiss()
             }
             R.id.txtDone -> {
+                setNavigationResult(DIALOG_KEY,adapter.selectedItemList())
+                findNavController().popBackStack()
+            }
+            R.id.txtTaxAll -> {
+                adapter.selectAll(true)
+            }
 
-                val chooseModel = adapter.getData()
-                selectedId = adapter.getPos()
-                if (chooseModel != null) {
-                    val result = Bundle().apply {
-                        putParcelable("data", chooseModel)
-                        putInt("selectedId", selectedId)
-                    }
-                    setFragmentResult("request_key", result)
-                }
-                findNavController().navigateUp()
+            R.id.txtExemptAll -> {
+                adapter.selectAll(false)
             }
 
         }

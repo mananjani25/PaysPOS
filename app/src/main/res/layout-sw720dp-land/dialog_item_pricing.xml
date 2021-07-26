@@ -58,58 +58,71 @@
             android:layout_height="1dp"
             android:background="@color/view" />
 
-        <androidx.appcompat.widget.AppCompatEditText
-            android:id="@+id/edtSearch"
-            style="@style/CustomFontRegularStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@null"
-            android:drawableStart="@drawable/ic_search"
-            android:drawablePadding="@dimen/_10sdp"
-            android:hint="@string/search_categories"
-            android:imeOptions="actionDone"
-            android:inputType="text"
-            android:padding="@dimen/_5sdp"
-            android:textColor="@color/black"
-            android:textColorHint="@color/hintColor"
-            android:textSize="@dimen/_6mdpi"
-            android:visibility="gone" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/view" />
-
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginStart="@dimen/_20sdp"
-            android:layout_marginTop="@dimen/_10sdp"
-            android:layout_marginEnd="@dimen/_20sdp"
-            android:layout_marginBottom="@dimen/_10sdp"
-            android:background="@color/white"
+            android:layout_margin="@dimen/_10sdp"
             android:orientation="vertical">
 
-            <ProgressBar
-                android:id="@+id/progress_circular"
-                style="@style/Widget.AppCompat.ProgressBar"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_gravity="center"
-                android:layout_weight="1"
-                android:visibility="gone" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvCategoriesList"
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/llAddTax"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="gone"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:itemCount="5"
-                tools:listitem="@layout/view_category" />
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginBottom="@dimen/_10sdp"
+                android:orientation="horizontal">
 
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:gravity="start"
+                    android:padding="@dimen/_5sdp"
+                    android:text="@string/tv_add_tax_to_item_price"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_6mdpi" />
 
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/ivAddTax"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:layout_marginEnd="@dimen/_10sdp"
+                    android:src="@drawable/ic_uncheck_circle" />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/llIncludeTax"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:gravity="start"
+                    android:padding="@dimen/_5sdp"
+                    android:text="@string/tv_include_tax_in_item_price"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_6mdpi" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/ivIncludeTax"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:layout_marginEnd="@dimen/_10sdp"
+                    android:src="@drawable/ic_uncheck_circle" />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
         </androidx.appcompat.widget.LinearLayoutCompat>
 
 
