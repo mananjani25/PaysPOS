@@ -1,4 +1,3 @@
-
 package com.android.pos.ui.adapter
 
 import android.app.Activity
@@ -82,12 +81,11 @@ class CategorySearchAdapter @Inject constructor(
 
                 }
                 val filterResult = FilterResults()
-                filterResult.values= suggestions
+                filterResult.values = suggestions
                 filterResult.count = suggestions.size
                 filterResult
 
-            }
-            else{
+            } else {
                 FilterResults()
             }
 
@@ -97,7 +95,8 @@ class CategorySearchAdapter @Inject constructor(
             if (results != null && results.count > 0) {
                 clear()
 
-                val filteredList: ArrayList<CategorySearchData> = results.values as ArrayList<CategorySearchData>
+                val filteredList: ArrayList<CategorySearchData> =
+                    results.values as ArrayList<CategorySearchData>
                 if (results != null && results.count > 0) {
                     clear()
                     for (c in filteredList) {
