@@ -109,33 +109,14 @@ class CreateCategoryViewModel @Inject constructor(
                                     posRepository.createCategory(category)
 
 
-//                                    val oldIds = posRepository.getItemsByCategory(category.id)
-//
-//                                    oldIds?.forEach { old ->
-//
-//                                        ids.forEach { new ->
-//
-//                                            if (old == new) {
-//                                                posRepository.updateItemCategory(
-//                                                    category.id,
-//                                                    category.name,
-//                                                    new
-//                                                )
-//                                            } else {
-//                                                posRepository.updateItemCategory(
-//                                                    category.id,
-//                                                    category.name,
-//                                                    null
-//                                                )
-//                                            }
-//                                        }
-//                                    }
-
-
-                                    // old list 4 get first
-
-
-                                    // new list 2
+                                    val oldIds = posRepository.getItemsByCategory(category.id)
+                                    oldIds?.forEach { old ->
+                                        posRepository.updateItemCategory(
+                                            category.id,
+                                            category.name,
+                                            null
+                                        )
+                                    }
 
                                     ids.forEach { itemId ->
                                         posRepository.updateItemCategory(
