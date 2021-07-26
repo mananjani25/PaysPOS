@@ -13,7 +13,7 @@ import com.android.pos.data.entities.TbCategory
 interface CategoryDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun add(categoryModel: TbCategory?): Long
+    suspend fun add(categoryModel: TbCategory?): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addAll(categoryModel: List<TbCategory>)

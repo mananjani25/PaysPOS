@@ -5,6 +5,7 @@ import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.db.IDataManager
 import com.android.pos.data.entities.TbCategory
 import com.android.pos.data.entities.TbItem
+import com.android.pos.data.model.requestModel.CreateCategoryRequestModel
 import com.android.pos.data.model.requestModel.CreateEmployeeRequestModel
 import com.android.pos.data.model.requestModel.CreateItemRequestModel
 import com.android.pos.data.model.requestModel.CreateNoteRequest
@@ -124,5 +125,24 @@ class PosRepository @Inject constructor(
     suspend fun deleteCategoryCall(data: Int) = apiHelperNew.deleteCategoryCall(data)
     suspend fun hideCategoryCall(id: Int, active: Boolean) =
         apiHelperNew.hideCategoryCall(id, active)
+
+
+    suspend fun createCategoryCall(data: CreateCategoryRequestModel) =
+        apiHelperNew.createCategoryCall(data)
+
+    suspend fun updateCategoryCall(id: Int, data: CreateCategoryRequestModel) =
+        apiHelperNew.updateCategoryCall(id, data)
+
+    suspend fun createCategory(category: TbCategory) =
+        appDatabase.categoryDao().add(category)
+
+    suspend fun updateItemCategory(catId: Int, catName: String, itemId: Int?) {
+
+        appDatabase.itemDao().updateItem(catId, catName, itemId)
+    }
+
+    suspend fun getItemsByCategory(id: Int): List<Int?>? {
+        return appDatabase.itemDao().getListByCategory(id)
+    }
 }
 

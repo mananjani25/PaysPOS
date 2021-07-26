@@ -3,6 +3,7 @@ package com.android.pos.data.remote
 
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.*
+import com.android.pos.data.remote.Constants.CATEGORY
 import com.android.pos.data.remote.Constants.CATEGORY_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.CLOCK_OUT
 import com.android.pos.data.remote.Constants.DISCOUNTS
@@ -194,4 +195,13 @@ interface ApiService {
         @Path("id") id: Int,
         @Query("is_active") is_active: Boolean,
     ): BaseResponse
+
+    @POST(CATEGORY)
+    suspend fun createCategory(@Body createItemRequestModel: CreateCategoryRequestModel): CreateCategoryResponse
+
+    @PUT(CATEGORY_UPDATE_DELETE)
+    suspend fun updateCategory(
+        @Path("id") id: Int,
+        @Body updateItem: CreateCategoryRequestModel
+    ): CreateCategoryResponse
 }

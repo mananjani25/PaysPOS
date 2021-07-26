@@ -29,6 +29,7 @@
 
 
             <androidx.appcompat.widget.AppCompatImageView
+                profileImage="@{model.imageUrl != null ? model.imageUrl : null}"
                 android:layout_width="@dimen/_20sdp"
                 android:layout_height="@dimen/_20sdp"
                 android:layout_gravity="center"
@@ -57,13 +58,18 @@
                 android:textColor="@color/hintColor"
                 android:textSize="@dimen/_6mdpi" />
 
+            <!--// profileImage="@{viewModel.imageUrl != null ? viewModel.imageUrl : null}"
+             android:visibility="@{viewModel.imageUrl != null ? View.VISIBLE : View.GONE}"
+
+             app:srcCompat="@drawable/ic_uncheck_circle"-->
             <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/imgCheck"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/_5sdp"
                 android:layout_marginEnd="@dimen/_10sdp"
-                app:srcCompat="@drawable/ic_uncheck_circle" />
+                android:src="@{model.isChecked ? @drawable/ic_outline_radio_button_checked: @drawable/ic_uncheck_circle}" />
         </androidx.appcompat.widget.LinearLayoutCompat>
 
         <View

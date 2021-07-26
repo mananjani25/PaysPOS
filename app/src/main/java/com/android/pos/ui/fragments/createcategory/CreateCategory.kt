@@ -10,7 +10,6 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.TbCategory
-import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.CategoryListItemModel
 import com.android.pos.data.remote.Constants.CREATECATEGORY
 import com.android.pos.data.remote.Constants.KEY
@@ -53,9 +52,11 @@ class CreateCategory : Fragment() {
         setupSnackbar()
         observeShowProgress()
         getInventoryListObserver()
+        navigationObserver()
 
         return binding.root
     }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -68,14 +69,31 @@ class CreateCategory : Fragment() {
     private fun onClick() {
 
         binding.txtSave.setOnClickListener {
-            findNavController().navigate(R.id.action_createCategory_to_createIModifierSet)
+
+            viewModel.submit(adapter.getIds())
+
+            //
         }
         binding.imgBack.setOnClickListener {
-            val navControll = findNavController()
-            navControll.previousBackStackEntry?.savedStateHandle?.set(KEY, CREATECATEGORY)
-            navControll.popBackStack()
-            // findNavController().popBackStack()
+            onSubmitBack()
         }
+    }
+
+    private fun onSubmitBack() {
+        val navControll = findNavController()
+        navControll.previousBackStackEntry?.savedStateHandle?.set(KEY, CREATECATEGORY)
+        navControll.popBackStack()
+    }
+
+    private fun navigationObserver() {
+
+        viewModel.data.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    onSubmitBack()
+                }
+            }
+        })
     }
 
     private fun observeShowProgress() {

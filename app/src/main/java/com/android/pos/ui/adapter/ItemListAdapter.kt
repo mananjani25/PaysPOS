@@ -37,8 +37,8 @@ class ItemListAdapter(private val isChoose: Boolean) :
             binding.ivCheck.setOnClickListener {
                 filterList[layoutPosition].isChecked = !filterList[layoutPosition].isChecked
 
-                if (filterList.get(layoutPosition).isChecked) {
-                    selectedItemList.add(filterList.get(layoutPosition))
+                if (filterList[layoutPosition].isChecked) {
+                    selectedItemList.add(filterList[layoutPosition])
                 } else {
                     selectedItemList.remove(filterList.get(layoutPosition))
                 }

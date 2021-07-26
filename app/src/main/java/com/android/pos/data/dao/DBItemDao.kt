@@ -45,6 +45,10 @@ interface DBItemDao {
     @Query("UPDATE TbItem SET isHide = 1 WHERE  TbItem.itemId = :id")
     fun update(id: Int): Int
 
+
+    @Query("UPDATE TbItem SET categoryId = :catId,categoryName = :catName  WHERE  TbItem.itemId = :itemId")
+    suspend fun updateItem(catId: Int, catName: String, itemId: Int?): Int
+
 //    @Transaction
 //    @Query("SELECT * FROM TbItem")
 //    fun cartWithModifierList(): LiveData<List<ItemWithModifier?>>?
@@ -52,6 +56,9 @@ interface DBItemDao {
 //    @Transaction
 //    @Query("SELECT * FROM TbItem")
 //    fun cartWithModifier(): List<ItemWithModifier?>?
+
+    @Query("SELECT itemId from TbItem where TbItem.categoryId  = :catId")
+    suspend fun getListByCategory(catId: Int?): List<Int?>?
 
     @Query("UPDATE TbItem SET itemQuantity = :qty WHERE  TbItem.itemId = :id")
     fun updateItemQty(id: Int?, qty: Int?)

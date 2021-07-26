@@ -52,7 +52,6 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_weight="0.1"
-                    android:onClick="@{() -> createCategoryViewModel.submit()}"
                     android:background="@color/btnColor"
                     android:gravity="center"
                     android:padding="@dimen/_5sdp"
@@ -82,7 +81,7 @@
                 android:padding="@dimen/_5sdp"
                 android:imeOptions="actionDone"
                 android:textColor="@color/black"
-                android:text="@={createCategoryViewModel.categoryDetails.categoryName}"
+                android:text="@={createCategoryViewModel.categoryDetails.name}"
                 android:textColorHint="@color/hintColor"
                 android:textSize="@dimen/_6mdpi" />
 

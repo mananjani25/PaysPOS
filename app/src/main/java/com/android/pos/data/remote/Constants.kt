@@ -70,4 +70,5 @@ object Constants {
 
     const val CATEGORY_UPDATE_DELETE = "categories/{id}"
     const val HIDE_CATEGORY = "categories/{id}/active"
+    const val CATEGORY = "categories"
 }
