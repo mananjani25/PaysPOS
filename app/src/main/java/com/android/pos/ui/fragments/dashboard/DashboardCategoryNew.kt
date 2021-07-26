@@ -5,12 +5,17 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.*
+import android.widget.Filter
 import android.widget.LinearLayout
 import android.widget.PopupMenu
 import android.widget.PopupWindow
+import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -99,28 +104,109 @@ class DashboardCategoryNew : Fragment() {
         setVenueData()
         configureDrawer()
         onClick()
-        searchCategory()
+        searchItem()
+        //searchCategory()
     }
 
-    private fun searchCategory() {
-        searchList = arrayListOf()
-        searchList.add(CategorySearchData(0, "Apple", ""))
-        searchList.add(CategorySearchData(0, "Banana", ""))
-        searchList.add(CategorySearchData(0, "Cherry", ""))
-        searchList.add(CategorySearchData(0, "Grape", ""))
-        searchList.add(CategorySearchData(0, "Kiwi", ""))
-        searchList.add(CategorySearchData(0, "Mango", ""))
-        searchList.add(CategorySearchData(0, "Pear", ""))
-        searchList.add(CategorySearchData(0, "Applocam", ""))
-        searchAdapter =
-            CategorySearchAdapter(requireActivity(), R.layout.search_category_item, searchList)
-        binding.layoutMenu.autoSearch.threshold = 1
-        binding.layoutMenu.autoSearch.setAdapter(searchAdapter)
-        binding.layoutMenu.autoSearch.setOnItemClickListener { parent, view, position, id ->
-            val model: CategorySearchData = parent.getItemAtPosition(position) as CategorySearchData
-            binding.layoutMenu.autoSearch.setText(model.title)
+    private fun searchItem() {
+        binding.layoutMenu.autoSearch.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if (binding.layoutMenu.autoSearch.text.isNotEmpty()) {
+                    searchbyKey(binding.layoutMenu.autoSearch.text.trim().toString())
+
+
+                }
+
+
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+
+            }
+
+        })
+    }
+
+
+    private fun searchbyKey(searchKey: String) {
+        Log.e(TAG, "searchKey:  $searchKey")
+        Log.e(TAG, "categoryListSearch  ${Gson().toJson(categoryList1)}")
+
+
+        var localVariable = ""
+
+        for (i in 0 until categoryList1.size) {
+
+            var dataSearch = categoryList1.get(i).inventoryLists?.filter {
+                if (it?.name?.toLowerCase().toString()
+                        .startsWith(searchKey.toLowerCase().toString())
+                ) {
+                    localVariable = it?.name!!
+                    Log.e(TAG, "localVariableInside  ${localVariable}")
+
+                    return@filter true
+
+                }
+                else{
+                    return@filter false
+                }
+
+
+
+
+            }
+
+            if (localVariable.isNotEmpty()) {
+                Log.e(TAG, "localVariable  ${localVariable}")
+                break
+            }
+
+
+            /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                val filters =categoryList1.stream().filter {
+                    Log.e(TAG,"StreamItem  ${Gson().toJson(it)}")
+                     for (i in 0 until it.inventoryLists!!.size){
+
+
+                             return@filter (it.inventoryLists!!.get(i)?.name!!.startsWith(searchKey))
+
+                     }
+                     return@filter false
+
+
+                }
+
+                Log.e(TAG,"filtersItem  ${Gson().toJson(filters)}")
+            }*/
         }
+
+
+    }
+
+
+    private fun searchCategory() {
+        /* searchList = arrayListOf()
+         searchList.add(CategorySearchData(0, "Apple", ""))
+         searchList.add(CategorySearchData(0, "Banana", ""))
+         searchList.add(CategorySearchData(0, "Cherry", ""))
+         searchList.add(CategorySearchData(0, "Grape", ""))
+         searchList.add(CategorySearchData(0, "Kiwi", ""))
+         searchList.add(CategorySearchData(0, "Mango", ""))
+         searchList.add(CategorySearchData(0, "Pear", ""))
+         searchList.add(CategorySearchData(0, "Applocam", ""))
+         searchAdapter =
+             CategorySearchAdapter(requireActivity(), R.layout.search_category_item, searchList)
+         binding.layoutMenu.autoSearch.threshold = 1
+         binding.layoutMenu.autoSearch.setAdapter(searchAdapter)
+         binding.layoutMenu.autoSearch.setOnItemClickListener { parent, view, position, id ->
+             val model: CategorySearchData = parent.getItemAtPosition(position) as CategorySearchData
+             binding.layoutMenu.autoSearch.setText(model.title)
+
+         }*/
     }
 
     private fun onClick() {

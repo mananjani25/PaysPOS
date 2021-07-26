@@ -52,7 +52,7 @@ class CategoryTabAdapter(
         fun bind(item: CategoryTabModel) {
             binding.model = item
             binding.executePendingBindings()
-        }
+          }
 
         init {
             binding.root.setOnClickListener {

@@ -58,7 +58,7 @@
             android:src="@drawable/ic_dot_menu"
             app:tint="#111214" />
 
-        <AutoCompleteTextView
+        <EditText
             android:id="@+id/autoSearch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
