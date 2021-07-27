@@ -21,11 +21,8 @@ import com.android.pos.data.typeconvert.TypeConvertersIds
     entities = [CharacterModel::class, TbCategory::class, TbItem::class, GetTaxResponse.TaxData::class],
     version = 2
 )
-@TypeConverters(TypeConvertersIds::class)
+@TypeConverters(TypeConvertersIds::class, TypeConvertersItemIds::class)
 
-@TypeConverters(
-    TypeConvertersItemIds::class
-)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun characterDao(): CharacterDao
