@@ -19,6 +19,7 @@ import com.android.pos.data.remote.Constants.LOGIN_TERMINAL
 import com.android.pos.data.remote.Constants.LOGOUT
 import com.android.pos.data.remote.Constants.NOTES
 import com.android.pos.data.remote.Constants.NOTE_UPDATE_DELETE
+import com.android.pos.data.remote.Constants.REORDER_CATEGORY
 import com.android.pos.data.remote.Constants.SERVICE_CHARGE
 import com.android.pos.data.remote.Constants.SERVICE_CHARGE_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.SYNC_VENUE_DATA
@@ -204,4 +205,14 @@ interface ApiService {
         @Path("id") id: Int,
         @Body updateItem: CreateCategoryRequestModel
     ): CreateCategoryResponse
+
+    @GET(CATEGORY)
+    suspend fun getCategories(): CategoriesResponse
+
+    @PUT(REORDER_CATEGORY)
+    suspend fun reOrderCategory(
+        @Path("id") id: Int,
+        @Query("old_position") old_position: Int,
+        @Query("new_position") new_position: Int,
+    ): BaseResponse
 }

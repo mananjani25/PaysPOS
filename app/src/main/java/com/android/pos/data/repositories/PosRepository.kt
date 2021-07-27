@@ -41,6 +41,7 @@ class PosRepository @Inject constructor(
                     sort = category.sort
                     updatedAt = ""
                     locationId = category.locationId
+                    item_ids = category.itemIds
                 }
                 categoryModelList.add(model)
 
@@ -67,7 +68,26 @@ class PosRepository @Inject constructor(
     )
 
     fun getCategoryList() =
-        performGetOperationDatabase(databaseQuery = { appDatabase.categoryDao().all() })
+        performGetOperation(databaseQuery = { appDatabase.categoryDao().all() },
+            networkCall = { apiHelperNew.getCategories() },
+            saveCallResult = {
+                val categoryModelList = ArrayList<TbCategory>()
+                it.data.forEach { category ->
+                    val model = TbCategory().apply {
+                        createdAt = category.createdAt
+                        id = category.id
+                        active = category.active
+                        name = category.name
+                        sort = category.sort
+                        updatedAt = category.updatedAt
+                        locationId = category.locationId
+                        item_ids = category.itemIds
+                    }
+                    categoryModelList.add(model)
+                }
+                appDatabase.categoryDao().addAll(categoryModelList)
+            }
+        )
 
     suspend fun deleteCategory(catId: Int) = appDatabase.categoryDao().deleteCategoryById(catId)
 
@@ -143,6 +163,14 @@ class PosRepository @Inject constructor(
 
     suspend fun getItemsByCategory(id: Int): List<Int?>? {
         return appDatabase.itemDao().getListByCategory(id)
+    }
+
+    suspend fun reOrderCategoryCall(id: Int, oldPos: Int, newPos: Int) =
+        apiHelperNew.reOrderCategoryCall(id, oldPos, newPos)
+
+
+    suspend fun updateCategorySort(allCategories: ArrayList<TbCategory>) {
+        appDatabase.categoryDao().addAll(allCategories)
     }
 }
 

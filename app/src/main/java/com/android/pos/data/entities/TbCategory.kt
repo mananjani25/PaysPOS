@@ -3,8 +3,11 @@ package com.android.pos.data.entities
 import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
+import com.android.pos.data.typeconvert.TypeConvertersIds
 import kotlinx.parcelize.Parcelize
 
+@TypeConverters(TypeConvertersIds::class)
 @Entity(tableName = "TbCategory")
 @Parcelize
 class TbCategory : Parcelable {
@@ -17,4 +20,5 @@ class TbCategory : Parcelable {
     var createdAt: String = ""
     var updatedAt: String = ""
     var isSelect: Boolean = false
+    var item_ids: List<Int> = emptyList()
 }

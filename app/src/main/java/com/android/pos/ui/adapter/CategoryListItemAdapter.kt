@@ -69,6 +69,20 @@ class CategoryListItemAdapter :
         this.inventory = inventory as ArrayList<TbItem>
     }
 
+    fun selectedItemFromEdit(itemIds: List<Int>) {
+
+        inventory.forEach { TbItem ->
+            itemIds.forEach {
+                if (TbItem.itemId == it) {
+                    TbItem.isChecked = true
+                    selectedIds.add(TbItem.itemId)
+                }
+            }
+        }
+        notifyDataSetChanged()
+
+    }
+
     /* fun add(categoryModel: List<TbCategory>) {
          this.categoryList = categoryModel as ArrayList<TbCategory>
          this.filterList = categoryModel

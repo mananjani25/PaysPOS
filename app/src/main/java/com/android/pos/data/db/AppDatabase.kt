@@ -4,19 +4,21 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import com.android.pos.data.dao.CategoryDao
 import com.android.pos.data.dao.DBItemDao
 import com.android.pos.data.entities.TbCategory
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.CharacterModel
 import com.android.pos.data.remote.Constants.DATABASE_NAME
+import com.android.pos.data.typeconvert.TypeConvertersIds
 
 
 @Database(
     entities = [CharacterModel::class, TbCategory::class, TbItem::class],
-    version = 1
+    version = 2
 )
-
+@TypeConverters(TypeConvertersIds::class)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun characterDao(): CharacterDao
