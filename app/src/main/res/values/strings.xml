@@ -82,7 +82,7 @@
     <string name="delete_item_message">Are you sure want to Delete Item?</string>
 
     <string name="delete_category_message">Are you sure you want to delete category?</string>
-    <string name="hide_category_message">Are you sure you want to deactivate category?</string>
+    <string name="hide_category_message">Are you sure you want to hide category?</string>
 
 
     <string name="tv_personal_info">Personal Info</string>
@@ -296,7 +296,7 @@
     <string name="tv_add_tax_to_item_price">Add Tax to Item Price</string>
     <string name="tv_include_tax_in_item_price">Include Tax in Item Price</string>
     <string name="tv_done">Done</string>
-    <string name="deactivate">Deactivate</string>
+    <string name="deactivate">Hide</string>
     <string name="edit">Edit</string>
     <string name="personal_information">Personal Information</string>
 </resources>
