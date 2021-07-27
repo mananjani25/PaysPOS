@@ -1,6 +1,9 @@
 package com.android.pos.ui.fragments.customer
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,6 +20,8 @@ import com.android.pos.ui.adapter.CustomerListAdapter
 class Customer : Fragment() {
 
     private lateinit var binding: FragmentCustomerBinding
+    private lateinit var customerAdapter: CustomerListAdapter
+    private val TAG = "Customer"
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -38,6 +43,28 @@ class Customer : Fragment() {
         configureToolbar()
         setAdapter()
         loadFragment()
+        searchQuery()
+    }
+
+    private fun searchQuery() {
+        binding.autoSearch.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+                    Log.e(TAG, "${binding.autoSearch.text}")
+                    customerAdapter.filter.filter(binding.autoSearch.text.trim().toString())
+
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+
+            }
+
+        })
+
     }
 
     private fun loadFragment() {
@@ -99,15 +126,19 @@ class Customer : Fragment() {
                 false
             )
         )
-        binding.rvEmployeeList.adapter =
-            CustomerListAdapter(requireContext(), listCustomer, object :
-                CustomerListAdapter.CustomerInteface {
-                override fun onCustomerSelect(pos: Int) {
 
 
-                }
+        customerAdapter = CustomerListAdapter(requireContext(), listCustomer, object :
+            CustomerListAdapter.CustomerInteface {
+            override fun onCustomerSelect(pos: Int) {
 
-            })
+
+            }
+
+        })
+
+        customerAdapter.setList(requireContext(), listCustomer)
+        binding.rvEmployeeList.adapter = customerAdapter
 
 
     }
