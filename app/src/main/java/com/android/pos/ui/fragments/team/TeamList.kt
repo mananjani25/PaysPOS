@@ -112,11 +112,17 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
             ) {
 
                 underlayButtons.add(UnderlayButton(
-                    "Edit",
+                    "Delete",
                     0,
-                    Color.parseColor("#2997cc")
+                    Color.parseColor("#FF3C30")
                 ) { pos ->
-                    Log.e("SwipeHelper", "pos")
+
+                    empObject =
+                        viewHolder?.itemView?.getTag(R.string.tv_order_id) as EmployeeListResponse.Data.Employee
+
+                    Log.e("Edit", empObject.id.toString())
+                    viewModel.delete(empObject.id)
+
                 })
 
             }

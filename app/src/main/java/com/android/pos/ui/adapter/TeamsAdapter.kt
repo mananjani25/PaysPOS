@@ -194,7 +194,7 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
                 person.firstName?.subSequence(0, 2)
         }
 
-        // ivh.itemView.tag = person
+         ivh.itemView.setTag(R.string.tv_order_id, person)
 
         ivh.itemView.tag = "normal";
 
