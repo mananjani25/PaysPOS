@@ -1,6 +1,5 @@
 package com.android.pos.ui.adapter
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -37,8 +36,8 @@ class ItemListAdapter(private val isChoose: Boolean) :
             binding.ivCheck.setOnClickListener {
                 filterList[layoutPosition].isChecked = !filterList[layoutPosition].isChecked
 
-                if (filterList.get(layoutPosition).isChecked) {
-                    selectedItemList.add(filterList.get(layoutPosition))
+                if (filterList[layoutPosition].isChecked) {
+                    selectedItemList.add(filterList[layoutPosition])
                 } else {
                     selectedItemList.remove(filterList.get(layoutPosition))
                 }
@@ -47,6 +46,24 @@ class ItemListAdapter(private val isChoose: Boolean) :
         }
 
 
+    }
+
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ): ItemListAdapter.MyViewHolder {
+        val inflater = LayoutInflater.from(parent.context)
+        val binding = ViewItemBinding.inflate(inflater, parent, false)
+        return MyViewHolder(binding)
+    }
+
+    override fun onBindViewHolder(holder: ItemListAdapter.MyViewHolder, position: Int) {
+        holder.bind(filterList[position])
+
+    }
+
+    override fun getItemCount(): Int {
+        return filterList.size
     }
 
     /*private fun isAllItemsChecked(): Boolean {
@@ -75,27 +92,20 @@ class ItemListAdapter(private val isChoose: Boolean) :
     }
 
     fun selectedItemList(): ArrayList<TbItem> {
-
         return selectedItemList
     }
 
+    fun selectedItemFromEdit(itemIds: ArrayList<Int>) {
 
-    override fun onCreateViewHolder(
-        parent: ViewGroup,
-        viewType: Int
-    ): ItemListAdapter.MyViewHolder {
-        val inflater = LayoutInflater.from(parent.context)
-        val binding = ViewItemBinding.inflate(inflater, parent, false)
-        return MyViewHolder(binding)
-    }
-
-    override fun onBindViewHolder(holder: ItemListAdapter.MyViewHolder, position: Int) {
-        holder.bind(filterList[position])
-
-    }
-
-    override fun getItemCount(): Int {
-        return filterList.size
+        filterList.forEach { TbItem ->
+            itemIds.forEach {
+                if (TbItem.itemId == it) {
+                    TbItem.isChecked = true
+                    selectedItemList.add(TbItem)
+                }
+            }
+        }
+        notifyDataSetChanged()
     }
 
     fun add(categoryModel: List<TbItem>) {

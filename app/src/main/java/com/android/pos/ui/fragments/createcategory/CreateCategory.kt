@@ -52,9 +52,11 @@ class CreateCategory : Fragment() {
         setupSnackbar()
         observeShowProgress()
         getInventoryListObserver()
+        navigationObserver()
 
         return binding.root
     }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -67,14 +69,31 @@ class CreateCategory : Fragment() {
     private fun onClick() {
 
         binding.txtSave.setOnClickListener {
-            findNavController().navigate(R.id.action_createCategory_to_createIModifierSet)
+
+            viewModel.submit(adapter.getIds())
+
+            //
         }
         binding.imgBack.setOnClickListener {
-            val navControll = findNavController()
-            navControll.previousBackStackEntry?.savedStateHandle?.set(KEY, CREATECATEGORY)
-            navControll.popBackStack()
-            // findNavController().popBackStack()
+            onSubmitBack()
         }
+    }
+
+    private fun onSubmitBack() {
+        val navControll = findNavController()
+        navControll.previousBackStackEntry?.savedStateHandle?.set(KEY, CREATECATEGORY)
+        navControll.popBackStack()
+    }
+
+    private fun navigationObserver() {
+
+        viewModel.data.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    onSubmitBack()
+                }
+            }
+        })
     }
 
     private fun observeShowProgress() {
@@ -101,7 +120,8 @@ class CreateCategory : Fragment() {
 
     private fun getInventoryListObserver() {
 
-        viewModel.getInventory?.observe(viewLifecycleOwner, {
+
+        viewModel.items.observe(viewLifecycleOwner, {
 
             it?.let { resource ->
                 when (resource.status) {
@@ -114,17 +134,17 @@ class CreateCategory : Fragment() {
                     }
                     Status.LOADING -> {
                         binding.recyclerViewItemsList.visibility = View.GONE
+
                     }
                 }
             }
 
 
         })
+
     }
 
     private fun setAdapter() {
-        /* listCategory.add(CategoryListItemModel(0, "Chicken", "Food", ""))
-         listCategory.add(CategoryListItemModel(0, "Chicken Biryani", "Biryani", ""))*/
         binding.recyclerViewItemsList.adapter = adapter
 
 

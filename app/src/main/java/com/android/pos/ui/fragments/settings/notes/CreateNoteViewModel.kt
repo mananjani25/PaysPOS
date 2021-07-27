@@ -80,10 +80,10 @@ class CreateNoteViewModel @Inject constructor(
 
 
             viewModelScope.launch {
-                if (isEdit) {
-                    resource = posRepository.updateNote(taxId, noteData)
+                resource = if (isEdit) {
+                    posRepository.updateNote(taxId, noteData)
                 } else {
-                    resource = posRepository.createNote(noteData)
+                    posRepository.createNote(noteData)
                 }
 
                 when (resource.status) {

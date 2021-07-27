@@ -5,6 +5,7 @@ import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.db.IDataManager
 import com.android.pos.data.entities.TbCategory
 import com.android.pos.data.entities.TbItem
+import com.android.pos.data.model.requestModel.CreateCategoryRequestModel
 import com.android.pos.data.model.requestModel.CreateEmployeeRequestModel
 import com.android.pos.data.model.requestModel.CreateItemRequestModel
 import com.android.pos.data.model.requestModel.CreateNoteRequest
@@ -35,10 +36,11 @@ class PosRepository @Inject constructor(
                 val model = TbCategory().apply {
                     createdAt = ""
                     id = category.id
-                    isHide = false
+                    active = category.active
                     name = category.name
                     sort = category.sort
                     updatedAt = ""
+                    locationId = category.locationId
                 }
                 categoryModelList.add(model)
 
@@ -69,14 +71,15 @@ class PosRepository @Inject constructor(
 
     suspend fun deleteCategory(catId: Int) = appDatabase.categoryDao().deleteCategoryById(catId)
 
+    suspend fun hideCategory(catId: Int, active: Boolean) =
+        appDatabase.categoryDao().hideCategory(catId, active)
+
 
     fun getItemsList() =
         performGetOperationDatabase(databaseQuery = { appDatabase.itemDao().allItem!! })
 
     fun getInventory(catId: Int) =
         performGetOperationDatabase(databaseQuery = { appDatabase.itemDao().getItemList(catId)!! })
-
-
 
 
     fun getNoteList() =
@@ -102,7 +105,6 @@ class PosRepository @Inject constructor(
 
 
     suspend fun logout(data: HashMap<String, String>) = apiHelperNew.logOut(data)
-    
 
 
     override suspend fun abs() {
@@ -119,5 +121,28 @@ class PosRepository @Inject constructor(
     suspend fun createItem(data: CreateItemRequestModel) = apiHelperNew.createItem(data)
     suspend fun updateItem(id: Int, data: CreateItemRequestModel) =
         apiHelperNew.updateItem(id, data)
+
+    suspend fun deleteCategoryCall(data: Int) = apiHelperNew.deleteCategoryCall(data)
+    suspend fun hideCategoryCall(id: Int, active: Boolean) =
+        apiHelperNew.hideCategoryCall(id, active)
+
+
+    suspend fun createCategoryCall(data: CreateCategoryRequestModel) =
+        apiHelperNew.createCategoryCall(data)
+
+    suspend fun updateCategoryCall(id: Int, data: CreateCategoryRequestModel) =
+        apiHelperNew.updateCategoryCall(id, data)
+
+    suspend fun createCategory(category: TbCategory) =
+        appDatabase.categoryDao().add(category)
+
+    suspend fun updateItemCategory(catId: Int, catName: String, itemId: Int?) {
+
+        appDatabase.itemDao().updateItem(catId, catName, itemId)
+    }
+
+    suspend fun getItemsByCategory(id: Int): List<Int?>? {
+        return appDatabase.itemDao().getListByCategory(id)
+    }
 }
 

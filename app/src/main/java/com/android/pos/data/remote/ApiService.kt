@@ -3,6 +3,8 @@ package com.android.pos.data.remote
 
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.*
+import com.android.pos.data.remote.Constants.CATEGORY
+import com.android.pos.data.remote.Constants.CATEGORY_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.CLOCK_OUT
 import com.android.pos.data.remote.Constants.DISCOUNTS
 import com.android.pos.data.remote.Constants.DISCOUNTS_UPDATE_DELETE
@@ -11,6 +13,7 @@ import com.android.pos.data.remote.Constants.EMPLOYEES_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.EMPLOYEE_CLOCK_IN
 import com.android.pos.data.remote.Constants.EMPLOYEE_LOG_IN
 import com.android.pos.data.remote.Constants.FORGOT_PASSWORD
+import com.android.pos.data.remote.Constants.HIDE_CATEGORY
 import com.android.pos.data.remote.Constants.ITEM_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.LOGIN_TERMINAL
 import com.android.pos.data.remote.Constants.LOGOUT
@@ -51,11 +54,11 @@ interface ApiService {
 
     @FormUrlEncoded
     @POST(FORGOT_PASSWORD)
-    suspend fun forgotPassword(@FieldMap option:HashMap<String,String>):BaseResponse
+    suspend fun forgotPassword(@FieldMap option: HashMap<String, String>): BaseResponse
 
     @FormUrlEncoded
     @POST(LOGOUT)
-    suspend fun userLogOut(@FieldMap option:HashMap<String,String>):BaseResponse
+    suspend fun userLogOut(@FieldMap option: HashMap<String, String>): BaseResponse
 
     @GET(SYNC_VENUE_DATA)
     suspend fun syncVenueData(): VenueDataResponse
@@ -181,4 +184,24 @@ interface ApiService {
         @Path("id") id: Int,
         @Body updateItem: CreateItemRequestModel
     ): BaseResponse
+
+    @DELETE(CATEGORY_UPDATE_DELETE)
+    suspend fun deleteCategoryCall(
+        @Path("id") noteId: Int,
+    ): BaseResponse
+
+    @PUT(HIDE_CATEGORY)
+    suspend fun hideCategory(
+        @Path("id") id: Int,
+        @Query("is_active") is_active: Boolean,
+    ): BaseResponse
+
+    @POST(CATEGORY)
+    suspend fun createCategory(@Body createItemRequestModel: CreateCategoryRequestModel): CreateCategoryResponse
+
+    @PUT(CATEGORY_UPDATE_DELETE)
+    suspend fun updateCategory(
+        @Path("id") id: Int,
+        @Body updateItem: CreateCategoryRequestModel
+    ): CreateCategoryResponse
 }

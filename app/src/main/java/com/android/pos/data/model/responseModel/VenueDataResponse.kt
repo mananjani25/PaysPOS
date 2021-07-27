@@ -1,13 +1,9 @@
 package com.android.pos.data.model.responseModel
 
 
-import android.graphics.drawable.Drawable
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
-import com.android.pos.R
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
-import com.bumptech.glide.request.target.Target
 import com.google.gson.annotations.SerializedName
 
 
@@ -33,8 +29,13 @@ data class VenueDataResponse(
             @SerializedName("name")
             val name: String,
             @SerializedName("sort")
-            val sort: Int
-        ) {
+            val sort: Int,
+            @SerializedName("location_id")
+            val locationId: Int,
+            @SerializedName("active")
+            val active: Boolean,
+
+            ) {
             data class Item(
                 @SerializedName("cost")
                 val cost: Int,

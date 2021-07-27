@@ -7,11 +7,13 @@ import androidx.room.TypeConverters
 import com.android.pos.data.typeconvert.TypeConvertersTax
 import kotlinx.parcelize.Parcelize
 
+
 @TypeConverters(TypeConvertersTax::class)
-@Entity(tableName = "TbItem", primaryKeys = ["itemId", "categoryId"])
+@Entity(tableName = "TbItem")
 @Parcelize
 class TbItem : Parcelable {
 
+    @PrimaryKey
     var itemId: Int = 0
     var categoryId: Int = 0
     var categoryName: String = ""
@@ -32,6 +34,5 @@ class TbItem : Parcelable {
     var isManualSales: Boolean = false
     var taxes: List<TaxModel>? = null
     var isChecked: Boolean = false
-
 
 }

@@ -21,7 +21,7 @@ data class CreateTaxRequestModel(
     @SerializedName("is_custom_amount")
     var isCustomAmount: Boolean = false,
     @SerializedName("item_pricing")
-    var itemPricing: Int = -1,
+    var itemPricing: String = "",
     @SerializedName("item_ids")
     var itemIds: ArrayList<Int>? = null
 )

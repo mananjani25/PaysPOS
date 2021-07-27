@@ -38,7 +38,7 @@ class CreateTaxViewModel @Inject constructor(
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
     private var taxId: Int = -1
-    private var itemPricingViewModel: Int = -1
+    private var itemPricingViewModel: String = ""
 
     private var isEdit: Boolean = false
 
@@ -57,10 +57,10 @@ class CreateTaxViewModel @Inject constructor(
     fun setTaxData(taxData: GetTaxResponse.TaxData) {
         createTaxDetails.value?.name = taxData.name
         createTaxDetails.value?.rate = taxData.rate
-        enableTaxViewModel = taxData.isActive
+        enableTaxViewModel = taxData.isDefault
     }
 
-    fun setItemIds(itemIds: ArrayList<Int>, itemPricing: Int) {
+    fun setItemIds(itemIds: ArrayList<Int>, itemPricing: String) {
         this.itemIdsViewModel = itemIds
         this.itemPricingViewModel = itemPricing
     }
@@ -83,7 +83,7 @@ class CreateTaxViewModel @Inject constructor(
                 if (isEdit) id = taxId
                 name = value!!.name
                 rate = value.rate
-                isActive = enableTaxViewModel
+                isDefault = enableTaxViewModel
                 itemIds = itemIdsViewModel
                 itemPricing = itemPricingViewModel
                 locationId = prefProvider.getValueInt(LOCATION_ID, -1)

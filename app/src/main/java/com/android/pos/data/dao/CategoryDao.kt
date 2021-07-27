@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.android.pos.data.entities.CategoryWithInventory
 import com.android.pos.data.entities.TbCategory
-import com.android.pos.utils.statusUtils.Resource
 
 
 /**
@@ -14,15 +13,15 @@ import com.android.pos.utils.statusUtils.Resource
 interface CategoryDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun add(categoryModel: TbCategory?): Long
+    suspend fun add(categoryModel: TbCategory?): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addAll(categoryModel: List<TbCategory>)
 
-    @Query("select * from TbCategory")
+    @Query("select * from TbCategory where TbCategory.active = 1 ORDER BY TbCategory.sort ASC")
     fun all(): LiveData<List<TbCategory>>
 
-    @get:Query("select * from TbCategory where TbCategory.isHide = 1 ORDER BY TbCategory.sort ASC")
+    @get:Query("select * from TbCategory where TbCategory.active = 1 ORDER BY TbCategory.sort ASC")
     val allHideCategory: LiveData<List<TbCategory?>>?
 
     @Query("SELECT * from TbCategory where TbCategory.id  = :id LIMIT 1")
@@ -43,8 +42,11 @@ interface CategoryDao {
     @Query("DELETE FROM TbCategory")
     fun delete()
 
-    @Query("UPDATE TbCategory SET isHide = :sort WHERE  TbCategory.id = :id")
+    @Query("UPDATE TbCategory SET sort = :sort WHERE  TbCategory.id = :id")
     fun updateSorting(id: Int, sort: Int?): Int
+
+    @Query("UPDATE TbCategory SET active = :active WHERE  TbCategory.id = :id")
+    suspend fun hideCategory(id: Int, active: Boolean?): Int
 
     @Transaction
     @Query("SELECT * FROM TbCategory")
