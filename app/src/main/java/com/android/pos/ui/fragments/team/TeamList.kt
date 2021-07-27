@@ -32,10 +32,11 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class TeamList : Fragment(), CustomCallback, OperationCallback {
+    private var selectedPos: Int = -1
     private lateinit var binding: FragmentTeamListBinding
     private val viewModel by viewModels<TeamListViewModel>()
     var adapter: TeamsAdapter = TeamsAdapter()
-    private lateinit var empObject: EmployeeListResponse.Data.Employee
+    private var empObject: EmployeeListResponse.Data.Employee? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -48,9 +49,16 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
         setupStickyLayout()
         configureToolbar()
         observeShowProgress()
-        loadTeamDetails(null)
+
+        if (empObject != null) {
+            loadTeamDetails(empObject)
+        } else {
+            loadTeamDetails(null)
+        }
         loadTeams()
         deleteEmployee()
+
+        Log.e("Calling", "onCreateView")
 
         return binding.root
     }
@@ -59,7 +67,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
         super.onViewCreated(view, savedInstanceState)
 
 
-
+        Log.e("Calling", "onViewCreated")
 
         binding.layoutTool.imgOptionMenu.setOnClickListener {
 
@@ -69,6 +77,11 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
 
     }
 
+    override fun onResume() {
+        super.onResume()
+        Log.e("Calling", "onResume")
+    }
+
     private fun deleteEmployee() {
 
         viewModel.data.observe(viewLifecycleOwner, { event ->
@@ -76,7 +89,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
 
                 AlertUtils.showCustomAlert(requireActivity(), it.message)
 
-                adapter.removeItem(empObject, requireActivity())
+                empObject?.let { it1 -> adapter.removeItem(it1, requireActivity()) }
 
 
             }
@@ -127,8 +140,8 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
                             empObject =
                                 viewHolder?.itemView?.getTag(R.string.tv_order_id) as EmployeeListResponse.Data.Employee
 
-                            Log.e("Edit", empObject.id.toString())
-                            viewModel.delete(empObject.id)
+                            Log.e("Edit", empObject!!.id.toString())
+                            viewModel.delete(empObject!!.id)
                         }
                         negativeButton(R.string.tv_cancel) {
                             // Do negative stuff here
@@ -158,7 +171,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
 
     private fun loadTeams() {
 
-        viewModel.employeeData.observe(viewLifecycleOwner, {
+        viewModel.employeeData().observe(viewLifecycleOwner, { it ->
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
@@ -166,10 +179,21 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
 
                         if (resource.data != null && resource.data.data.employees.isNotEmpty())
 
-                            adapter.setPeople(
-                                resource.data.data.employees as MutableList<EmployeeListResponse.Data.Employee>,
-                                requireActivity()
-                            )
+                            adapter.setSelected(selectedPos)
+                        adapter.setPeople(
+                            resource.data?.data?.employees as MutableList<EmployeeListResponse.Data.Employee>,
+                            requireActivity()
+                        )
+
+                        if (selectedPos != -1)
+                            resource.data.data.employees.forEach {
+                                if (it.id == selectedPos) {
+                                    loadTeamDetails(it)
+                                    return@forEach
+                                }
+
+                            }
+
                     }
                     Status.ERROR -> {
                         ProgressUtils.dismissProgressDialog()
@@ -204,6 +228,18 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
 
     private fun loadTeamDetails(data: EmployeeListResponse.Data.Employee?) {
 
+
+        if (data != null) {
+            binding.layoutTool.txtEdit.visibility = View.VISIBLE
+            if (data.firstName != null && data.lastName != null) {
+                binding.layoutTool.txtSubTitle.text =
+                    data.firstName + " " + data.lastName.toString()
+            } else {
+                binding.layoutTool.txtSubTitle.text = data.firstName
+
+            }
+        }
+
         val teamDetails = TeamDetails()
 
         val args = Bundle()
@@ -217,16 +253,9 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
     override fun onItemClickListener(view: View?, data: EmployeeListResponse.Data.Employee) {
 
         Log.e("onItemClickListener", ">>>>")
-        binding.layoutTool.txtEdit.visibility = View.VISIBLE
-
-        if (data.firstName != null && data.lastName != null) {
-            binding.layoutTool.txtSubTitle.text = data.firstName + " " + data.lastName.toString()
-        } else {
-            binding.layoutTool.txtSubTitle.text = data.firstName
-
-        }
+        selectedPos = data.id
         empObject = data
-        loadTeamDetails(data)
+        loadTeamDetails(empObject)
     }
 
     override fun onItemClickListener(employee: EmployeeListResponse.Data.Employee) {

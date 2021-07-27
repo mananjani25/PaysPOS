@@ -3,7 +3,6 @@ package com.android.pos.ui.adapter
 import android.annotation.SuppressLint
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
@@ -26,7 +25,7 @@ import java.util.*
  * first letter of the last name.
  */
 class TeamsAdapter : SectioningAdapter(), Filterable {
-    private var isSelectedPos: Int = -1
+    private var isSelectedPos: Int = 0
     private val locale = Locale.getDefault()
     private lateinit var requireActivity: FragmentActivity
 
@@ -63,19 +62,6 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
     inner class HeaderViewHolder internal constructor(itemView: View) :
         SectioningAdapter.HeaderViewHolder(itemView) {
         var titleTextView: TextView = itemView.findViewById(R.id.txtHeader)
-
-        init {
-            itemView.setOnTouchListener { v, event ->
-                when (event?.action) {
-                    MotionEvent.ACTION_DOWN -> {
-
-                    }//Do Something
-                }
-
-                v?.onTouchEvent(event) ?: true
-            }
-        }
-
     }
 
     private var people: MutableList<EmployeeListResponse.Data.Employee>? = null
@@ -194,11 +180,11 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
                 person.firstName?.subSequence(0, 2)
         }
 
-         ivh.itemView.setTag(R.string.tv_order_id, person)
+        ivh.itemView.setTag(R.string.tv_order_id, person)
 
         ivh.itemView.tag = "normal";
 
-        if (isSelectedPos == ivh.layoutPosition) {
+        if (isSelectedPos == person.id) {
             ivh.layout.background =
                 ContextCompat.getDrawable(ivh.itemView.context, R.color.txt_color_blue)
             ivh.personNameTextView.setTextColor(ivh.itemView.context.getColorCompat(R.color.white))
@@ -213,7 +199,7 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
         // (ivh.itemView as SwipeLayout).setItemState(SwipeLayout.ITEM_STATE_COLLAPSED, false)
 
         ivh.itemView.setOnClickListener {
-            isSelectedPos = ivh.layoutPosition
+            isSelectedPos = person.id
             notifyDataSetChanged()
 
             mCallback.onItemClickListener(it, person)
@@ -313,6 +299,10 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
                 notifyAllSectionsDataSetChanged()
             }
         }
+    }
+
+    fun setSelected(selectedPos: Int) {
+        isSelectedPos = selectedPos
     }
 
 
