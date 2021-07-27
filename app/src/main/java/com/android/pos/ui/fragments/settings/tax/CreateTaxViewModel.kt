@@ -71,7 +71,6 @@ class CreateTaxViewModel @Inject constructor(
     fun enableTax(enableTax: Boolean) {
         this.enableTaxViewModel = enableTax
     }
-
     fun submit() {
         val value = createTaxDetails.value
         if (TextUtils.isEmpty(value?.name?.trim())) {

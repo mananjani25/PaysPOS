@@ -32,6 +32,7 @@ object Constants {
 
     const val TAXES = "taxes"
     const val TAX_UPDATE_DELETE = "taxes/{id}"
+    const val TAX_ACTIVE="taxes/{id}/active"
 
     const val TIPS = "tip_settings"
     const val TIPS_UPDATE_DELETE = "tip_settings/{id}"

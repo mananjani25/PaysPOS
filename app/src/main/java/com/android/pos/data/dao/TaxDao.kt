@@ -32,4 +32,7 @@ interface TaxDao {
 
     @Query("SELECT * FROM TbTax WHERE TbTax.id IN (:userIds)")
     fun taxByIds(userIds: IntArray): List<GetTaxResponse.TaxData>
+
+    @Query("UPDATE TbTax SET isActive = :active WHERE  TbTax.id = :id")
+    suspend fun activeTax(id: Int, active: Boolean?): Int
 }

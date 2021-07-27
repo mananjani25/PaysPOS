@@ -1,7 +1,9 @@
 package com.android.pos.ui.fragments.settings.tax
 
+import android.util.Log
 import androidx.lifecycle.*
 import com.android.pos.data.model.responseModel.CreateTaxResponse
+import com.android.pos.data.model.responseModel.GetTaxResponse
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.TaxServiceChargeRepository
 import com.android.pos.utils.Event
@@ -21,11 +23,61 @@ class TaxListViewModel @Inject constructor(
     private val _data = MutableLiveData<Event<CreateTaxResponse?>>()
     val data: LiveData<Event<CreateTaxResponse?>> = _data
 
+    private val _notifydata = MutableLiveData<Event<Boolean?>>()
+    val notifydata: LiveData<Event<Boolean?>> = _notifydata
+
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
 
     val getTaxList = taxServiceChargeRepository.getTaxList()
+
+    fun isTaxActive(taxDataItem: GetTaxResponse.TaxData) {
+
+        // _showProgress.value = Event(true)
+
+        viewModelScope.launch {
+            taxDataItem.isActive = !taxDataItem.isActive
+
+            val resource =
+                taxServiceChargeRepository.taxActive(taxDataItem.id, taxDataItem.isActive)
+
+            when (resource.status) {
+                Status.SUCCESS -> {
+
+                    //   _showProgress.value = Event(false)
+
+                    resource.data.let {
+                        if (it?.status == 200) {
+                            resource.data?.let { baseResponse ->
+                                taxServiceChargeRepository.taxActiveDatabase(
+                                    taxDataItem.id,
+                                    taxDataItem.isActive
+                                )
+                                _notifydata.value = Event(true)
+
+                            }
+                        } else {
+                            _snackbarText.value = Event(resource.message)
+                        }
+
+                    }
+
+                }
+
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+                    //_showProgress.value = Event(false)
+                }
+
+                Status.LOADING -> {
+                    // _showProgress.value = Event(true)
+                }
+            }
+        }
+
+
+    }
 
     fun delete(id: Int) {
         _showProgress.value = Event(true)

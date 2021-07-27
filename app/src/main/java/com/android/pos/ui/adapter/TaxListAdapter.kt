@@ -5,9 +5,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.model.responseModel.GetTaxResponse
 import com.android.pos.databinding.ViewTaxItemBinding
+import com.android.pos.ui.fragments.settings.tax.TaxListViewModel
 
 
-class TaxListAdapter : RecyclerView.Adapter<TaxListAdapter.MyViewHolder>() {
+class TaxListAdapter(val viewModel: TaxListViewModel) : RecyclerView.Adapter<TaxListAdapter.MyViewHolder>() {
 
     var taxList = ArrayList<GetTaxResponse.TaxData>()
 
@@ -21,6 +22,7 @@ class TaxListAdapter : RecyclerView.Adapter<TaxListAdapter.MyViewHolder>() {
     override fun onBindViewHolder(holder: TaxListAdapter.MyViewHolder, position: Int) {
         val itemBinding = holder.taxItemBinding
         itemBinding.taxModel = taxList[position]
+        itemBinding.viewModel = viewModel
 
         itemBinding.executePendingBindings()
     }
@@ -41,7 +43,7 @@ class TaxListAdapter : RecyclerView.Adapter<TaxListAdapter.MyViewHolder>() {
 
     inner class MyViewHolder(val taxItemBinding: ViewTaxItemBinding) :
         RecyclerView.ViewHolder(taxItemBinding.root) {
-        init {
+        /*init {
 
             taxItemBinding.imgCheckBox.setOnClickListener {
                 taxList.get(layoutPosition).isActive = !taxList.get(layoutPosition).isActive
@@ -50,6 +52,6 @@ class TaxListAdapter : RecyclerView.Adapter<TaxListAdapter.MyViewHolder>() {
 
             }
 
-        }
+        }*/
     }
 }

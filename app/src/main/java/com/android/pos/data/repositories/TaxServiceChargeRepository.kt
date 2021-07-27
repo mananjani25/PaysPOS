@@ -29,9 +29,15 @@ class TaxServiceChargeRepository @Inject constructor(
     suspend fun updateTax(taxId: Int, data: CreateTaxRequestModel) =
         apiHelperNew.updateTax(taxId, data)
 
+    suspend fun taxActive(id: Int, active: Boolean) =
+        apiHelperNew.taxActive(id, active)
+
+    suspend fun taxActiveDatabase(taxId: Int, active: Boolean) =
+        appDatabase.taxDao().activeTax(taxId, active)
+
     suspend fun deleteTax(data: Int) = apiHelperNew.deleteTax(data)
 
-    suspend fun deleteTaxDatabase(taxId:Int) = appDatabase.taxDao().deleteTaxById(taxId)
+    suspend fun deleteTaxDatabase(taxId: Int) = appDatabase.taxDao().deleteTaxById(taxId)
 
     fun getServiceChargeList() =
         performGetOperationNew(networkCall = { apiHelperNew.getServiceChargeList() })

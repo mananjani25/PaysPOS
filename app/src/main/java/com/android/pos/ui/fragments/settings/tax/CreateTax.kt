@@ -66,6 +66,7 @@ class CreateTax : Fragment() {
             viewModel.isEditData(isEdit, taxData.id)
 
             itemPricing = taxData.itemPricing.toString()
+            itemIds = taxData.itemIds as ArrayList<Int>
         }
 
         setupSnackbar()
@@ -76,7 +77,6 @@ class CreateTax : Fragment() {
             if (isEdit) {
                 val bundle = Bundle()
                 bundle.putBoolean("isEdit", true)
-                itemIds = taxData.itemIds as ArrayList<Int>
                 bundle.putIntegerArrayList("itemIds", itemIds)
                 findNavController().navigate(R.id.action_newTax_to_itemDialog, bundle)
             } else {

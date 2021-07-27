@@ -24,6 +24,7 @@ import com.android.pos.data.remote.Constants.SERVICE_CHARGE
 import com.android.pos.data.remote.Constants.SERVICE_CHARGE_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.SYNC_VENUE_DATA
 import com.android.pos.data.remote.Constants.TAXES
+import com.android.pos.data.remote.Constants.TAX_ACTIVE
 import com.android.pos.data.remote.Constants.TAX_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.TIPS
 import com.android.pos.data.remote.Constants.TIPS_UPDATE_DELETE
@@ -77,6 +78,12 @@ interface ApiService {
     suspend fun updateTax(
         @Path("id") taxId: Int,
         @Body createTax: CreateTaxRequestModel
+    ): CreateTaxResponse
+
+    @PUT(TAX_ACTIVE)
+    suspend fun taxActive(
+        @Path("id") taxId: Int,
+        @Query("is_active") is_active: Boolean
     ): CreateTaxResponse
 
     @DELETE(TAX_UPDATE_DELETE)
