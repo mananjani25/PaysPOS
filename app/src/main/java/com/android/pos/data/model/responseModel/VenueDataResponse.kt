@@ -34,6 +34,8 @@ data class VenueDataResponse(
             val locationId: Int,
             @SerializedName("active")
             val active: Boolean,
+            @SerializedName("item_ids")
+            val itemIds: List<Int>,
 
             ) {
             data class Item(

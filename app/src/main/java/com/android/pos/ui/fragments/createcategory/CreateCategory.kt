@@ -128,6 +128,10 @@ class CreateCategory : Fragment() {
                     Status.SUCCESS -> {
                         binding.recyclerViewItemsList.visibility = View.VISIBLE
                         it.data?.let { it1 -> adapter.add(it1) }
+
+                        if (isEdit) {
+                            adapter.selectedItemFromEdit(categoryData.item_ids)
+                        }
                     }
                     Status.ERROR -> {
                         binding.recyclerViewItemsList.visibility = View.GONE

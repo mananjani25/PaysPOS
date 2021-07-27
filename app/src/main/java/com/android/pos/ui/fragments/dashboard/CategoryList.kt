@@ -30,7 +30,6 @@ class CategoryList : Fragment() {
             fragment.arguments = args
             return fragment
         }
-
     }
 
     override fun onCreateView(

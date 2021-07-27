@@ -1,5 +1,6 @@
 package com.android.pos.ui.fragments.team
 
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,6 +12,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.model.responseModel.EmployeeListResponse
 import com.android.pos.databinding.FragmentTeamListBinding
@@ -18,6 +21,7 @@ import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.TeamsAdapter
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.SwipeHelperNew
 import com.android.pos.utils.callback.CustomCallback
 import com.android.pos.utils.callback.OperationCallback
 import com.android.pos.utils.extensions.showAlert
@@ -79,12 +83,44 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
     }
 
     private fun setupStickyLayout() {
+
+        binding.rvEmployeeList.itemAnimator = null
         val stickyHeaderLayoutManager = StickyHeaderLayoutManager()
         binding.rvEmployeeList.layoutManager = stickyHeaderLayoutManager
         adapter.setCallback(this)
         adapter.setOperationCallback(this)
         binding.rvEmployeeList.adapter = adapter
 
+
+        object : SwipeHelperNew(activity, binding.rvEmployeeList) {
+            override fun getMovementFlags(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder
+            ): Int {
+
+                Log.e("makeMovementFlags", viewHolder.itemView.tag.toString())
+                if (viewHolder.itemView.tag.toString() == "header") {
+                    return 0
+                }
+                return makeMovementFlags(0, ItemTouchHelper.LEFT)
+
+            }
+
+            override fun instantiateUnderlayButton(
+                viewHolder: RecyclerView.ViewHolder?,
+                underlayButtons: MutableList<UnderlayButton?>
+            ) {
+
+                underlayButtons.add(UnderlayButton(
+                    "Edit",
+                    0,
+                    Color.parseColor("#2997cc")
+                ) { pos ->
+                    Log.e("SwipeHelper", "pos")
+                })
+
+            }
+        }
     }
 
     private fun observeShowProgress() {
@@ -110,6 +146,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
                         ProgressUtils.dismissProgressDialog()
 
                         if (resource.data != null && resource.data.data.employees.isNotEmpty())
+
                             adapter.setPeople(
                                 resource.data.data.employees as MutableList<EmployeeListResponse.Data.Employee>,
                                 requireActivity()
@@ -136,7 +173,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
         binding.layoutTool.imgDrawer.setOnClickListener {
             (requireActivity() as MainActivity).enableDrawer()
         }
-        binding.layoutTool.imgOptionMenu.setImageDrawable(requireContext().resources.getDrawable(R.drawable.ic_add))
+        binding.layoutTool.imgOptionMenu.setImageResource(R.drawable.ic_add)
         binding.layoutTool.imgOptionMenuContainer.visibility = View.GONE
 
         binding.layoutTool.txtEdit.setOnClickListener {

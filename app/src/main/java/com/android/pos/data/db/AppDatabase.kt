@@ -14,12 +14,14 @@ import com.android.pos.data.model.CharacterModel
 import com.android.pos.data.model.responseModel.GetTaxResponse
 import com.android.pos.data.remote.Constants.DATABASE_NAME
 import com.android.pos.data.typeconvert.TypeConvertersItemIds
+import com.android.pos.data.typeconvert.TypeConvertersIds
 
 
 @Database(
     entities = [CharacterModel::class, TbCategory::class, TbItem::class, GetTaxResponse.TaxData::class],
-    version = 1
+    version = 2
 )
+@TypeConverters(TypeConvertersIds::class)
 
 @TypeConverters(
     TypeConvertersItemIds::class

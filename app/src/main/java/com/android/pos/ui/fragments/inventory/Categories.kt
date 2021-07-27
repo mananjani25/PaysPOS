@@ -28,6 +28,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class Categories : Fragment() {
+    private var isreOrder: Boolean = false
     private lateinit var adapter: CategoriesListAdapter
     private lateinit var binding: FragmentCategoriesBinding
 
@@ -105,6 +106,13 @@ class Categories : Fragment() {
             event.getContentIfNotHandled()?.let {
 
                 AlertUtils.showCustomAlert(requireActivity(), it.message)
+
+                if (isreOrder) {
+                    val allCategories = adapter.getAll()
+
+                    viewModel.reOrder(allCategories)
+
+                }
             }
         })
 
@@ -181,16 +189,6 @@ class Categories : Fragment() {
                         }
                     }
 
-                    /*activity?.let {
-                        AlertUtils.showConfirmAlert(
-                            it, getString(R.string.delete_category_message)
-                        ) { _, _ ->
-
-                            deleteCategoryCall(pos)
-
-
-                        }
-                    }*/
 
                 })
             }
@@ -279,7 +277,9 @@ class Categories : Fragment() {
 
     private fun reallyMoved(oldPos: Int, newPos: Int, categoryIdOld: Int?) {
         if (categoryIdOld != null) {
-            //  reorderCall(categoryIdOld, oldPos, newPos)
+
+            isreOrder = true
+            viewModel.reOrderCategory(categoryIdOld, oldPos, newPos)
         }
 
     }

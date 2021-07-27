@@ -16,7 +16,7 @@ interface CategoryDao {
     suspend fun add(categoryModel: TbCategory?): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun addAll(categoryModel: List<TbCategory>)
+    suspend fun addAll(categoryModel: List<TbCategory>)
 
     @Query("select * from TbCategory where TbCategory.active = 1 ORDER BY TbCategory.sort ASC")
     fun all(): LiveData<List<TbCategory>>

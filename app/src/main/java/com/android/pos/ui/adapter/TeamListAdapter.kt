@@ -56,21 +56,24 @@ class TeamListAdapter(val context: Context, val list: ArrayList<TeamListModel>) 
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        when(holder.itemViewType) {
+        when (holder.itemViewType) {
             0 -> {
                 val holder: ViewHolderTitle = holder as ViewHolderTitle
                 holder.itemView.findViewById<AppCompatTextView>(R.id.txtHeader)
                     .setText(list.get(position).title)
             }
-            else ->{
-                (holder as ViewHolderMain).itemView.findViewById<AppCompatTextView>(R.id.tvInitialName).setText(list.get(position).title)
-                (holder as ViewHolderMain).itemView.findViewById<AppCompatTextView>(R.id.txtName).setText(list.get(position).name)
-                (holder as ViewHolderMain).itemView.findViewById<AppCompatTextView>(R.id.txtNumber).setText(list.get(position).email)
-            }
-
+            else -> {
+                (holder as ViewHolderMain).itemView.findViewById<AppCompatTextView>(R.id.tvInitialName)
+                    .setText(list.get(position).title)
+                (holder as ViewHolderMain).itemView.findViewById<AppCompatTextView>(R.id.txtName)
+                    .setText(list.get(position).name)
+                (holder as ViewHolderMain).itemView.findViewById<AppCompatTextView>(R.id.txtNumber)
+                    .setText(list.get(position).email)
             }
 
         }
+
+    }
 
     override fun getItemCount(): Int {
         return list.size
