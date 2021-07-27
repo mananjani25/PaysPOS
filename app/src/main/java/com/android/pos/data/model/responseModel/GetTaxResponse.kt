@@ -37,7 +37,7 @@ data class GetTaxResponse(
         @SerializedName("updated_at")
         val updatedAt: String?,
         @SerializedName("is_active")
-        val isActive: Boolean,
+        var isActive: Boolean = false,
         @SerializedName("is_default")
         val isDefault: Boolean,
         @SerializedName("is_custom_amount")
