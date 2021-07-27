@@ -123,4 +123,10 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
 
     suspend fun updateCategoryCall(id: Int, data: CreateCategoryRequestModel) =
         getResult { apiService.updateCategory(id, data) }
+
+    suspend fun getCategories() =
+        getResult { apiService.getCategories() }
+
+    suspend fun reOrderCategoryCall(id: Int, oldPos: Int, newPos: Int) =
+        getResult { apiService.reOrderCategory(id, oldPos, newPos) }
 }

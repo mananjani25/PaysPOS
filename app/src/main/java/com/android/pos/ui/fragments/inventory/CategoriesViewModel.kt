@@ -4,12 +4,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.android.pos.data.entities.TbCategory
 import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -73,4 +75,57 @@ class CategoriesViewModel @Inject constructor(
         }
     }
 
+
+    fun reOrderCategory(catId: Int, oldPos: Int, newPos: Int) {
+        _showProgress.value = Event(true)
+
+        viewModelScope.launch {
+
+            val resource = posRepository.reOrderCategoryCall(catId, oldPos, newPos)
+            when (resource.status) {
+                Status.SUCCESS -> {
+
+                    _showProgress.value = Event(false)
+
+                    resource.data.let {
+                        if (it?.status == 200) {
+                            resource.data?.let { baseResponse ->
+                                _data.value = Event(baseResponse)
+                            }
+                        } else {
+                            _snackbarText.value = Event(resource.message)
+                        }
+
+                    }
+
+
+                }
+
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
+                }
+
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
+            }
+        }
+    }
+
+
+    fun reOrder(allCategories: ArrayList<TbCategory>) {
+
+        if (allCategories.isNotEmpty()) {
+            allCategories.forEachIndexed { pos, model ->
+                model.sort = pos
+            }
+            viewModelScope.launch {
+                posRepository.updateCategorySort(allCategories)
+            }
+
+
+        }
+
+    }
 }

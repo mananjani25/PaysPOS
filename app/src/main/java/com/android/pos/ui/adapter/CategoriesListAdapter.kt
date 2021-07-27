@@ -165,8 +165,8 @@ class CategoriesListAdapter(private val isChoose: Boolean) :
 
     }
 
-    fun addItem() {
+    fun getAll(): ArrayList<TbCategory> {
 
-
+        return filterList
     }
 }

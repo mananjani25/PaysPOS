@@ -109,13 +109,15 @@ class CreateCategoryViewModel @Inject constructor(
                                     posRepository.createCategory(category)
 
 
-                                    val oldIds = posRepository.getItemsByCategory(category.id)
-                                    oldIds?.forEach { old ->
-                                        posRepository.updateItemCategory(
-                                            category.id,
-                                            category.name,
-                                            null
-                                        )
+                                    if (isEdit) {
+                                        val oldIds = posRepository.getItemsByCategory(category.id)
+                                        oldIds?.forEach { old ->
+                                            posRepository.updateItemCategory(
+                                                category.id,
+                                                category.name,
+                                                null
+                                            )
+                                        }
                                     }
 
                                     ids.forEach { itemId ->
