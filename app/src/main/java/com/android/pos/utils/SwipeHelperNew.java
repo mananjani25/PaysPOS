@@ -8,6 +8,8 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -26,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
-public abstract class SwipeHelper extends ItemTouchHelper.SimpleCallback {
+public abstract class SwipeHelperNew extends ItemTouchHelper.Callback {
 
     public static final int BUTTON_WIDTH = 150;
     private final RecyclerView recyclerView;
@@ -37,19 +39,6 @@ public abstract class SwipeHelper extends ItemTouchHelper.SimpleCallback {
     private final Map<Integer, List<UnderlayButton>> buttonsBuffer;
     private final Queue<Integer> recoverQueue;
 
-    @Override
-    public float getMoveThreshold(@NonNull @NotNull RecyclerView.ViewHolder viewHolder) {
-
-        Log.e("makeMovementFlags", viewHolder.itemView.getTag().toString());
-
-        if ("normal".equalsIgnoreCase((String) viewHolder.itemView.getTag())) {
-            return makeMovementFlags(0, ItemTouchHelper.LEFT);
-        } else {
-            return 0;
-        }
-
-
-    }
 
     private final GestureDetector.SimpleOnGestureListener gestureListener = new GestureDetector.SimpleOnGestureListener() {
         @Override
@@ -91,8 +80,7 @@ public abstract class SwipeHelper extends ItemTouchHelper.SimpleCallback {
     };
 
     @SuppressLint("ClickableViewAccessibility")
-    public SwipeHelper(Context context, RecyclerView recyclerView) {
-        super(0, ItemTouchHelper.LEFT);
+    public SwipeHelperNew(Context context, RecyclerView recyclerView) {
         this.recyclerView = recyclerView;
         this.buttons = new ArrayList<>();
         this.gestureDetector = new GestureDetector(context, gestureListener);
@@ -192,7 +180,11 @@ public abstract class SwipeHelper extends ItemTouchHelper.SimpleCallback {
         while (!recoverQueue.isEmpty()) {
             int pos = recoverQueue.poll();
             if (pos > -1) {
-                recyclerView.getAdapter().notifyItemChanged(pos);
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    //HERE
+                    recyclerView.getAdapter().notifyItemChanged(pos);
+                });
+
             }
         }
     }
