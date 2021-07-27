@@ -9,8 +9,10 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.android.pos.R
 import com.android.pos.data.model.OptionListModel
+import com.android.pos.data.remote.Constants.ADD_TAX
 import com.android.pos.data.remote.Constants.DIALOG_KEY
 import com.android.pos.data.remote.Constants.DIALOG_KEY_TAX
+import com.android.pos.data.remote.Constants.INCLUDE_TAX
 import com.android.pos.databinding.DialogEditItemTitleBinding
 import com.android.pos.databinding.DialogItemPricingBinding
 import com.android.pos.ui.adapter.ChooseColorsAdapter
@@ -44,12 +46,12 @@ class ItemPricingDialog : DialogFragment(), View.OnClickListener {
 
 
         if (isEdit) {
-            itemPricing = arguments?.getString("itemPricing")!!
-            if (itemPricing == "Add Tax To Item Price") {
+            itemPricing = arguments?.getString("itemPricing").toString()
+            if (itemPricing == ADD_TAX) {
                 binding.ivAddTax.setImageResource(R.drawable.ic_outline_radio_button_checked)
                 binding.ivIncludeTax.setImageResource(R.drawable.ic_uncheck_circle)
 
-            } else if (itemPricing == "Include Tax in Item Price") {
+            } else if (itemPricing == INCLUDE_TAX) {
                 binding.ivIncludeTax.setImageResource(R.drawable.ic_outline_radio_button_checked)
                 binding.ivAddTax.setImageResource(R.drawable.ic_uncheck_circle)
             }
@@ -74,12 +76,12 @@ class ItemPricingDialog : DialogFragment(), View.OnClickListener {
                 findNavController().popBackStack()
             }
             R.id.llAddTax -> {
-                ADD_INCLUDE_TAX = "Add Tax To Item Price"
+                ADD_INCLUDE_TAX = ADD_TAX
                 binding.ivAddTax.setImageResource(R.drawable.ic_outline_radio_button_checked)
                 binding.ivIncludeTax.setImageResource(R.drawable.ic_uncheck_circle)
             }
             R.id.llIncludeTax -> {
-                ADD_INCLUDE_TAX = "Include Tax in Item Price"
+                ADD_INCLUDE_TAX = INCLUDE_TAX
                 binding.ivIncludeTax.setImageResource(R.drawable.ic_outline_radio_button_checked)
                 binding.ivAddTax.setImageResource(R.drawable.ic_uncheck_circle)
             }
