@@ -282,6 +282,10 @@ class DashboardCategoryNew : Fragment() {
         linearHome.setOnClickListener {
             closeDialog(dialog)
         }
+        linearCust.setOnClickListener {
+            findNavController().navigate(R.id.action_dashboardCategoryNew_to_customer)
+            closeDialog(dialog)
+        }
         linearReports.setOnClickListener {
             findNavController().navigate(R.id.action_dashboardCategoryNew_to_reports)
             dialog.dismiss()

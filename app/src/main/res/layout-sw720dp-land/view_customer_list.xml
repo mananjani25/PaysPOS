@@ -39,6 +39,7 @@
                     android:background="@drawable/bg_circle_name"
                     android:gravity="center"
                     android:padding="@dimen/_4sdp"
+                    android:text="@{model.titleName}"
                     android:textAllCaps="true"
                     android:textColor="@color/btnColor"
                     android:textSize="@dimen/_6mdpi" />
@@ -57,6 +58,7 @@
                     android:layout_height="wrap_content"
                     android:paddingStart="@dimen/_5sdp"
                     android:paddingEnd="@dimen/_5sdp"
+                    android:text="@{model.name}"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />
 
@@ -67,6 +69,7 @@
                     android:layout_height="wrap_content"
                     android:paddingStart="@dimen/_5sdp"
                     android:paddingEnd="@dimen/_5sdp"
+                    android:text="@{model.email}"
                     android:textColor="@color/colorB9"
                     android:textSize="@dimen/_6mdpi" />
             </LinearLayout>
