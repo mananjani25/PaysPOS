@@ -55,14 +55,17 @@ class CreateTaxViewModel @Inject constructor(
     }
 
     fun setTaxData(taxData: GetTaxResponse.TaxData) {
-        createTaxDetails.value?.name = taxData.name
+        createTaxDetails.value?.name = taxData.name!!
         createTaxDetails.value?.rate = taxData.rate
         enableTaxViewModel = taxData.isDefault
     }
 
-    fun setItemIds(itemIds: ArrayList<Int>, itemPricing: String) {
+    fun setItemIds(itemIds: ArrayList<Int>) {
         this.itemIdsViewModel = itemIds
-        this.itemPricingViewModel = itemPricing
+    }
+
+    fun setItemPricing(itemPricing: String?) {
+        this.itemPricingViewModel = itemPricing.toString()
     }
 
     fun enableTax(enableTax: Boolean) {
@@ -137,4 +140,6 @@ class CreateTaxViewModel @Inject constructor(
         }
 
     }
+
+
 }

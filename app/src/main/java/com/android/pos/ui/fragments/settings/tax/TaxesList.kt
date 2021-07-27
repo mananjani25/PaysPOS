@@ -124,7 +124,7 @@ class TaxesList : Fragment() {
                     Status.SUCCESS -> {
                         ProgressUtils.dismissProgressDialog()
                         binding.rvTaxList.visibility = View.VISIBLE
-                        resource.data?.let { taxList -> setTaxData(taxList.data) }
+                        resource.data?.let { taxList -> setTaxData(taxList) }
                     }
                     Status.ERROR -> {
                         ProgressUtils.dismissProgressDialog()
@@ -175,10 +175,10 @@ class TaxesList : Fragment() {
 
 
                 AlertUtils.showCustomAlert(requireActivity(), it.message)
-                taxListUpdateDelete.remove(taxObject)
+               /* taxListUpdateDelete.remove(taxObject)
                 taxListadapter.addTaxes(taxListUpdateDelete)
                 taxListadapter.notifyItemRemoved(position)
-                taxListadapter.notifyItemRangeChanged(position, taxListUpdateDelete.size)
+                taxListadapter.notifyItemRangeChanged(position, taxListUpdateDelete.size)*/
 
             }
         })

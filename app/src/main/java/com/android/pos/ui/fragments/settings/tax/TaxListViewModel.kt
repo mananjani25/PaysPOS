@@ -1,9 +1,6 @@
 package com.android.pos.ui.fragments.settings.tax
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.android.pos.data.model.responseModel.CreateTaxResponse
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.TaxServiceChargeRepository
@@ -41,8 +38,10 @@ class TaxListViewModel @Inject constructor(
 
                     resource.data.let {
                         if (it?.status == 200) {
-                            resource.data?.let {createTaxResponse->
+                            resource.data?.let { createTaxResponse ->
+                                taxServiceChargeRepository.deleteTaxDatabase(id)
                                 _data.value = Event(createTaxResponse)
+
                             }
                         } else {
                             _snackbarText.value = Event(resource.message)
