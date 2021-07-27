@@ -24,6 +24,7 @@ import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.SwipeHelperNew
 import com.android.pos.utils.callback.CustomCallback
 import com.android.pos.utils.callback.OperationCallback
+import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.statusUtils.Status
 import com.android.pos.utils.sticky_recycler.StickyHeaderLayoutManager
@@ -46,7 +47,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
 
         setupStickyLayout()
         configureToolbar()
-        //  observeShowProgress()
+        observeShowProgress()
         loadTeamDetails(null)
         loadTeams()
         deleteEmployee()
@@ -112,11 +113,29 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
             ) {
 
                 underlayButtons.add(UnderlayButton(
-                    "Edit",
+                    "Delete",
                     0,
-                    Color.parseColor("#2997cc")
+                    Color.parseColor("#FF3C30")
                 ) { pos ->
-                    Log.e("SwipeHelper", "pos")
+
+                    alert(
+                        getString(R.string.app_name),
+                        getString(R.string.delete_employee_message)
+                    ) {
+                        positiveButton(getString(R.string.tv_delete)) {
+                            // Do positive stuff here
+                            empObject =
+                                viewHolder?.itemView?.getTag(R.string.tv_order_id) as EmployeeListResponse.Data.Employee
+
+                            Log.e("Edit", empObject.id.toString())
+                            viewModel.delete(empObject.id)
+                        }
+                        negativeButton(R.string.tv_cancel) {
+                            // Do negative stuff here
+                        }
+                    }
+
+
                 })
 
             }

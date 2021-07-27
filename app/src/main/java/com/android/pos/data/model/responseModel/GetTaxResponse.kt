@@ -43,7 +43,7 @@ data class GetTaxResponse(
         @SerializedName("is_custom_amount")
         val isCustomAmount: String?,
         @SerializedName("item_pricing")
-        val itemPricing: String?,
+        var itemPricing: String?,
         @SerializedName("item_ids")
         val itemIds: List<Int>
     ) : Parcelable

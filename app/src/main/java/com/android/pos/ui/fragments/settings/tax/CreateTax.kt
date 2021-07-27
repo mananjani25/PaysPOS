@@ -1,6 +1,7 @@
 package com.android.pos.ui.fragments.settings.tax
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -32,7 +33,7 @@ class CreateTax : Fragment() {
 
     private val viewModel by viewModels<CreateTaxViewModel>()
     private var itemIds = ArrayList<Int>()
-    private var itemPricing: String? = ""
+    private var itemPricing: String = ""
 
     var isEdit: Boolean = false
     private lateinit var taxData: GetTaxResponse.TaxData
@@ -63,6 +64,8 @@ class CreateTax : Fragment() {
 
             binding.swtEnableTax.isChecked = taxData.isDefault
             viewModel.isEditData(isEdit, taxData.id)
+
+            itemPricing = taxData.itemPricing.toString()
         }
 
         setupSnackbar()
@@ -86,7 +89,7 @@ class CreateTax : Fragment() {
                 //bundle have to sent for item ids
                 val bundle = Bundle()
                 bundle.putBoolean("isEdit", true)
-                itemPricing = taxData.itemPricing
+                Log.e("itemPricing", itemPricing.toString())
                 bundle.putString("itemPricing", itemPricing)
                 findNavController().navigate(R.id.action_newTax_to_itemPricingDialog, bundle)
             } else {

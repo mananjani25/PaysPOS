@@ -2,6 +2,7 @@ package com.android.pos.ui.dialog
 
 import android.graphics.Point
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
@@ -76,11 +77,13 @@ class ItemPricingDialog : DialogFragment(), View.OnClickListener {
                 findNavController().popBackStack()
             }
             R.id.llAddTax -> {
+                itemPricing = ADD_TAX
                 ADD_INCLUDE_TAX = ADD_TAX
                 binding.ivAddTax.setImageResource(R.drawable.ic_outline_radio_button_checked)
                 binding.ivIncludeTax.setImageResource(R.drawable.ic_uncheck_circle)
             }
             R.id.llIncludeTax -> {
+                itemPricing = INCLUDE_TAX
                 ADD_INCLUDE_TAX = INCLUDE_TAX
                 binding.ivIncludeTax.setImageResource(R.drawable.ic_outline_radio_button_checked)
                 binding.ivAddTax.setImageResource(R.drawable.ic_uncheck_circle)
