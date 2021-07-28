@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -61,6 +62,14 @@ class CreateDiscount : Fragment() {
         observeShowProgress()
         navigate()
 
+        val callback: OnBackPressedCallback =
+            object : OnBackPressedCallback(true /* enabled by default */) {
+                override fun handleOnBackPressed() {
+                    backPressManage()
+                }
+            }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+
         return binding.root
     }
 
@@ -72,13 +81,17 @@ class CreateDiscount : Fragment() {
 
     private fun onCLick() {
         binding.imgBack.setOnClickListener {
-            val navControll = findNavController()
-            navControll.previousBackStackEntry?.savedStateHandle?.set(
-                Constants.KEY,
-                Constants.CREATEDISCOUNT
-            )
-            navControll.popBackStack()
+            backPressManage()
         }
+    }
+
+    private fun backPressManage() {
+        val navControll = findNavController()
+        navControll.previousBackStackEntry?.savedStateHandle?.set(
+            Constants.KEY,
+            Constants.CREATEDISCOUNT
+        )
+        navControll.popBackStack()
     }
 
     fun discountType(isChecked: Boolean) {
@@ -113,7 +126,7 @@ class CreateDiscount : Fragment() {
                     AlertUtils.showCustomAlertWithListenerWithOK(
                         it, createDiscountResponse.message
                     ) { _, _ ->
-                        findNavController().navigateUp()
+                        backPressManage()
                     }
                 }
             }

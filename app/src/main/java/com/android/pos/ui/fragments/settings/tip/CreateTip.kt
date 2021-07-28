@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -49,15 +50,22 @@ class CreateTip : Fragment() {
         setupSnackbar()
         observeShowProgress()
         navigate()
+
+        val callback: OnBackPressedCallback =
+            object : OnBackPressedCallback(true /* enabled by default */) {
+                override fun handleOnBackPressed() {
+                    backPressManage()
+                }
+            }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
         return binding.root
     }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.imgBack.setOnClickListener {
-            val controller = findNavController()
-            controller.previousBackStackEntry?.savedStateHandle?.set(KEY, CREATE_TIP)
-            controller.popBackStack()
+            backPressManage()
         }
     }
 
@@ -75,6 +83,12 @@ class CreateTip : Fragment() {
 
     }
 
+    private fun backPressManage() {
+        val controller = findNavController()
+        controller.previousBackStackEntry?.savedStateHandle?.set(KEY, CREATE_TIP)
+        controller.popBackStack()
+    }
+
 
     private fun navigate() {
 
@@ -84,7 +98,7 @@ class CreateTip : Fragment() {
                     AlertUtils.showCustomAlertWithListenerWithOK(
                         it, createTipResponse.message
                     ) { _, _ ->
-                        findNavController().navigateUp()
+                        backPressManage()
                     }
                 }
             }
