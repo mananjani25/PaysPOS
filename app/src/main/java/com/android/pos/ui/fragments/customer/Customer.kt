@@ -139,7 +139,9 @@ class Customer : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
 
                 Log.e(TAG, "${binding.autoSearch.text}")
-                //  customerAdapter.filter.filter(binding.autoSearch.text.trim().toString())
+
+                (binding.rvEmployeeList.adapter as CustomerListAdapter).filter.filter(binding.autoSearch.text.trim().toString())
+
 
             }
 

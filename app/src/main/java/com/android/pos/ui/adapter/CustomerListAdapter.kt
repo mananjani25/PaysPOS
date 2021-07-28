@@ -27,14 +27,19 @@ class CustomerListAdapter(
 
     private var isSelectedPos: Int = -1
 
+    init {
+
+        filterList = list
+    }
+
 
     inner class MyViewHolder(private val binding: ViewCustomerListBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(model: com.android.pos.data.model.CustomerListResponse.Data) {
 
-            if (list.get(layoutPosition).first_name != null && list.get(layoutPosition).last_name != null) {
+            if (filterList.get(layoutPosition).first_name != null && filterList.get(layoutPosition).last_name != null) {
                 binding.tvInitialName.setText(
-                    "" + list.get(layoutPosition).first_name.first() + "" + list.get(
+                    "" + filterList.get(layoutPosition).first_name.first() + "" + filterList.get(
                         layoutPosition
                     ).last_name.first()
                 )
@@ -42,7 +47,7 @@ class CustomerListAdapter(
             } else {
                 binding.tvInitialName.setText(
                     "${
-                        list.get(layoutPosition).first_name?.subSequence(
+                        filterList.get(layoutPosition).first_name?.subSequence(
                             0,
                             2
                         )
@@ -50,19 +55,19 @@ class CustomerListAdapter(
                 )
             }
 
-            if (list.get(0).email != null) {
+            if (filterList.get(0).email != null) {
 
                 binding.txtNumber.setText(
                     "" + AlertUtils.usNumberFormat(
-                        list.get(layoutPosition).phones.get(
+                        filterList.get(layoutPosition).phones.get(
                             0
                         ).phone_number
-                    ) + " | " + list.get(layoutPosition).email
+                    ) + " | " + filterList.get(layoutPosition).email
                 )
             } else {
                 binding.txtNumber.setText(
                     "" + AlertUtils.usNumberFormat(
-                        list.get(layoutPosition).phones.get(
+                        filterList.get(layoutPosition).phones.get(
                             0
                         ).phone_number
                     )
@@ -98,7 +103,7 @@ class CustomerListAdapter(
             binding.root.setOnClickListener {
                 isSelectedPos = layoutPosition
                 notifyDataSetChanged()
-                listner.onCustomerSelect(layoutPosition, list[layoutPosition])
+                listner.onCustomerSelect(layoutPosition, filterList[layoutPosition])
             }
 
         }
@@ -115,11 +120,17 @@ class CustomerListAdapter(
     }
 
     override fun onBindViewHolder(holder: CustomerListAdapter.MyViewHolder, position: Int) {
-        holder.bind(list[position])
+        holder.bind(filterList[position])
     }
 
     override fun getItemCount(): Int {
-        return list.size
+        if (list.size > 0) {
+
+            return filterList.size
+
+        } else {
+            return 0
+        }
     }
 
 
@@ -139,15 +150,22 @@ class CustomerListAdapter(
                 } else {
                     var filterList: ArrayList<com.android.pos.data.model.CustomerListResponse.Data> =
                         arrayListOf()
-                    for (model in list) {
+                    for (model in this@CustomerListAdapter.filterList) {
                         Log.e("FilterProcess", "ModelName ${model.first_name.toLowerCase()}")
                         Log.e("FilterProcess", "Character ${charString.toLowerCase()}")
-                        if (model.first_name.toLowerCase().contains(charString.toLowerCase())) {
+
+                        if (model.first_name.toLowerCase()
+                                .contains(charString.toLowerCase()) || model.last_name.toLowerCase()
+                                .contains(charString.toLowerCase())
+                        ) {
                             filterList.add(model)
                         }
                     }
 
-                    this@CustomerListAdapter.filterList = filterList
+
+                    if (filterList.size != 0) {
+                        this@CustomerListAdapter.filterList = filterList
+                    }
                 }
                 val filterResult = FilterResults()
                 filterResult.values = filterList
