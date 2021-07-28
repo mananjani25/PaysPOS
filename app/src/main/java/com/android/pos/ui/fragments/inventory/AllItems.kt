@@ -18,6 +18,7 @@ import com.android.pos.data.entities.TbItem
 import com.android.pos.databinding.FragmentItemsBinding
 import com.android.pos.ui.adapter.ItemListAdapter
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.SwipeHelper
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
@@ -25,6 +26,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class AllItems : Fragment() {
 
+    private var isreOrder: Boolean = false
     private var deleteAndHide: Boolean = false
 
     private var deletePos: Int = -1
@@ -54,6 +56,7 @@ class AllItems : Fragment() {
         deleteObserver()
         setupHelper()
         searchFilter()
+        observeShowProgress()
     }
 
     private fun searchFilter() {
@@ -98,6 +101,12 @@ class AllItems : Fragment() {
                 }
                 dragTo = newPos
 
+                val a = adapter.getItem(dragFrom).sort
+                val b = adapter.getItem(dragTo).sort
+                Log.e("onItemMove", "$a:: $b")
+
+
+
                 adapter.onItemMove(viewHolder.bindingAdapterPosition, target.bindingAdapterPosition)
 
                 return true
@@ -117,9 +126,11 @@ class AllItems : Fragment() {
             ) {
 
                 if (dragFrom != -1 && dragTo != -1 && dragFrom != dragTo) {
+
+                    Log.e("clearView", "$dragFrom :: $dragTo")
                     reallyMoved(
-                        dragFrom,
-                        dragTo,
+                        adapter.getItem(dragFrom).sort,
+                        adapter.getItem(dragTo).sort,
                         adapter.getItem(viewHolder.bindingAdapterPosition).categoryId,
                         adapter.getItem(viewHolder.bindingAdapterPosition).itemId
                     )
@@ -145,6 +156,7 @@ class AllItems : Fragment() {
                 ) { pos ->
 
                     deleteAndHide = true
+                    deleteObj = adapter.getItem(pos)
                     viewModel.deleteAndHide(deleteObj!!.itemId, deleteAndHide)
 
                 })
@@ -166,7 +178,7 @@ class AllItems : Fragment() {
                             //delete API call
                             viewModel.deleteAndHide(deleteObj!!.itemId, deleteAndHide)
                             //Delete item in database
-                            viewModel.dbDeleteAndHide(deleteObj!!.itemId, deleteAndHide)
+//                            viewModel.dbDeleteAndHide(deleteObj!!.itemId, deleteAndHide)
                         }
                     }
 
@@ -201,7 +213,7 @@ class AllItems : Fragment() {
 
     private fun itemsObserver() {
 
-        viewModel.items.observe(viewLifecycleOwner, {
+        viewModel._getItems().observe(viewLifecycleOwner, {
 
             it?.let { resource ->
                 when (resource.status) {
@@ -231,11 +243,31 @@ class AllItems : Fragment() {
             event.getContentIfNotHandled()?.let {
 
                 AlertUtils.showCustomAlert(requireActivity(), it.message)
-                viewModel.dbDeleteAndHide(deleteObj!!.itemId, deleteAndHide)
+
+                if (isreOrder) {
+                    isreOrder = false
+                    viewModel.reOrder(adapter.getAll())
+                }
+                // viewModel.dbDeleteAndHide(deleteObj!!.itemId, deleteAndHide)
             }
         })
 
     }
+
+    private fun observeShowProgress() {
+
+        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    ProgressUtils.showProgressDialog(requireActivity())
+                } else {
+                    ProgressUtils.dismissProgressDialog()
+                }
+            }
+        })
+
+    }
+
 
     private fun setAdapter() {
         adapter = ItemListAdapter(false)
@@ -244,7 +276,9 @@ class AllItems : Fragment() {
 
     private fun reallyMoved(oldPos: Int, newPos: Int, categoryId: Int?, inventoryId: Int?) {
         if (categoryId != null) {
-            //   reorderCall(categoryId, inventoryId, oldPos, newPos)
+            isreOrder = true
+            Log.e("reallyMoved", "$oldPos :: $newPos")
+            viewModel.reOrderItem(inventoryId!!, newPos, oldPos)
         }
 
     }

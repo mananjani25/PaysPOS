@@ -62,7 +62,7 @@
                     android:text="@={loginViewModel.loginDetails.emailAddress}"
                     android:textColor="@color/black"
                     android:textColorHint="@color/hint_color_"
-                    android:textSize="@dimen/_7mdpi" />
+                    android:textSize="@dimen/_6mdpi" />
 
                 <View
                     android:layout_width="@dimen/_200sdp"
@@ -89,7 +89,7 @@
                         android:text="@={loginViewModel.loginDetails.password}"
                         android:textColor="@color/black"
                         android:textColorHint="@color/hint_color_"
-                        android:textSize="@dimen/_7mdpi" />
+                        android:textSize="@dimen/_6mdpi" />
 
                     <TextView
                         android:id="@+id/txtForgotPass"
@@ -97,7 +97,7 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
-                        android:layout_marginEnd="@dimen/_2sdp"
+                        android:layout_marginEnd="@dimen/_5sdp"
                         android:fontFamily="@font/sf_pro_display_medium"
                         android:text="@string/forgot_password"
                         android:textColor="@color/txt_color_blue"

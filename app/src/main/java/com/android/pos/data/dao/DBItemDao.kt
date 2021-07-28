@@ -16,9 +16,9 @@ interface DBItemDao {
     fun add(inventory: TbItem?): Long?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun addAllItem(elementsBeanList: List<TbItem>)
+    suspend fun addAllItem(elementsBeanList: List<TbItem>)
 
-    @get:Query("select * from TbItem where TbItem.isHide = 0 GROUP by TbItem.itemId ORDER BY TbItem.sort ASC ")
+ @get:Query("select * from TbItem where TbItem.isHide = 1 GROUP by TbItem.itemId ORDER BY TbItem.sort ASC ")
     val allItem: LiveData<List<TbItem?>>?
 
     @Query("select * from TbItem where TbItem.categoryId  = :id")
@@ -42,8 +42,8 @@ interface DBItemDao {
     @Query("DELETE FROM TbItem")
     fun deleteItemTbl()
 
-    @Query("UPDATE TbItem SET isHide = 1 WHERE  TbItem.itemId = :id")
-    fun update(id: Int): Int
+ @Query("UPDATE TbItem SET isHide = 0 WHERE  TbItem.itemId = :id")
+    suspend fun update(id: Int): Int
 
 
     @Query("UPDATE TbItem SET categoryId = :catId,categoryName = :catName  WHERE  TbItem.itemId = :itemId")

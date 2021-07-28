@@ -96,13 +96,15 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
         sections.clear()
         sectionSortedList.clear()
 
+        people.sortBy {
+            it.firstName?.lowercase()
+        }
         // sort people into buckets by the first letter of last name
         var alpha = 0.toChar()
         var currentSection: Section? = null
         for (person in people) {
 
             val sss = person.firstName?.uppercase(Locale.ROOT)?.get(0)
-            Log.e("alpha 1", sss.toString())
             if (sss != alpha) {
                 if (currentSection != null) {
                     sections.add(currentSection)
@@ -112,7 +114,6 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
                 if (sss != null) {
                     alpha = sss
                 }
-                Log.e("alpha 2", alpha.toString())
                 currentSection.alpha = alpha.toString()
             }
             currentSection?.people?.add(person)

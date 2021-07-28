@@ -40,9 +40,13 @@ data class VenueDataResponse(
             ) {
             data class Item(
                 @SerializedName("cost")
-                val cost: Int,
+                val cost: Double,
                 @SerializedName("id")
                 val id: Int,
+                @SerializedName("sort")
+                val sort: Int,
+                @SerializedName("category_id")
+                val categoryId: Int,
                 @SerializedName("kitchen_name")
                 val kitchenName: String,
                 @SerializedName("name")
@@ -60,7 +64,9 @@ data class VenueDataResponse(
                 @SerializedName("original_image_url")
                 val imgUrl: String?,
                 @SerializedName("thumb_image_url")
-                val thumpImgUrl: String?
+                val thumpImgUrl: String?,
+                @SerializedName("active")
+                val active: Boolean
 
 
             )

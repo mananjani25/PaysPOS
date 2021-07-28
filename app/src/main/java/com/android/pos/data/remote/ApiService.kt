@@ -1,11 +1,13 @@
 package com.android.pos.data.remote
 
 
+import com.android.pos.data.model.CustomerListResponse
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.Constants.CATEGORY
 import com.android.pos.data.remote.Constants.CATEGORY_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.CLOCK_OUT
+import com.android.pos.data.remote.Constants.CUSTOMERS
 import com.android.pos.data.remote.Constants.DISCOUNTS
 import com.android.pos.data.remote.Constants.DISCOUNTS_ACTIVE
 import com.android.pos.data.remote.Constants.DISCOUNTS_UPDATE_DELETE
@@ -15,6 +17,8 @@ import com.android.pos.data.remote.Constants.EMPLOYEE_CLOCK_IN
 import com.android.pos.data.remote.Constants.EMPLOYEE_LOG_IN
 import com.android.pos.data.remote.Constants.FORGOT_PASSWORD
 import com.android.pos.data.remote.Constants.HIDE_CATEGORY
+import com.android.pos.data.remote.Constants.HIDE_ITEM
+import com.android.pos.data.remote.Constants.ITEMS
 import com.android.pos.data.remote.Constants.ITEM_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.LOGIN_TERMINAL
 import com.android.pos.data.remote.Constants.LOGOUT
@@ -22,6 +26,7 @@ import com.android.pos.data.remote.Constants.NOTES
 import com.android.pos.data.remote.Constants.NOTES_ACTIVE
 import com.android.pos.data.remote.Constants.NOTE_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.REORDER_CATEGORY
+import com.android.pos.data.remote.Constants.REORDER_ITEM
 import com.android.pos.data.remote.Constants.SERVICE_CHARGE
 import com.android.pos.data.remote.Constants.SERVICE_CHARGE_ACTIVE
 import com.android.pos.data.remote.Constants.SERVICE_CHARGE_UPDATE_DELETE
@@ -68,6 +73,13 @@ interface ApiService {
 
     @GET(SYNC_VENUE_DATA)
     suspend fun syncVenueData(): VenueDataResponse
+
+   /* @GET(EMPLOYEES)
+    suspend fun employeesList(@Query("location_id") location_id: Int): EmployeeListResponse
+*/
+    @GET(CUSTOMERS)
+    suspend fun customerList():CustomerListResponse
+
 
     @GET(TAXES)
     suspend fun getTaxList(): GetTaxResponse
@@ -247,6 +259,23 @@ interface ApiService {
 
     @PUT(REORDER_CATEGORY)
     suspend fun reOrderCategory(
+        @Path("id") id: Int,
+        @Query("old_position") old_position: Int,
+        @Query("new_position") new_position: Int,
+    ): BaseResponse
+
+    @PUT(HIDE_ITEM)
+    suspend fun hideItem(
+        @Path("id") id: Int,
+        @Query("is_active") is_active: Boolean,
+    ): BaseResponse
+
+    @GET(ITEMS)
+    suspend fun getItems(): ItemsResponse
+
+
+    @PUT(REORDER_ITEM)
+    suspend fun reOrderItem(
         @Path("id") id: Int,
         @Query("old_position") old_position: Int,
         @Query("new_position") new_position: Int,

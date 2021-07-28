@@ -114,10 +114,21 @@ class CategoriesListAdapter(private val isChoose: Boolean) :
                 if (fromPosition < toPosition) {
                     for (i in fromPosition until toPosition) {
                         Collections.swap(filterList, i, i + 1)
+
+
+                        val order1: Int = filterList[i].sort
+                        val order2: Int = filterList[i + 1].sort
+                        filterList[i].sort = order2
+                        filterList[i + 1].sort = order1
                     }
                 } else {
                     for (i in fromPosition downTo toPosition + 1) {
                         Collections.swap(filterList, i, i - 1)
+
+                        val order1: Int = filterList[i].sort
+                        val order2: Int = filterList[i - 1].sort
+                        filterList[i].sort = (order2)
+                        filterList[i - 1].sort = (order1)
                     }
                 }
                 notifyItemMoved(fromPosition, toPosition)

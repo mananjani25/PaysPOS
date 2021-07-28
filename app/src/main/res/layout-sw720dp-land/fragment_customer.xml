@@ -21,13 +21,14 @@
             android:orientation="horizontal"
             android:weightSum="1">
 
-            <androidx.appcompat.widget.LinearLayoutCompat
+            <RelativeLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.25"
                 android:orientation="vertical">
 
                 <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/linearSearchView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
@@ -67,12 +68,91 @@
                     android:id="@+id/rvEmployeeList"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_below="@+id/linearSearchView"
                     android:nestedScrollingEnabled="false"
                     android:orientation="vertical"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:listitem="@layout/view_team_item" />
 
-            </androidx.appcompat.widget.LinearLayoutCompat>
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/linearCustomerDialog"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/linearSearchView"
+                    android:background="@color/txtColor"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:id="@+id/txtCrtNewCustomer"
+                        style="@style/CustomFontMediumStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:padding="@dimen/_7sdp"
+                        android:text="@string/create_new_customer"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_7mdpi" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.5dp"
+                        android:background="@color/colorCustomerDialogBorder" />
+
+                    <TextView
+                        style="@style/CustomFontMediumStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:padding="@dimen/_7sdp"
+                        android:text="@string/filter_customers"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_7mdpi" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.5dp"
+                        android:background="@color/colorCustomerDialogBorder" />
+
+                    <TextView
+                        style="@style/CustomFontMediumStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:padding="@dimen/_7sdp"
+                        android:text="@string/bulk_delete_customers"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_7mdpi" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.5dp"
+                        android:background="@color/colorCustomerDialogBorder" />
+
+                    <TextView
+                        style="@style/CustomFontMediumStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:padding="@dimen/_7sdp"
+                        android:text="@string/messages"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_7mdpi" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.5dp"
+                        android:background="@color/colorCustomerDialogBorder" />
+
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+            </RelativeLayout>
 
             <View
                 android:id="@+id/view"
