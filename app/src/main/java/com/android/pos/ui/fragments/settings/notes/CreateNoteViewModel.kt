@@ -32,8 +32,8 @@ class CreateNoteViewModel @Inject constructor(
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
 
-    private val _data = MutableLiveData<Event<Boolean?>>()
-    val data: LiveData<Event<Boolean?>> = _data
+    private val _data = MutableLiveData<Event<BaseResponse?>>()
+    val data: LiveData<Event<BaseResponse?>> = _data
 
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
@@ -92,8 +92,8 @@ class CreateNoteViewModel @Inject constructor(
                         resource.data.let { logInResponse ->
                             if (logInResponse?.status == 200) {
 
-                                resource.data?.let {
-                                    _data.value = Event(true)
+                                resource.data?.let { baseResponse ->
+                                    _data.value = Event(baseResponse)
 
                                 }
                             } else {

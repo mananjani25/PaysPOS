@@ -9,17 +9,16 @@ import com.android.pos.data.dao.*
 import com.android.pos.data.entities.TbCategory
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.CharacterModel
-import com.android.pos.data.model.responseModel.GetDiscountResponse
-import com.android.pos.data.model.responseModel.GetTaxResponse
-import com.android.pos.data.model.responseModel.GetTipReponse
+import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.Constants.DATABASE_NAME
 import com.android.pos.data.typeconvert.TypeConvertersItemIds
 import com.android.pos.data.typeconvert.TypeConvertersIds
 
 
 @Database(
-    entities = [CharacterModel::class, TbCategory::class, TbItem::class, GetTaxResponse.TaxData::class, GetTipReponse.Data::class, GetDiscountResponse.Data::class],
-    version = 2
+    entities = [CharacterModel::class, TbCategory::class, TbItem::class, GetTaxResponse.TaxData::class,
+        GetTipReponse.Data::class, GetDiscountResponse.Data::class, NoteResponse.Data::class, GetServiceChargeResponse.Data::class],
+    version = 1
 )
 @TypeConverters(TypeConvertersIds::class)
 
@@ -31,6 +30,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun taxDao(): TaxDao
     abstract fun tipDao(): TipsDao
     abstract fun discountDao(): DiscountDao
+    abstract fun notesDao(): NotesDao
+    abstract fun serviceChargeDao(): ServiceChargeDao
 
     companion object {
         @Volatile

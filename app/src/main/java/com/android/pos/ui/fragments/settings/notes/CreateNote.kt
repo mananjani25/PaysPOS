@@ -14,6 +14,7 @@ import com.android.pos.data.remote.Constants.CREATE_NOTES
 import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.databinding.CreateNoteBinding
 import com.android.pos.ui.fragments.settings.tax.CreateTaxViewModel
+import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
 import com.google.android.material.snackbar.Snackbar
@@ -74,9 +75,13 @@ class CreateNote : Fragment() {
         })
 
         viewModel.data.observe(viewLifecycleOwner, { event ->
-            event.getContentIfNotHandled()?.let {
-                if (it) {
-                    findNavController().navigateUp()
+            event.getContentIfNotHandled()?.let { baseResponse ->
+                activity?.let {
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        it, baseResponse.message
+                    ) { _, _ ->
+                        findNavController().navigateUp()
+                    }
                 }
             }
         })

@@ -33,19 +33,23 @@ object Constants {
 
     const val TAXES = "taxes"
     const val TAX_UPDATE_DELETE = "taxes/{id}"
-    const val TAX_ACTIVE="taxes/{id}/active"
+    const val TAX_ACTIVE = "taxes/{id}/active"
 
     const val TIPS = "tip_settings"
     const val TIPS_UPDATE_DELETE = "tip_settings/{id}"
+    const val TIPS_ACTIVE = "tip_settings/{id}/active"
 
     const val DISCOUNTS = "discounts"
     const val DISCOUNTS_UPDATE_DELETE = "discounts/{id}"
+    const val DISCOUNTS_ACTIVE = "discounts/{id}/active"
 
     const val NOTES = "dynamic_notes"
     const val NOTE_UPDATE_DELETE = "dynamic_notes/{id}"
+    const val NOTES_ACTIVE = "dynamic_notes/{id}/active"
 
     const val SERVICE_CHARGE = "service_charges"
     const val SERVICE_CHARGE_UPDATE_DELETE = "service_charges/{id}"
+    const val SERVICE_CHARGE_ACTIVE = "service_charges/{id}/active"
 
     const val ITEM_UPDATE_DELETE = "items/{id}"
     const val HIDE_ITEM = "items/{id}/active"
@@ -71,8 +75,8 @@ object Constants {
 
     const val DIALOG_KEY = "dialog_key"
     const val DIALOG_KEY_TAX = "dialog_key_tax"
-    const val ADD_TAX= "Add Tax To Item Price"
-    const val INCLUDE_TAX= "Include Tax in Item Price"
+    const val ADD_TAX = "Add Tax To Item Price"
+    const val INCLUDE_TAX = "Include Tax in Item Price"
 
     const val CATEGORY_UPDATE_DELETE = "categories/{id}"
     const val HIDE_CATEGORY = "categories/{id}/active"

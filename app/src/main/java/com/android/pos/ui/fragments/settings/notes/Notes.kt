@@ -10,12 +10,9 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
-import com.android.pos.data.model.BusinessSettingModel
-import com.android.pos.data.model.responseModel.GetTaxResponse
 import com.android.pos.data.model.responseModel.NoteResponse
 import com.android.pos.databinding.FragmentNotesBinding
 import com.android.pos.ui.adapter.NotesListAdapter
-import com.android.pos.ui.fragments.settings.tax.TaxListViewModel
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.SwipeHelper
@@ -30,7 +27,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class Notes : Fragment() {
     private lateinit var binding: FragmentNotesBinding
 
-    private var noteListadapter = NotesListAdapter()
+    private lateinit var noteListadapter: NotesListAdapter
     private lateinit var noteObject: NoteResponse.Data
     private val viewModel by viewModels<NoteListViewModel>()
     private var position: Int = -1
@@ -48,6 +45,7 @@ class Notes : Fragment() {
         setupSnackbar()
         observeShowProgress()
         deleteTax()
+        notifyAdapter()
         return binding.root
     }
 
@@ -62,6 +60,7 @@ class Notes : Fragment() {
 
 
     private fun setUpRecyclerView() {
+        noteListadapter = NotesListAdapter(viewModel)
         binding.rvNoteLise.adapter = noteListadapter
 
         object : SwipeHelper(activity, binding.rvNoteLise) {
@@ -69,29 +68,6 @@ class Notes : Fragment() {
                 viewHolder: RecyclerView.ViewHolder?,
                 underlayButtons: MutableList<UnderlayButton?>
             ) {
-
-                underlayButtons.add(UnderlayButton(
-                    "Delete",
-                    0,
-                    Color.parseColor("#FF3C30")
-                ) { pos ->
-
-                    position = pos
-
-                    alert(
-                        getString(R.string.app_name),
-                        getString(R.string.delete_tax_message)
-                    ) {
-                        positiveButton(getString(R.string.tv_delete)) {
-                            // Do positive stuff here
-                            noteObject = noteListadapter.getItem(pos)
-                            viewModel.delete(noteListadapter.getItem(pos).id)
-                        }
-                        negativeButton(R.string.tv_cancel) {
-                            // Do negative stuff here
-                        }
-                    }
-                })
 
                 underlayButtons.add(UnderlayButton(
                     "Edit",
@@ -109,6 +85,29 @@ class Notes : Fragment() {
 
                 })
 
+                underlayButtons.add(UnderlayButton(
+                    "Delete",
+                    0,
+                    Color.parseColor("#FF3C30")
+                ) { pos ->
+
+                    position = pos
+
+                    alert(
+                        getString(R.string.app_name),
+                        getString(R.string.delete_note_message)
+                    ) {
+                        positiveButton(getString(R.string.tv_delete)) {
+                            // Do positive stuff here
+                            noteObject = noteListadapter.getItem(pos)
+                            viewModel.delete(noteListadapter.getItem(pos).id)
+                        }
+                        negativeButton(R.string.tv_cancel) {
+                            // Do negative stuff here
+                        }
+                    }
+                })
+
             }
         }
     }
@@ -123,7 +122,7 @@ class Notes : Fragment() {
                     Status.SUCCESS -> {
                         ProgressUtils.dismissProgressDialog()
                         binding.rvNoteLise.visibility = View.VISIBLE
-                        resource.data?.let { taxList -> setTaxData(taxList.data) }
+                        resource.data?.let { taxList -> setTaxData(taxList) }
                     }
                     Status.ERROR -> {
                         ProgressUtils.dismissProgressDialog()
@@ -135,6 +134,14 @@ class Notes : Fragment() {
                         binding.rvNoteLise.visibility = View.GONE
                     }
                 }
+            }
+        })
+    }
+
+    private fun notifyAdapter() {
+        viewModel.notifydata.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+                noteListadapter.notifyDataSetChanged()
             }
         })
     }
@@ -166,10 +173,10 @@ class Notes : Fragment() {
         viewModel.data.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
                 AlertUtils.showCustomAlert(requireActivity(), it.message)
-                noteListUpdateDelete.remove(noteObject)
+                /*noteListUpdateDelete.remove(noteObject)
                 noteListadapter.addNotes(noteListUpdateDelete)
                 noteListadapter.notifyItemRemoved(position)
-                noteListadapter.notifyItemRangeChanged(position, noteListUpdateDelete.size)
+                noteListadapter.notifyItemRangeChanged(position, noteListUpdateDelete.size)*/
             }
         })
 

@@ -45,18 +45,17 @@ class ItemPricingDialog : DialogFragment(), View.OnClickListener {
         isEdit = arguments?.getBoolean("isEdit")!!
 
 
+        // if (isEdit) {
+        itemPricing = arguments?.getString("itemPricing").toString()
+        if (itemPricing == ADD_TAX) {
+            binding.ivAddTax.setImageResource(R.drawable.ic_outline_radio_button_checked)
+            binding.ivIncludeTax.setImageResource(R.drawable.ic_uncheck_circle)
 
-        if (isEdit) {
-            itemPricing = arguments?.getString("itemPricing").toString()
-            if (itemPricing == ADD_TAX) {
-                binding.ivAddTax.setImageResource(R.drawable.ic_outline_radio_button_checked)
-                binding.ivIncludeTax.setImageResource(R.drawable.ic_uncheck_circle)
-
-            } else if (itemPricing == INCLUDE_TAX) {
-                binding.ivIncludeTax.setImageResource(R.drawable.ic_outline_radio_button_checked)
-                binding.ivAddTax.setImageResource(R.drawable.ic_uncheck_circle)
-            }
+        } else if (itemPricing == INCLUDE_TAX) {
+            binding.ivIncludeTax.setImageResource(R.drawable.ic_outline_radio_button_checked)
+            binding.ivAddTax.setImageResource(R.drawable.ic_uncheck_circle)
         }
+        //  }
 
         return binding.root
     }

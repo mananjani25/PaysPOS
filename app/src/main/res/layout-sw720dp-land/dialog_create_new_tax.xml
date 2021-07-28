@@ -209,6 +209,19 @@
                             android:textColorHint="@color/hintColor"
                             android:textSize="@dimen/_6mdpi" />
 
+                        <androidx.appcompat.widget.SwitchCompat
+                            android:id="@+id/swtTaxType"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_gravity="center"
+                            android:checked="true"
+                            android:onCheckedChanged="@{(button, bool)-> createTaxFragment.taxType(bool)}"
+                            android:padding="@dimen/_5sdp"
+                            android:text="@string/disc_percentage"
+                            android:textSize="@dimen/_6mdpi"
+                            app:theme="@style/AppTheme" />
+
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
 
@@ -310,11 +323,13 @@
                         android:textSize="@dimen/_6mdpi" />
 
                     <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/swtCustomAmount"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_gravity="center"
                         android:checked="false"
+                        android:onCheckedChanged="@{(button, bool)-> createTaxFragment.customAmount(bool)}"
                         android:padding="@dimen/_5sdp"
                         app:theme="@style/AppTheme" />
                 </androidx.appcompat.widget.LinearLayoutCompat>

@@ -71,10 +71,12 @@ class ItemDialog : DialogFragment(), View.OnClickListener {
                         binding.progressCircular.visibility = View.GONE
                         it.data?.let { it1 -> adapter.add(it1 as List<TbItem>) }
 
-                        if (isEdit) {
-                            var itemIds = arguments?.getIntegerArrayList("itemIds")!!
+                        // if (isEdit) {
+                        var itemIds = arguments?.getIntegerArrayList("itemIds")
+                        if (itemIds != null) {
                             adapter.selectedItemFromEdit(itemIds)
                         }
+                        // }
                     }
                     Status.ERROR -> {
                         binding.rvItemList.visibility = View.GONE
