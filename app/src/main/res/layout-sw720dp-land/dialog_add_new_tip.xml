@@ -173,7 +173,8 @@
                     android:padding="@dimen/_5sdp"
                     android:text="@string/remove_tip"
                     android:textColor="@color/btnColor"
-                    android:textSize="@dimen/_6mdpi" />
+                    android:textSize="@dimen/_6mdpi"
+                    android:visibility="gone" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 

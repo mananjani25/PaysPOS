@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -53,15 +54,22 @@ class CreateServiceCharge : Fragment() {
         observeShowProgress()
         navigate()
 
+        val callback: OnBackPressedCallback =
+            object : OnBackPressedCallback(true /* enabled by default */) {
+                override fun handleOnBackPressed() {
+                    backPressManage()
+                }
+            }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+
         return binding.root
     }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.imgBack.setOnClickListener {
-            val navController = findNavController()
-            navController.previousBackStackEntry?.savedStateHandle?.set(KEY, ADD_SERVICE_CHARGE)
-            navController.popBackStack()
+            backPressManage()
         }
 
     }
@@ -95,11 +103,17 @@ class CreateServiceCharge : Fragment() {
                     AlertUtils.showCustomAlertWithListenerWithOK(
                         it, createServiceChargeResponse.message
                     ) { _, _ ->
-                        findNavController().navigateUp()
+                        backPressManage()
                     }
                 }
             }
         })
+    }
+
+    private fun backPressManage() {
+        val navController = findNavController()
+        navController.previousBackStackEntry?.savedStateHandle?.set(KEY, ADD_SERVICE_CHARGE)
+        navController.popBackStack()
     }
 
     private fun setupSnackbar() {

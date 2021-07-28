@@ -78,7 +78,7 @@ class CreateTax : Fragment() {
                 binding.swtTaxType.text = getString(R.string.disc_percentage)
             } else {
                 binding.swtTaxType.isChecked = false
-                binding.swtTaxType.text = getString(R.string.disc_amount)
+                binding.swtTaxType.text = getString(R.string.dollar_amount)
             }
         }
 
@@ -181,8 +181,8 @@ class CreateTax : Fragment() {
             binding.swtTaxType.text = getString(R.string.disc_percentage)
             viewModel.discountType(getString(R.string.disc_percentage))
         } else {
-            binding.swtTaxType.text = getString(R.string.disc_amount)
-            viewModel.discountType(getString(R.string.disc_amount))
+            binding.swtTaxType.text = getString(R.string.dollar_amount)
+            viewModel.discountType(getString(R.string.dollar_amount))
         }
     }
 

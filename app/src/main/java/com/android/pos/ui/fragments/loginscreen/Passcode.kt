@@ -49,7 +49,7 @@ class Passcode : Fragment() {
                     }
                 }
             }
-        requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_passcode, container, false)
         binding.lifecycleOwner = this
         binding.passcodeViewModel = viewModel

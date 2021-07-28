@@ -277,6 +277,7 @@
     <string name="update">Update</string>
     <string name="disc_percentage">Percentage</string>
     <string name="disc_amount">Amount</string>
+    <string name="dollar_amount">Dollar</string>
 
     <string name="first_name_validate">Please Enter First Name</string>
     <string name="last_name_validate">Please Enter Last Name</string>
