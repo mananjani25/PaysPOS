@@ -345,7 +345,7 @@
             app:destination="@id/reports"
             app:enterAnim="@anim/nav_default_enter_anim" />
         <action
-                android:id="@+id/action_dashboardCategoryNew_to_customer"
+            android:id="@+id/action_dashboardCategoryNew_to_customer"
             app:destination="@id/customer"
             app:enterAnim="@anim/nav_default_enter_anim" />
 
@@ -404,17 +404,26 @@
         android:id="@+id/customer"
         android:name="com.android.pos.ui.fragments.customer.Customer"
         android:label="Customer"
-        tools:layout="@layout/fragment_customer" >
+        tools:layout="@layout/fragment_customer">
         <action
             android:id="@+id/action_customer_to_dashboardCategoryNew"
             app:destination="@id/dashboardCategoryNew"
             app:popUpTo="@id/customer"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_customer_to_addEditCustomer"
+            app:destination="@id/addEditCustomer"
+            app:enterAnim="@anim/nav_default_enter_anim" />
     </fragment>
     <action
         android:id="@+id/action_global_customer"
         app:destination="@id/customer"
         app:enterAnim="@anim/nav_default_enter_anim" />
+    <fragment
+        android:id="@+id/addEditCustomer"
+        android:name="com.android.pos.ui.fragments.customer.AddEditCustomer"
+        android:label="AddEditCustomer"
+        tools:layout="@layout/fragment_add_edit_customer" />
 
 
 </navigation>

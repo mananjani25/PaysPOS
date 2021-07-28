@@ -1,11 +1,13 @@
 package com.android.pos.data.remote
 
 
+import com.android.pos.data.model.CustomerListResponse
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.Constants.CATEGORY
 import com.android.pos.data.remote.Constants.CATEGORY_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.CLOCK_OUT
+import com.android.pos.data.remote.Constants.CUSTOMERS
 import com.android.pos.data.remote.Constants.DISCOUNTS
 import com.android.pos.data.remote.Constants.DISCOUNTS_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.EMPLOYEES
@@ -66,6 +68,10 @@ interface ApiService {
 
     @GET(EMPLOYEES)
     suspend fun employeesList(@Query("location_id") location_id: Int): EmployeeListResponse
+
+    @GET(CUSTOMERS)
+    suspend fun customerList():CustomerListResponse
+
 
     @GET(TAXES)
     suspend fun getTaxList(): GetTaxResponse
