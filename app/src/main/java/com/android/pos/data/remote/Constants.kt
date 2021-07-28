@@ -46,8 +46,10 @@ object Constants {
     const val SERVICE_CHARGE = "service_charges"
     const val SERVICE_CHARGE_UPDATE_DELETE = "service_charges/{id}"
 
-    const val ITEM_UPDATE_DELETE = "item/{id}"
-
+    const val ITEM_UPDATE_DELETE = "items/{id}"
+    const val HIDE_ITEM = "items/{id}/active"
+    const val ITEMS = "items"
+    const val REORDER_ITEM = "items/{id}/reorder"
 
     const val VERTICAL = "vertical"
     const val HORIZONTAL = "horizontal"
@@ -75,4 +77,6 @@ object Constants {
     const val HIDE_CATEGORY = "categories/{id}/active"
     const val REORDER_CATEGORY = "categories/{id}/reorder"
     const val CATEGORY = "categories"
+
+
 }

@@ -106,8 +106,8 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun deleteItem(itemId: Int) =
         getResult { apiService.deleteItem(itemId) }
 
-    suspend fun hideItem(itemId: Int, data: HashMap<String, String>) =
-        getResult { apiService.hideItem(data) }
+    suspend fun hideItem(itemId: Int, active: Boolean) =
+        getResult { apiService.hideItem(itemId, active) }
 
     suspend fun createItem(data: CreateItemRequestModel) =
         getResult { apiService.createItem(data) }
@@ -132,4 +132,10 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
 
     suspend fun reOrderCategoryCall(id: Int, oldPos: Int, newPos: Int) =
         getResult { apiService.reOrderCategory(id, oldPos, newPos) }
+
+    suspend fun getItemsCall() =
+        getResult { apiService.getItems() }
+
+    suspend fun reOrderItemCall(id: Int, oldPos: Int, newPos: Int) =
+        getResult { apiService.reOrderItem(id, oldPos, newPos) }
 }

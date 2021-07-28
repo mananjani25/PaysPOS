@@ -186,7 +186,6 @@ class DashboardCategoryNew : Fragment() {
     private fun searchCategory() {
 
         searchList = arrayListOf()
-        Log.e(TAG, "categoryList1  ${categoryList1.size}")
 
 
         for (i in 0 until categoryList1.size) {
@@ -212,7 +211,6 @@ class DashboardCategoryNew : Fragment() {
 
         }
 
-        Log.e(TAG, "searchList  ${Gson().toJson(searchList)}")
         searchAdapter =
             CategorySearchAdapter(
                 requireActivity(),
@@ -517,7 +515,6 @@ class DashboardCategoryNew : Fragment() {
                         ProgressUtils.dismissProgressDialog()
                         val tbCategory = it.data
                         if (tbCategory != null) {
-                            Log.e("venueDataLocal", "SUCCESS" + tbCategory.size)
 
                             categoryList1 = tbCategory as MutableList<CategoryWithInventory>
 
@@ -562,11 +559,6 @@ class DashboardCategoryNew : Fragment() {
                                                     TbItem()
                                                 )
 
-                                                Log.e(
-                                                    TAG,
-                                                    "categoryListData  ${categoryList1.get(pos).inventoryLists}"
-                                                )
-
                                                 categoryList1[pos].inventoryLists?.let { it1 ->
                                                     listCategories.addAll(
                                                         it1
@@ -592,10 +584,6 @@ class DashboardCategoryNew : Fragment() {
                                         )
                                     }
 
-                                    Log.e(
-                                        "CatList",
-                                        "${Gson().toJson(categoryList1.get(0).inventoryLists)}"
-                                    )
                                     searchCategory()
                                     binding.rvPagerCategory.adapter =
                                         CategoryItemAdapter1(requireContext(), itemList1, object :

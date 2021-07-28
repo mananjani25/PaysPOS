@@ -56,6 +56,8 @@ class PosRepository @Inject constructor(
                         kitchenName = it.kitchenName
                         price = it.price
                         productCode = it.productCode
+                        isHide = it.active
+                        sort = it.sort
                     }
 
                     inventoryModelList.add(items)
@@ -98,8 +100,32 @@ class PosRepository @Inject constructor(
     fun getItemsList() =
         performGetOperationDatabase(databaseQuery = { appDatabase.itemDao().allItem!! })
 
-    fun getInventory(catId: Int) =
-        performGetOperationDatabase(databaseQuery = { appDatabase.itemDao().getItemList(catId)!! })
+    fun getInventory() =
+        performGetOperation(databaseQuery = { appDatabase.itemDao().allItem!! },
+            networkCall = { apiHelperNew.getItemsCall() },
+            saveCallResult = {
+
+                val inventoryModelList = ArrayList<TbItem>()
+
+                it.data.forEach { item ->
+
+                    val items = TbItem().apply {
+                        itemId = item.id
+                        categoryId = item.categoryId
+                        categoryName = ""
+                        name = item.name
+                        imageUrl = item.imgUrl
+                        kitchenName = item.kitchenName
+                        price = item.price
+                        productCode = item.productCode
+                        isHide = item.active
+                        sort = item.sort
+                    }
+                    inventoryModelList.add(items)
+                }
+                appDatabase.itemDao().addAllItem(inventoryModelList)
+            }
+        )
 
 
     fun getNoteList() =
@@ -135,8 +161,8 @@ class PosRepository @Inject constructor(
 
     suspend fun deleteItem(itemId: Int) = apiHelperNew.deleteItem(itemId)
 
-    suspend fun itemHide(itemId: Int, data: HashMap<String, String>) =
-        apiHelperNew.hideItem(itemId, data)
+    suspend fun itemHide(itemId: Int, active: Boolean) =
+        apiHelperNew.hideItem(itemId, active)
 
     suspend fun createItem(data: CreateItemRequestModel) = apiHelperNew.createItem(data)
     suspend fun updateItem(id: Int, data: CreateItemRequestModel) =
@@ -172,5 +198,8 @@ class PosRepository @Inject constructor(
     suspend fun updateCategorySort(allCategories: ArrayList<TbCategory>) {
         appDatabase.categoryDao().addAll(allCategories)
     }
+
+    suspend fun reOrderItemCall(id: Int, oldPos: Int, newPos: Int) =
+        apiHelperNew.reOrderItemCall(id, oldPos, newPos)
 }
 

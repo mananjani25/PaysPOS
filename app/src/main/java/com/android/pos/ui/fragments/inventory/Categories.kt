@@ -61,7 +61,7 @@ class Categories : Fragment() {
 
     private fun categoriesObserver() {
 
-        viewModel.categories.observe(viewLifecycleOwner, {
+        viewModel._getCategories().observe(viewLifecycleOwner, {
 
             it?.let { resource ->
                 when (resource.status) {
@@ -108,9 +108,11 @@ class Categories : Fragment() {
                 AlertUtils.showCustomAlert(requireActivity(), it.message)
 
                 if (isreOrder) {
-                    val allCategories = adapter.getAll()
 
-                    viewModel.reOrder(allCategories)
+                    isreOrder = false
+                    viewModel.reOrder(adapter.getAll())
+                    // categoriesObserver()
+
 
                 }
             }
@@ -238,8 +240,8 @@ class Categories : Fragment() {
 
                     if (dragFrom != -1 && dragTo != -1 && dragFrom != dragTo) {
                         reallyMoved(
-                            dragFrom,
-                            dragTo,
+                            adapter.getItem(dragFrom).sort,
+                            adapter.getItem(dragTo).sort,
                             adapter.getItem(viewHolder.layoutPosition)?.id
                         )
                     }
@@ -279,7 +281,7 @@ class Categories : Fragment() {
         if (categoryIdOld != null) {
 
             isreOrder = true
-            viewModel.reOrderCategory(categoryIdOld, oldPos, newPos)
+            viewModel.reOrderCategory(categoryIdOld, newPos, oldPos)
         }
 
     }
