@@ -180,6 +180,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
                         if (resource.data != null && resource.data.data.employees.isNotEmpty())
 
                             adapter.setSelected(selectedPos)
+
                         adapter.setPeople(
                             resource.data?.data?.employees as MutableList<EmployeeListResponse.Data.Employee>,
                             requireActivity()

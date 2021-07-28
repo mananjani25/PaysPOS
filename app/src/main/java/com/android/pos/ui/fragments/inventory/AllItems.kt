@@ -145,7 +145,9 @@ class AllItems : Fragment() {
                 ) { pos ->
 
                     deleteAndHide = true
-                    viewModel.deleteAndHide(deleteObj!!.itemId, deleteAndHide)
+                    deleteObj = adapter.getItem(pos)
+                    //  viewModel.deleteAndHide(deleteObj!!.itemId, deleteAndHide)
+                    viewModel.dbDeleteAndHide(deleteObj!!.itemId, deleteAndHide)
 
                 })
 
@@ -164,7 +166,7 @@ class AllItems : Fragment() {
                             deletePos = pos
                             deleteObj = adapter.getItem(pos)
                             //delete API call
-                            viewModel.deleteAndHide(deleteObj!!.itemId, deleteAndHide)
+                            //viewModel.deleteAndHide(deleteObj!!.itemId, deleteAndHide)
                             //Delete item in database
                             viewModel.dbDeleteAndHide(deleteObj!!.itemId, deleteAndHide)
                         }

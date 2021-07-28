@@ -43,7 +43,7 @@ interface DBItemDao {
     fun deleteItemTbl()
 
     @Query("UPDATE TbItem SET isHide = 1 WHERE  TbItem.itemId = :id")
-    fun update(id: Int): Int
+    suspend fun update(id: Int): Int
 
 
     @Query("UPDATE TbItem SET categoryId = :catId,categoryName = :catName  WHERE  TbItem.itemId = :itemId")
