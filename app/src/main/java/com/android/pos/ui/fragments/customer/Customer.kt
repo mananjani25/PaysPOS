@@ -1,12 +1,14 @@
 package com.android.pos.ui.fragments.customer
 
+import android.app.Dialog
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -32,6 +34,7 @@ class Customer : Fragment() {
     private lateinit var binding: FragmentCustomerBinding
     private lateinit var customerAdapter: CustomerListAdapter
     private val viewModel by viewModels<CustomerListViewModel>()
+    private var dialog: Dialog? = null
     private val TAG = "Customer"
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,6 +47,17 @@ class Customer : Fragment() {
             container,
             false
         )
+        dialog = Dialog(requireContext(), android.R.style.Theme_Light)
+        dialog?.window?.requestFeature(Window.FEATURE_NO_TITLE)
+
+        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog?.window?.setLayout(
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            WindowManager.LayoutParams.WRAP_CONTENT
+        )
+
+        dialog?.setContentView(R.layout.dialog_customer)
+
         binding.lifecycleOwner = this
         return binding.root
     }
@@ -56,6 +70,15 @@ class Customer : Fragment() {
         //loadFragment()
         searchQuery()
         loadCustomerList()
+        binding.txtCrtNewCustomer.setOnClickListener {
+            //dialog?.dismiss()
+            binding.linearCustomerDialog.visibility = View.GONE
+
+            val bundle: Bundle = bundleOf("isEdit" to false)
+            findNavController().navigate(R.id.action_customer_to_addEditCustomer, bundle)
+
+        }
+
     }
 
     private fun loadCustomerList() {
@@ -206,6 +229,40 @@ class Customer : Fragment() {
             findNavController().navigate(R.id.action_customer_to_dashboardCategoryNew)
         }
 
+        binding.layoutTool.imgOptionMenu.setOnClickListener {
+
+            // showDialog()
+            if (binding.linearCustomerDialog.visibility == View.VISIBLE) {
+                binding.linearCustomerDialog.visibility = View.GONE
+            } else {
+                binding.linearCustomerDialog.visibility = View.VISIBLE
+            }
+            /* if (binding.linearCustomerDialog.visibility == View.VISIBLE){
+
+             }
+             else{
+
+             }*/
+        }
+
+
+
+        binding.root.setOnClickListener {
+            if (binding.linearCustomerDialog.visibility == View.VISIBLE) {
+                binding.linearCustomerDialog.visibility = View.GONE
+            }
+        }
+    }
+
+    private fun showDialog() {
+
+
+        dialog?.setCanceledOnTouchOutside(true)
+        dialog?.setCancelable(true)
+        dialog?.setOnDismissListener {
+            binding.linearCustomerDialog.visibility = View.GONE
+        }
+        dialog?.show()
     }
 
 

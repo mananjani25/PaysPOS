@@ -1,4 +1,3 @@
-
 package com.android.pos.ui.adapter
 
 import android.content.Context
@@ -22,7 +21,8 @@ class CustomerListAdapter(
     val listner: CustomerInteface
 ) :
     RecyclerView.Adapter<CustomerListAdapter.MyViewHolder>(), Filterable {
-    private var filterList: ArrayList<com.android.pos.data.model.CustomerListResponse.Data> = arrayListOf()
+    private var filterList: ArrayList<com.android.pos.data.model.CustomerListResponse.Data> =
+        arrayListOf()
     private val TAG = "CustomerListAdapter"
 
     private var isSelectedPos: Int = -1
@@ -32,32 +32,52 @@ class CustomerListAdapter(
         RecyclerView.ViewHolder(binding.root) {
         fun bind(model: com.android.pos.data.model.CustomerListResponse.Data) {
 
-            if(list.get(layoutPosition).first_name != null && list.get(layoutPosition).last_name != null){
-                binding.tvInitialName.setText(""+list.get(layoutPosition).first_name.first()+""+list.get(layoutPosition).last_name.first())
+            if (list.get(layoutPosition).first_name != null && list.get(layoutPosition).last_name != null) {
+                binding.tvInitialName.setText(
+                    "" + list.get(layoutPosition).first_name.first() + "" + list.get(
+                        layoutPosition
+                    ).last_name.first()
+                )
 
-            }
-            else{
-                binding.tvInitialName.setText("${list.get(layoutPosition).first_name?.subSequence(0,2)}")
+            } else {
+                binding.tvInitialName.setText(
+                    "${
+                        list.get(layoutPosition).first_name?.subSequence(
+                            0,
+                            2
+                        )
+                    }"
+                )
             }
 
-            if (list.get(0).email != null){
+            if (list.get(0).email != null) {
 
-                binding.txtNumber.setText(""+ AlertUtils.usNumberFormat(list.get(layoutPosition).phones.get(0).phone_number)+" | "+list.get(layoutPosition).email)
-            }
-            else{
-                binding.txtNumber.setText(""+ AlertUtils.usNumberFormat(list.get(layoutPosition).phones.get(0).phone_number))
+                binding.txtNumber.setText(
+                    "" + AlertUtils.usNumberFormat(
+                        list.get(layoutPosition).phones.get(
+                            0
+                        ).phone_number
+                    ) + " | " + list.get(layoutPosition).email
+                )
+            } else {
+                binding.txtNumber.setText(
+                    "" + AlertUtils.usNumberFormat(
+                        list.get(layoutPosition).phones.get(
+                            0
+                        ).phone_number
+                    )
+                )
 
             }
 
             binding.model = model
             binding.executePendingBindings()
 
-            if (isSelectedPos == layoutPosition){
+            if (isSelectedPos == layoutPosition) {
                 binding.layout.background = context.getDrawable(R.color.txt_color_blue)
                 binding.txtName.setTextColor(context.getColorCompat(R.color.white))
                 binding.txtNumber.setTextColor(context.getColorCompat(R.color.white))
-            }
-            else{
+            } else {
                 binding.layout.background = context.getDrawable(R.color.white)
                 binding.txtName.setTextColor(context.getColorCompat(R.color.txtColor))
                 binding.txtNumber.setTextColor(context.getColorCompat(R.color.colorB9))
@@ -78,7 +98,7 @@ class CustomerListAdapter(
             binding.root.setOnClickListener {
                 isSelectedPos = layoutPosition
                 notifyDataSetChanged()
-                listner.onCustomerSelect(layoutPosition,list[layoutPosition])
+                listner.onCustomerSelect(layoutPosition, list[layoutPosition])
             }
 
         }
@@ -117,7 +137,8 @@ class CustomerListAdapter(
                     Log.e("KeyWordEmpty", "KeyWord")
                     notifyDataSetChanged()
                 } else {
-                    var filterList: ArrayList<com.android.pos.data.model.CustomerListResponse.Data> = arrayListOf()
+                    var filterList: ArrayList<com.android.pos.data.model.CustomerListResponse.Data> =
+                        arrayListOf()
                     for (model in list) {
                         Log.e("FilterProcess", "ModelName ${model.first_name.toLowerCase()}")
                         Log.e("FilterProcess", "Character ${charString.toLowerCase()}")
@@ -139,7 +160,8 @@ class CustomerListAdapter(
 
                 if (results?.values != null) {
 
-                    filterList = results?.values as ArrayList<com.android.pos.data.model.CustomerListResponse.Data>
+                    filterList =
+                        results?.values as ArrayList<com.android.pos.data.model.CustomerListResponse.Data>
                 } else {
                     filterList = list
                 }
@@ -186,7 +208,10 @@ class CustomerListAdapter(
         }
     }*/
 
-    fun setList(context: Context, list: ArrayList<com.android.pos.data.model.CustomerListResponse.Data>) {
+    fun setList(
+        context: Context,
+        list: ArrayList<com.android.pos.data.model.CustomerListResponse.Data>
+    ) {
         this.filterList = list
         this.context = context
 

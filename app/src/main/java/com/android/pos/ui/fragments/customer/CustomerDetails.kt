@@ -5,6 +5,7 @@ import android.text.Layout
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
@@ -44,12 +45,16 @@ class CustomerDetails : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        customerModel = requireArguments().getParcelable<com.android.pos.data.model.CustomerListResponse.Data>(CUSTOMER_MODEL)!!
+        customerModel =
+            requireArguments().getParcelable<com.android.pos.data.model.CustomerListResponse.Data>(
+                CUSTOMER_MODEL
+            )!!
         binding.model = customerModel
         binding.executePendingBindings()
 
         binding.txtEdit.setOnClickListener {
-            findNavController().navigate(R.id.action_customer_to_addEditCustomer)
+            val bundle: Bundle = bundleOf("isEdit" to true, "dataModel" to customerModel)
+            findNavController().navigate(R.id.action_customer_to_addEditCustomer, bundle)
         }
 
     }

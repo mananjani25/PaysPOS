@@ -25,13 +25,13 @@
                 app:srcCompat="@drawable/ic_cancel_black" />
 
             <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtCustomerType"
                 style="@style/CustomFontSemiBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="Edit Customer"
                 android:textSize="@dimen/_8mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -293,6 +293,101 @@
 
                     <EditText
                         android:id="@+id/edtZip"
+                        style="@style/CustomFontMediumStyle"
+                        android:layout_width="0sp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/background_square_border_grey"
+                        android:enabled="false"
+                        android:padding="@dimen/_7sdp"
+                        android:text="Zip"
+                        android:textColor="@color/hintColor"
+                        android:textSize="@dimen/_6mdpi" />
+
+
+                </LinearLayout>
+
+
+                <EditText
+                    android:id="@+id/edtAddress2"
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:layout_marginEnd="@dimen/_15sdp"
+                    android:background="@drawable/background_square_border_grey"
+                    android:enabled="false"
+                    android:padding="@dimen/_7sdp"
+                    android:text="United States"
+                    android:textColor="@color/txt_color_blue"
+                    android:textSize="@dimen/_6mdpi" />
+
+                <EditText
+                    android:id="@+id/edtStreet2"
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_marginEnd="@dimen/_15sdp"
+                    android:background="@drawable/background_square_border_grey"
+                    android:enabled="false"
+                    android:padding="@dimen/_7sdp"
+                    android:text="Street"
+                    android:textColor="@color/hintColor"
+                    android:textSize="@dimen/_6mdpi" />
+
+                <EditText
+                    android:id="@+id/edtSuite2"
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_marginEnd="@dimen/_15sdp"
+                    android:background="@drawable/background_square_border_grey"
+                    android:enabled="false"
+                    android:padding="@dimen/_7sdp"
+                    android:text="Apt/Suite"
+                    android:textColor="@color/hintColor"
+                    android:textSize="@dimen/_6mdpi" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_marginEnd="@dimen/_15sdp"
+                    android:orientation="horizontal"
+                    android:weightSum="3">
+
+
+                    <EditText
+                        android:id="@+id/edtCity2"
+                        style="@style/CustomFontMediumStyle"
+                        android:layout_width="0sp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/background_square_border_grey"
+                        android:enabled="false"
+                        android:padding="@dimen/_7sdp"
+                        android:text="City"
+                        android:textColor="@color/hintColor"
+                        android:textSize="@dimen/_6mdpi" />
+
+                    <EditText
+                        android:id="@+id/edtState2"
+                        style="@style/CustomFontMediumStyle"
+                        android:layout_width="0sp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/background_square_border_grey"
+                        android:enabled="false"
+                        android:padding="@dimen/_7sdp"
+                        android:text="State"
+                        android:textColor="@color/hintColor"
+                        android:textSize="@dimen/_6mdpi" />
+
+                    <EditText
+                        android:id="@+id/edtZip2"
                         style="@style/CustomFontMediumStyle"
                         android:layout_width="0sp"
                         android:layout_height="wrap_content"

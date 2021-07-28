@@ -413,7 +413,12 @@
         <action
             android:id="@+id/action_customer_to_addEditCustomer"
             app:destination="@id/addEditCustomer"
-            app:enterAnim="@anim/nav_default_enter_anim" />
+            app:enterAnim="@anim/nav_default_enter_anim">
+
+            <argument
+                android:name="isEdit"
+                app:argType="boolean" />
+        </action>
     </fragment>
     <action
         android:id="@+id/action_global_customer"
@@ -423,7 +428,14 @@
         android:id="@+id/addEditCustomer"
         android:name="com.android.pos.ui.fragments.customer.AddEditCustomer"
         android:label="AddEditCustomer"
-        tools:layout="@layout/fragment_add_edit_customer" />
+        tools:layout="@layout/fragment_add_edit_customer">
+
+        <argument
+            android:name="isEdit"
+            android:defaultValue="false"
+            app:argType="boolean" />
+
+    </fragment>
 
 
 </navigation>

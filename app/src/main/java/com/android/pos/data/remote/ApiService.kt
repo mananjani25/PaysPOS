@@ -70,9 +70,9 @@ interface ApiService {
     @GET(SYNC_VENUE_DATA)
     suspend fun syncVenueData(): VenueDataResponse
 
-    @GET(EMPLOYEES)
+   /* @GET(EMPLOYEES)
     suspend fun employeesList(@Query("location_id") location_id: Int): EmployeeListResponse
-
+*/
     @GET(CUSTOMERS)
     suspend fun customerList():CustomerListResponse
 

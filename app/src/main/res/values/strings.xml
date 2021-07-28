@@ -300,5 +300,9 @@
     <string name="deactivate">Hide</string>
     <string name="edit">Edit</string>
     <string name="personal_information">Personal Information</string>
+    <string name="messages">Messages</string>
+    <string name="bulk_delete_customers">Bulk Delete Customers</string>
+    <string name="filter_customers">Filter Customers</string>
+    <string name="create_new_customer">Create New Customer</string>
 
 </resources>

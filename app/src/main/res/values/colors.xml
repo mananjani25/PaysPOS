@@ -74,4 +74,5 @@
     <color name="colorF9">#FF9A8C</color>
 
     <color name="colorNewBorder">#DBDCE0</color>
+    <color name="colorCustomerDialogBorder">#00000073</color>
 </resources>
