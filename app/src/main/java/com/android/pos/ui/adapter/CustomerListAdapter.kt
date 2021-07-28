@@ -142,31 +142,32 @@ class CustomerListAdapter(
         return object : Filter() {
             override fun performFiltering(charSequence: CharSequence?): FilterResults {
                 val charString = charSequence.toString()
-                if (charString.isEmpty()) {
-                    filterList.clear()
-                    filterList.addAll(list)
-                    Log.e("KeyWordEmpty", "KeyWord")
-                    notifyDataSetChanged()
-                } else {
-                    var filterList: ArrayList<com.android.pos.data.model.CustomerListResponse.Data> =
-                        arrayListOf()
-                    for (model in this@CustomerListAdapter.filterList) {
-                        Log.e("FilterProcess", "ModelName ${model.first_name.toLowerCase()}")
-                        Log.e("FilterProcess", "Character ${charString.toLowerCase()}")
+                /*  if (charString.isEmpty()) {
+                      filterList.clear()
+                      filterList.addAll(list)
+                      Log.e("KeyWordEmpty", "KeyWord")
+                      notifyDataSetChanged()
+                  } else {*/
+                Log.e(TAG, "charSequence:  ${charSequence}")
+                var filterList: ArrayList<com.android.pos.data.model.CustomerListResponse.Data> =
+                    arrayListOf()
+                for (model in this@CustomerListAdapter.list) {
+                    Log.e("FilterProcess", "ModelName ${model.first_name.toLowerCase()}")
+                    Log.e("FilterProcess", "Character ${charString.toLowerCase()}")
 
-                        if (model.first_name.toLowerCase()
-                                .contains(charString.toLowerCase()) || model.last_name.toLowerCase()
-                                .contains(charString.toLowerCase())
-                        ) {
-                            filterList.add(model)
-                        }
-                    }
-
-
-                    if (filterList.size != 0) {
-                        this@CustomerListAdapter.filterList = filterList
+                    if (model.first_name.toLowerCase()
+                            .contains(charString.toLowerCase()) || model.last_name.toLowerCase()
+                            .contains(charString.toLowerCase())
+                    ) {
+                        filterList.add(model)
                     }
                 }
+
+
+                if (filterList.size != 0) {
+                    this@CustomerListAdapter.filterList = filterList
+                }
+                /*}*/
                 val filterResult = FilterResults()
                 filterResult.values = filterList
                 return filterResult
@@ -184,7 +185,6 @@ class CustomerListAdapter(
                     filterList = list
                 }
                 notifyDataSetChanged()
-
             }
 
         }

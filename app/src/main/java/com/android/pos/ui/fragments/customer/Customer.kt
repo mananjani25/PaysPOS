@@ -34,6 +34,8 @@ class Customer : Fragment() {
     private lateinit var binding: FragmentCustomerBinding
     private lateinit var customerAdapter: CustomerListAdapter
     private val viewModel by viewModels<CustomerListViewModel>()
+    private val dynamicCustomerList: ArrayList<com.android.pos.data.model.CustomerListResponse.Data> =
+        arrayListOf()
     private var dialog: Dialog? = null
     private val TAG = "Customer"
     override fun onCreateView(
@@ -94,6 +96,8 @@ class Customer : Fragment() {
                                 resource.data.data as ArrayList<com.android.pos.data.model.CustomerListResponse.Data>
 
                             Log.e(TAG, "getCustomerData ${Gson().toJson(data)}")
+                            dynamicCustomerList.clear()
+                            dynamicCustomerList.addAll(data)
 
                             val adapter = CustomerListAdapter(requireContext(), data, object :
                                 CustomerListAdapter.CustomerInteface {
@@ -138,9 +142,19 @@ class Customer : Fragment() {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
 
-                Log.e(TAG, "${binding.autoSearch.text}")
 
-                (binding.rvEmployeeList.adapter as CustomerListAdapter).filter.filter(binding.autoSearch.text.trim().toString())
+
+                if (binding.autoSearch.text.trim().isNotEmpty()) {
+                    (binding.rvEmployeeList.adapter as CustomerListAdapter).filter.filter(
+                        binding.autoSearch.text.trim().toString()
+                    )
+                }else{
+                    (binding.rvEmployeeList.adapter as CustomerListAdapter?)?.setList(requireContext(),dynamicCustomerList)
+                    (binding.rvEmployeeList.adapter as CustomerListAdapter?)?.notifyDataSetChanged()
+
+
+                }
+                binding.rvEmployeeList.adapter?.notifyDataSetChanged()
 
 
             }

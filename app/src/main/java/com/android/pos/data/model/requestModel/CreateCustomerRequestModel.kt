@@ -20,7 +20,11 @@ data class CreateCustomerRequestModel(
         @SerializedName("birthday_year")
         var birthday_year: String = "",
         @SerializedName("email")
-        var email: String
+        var email: String,
+        @SerializedName("phones_attributes")
+        var phones_attributes: List<Phone>,
+        @SerializedName("addresses_attributes")
+        var addresses_attributes: List<Addresses>
     ) {
         data class Phone(
             @SerializedName("id")
@@ -31,28 +35,32 @@ data class CreateCustomerRequestModel(
             var _destroy: String = "true"
 
         )
+
         data class Addresses(
             @SerializedName("id")
-            var id:Int = 0,
+            var id: Int = 0,
             @SerializedName("address1")
-            var address1:String = "",
+            var address1: String = "",
             @SerializedName("address2")
-            var address2:String ="",
+            var address2: String = "",
             @SerializedName("city")
-            var city:String = "",
+            var city: String = "",
             @SerializedName("state")
-            var state:String = "",
+            var state: String = "",
             @SerializedName("country")
-            var country:String = "",
+            var country: String = "",
             @SerializedName("postcode")
-            var postcode:String ="",
+            var postcode: String = "",
             @SerializedName("type_of_address")
-            var type_of_address:String="Shipping",
+            var type_of_address: String = "Shipping",
             @SerializedName("latitude")
-            var latitude:Double = 0.0,
+            var latitude: Double = 0.0,
             @SerializedName("longitude")
-            var longitude:Double = 0.0
+            var longitude: Double = 0.0,
+            @SerializedName("_destroy")
+            var _destroy: String = "true"
         )
+
 
     }
 }
