@@ -31,8 +31,8 @@ class TipDiscountRepository @Inject constructor(
     suspend fun tipActive(id: Int, active: Boolean) =
         apiHelperNew.tipActive(id, active)
 
-    suspend fun tipActiveDatabase(taxId: Int, active: Boolean) =
-        appDatabase.taxDao().activeTax(taxId, active)
+    suspend fun tipActiveDatabase(tipId: Int, active: Boolean) =
+        appDatabase.tipDao().activeTip(tipId, active)
 
     suspend fun deleteTip(data: Int) = apiHelperNew.deleteTip(data)
 
@@ -51,8 +51,8 @@ class TipDiscountRepository @Inject constructor(
     suspend fun discountActive(id: Int, active: Boolean) =
         apiHelperNew.discountActive(id, active)
 
-    suspend fun discountActiveDatabase(taxId: Int, active: Boolean) =
-        appDatabase.taxDao().activeTax(taxId, active)
+    suspend fun discountActiveDatabase(discountId: Int, active: Boolean) =
+        appDatabase.discountDao().activeDiscount(discountId, active)
 
     suspend fun deleteDiscount(data: Int) = apiHelperNew.deleteDiscount(data)
 

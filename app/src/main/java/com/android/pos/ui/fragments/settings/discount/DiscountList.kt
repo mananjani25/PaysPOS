@@ -103,7 +103,7 @@ class DiscountList : Fragment() {
 
                     alert(
                         getString(R.string.app_name),
-                        getString(R.string.delete_tax_message)
+                        getString(R.string.delete_discount_message)
                     ) {
                         positiveButton(getString(R.string.tv_delete)) {
                             // Do positive stuff here

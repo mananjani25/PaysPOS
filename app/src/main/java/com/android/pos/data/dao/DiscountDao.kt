@@ -21,7 +21,7 @@ interface DiscountDao {
     fun allDiscountList(): List<GetDiscountResponse.Data>
 
     @Query("SELECT * from TbDiscount where TbDiscount.id  = :id LIMIT 1")
-    fun DiscountById(id: Int?): GetDiscountResponse.Data
+    fun discountById(id: Int?): GetDiscountResponse.Data
 
     @Query("DELETE FROM TbDiscount")
     fun delete()
@@ -30,7 +30,7 @@ interface DiscountDao {
     suspend fun deleteDiscountById(id: Int)
 
     @Query("SELECT * FROM TbDiscount WHERE TbDiscount.id IN (:userIds)")
-    fun DiscountByIds(userIds: IntArray): List<GetDiscountResponse.Data>
+    fun discountByIds(userIds: IntArray): List<GetDiscountResponse.Data>
 
     @Query("UPDATE TbDiscount SET isActive = :active WHERE  TbDiscount.id = :id")
     suspend fun activeDiscount(id: Int, active: Boolean?): Int

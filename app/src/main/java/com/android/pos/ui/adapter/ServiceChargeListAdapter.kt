@@ -1,16 +1,13 @@
 package com.android.pos.ui.adapter
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.android.pos.data.model.DiscountListModel
-import com.android.pos.data.model.responseModel.GetDiscountResponse
 import com.android.pos.data.model.responseModel.GetServiceChargeResponse
-import com.android.pos.databinding.ViewDiscountItemBinding
 import com.android.pos.databinding.ViewServiceChargeItemBinding
+import com.android.pos.ui.fragments.settings.servicecharge.ServiceChargeListViewModel
 
-class ServiceChargeListAdapter() :
+class ServiceChargeListAdapter(val viewModel: ServiceChargeListViewModel) :
     RecyclerView.Adapter<ServiceChargeListAdapter.MyViewHolder>() {
 
     var serviceChargeList = ArrayList<GetServiceChargeResponse.Data>()
@@ -29,6 +26,7 @@ class ServiceChargeListAdapter() :
     override fun onBindViewHolder(holder: ServiceChargeListAdapter.MyViewHolder, position: Int) {
         val itemBinding = holder.discountItemBinding
         itemBinding.serviceChargeModel = serviceChargeList[position]
+        itemBinding.viewModel = viewModel
 
         itemBinding.executePendingBindings()
     }
@@ -51,12 +49,12 @@ class ServiceChargeListAdapter() :
     inner class MyViewHolder(val discountItemBinding: ViewServiceChargeItemBinding) :
         RecyclerView.ViewHolder(discountItemBinding.root){
 
-            init {
+            /*init {
                 discountItemBinding.imgCheckBox.setOnClickListener {
                     serviceChargeList[layoutPosition].isChecked = !serviceChargeList[layoutPosition].isChecked
                     notifyDataSetChanged()
                 }
-            }
+            }*/
         }
 
 }

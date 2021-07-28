@@ -12,6 +12,7 @@ import com.android.pos.R
 import com.android.pos.data.model.responseModel.GetDiscountResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentCreateDiscountBinding
+import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
 import com.google.android.material.snackbar.Snackbar
@@ -107,9 +108,13 @@ class CreateDiscount : Fragment() {
     private fun navigate() {
 
         viewModel.data.observe(viewLifecycleOwner, { event ->
-            event.getContentIfNotHandled()?.let {
-                if (it) {
-                    findNavController().navigateUp()
+            event.getContentIfNotHandled()?.let { createDiscountResponse ->
+                activity?.let {
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        it, createDiscountResponse.message
+                    ) { _, _ ->
+                        findNavController().navigateUp()
+                    }
                 }
             }
         })

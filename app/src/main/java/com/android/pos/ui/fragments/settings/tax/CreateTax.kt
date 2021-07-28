@@ -20,7 +20,9 @@ import com.android.pos.data.remote.Constants.DIALOG_KEY_TAX
 import com.android.pos.data.remote.Constants.INCLUDE_TAX
 import com.android.pos.data.remote.Constants.SETTING_KEY
 import com.android.pos.databinding.DialogCreateNewTaxBinding
+import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.getNavigationResultLiveData
 import com.android.pos.utils.extensions.liveSnackBar
 import com.google.android.material.snackbar.Snackbar
@@ -63,10 +65,21 @@ class CreateTax : Fragment() {
             binding.tvItemPricing.text = taxData.itemPricing
 
             binding.swtEnableTax.isChecked = taxData.isDefault
+            binding.swtCustomAmount.isChecked = taxData.isCustomAmount
             viewModel.isEditData(isEdit, taxData.id)
 
             itemPricing = taxData.itemPricing.toString()
             itemIds = taxData.itemIds as ArrayList<Int>
+            viewModel.setItemPricing(itemPricing)
+            viewModel.setItemIds(itemIds)
+
+            if (taxData.taxType == getString(R.string.disc_percentage)) {
+                binding.swtTaxType.isChecked = true
+                binding.swtTaxType.text = getString(R.string.disc_percentage)
+            } else {
+                binding.swtTaxType.isChecked = false
+                binding.swtTaxType.text = getString(R.string.disc_amount)
+            }
         }
 
         setupSnackbar()
@@ -74,26 +87,30 @@ class CreateTax : Fragment() {
         navigate()
 
         binding.llAllItemsDialog.setOnClickListener {
+            val bundle = Bundle()
             if (isEdit) {
-                val bundle = Bundle()
+
                 bundle.putBoolean("isEdit", true)
                 bundle.putIntegerArrayList("itemIds", itemIds)
                 findNavController().navigate(R.id.action_newTax_to_itemDialog, bundle)
             } else {
-                findNavController().navigate(R.id.action_newTax_to_itemDialog)
+                bundle.putIntegerArrayList("itemIds", itemIds)
+                findNavController().navigate(R.id.action_newTax_to_itemDialog, bundle)
             }
         }
 
         binding.llItemPricing.setOnClickListener {
+            val bundle = Bundle()
             if (isEdit) {
                 //bundle have to sent for item ids
-                val bundle = Bundle()
+
                 bundle.putBoolean("isEdit", true)
                 Log.e("itemPricing", itemPricing.toString())
                 bundle.putString("itemPricing", itemPricing)
                 findNavController().navigate(R.id.action_newTax_to_itemPricingDialog, bundle)
             } else {
-                findNavController().navigate(R.id.action_newTax_to_itemPricingDialog)
+                bundle.putString("itemPricing", itemPricing)
+                findNavController().navigate(R.id.action_newTax_to_itemPricingDialog, bundle)
             }
 
         }
@@ -151,6 +168,24 @@ class CreateTax : Fragment() {
         }
     }
 
+    fun customAmount(isChecked: Boolean) {
+        if (isChecked) {
+            viewModel.customAmount(isChecked)
+        } else {
+            viewModel.customAmount(isChecked)
+        }
+    }
+
+    fun taxType(isChecked: Boolean) {
+        if (isChecked) {
+            binding.swtTaxType.text = getString(R.string.disc_percentage)
+            viewModel.discountType(getString(R.string.disc_percentage))
+        } else {
+            binding.swtTaxType.text = getString(R.string.disc_amount)
+            viewModel.discountType(getString(R.string.disc_amount))
+        }
+    }
+
     private fun observeShowProgress() {
 
         viewModel.showProgress.observe(viewLifecycleOwner, { event ->
@@ -167,10 +202,15 @@ class CreateTax : Fragment() {
     private fun navigate() {
 
         viewModel.data.observe(viewLifecycleOwner, { event ->
-            event.getContentIfNotHandled()?.let {
-                if (it) {
-                    findNavController().navigateUp()
+            event.getContentIfNotHandled()?.let { createTaxResponse ->
+                activity?.let {
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        it, createTaxResponse.message
+                    ) { _, _ ->
+                        findNavController().navigateUp()
+                    }
                 }
+
             }
         })
     }

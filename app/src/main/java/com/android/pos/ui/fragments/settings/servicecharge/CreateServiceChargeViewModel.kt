@@ -32,8 +32,8 @@ class CreateServiceChargeViewModel @Inject constructor(
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
 
-    private val _data = MutableLiveData<Event<Boolean?>>()
-    val data: LiveData<Event<Boolean?>> = _data
+    private val _data = MutableLiveData<Event<CreateServiceChargeResponse?>>()
+    val data: LiveData<Event<CreateServiceChargeResponse?>> = _data
 
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
@@ -99,7 +99,10 @@ class CreateServiceChargeViewModel @Inject constructor(
 
             viewModelScope.launch {
                 if (isEdit) {
-                    resource = taxServiceChargeRepository.updateServiceCharge(serviceChargeId, serviceChargeData)
+                    resource = taxServiceChargeRepository.updateServiceCharge(
+                        serviceChargeId,
+                        serviceChargeData
+                    )
                 } else {
                     resource = taxServiceChargeRepository.createServiceCharge(serviceChargeData)
                 }
@@ -110,8 +113,8 @@ class CreateServiceChargeViewModel @Inject constructor(
                         resource.data.let { logInResponse ->
                             if (logInResponse?.status == 200) {
 
-                                resource.data?.let {
-                                    _data.value = Event(true)
+                                resource.data?.let { createServiceChargeResponse ->
+                                    _data.value = Event(createServiceChargeResponse)
                                 }
                             } else {
                                 _snackbarText.value = Event(resource.message)

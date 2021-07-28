@@ -13,6 +13,7 @@ import com.android.pos.data.remote.Constants.CREATE_TIP
 import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.data.remote.Constants.SETTING_KEY
 import com.android.pos.databinding.DialogAddNewTipBinding
+import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
 import com.google.android.material.snackbar.Snackbar
@@ -42,7 +43,7 @@ class CreateTip : Fragment() {
             tipData = arguments?.getParcelable("tipObject")!!
 
             viewModel.setTipData(tipData)
-            viewModel.isEditData(isEdit,tipData.id)
+            viewModel.isEditData(isEdit, tipData.id)
         }
 
         setupSnackbar()
@@ -78,9 +79,13 @@ class CreateTip : Fragment() {
     private fun navigate() {
 
         viewModel.data.observe(viewLifecycleOwner, { event ->
-            event.getContentIfNotHandled()?.let {
-                if (it) {
-                    findNavController().navigateUp()
+            event.getContentIfNotHandled()?.let { createTipResponse ->
+                activity?.let {
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        it, createTipResponse.message
+                    ) { _, _ ->
+                        findNavController().navigateUp()
+                    }
                 }
             }
         })

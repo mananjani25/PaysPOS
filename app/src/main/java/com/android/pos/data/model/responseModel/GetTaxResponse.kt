@@ -41,7 +41,7 @@ data class GetTaxResponse(
         @SerializedName("is_default")
         val isDefault: Boolean,
         @SerializedName("is_custom_amount")
-        val isCustomAmount: String?,
+        val isCustomAmount: Boolean,
         @SerializedName("item_pricing")
         var itemPricing: String?,
         @SerializedName("item_ids")

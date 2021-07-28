@@ -305,4 +305,5 @@
     <string name="filter_customers">Filter Customers</string>
     <string name="create_new_customer">Create New Customer</string>
 
+    <string name="tv_ok">OK</string>
 </resources>

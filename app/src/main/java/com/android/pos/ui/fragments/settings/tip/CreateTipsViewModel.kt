@@ -32,8 +32,8 @@ class CreateTipsViewModel @Inject constructor(
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
 
-    private val _data = MutableLiveData<Event<Boolean?>>()
-    val data: LiveData<Event<Boolean?>> = _data
+    private val _data = MutableLiveData<Event<CreateTipResponse?>>()
+    val data: LiveData<Event<CreateTipResponse?>> = _data
 
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
@@ -99,8 +99,8 @@ class CreateTipsViewModel @Inject constructor(
                         resource.data.let { logInResponse ->
                             if (logInResponse?.status == 200) {
 
-                                resource.data?.let {
-                                    _data.value = Event(true)
+                                resource.data?.let {createTipResponse->
+                                    _data.value = Event(createTipResponse)
 
                                 }
                             } else {

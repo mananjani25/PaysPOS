@@ -3,11 +3,11 @@ package com.android.pos.ui.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.android.pos.data.model.responseModel.GetTipReponse
 import com.android.pos.data.model.responseModel.NoteResponse
 import com.android.pos.databinding.ViewNoteItemBinding
+import com.android.pos.ui.fragments.settings.notes.NoteListViewModel
 
-class NotesListAdapter() :
+class NotesListAdapter(val viewModel: NoteListViewModel) :
     RecyclerView.Adapter<NotesListAdapter.MyViewHolder>() {
 
     var noteList = ArrayList<NoteResponse.Data>()
@@ -35,6 +35,7 @@ class NotesListAdapter() :
     override fun onBindViewHolder(holder: NotesListAdapter.MyViewHolder, position: Int) {
         val itemBinding = holder.noteItemBinding
         itemBinding.noteModel = noteList[position]
+        itemBinding.viewModel = viewModel
 
         itemBinding.executePendingBindings()
     }
@@ -47,13 +48,13 @@ class NotesListAdapter() :
     inner class MyViewHolder(val noteItemBinding: ViewNoteItemBinding) :
         RecyclerView.ViewHolder(noteItemBinding.root) {
 
-        init {
+        /*init {
                 noteItemBinding.imgCheckBox.setOnClickListener {
                     noteList[layoutPosition].isChecked = !noteList[layoutPosition].isChecked
                     notifyDataSetChanged()
                 }
 
-        }
+        }*/
     }
 
 }
