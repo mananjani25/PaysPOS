@@ -142,6 +142,8 @@ class PosRepository @Inject constructor(
     fun employeesList(locationId: Int) =
         performGetOperationNew(networkCall = { apiHelperNew.employeesList(locationId) })
 
+    fun customerList() = performGetOperationNew(networkCall = { apiHelperNew.customerList() })
+
     suspend fun createEmployee(data: CreateEmployeeRequestModel) = apiHelperNew.createEmployee(data)
 
     suspend fun updateEmployee(taxId: Int, data: CreateEmployeeRequestModel) =

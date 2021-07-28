@@ -72,4 +72,6 @@
     <color name="colorFD">#FFDF6B</color>
     <color name="colorD8">#D8F8B7</color>
     <color name="colorF9">#FF9A8C</color>
+
+    <color name="colorNewBorder">#DBDCE0</color>
 </resources>

@@ -34,6 +34,8 @@ class TeamListViewModel @Inject constructor(
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
+    val employeeData = posRepository.employeesList(locationId)
+
 
     fun employeeData(): LiveData<Resource<EmployeeListResponse>> {
         return posRepository.employeesList(locationId)

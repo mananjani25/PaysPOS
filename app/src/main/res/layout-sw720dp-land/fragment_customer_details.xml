@@ -3,12 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingDefaultResource">
-
     <data>
-
         <variable
             name="model"
-            type="com.android.pos.data.model.CustomerDetailModel" />
+            type="com.android.pos.data.model.CustomerListResponse.Data" />
     </data>
 
     <LinearLayout
@@ -85,6 +83,7 @@
                         android:textSize="@dimen/_6mdpi" />
 
                     <TextView
+                        android:id="@+id/txtEdit"
                         style="@style/CustomFontSemiBold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -118,7 +117,7 @@
                         android:layout_gravity="center"
                         android:layout_marginTop="@dimen/_3sdp"
                         android:layout_marginBottom="@dimen/_3sdp"
-                        android:text="@{model.name}"
+                        android:text="@{model.first_name +' '+model.last_name}"
                         android:textColor="@color/txtColor"
                         android:textSize="@dimen/_7mdpi" />
 
@@ -152,8 +151,8 @@
                         android:layout_gravity="center"
                         android:layout_marginTop="@dimen/_3sdp"
                         android:layout_marginBottom="@dimen/_3sdp"
-                        android:text="@{model.phone}"
-                        android:textColor="@color/btnColorDark_"
+                        android:text="@{model.phones.get(0).phone_number}"
+                        android:textColor="@color/txt_color_blue"
                         android:textSize="@dimen/_7mdpi" />
 
                     <View
@@ -187,7 +186,7 @@
                         android:layout_marginTop="@dimen/_3sdp"
                         android:layout_marginBottom="@dimen/_3sdp"
                         android:text="@{model.email}"
-                        android:textColor="@color/btnColorDark_"
+                        android:textColor="@color/btnColor"
                         android:textSize="@dimen/_7mdpi" />
 
                     <View
@@ -197,6 +196,7 @@
                         android:background="@color/txtColorGray" />
 
                 </LinearLayout>
+
 
 
                 <LinearLayout
@@ -221,8 +221,8 @@
                         android:layout_gravity="center"
                         android:layout_marginTop="@dimen/_3sdp"
                         android:layout_marginBottom="@dimen/_3sdp"
-                        android:text="@{model.address1}"
-                        android:textColor="@color/btnColorDark_"
+                        android:text="@{model.addresses.get(0).address1}"
+                        android:textColor="@color/txt_color_blue"
                         android:textSize="@dimen/_7mdpi" />
 
                     <View
@@ -255,7 +255,7 @@
                         android:layout_gravity="center"
                         android:layout_marginTop="@dimen/_3sdp"
                         android:layout_marginBottom="@dimen/_3sdp"
-                        android:text="@{model.companyName}"
+                        android:text="company Name"
                         android:textColor="@color/txtColor"
                         android:textSize="@dimen/_7mdpi" />
 
@@ -289,7 +289,7 @@
                         android:layout_gravity="center"
                         android:layout_marginTop="@dimen/_3sdp"
                         android:layout_marginBottom="@dimen/_3sdp"
-                        android:text="@{model.birthDate}"
+                        android:text="@{model.birth_date}"
                         android:textColor="@color/txtColor"
                         android:textSize="@dimen/_7mdpi" />
 

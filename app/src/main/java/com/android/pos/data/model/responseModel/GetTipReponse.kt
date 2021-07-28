@@ -2,6 +2,8 @@ package com.android.pos.data.model.responseModel
 
 
 import android.os.Parcelable
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
@@ -17,13 +19,15 @@ data class GetTipReponse(
     val type: String
 ) : Parcelable {
     @Parcelize
+    @Entity(tableName = "TbTips")
     data class Data(
         @SerializedName("created_at")
         val createdAt: String,
+        @PrimaryKey
         @SerializedName("id")
         val id: Int,
         @SerializedName("is_active")
-        val isActive: Boolean,
+        var isActive: Boolean = false,
         @SerializedName("location_id")
         val locationId: Int,
         @SerializedName("name")

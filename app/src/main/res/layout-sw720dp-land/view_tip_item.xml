@@ -11,6 +11,10 @@
         <variable
             name="tipModel"
             type="com.android.pos.data.model.responseModel.GetTipReponse.Data" />
+
+        <variable
+            name="viewModel"
+            type="com.android.pos.ui.fragments.settings.tip.TipListViewModel" />
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat
@@ -34,8 +38,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:onClick="@{() -> viewModel.isTipActive(tipModel)}"
                 android:padding="@dimen/_5sdp"
-                android:src="@{tipModel.isChecked ? @drawable/ic_check_box_unchecked: @drawable/ic_check_box}" />
+                android:src="@{tipModel.isActive ? @drawable/ic_check_box: @drawable/ic_check_box_unchecked}" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"

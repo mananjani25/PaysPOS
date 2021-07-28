@@ -61,6 +61,7 @@
 
     <string name="tax_name_validate">Please enter Tax Name</string>
     <string name="tax_rate_validate">Please enter valid Tax Rate</string>
+    <string name="item_pricing_validate">Please enter ItemPricing</string>
 
     <string name="tip_name_validate">Please enter Tip Name</string>
     <string name="tip_rate_validate">Please enter valid Tip Rate</string>
@@ -299,4 +300,5 @@
     <string name="deactivate">Hide</string>
     <string name="edit">Edit</string>
     <string name="personal_information">Personal Information</string>
+
 </resources>

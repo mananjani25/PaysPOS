@@ -6,5 +6,5 @@ data class CustomerModel(
     val name: String,
     val number: String,
     val email: String,
-    val isSelected: Boolean
+    var isSelected: Boolean
 )

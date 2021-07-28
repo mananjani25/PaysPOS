@@ -10,17 +10,28 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.model.CustomerDetailModel
 import com.android.pos.data.model.CustomerModel
+import com.android.pos.data.model.responseModel.EmployeeListResponse
 import com.android.pos.databinding.FragmentCustomerBinding
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.CustomerListAdapter
+import com.android.pos.ui.fragments.team.TeamListViewModel
+import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.extensions.showAlert
+import com.android.pos.utils.statusUtils.Status
+import com.google.gson.Gson
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class Customer : Fragment() {
 
     private lateinit var binding: FragmentCustomerBinding
     private lateinit var customerAdapter: CustomerListAdapter
+    private val viewModel by viewModels<CustomerListViewModel>()
     private val TAG = "Customer"
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -42,8 +53,58 @@ class Customer : Fragment() {
 
         configureToolbar()
         setAdapter()
-        loadFragment()
+        //loadFragment()
         searchQuery()
+        loadCustomerList()
+    }
+
+    private fun loadCustomerList() {
+        viewModel.customerList.observe(viewLifecycleOwner, {
+            it?.let { resource ->
+                when (resource.status) {
+                    Status.SUCCESS -> {
+                        ProgressUtils.dismissProgressDialog()
+                        if (resource.data?.data != null) {
+                            val list: ArrayList<CustomerModel> = arrayListOf()
+
+                            val data =
+                                resource.data.data as ArrayList<com.android.pos.data.model.CustomerListResponse.Data>
+
+                            Log.e(TAG, "getCustomerData ${Gson().toJson(data)}")
+
+                            val adapter = CustomerListAdapter(requireContext(), data, object :
+                                CustomerListAdapter.CustomerInteface {
+                                override fun onCustomerSelect(
+                                    pos: Int,
+                                    model: com.android.pos.data.model.CustomerListResponse.Data
+                                ) {
+                                    binding.layoutTool.txtSubTitle.setText(model.first_name + " " + model.last_name)
+                                    loadFragment(model)
+                                }
+
+                            })
+
+                            binding.rvEmployeeList.adapter = adapter
+
+                        }
+
+
+                    }
+                    Status.ERROR -> {
+                        ProgressUtils.dismissProgressDialog()
+                        binding.root.showAlert(resource.message)
+
+                    }
+                    Status.LOADING -> {
+                        ProgressUtils.showProgressDialog(requireActivity())
+                    }
+
+                }
+
+            }
+
+
+        })
     }
 
     private fun searchQuery() {
@@ -54,8 +115,8 @@ class Customer : Fragment() {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
 
-                    Log.e(TAG, "${binding.autoSearch.text}")
-                    customerAdapter.filter.filter(binding.autoSearch.text.trim().toString())
+                Log.e(TAG, "${binding.autoSearch.text}")
+                //  customerAdapter.filter.filter(binding.autoSearch.text.trim().toString())
 
             }
 
@@ -67,17 +128,8 @@ class Customer : Fragment() {
 
     }
 
-    private fun loadFragment() {
-        val model = CustomerDetailModel(
-            0,
-            "David Miller",
-            "(365) 654 9879",
-            "davidmiller@gmail.com",
-            "Address line one\nAddress line two",
-            "",
-            "David Miller LTD",
-            "May 7, 1990"
-        )
+    private fun loadFragment(model: com.android.pos.data.model.CustomerListResponse.Data) {
+
 
         val frag = CustomerDetails.newInstance(model)
         val fm: FragmentManager = requireActivity().supportFragmentManager
@@ -128,18 +180,19 @@ class Customer : Fragment() {
         )
 
 
-        customerAdapter = CustomerListAdapter(requireContext(), listCustomer, object :
-            CustomerListAdapter.CustomerInteface {
-            override fun onCustomerSelect(pos: Int) {
+        /* binding.layoutTool.txtSubTitle.setText("${listCustomer.get(0).name}")
+         customerAdapter = CustomerListAdapter(requireContext(), listCustomer, object :
+             CustomerListAdapter.CustomerInteface {
+             override fun onCustomerSelect(pos: Int, model: CustomerModel) {
+                 binding.layoutTool.txtSubTitle.setText("${model.name}")
 
+             }
 
-            }
+         })
 
-        })
-
-        customerAdapter.setList(requireContext(), listCustomer)
-        binding.rvEmployeeList.adapter = customerAdapter
-
+         customerAdapter.setList(requireContext(), listCustomer)
+         binding.rvEmployeeList.adapter = customerAdapter
+ */
 
     }
 
@@ -148,6 +201,9 @@ class Customer : Fragment() {
 
         binding.layoutTool.imgDrawer.setOnClickListener {
             (requireActivity() as MainActivity).enableDrawer()
+        }
+        binding.layoutTool.txtHome.setOnClickListener {
+            findNavController().navigate(R.id.action_customer_to_dashboardCategoryNew)
         }
 
     }

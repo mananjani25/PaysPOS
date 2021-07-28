@@ -36,13 +36,13 @@
 
                 <TextView
                     android:id="@+id/txtTitle"
+                    style="@style/CustomFontMediumStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
                     android:layout_centerVertical="true"
                     android:layout_gravity="center"
                     android:layout_marginStart="@dimen/_30sdp"
-                    style="@style/CustomFontMediumStyle"
                     android:text="Team"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_8mdpi" />
@@ -79,13 +79,13 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/sf_pro_display_medium"
                     android:gravity="center"
-                    tools:text="David Miller"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_7mdpi"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/txtHome"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="David Miller" />
 
                 <ImageView
                     android:id="@+id/imgOptionMenuContainer"
@@ -104,8 +104,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_marginEnd="@dimen/_10sdp"
-                    android:text="Home"
                     android:gravity="center"
+                    android:text="Home"
                     android:textColor="@color/txt_color_blue"
                     android:textSize="@dimen/_7mdpi"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -118,11 +118,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_marginEnd="@dimen/_10sdp"
-                    android:text="Edit"
                     android:padding="@dimen/_5sdp"
-                    android:visibility="gone"
+                    android:text="Edit"
                     android:textColor="@color/txt_color_blue"
                     android:textSize="@dimen/_7mdpi"
+                    android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/txtHome"
                     app:layout_constraintTop_toTopOf="parent" />

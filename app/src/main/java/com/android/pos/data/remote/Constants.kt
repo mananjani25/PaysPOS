@@ -26,6 +26,7 @@ object Constants {
     const val FORGOT_PASSWORD = "users/forgot_password"
 
     const val EMPLOYEES = "employees"
+    const val CUSTOMERS = "customers"
     const val EMPLOYEES_UPDATE_DELETE = "employees/{id}"
 
     const val SYNC_VENUE_DATA = "locations/sync_data"
