@@ -1,14 +1,13 @@
 package com.android.pos.ui.adapter
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.android.pos.data.model.DiscountListModel
 import com.android.pos.data.model.responseModel.GetDiscountResponse
 import com.android.pos.databinding.ViewDiscountItemBinding
+import com.android.pos.ui.fragments.settings.discount.DiscountListViewModel
 
-class DiscountListAdapter() :
+class DiscountListAdapter(val viewModel: DiscountListViewModel) :
     RecyclerView.Adapter<DiscountListAdapter.MyViewHolder>() {
 
     var discountList = ArrayList<GetDiscountResponse.Data>()
@@ -27,6 +26,7 @@ class DiscountListAdapter() :
     override fun onBindViewHolder(holder: DiscountListAdapter.MyViewHolder, position: Int) {
         val itemBinding = holder.discountItemBinding
         itemBinding.discountModel = discountList[position]
+        itemBinding.viewModel = viewModel
 
         itemBinding.executePendingBindings()
     }
@@ -49,13 +49,13 @@ class DiscountListAdapter() :
     inner class MyViewHolder(val discountItemBinding: ViewDiscountItemBinding) :
         RecyclerView.ViewHolder(discountItemBinding.root) {
 
-        init {
+        /*init {
 
             discountItemBinding.imgCheckBox.setOnClickListener {
                 discountList[layoutPosition].isChecked = !discountList[layoutPosition].isChecked
                 notifyDataSetChanged()
             }
-        }
+        }*/
     }
 
 

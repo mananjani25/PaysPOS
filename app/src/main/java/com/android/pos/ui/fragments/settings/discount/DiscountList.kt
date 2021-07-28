@@ -10,10 +10,8 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
-import com.android.pos.data.model.DiscountListModel
 import com.android.pos.data.model.responseModel.GetDiscountResponse
 import com.android.pos.databinding.DiscountFragmentBinding
-import com.android.pos.databinding.FragmentDiscountBinding
 import com.android.pos.ui.adapter.DiscountListAdapter
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
@@ -33,7 +31,7 @@ class DiscountList : Fragment() {
     private var position: Int = -1
     private lateinit var discountListUpdateDelete: ArrayList<GetDiscountResponse.Data>
     private val viewModel by viewModels<DiscountListViewModel>()
-    private var discountListadapter = DiscountListAdapter()
+    private lateinit var discountListadapter: DiscountListAdapter
     private lateinit var discountObject: GetDiscountResponse.Data
 
 
@@ -50,6 +48,7 @@ class DiscountList : Fragment() {
         setupSnackbar()
         observeShowProgress()
         deleteDiscount()
+        notifyAdapter()
 
         return binding.root
     }
@@ -69,6 +68,7 @@ class DiscountList : Fragment() {
     }
 
     private fun setUpRecyclerView() {
+        discountListadapter = DiscountListAdapter(viewModel)
         binding.rvDiscountList.adapter = discountListadapter
 
         object : SwipeHelper(activity, binding.rvDiscountList) {
@@ -128,7 +128,7 @@ class DiscountList : Fragment() {
                     Status.SUCCESS -> {
                         ProgressUtils.dismissProgressDialog()
                         binding.rvDiscountList.visibility = View.VISIBLE
-                        resource.data?.let { taxList -> setTaxData(taxList.data) }
+                        resource.data?.let { taxList -> setTaxData(taxList) }
                     }
                     Status.ERROR -> {
                         ProgressUtils.dismissProgressDialog()
@@ -140,6 +140,14 @@ class DiscountList : Fragment() {
                         binding.rvDiscountList.visibility = View.GONE
                     }
                 }
+            }
+        })
+    }
+
+    private fun notifyAdapter() {
+        viewModel.notifydata.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+                discountListadapter.notifyDataSetChanged()
             }
         })
     }

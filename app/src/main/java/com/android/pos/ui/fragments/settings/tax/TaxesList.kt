@@ -52,14 +52,6 @@ class TaxesList : Fragment() {
         return binding.root
     }
 
-    private fun notifyAdapter() {
-        viewModel.notifydata.observe(viewLifecycleOwner, { event ->
-            event.getContentIfNotHandled()?.let {
-                taxListadapter.notifyDataSetChanged()
-            }
-        })
-    }
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -144,6 +136,14 @@ class TaxesList : Fragment() {
                         binding.rvTaxList.visibility = View.GONE
                     }
                 }
+            }
+        })
+    }
+
+    private fun notifyAdapter() {
+        viewModel.notifydata.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+                taxListadapter.notifyDataSetChanged()
             }
         })
     }

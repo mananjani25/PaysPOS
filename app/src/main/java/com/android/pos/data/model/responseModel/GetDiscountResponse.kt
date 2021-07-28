@@ -2,6 +2,8 @@ package com.android.pos.data.model.responseModel
 
 
 import android.os.Parcelable
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
@@ -17,11 +19,13 @@ data class GetDiscountResponse(
     val type: String
 ) : Parcelable {
     @Parcelize
+    @Entity(tableName = "TbDiscount")
     data class Data(
         @SerializedName("created_at")
         val createdAt: String,
         @SerializedName("discount_type")
         val discountType: String,
+        @PrimaryKey
         @SerializedName("id")
         val id: Int,
         @SerializedName("location_id")
@@ -32,6 +36,8 @@ data class GetDiscountResponse(
         val percentage: Double,
         @SerializedName("updated_at")
         val updatedAt: String,
-        var isChecked:Boolean = true
+        @SerializedName("is_active")
+        var isActive: Boolean = false,
+        var isChecked: Boolean = true
     ) : Parcelable
 }

@@ -7,6 +7,7 @@ import com.android.pos.data.entities.TbCategory
 import com.android.pos.data.model.requestModel.CreateDiscountRequestModel
 import com.android.pos.data.model.requestModel.CreateTipRequestModel
 import com.android.pos.data.remote.ApiHelper
+import com.android.pos.utils.performGetOperation
 import com.android.pos.utils.performGetOperationNew
 import com.android.pos.utils.statusUtils.Resource
 import javax.inject.Inject
@@ -17,26 +18,46 @@ class TipDiscountRepository @Inject constructor(
 ) {
 
 
-    fun getTipList() =
-        performGetOperationNew(networkCall = { apiHelperNew.getTipsList() })
+    fun getTipList() = performGetOperation(
+        databaseQuery = { appDatabase.tipDao().allTips },
+        networkCall = { apiHelperNew.getTipsList() },
+        saveCallResult = { appDatabase.tipDao().addAllTips(it.data) })
 
     suspend fun createTips(data: CreateTipRequestModel) = apiHelperNew.createTips(data)
 
     suspend fun updateTip(taxId: Int, data: CreateTipRequestModel) =
         apiHelperNew.updateTip(taxId, data)
 
+    suspend fun tipActive(id: Int, active: Boolean) =
+        apiHelperNew.tipActive(id, active)
+
+    suspend fun tipActiveDatabase(taxId: Int, active: Boolean) =
+        appDatabase.taxDao().activeTax(taxId, active)
+
     suspend fun deleteTip(data: Int) = apiHelperNew.deleteTip(data)
 
+    suspend fun deleteTipDatabase(tipId: Int) = appDatabase.tipDao().deleteTipById(tipId)
 
-    fun getDiscountsList() =
-        performGetOperationNew(networkCall = { apiHelperNew.getDiscountsList() })
+    fun getDiscountsList() = performGetOperation(
+        databaseQuery = { appDatabase.discountDao().allDiscount },
+        networkCall = { apiHelperNew.getDiscountsList() },
+        saveCallResult = { appDatabase.discountDao().addAllDiscount(it.data) })
 
     suspend fun createDiscount(data: CreateDiscountRequestModel) = apiHelperNew.createDiscount(data)
 
     suspend fun updateDiscount(discountId: Int, data: CreateDiscountRequestModel) =
         apiHelperNew.updateDiscount(discountId, data)
 
+    suspend fun discountActive(id: Int, active: Boolean) =
+        apiHelperNew.discountActive(id, active)
+
+    suspend fun discountActiveDatabase(taxId: Int, active: Boolean) =
+        appDatabase.taxDao().activeTax(taxId, active)
+
     suspend fun deleteDiscount(data: Int) = apiHelperNew.deleteDiscount(data)
+
+    suspend fun deleteDiscountDatabase(discountId: Int) =
+        appDatabase.discountDao().deleteDiscountById(discountId)
 
 
 }

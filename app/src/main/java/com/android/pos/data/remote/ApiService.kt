@@ -65,9 +65,6 @@ interface ApiService {
     @GET(SYNC_VENUE_DATA)
     suspend fun syncVenueData(): VenueDataResponse
 
-    @GET(EMPLOYEES)
-    suspend fun employeesList(@Query("location_id") location_id: Int): EmployeeListResponse
-
     @GET(TAXES)
     suspend fun getTaxList(): GetTaxResponse
 
@@ -103,6 +100,12 @@ interface ApiService {
         @Body createTip: CreateTipRequestModel
     ): CreateTipResponse
 
+    @PUT(TAX_ACTIVE)
+    suspend fun tipActive(
+        @Path("id") taxId: Int,
+        @Query("is_active") is_active: Boolean
+    ): CreateTipResponse
+
     @DELETE(TIPS_UPDATE_DELETE)
     suspend fun deleteTip(
         @Path("id") tipId: Int
@@ -118,6 +121,12 @@ interface ApiService {
     suspend fun updateDiscount(
         @Path("id") discountId: Int,
         @Body createDiscount: CreateDiscountRequestModel
+    ): CreateDiscountResponse
+
+    @PUT(TAX_ACTIVE)
+    suspend fun discountActive(
+        @Path("id") taxId: Int,
+        @Query("is_active") is_active: Boolean
     ): CreateDiscountResponse
 
     @DELETE(DISCOUNTS_UPDATE_DELETE)
@@ -160,6 +169,9 @@ interface ApiService {
         @Path("id") taxId: Int,
         @Body createTax: CreateNoteRequest
     ): BaseResponse
+
+    @GET(EMPLOYEES)
+    suspend fun employeesList(@Query("location_id") location_id: Int): EmployeeListResponse
 
     @POST(EMPLOYEES)
     suspend fun createEmployee(@Body createEmployeeRequestModel: CreateEmployeeRequestModel): BaseResponse

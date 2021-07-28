@@ -5,8 +5,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.model.responseModel.GetTipReponse
 import com.android.pos.databinding.ViewTipItemBinding
+import com.android.pos.ui.fragments.settings.tip.TipListViewModel
 
-class TipsListAdapter : RecyclerView.Adapter<TipsListAdapter.MyViewHolder>() {
+class TipsListAdapter(val viewModel: TipListViewModel) : RecyclerView.Adapter<TipsListAdapter.MyViewHolder>() {
 
     private val tipList = ArrayList<GetTipReponse.Data>()
 
@@ -23,6 +24,8 @@ class TipsListAdapter : RecyclerView.Adapter<TipsListAdapter.MyViewHolder>() {
     override fun onBindViewHolder(holder: TipsListAdapter.MyViewHolder, position: Int) {
         val itemBinding = holder.tipItemBinding
         itemBinding.tipModel = tipList[position]
+        itemBinding.viewModel = viewModel
+
 
         itemBinding.executePendingBindings()
     }
@@ -44,7 +47,7 @@ class TipsListAdapter : RecyclerView.Adapter<TipsListAdapter.MyViewHolder>() {
     inner class MyViewHolder(val tipItemBinding: ViewTipItemBinding) :
         RecyclerView.ViewHolder(tipItemBinding.root){
 
-            init {
+           /* init {
 
                 tipItemBinding.imgCheckBox.setOnClickListener {
                     tipList.get(layoutPosition).isChecked =  !tipList.get(layoutPosition).isChecked
@@ -52,6 +55,6 @@ class TipsListAdapter : RecyclerView.Adapter<TipsListAdapter.MyViewHolder>() {
 
                 }
 
-            }
+            }*/
 
     }}
