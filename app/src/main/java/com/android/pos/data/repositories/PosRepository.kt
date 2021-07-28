@@ -102,16 +102,25 @@ class PosRepository @Inject constructor(
         performGetOperationDatabase(databaseQuery = { appDatabase.itemDao().getItemList(catId)!! })
 
 
-    fun getNoteList() =
-        performGetOperationNew(networkCall = { apiHelperNew.getNoteList() })
-
-    suspend fun deleteNote(data: Int) = apiHelperNew.deleteNote(data)
+    fun getNoteList() = performGetOperation(
+        databaseQuery = { appDatabase.notesDao().alllNotes },
+        networkCall = { apiHelperNew.getNoteList() },
+        saveCallResult = { appDatabase.notesDao().addAllNotes(it.data) })
 
     suspend fun createNote(data: CreateNoteRequest) = apiHelperNew.createNote(data)
 
     suspend fun updateNote(taxId: Int, data: CreateNoteRequest) =
         apiHelperNew.updateNote(taxId, data)
 
+    suspend fun noteActive(id: Int, active: Boolean) =
+        apiHelperNew.noteActive(id, active)
+
+    suspend fun noteActiveDatabase(noteId: Int, active: Boolean) =
+        appDatabase.notesDao().activeNote(noteId, active)
+
+    suspend fun deleteNote(data: Int) = apiHelperNew.deleteNote(data)
+
+    suspend fun deleteNoteDatabase(noteId: Int) = appDatabase.notesDao().deleteNotesById(noteId)
 
     fun employeesList(locationId: Int) =
         performGetOperationNew(networkCall = { apiHelperNew.employeesList(locationId) })

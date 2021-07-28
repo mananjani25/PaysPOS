@@ -9,6 +9,10 @@
         <variable
             name="serviceChargeModel"
             type="com.android.pos.data.model.responseModel.GetServiceChargeResponse.Data" />
+
+        <variable
+            name="viewModel"
+            type="com.android.pos.ui.fragments.settings.servicecharge.ServiceChargeListViewModel" />
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat
@@ -33,8 +37,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:onClick="@{() -> viewModel.isSerChargeActive(serviceChargeModel)}"
                 android:padding="@dimen/_5sdp"
-                android:src="@{serviceChargeModel.isChecked ? @drawable/ic_check_box_unchecked: @drawable/ic_check_box}" />
+                android:src="@{serviceChargeModel.isEnabled ? @drawable/ic_check_box: @drawable/ic_check_box_unchecked}" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"

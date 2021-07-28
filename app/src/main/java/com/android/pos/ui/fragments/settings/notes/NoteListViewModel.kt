@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.data.model.responseModel.BaseResponse
+import com.android.pos.data.model.responseModel.NoteResponse
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Status
@@ -26,8 +27,57 @@ class NoteListViewModel @Inject constructor(
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
+    private val _notifydata = MutableLiveData<Event<Boolean?>>()
+    val notifydata: LiveData<Event<Boolean?>> = _notifydata
 
     val getTaxList = posRepository.getNoteList()
+
+    fun isNoteActive(noteDataItem: NoteResponse.Data) {
+
+        // _showProgress.value = Event(true)
+
+        viewModelScope.launch {
+            noteDataItem.isActive = !noteDataItem.isActive
+
+            val resource =
+                posRepository.noteActive(noteDataItem.id, noteDataItem.isActive)
+
+            when (resource.status) {
+                Status.SUCCESS -> {
+
+                    //   _showProgress.value = Event(false)
+
+                    resource.data.let {
+                        if (it?.status == 200) {
+                            resource.data?.let { baseResponse ->
+                                posRepository.noteActiveDatabase(
+                                    noteDataItem.id,
+                                    noteDataItem.isActive
+                                )
+                                _notifydata.value = Event(true)
+
+                            }
+                        } else {
+                            _snackbarText.value = Event(resource.message)
+                        }
+
+                    }
+
+                }
+
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+                    //_showProgress.value = Event(false)
+                }
+
+                Status.LOADING -> {
+                    // _showProgress.value = Event(true)
+                }
+            }
+        }
+
+
+    }
 
     fun delete(id: Int) {
         _showProgress.value = Event(true)
@@ -44,6 +94,7 @@ class NoteListViewModel @Inject constructor(
                     resource.data.let {
                         if (it?.status == 200) {
                             resource.data?.let { createTaxResponse ->
+                                posRepository.deleteNoteDatabase(id)
                                 _data.value = Event(createTaxResponse)
                             }
                         } else {

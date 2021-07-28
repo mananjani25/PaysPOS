@@ -7,6 +7,7 @@ import com.android.pos.data.remote.Constants.CATEGORY
 import com.android.pos.data.remote.Constants.CATEGORY_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.CLOCK_OUT
 import com.android.pos.data.remote.Constants.DISCOUNTS
+import com.android.pos.data.remote.Constants.DISCOUNTS_ACTIVE
 import com.android.pos.data.remote.Constants.DISCOUNTS_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.EMPLOYEES
 import com.android.pos.data.remote.Constants.EMPLOYEES_UPDATE_DELETE
@@ -18,15 +19,18 @@ import com.android.pos.data.remote.Constants.ITEM_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.LOGIN_TERMINAL
 import com.android.pos.data.remote.Constants.LOGOUT
 import com.android.pos.data.remote.Constants.NOTES
+import com.android.pos.data.remote.Constants.NOTES_ACTIVE
 import com.android.pos.data.remote.Constants.NOTE_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.REORDER_CATEGORY
 import com.android.pos.data.remote.Constants.SERVICE_CHARGE
+import com.android.pos.data.remote.Constants.SERVICE_CHARGE_ACTIVE
 import com.android.pos.data.remote.Constants.SERVICE_CHARGE_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.SYNC_VENUE_DATA
 import com.android.pos.data.remote.Constants.TAXES
 import com.android.pos.data.remote.Constants.TAX_ACTIVE
 import com.android.pos.data.remote.Constants.TAX_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.TIPS
+import com.android.pos.data.remote.Constants.TIPS_ACTIVE
 import com.android.pos.data.remote.Constants.TIPS_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.USERS_LOG_IN
 import retrofit2.http.*
@@ -100,7 +104,7 @@ interface ApiService {
         @Body createTip: CreateTipRequestModel
     ): CreateTipResponse
 
-    @PUT(TAX_ACTIVE)
+    @PUT(TIPS_ACTIVE)
     suspend fun tipActive(
         @Path("id") taxId: Int,
         @Query("is_active") is_active: Boolean
@@ -123,7 +127,7 @@ interface ApiService {
         @Body createDiscount: CreateDiscountRequestModel
     ): CreateDiscountResponse
 
-    @PUT(TAX_ACTIVE)
+    @PUT(DISCOUNTS_ACTIVE)
     suspend fun discountActive(
         @Path("id") taxId: Int,
         @Query("is_active") is_active: Boolean
@@ -147,6 +151,13 @@ interface ApiService {
         @Body createDiscount: CreateServiceChargeRequestModel
     ): CreateServiceChargeResponse
 
+    @PUT(SERVICE_CHARGE_ACTIVE)
+    suspend fun serviceChargeActive(
+        @Path("id") serviceChargeId: Int,
+        @Query("is_enabled") is_active: Boolean
+    ): CreateServiceChargeResponse
+
+
     @DELETE(SERVICE_CHARGE_UPDATE_DELETE)
     suspend fun deleteServiceCharge(
         @Path("id") discountId: Int
@@ -168,6 +179,12 @@ interface ApiService {
     suspend fun updateNote(
         @Path("id") taxId: Int,
         @Body createTax: CreateNoteRequest
+    ): BaseResponse
+
+    @PUT(NOTES_ACTIVE)
+    suspend fun noteActive(
+        @Path("id") noteId: Int,
+        @Query("is_active") is_active: Boolean
     ): BaseResponse
 
     @GET(EMPLOYEES)

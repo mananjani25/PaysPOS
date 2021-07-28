@@ -32,7 +32,7 @@ class ServiceChargeList : Fragment() {
     private var position: Int = -1
     private lateinit var discountListUpdateDelete: ArrayList<GetServiceChargeResponse.Data>
     private val viewModel by viewModels<ServiceChargeListViewModel>()
-    private var serviceChargeListadapter = ServiceChargeListAdapter()
+    private lateinit var serviceChargeListadapter: ServiceChargeListAdapter
     private lateinit var serviceChargeObject: GetServiceChargeResponse.Data
 
     override fun onCreateView(
@@ -49,6 +49,7 @@ class ServiceChargeList : Fragment() {
         setupSnackbar()
         observeShowProgress()
         deleteServiceCharge()
+        notifyAdapter()
 
         return binding.root
     }
@@ -61,6 +62,7 @@ class ServiceChargeList : Fragment() {
     }
 
     private fun setUpRecyclerView() {
+        serviceChargeListadapter = ServiceChargeListAdapter(viewModel)
         binding.rvServiceCharge.adapter = serviceChargeListadapter
 
         object : SwipeHelper(activity, binding.rvServiceCharge) {
@@ -98,7 +100,7 @@ class ServiceChargeList : Fragment() {
 
                     alert(
                         getString(R.string.app_name),
-                        getString(R.string.delete_tax_message)
+                        getString(R.string.delete_service_charge_message)
                     ) {
                         positiveButton(getString(R.string.tv_delete)) {
                             // Do positive stuff here
@@ -123,7 +125,7 @@ class ServiceChargeList : Fragment() {
                     Status.SUCCESS -> {
                         ProgressUtils.dismissProgressDialog()
                         binding.rvServiceCharge.visibility = View.VISIBLE
-                        resource.data?.let { taxList -> setTaxData(taxList.data) }
+                        resource.data?.let { taxList -> setTaxData(taxList) }
                     }
                     Status.ERROR -> {
                         ProgressUtils.dismissProgressDialog()
@@ -135,6 +137,14 @@ class ServiceChargeList : Fragment() {
                         binding.rvServiceCharge.visibility = View.GONE
                     }
                 }
+            }
+        })
+    }
+
+    private fun notifyAdapter() {
+        viewModel.notifydata.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+                serviceChargeListadapter.notifyDataSetChanged()
             }
         })
     }

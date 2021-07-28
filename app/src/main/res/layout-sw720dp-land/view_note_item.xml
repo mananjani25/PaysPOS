@@ -10,6 +10,10 @@
         <variable
             name="noteModel"
             type="com.android.pos.data.model.responseModel.NoteResponse.Data" />
+
+        <variable
+            name="viewModel"
+            type="com.android.pos.ui.fragments.settings.notes.NoteListViewModel" />
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat
@@ -33,8 +37,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:onClick="@{() -> viewModel.isNoteActive(noteModel)}"
                 android:padding="@dimen/_5sdp"
-                android:src="@{noteModel.isChecked ? @drawable/ic_check_box_unchecked: @drawable/ic_check_box}" />
+                android:src="@{noteModel.isActive ? @drawable/ic_check_box: @drawable/ic_check_box_unchecked}" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"

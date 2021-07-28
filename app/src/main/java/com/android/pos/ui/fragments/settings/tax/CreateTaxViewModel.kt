@@ -31,8 +31,8 @@ class CreateTaxViewModel @Inject constructor(
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
 
-    private val _data = MutableLiveData<Event<Boolean?>>()
-    val data: LiveData<Event<Boolean?>> = _data
+    private val _data = MutableLiveData<Event<CreateTaxResponse?>>()
+    val data: LiveData<Event<CreateTaxResponse?>> = _data
 
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
@@ -43,6 +43,8 @@ class CreateTaxViewModel @Inject constructor(
     private var isEdit: Boolean = false
 
     private var enableTaxViewModel: Boolean = false
+    private var customAmountViewModel: Boolean = false
+    private var taxTypeViewModel: String = "Percentage"
     private var itemIdsViewModel = ArrayList<Int>()
 
     private lateinit var taxData: CreateTaxRequestModel
@@ -58,6 +60,8 @@ class CreateTaxViewModel @Inject constructor(
         createTaxDetails.value?.name = taxData.name!!
         createTaxDetails.value?.rate = taxData.rate
         enableTaxViewModel = taxData.isDefault
+        customAmountViewModel = taxData.isCustomAmount
+        taxTypeViewModel = taxData.taxType.toString()
     }
 
     fun setItemIds(itemIds: ArrayList<Int>) {
@@ -70,6 +74,14 @@ class CreateTaxViewModel @Inject constructor(
 
     fun enableTax(enableTax: Boolean) {
         this.enableTaxViewModel = enableTax
+    }
+
+    fun customAmount(customAmount: Boolean) {
+        this.customAmountViewModel = customAmount
+    }
+
+    fun discountType(taxType: String) {
+        this.taxTypeViewModel = taxType
     }
 
     fun submit() {
@@ -89,8 +101,10 @@ class CreateTaxViewModel @Inject constructor(
                 name = value!!.name
                 rate = value.rate
                 isDefault = enableTaxViewModel
+                isCustomAmount = customAmountViewModel
                 itemIds = itemIdsViewModel
                 itemPricing = itemPricingViewModel
+                taxType = taxTypeViewModel
                 locationId = prefProvider.getValueInt(LOCATION_ID, -1)
 
             } /*else {
@@ -119,7 +133,7 @@ class CreateTaxViewModel @Inject constructor(
                             if (logInResponse?.status == 200) {
 
                                 resource.data?.let {
-                                    _data.value = Event(true)
+                                    _data.value = Event(it)
 
                                 }
                             } else {

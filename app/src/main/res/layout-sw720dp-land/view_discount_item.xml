@@ -38,7 +38,7 @@
                 android:layout_gravity="center"
                 android:onClick="@{() -> viewModel.isDiscountActive(discountModel)}"
                 android:padding="@dimen/_5sdp"
-                android:src="@{discountModel.isChecked ? @drawable/ic_check_box: @drawable/ic_check_box_unchecked}" />
+                android:src="@{discountModel.isActive ? @drawable/ic_check_box: @drawable/ic_check_box_unchecked}" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"

@@ -81,6 +81,9 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun updateServiceCharge(serviceChargeId: Int, data: CreateServiceChargeRequestModel) =
         getResult { apiService.updateServiceCharge(serviceChargeId, data) }
 
+    suspend fun serChargeActive(serChargeId: Int, active: Boolean) =
+        getResult { apiService.serviceChargeActive(serChargeId, active) }
+
     suspend fun deleteServiceCharge(serviceChargeId: Int) =
         getResult { apiService.deleteServiceCharge(serviceChargeId) }
 
@@ -95,6 +98,9 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
 
     suspend fun updateNote(taxId: Int, data: CreateNoteRequest) =
         getResult { apiService.updateNote(taxId, data) }
+
+    suspend fun noteActive(tipId: Int, active: Boolean) =
+        getResult { apiService.noteActive(tipId, active) }
 
     suspend fun logOut(data: HashMap<String, String>) = getResult {
         apiService.userLogOut(data)

@@ -26,7 +26,6 @@ class TipsListAdapter(val viewModel: TipListViewModel) : RecyclerView.Adapter<Ti
         itemBinding.tipModel = tipList[position]
         itemBinding.viewModel = viewModel
 
-
         itemBinding.executePendingBindings()
     }
 
