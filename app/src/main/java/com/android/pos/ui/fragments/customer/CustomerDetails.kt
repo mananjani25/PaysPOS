@@ -57,5 +57,11 @@ class CustomerDetails : Fragment() {
             findNavController().navigate(R.id.action_customer_to_addEditCustomer, bundle)
         }
 
+        if (customerModel.phones.size > 0) {
+            binding.txtPhoneNo.setText("${customerModel.phones.get(0).phone_number}")
+        }
+        if (customerModel.addresses.size > 0){
+            binding.txtAddress.setText("${customerModel.addresses.get(0).address1}")
+        }
     }
 }

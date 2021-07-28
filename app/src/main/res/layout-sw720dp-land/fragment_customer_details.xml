@@ -151,7 +151,7 @@
                         android:layout_gravity="center"
                         android:layout_marginTop="@dimen/_3sdp"
                         android:layout_marginBottom="@dimen/_3sdp"
-                        android:text="@{model.phones.get(0).phone_number}"
+                        android:text=""
                         android:textColor="@color/txt_color_blue"
                         android:textSize="@dimen/_7mdpi" />
 
@@ -221,7 +221,7 @@
                         android:layout_gravity="center"
                         android:layout_marginTop="@dimen/_3sdp"
                         android:layout_marginBottom="@dimen/_3sdp"
-                        android:text="@{model.addresses.get(0).address1}"
+
                         android:textColor="@color/txt_color_blue"
                         android:textSize="@dimen/_7mdpi" />
 

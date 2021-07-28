@@ -49,13 +49,14 @@ class AddEditCustomer : Fragment() {
                 binding.edtEmailAdd.setText("${editModel.email}")
             }
 
-            if (editModel.addresses.get(0).country != null) {
+            if (editModel.addresses.size > 0) {
                 binding.edtAddress.setText("${editModel.addresses.get(0).country}")
+
+                binding.edtStreet.setText("${editModel.addresses.get(0).street}")
+                binding.edtCity.setText("${editModel.addresses.get(0).city}")
+                binding.edtState.setText("${editModel.addresses.get(0).state}")
+                binding.edtZip.setText("${editModel.addresses.get(0).postcode}")
             }
-            binding.edtStreet.setText("${editModel.addresses.get(0).street}")
-            binding.edtCity.setText("${editModel.addresses.get(0).city}")
-            binding.edtState.setText("${editModel.addresses.get(0).state}")
-            binding.edtZip.setText("${editModel.addresses.get(0).postcode}")
             binding.edtCompany.setText("company")
             if (editModel.birth_date != null) {
                 binding.edtBirthDay.setText("${editModel.birth_date}")
