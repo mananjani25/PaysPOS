@@ -6,10 +6,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.model.responseModel.CreateTaxResponse
+import com.android.pos.data.model.responseModel.EmployeeListResponse
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
+import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -34,6 +36,11 @@ class TeamListViewModel @Inject constructor(
 
     val employeeData = posRepository.employeesList(locationId)
 
+
+    fun employeeData(): LiveData<Resource<EmployeeListResponse>> {
+        return posRepository.employeesList(locationId)
+    }
+
     fun delete(id: Int) {
         _showProgress.value = Event(true)
 
@@ -51,7 +58,10 @@ class TeamListViewModel @Inject constructor(
                         } else {
                             _snackbarText.value = Event(resource.message)
                         }
+
                     }
+
+
                 }
 
                 Status.ERROR -> {

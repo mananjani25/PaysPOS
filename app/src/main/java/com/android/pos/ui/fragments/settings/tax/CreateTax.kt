@@ -1,6 +1,7 @@
 package com.android.pos.ui.fragments.settings.tax
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,9 +13,11 @@ import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.responseModel.GetTaxResponse
+import com.android.pos.data.remote.Constants.ADD_TAX
 import com.android.pos.data.remote.Constants.CREATE_TAX
 import com.android.pos.data.remote.Constants.DIALOG_KEY
 import com.android.pos.data.remote.Constants.DIALOG_KEY_TAX
+import com.android.pos.data.remote.Constants.INCLUDE_TAX
 import com.android.pos.data.remote.Constants.SETTING_KEY
 import com.android.pos.databinding.DialogCreateNewTaxBinding
 import com.android.pos.utils.ProgressUtils
@@ -30,6 +33,7 @@ class CreateTax : Fragment() {
 
     private val viewModel by viewModels<CreateTaxViewModel>()
     private var itemIds = ArrayList<Int>()
+    private var itemPricing: String = ""
 
     var isEdit: Boolean = false
     private lateinit var taxData: GetTaxResponse.TaxData
@@ -60,6 +64,9 @@ class CreateTax : Fragment() {
 
             binding.swtEnableTax.isChecked = taxData.isDefault
             viewModel.isEditData(isEdit, taxData.id)
+
+            itemPricing = taxData.itemPricing.toString()
+            itemIds = taxData.itemIds as ArrayList<Int>
         }
 
         setupSnackbar()
@@ -70,8 +77,6 @@ class CreateTax : Fragment() {
             if (isEdit) {
                 val bundle = Bundle()
                 bundle.putBoolean("isEdit", true)
-                //itemIds.clear()
-                itemIds = taxData.itemIds
                 bundle.putIntegerArrayList("itemIds", itemIds)
                 findNavController().navigate(R.id.action_newTax_to_itemDialog, bundle)
             } else {
@@ -84,7 +89,8 @@ class CreateTax : Fragment() {
                 //bundle have to sent for item ids
                 val bundle = Bundle()
                 bundle.putBoolean("isEdit", true)
-                bundle.putString("itemPricing", taxData.itemPricing)
+                Log.e("itemPricing", itemPricing.toString())
+                bundle.putString("itemPricing", itemPricing)
                 findNavController().navigate(R.id.action_newTax_to_itemPricingDialog, bundle)
             } else {
                 findNavController().navigate(R.id.action_newTax_to_itemPricingDialog)
@@ -93,8 +99,8 @@ class CreateTax : Fragment() {
         }
 
         val resultDialogKey = getNavigationResultLiveData<ArrayList<TbItem>>(DIALOG_KEY)
-
         resultDialogKey?.observe(viewLifecycleOwner) {
+            itemIds.clear()
             if (it.size > 0) {
                 binding.itemsCount.text = "" + it.size + " Items"
             } else {
@@ -104,19 +110,20 @@ class CreateTax : Fragment() {
             it.forEach {
                 itemIds.add(it.itemId)
             }
+            viewModel.setItemIds(itemIds)
         }
 
         val resultDialogKeyTax = getNavigationResultLiveData<String>(DIALOG_KEY_TAX)
 
-        resultDialogKeyTax?.observe(viewLifecycleOwner) { itemPricing ->
-
-            if (itemPricing == "Add Tax To Item Price") {
+        resultDialogKeyTax?.observe(viewLifecycleOwner) { itemPricing1 ->
+            itemPricing = itemPricing1
+            if (itemPricing == ADD_TAX) {
                 binding.tvItemPricing.text = getString(R.string.tv_add_tax_to_item_price)
-            } else if (itemPricing == "Include Tax in Item Price") {
+            } else if (itemPricing == INCLUDE_TAX) {
                 binding.tvItemPricing.text = getString(R.string.tv_include_tax_in_item_price)
             }
+            viewModel.setItemPricing(itemPricing)
 
-            viewModel.setItemIds(itemIds, itemPricing)
         }
         return binding.root
     }
@@ -133,6 +140,7 @@ class CreateTax : Fragment() {
             navController.popBackStack()
             //findNavController().navigateUp()
         }
+
     }
 
     fun enableTax(isChecked: Boolean) {

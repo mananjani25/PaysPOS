@@ -2,12 +2,10 @@ package com.android.pos.ui.fragments.settings.tax
 
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatTextView
-import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -34,7 +32,7 @@ class TaxesList : Fragment() {
     private lateinit var taxListUpdateDelete: ArrayList<GetTaxResponse.TaxData>
     private lateinit var binding: FragmentTaxesBinding
     private val viewModel by viewModels<TaxListViewModel>()
-    private var taxListadapter = TaxListAdapter()
+    private lateinit var taxListadapter: TaxListAdapter
     private lateinit var taxObject: GetTaxResponse.TaxData
 
     override fun onCreateView(
@@ -50,6 +48,7 @@ class TaxesList : Fragment() {
         setupSnackbar()
         observeShowProgress()
         deleteTax()
+        notifyAdapter()
         return binding.root
     }
 
@@ -63,6 +62,7 @@ class TaxesList : Fragment() {
 
 
     private fun setUpRecyclerView() {
+        taxListadapter = TaxListAdapter(viewModel)
         binding.rvTaxList.adapter = taxListadapter
 
         object : SwipeHelper(activity, binding.rvTaxList) {
@@ -124,7 +124,7 @@ class TaxesList : Fragment() {
                     Status.SUCCESS -> {
                         ProgressUtils.dismissProgressDialog()
                         binding.rvTaxList.visibility = View.VISIBLE
-                        resource.data?.let { taxList -> setTaxData(taxList.data) }
+                        resource.data?.let { taxList -> setTaxData(taxList) }
                     }
                     Status.ERROR -> {
                         ProgressUtils.dismissProgressDialog()
@@ -136,6 +136,14 @@ class TaxesList : Fragment() {
                         binding.rvTaxList.visibility = View.GONE
                     }
                 }
+            }
+        })
+    }
+
+    private fun notifyAdapter() {
+        viewModel.notifydata.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+                taxListadapter.notifyDataSetChanged()
             }
         })
     }
@@ -175,10 +183,10 @@ class TaxesList : Fragment() {
 
 
                 AlertUtils.showCustomAlert(requireActivity(), it.message)
-                taxListUpdateDelete.remove(taxObject)
-                taxListadapter.addTaxes(taxListUpdateDelete)
-                taxListadapter.notifyItemRemoved(position)
-                taxListadapter.notifyItemRangeChanged(position, taxListUpdateDelete.size)
+                /* taxListUpdateDelete.remove(taxObject)
+                 taxListadapter.addTaxes(taxListUpdateDelete)
+                 taxListadapter.notifyItemRemoved(position)
+                 taxListadapter.notifyItemRangeChanged(position, taxListUpdateDelete.size)*/
 
             }
         })

@@ -10,10 +10,8 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
-import com.android.pos.data.model.DiscountListModel
 import com.android.pos.data.model.responseModel.GetTipReponse
 import com.android.pos.databinding.FragmentTipsBinding
-import com.android.pos.ui.adapter.DiscountListAdapter
 import com.android.pos.ui.adapter.TipsListAdapter
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
@@ -31,7 +29,7 @@ class TipsList : Fragment() {
     private var position: Int = -1
     private lateinit var binding: FragmentTipsBinding
     private val viewModel by viewModels<TipListViewModel>()
-    private var tipListadapter = TipsListAdapter()
+    private lateinit var tipListadapter: TipsListAdapter
     private lateinit var tipObject: GetTipReponse.Data
     private lateinit var tipListUpdateDelete: ArrayList<GetTipReponse.Data>
 
@@ -48,6 +46,7 @@ class TipsList : Fragment() {
         setupSnackbar()
         observeShowProgress()
         deleteTip()
+        notifyAdapter()
         return binding.root
     }
 
@@ -60,6 +59,7 @@ class TipsList : Fragment() {
     }
 
     private fun setUpRecyclerView() {
+        tipListadapter = TipsListAdapter(viewModel)
         binding.rvTipList.adapter = tipListadapter
 
         object : SwipeHelper(activity, binding.rvTipList) {
@@ -94,7 +94,7 @@ class TipsList : Fragment() {
 
                     alert(
                         getString(R.string.app_name),
-                        getString(R.string.delete_tax_message)
+                        getString(R.string.delete_tip_message)
                     ) {
                         positiveButton(getString(R.string.tv_delete)) {
                             // Do positive stuff here
@@ -117,7 +117,7 @@ class TipsList : Fragment() {
                     Status.SUCCESS -> {
                         ProgressUtils.dismissProgressDialog()
                         binding.rvTipList.visibility = View.VISIBLE
-                        resource.data?.let { tipList -> setTipData(tipList.data) }
+                        resource.data?.let { tipList -> setTipData(tipList) }
                     }
                     Status.ERROR -> {
                         ProgressUtils.dismissProgressDialog()
@@ -129,6 +129,14 @@ class TipsList : Fragment() {
                         binding.rvTipList.visibility = View.GONE
                     }
                 }
+            }
+        })
+    }
+
+    private fun notifyAdapter() {
+        viewModel.notifydata.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+                tipListadapter.notifyDataSetChanged()
             }
         })
     }
@@ -167,10 +175,10 @@ class TipsList : Fragment() {
                  adapter.notifyDataSetChanged()*/
 
                 AlertUtils.showCustomAlert(requireActivity(), it.message)
-                tipListUpdateDelete.remove(tipObject)
+                /*tipListUpdateDelete.remove(tipObject)
                 tipListadapter.addTips(tipListUpdateDelete)
                 tipListadapter.notifyItemRemoved(position)
-                tipListadapter.notifyItemRangeChanged(position, tipListUpdateDelete.size)
+                tipListadapter.notifyItemRangeChanged(position, tipListUpdateDelete.size)*/
 
             }
         })

@@ -55,14 +55,17 @@ class CreateTaxViewModel @Inject constructor(
     }
 
     fun setTaxData(taxData: GetTaxResponse.TaxData) {
-        createTaxDetails.value?.name = taxData.name
+        createTaxDetails.value?.name = taxData.name!!
         createTaxDetails.value?.rate = taxData.rate
         enableTaxViewModel = taxData.isDefault
     }
 
-    fun setItemIds(itemIds: ArrayList<Int>, itemPricing: String) {
+    fun setItemIds(itemIds: ArrayList<Int>) {
         this.itemIdsViewModel = itemIds
-        this.itemPricingViewModel = itemPricing
+    }
+
+    fun setItemPricing(itemPricing: String?) {
+        this.itemPricingViewModel = itemPricing.toString()
     }
 
     fun enableTax(enableTax: Boolean) {
@@ -75,6 +78,8 @@ class CreateTaxViewModel @Inject constructor(
             _snackbarText.value = Event(R.string.tax_name_validate)
         } else if (TextUtils.isEmpty(value?.rate?.toString()?.trim()) || value?.rate == 0.0) {
             _snackbarText.value = Event(R.string.tax_rate_validate)
+        } else if (TextUtils.isEmpty(itemPricingViewModel.trim())) {
+            _snackbarText.value = Event(R.string.item_pricing_validate)
         } else {
             _showProgress.value = Event(true)
 
@@ -137,4 +142,6 @@ class CreateTaxViewModel @Inject constructor(
         }
 
     }
+
+
 }

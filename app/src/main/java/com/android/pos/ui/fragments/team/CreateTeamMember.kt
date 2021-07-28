@@ -84,7 +84,7 @@ class CreateTeamMember : Fragment() {
         viewModel.data.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
-                    findNavController().navigateUp()
+                    findNavController().popBackStack()
                 }
             }
         })

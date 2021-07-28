@@ -5,11 +5,12 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.model.responseModel.GetTaxResponse
 import com.android.pos.databinding.ViewTaxItemBinding
+import com.android.pos.ui.fragments.settings.tax.TaxListViewModel
 
 
-class TaxListAdapter : RecyclerView.Adapter<TaxListAdapter.MyViewHolder>() {
+class TaxListAdapter(val viewModel: TaxListViewModel) : RecyclerView.Adapter<TaxListAdapter.MyViewHolder>() {
 
-     var taxList = ArrayList<GetTaxResponse.TaxData>()
+    var taxList = ArrayList<GetTaxResponse.TaxData>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaxListAdapter.MyViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -21,11 +22,12 @@ class TaxListAdapter : RecyclerView.Adapter<TaxListAdapter.MyViewHolder>() {
     override fun onBindViewHolder(holder: TaxListAdapter.MyViewHolder, position: Int) {
         val itemBinding = holder.taxItemBinding
         itemBinding.taxModel = taxList[position]
+        itemBinding.viewModel = viewModel
 
         itemBinding.executePendingBindings()
     }
 
-    override fun getItemCount()=taxList.size
+    override fun getItemCount() = taxList.size
 
     fun addTaxes(taxList: List<GetTaxResponse.TaxData>) {
 
@@ -35,10 +37,21 @@ class TaxListAdapter : RecyclerView.Adapter<TaxListAdapter.MyViewHolder>() {
         }
     }
 
-    fun getItem(position:Int): GetTaxResponse.TaxData {
+    fun getItem(position: Int): GetTaxResponse.TaxData {
         return taxList[position]
     }
 
     inner class MyViewHolder(val taxItemBinding: ViewTaxItemBinding) :
-        RecyclerView.ViewHolder(taxItemBinding.root)
+        RecyclerView.ViewHolder(taxItemBinding.root) {
+        /*init {
+
+            taxItemBinding.imgCheckBox.setOnClickListener {
+                taxList.get(layoutPosition).isActive = !taxList.get(layoutPosition).isActive
+
+                notifyDataSetChanged()
+
+            }
+
+        }*/
+    }
 }

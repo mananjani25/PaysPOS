@@ -2,6 +2,8 @@ package com.android.pos.data.model.responseModel
 
 
 import android.os.Parcelable
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
@@ -17,30 +19,32 @@ data class GetTaxResponse(
     val type: String
 ) : Parcelable {
     @Parcelize
+    @Entity(tableName = "TbTax")
     data class TaxData(
         @SerializedName("created_at")
-        val createdAt: String,
+        val createdAt: String?,
+        @PrimaryKey
         @SerializedName("id")
         val id: Int,
         @SerializedName("location_id")
         val locationId: Int,
         @SerializedName("name")
-        val name: String,
+        val name: String?,
         @SerializedName("rate")
         val rate: Double,
         @SerializedName("tax_type")
-        val taxType: String,
+        val taxType: String?,
         @SerializedName("updated_at")
-        val updatedAt: String,
+        val updatedAt: String?,
         @SerializedName("is_active")
-        val isActive: Boolean,
+        var isActive: Boolean = false,
         @SerializedName("is_default")
         val isDefault: Boolean,
         @SerializedName("is_custom_amount")
-        val isCustomAmount: String,
+        val isCustomAmount: String?,
         @SerializedName("item_pricing")
-        val itemPricing: String,
+        var itemPricing: String?,
         @SerializedName("item_ids")
-        val itemIds: ArrayList<Int>
+        val itemIds: List<Int>
     ) : Parcelable
 }

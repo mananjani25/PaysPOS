@@ -9,14 +9,13 @@ import android.widget.Filter
 import android.widget.Filterable
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import com.android.pos.R
 import com.android.pos.data.model.responseModel.EmployeeListResponse
 import com.android.pos.utils.AlertUtils
-import com.android.pos.utils.CustomSwipeLayout.SwipeLayout
 import com.android.pos.utils.callback.CustomCallback
 import com.android.pos.utils.callback.OperationCallback
-import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.getColorCompat
 import com.android.pos.utils.sticky_recycler.SectioningAdapter
 import java.util.*
@@ -26,7 +25,7 @@ import java.util.*
  * first letter of the last name.
  */
 class TeamsAdapter : SectioningAdapter(), Filterable {
-    private var isSelectedPos: Int = -1
+    private var isSelectedPos: Int = 0
     private val locale = Locale.getDefault()
     private lateinit var requireActivity: FragmentActivity
 
@@ -49,54 +48,20 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
     }
 
     inner class ItemViewHolder internal constructor(itemView: View) :
-        SectioningAdapter.ItemViewHolder(itemView), SwipeLayout.OnSwipeItemClickListener {
-        init {
-            (itemView as SwipeLayout).setOnSwipeItemClickListener(this)
-        }
+        SectioningAdapter.ItemViewHolder(itemView) {
+
 
         var personNameTextView: TextView = itemView.findViewById(R.id.txtName)
         var personNumberTextView: TextView = itemView.findViewById(R.id.txtNumber)
         var tvInitialName: TextView = itemView.findViewById(R.id.tvInitialName)
         var layout: LinearLayout = itemView.findViewById(R.id.layout)
 
-
-        //var txtId: TextView = itemView.findViewById(R.id.txtId)
-
-
-        override fun onSwipeItemClick(left: Boolean, p1: Int) {
-
-            requireActivity.alert(
-                requireActivity.getString(R.string.app_name),
-                requireActivity.getString(R.string.delete_tax_message)
-            ) {
-                positiveButton(requireActivity.getString(R.string.tv_delete)) {
-                    // Do positive stuff here
-                    val employee = itemView.tag as EmployeeListResponse.Data.Employee
-                    operationCallback.onItemClickListener(employee)
-                }
-                negativeButton(R.string.tv_cancel) {
-                    // Do negative stuff here
-                }
-            }
-
-            /*AlertUtils.showConfirmAlert(
-                itemView.context, itemView.context.getString(R.string.delete_employee_message)
-            ) { _, _ ->
-
-                val employee = itemView.tag as EmployeeListResponse.Data.Employee
-                operationCallback.onItemClickListener(employee)
-
-            }*/
-
-        }
-
-
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     inner class HeaderViewHolder internal constructor(itemView: View) :
         SectioningAdapter.HeaderViewHolder(itemView) {
         var titleTextView: TextView = itemView.findViewById(R.id.txtHeader)
-
     }
 
     private var people: MutableList<EmployeeListResponse.Data.Employee>? = null
@@ -177,14 +142,16 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
 
     override fun onCreateItemViewHolder(parent: ViewGroup, itemType: Int): ItemViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val v: View = inflater.inflate(R.layout.recycler_view_item, parent, false)
-        return ItemViewHolder(v)
+        val v: View = inflater.inflate(R.layout.view_team_item, parent, false)
+        val holder = ItemViewHolder(v)
+        return holder
     }
 
     override fun onCreateHeaderViewHolder(parent: ViewGroup, headerType: Int): HeaderViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val v: View = inflater.inflate(R.layout.view_team_header, parent, false)
-        return HeaderViewHolder(v)
+        val holder = HeaderViewHolder(v)
+        return holder
     }
 
     @SuppressLint("SetTextI18n")
@@ -213,24 +180,26 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
                 person.firstName?.subSequence(0, 2)
         }
 
-        ivh.itemView.tag = person
+        ivh.itemView.setTag(R.string.tv_order_id, person)
 
-        if (isSelectedPos == ivh.layoutPosition) {
-            ivh.layout.background = ivh.itemView.context.getDrawable(R.color.txt_color_blue)
+        ivh.itemView.tag = "normal";
+
+        if (isSelectedPos == person.id) {
+            ivh.layout.background =
+                ContextCompat.getDrawable(ivh.itemView.context, R.color.txt_color_blue)
             ivh.personNameTextView.setTextColor(ivh.itemView.context.getColorCompat(R.color.white))
             ivh.personNumberTextView.setTextColor(ivh.itemView.context.getColorCompat(R.color.white))
         } else {
             ivh.personNameTextView.setTextColor(ivh.itemView.context.getColorCompat(R.color.txtColor))
             ivh.personNumberTextView.setTextColor(ivh.itemView.context.getColorCompat(R.color.colorB9))
-            ivh.layout.background = ivh.itemView.context.getDrawable(R.color.white)
+            ivh.layout.background = ContextCompat.getDrawable(ivh.itemView.context, R.color.white)
         }
 
 
+        // (ivh.itemView as SwipeLayout).setItemState(SwipeLayout.ITEM_STATE_COLLAPSED, false)
 
-        (ivh.itemView as SwipeLayout).setItemState(SwipeLayout.ITEM_STATE_COLLAPSED, false)
-
-        viewHolder.itemView.setOnClickListener {
-            isSelectedPos = ivh.layoutPosition
+        ivh.itemView.setOnClickListener {
+            isSelectedPos = person.id
             notifyDataSetChanged()
 
             mCallback.onItemClickListener(it, person)
@@ -253,6 +222,7 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
         } else {
             hvh.titleTextView.text = s.alpha
         }
+        hvh.itemView.tag = "header";
     }
 
     private fun capitalize(s: String?): String {
@@ -329,6 +299,10 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
                 notifyAllSectionsDataSetChanged()
             }
         }
+    }
+
+    fun setSelected(selectedPos: Int) {
+        isSelectedPos = selectedPos
     }
 
 

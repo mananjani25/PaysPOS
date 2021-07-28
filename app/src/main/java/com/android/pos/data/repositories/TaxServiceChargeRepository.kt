@@ -6,7 +6,9 @@ import com.android.pos.data.db.IDataManager
 import com.android.pos.data.entities.TbCategory
 import com.android.pos.data.model.requestModel.CreateServiceChargeRequestModel
 import com.android.pos.data.model.requestModel.CreateTaxRequestModel
+import com.android.pos.data.model.responseModel.GetTaxResponse
 import com.android.pos.data.remote.ApiHelper
+import com.android.pos.utils.performGetOperation
 import com.android.pos.utils.performGetOperationNew
 import com.android.pos.utils.statusUtils.Resource
 import javax.inject.Inject
@@ -17,14 +19,25 @@ class TaxServiceChargeRepository @Inject constructor(
 ) {
 
     fun getTaxList() =
-        performGetOperationNew(networkCall = { apiHelperNew.getTaxList() })
+        performGetOperation(
+            databaseQuery = { appDatabase.taxDao().allTax },
+            networkCall = { apiHelperNew.getTaxList() },
+            saveCallResult = { appDatabase.taxDao().addAllTaxes(it.data) })
 
     suspend fun createTax(data: CreateTaxRequestModel) = apiHelperNew.createTax(data)
 
     suspend fun updateTax(taxId: Int, data: CreateTaxRequestModel) =
         apiHelperNew.updateTax(taxId, data)
 
+    suspend fun taxActive(id: Int, active: Boolean) =
+        apiHelperNew.taxActive(id, active)
+
+    suspend fun taxActiveDatabase(taxId: Int, active: Boolean) =
+        appDatabase.taxDao().activeTax(taxId, active)
+
     suspend fun deleteTax(data: Int) = apiHelperNew.deleteTax(data)
+
+    suspend fun deleteTaxDatabase(taxId: Int) = appDatabase.taxDao().deleteTaxById(taxId)
 
     fun getServiceChargeList() =
         performGetOperationNew(networkCall = { apiHelperNew.getServiceChargeList() })

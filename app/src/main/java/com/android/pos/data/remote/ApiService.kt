@@ -26,6 +26,7 @@ import com.android.pos.data.remote.Constants.SERVICE_CHARGE
 import com.android.pos.data.remote.Constants.SERVICE_CHARGE_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.SYNC_VENUE_DATA
 import com.android.pos.data.remote.Constants.TAXES
+import com.android.pos.data.remote.Constants.TAX_ACTIVE
 import com.android.pos.data.remote.Constants.TAX_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.TIPS
 import com.android.pos.data.remote.Constants.TIPS_UPDATE_DELETE
@@ -85,6 +86,12 @@ interface ApiService {
         @Body createTax: CreateTaxRequestModel
     ): CreateTaxResponse
 
+    @PUT(TAX_ACTIVE)
+    suspend fun taxActive(
+        @Path("id") taxId: Int,
+        @Query("is_active") is_active: Boolean
+    ): CreateTaxResponse
+
     @DELETE(TAX_UPDATE_DELETE)
     suspend fun deleteTax(
         @Path("id") taxId: Int,
@@ -102,6 +109,12 @@ interface ApiService {
         @Body createTip: CreateTipRequestModel
     ): CreateTipResponse
 
+    @PUT(TAX_ACTIVE)
+    suspend fun tipActive(
+        @Path("id") taxId: Int,
+        @Query("is_active") is_active: Boolean
+    ): CreateTipResponse
+
     @DELETE(TIPS_UPDATE_DELETE)
     suspend fun deleteTip(
         @Path("id") tipId: Int
@@ -117,6 +130,12 @@ interface ApiService {
     suspend fun updateDiscount(
         @Path("id") discountId: Int,
         @Body createDiscount: CreateDiscountRequestModel
+    ): CreateDiscountResponse
+
+    @PUT(TAX_ACTIVE)
+    suspend fun discountActive(
+        @Path("id") taxId: Int,
+        @Query("is_active") is_active: Boolean
     ): CreateDiscountResponse
 
     @DELETE(DISCOUNTS_UPDATE_DELETE)
@@ -159,6 +178,9 @@ interface ApiService {
         @Path("id") taxId: Int,
         @Body createTax: CreateNoteRequest
     ): BaseResponse
+
+    @GET(EMPLOYEES)
+    suspend fun employeesList(@Query("location_id") location_id: Int): EmployeeListResponse
 
     @POST(EMPLOYEES)
     suspend fun createEmployee(@Body createEmployeeRequestModel: CreateEmployeeRequestModel): BaseResponse

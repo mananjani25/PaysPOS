@@ -77,9 +77,10 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/_10sdp"
-                        android:text="@string/tv_personal_info"
+                        android:text="@string/personal_information"
+                        android:textAllCaps="true"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_8mdpi" />
+                        android:textSize="@dimen/_6mdpi" />
 
                     <TextView
                         android:id="@+id/txtEdit"
@@ -106,7 +107,7 @@
                         android:layout_gravity="center"
                         android:text="@string/name"
                         android:textColor="@color/colorB9"
-                        android:textSize="@dimen/_7mdpi" />
+                        android:textSize="@dimen/_6mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtFirstName"
@@ -140,7 +141,7 @@
                         android:layout_gravity="center"
                         android:text="Phone"
                         android:textColor="@color/colorB9"
-                        android:textSize="@dimen/_7mdpi" />
+                        android:textSize="@dimen/_6mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtPhoneNo"
@@ -174,7 +175,7 @@
                         android:layout_gravity="center"
                         android:text="Email"
                         android:textColor="@color/colorB9"
-                        android:textSize="@dimen/_7mdpi" />
+                        android:textSize="@dimen/_6mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtEmail"
@@ -210,7 +211,7 @@
                         android:layout_gravity="center"
                         android:text="Address"
                         android:textColor="@color/colorB9"
-                        android:textSize="@dimen/_7mdpi" />
+                        android:textSize="@dimen/_6mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtAddress"
@@ -244,7 +245,7 @@
                         android:layout_gravity="center"
                         android:text="Company"
                         android:textColor="@color/colorB9"
-                        android:textSize="@dimen/_7mdpi" />
+                        android:textSize="@dimen/_6mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtCompanyName"
@@ -278,7 +279,7 @@
                         android:layout_gravity="center"
                         android:text="Birthday"
                         android:textColor="@color/colorB9"
-                        android:textSize="@dimen/_7mdpi" />
+                        android:textSize="@dimen/_6mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtBirthDate"

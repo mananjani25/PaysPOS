@@ -349,7 +349,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:text="@string/tv_all_items"
+                        android:text=""
                         android:textColor="@color/cool_grey"
                         android:textSize="@dimen/_6mdpi" />
 

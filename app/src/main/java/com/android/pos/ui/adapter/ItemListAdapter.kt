@@ -96,7 +96,7 @@ class ItemListAdapter(private val isChoose: Boolean) :
     }
 
     fun selectedItemFromEdit(itemIds: ArrayList<Int>) {
-
+        selectedItemList.clear()
         filterList.forEach { TbItem ->
             itemIds.forEach {
                 if (TbItem.itemId == it) {
