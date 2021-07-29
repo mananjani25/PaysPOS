@@ -283,6 +283,7 @@
     <string name="last_name_validate">Please Enter Last Name</string>
     <string name="tv_delete">Delete</string>
     <string name="symbole">$</string>
+    <string name="percentage_symbol">%</string>
     <string name="format">%.2f</string>
 
     <string name="horizontal">Horizontal</string>

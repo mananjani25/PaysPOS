@@ -41,6 +41,7 @@ class CreateDiscount : Fragment() {
 
 
         isEdit = arguments?.getBoolean("isEdit")!!
+        binding.tvSymbolPer.visibility = View.VISIBLE
 
         if (isEdit) {
             discountData = arguments?.getParcelable("discountObject")!!
@@ -50,9 +51,13 @@ class CreateDiscount : Fragment() {
             if (discountData.discountType == getString(R.string.disc_percentage)) {
                 binding.swtDiscountType.isChecked = true
                 binding.swtDiscountType.text = getString(R.string.disc_percentage)
+                binding.tvSymbolPer.visibility = View.VISIBLE
+                binding.tvSymbolDollar.visibility = View.GONE
             } else {
                 binding.swtDiscountType.isChecked = false
                 binding.swtDiscountType.text = getString(R.string.disc_amount)
+                binding.tvSymbolDollar.visibility = View.VISIBLE
+                binding.tvSymbolPer.visibility = View.GONE
             }
 
             viewModel.isEditData(isEdit, discountData.id)
@@ -98,9 +103,13 @@ class CreateDiscount : Fragment() {
         if (isChecked) {
             binding.swtDiscountType.text = getString(R.string.disc_percentage)
             viewModel.discountType(getString(R.string.disc_percentage))
+            binding.tvSymbolPer.visibility = View.VISIBLE
+            binding.tvSymbolDollar.visibility = View.GONE
         } else {
             binding.swtDiscountType.text = getString(R.string.disc_amount)
             viewModel.discountType(getString(R.string.disc_amount))
+            binding.tvSymbolDollar.visibility = View.VISIBLE
+            binding.tvSymbolPer.visibility = View.GONE
         }
     }
 

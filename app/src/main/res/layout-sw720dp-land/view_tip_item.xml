@@ -63,7 +63,7 @@
                 android:layout_marginStart="@dimen/_5sdp"
                 android:gravity="start"
                 android:padding="@dimen/_5sdp"
-                android:text="@{``+tipModel.rate}"
+                android:text="@{String.format(@string/format,tipModel.rate)+``+@string/percentage_symbol}"
                 android:textColor="@color/color96"
                 android:textSize="@dimen/_6mdpi" />
 
