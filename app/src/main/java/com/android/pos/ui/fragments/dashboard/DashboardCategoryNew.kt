@@ -6,14 +6,10 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
-import android.os.Build
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
 import android.view.*
 import android.widget.*
-import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -21,11 +17,13 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.pos.R
+import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.CategoryWithInventory
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.CategorySearchData
 import com.android.pos.data.model.CategoryTabModel
 import com.android.pos.data.model.responseModel.VenueDataResponse
+import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.HORIZONTAL
 import com.android.pos.data.remote.Constants.IS_CLOCKOUT
 import com.android.pos.data.remote.Constants.VERTICAL
@@ -44,7 +42,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class DashboardCategoryNew : Fragment() {
+class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList {
+    private var cartList: List<CartModel>? = null
     private lateinit var binding: FragmentDashboardCategoryNewBinding
     private val TAG = "DashboardCategoryNew"
 
@@ -103,7 +102,17 @@ class DashboardCategoryNew : Fragment() {
         configureDrawer()
         onClick()
         //searchItem()
+        getCartList()
 
+    }
+
+    private fun getCartList() {
+
+        viewModel.mAllWords.observe(
+            requireActivity(), {
+                cartList = it
+            }
+        )
     }
 
     /*private fun searchItem() {
@@ -586,17 +595,7 @@ class DashboardCategoryNew : Fragment() {
 
                                     searchCategory()
                                     binding.rvPagerCategory.adapter =
-                                        CategoryItemAdapter1(requireContext(), itemList1, object :
-                                            CategoryItemAdapter1.CategoryItemList {
-                                            override fun onClick() {
-
-                                            }
-
-                                            override fun onClickedCreateItem() {
-                                                findNavController().navigate(R.id.action_dashboardCategoryNew_to_createItem)
-                                            }
-
-                                        })
+                                        CategoryItemAdapter1(requireContext(), itemList1, this)
                                 }
                             }
 
@@ -610,139 +609,6 @@ class DashboardCategoryNew : Fragment() {
                 }
             })
 
-
-//        viewModel.venueData.observe(viewLifecycleOwner, {
-//            it?.let { resource ->
-//                when (resource.status) {
-//                    Status.SUCCESS -> {
-//
-//                        ProgressUtils.dismissProgressDialog()
-//
-//                        resource.data?.let { category ->
-//
-//                            categoryList = category.data.categories.toMutableList()
-//
-//                            tabList.clear()
-//                            for (i in 0 until categoryList.size) {
-//
-//                                if (i == 0) {
-//                                    tabList.add(
-//                                        CategoryTabModel(
-//                                            0,
-//                                            categoryList.get(i).name,
-//                                            true,
-//                                            0
-//                                        )
-//                                    )
-//                                } else {
-//                                    tabList.add(
-//                                        CategoryTabModel(
-//                                            0,
-//                                            categoryList.get(i).name,
-//                                            false,
-//                                            0
-//                                        )
-//                                    )
-//                                }
-//                            }
-//                            if (categoryList.isNotEmpty()) {
-//                                categoryList.forEach {
-//                                    categoryTabsList.add(it.name)
-//
-//                                    binding.rvTabLayout.adapter = CategoryTabAdapter(
-//                                        requireContext(),
-//                                        tabList,
-//                                        object : CategoryTabAdapter.TabListner {
-//                                            override fun onTabSelected(pos: Int) {
-//                                                Log.e("CatTab", "CatTab $pos")
-//                                                val listCategories =
-//                                                    (binding.rvPagerCategory.adapter as CategoryItemAdapter).list
-//                                                listCategories.clear()
-//                                                listCategories.add(
-//                                                    0,
-//                                                    VenueDataResponse.Data.Category.Item(
-//                                                        0,
-//                                                        0,
-//                                                        "",
-//                                                        "",
-//                                                        0.0,
-//                                                        "",
-//                                                        "",
-//                                                        0,
-//                                                        "",
-//                                                        "",
-//                                                        ""
-//                                                    )
-//                                                )
-//
-//                                                Log.e(
-//                                                    TAG,
-//                                                    "categoryListData  ${categoryList.get(pos).items}"
-//                                                )
-//
-//                                                listCategories.addAll(categoryList.get(pos).items)
-//                                                (binding.rvPagerCategory?.adapter as CategoryItemAdapter).list =
-//                                                    listCategories
-//
-//                                                binding.rvPagerCategory?.adapter?.notifyDataSetChanged()
-//
-//
-//                                            }
-//                                        })
-//                                    itemList.clear()
-//                                    itemList.add(
-//                                        0,
-//                                        VenueDataResponse.Data.Category.Item(
-//                                            0,
-//                                            0,
-//                                            "",
-//                                            "",
-//                                            0.0,
-//                                            "",
-//                                            "",
-//                                            0,
-//                                            "",
-//                                            "",
-//                                            ""
-//                                        )
-//                                    )
-//
-//                                    itemList.addAll(categoryList.get(0).items)
-//
-//                                    Log.e("CatList", "${Gson().toJson(categoryList.get(0).items)}")
-//                                    binding.rvPagerCategory.adapter =
-//                                        CategoryItemAdapter(requireContext(), itemList, object :
-//                                            CategoryItemAdapter.CategoryItemList {
-//                                            override fun onClick() {
-//
-//                                            }
-//
-//                                            override fun onClickedCreateItem() {
-//                                                findNavController().navigate(R.id.action_dashboardCategoryNew_to_createItem)
-//                                            }
-//
-//                                        })
-//                                }
-//                            }
-//                        }
-//                    }
-//                    Status.ERROR -> {
-//                        ProgressUtils.dismissProgressDialog()
-//
-//                    }
-//                    Status.LOADING -> {
-//                        try {
-//                            val activity: Activity = requireActivity() as Activity
-//                            if (!activity.isFinishing) {
-//                                ProgressUtils.showProgressDialog(requireActivity())
-//                            }
-//                        } catch (ex: Exception) {
-//                            ex.printStackTrace()
-//                        }
-//                    }
-//                }
-//            }
-//        })
     }
 
 
@@ -865,4 +731,16 @@ class DashboardCategoryNew : Fragment() {
 
 
     }
+
+    override fun onClick(item: TbItem) {
+
+        viewModel.cartLogic(cartList, item)
+
+    }
+
+    override fun onClickedCreateItem() {
+        findNavController().navigate(R.id.action_dashboardCategoryNew_to_createItem)
+    }
+
+
 }

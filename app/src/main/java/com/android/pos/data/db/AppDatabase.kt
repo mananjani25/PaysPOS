@@ -18,7 +18,7 @@ import com.android.pos.data.typeconvert.TypeConvertersIds
 @Database(
     entities = [CharacterModel::class, TbCategory::class, TbItem::class, GetTaxResponse.TaxData::class,
         GetTipReponse.Data::class, GetDiscountResponse.Data::class, NoteResponse.Data::class, GetServiceChargeResponse.Data::class, CartModel::class],
-    version = 2
+    version = 1
 )
 @TypeConverters(TypeConvertersIds::class)
 

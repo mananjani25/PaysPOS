@@ -1,8 +1,10 @@
 package com.android.pos.data.repositories
 
 
+import androidx.lifecycle.LiveData
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.db.IDataManager
+import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.TbCategory
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.requestModel.CreateCategoryRequestModel
@@ -13,6 +15,7 @@ import com.android.pos.data.remote.ApiHelper
 import com.android.pos.utils.performGetOperation
 import com.android.pos.utils.performGetOperationDatabase
 import com.android.pos.utils.performGetOperationNew
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 
@@ -224,5 +227,10 @@ class PosRepository @Inject constructor(
 
     suspend fun reOrderItemCall(id: Int, oldPos: Int, newPos: Int) =
         apiHelperNew.reOrderItemCall(id, oldPos, newPos)
+
+
+    fun getCartList(): LiveData<List<CartModel>> {
+        return appDatabase.cartDao().allItem
+    }
 }
 
