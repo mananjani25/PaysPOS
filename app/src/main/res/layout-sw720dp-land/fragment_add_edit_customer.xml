@@ -4,6 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingDefaultResource">
 
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.android.pos.ui.fragments.customer.AddCustomerViewModel" />
+    </data>
+
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -43,6 +50,7 @@
                 android:layout_weight="0.1"
                 android:background="@color/btnColor"
                 android:gravity="center"
+                android:onClick="@{() -> viewModel.submit()}"
                 android:padding="@dimen/_5sdp"
                 android:text="@string/save"
                 android:textColor="@color/white"
@@ -55,6 +63,7 @@
             android:layout_height="wrap_content">
 
             <LinearLayout
+
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_15sdp"
@@ -66,6 +75,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/_15sdp"
                     android:layout_marginEnd="@dimen/_15sdp"
+                    android:visibility="visible"
                     android:weightSum="2">
 
                     <LinearLayout
@@ -91,7 +101,10 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/_5sdp"
                             android:background="@drawable/background_square_border_grey"
+                            android:imeOptions="actionNext"
+                            android:inputType="textNoSuggestions"
                             android:padding="@dimen/_5sdp"
+                            android:text="@={viewModel.addCustomerDetails.data.first_name}"
                             android:textColor="@color/hintColor"
                             android:textSize="@dimen/_6mdpi" />
                     </LinearLayout>
@@ -119,7 +132,10 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/_5sdp"
                             android:background="@drawable/background_square_border_grey"
+                            android:imeOptions="actionNext"
+                            android:inputType="text"
                             android:padding="@dimen/_5sdp"
+                            android:text="@={viewModel.addCustomerDetails.data.last_name}"
                             android:textColor="@color/hintColor"
                             android:textSize="@dimen/_6mdpi" />
                     </LinearLayout>
@@ -134,7 +150,8 @@
                     android:layout_marginTop="@dimen/_10sdp"
                     android:text="@string/phone"
                     android:textColor="@color/color65"
-                    android:textSize="@dimen/_6mdpi" />
+                    android:textSize="@dimen/_6mdpi"
+                    android:visibility="visible" />
 
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
@@ -143,7 +160,8 @@
                     android:layout_marginTop="@dimen/_5sdp"
                     android:layout_marginEnd="@dimen/_15sdp"
                     android:background="@drawable/background_square_border_grey"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:visibility="visible">
 
                     <EditText
                         android:id="@+id/edtCountry"
@@ -168,10 +186,12 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@null"
+                        android:inputType="number"
                         android:padding="@dimen/_5sdp"
-                        android:hint="(635) 546 8979"
+                        android:text="@={viewModel.phoneNo}"
                         android:textColor="@color/hintColor"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textSize="@dimen/_6mdpi"
+                        app:met_mask="(###) ###-####" />
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -194,9 +214,10 @@
                     android:layout_marginTop="@dimen/_5sdp"
                     android:layout_marginEnd="@dimen/_15sdp"
                     android:background="@drawable/background_square_border_grey"
-                    android:enabled="false"
+                    android:imeOptions="actionNext"
+                    android:inputType="textEmailAddress"
                     android:padding="@dimen/_5sdp"
-                    android:hint="Email Address"
+                    android:text="@={viewModel.addCustomerDetails.data.email}"
                     android:textColor="@color/hintColor"
                     android:textSize="@dimen/_6mdpi" />
 
@@ -226,7 +247,7 @@
                     android:textColor="@color/txt_color_blue"
                     android:textSize="@dimen/_6mdpi" />
 
-                <EditText
+                <AutoCompleteTextView
                     android:id="@+id/edtStreet"
                     style="@style/CustomFontMediumStyle"
                     android:layout_width="match_parent"
@@ -234,9 +255,11 @@
                     android:layout_marginStart="@dimen/_15sdp"
                     android:layout_marginEnd="@dimen/_15sdp"
                     android:background="@drawable/background_square_border_grey"
-                    android:enabled="false"
-                    android:padding="@dimen/_5sdp"
                     android:hint="Street"
+                    android:imeOptions="actionNext"
+                    android:inputType="text"
+                    android:padding="@dimen/_5sdp"
+                    android:text="@{viewModel.address1}"
                     android:textColor="@color/hintColor"
                     android:textSize="@dimen/_6mdpi" />
 
@@ -248,9 +271,8 @@
                     android:layout_marginStart="@dimen/_15sdp"
                     android:layout_marginEnd="@dimen/_15sdp"
                     android:background="@drawable/background_square_border_grey"
-                    android:enabled="false"
                     android:padding="@dimen/_5sdp"
-                    android:hint="Apt/Suite"
+                    android:inputType="textNoSuggestions"
                     android:textColor="@color/hintColor"
                     android:textSize="@dimen/_6mdpi" />
 
@@ -269,10 +291,10 @@
                         android:layout_width="0sp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:text=""
+                        android:inputType="textNoSuggestions"
                         android:background="@drawable/background_square_border_grey"
-                        android:enabled="false"
                         android:padding="@dimen/_5sdp"
-                        android:text="City"
                         android:textColor="@color/hintColor"
                         android:textSize="@dimen/_6mdpi" />
 
@@ -281,12 +303,11 @@
                         style="@style/CustomFontMediumStyle"
                         android:layout_width="0sp"
                         android:layout_height="wrap_content"
-
                         android:layout_weight="1"
+                        android:text=""
+                        android:inputType="textNoSuggestions"
                         android:background="@drawable/background_square_border_grey"
-                        android:enabled="false"
                         android:padding="@dimen/_5sdp"
-                        android:hint="State"
                         android:textColor="@color/hintColor"
                         android:textSize="@dimen/_6mdpi" />
 
@@ -297,9 +318,9 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:background="@drawable/background_square_border_grey"
-                        android:enabled="false"
                         android:padding="@dimen/_5sdp"
-                        android:hint="Zip"
+                        android:text=""
+                        android:inputType="textNoSuggestions"
                         android:textColor="@color/hintColor"
                         android:textSize="@dimen/_6mdpi" />
 
@@ -320,7 +341,8 @@
                     android:padding="@dimen/_5sdp"
                     android:text="United States"
                     android:textColor="@color/txt_color_blue"
-                    android:textSize="@dimen/_6mdpi" />
+                    android:textSize="@dimen/_6mdpi"
+                    android:visibility="gone" />
 
                 <EditText
                     android:id="@+id/edtStreet2"
@@ -334,7 +356,8 @@
                     android:padding="@dimen/_5sdp"
                     android:text="Street"
                     android:textColor="@color/hintColor"
-                    android:textSize="@dimen/_6mdpi" />
+                    android:textSize="@dimen/_6mdpi"
+                    android:visibility="gone" />
 
                 <EditText
                     android:id="@+id/edtSuite2"
@@ -348,7 +371,8 @@
                     android:padding="@dimen/_5sdp"
                     android:text="Apt/Suite"
                     android:textColor="@color/hintColor"
-                    android:textSize="@dimen/_6mdpi" />
+                    android:textSize="@dimen/_6mdpi"
+                    android:visibility="gone" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -356,6 +380,7 @@
                     android:layout_marginStart="@dimen/_15sdp"
                     android:layout_marginEnd="@dimen/_15sdp"
                     android:orientation="horizontal"
+                    android:visibility="gone"
                     android:weightSum="3">
 
 
@@ -367,8 +392,8 @@
                         android:layout_weight="1"
                         android:background="@drawable/background_square_border_grey"
                         android:enabled="false"
-                        android:padding="@dimen/_5sdp"
                         android:hint="City"
+                        android:padding="@dimen/_5sdp"
                         android:textColor="@color/hintColor"
                         android:textSize="@dimen/_6mdpi" />
 
@@ -421,9 +446,11 @@
                     android:layout_marginTop="@dimen/_5sdp"
                     android:layout_marginEnd="@dimen/_15sdp"
                     android:background="@drawable/background_square_border_grey"
-                    android:enabled="false"
-                    android:padding="@dimen/_5sdp"
                     android:hint="Company"
+                    android:imeOptions="actionDone"
+                    android:inputType="text"
+                    android:padding="@dimen/_5sdp"
+                    android:text="@={viewModel.addCustomerDetails.data.company}"
                     android:textColor="@color/hintColor"
                     android:textSize="@dimen/_6mdpi" />
 
@@ -437,7 +464,7 @@
                     android:textColor="@color/color65"
                     android:textSize="@dimen/_6mdpi" />
 
-                <EditText
+                <TextView
                     android:id="@+id/edtBirthDay"
                     style="@style/CustomFontMediumStyle"
                     android:layout_width="match_parent"
@@ -447,9 +474,9 @@
                     android:layout_marginEnd="@dimen/_15sdp"
                     android:layout_marginBottom="@dimen/_15sdp"
                     android:background="@drawable/background_square_border_grey"
-                    android:enabled="false"
+                    android:clickable="true"
                     android:padding="@dimen/_5sdp"
-                    android:hint="Birthday"
+                    android:text=""
                     android:textColor="@color/hintColor"
                     android:textSize="@dimen/_6mdpi" />
 

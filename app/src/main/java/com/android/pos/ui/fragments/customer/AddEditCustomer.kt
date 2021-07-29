@@ -1,20 +1,55 @@
 package com.android.pos.ui.fragments.customer
 
+import `in`.madapps.placesautocomplete.PlaceAPI
+import `in`.madapps.placesautocomplete.adapter.PlacesAutoCompleteAdapter
+import `in`.madapps.placesautocomplete.listener.OnPlacesDetailsListener
+import `in`.madapps.placesautocomplete.model.Place
+import `in`.madapps.placesautocomplete.model.PlaceDetails
+import android.app.DatePickerDialog
+import android.location.Address
+import android.location.Geocoder
+import android.os.Build
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.DatePicker
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.android.pos.R
 import com.android.pos.databinding.FragmentAddEditCustomerBinding
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.extensions.liveSnackBar
+import com.google.android.libraries.places.api.Places
+import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
+import dagger.hilt.android.AndroidEntryPoint
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.util.*
+import com.google.android.libraries.places.api.net.PlacesClient
+import okhttp3.internal.notify
+import okhttp3.internal.notifyAll
 
+
+@AndroidEntryPoint
 class AddEditCustomer : Fragment() {
     private lateinit var binding: FragmentAddEditCustomerBinding
     private var isEdit = false
     private val TAG = "AddEditCustomer"
+    private val viewModel by viewModels<AddCustomerViewModel>()
+    private var currentSelectedDate: Long? = null
+    private lateinit var placesApi: PlaceAPI
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -23,13 +58,39 @@ class AddEditCustomer : Fragment() {
     ): View? {
         binding = FragmentAddEditCustomerBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
+        binding.viewModel = viewModel
+
+        setUpSnackBar()
+        showObserveProgress()
+
         return binding.root
+    }
+
+    private fun showObserveProgress() {
+        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    ProgressUtils.showProgressDialog(requireActivity())
+                } else {
+                    ProgressUtils.dismissProgressDialog()
+                }
+            }
+
+        })
+    }
+
+    private fun setUpSnackBar() {
+        binding.root.liveSnackBar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+
         isEdit = requireArguments().getBoolean("isEdit", false)
         Log.e(TAG, "isEdit  $isEdit")
+
+        searchPlaces()
 
         if (isEdit) {
             binding.txtCustomerType.setText("Edit Customer")
@@ -38,24 +99,24 @@ class AddEditCustomer : Fragment() {
                     "dataModel"
                 )
             Log.e(TAG, "editModel  ${Gson().toJson(editModel)}")
-            binding.edtFName.setText("${editModel?.first_name}")
-            binding.edtLName.setText("${editModel?.last_name}")
-            binding.edtPhoneNo.setText(
-                "${
-                    AlertUtils.usNumberFormat(editModel?.phones?.get(0)!!.phone_number)
-                }"
-            )
+            viewModel.addCustomerDetails.value?.data?.first_name = editModel?.first_name.toString()
+            viewModel.addCustomerDetails.value?.data?.last_name = editModel?.last_name.toString()
+
+            viewModel.phoneNo.value =
+                AlertUtils.usNumberFormat(editModel?.phones?.get(0)!!.phone_number).toString()
             if (editModel.email != null) {
-                binding.edtEmailAdd.setText("${editModel.email}")
+                viewModel.addCustomerDetails.value?.data?.email = editModel?.email
             }
 
             if (editModel.addresses.size > 0) {
                 binding.edtAddress.setText("${editModel.addresses.get(0).country}")
 
-                binding.edtStreet.setText("${editModel.addresses.get(0).street}")
-                binding.edtCity.setText("${editModel.addresses.get(0).city}")
-                binding.edtState.setText("${editModel.addresses.get(0).state}")
-                binding.edtZip.setText("${editModel.addresses.get(0).postcode}")
+                binding.edtStreet.setText(editModel.addresses.get(0).address1)
+                binding.edtSuite.setText(editModel.addresses.get(0).address2)
+                binding.edtCity.setText(editModel.addresses.get(0).city)
+                binding.edtState.setText(editModel.addresses.get(0).state)
+                binding.edtZip.setText(editModel.addresses.get(0).postcode.toString())
+
             }
             binding.edtCompany.setText("company")
             if (editModel.birth_date != null) {
@@ -63,30 +124,137 @@ class AddEditCustomer : Fragment() {
             }
 
 
-            binding.edtEmailAdd.isEnabled = true
-            binding.edtAddress.isEnabled = true
-            binding.edtStreet.isEnabled = true
-            binding.edtCity.isEnabled = true
-            binding.edtState.isEnabled = true
-            binding.edtZip.isEnabled = true
-            binding.edtCompany.isEnabled = true
-            binding.edtBirthDay.isEnabled = false
-
         } else {
             binding.txtCustomerType.setText("New Customer")
-            binding.edtEmailAdd.isEnabled = true
-            binding.edtAddress.isEnabled = true
-            binding.edtStreet.isEnabled = true
-            binding.edtCity.isEnabled = true
-            binding.edtState.isEnabled = true
-            binding.edtZip.isEnabled = true
-            binding.edtCompany.isEnabled = true
-            binding.edtBirthDay.isEnabled = false
+
 
         }
         binding.imgBack.setOnClickListener {
             findNavController().navigateUp()
         }
 
+        binding.edtBirthDay.setOnClickListener {
+            Log.e(TAG, "DatePicker  ")
+            showDatePicker()
+
+        }
+
+        /* binding.edtStreet.addTextChangedListener(object : TextWatcher {
+             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+             }
+
+             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+                     searchPlaces(binding.edtStreet.text.toString())
+
+
+
+             }
+
+             override fun afterTextChanged(s: Editable?) {
+
+             }
+
+         })
+ */
     }
+
+    private fun searchPlaces() {
+        placesApi = PlaceAPI.Builder().apiKey(getString(R.string.api_key)).build(requireActivity())
+        binding.edtStreet.setAdapter(PlacesAutoCompleteAdapter(requireContext(), placesApi))
+        binding.edtStreet.setOnItemClickListener { parent, view, position, id ->
+            val place = parent.getItemAtPosition(position) as Place
+
+            Log.e(TAG, "placeJson:  ${Gson().toJson(place)}")
+            //binding.edtStreet.setText("${place.description}")
+            placesApi.fetchPlaceDetails(place.id, object : OnPlacesDetailsListener {
+                override fun onError(errorMessage: String) {
+
+                }
+
+                override fun onPlaceDetailsFetched(placeDetails: PlaceDetails) {
+                    decodeLocation(placeDetails.lat, placeDetails.lng, placeDetails.name)
+
+                    Log.e(TAG, "placeDetails:  ${Gson().toJson(placeDetails.name)}")
+
+                }
+
+            })
+
+        }
+
+
+    }
+
+    private fun decodeLocation(lat: Double, lng: Double, place: String) {
+        val gcd: Geocoder = Geocoder(requireContext(), Locale.getDefault())
+        var address: List<Address> = gcd.getFromLocation(lat, lng, 1)
+
+        Log.e(TAG, "CountryNAme ${address.get(0).countryName}")
+        if (address.size > 0) {
+
+
+/*
+
+            viewModel.address1.value = place.toString()
+            viewModel.address2.value = place.toString()
+            viewModel.city.value = address.get(0).locality.toString()
+            viewModel.state.value = address.get(0).adminArea.toString()
+            viewModel.pin.value = address.get(0).postalCode.toString()
+*/
+
+            Log.e("Addredd", "adminArea:   ${address.get(0).adminArea}")
+
+            binding.edtStreet.setText(place)
+            viewModel.setAddress1(place)
+            binding.edtSuite.setText(place)
+            viewModel.setAddress2(place)
+            binding.edtCity.setText(address.get(0).locality)
+            viewModel.setCity(address.get(0).locality)
+            binding.edtState.setText(address.get(0).adminArea)
+            viewModel.setState(address.get(0).adminArea)
+            binding.edtZip.setText(address.get(0).postalCode)
+            viewModel.setPinCode(address.get(0).postalCode)
+          //  binding.executePendingBindings()
+
+
+
+            Log.e(TAG, "TextSetted")
+
+
+        }
+
+    }
+
+    private fun showDatePicker() {
+        val c = Calendar.getInstance();
+        val mYear = c.get(Calendar.YEAR);
+        val mMonth = c.get(Calendar.MONTH);
+        val mDay = c.get(Calendar.DAY_OF_MONTH)
+
+        val datePicker: DatePickerDialog =
+            DatePickerDialog(requireContext(), object : DatePickerDialog.OnDateSetListener {
+                override fun onDateSet(
+                    view: DatePicker?,
+                    year: Int,
+                    monthOfYear: Int,
+                    dayOfMonth: Int
+                ) {
+                    viewModel.addCustomerDetails.value?.data?.birth_day = dayOfMonth.toString()
+                    viewModel.addCustomerDetails.value?.data?.birth_month =
+                        (monthOfYear + 1).toString()
+                    viewModel.addCustomerDetails.value?.data?.birthday_year = year.toString()
+
+
+                    binding.edtBirthDay.text = "$dayOfMonth" + "-" + (monthOfYear + 1) + "-" + year
+
+                }
+
+            }, mYear, mMonth, mDay)
+        datePicker.show()
+        Log.e(TAG, "DatePickerInside  ")
+    }
+
+
 }

@@ -109,6 +109,10 @@ dependencies {
     //Masking
     implementation 'com.github.santalu:mask-edittext:1.1.1'
 
+    //Google Places SDK
+    implementation 'com.google.android.libraries.places:places:2.4.0'
+    implementation 'com.android.volley:volley:1.2.0'
+    implementation 'com.github.mukeshsolanki:Google-Places-AutoComplete-EditText:0.0.8'
 
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

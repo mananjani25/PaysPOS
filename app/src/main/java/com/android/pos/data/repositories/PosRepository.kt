@@ -5,10 +5,7 @@ import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.db.IDataManager
 import com.android.pos.data.entities.TbCategory
 import com.android.pos.data.entities.TbItem
-import com.android.pos.data.model.requestModel.CreateCategoryRequestModel
-import com.android.pos.data.model.requestModel.CreateEmployeeRequestModel
-import com.android.pos.data.model.requestModel.CreateItemRequestModel
-import com.android.pos.data.model.requestModel.CreateNoteRequest
+import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.remote.ApiHelper
 import com.android.pos.utils.performGetOperation
 import com.android.pos.utils.performGetOperationDatabase
@@ -154,6 +151,8 @@ class PosRepository @Inject constructor(
     fun customerList() = performGetOperationNew(networkCall = { apiHelperNew.customerList() })
 
     suspend fun createEmployee(data: CreateEmployeeRequestModel) = apiHelperNew.createEmployee(data)
+
+    suspend fun createCustomer(data: CreateCustomerRequestModel) = apiHelperNew.createCustomer(data)
 
     suspend fun updateEmployee(taxId: Int, data: CreateEmployeeRequestModel) =
         apiHelperNew.updateEmployee(taxId, data)

@@ -205,6 +205,9 @@ interface ApiService {
     @POST(EMPLOYEES)
     suspend fun createEmployee(@Body createEmployeeRequestModel: CreateEmployeeRequestModel): BaseResponse
 
+    @POST(CUSTOMERS)
+    suspend fun createCustomer(@Body createCustomerRequestModel: CreateCustomerRequestModel):BaseResponse
+
     @PUT(EMPLOYEES_UPDATE_DELETE)
     suspend fun updateEmployee(
         @Path("id") taxId: Int,

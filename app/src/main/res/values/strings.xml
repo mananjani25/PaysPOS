@@ -26,6 +26,8 @@
     <string name="first_name">First Name</string>
     <string name="last_name">Last Name</string>
     <string name="phone">Phone Number</string>
+    <string name="address_empty_validation">Please Enter Full Address</string>
+    <string name="birth_date_validation">Please Enter Birth Date</string>
 
     <string name="buttonOne">1</string>
     <string name="buttonTwo">2</string>
@@ -281,6 +283,9 @@
 
     <string name="first_name_validate">Please Enter First Name</string>
     <string name="last_name_validate">Please Enter Last Name</string>
+    <string name="phone_no_validate">Please Enter Phone No</string>
+
+    <string name="company_name_validate">Pleae Enter Company Name</string>
     <string name="tv_delete">Delete</string>
     <string name="symbole">$</string>
     <string name="format">%.2f</string>
@@ -307,4 +312,6 @@
     <string name="create_new_customer">Create New Customer</string>
 
     <string name="tv_ok">OK</string>
+
+    <string name="api_key">AIzaSyC1x5a06yKDyurLe3vASM_UCFZc0iT4Jfw</string>
 </resources>
