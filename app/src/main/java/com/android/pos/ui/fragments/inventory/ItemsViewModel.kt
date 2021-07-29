@@ -33,21 +33,25 @@ class ItemsViewModel @Inject constructor(
 
 
     val items = posRepository.getItemsList()
+    val showItemsList = posRepository.unhideItemList()
 
 
     fun _getItems(): LiveData<Resource<List<TbItem?>>> {
         return posRepository.getInventory()
     }
 
-    fun deleteAndHide(id: Int, deleteAndHide: Boolean) {
+    fun deleteAndHide(id: Int, deleteAndHide: Boolean, isHideItemScreen: Boolean) {
         _showProgress.value = Event(true)
 
         viewModelScope.launch {
-            val resource: Resource<BaseResponse> = if (deleteAndHide) {
-                posRepository.itemHide(id, !deleteAndHide)
-            } else {
-                posRepository.deleteItem(id)
-            }
+            val resource =
+                if (isHideItemScreen) {
+                    posRepository.itemHide(id, deleteAndHide)
+                } else if (deleteAndHide) {
+                    posRepository.itemHide(id, !deleteAndHide)
+                } else {
+                    posRepository.deleteItem(id)
+                }
 
 
             when (resource.status) {
@@ -58,8 +62,9 @@ class ItemsViewModel @Inject constructor(
                         if (it?.status == 200) {
                             resource.data?.let { response ->
                                 _data.value = Event(response)
-
-                                if (deleteAndHide) {
+                                if (isHideItemScreen) {
+                                    appDatabase.itemDao().updateShowItem(id)
+                                } else if (deleteAndHide) {
                                     appDatabase.itemDao().update(id)
                                 } else
                                     appDatabase.itemDao().deleteItem(id)

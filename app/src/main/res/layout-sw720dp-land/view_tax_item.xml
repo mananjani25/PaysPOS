@@ -56,6 +56,7 @@
                 android:textSize="@dimen/_6mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvRate"
                 style="@style/CustomFontSemiBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -63,7 +64,6 @@
                 android:layout_marginStart="@dimen/_5sdp"
                 android:gravity="start"
                 android:padding="@dimen/_5sdp"
-                android:text="@{``+taxModel.rate+`%`}"
                 android:textColor="@color/color96"
                 android:textSize="@dimen/_6mdpi" />
 

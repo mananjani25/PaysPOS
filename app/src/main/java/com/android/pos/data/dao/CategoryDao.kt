@@ -21,8 +21,8 @@ interface CategoryDao {
     @Query("select * from TbCategory where TbCategory.active = 1 ORDER BY TbCategory.sort ASC")
     fun all(): LiveData<List<TbCategory>>
 
-    @get:Query("select * from TbCategory where TbCategory.active = 1 ORDER BY TbCategory.sort ASC")
-    val allHideCategory: LiveData<List<TbCategory?>>?
+    @get:Query("select * from TbCategory where TbCategory.active = 0 ORDER BY TbCategory.sort ASC")
+    val unhideCategory: LiveData<List<TbCategory>>
 
     @Query("SELECT * from TbCategory where TbCategory.id  = :id LIMIT 1")
     fun categoryById(id: Int?): TbCategory?

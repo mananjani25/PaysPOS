@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -55,6 +56,7 @@ class CreateTax : Fragment() {
 
 
         isEdit = arguments?.getBoolean("isEdit")!!
+        binding.tvSymbolPer.visibility = View.VISIBLE
 
         if (isEdit) {
             taxData = arguments?.getParcelable("taxObject")!!
@@ -76,15 +78,27 @@ class CreateTax : Fragment() {
             if (taxData.taxType == getString(R.string.disc_percentage)) {
                 binding.swtTaxType.isChecked = true
                 binding.swtTaxType.text = getString(R.string.disc_percentage)
+                binding.tvSymbolPer.visibility = View.VISIBLE
+                binding.tvSymbolDollar.visibility = View.GONE
             } else {
                 binding.swtTaxType.isChecked = false
                 binding.swtTaxType.text = getString(R.string.dollar_amount)
+                binding.tvSymbolDollar.visibility = View.VISIBLE
+                binding.tvSymbolPer.visibility = View.GONE
             }
         }
 
         setupSnackbar()
         observeShowProgress()
         navigate()
+
+        val callback: OnBackPressedCallback =
+            object : OnBackPressedCallback(true /* enabled by default */) {
+                override fun handleOnBackPressed() {
+                    backPressManage()
+                }
+            }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 
         binding.llAllItemsDialog.setOnClickListener {
             val bundle = Bundle()
@@ -149,15 +163,19 @@ class CreateTax : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         view.findViewById<AppCompatImageView>(R.id.imgBack).setOnClickListener {
-            val navController = findNavController()
-            navController.previousBackStackEntry?.savedStateHandle?.set(
-                SETTING_KEY,
-                CREATE_TAX
-            )
-            navController.popBackStack()
+            backPressManage()
             //findNavController().navigateUp()
         }
 
+    }
+
+    private fun backPressManage() {
+        val navController = findNavController()
+        navController.previousBackStackEntry?.savedStateHandle?.set(
+            SETTING_KEY,
+            CREATE_TAX
+        )
+        navController.popBackStack()
     }
 
     fun enableTax(isChecked: Boolean) {
@@ -179,9 +197,13 @@ class CreateTax : Fragment() {
     fun taxType(isChecked: Boolean) {
         if (isChecked) {
             binding.swtTaxType.text = getString(R.string.disc_percentage)
+            binding.tvSymbolPer.visibility = View.VISIBLE
+            binding.tvSymbolDollar.visibility = View.GONE
             viewModel.discountType(getString(R.string.disc_percentage))
         } else {
             binding.swtTaxType.text = getString(R.string.dollar_amount)
+            binding.tvSymbolDollar.visibility = View.VISIBLE
+            binding.tvSymbolPer.visibility = View.GONE
             viewModel.discountType(getString(R.string.dollar_amount))
         }
     }

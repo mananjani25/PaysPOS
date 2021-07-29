@@ -27,7 +27,7 @@ import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class Categories : Fragment() {
+class HideCategoryListing : Fragment() {
     private var isreOrder: Boolean = false
     private lateinit var adapter: CategoriesListAdapter
     private lateinit var binding: FragmentCategoriesBinding
@@ -45,6 +45,7 @@ class Categories : Fragment() {
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_categories, container, false)
         binding.lifecycleOwner = this
+        binding.txtCreateCategory.visibility = View.GONE
         return binding.root
     }
 
@@ -61,17 +62,14 @@ class Categories : Fragment() {
 
     private fun categoriesObserver() {
 
-        viewModel._getCategories().observe(viewLifecycleOwner, {
+        viewModel.unhideCategories.observe(viewLifecycleOwner, {
 
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
                         binding.rvCategoriesList.visibility = View.VISIBLE
                         binding.progressCircular.visibility = View.GONE
-                        it.data?.let { it1 ->
-                            adapter.add(it1)
-                            binding.etSearch.hint = "Search (" + it1.size + ") Categories"
-                        }
+                        it.data?.let { it1 -> adapter.add(it1) }
                     }
                     Status.ERROR -> {
                         binding.rvCategoriesList.visibility = View.GONE
@@ -141,7 +139,7 @@ class Categories : Fragment() {
             ) {
 
                 underlayButtons.add(UnderlayButton(
-                    "Hide",
+                    "UnHide",
                     0,
                     Color.parseColor("#2997cc")
                 ) { pos ->
@@ -149,10 +147,10 @@ class Categories : Fragment() {
 
                     alert(
                         getString(R.string.app_name),
-                        getString(R.string.hide_category_message)
+                        getString(R.string.unhide_category_message)
                     ) {
-                        positiveButton(getString(R.string.deactivate)) {
-                            viewModel.deleteCategory(adapter.getItem(pos).id, true, false)
+                        positiveButton(getString(R.string.activate)) {
+                            viewModel.deleteCategory(adapter.getItem(pos).id, true, true)
                         }
                         negativeButton(R.string.tv_cancel) {
                             // Do negative stuff here
@@ -160,7 +158,7 @@ class Categories : Fragment() {
                     }
 
                 })
-                underlayButtons.add(UnderlayButton(
+                /*underlayButtons.add(UnderlayButton(
                     "Edit",
                     0,
                     Color.parseColor("#2997cc")
@@ -174,9 +172,9 @@ class Categories : Fragment() {
                     )
 
 
-                })
+                })*/
 
-                underlayButtons.add(UnderlayButton(
+                /*underlayButtons.add(UnderlayButton(
                     "Delete",
                     0,
                     Color.parseColor("#FF3C30")
@@ -187,7 +185,7 @@ class Categories : Fragment() {
                         getString(R.string.delete_category_message)
                     ) {
                         positiveButton(getString(R.string.tv_delete)) {
-                            viewModel.deleteCategory(adapter.getItem(pos).id, false, false)
+                            viewModel.deleteCategory(adapter.getItem(pos).id, false)
                         }
                         negativeButton(R.string.tv_cancel) {
                             // Do negative stuff here
@@ -195,7 +193,7 @@ class Categories : Fragment() {
                     }
 
 
-                })
+                })*/
             }
         }
 
