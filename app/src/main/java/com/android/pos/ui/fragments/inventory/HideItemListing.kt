@@ -25,7 +25,7 @@ import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class AllItems : Fragment() {
+class HideItemListing : Fragment() {
 
     private var isreOrder: Boolean = false
     private var deleteAndHide: Boolean = false
@@ -46,6 +46,7 @@ class AllItems : Fragment() {
     ): View? {
         binding = FragmentItemsBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
+        binding.txtCreateItem.visibility = View.GONE
         return binding.root
     }
 
@@ -151,19 +152,19 @@ class AllItems : Fragment() {
             ) {
 
                 underlayButtons.add(UnderlayButton(
-                    "Hide",
+                    "UnHide",
                     0,
                     Color.parseColor("#2997cc")
                 ) { pos ->
 
                     alert(
                         getString(R.string.app_name),
-                        getString(R.string.hide_item_message)
+                        getString(R.string.unhide_item_message)
                     ) {
-                        positiveButton(getString(R.string.deactivate)) {
+                        positiveButton(getString(R.string.activate)) {
                             deleteAndHide = true
                             deleteObj = adapter.getItem(pos)
-                            viewModel.deleteAndHide(deleteObj!!.itemId, deleteAndHide, false)
+                            viewModel.deleteAndHide(deleteObj!!.itemId, deleteAndHide, true)
                         }
                         negativeButton(R.string.tv_cancel) {
                             // Do negative stuff here
@@ -173,24 +174,7 @@ class AllItems : Fragment() {
 
                 })
 
-                underlayButtons.add(UnderlayButton(
-                    "Edit",
-                    0,
-                    Color.parseColor("#2997cc")
-                ) { pos ->
-
-                    val itemObject = adapter.getItem(pos)
-                    val bundle = Bundle()
-                    bundle.putBoolean("isEdit", true)
-                    bundle.putParcelable("itemObject", itemObject)
-
-                    findNavController().navigate(R.id.action_inventory_to_createItem, bundle)
-
-
-                })
-
-
-                underlayButtons.add(UnderlayButton(
+                /*underlayButtons.add(UnderlayButton(
                     "Delete",
                     0,
                     Color.parseColor("#FF3C30")
@@ -205,15 +189,29 @@ class AllItems : Fragment() {
                             deletePos = pos
                             deleteObj = adapter.getItem(pos)
                             //delete API call
-                            viewModel.deleteAndHide(deleteObj!!.itemId, deleteAndHide, false)
+                            viewModel.deleteAndHide(deleteObj!!.itemId, deleteAndHide)
                             //Delete item in database
 //                            viewModel.dbDeleteAndHide(deleteObj!!.itemId, deleteAndHide)
                         }
                     }
 
-                })
+                })*/
+
+                /* underlayButtons.add(UnderlayButton(
+                     "Edit",
+                     0,
+                     Color.parseColor("#2997cc")
+                 ) { pos ->
+
+                     val itemObject = adapter.getItem(pos)
+                     val bundle = Bundle()
+                     bundle.putBoolean("isEdit", true)
+                     bundle.putParcelable("itemObject", itemObject)
+
+                     findNavController().navigate(R.id.action_inventory_to_createItem, bundle)
 
 
+                 })*/
             }
         }
 
@@ -228,17 +226,14 @@ class AllItems : Fragment() {
 
     private fun itemsObserver() {
 
-        viewModel._getItems().observe(viewLifecycleOwner, {
+        viewModel.showItemsList.observe(viewLifecycleOwner, {
 
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
                         binding.rvAllItemList.visibility = View.VISIBLE
                         binding.progressCircular.visibility = View.GONE
-                        it.data?.let { it1 ->
-                            adapter.add(it1 as List<TbItem>)
-                            binding.edtSearch.hint = "Search (" + it1.size + ") Items"
-                        }
+                        it.data?.let { it1 -> adapter.add(it1 as List<TbItem>) }
                     }
                     Status.ERROR -> {
                         binding.rvAllItemList.visibility = View.GONE

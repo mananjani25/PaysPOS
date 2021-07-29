@@ -21,6 +21,7 @@ class CategoriesViewModel @Inject constructor(
 ) : ViewModel() {
 
     val categories = posRepository.getCategoryList()
+    val unhideCategories = posRepository.unhideCategoryList()
 
     fun _getCategories(): LiveData<Resource<List<TbCategory>>> {
         return posRepository.getCategoryList()
@@ -35,15 +36,18 @@ class CategoriesViewModel @Inject constructor(
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
-    fun deleteCategory(catId: Int, isHide: Boolean) {
+    fun deleteCategory(catId: Int, isHide: Boolean, isHideCategoryScreen: Boolean) {
         _showProgress.value = Event(true)
 
         viewModelScope.launch {
 
-            val resource = if (isHide) {
+            val resource = if (isHideCategoryScreen) {
+                posRepository.hideCategoryCall(catId, isHide)
+            } else if (isHide) {
                 posRepository.hideCategoryCall(catId, !isHide)
-            } else
+            } else {
                 posRepository.deleteCategoryCall(catId)
+            }
 
             when (resource.status) {
                 Status.SUCCESS -> {
@@ -54,18 +58,20 @@ class CategoriesViewModel @Inject constructor(
                         if (it?.status == 200) {
                             resource.data?.let { baseResponse ->
                                 _data.value = Event(baseResponse)
-                                if (isHide) {
+                                if (isHideCategoryScreen) {
+                                    posRepository.hideCategory(catId, isHide)
+                                } else if (isHide) {
                                     posRepository.hideCategory(catId, !isHide)
-                                } else
+                                } else {
                                     posRepository.deleteCategory(catId)
+                                }
+
                             }
                         } else {
                             _snackbarText.value = Event(resource.message)
                         }
 
                     }
-
-
                 }
 
                 Status.ERROR -> {

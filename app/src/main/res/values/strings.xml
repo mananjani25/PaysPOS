@@ -84,6 +84,9 @@
 
     <string name="delete_category_message">Are you sure you want to delete category?</string>
     <string name="hide_category_message">Are you sure you want to hide category?</string>
+    <string name="hide_item_message">Are you sure you want to hide item?</string>
+    <string name="unhide_category_message">Are you sure you want to unhide category?</string>
+    <string name="unhide_item_message">Are you sure you want to unhide item?</string>
 
 
     <string name="tv_personal_info">Personal Info</string>
@@ -300,6 +303,7 @@
     <string name="tv_include_tax_in_item_price">Include Tax in Item Price</string>
     <string name="tv_done">Done</string>
     <string name="deactivate">Hide</string>
+    <string name="activate">UnHide</string>
     <string name="edit">Edit</string>
     <string name="personal_information">Personal Information</string>
     <string name="messages">Messages</string>

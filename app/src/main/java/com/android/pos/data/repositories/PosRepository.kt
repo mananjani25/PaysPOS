@@ -175,6 +175,9 @@ class PosRepository @Inject constructor(
     suspend fun itemHide(itemId: Int, active: Boolean) =
         apiHelperNew.hideItem(itemId, active)
 
+    fun unhideItemList() =
+        performGetOperationDatabase(databaseQuery = { appDatabase.itemDao().unhideItem!! })
+
     suspend fun createItem(data: CreateItemRequestModel) = apiHelperNew.createItem(data)
     suspend fun updateItem(id: Int, data: CreateItemRequestModel) =
         apiHelperNew.updateItem(id, data)
@@ -182,6 +185,9 @@ class PosRepository @Inject constructor(
     suspend fun deleteCategoryCall(data: Int) = apiHelperNew.deleteCategoryCall(data)
     suspend fun hideCategoryCall(id: Int, active: Boolean) =
         apiHelperNew.hideCategoryCall(id, active)
+
+    fun unhideCategoryList() =
+        performGetOperationDatabase(databaseQuery = { appDatabase.categoryDao().unhideCategory })
 
 
     suspend fun createCategoryCall(data: CreateCategoryRequestModel) =
