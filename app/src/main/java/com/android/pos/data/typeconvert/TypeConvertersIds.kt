@@ -1,9 +1,6 @@
 package com.android.pos.data.typeconvert
 
 import androidx.room.TypeConverter
-import com.android.pos.data.entities.TaxModel
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 
 object TypeConvertersIds {
     @TypeConverter

@@ -49,15 +49,21 @@ class PosRepository @Inject constructor(
 
                     val items = TbItem().apply {
                         itemId = it.id
-                        categoryId = category.id
-                        categoryName = category.name
                         name = it.name
-                        imageUrl = it.imgUrl
-                        kitchenName = it.kitchenName
+                        cost = it.cost
                         price = it.price
+                        priceType = it.priceType
+                        quantity = it.quantity
+                        kitchenName = it.kitchenName
                         productCode = it.productCode
+                        sku = it.sku
                         isHide = it.active
                         sort = it.sort
+                        imageUrl = it.imgUrl
+                        thumbImageUrl = it.thumpImgUrl
+                        categoryId = category.id
+                        categoryName = category.name
+                        taxes = it.taxes
                     }
 
                     inventoryModelList.add(items)
@@ -107,19 +113,25 @@ class PosRepository @Inject constructor(
 
                 val inventoryModelList = ArrayList<TbItem>()
 
-                it.data.forEach { item ->
+                it.data.forEach {
 
                     val items = TbItem().apply {
-                        itemId = item.id
-                        categoryId = item.categoryId
-                        categoryName = ""
-                        name = item.name
-                        imageUrl = item.imgUrl
-                        kitchenName = item.kitchenName
-                        price = item.price
-                        productCode = item.productCode
-                        isHide = item.active
-                        sort = item.sort
+                        itemId = it.id
+                        name = it.name
+                        cost = it.cost
+                        price = it.price
+                        priceType = it.priceType
+                        quantity = it.quantity
+                        kitchenName = it.kitchenName
+                        productCode = it.productCode
+                        sku = it.sku
+                        isHide = it.active
+                        sort = it.sort
+                        imageUrl = it.imgUrl
+                        thumbImageUrl = it.thumpImgUrl
+                        categoryId = it.categoryId
+                        taxes = it.taxes
+//                        categoryName =
                     }
                     inventoryModelList.add(items)
                 }

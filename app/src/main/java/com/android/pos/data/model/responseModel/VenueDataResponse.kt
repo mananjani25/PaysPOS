@@ -66,7 +66,8 @@ data class VenueDataResponse(
                 @SerializedName("thumb_image_url")
                 val thumpImgUrl: String?,
                 @SerializedName("active")
-                val active: Boolean
+                val active: Boolean,
+                var taxes: List<GetTaxResponse.TaxData>? = null
 
 
             )
