@@ -54,6 +54,7 @@ class TeamListViewModel @Inject constructor(
                             resource.data?.let { createTaxResponse ->
                                 posRepository.deleteEmployeeDatabase(id)
                                 _data.value = Event(createTaxResponse)
+
                             }
                         } else {
                             _snackbarText.value = Event(resource.message)

@@ -91,7 +91,7 @@ class Customer : Fragment() {
                 when (it) {
                     CUSTOMERDETAILS -> {
                         Log.e(TAG, "UpdateLoadList")
-                        //   loadCustomerList()
+                        viewModel.customerList()
 
                     }
 
@@ -102,7 +102,7 @@ class Customer : Fragment() {
     }
 
     private fun loadCustomerList() {
-        viewModel.customerList.observe(viewLifecycleOwner, {
+        viewModel.customerList().observe(viewLifecycleOwner, {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
@@ -282,17 +282,17 @@ class Customer : Fragment() {
         dialog?.show()
     }
 
-    private fun swipeToDelete() {
-
-    }
-
-    fun removeItem(pos:Int){
+    fun removeItem(pos: Int) {
         var customerList = (binding.rvEmployeeList.adapter as CustomerListAdapter).list
         customerList.removeAt(pos)
         binding.rvEmployeeList.removeViewAt(pos)
         (binding.rvEmployeeList.adapter as CustomerListAdapter).notifyItemRemoved(pos)
-        (binding.rvEmployeeList.adapter as CustomerListAdapter).notifyItemRangeChanged(pos,customerList.size)
+        (binding.rvEmployeeList.adapter as CustomerListAdapter).notifyItemRangeChanged(
+            pos,
+            customerList.size
+        )
         (binding.rvEmployeeList.adapter as CustomerListAdapter).notifyDataSetChanged()
+
 
     }
 }

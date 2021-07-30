@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.entities.TbItem
-import com.android.pos.data.model.responseModel.VenueDataResponse
 import com.android.pos.databinding.ViewCreateItemBinding
 import com.android.pos.databinding.ViewDashboardItemBinding
 
@@ -24,7 +23,7 @@ class CategoryItemAdapter1(
 
         init {
             binding.root.setOnClickListener {
-                listner.onClick()
+                list[bindingAdapterPosition]?.let { it1 -> listner.onClick(item = it1) }
             }
         }
     }
@@ -45,14 +44,14 @@ class CategoryItemAdapter1(
         viewType: Int
     ): RecyclerView.ViewHolder {
 
-        if (viewType == 0) {
+        return if (viewType == 0) {
             val binding = ViewCreateItemBinding.inflate(LayoutInflater.from(context), parent, false)
-            return CustomItemHolder(binding)
+            CustomItemHolder(binding)
 
         } else {
             val binding =
                 ViewDashboardItemBinding.inflate(LayoutInflater.from(context), parent, false)
-            return MyViewHolder(binding)
+            MyViewHolder(binding)
         }
     }
 
@@ -71,7 +70,7 @@ class CategoryItemAdapter1(
     }
 
     interface CategoryItemList {
-        fun onClick()
+        fun onClick(item: TbItem)
         fun onClickedCreateItem()
     }
 

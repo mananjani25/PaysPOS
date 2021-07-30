@@ -341,4 +341,12 @@
     <string name="tv_working_hours">Working Hours</string>
     <string name="tv_total_wage">Total Wage</string>
     <string name="tv_action">Action</string>
+    <string name="take_out_order">Take Out Order</string>
+    <string name="add_customer">Add Customer</string>
+    <string name="quantity">Quantity</string>
+    <string name="notes">Notes</string>
+    <string name="add_note">Add Note</string>
+    <string name="remove_item">Remove Item</string>
+    <string name="add_discount">Add Discount</string>
+    <string name="pay">Pay</string>
 </resources>
