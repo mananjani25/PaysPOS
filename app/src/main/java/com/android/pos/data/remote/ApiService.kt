@@ -8,6 +8,7 @@ import com.android.pos.data.remote.Constants.CATEGORY
 import com.android.pos.data.remote.Constants.CATEGORY_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.CLOCK_OUT
 import com.android.pos.data.remote.Constants.CUSTOMERS
+import com.android.pos.data.remote.Constants.CUSTOMER_UPDATE
 import com.android.pos.data.remote.Constants.DISCOUNTS
 import com.android.pos.data.remote.Constants.DISCOUNTS_ACTIVE
 import com.android.pos.data.remote.Constants.DISCOUNTS_UPDATE_DELETE
@@ -236,6 +237,9 @@ interface ApiService {
         @Path("id") id: Int,
         @Body updateItem: CreateItemRequestModel
     ): BaseResponse
+
+    @PUT(CUSTOMER_UPDATE)
+    suspend fun updateCustomer(@Path("id")id:Int,@Body createCustomerRequestModel: CreateCustomerRequestModel):BaseResponse
 
     @DELETE(CATEGORY_UPDATE_DELETE)
     suspend fun deleteCategoryCall(

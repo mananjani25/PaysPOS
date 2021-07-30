@@ -3,7 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingDefaultResource">
+
     <data>
+
         <variable
             name="model"
             type="com.android.pos.data.model.CustomerListResponse.Data" />
@@ -196,7 +198,6 @@
                         android:background="@color/txtColorGray" />
 
                 </LinearLayout>
-
 
 
                 <LinearLayout

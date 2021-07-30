@@ -16,7 +16,7 @@ import com.android.pos.data.remote.Constants.CREATEDISCOUNT
 import com.android.pos.data.remote.Constants.CREATEITEM
 import com.android.pos.data.remote.Constants.CREATEMODIFIER
 import com.android.pos.data.remote.Constants.CREATEOPTION
-import com.android.pos.data.remote.Constants.HIDECATEGORY
+
 import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.databinding.FragmentInventoryBinding
 import com.android.pos.ui.activities.MainActivity

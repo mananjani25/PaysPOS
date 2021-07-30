@@ -154,6 +154,8 @@ class PosRepository @Inject constructor(
 
     suspend fun createCustomer(data: CreateCustomerRequestModel) = apiHelperNew.createCustomer(data)
 
+    suspend fun updateCustomer(id:Int,data:CreateCustomerRequestModel) = apiHelperNew.updateCustomer(id,data)
+
     suspend fun updateEmployee(taxId: Int, data: CreateEmployeeRequestModel) =
         apiHelperNew.updateEmployee(taxId, data)
 
