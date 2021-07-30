@@ -2,6 +2,8 @@ package com.android.pos.data.model.responseModel
 
 
 import android.os.Parcelable
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
 
@@ -16,6 +18,7 @@ data class EmployeeListResponse(
         val employees: List<Employee>
     ) : Parcelable {
         @Parcelize
+        @Entity(tableName = "TbEmployee")
         data class Employee(
             @SerializedName("created_at")
             val createdAt: String,
@@ -23,6 +26,7 @@ data class EmployeeListResponse(
             val email: String,
             @SerializedName("first_name")
             val firstName: String?,
+            @PrimaryKey
             @SerializedName("id")
             val id: Int,
             @SerializedName("is_active")
@@ -36,7 +40,7 @@ data class EmployeeListResponse(
             @SerializedName("loggedin_terminal_id")
             val loggedinTerminalId: Int,
             @SerializedName("name")
-            val name: String,
+            val name: String?,
             @SerializedName("passcode")
             val passcode: String,
             @SerializedName("phone_number")
