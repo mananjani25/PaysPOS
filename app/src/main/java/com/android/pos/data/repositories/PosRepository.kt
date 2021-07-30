@@ -159,16 +159,18 @@ class PosRepository @Inject constructor(
 
     suspend fun createCustomer(data: CreateCustomerRequestModel) = apiHelperNew.createCustomer(data)
 
-    suspend fun updateCustomer(id:Int,data:CreateCustomerRequestModel) = apiHelperNew.updateCustomer(id,data)
+    suspend fun updateCustomer(id: Int, data: CreateCustomerRequestModel) =
+        apiHelperNew.updateCustomer(id, data)
 
-    suspend fun deleteCustomer(id:Int) = apiHelperNew.deleteCustomer(id)
+    suspend fun deleteCustomer(id: Int) = apiHelperNew.deleteCustomer(id)
 
     suspend fun updateEmployee(taxId: Int, data: CreateEmployeeRequestModel) =
         apiHelperNew.updateEmployee(taxId, data)
 
     suspend fun deleteEmployee(data: Int) = apiHelperNew.deleteEmployee(data)
 
-    suspend fun deleteEmployeeDatabase(employeeId: Int) = appDatabase.employeeDao().deleteEmployeeById(employeeId)
+    suspend fun deleteEmployeeDatabase(employeeId: Int) =
+        appDatabase.employeeDao().deleteEmployeeById(employeeId)
 
 
     suspend fun logout(data: HashMap<String, String>) = apiHelperNew.logOut(data)

@@ -50,7 +50,7 @@ class CustomerListViewModel @Inject constructor(
                     resource.data.let {
                         if (it?.status == 200) {
                             resource.data?.let {
-                           //     _data.value = Event(true)
+                           mdata.value = Event(it)
                             }
                         } else {
                             _snackbarText.value = Event(resource.message)
@@ -59,9 +59,12 @@ class CustomerListViewModel @Inject constructor(
 
                 }
                 Status.LOADING ->{
+                    _showProgress.value = Event(true)
 
                 }
                 Status.ERROR ->{
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
 
                 }
 
