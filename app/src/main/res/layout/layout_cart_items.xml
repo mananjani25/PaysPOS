@@ -4,8 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/llCart"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:visibility="gone"
         android:orientation="vertical">
 
         <androidx.appcompat.widget.AppCompatTextView
@@ -96,7 +98,7 @@
                 android:background="@drawable/bg_button_border"
                 android:gravity="center"
                 android:padding="@dimen/_5sdp"
-                android:text="Pay $100.00"
+                android:text="@string/pay"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_6mdpi" />
         </androidx.appcompat.widget.LinearLayoutCompat>

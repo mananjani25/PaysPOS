@@ -327,4 +327,5 @@
     <string name="add_note">Add Note</string>
     <string name="remove_item">Remove Item</string>
     <string name="add_discount">Add Discount</string>
+    <string name="pay">Pay</string>
 </resources>

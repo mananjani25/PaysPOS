@@ -42,51 +42,59 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
         if (cartList != null && cartList.isEmpty()) {
-            val inventoryModelList = ArrayList<TbItem>()
-            val cartModel = CartModel().apply {
-                terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
-                item.itemQuantity = 1
-                inventoryModelList.add(item)
-                items = inventoryModelList
-            }
+            val cartModel = addCartModel(item)
             addCart(cartModel)
         } else {
 
             val list = cartList?.get(0)?.items?.toMutableList()
+            if (list != null && list.isNotEmpty()) {
 
-            if (type == "ADD" || type == "UPDATE") {
-                var index = -1
+                if (type == "ADD" || type == "UPDATE") {
+                    var index = -1
 
-                list?.forEachIndexed { pos, tbItem ->
-                    if (tbItem.itemId == item.itemId) {
-                        index = pos
-                        return@forEachIndexed
+                    list?.forEachIndexed { pos, tbItem ->
+                        if (tbItem.itemId == item.itemId) {
+                            index = pos
+                            return@forEachIndexed
+                        }
                     }
-                }
-                if (index != -1) {
-                    val model = cartList?.get(0)?.items?.get(index)
-                    if (model != null) {
-                        if (type == "UPDATE") {
-                            model.itemQuantity = item.itemQuantity
-                        } else
-                            model.itemQuantity = model.itemQuantity + 1
-                        list?.set(index, model)
+                    if (index != -1) {
+                        val model = cartList?.get(0)?.items?.get(index)
+                        if (model != null) {
+                            if (type == "UPDATE") {
+                                model.itemQuantity = item.itemQuantity
+                            } else
+                                model.itemQuantity = model.itemQuantity + 1
+                            list?.set(index, model)
+                        }
+                    } else {
+                        item.itemQuantity = 1
+                        list?.add(item)
                     }
-                } else {
-                    item.itemQuantity = 1
-                    list?.add(item)
-                }
-            } else if (type == "DELETE") {
+                } else if (type == "DELETE") {
 
-                list?.remove(item)
+                    list.remove(item)
+                }
+                val cartModel = CartModel().apply {
+                    cartId = cartList[0].cartId
+                    items = list
+                }
+                addCart(cartModel)
             }
-            val cartModel = CartModel().apply {
-                cartId = cartList?.get(0)?.cartId!!
-                items = list
-            }
-            addCart(cartModel)
+
 
         }
+    }
+
+    private fun addCartModel(item: TbItem): CartModel {
+        val inventoryModelList = ArrayList<TbItem>()
+        val cartModel = CartModel().apply {
+            terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
+            item.itemQuantity = 1
+            inventoryModelList.add(item)
+            items = inventoryModelList
+        }
+        return cartModel
     }
 
     @SuppressLint("SetTextI18n")

@@ -152,13 +152,19 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         viewModel.mAllWords.observe(
             requireActivity(), {
                 cartList = it
-                if (cartList?.isNotEmpty()!!)
+                if (cartList?.isNotEmpty()!!) {
+                    binding.layoutCart.llCart.visibility = View.VISIBLE
+                    binding.lltakeout.visibility = View.GONE
                     cartAdapter.addCart(cartList?.get(0)?.items)
 
-                viewModel.itemCalculation(
-                    cartList?.get(0)?.items,
-                    binding.layoutCart.txtTotalAmount
-                )
+                    viewModel.itemCalculation(
+                        cartList?.get(0)?.items,
+                        binding.layoutCart.txtTotalAmount
+                    )
+                } else {
+                    binding.lltakeout.visibility = View.VISIBLE
+                    binding.layoutCart.llCart.visibility = View.GONE
+                }
             }
         )
     }

@@ -57,6 +57,7 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/lltakeout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -64,7 +65,7 @@
                 android:paddingTop="@dimen/_10sdp"
                 android:paddingEnd="@dimen/_20sdp"
                 android:paddingBottom="@dimen/_10sdp"
-                android:visibility="gone">
+                android:visibility="visible">
 
                 <TextView
                     android:id="@+id/txtTakeOut"
