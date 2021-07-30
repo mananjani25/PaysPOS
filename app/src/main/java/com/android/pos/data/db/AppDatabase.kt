@@ -6,18 +6,20 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.android.pos.data.dao.*
+import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.TbCategory
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.CharacterModel
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.Constants.DATABASE_NAME
-import com.android.pos.data.typeconvert.TypeConvertersItemIds
 import com.android.pos.data.typeconvert.TypeConvertersIds
 
 
 @Database(
     entities = [CharacterModel::class, TbCategory::class, TbItem::class, GetTaxResponse.TaxData::class,
-        GetTipReponse.Data::class, GetDiscountResponse.Data::class, NoteResponse.Data::class, GetServiceChargeResponse.Data::class, EmployeeListResponse.Data.Employee::class],
+        GetTipReponse.Data::class, GetDiscountResponse.Data::class,
+        NoteResponse.Data::class, GetServiceChargeResponse.Data::class,
+        EmployeeListResponse.Data.Employee::class, CartModel::class],
     version = 2
 )
 @TypeConverters(TypeConvertersIds::class)
@@ -32,6 +34,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun discountDao(): DiscountDao
     abstract fun notesDao(): NotesDao
     abstract fun serviceChargeDao(): ServiceChargeDao
+    abstract fun cartDao(): CartDao
     abstract fun employeeDao(): EmployeeDao
 
     companion object {

@@ -75,4 +75,6 @@
 
     <color name="colorNewBorder">#DBDCE0</color>
     <color name="colorCustomerDialogBorder">#00000073</color>
+    <color name="colorE7">#E6E7E7</color>
+    <color name="color88">#888889</color>
 </resources>
