@@ -100,8 +100,7 @@ class CustomerListAdapter(
                  listner.onCustomerSelect(layoutPosition, filterList.get(layoutPosition))
 
              }*/
-            }
-            catch (e:Exception){
+            } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
@@ -244,5 +243,8 @@ class CustomerListAdapter(
 
     }
 
+    fun getItem(position: Int): com.android.pos.data.model.CustomerListResponse.Data {
+        return filterList[position]
+    }
 
 }
