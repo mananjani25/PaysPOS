@@ -177,7 +177,6 @@ class PosRepository @Inject constructor(
 
 
     override suspend fun abs() {
-
         appDatabase.characterDao().getCharacter(0)
     }
 

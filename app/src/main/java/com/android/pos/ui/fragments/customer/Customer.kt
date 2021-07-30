@@ -91,7 +91,7 @@ class Customer : Fragment() {
                 when (it) {
                     CUSTOMERDETAILS -> {
                         Log.e(TAG, "UpdateLoadList")
-                         viewModel.customerList()
+                        viewModel.customerList()
 
                     }
 
@@ -282,17 +282,17 @@ class Customer : Fragment() {
         dialog?.show()
     }
 
-    private fun swipeToDelete() {
-
-    }
-
-    fun removeItem(pos:Int){
+    fun removeItem(pos: Int) {
         var customerList = (binding.rvEmployeeList.adapter as CustomerListAdapter).list
         customerList.removeAt(pos)
         binding.rvEmployeeList.removeViewAt(pos)
         (binding.rvEmployeeList.adapter as CustomerListAdapter).notifyItemRemoved(pos)
-        (binding.rvEmployeeList.adapter as CustomerListAdapter).notifyItemRangeChanged(pos,customerList.size)
+        (binding.rvEmployeeList.adapter as CustomerListAdapter).notifyItemRangeChanged(
+            pos,
+            customerList.size
+        )
         (binding.rvEmployeeList.adapter as CustomerListAdapter).notifyDataSetChanged()
+
 
     }
 }
