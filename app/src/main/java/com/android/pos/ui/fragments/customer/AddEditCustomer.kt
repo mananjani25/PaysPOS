@@ -22,6 +22,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
+import com.android.pos.data.remote.Constants.CUSTOMERDETAILS
+import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.databinding.FragmentAddEditCustomerBinding
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
@@ -278,10 +280,13 @@ class AddEditCustomer : Fragment() {
 
     private fun navigate() {
 
+        Log.e(TAG,"POPBACKCUSTOMER")
         viewModel.data.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
-                    findNavController().popBackStack()
+                    val navControll = findNavController()
+                    navControll.previousBackStackEntry?.savedStateHandle?.set(KEY,CUSTOMERDETAILS)
+                    navControll.popBackStack()
                 }
             }
         })

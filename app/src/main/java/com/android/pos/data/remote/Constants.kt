@@ -41,6 +41,7 @@ object Constants {
 
     const val DISCOUNTS = "discounts"
     const val DISCOUNTS_UPDATE_DELETE = "discounts/{id}"
+
     const val DISCOUNTS_ACTIVE = "discounts/{id}/active"
 
     const val NOTES = "dynamic_notes"
@@ -61,6 +62,7 @@ object Constants {
     const val HORIZONTAL = "horizontal"
 
     const val KEY = "key"
+    const val CUSTOMERDETAILS = "customer_details"
     const val CREATECATEGORY = "create_category"
     const val CREATEMODIFIER = "create_modifier"
     const val CREATEDISCOUNT = "create_discount"

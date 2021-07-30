@@ -14,15 +14,20 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.model.CustomerDetailModel
 import com.android.pos.data.model.CustomerModel
 import com.android.pos.data.model.responseModel.EmployeeListResponse
+import com.android.pos.data.remote.Constants.CUSTOMERDETAILS
+import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.databinding.FragmentCustomerBinding
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.CustomerListAdapter
 import com.android.pos.ui.fragments.team.TeamListViewModel
 import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.SwipeHelper
+import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.statusUtils.Status
 import com.google.gson.Gson
@@ -60,7 +65,7 @@ class Customer : Fragment() {
 
         dialog?.setContentView(R.layout.dialog_customer)
 
-        binding.lifecycleOwner = this
+        // binding.lifecycleOwner = this
         return binding.root
     }
 
@@ -68,7 +73,6 @@ class Customer : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         configureToolbar()
-        setAdapter()
         //loadFragment()
         searchQuery()
         loadCustomerList()
@@ -80,6 +84,19 @@ class Customer : Fragment() {
             findNavController().navigate(R.id.action_customer_to_addEditCustomer, bundle)
 
         }
+
+        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<String>(KEY)
+            ?.observe(viewLifecycleOwner) {
+                when (it) {
+                    CUSTOMERDETAILS -> {
+                        Log.e(TAG, "UpdateLoadList")
+                        loadCustomerList()
+
+                    }
+
+                }
+
+            }
 
     }
 
@@ -112,6 +129,43 @@ class Customer : Fragment() {
                             })
 
                             binding.rvEmployeeList.adapter = adapter
+                            object : SwipeHelper(activity, binding.rvEmployeeList) {
+                                override fun instantiateUnderlayButton(
+                                    viewHolder: RecyclerView.ViewHolder?,
+                                    underlayButtons: MutableList<UnderlayButton>
+                                ) {
+                                    underlayButtons.add(
+                                        UnderlayButton(
+                                            "Delete",
+                                            0,
+                                            Color.parseColor("#FF3C30")
+                                        ) { pos ->
+
+                                            Log.e(TAG, "UnderLAyButton")
+                                            alert(
+                                                getString(R.string.app_name),
+                                                getString(R.string.delete_customer_message)
+                                            ) {
+                                                positiveButton(getString(R.string.tv_delete)) {
+                                                    // Do positive stuff here
+                                                    Log.e(
+                                                        "Delete",
+                                                        "getDeleteItem  ${adapter.getItem(pos)}"
+                                                    )
+                                                    // discountObject = discountListadapter.getItem(pos)
+                                                    // viewModel.delete(discountListadapter.getItem(pos).id)
+                                                }
+                                                negativeButton(R.string.tv_cancel) {
+                                                    // Do negative stuff here
+                                                }
+                                            }
+
+                                        })
+
+                                }
+
+                            }
+
 
                         }
 
@@ -143,13 +197,15 @@ class Customer : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
 
 
-
                 if (binding.autoSearch.text.trim().isNotEmpty()) {
                     (binding.rvEmployeeList.adapter as CustomerListAdapter).filter.filter(
                         binding.autoSearch.text.trim().toString()
                     )
-                }else{
-                    (binding.rvEmployeeList.adapter as CustomerListAdapter?)?.setList(requireContext(),dynamicCustomerList)
+                } else {
+                    (binding.rvEmployeeList.adapter as CustomerListAdapter?)?.setList(
+                        requireContext(),
+                        dynamicCustomerList
+                    )
                     (binding.rvEmployeeList.adapter as CustomerListAdapter?)?.notifyDataSetChanged()
 
 
@@ -175,65 +231,6 @@ class Customer : Fragment() {
         fm.beginTransaction().replace(binding.frameContainer.id, frag).commit()
     }
 
-    private fun setAdapter() {
-        var listCustomer: ArrayList<CustomerModel> = arrayListOf()
-        listCustomer.add(
-            CustomerModel(
-                0,
-                "DM",
-                "David Miller",
-                "(365) 654 9879 | davidmiller@...",
-                "(365) 654 9879 | davidmiller@...",
-                true
-            )
-        )
-        listCustomer.add(
-            CustomerModel(
-                0,
-                "KS",
-                "Kareena Smith",
-                "(365) 987 5648 | kareenasmit...",
-                "(365) 987 5648 | kareenasmit...",
-                false
-            )
-        )
-        listCustomer.add(
-            CustomerModel(
-                0,
-                "KM",
-                "Krisha Miller",
-                "(365) 897 3214 | krishamiller@...",
-                "(365) 897 3214 | krishamiller@...",
-                false
-            )
-        )
-        listCustomer.add(
-            CustomerModel(
-                0,
-                "RD",
-                "Robert Doe",
-                "(365) 879 6540 | robertdoe@...",
-                "(365) 879 6540 | robertdoe@...",
-                false
-            )
-        )
-
-
-        /* binding.layoutTool.txtSubTitle.setText("${listCustomer.get(0).name}")
-         customerAdapter = CustomerListAdapter(requireContext(), listCustomer, object :
-             CustomerListAdapter.CustomerInteface {
-             override fun onCustomerSelect(pos: Int, model: CustomerModel) {
-                 binding.layoutTool.txtSubTitle.setText("${model.name}")
-
-             }
-
-         })
-
-         customerAdapter.setList(requireContext(), listCustomer)
-         binding.rvEmployeeList.adapter = customerAdapter
- */
-
-    }
 
     private fun configureToolbar() {
         binding.layoutTool.txtTitle.setText("Customers")
@@ -281,5 +278,7 @@ class Customer : Fragment() {
         dialog?.show()
     }
 
+    private fun swipeToDelete() {
 
+    }
 }
