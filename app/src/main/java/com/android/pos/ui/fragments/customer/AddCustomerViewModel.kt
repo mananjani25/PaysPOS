@@ -1,0 +1,224 @@
+package com.android.pos.ui.fragments.customer
+
+import android.text.TextUtils
+import android.text.TextUtils.replace
+import android.util.Log
+import android.util.Patterns
+import androidx.databinding.BaseObservable
+import androidx.databinding.Bindable
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.android.pos.R
+import com.android.pos.data.model.requestModel.CreateCustomerRequestModel
+import com.android.pos.data.model.responseModel.BaseResponse
+import com.android.pos.data.remote.Constants
+import com.android.pos.data.repositories.PosRepository
+import com.android.pos.di.PrefProvider
+import com.android.pos.utils.Event
+import com.android.pos.utils.statusUtils.Resource
+import com.android.pos.utils.statusUtils.Status
+import com.google.gson.Gson
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
+import okhttp3.internal.notify
+import org.w3c.dom.Text
+import java.util.regex.Pattern
+import javax.inject.Inject
+
+@HiltViewModel
+class AddCustomerViewModel @Inject constructor(
+    private val posRepository: PosRepository,
+    private val prefProvider: PrefProvider
+) : ViewModel() {
+    private val TAG = "AddCustomerViewModel"
+    private lateinit var addCustomerData: CreateCustomerRequestModel
+    val locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 0)
+
+    private var customerID: Int = -1
+
+    private var isEdit: Boolean = false
+
+    private val _snackbarText = MutableLiveData<Event<Any?>>()
+    val snackbarText: LiveData<Event<Any?>> = _snackbarText
+
+    private val _data = MutableLiveData<Event<Boolean?>>()
+    val data: LiveData<Event<Boolean?>> = _data
+
+    private val _showProgress = MutableLiveData<Event<Boolean>>()
+    val showProgress: LiveData<Event<Boolean>> = _showProgress
+
+    val addCustomerDetails = MutableLiveData(CreateCustomerRequestModel())
+    val phoneNo = MutableLiveData<String>()
+    var address1 = MutableLiveData<String>()
+    val address2 = MutableLiveData<String>()
+    val city = MutableLiveData<String>()
+    val state = MutableLiveData<String>()
+    var pin = MutableLiveData<String>()
+
+
+     var straddress1:String = ""
+    var straddress2:String=""
+    var strcity:String = ""
+    var strstate = ""
+    var strPin = ""
+
+
+    fun setAddress1(adr: String) {
+        this.straddress1 = adr
+
+    }
+
+    fun setAddress2(str: String) {
+        this.straddress2 = str
+
+    }
+
+    fun setCity(str:String){
+        this.strcity = str
+
+    }
+    fun setState(str:String){
+        this.strstate = str
+
+    }
+    fun setPinCode(str:String){
+        this.strPin = str
+
+    }
+
+    private lateinit var resource: Resource<BaseResponse>
+
+
+    fun isEditData(isEditData: Boolean, id: Int) {
+        this.isEdit = isEditData
+        this.customerID = id
+    }
+
+    fun submit() {
+
+
+        if (phoneNo.value != null) {
+
+            addCustomerDetails.value?.data?.phones_attributes?.add(
+                0,
+                CreateCustomerRequestModel.Customer.Phone(
+                    0,
+                    phone_number =
+                    phoneNo.value.toString().replace(
+                        ("[\\D]").toRegex(),
+                        ""
+                    ),
+                    "true"
+                )
+            )
+        }
+
+        Log.e("Address1", "address1: ${address1.value}")
+        Log.e("Address1", "straddress1: ${straddress1}")
+        if (straddress1.isNotEmpty() && straddress2.isNotEmpty() &&strcity.isNotEmpty() && strstate.isNotEmpty() &&strPin.isNotEmpty()) {
+
+            addCustomerDetails.value?.data?.addresses_attributes?.add(
+                0, CreateCustomerRequestModel.Customer.Addresses(
+                    address1 = straddress1.toString(),
+                    address2 = straddress2,
+                    city = strcity,
+                    state = strstate,
+                    postcode = strPin
+                )
+            )
+
+        }
+
+
+        val value = addCustomerDetails.value
+        if (TextUtils.isEmpty(value?.data?.first_name?.trim())) {
+            _snackbarText.value = Event(R.string.first_name_validate)
+        } else if (TextUtils.isEmpty(value?.data?.last_name?.trim())) {
+            _snackbarText.value = Event(R.string.last_name_validate)
+        } else if (value?.data?.phones_attributes?.size == 0) {
+
+            _snackbarText.value = Event(R.string.phone_no_validate)
+        } else if (TextUtils.isEmpty(value?.data?.email)) {
+            _snackbarText.value = Event(R.string.email_validate)
+        } else if (!Patterns.EMAIL_ADDRESS.matcher(value?.data?.email).matches()) {
+            _snackbarText.value = Event(R.string.valid_email_validate)
+        } else if (value?.data?.addresses_attributes?.size == 0) {
+            _snackbarText.value = Event(R.string.address_empty_validation)
+        } else if (TextUtils.isEmpty(value?.data?.company?.trim())) {
+            _snackbarText.value = Event(R.string.company_name_validate)
+        } else if (TextUtils.isEmpty(value?.data?.birth_day) || TextUtils.isEmpty(value?.data?.birth_month) || TextUtils.isEmpty(
+                value?.data?.birthday_year
+            )
+        ) {
+            _snackbarText.value = Event(R.string.birth_date_validation)
+        } else {
+            _showProgress.value = Event(true)
+            addCustomerData = CreateCustomerRequestModel().apply {
+                if (!isEdit) {
+
+                    Log.e("DaataJson","PassData  ${Gson().toJson(value?.data)}")
+                    data?.first_name = value?.data?.first_name!!
+                    data?.last_name = value?.data?.last_name!!
+
+                    data?.phones_attributes?.addAll(value.data?.phones_attributes!!)
+//                    data?.phones_attributes.add(0,) =
+//                        value.data!!.phones_attributes?.get(0)?.phone_number!!.
+                    data?.email = value.data!!.email
+                    data?.birth_day = value.data!!.birth_day
+                    data?.birth_month = value.data!!.birth_month
+                    data?.birthday_year = value.data!!.birthday_year
+                    data?.company = value.data!!.company
+
+
+                    data?.addresses_attributes?.get(0)?.address1 =
+                        value.data!!.addresses_attributes!!.get(0).address1
+                    data?.addresses_attributes?.get(0)?.address2 =
+                        value.data!!.addresses_attributes!!.get(0).address2
+                    data?.addresses_attributes?.get(0)?.state =
+                        value.data!!.addresses_attributes!!.get(0).state
+                    data?.addresses_attributes?.get(0)?.country =
+                        value.data!!.addresses_attributes!!.get(0).country
+                    data?.addresses_attributes?.get(0)?.postcode =
+                        value.data!!.addresses_attributes!!.get(0).postcode
+
+                    viewModelScope.launch {
+                        resource = posRepository.createCustomer(addCustomerData)
+
+                        when (resource.status) {
+                            Status.SUCCESS -> {
+                                _showProgress.value = Event(false)
+                                resource.data.let {
+                                    if (it?.status == 200) {
+                                        resource.data?.let {
+                                            _data.value = Event(true)
+                                        }
+                                    } else {
+                                        _snackbarText.value = Event(resource.message)
+                                    }
+                                }
+                            }
+                            Status.ERROR -> {
+                                _snackbarText.value = Event(resource.message)
+                                _showProgress.value = Event(false)
+                            }
+                            Status.LOADING -> {
+                                _showProgress.value = Event(true)
+                            }
+
+                        }
+
+                    }
+
+
+                }
+            }
+
+        }
+
+
+    }
+
+
+}

@@ -16,6 +16,7 @@ import com.android.pos.data.remote.Constants.CREATEDISCOUNT
 import com.android.pos.data.remote.Constants.CREATEITEM
 import com.android.pos.data.remote.Constants.CREATEMODIFIER
 import com.android.pos.data.remote.Constants.CREATEOPTION
+import com.android.pos.data.remote.Constants.HIDECATEGORY
 import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.databinding.FragmentInventoryBinding
 import com.android.pos.ui.activities.MainActivity
@@ -70,8 +71,6 @@ class Inventory : Fragment() {
                         changePosition(4)
                         setAdapter(4)
                     }
-
-
                 }
 
             }
@@ -127,6 +126,19 @@ class Inventory : Fragment() {
                 binding.commonToolbar.txtSetItem.visibility = View.VISIBLE
                 binding.commonToolbar.txtSubTitle.text = "Options"
             }
+            5 -> {
+                val hideCategory: Fragment = HideCategoryListing()
+                loadFragment(hideCategory)
+                binding.commonToolbar.txtSetItem.visibility = View.VISIBLE
+                binding.commonToolbar.txtSubTitle.text = "Hidden Categories"
+            }
+
+            6 -> {
+                val hideItem: Fragment = HideItemListing()
+                loadFragment(hideItem)
+                binding.commonToolbar.txtSetItem.visibility = View.VISIBLE
+                binding.commonToolbar.txtSubTitle.text = "Hidden Items"
+            }
         }
 
 
@@ -147,6 +159,8 @@ class Inventory : Fragment() {
                 list.add(InventoryItemModel(0, "Modifiers"))
                 list.add(InventoryItemModel(0, "Discounts"))
                 list.add(InventoryItemModel(0, "Options"))
+                list.add(InventoryItemModel(0, "Hidden Categories"))
+                list.add(InventoryItemModel(0, "Hidden Items"))
             }
             1 -> {
                 list.add(InventoryItemModel(0, "All Items"))
@@ -154,6 +168,8 @@ class Inventory : Fragment() {
                 list.add(InventoryItemModel(0, "Modifiers"))
                 list.add(InventoryItemModel(0, "Discounts"))
                 list.add(InventoryItemModel(0, "Options"))
+                list.add(InventoryItemModel(0, "Hidden Categories"))
+                list.add(InventoryItemModel(0, "Hidden Items"))
 
             }
             2 -> {
@@ -162,6 +178,8 @@ class Inventory : Fragment() {
                 list.add(InventoryItemModel(0, "Modifiers", true))
                 list.add(InventoryItemModel(0, "Discounts"))
                 list.add(InventoryItemModel(0, "Options"))
+                list.add(InventoryItemModel(0, "Hidden Categories"))
+                list.add(InventoryItemModel(0, "Hidden Items"))
 
             }
             3 -> {
@@ -170,6 +188,8 @@ class Inventory : Fragment() {
                 list.add(InventoryItemModel(0, "Modifiers"))
                 list.add(InventoryItemModel(0, "Discounts", true))
                 list.add(InventoryItemModel(0, "Options"))
+                list.add(InventoryItemModel(0, "Hidden Categories"))
+                list.add(InventoryItemModel(0, "Hidden Items"))
 
             }
 
@@ -179,6 +199,30 @@ class Inventory : Fragment() {
                 list.add(InventoryItemModel(0, "Modifiers"))
                 list.add(InventoryItemModel(0, "Discounts"))
                 list.add(InventoryItemModel(0, "Options", true))
+                list.add(InventoryItemModel(0, "Hidden Categories"))
+                list.add(InventoryItemModel(0, "Hidden Items"))
+
+            }
+
+            5 -> {
+                list.add(InventoryItemModel(0, "All Items"))
+                list.add(InventoryItemModel(0, "Categories"))
+                list.add(InventoryItemModel(0, "Modifiers"))
+                list.add(InventoryItemModel(0, "Discounts"))
+                list.add(InventoryItemModel(0, "Options"))
+                list.add(InventoryItemModel(0, "Hidden Categories", true))
+                list.add(InventoryItemModel(0, "Hidden Items"))
+
+            }
+
+            6 -> {
+                list.add(InventoryItemModel(0, "All Items"))
+                list.add(InventoryItemModel(0, "Categories"))
+                list.add(InventoryItemModel(0, "Modifiers"))
+                list.add(InventoryItemModel(0, "Discounts"))
+                list.add(InventoryItemModel(0, "Options"))
+                list.add(InventoryItemModel(0, "Hidden Categories"))
+                list.add(InventoryItemModel(0, "Hidden Items", true))
 
             }
 

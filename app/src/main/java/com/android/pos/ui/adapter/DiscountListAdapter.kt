@@ -3,6 +3,7 @@ package com.android.pos.ui.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.android.pos.R
 import com.android.pos.data.model.responseModel.GetDiscountResponse
 import com.android.pos.databinding.ViewDiscountItemBinding
 import com.android.pos.ui.fragments.settings.discount.DiscountListViewModel
@@ -26,6 +27,13 @@ class DiscountListAdapter(val viewModel: DiscountListViewModel) :
     override fun onBindViewHolder(holder: DiscountListAdapter.MyViewHolder, position: Int) {
         val itemBinding = holder.discountItemBinding
         itemBinding.discountModel = discountList[position]
+        val context = itemBinding.root.context
+        if (discountList[position].discountType == context.getString(R.string.disc_percentage)) {
+            itemBinding.tvRate.setText("" + String.format(context.getString(R.string.format),discountList[position].percentage) +  " "+context.getString(R.string.percentage_symbol))
+        } else {
+            itemBinding.tvRate.setText(context.getString(R.string.symbole) +  " "+String.format(context.getString(R.string.format),discountList[position].percentage))
+        }
+
         itemBinding.viewModel = viewModel
 
         itemBinding.executePendingBindings()

@@ -60,8 +60,8 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/_5sdp"
                 android:gravity="start"
+                android:id="@+id/tvRate"
                 android:padding="@dimen/_5sdp"
-                android:text="@{``+discountModel.percentage}"
                 android:textColor="@color/color96"
                 android:textSize="@dimen/_6mdpi" />
 

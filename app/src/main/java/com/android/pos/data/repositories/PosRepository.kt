@@ -7,10 +7,7 @@ import com.android.pos.data.db.IDataManager
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.TbCategory
 import com.android.pos.data.entities.TbItem
-import com.android.pos.data.model.requestModel.CreateCategoryRequestModel
-import com.android.pos.data.model.requestModel.CreateEmployeeRequestModel
-import com.android.pos.data.model.requestModel.CreateItemRequestModel
-import com.android.pos.data.model.requestModel.CreateNoteRequest
+import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.remote.ApiHelper
 import com.android.pos.utils.performGetOperation
 import com.android.pos.utils.performGetOperationDatabase
@@ -170,6 +167,8 @@ class PosRepository @Inject constructor(
 
     suspend fun createEmployee(data: CreateEmployeeRequestModel) = apiHelperNew.createEmployee(data)
 
+    suspend fun createCustomer(data: CreateCustomerRequestModel) = apiHelperNew.createCustomer(data)
+
     suspend fun updateEmployee(taxId: Int, data: CreateEmployeeRequestModel) =
         apiHelperNew.updateEmployee(taxId, data)
 
@@ -190,6 +189,9 @@ class PosRepository @Inject constructor(
     suspend fun itemHide(itemId: Int, active: Boolean) =
         apiHelperNew.hideItem(itemId, active)
 
+    fun unhideItemList() =
+        performGetOperationDatabase(databaseQuery = { appDatabase.itemDao().unhideItem!! })
+
     suspend fun createItem(data: CreateItemRequestModel) = apiHelperNew.createItem(data)
     suspend fun updateItem(id: Int, data: CreateItemRequestModel) =
         apiHelperNew.updateItem(id, data)
@@ -197,6 +199,9 @@ class PosRepository @Inject constructor(
     suspend fun deleteCategoryCall(data: Int) = apiHelperNew.deleteCategoryCall(data)
     suspend fun hideCategoryCall(id: Int, active: Boolean) =
         apiHelperNew.hideCategoryCall(id, active)
+
+    fun unhideCategoryList() =
+        performGetOperationDatabase(databaseQuery = { appDatabase.categoryDao().unhideCategory })
 
 
     suspend fun createCategoryCall(data: CreateCategoryRequestModel) =

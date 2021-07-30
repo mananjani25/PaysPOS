@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 data class CreateCustomerRequestModel(
     @SerializedName("customer")
-    var `data`: Customer,
+    var data: Customer? = Customer(),
 ) {
     data class Customer(
         @SerializedName("first_name")
@@ -20,11 +20,11 @@ data class CreateCustomerRequestModel(
         @SerializedName("birthday_year")
         var birthday_year: String = "",
         @SerializedName("email")
-        var email: String,
+        var email: String = "",
         @SerializedName("phones_attributes")
-        var phones_attributes: List<Phone>,
+        var phones_attributes: ArrayList<Phone>?= arrayListOf(),
         @SerializedName("addresses_attributes")
-        var addresses_attributes: List<Addresses>
+        var addresses_attributes: ArrayList<Addresses>? = arrayListOf()
     ) {
         data class Phone(
             @SerializedName("id")
@@ -55,7 +55,7 @@ data class CreateCustomerRequestModel(
             var type_of_address: String = "Shipping",
             @SerializedName("latitude")
             var latitude: Double = 0.0,
-            @SerializedName("longitude")
+            @SerializedName(    "longitude")
             var longitude: Double = 0.0,
             @SerializedName("_destroy")
             var _destroy: String = "true"

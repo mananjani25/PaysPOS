@@ -3,12 +3,14 @@ package com.android.pos.ui.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.android.pos.R
 import com.android.pos.data.model.responseModel.GetTaxResponse
 import com.android.pos.databinding.ViewTaxItemBinding
 import com.android.pos.ui.fragments.settings.tax.TaxListViewModel
 
 
-class TaxListAdapter(val viewModel: TaxListViewModel) : RecyclerView.Adapter<TaxListAdapter.MyViewHolder>() {
+class TaxListAdapter(val viewModel: TaxListViewModel) :
+    RecyclerView.Adapter<TaxListAdapter.MyViewHolder>() {
 
     var taxList = ArrayList<GetTaxResponse.TaxData>()
 
@@ -22,6 +24,16 @@ class TaxListAdapter(val viewModel: TaxListViewModel) : RecyclerView.Adapter<Tax
     override fun onBindViewHolder(holder: TaxListAdapter.MyViewHolder, position: Int) {
         val itemBinding = holder.taxItemBinding
         itemBinding.taxModel = taxList[position]
+        val context = itemBinding.root.context
+        if (taxList[position].taxType == context.getString(R.string.disc_percentage)) {
+            itemBinding.tvRate.text =
+                "" + String.format(context.getString(R.string.format) ,taxList[position].rate) + " "+context.getString(
+                    R.string.percentage_symbol
+                )
+        } else {
+            itemBinding.tvRate.text =
+                context.getString(R.string.symbole) +  " "+String.format(context.getString(R.string.format) , taxList[position].rate)
+        }
         itemBinding.viewModel = viewModel
 
         itemBinding.executePendingBindings()
