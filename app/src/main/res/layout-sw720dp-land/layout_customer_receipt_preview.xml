@@ -7,14 +7,14 @@
     android:orientation="vertical"
     tools:ignore="MissingDefaultResource">
 
-        <androidx.appcompat.widget.AppCompatTextView
-            style="@style/CustomFontSemiBold"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/_5sdp"
-            android:text="@string/tv_customer_receipt_preview"
-            android:textColor="@color/viewTextColor"
-            android:textSize="@dimen/_6mdpi" />
+    <androidx.appcompat.widget.AppCompatTextView
+        style="@style/CustomFontSemiBold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/_5sdp"
+        android:text="@string/tv_customer_receipt_preview"
+        android:textColor="@color/viewTextColor"
+        android:textSize="@dimen/_6mdpi" />
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -148,8 +148,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_margin="@dimen/_5sdp"
-                tools:itemCount="1"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:itemCount="1"
                 tools:listitem="@layout/view_receipt_item_name" />
 
             <LinearLayout

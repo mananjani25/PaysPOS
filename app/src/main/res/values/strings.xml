@@ -320,4 +320,25 @@
     <string name="tv_ok">OK</string>
 
     <string name="api_key">AIzaSyC1x5a06yKDyurLe3vASM_UCFZc0iT4Jfw</string>
+    <string name="tv_team_member_timesheet">Team Member TimeSheet</string>
+    <string name="tv_start_date">Start Date</string>
+    <string name="tv_end_date">End Date</string>
+    <string name="tv_customer">Customer</string>
+    <string name="tv_total_hours">Total Hours</string>
+    <string name="tv_total_wage">Total Wage</string>
+    <string name="tv_mon">Mon</string>
+    <string name="tv_tue">Tue</string>
+    <string name="tv_wed">Wed</string>
+    <string name="tv_thu">Thu</string>
+    <string name="tv_fri">Fri</string>
+    <string name="tv_sat">Sat</string>
+    <string name="tv_sun">Sun</string>
+    <string name="tv_hash">#</string>
+    <string name="tv_clock_in_date_time">Clock In Date/Time</string>
+    <string name="tv_clock_out_date_time">Clock Out Date/Time</string>
+    <string name="tv_wage">Wage</string>
+    <string name="tv_break">Break</string>
+    <string name="tv_working_hours">Working Hours</string>
+    <string name="tv_total_wage">Total Wage</string>
+    <string name="tv_action">Action</string>
 </resources>
