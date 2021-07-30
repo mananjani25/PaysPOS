@@ -171,23 +171,23 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
 
     private fun loadTeams() {
 
-        viewModel.employeeData().observe(viewLifecycleOwner, { it ->
+        viewModel.employeeData().observe(viewLifecycleOwner, {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
                         ProgressUtils.dismissProgressDialog()
 
-                        if (resource.data != null && resource.data.data.employees.isNotEmpty())
+                        if (resource.data != null && resource.data.isNotEmpty())
 
                             adapter.setSelected(selectedPos)
 
                         adapter.setPeople(
-                            resource.data?.data?.employees as MutableList<EmployeeListResponse.Data.Employee>,
+                            resource.data as MutableList<EmployeeListResponse.Data.Employee>,
                             requireActivity()
                         )
 
                         if (selectedPos != -1)
-                            resource.data.data.employees.forEach {
+                            resource.data.forEach {
                                 if (it.id == selectedPos) {
                                     loadTeamDetails(it)
                                     return@forEach

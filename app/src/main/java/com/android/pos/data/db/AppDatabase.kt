@@ -17,8 +17,8 @@ import com.android.pos.data.typeconvert.TypeConvertersIds
 
 @Database(
     entities = [CharacterModel::class, TbCategory::class, TbItem::class, GetTaxResponse.TaxData::class,
-        GetTipReponse.Data::class, GetDiscountResponse.Data::class, NoteResponse.Data::class, GetServiceChargeResponse.Data::class, CartModel::class],
-    version = 1
+        GetTipReponse.Data::class, GetDiscountResponse.Data::class, NoteResponse.Data::class, GetServiceChargeResponse.Data::class, EmployeeListResponse.Data.Employee::class],
+    version = 2
 )
 @TypeConverters(TypeConvertersIds::class)
 
@@ -33,6 +33,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun notesDao(): NotesDao
     abstract fun serviceChargeDao(): ServiceChargeDao
     abstract fun cartDao(): CartDao
+    abstract fun employeeDao(): EmployeeDao
 
     companion object {
         @Volatile

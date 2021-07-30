@@ -8,6 +8,7 @@ import com.android.pos.data.remote.Constants.CATEGORY
 import com.android.pos.data.remote.Constants.CATEGORY_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.CLOCK_OUT
 import com.android.pos.data.remote.Constants.CUSTOMERS
+import com.android.pos.data.remote.Constants.CUSTOMER_UPDATE
 import com.android.pos.data.remote.Constants.DISCOUNTS
 import com.android.pos.data.remote.Constants.DISCOUNTS_ACTIVE
 import com.android.pos.data.remote.Constants.DISCOUNTS_UPDATE_DELETE
@@ -74,11 +75,11 @@ interface ApiService {
     @GET(SYNC_VENUE_DATA)
     suspend fun syncVenueData(): VenueDataResponse
 
-   /* @GET(EMPLOYEES)
-    suspend fun employeesList(@Query("location_id") location_id: Int): EmployeeListResponse
-*/
+    /* @GET(EMPLOYEES)
+     suspend fun employeesList(@Query("location_id") location_id: Int): EmployeeListResponse
+ */
     @GET(CUSTOMERS)
-    suspend fun customerList():CustomerListResponse
+    suspend fun customerList(): CustomerListResponse
 
 
     @GET(TAXES)
@@ -150,6 +151,8 @@ interface ApiService {
         @Path("id") discountId: Int
     ): CreateDiscountResponse
 
+    @DELETE(CUSTOMER_UPDATE)
+    suspend fun deleteCustomer(@Path("id") customerId: Int): BaseResponse
 
     @GET(SERVICE_CHARGE)
     suspend fun getServiceChargeList(): GetServiceChargeResponse
@@ -206,7 +209,7 @@ interface ApiService {
     suspend fun createEmployee(@Body createEmployeeRequestModel: CreateEmployeeRequestModel): BaseResponse
 
     @POST(CUSTOMERS)
-    suspend fun createCustomer(@Body createCustomerRequestModel: CreateCustomerRequestModel):BaseResponse
+    suspend fun createCustomer(@Body createCustomerRequestModel: CreateCustomerRequestModel): BaseResponse
 
     @PUT(EMPLOYEES_UPDATE_DELETE)
     suspend fun updateEmployee(
@@ -235,6 +238,12 @@ interface ApiService {
     suspend fun updateItem(
         @Path("id") id: Int,
         @Body updateItem: CreateItemRequestModel
+    ): BaseResponse
+
+    @PUT(CUSTOMER_UPDATE)
+    suspend fun updateCustomer(
+        @Path("id") id: Int,
+        @Body createCustomerRequestModel: CreateCustomerRequestModel
     ): BaseResponse
 
     @DELETE(CATEGORY_UPDATE_DELETE)

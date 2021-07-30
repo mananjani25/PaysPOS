@@ -58,9 +58,9 @@ class AddCustomerViewModel @Inject constructor(
     var pin = MutableLiveData<String>()
 
 
-     var straddress1:String = ""
-    var straddress2:String=""
-    var strcity:String = ""
+    var straddress1: String = ""
+    var straddress2: String = ""
+    var strcity: String = ""
     var strstate = ""
     var strPin = ""
 
@@ -75,15 +75,17 @@ class AddCustomerViewModel @Inject constructor(
 
     }
 
-    fun setCity(str:String){
+    fun setCity(str: String) {
         this.strcity = str
 
     }
-    fun setState(str:String){
+
+    fun setState(str: String) {
         this.strstate = str
 
     }
-    fun setPinCode(str:String){
+
+    fun setPinCode(str: String) {
         this.strPin = str
 
     }
@@ -101,23 +103,23 @@ class AddCustomerViewModel @Inject constructor(
 
         if (phoneNo.value != null) {
 
+
             addCustomerDetails.value?.data?.phones_attributes?.add(
                 0,
                 CreateCustomerRequestModel.Customer.Phone(
-                    0,
                     phone_number =
                     phoneNo.value.toString().replace(
                         ("[\\D]").toRegex(),
                         ""
                     ),
-                    "true"
-                )
+
+                    )
             )
         }
 
         Log.e("Address1", "address1: ${address1.value}")
         Log.e("Address1", "straddress1: ${straddress1}")
-        if (straddress1.isNotEmpty() && straddress2.isNotEmpty() &&strcity.isNotEmpty() && strstate.isNotEmpty() &&strPin.isNotEmpty()) {
+        if (straddress1.isNotEmpty() && straddress2.isNotEmpty() && strcity.isNotEmpty() && strstate.isNotEmpty() && strPin.isNotEmpty()) {
 
             addCustomerDetails.value?.data?.addresses_attributes?.add(
                 0, CreateCustomerRequestModel.Customer.Addresses(
@@ -156,63 +158,74 @@ class AddCustomerViewModel @Inject constructor(
         } else {
             _showProgress.value = Event(true)
             addCustomerData = CreateCustomerRequestModel().apply {
-                if (!isEdit) {
 
-                    Log.e("DaataJson","PassData  ${Gson().toJson(value?.data)}")
-                    data?.first_name = value?.data?.first_name!!
-                    data?.last_name = value?.data?.last_name!!
 
-                    data?.phones_attributes?.addAll(value.data?.phones_attributes!!)
+                Log.e("DaataJson", "PassData  ${Gson().toJson(value?.data)}")
+                data?.first_name = value?.data?.first_name!!
+                data?.last_name = value?.data?.last_name!!
+
+                data?.phones_attributes?.add(0, CreateCustomerRequestModel.Customer.Phone(phone_number = phoneNo.value.toString().replace(
+                    ("[\\D]").toRegex(),
+                    ""
+                )))
+
 //                    data?.phones_attributes.add(0,) =
 //                        value.data!!.phones_attributes?.get(0)?.phone_number!!.
-                    data?.email = value.data!!.email
-                    data?.birth_day = value.data!!.birth_day
-                    data?.birth_month = value.data!!.birth_month
-                    data?.birthday_year = value.data!!.birthday_year
-                    data?.company = value.data!!.company
+                data?.email = value.data!!.email
+                data?.birth_day = value.data!!.birth_day
+                data?.birth_month = value.data!!.birth_month
+                data?.birthday_year = value.data!!.birthday_year
+                data?.company = value.data!!.company
+
+               // data?.addresses_attributes?.add(0, CreateCustomerRequestModel.Customer.Addresses())
+
+                data?.addresses_attributes?.add(
+                    0, CreateCustomerRequestModel.Customer.Addresses(
+                        address1 = straddress1.toString(),
+                        address2 = straddress2,
+                        city = strcity,
+                        state = strstate,
+                        postcode = strPin
+                    )
+                )
 
 
-                    data?.addresses_attributes?.get(0)?.address1 =
-                        value.data!!.addresses_attributes!!.get(0).address1
-                    data?.addresses_attributes?.get(0)?.address2 =
-                        value.data!!.addresses_attributes!!.get(0).address2
-                    data?.addresses_attributes?.get(0)?.state =
-                        value.data!!.addresses_attributes!!.get(0).state
-                    data?.addresses_attributes?.get(0)?.country =
-                        value.data!!.addresses_attributes!!.get(0).country
-                    data?.addresses_attributes?.get(0)?.postcode =
-                        value.data!!.addresses_attributes!!.get(0).postcode
+            }
 
-                    viewModelScope.launch {
-                        resource = posRepository.createCustomer(addCustomerData)
+            Log.e(TAG,"addCustomerDataJson:  ${Gson().toJson(addCustomerData)}")
+            Log.e(TAG, "isEdit:  ${isEdit}")
+            Log.e(TAG, "customerID:  ${customerID}")
+            viewModelScope.launch {
+                resource = if (isEdit) {
+                    posRepository.updateCustomer(customerID, addCustomerData)
+                } else {
 
-                        when (resource.status) {
-                            Status.SUCCESS -> {
-                                _showProgress.value = Event(false)
-                                resource.data.let {
-                                    if (it?.status == 200) {
-                                        resource.data?.let {
-                                            _data.value = Event(true)
-                                        }
-                                    } else {
-                                        _snackbarText.value = Event(resource.message)
-                                    }
+                    posRepository.createCustomer(addCustomerData)
+                }
+
+                when (resource.status) {
+                    Status.SUCCESS -> {
+                        _showProgress.value = Event(false)
+                        resource.data.let {
+                            if (it?.status == 200) {
+                                resource.data?.let {
+                                    _data.value = Event(true)
                                 }
-                            }
-                            Status.ERROR -> {
+                            } else {
                                 _snackbarText.value = Event(resource.message)
-                                _showProgress.value = Event(false)
                             }
-                            Status.LOADING -> {
-                                _showProgress.value = Event(true)
-                            }
-
                         }
-
+                    }
+                    Status.ERROR -> {
+                        _snackbarText.value = Event(resource.message)
+                        _showProgress.value = Event(false)
+                    }
+                    Status.LOADING -> {
+                        _showProgress.value = Event(true)
                     }
 
-
                 }
+
             }
 
         }

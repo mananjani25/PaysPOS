@@ -34,12 +34,11 @@ class TeamListViewModel @Inject constructor(
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
-    val employeeData = posRepository.employeesList(locationId)
+    //  val employeeData = posRepository.employeesList(locationId)
 
 
-    fun employeeData(): LiveData<Resource<EmployeeListResponse>> {
-        return posRepository.employeesList(locationId)
-    }
+    fun employeeData() = posRepository.employeesList(locationId)
+
 
     fun delete(id: Int) {
         _showProgress.value = Event(true)
@@ -53,7 +52,9 @@ class TeamListViewModel @Inject constructor(
                     resource.data.let {
                         if (it?.status == 200) {
                             resource.data?.let { createTaxResponse ->
+                                posRepository.deleteEmployeeDatabase(id)
                                 _data.value = Event(createTaxResponse)
+
                             }
                         } else {
                             _snackbarText.value = Event(resource.message)

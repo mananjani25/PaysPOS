@@ -37,58 +37,62 @@ class CustomerListAdapter(
         RecyclerView.ViewHolder(binding.root) {
         fun bind(model: com.android.pos.data.model.CustomerListResponse.Data) {
 
-            if (filterList.get(layoutPosition).first_name != null && filterList.get(layoutPosition).last_name != null) {
-                binding.tvInitialName.setText(
-                    "" + filterList.get(layoutPosition).first_name.first() + "" + filterList.get(
+            try {
+                if (filterList.get(layoutPosition).first_name != null && filterList.get(
                         layoutPosition
-                    ).last_name.first()
-                )
-
-            } else {
-                binding.tvInitialName.setText(
-                    "${
-                        filterList.get(layoutPosition).first_name?.subSequence(
-                            0,
-                            2
-                        )
-                    }"
-                )
-            }
-
-            if (filterList.get(0).email != null) {
-
-                binding.txtNumber.setText(
-                    "" + AlertUtils.usNumberFormat(
-                        filterList.get(layoutPosition).phones.get(
-                            0
-                        ).phone_number
-                    ) + " | " + filterList.get(layoutPosition).email
-                )
-            } else {
-                binding.txtNumber.setText(
-                    "" + AlertUtils.usNumberFormat(
-                        filterList.get(layoutPosition).phones.get(
-                            0
-                        ).phone_number
+                    ).last_name != null
+                ) {
+                    binding.tvInitialName.setText(
+                        filterList.get(layoutPosition).first_name.first() + "" + filterList.get(
+                            layoutPosition
+                        ).last_name.first()
                     )
-                )
 
-            }
+                } else {
+                    binding.tvInitialName.setText(
+                        "${
+                            filterList.get(layoutPosition).first_name?.subSequence(
+                                0,
+                                2
+                            )
+                        }"
+                    )
+                }
 
-            binding.model = model
-            binding.executePendingBindings()
+                if (filterList.get(layoutPosition).email != null && filterList.get(layoutPosition).phones.size > 0) {
 
-            if (isSelectedPos == layoutPosition) {
-                binding.layout.background = context.getDrawable(R.color.txt_color_blue)
-                binding.txtName.setTextColor(context.getColorCompat(R.color.white))
-                binding.txtNumber.setTextColor(context.getColorCompat(R.color.white))
-            } else {
-                binding.layout.background = context.getDrawable(R.color.white)
-                binding.txtName.setTextColor(context.getColorCompat(R.color.txtColor))
-                binding.txtNumber.setTextColor(context.getColorCompat(R.color.colorB9))
-            }
+                    binding.txtNumber.setText(
+                        "" + AlertUtils.usNumberFormat(
+                            filterList.get(layoutPosition).phones.get(
+                                0
+                            ).phone_number
+                        ) + " | " + filterList.get(layoutPosition).email
+                    )
+                } else if (filterList.get(layoutPosition).phones.size > 0) {
+                    binding.txtNumber.setText(
+                        "" + AlertUtils.usNumberFormat(
+                            filterList.get(layoutPosition).phones.get(
+                                0
+                            ).phone_number
+                        )
+                    )
 
-            /* binding.root.setOnClickListener {
+                }
+
+                binding.model = model
+                binding.executePendingBindings()
+
+                if (isSelectedPos == layoutPosition) {
+                    binding.layout.background = context.getDrawable(R.color.txt_color_blue)
+                    binding.txtName.setTextColor(context.getColorCompat(R.color.white))
+                    binding.txtNumber.setTextColor(context.getColorCompat(R.color.white))
+                } else {
+                    binding.layout.background = context.getDrawable(R.color.white)
+                    binding.txtName.setTextColor(context.getColorCompat(R.color.txtColor))
+                    binding.txtNumber.setTextColor(context.getColorCompat(R.color.colorB9))
+                }
+
+                /* binding.root.setOnClickListener {
 
                  Log.e(TAG, "filterSize  ${filterList.size}")
 
@@ -96,6 +100,9 @@ class CustomerListAdapter(
                  listner.onCustomerSelect(layoutPosition, filterList.get(layoutPosition))
 
              }*/
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
 
         init {
@@ -236,5 +243,8 @@ class CustomerListAdapter(
 
     }
 
+    fun getItem(position: Int): com.android.pos.data.model.CustomerListResponse.Data {
+        return filterList[position]
+    }
 
 }
