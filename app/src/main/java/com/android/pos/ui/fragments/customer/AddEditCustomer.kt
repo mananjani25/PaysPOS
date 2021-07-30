@@ -62,7 +62,7 @@ class AddEditCustomer : Fragment() {
 
         setUpSnackBar()
         showObserveProgress()
-
+        navigate()
         return binding.root
     }
 
@@ -90,33 +90,54 @@ class AddEditCustomer : Fragment() {
         isEdit = requireArguments().getBoolean("isEdit", false)
         Log.e(TAG, "isEdit  $isEdit")
 
+
         searchPlaces()
 
         if (isEdit) {
             binding.txtCustomerType.setText("Edit Customer")
+
             val editModel: com.android.pos.data.model.CustomerListResponse.Data? =
                 requireArguments().getParcelable<com.android.pos.data.model.CustomerListResponse.Data>(
                     "dataModel"
                 )
+
+            if (editModel?.id != null) {
+                viewModel.isEditData(isEdit, editModel?.id!!)
+            }
+
             Log.e(TAG, "editModel  ${Gson().toJson(editModel)}")
             viewModel.addCustomerDetails.value?.data?.first_name = editModel?.first_name.toString()
             viewModel.addCustomerDetails.value?.data?.last_name = editModel?.last_name.toString()
 
-            viewModel.phoneNo.value =
-                AlertUtils.usNumberFormat(editModel?.phones?.get(0)!!.phone_number).toString()
+
+            if (editModel?.phones?.size != 0) {
+                viewModel.phoneNo.value =
+                    AlertUtils.usNumberFormat(editModel?.phones?.get(0)?.phone_number!!).toString()
+            }
             if (editModel.email != null) {
                 viewModel.addCustomerDetails.value?.data?.email = editModel?.email
             }
 
             if (editModel.addresses.size > 0) {
-                binding.edtAddress.setText("${editModel.addresses.get(0).country}")
+                binding.edtAddress.setText("United States")
 
-                binding.edtStreet.setText(editModel.addresses.get(0).address1)
+                binding.edtStreet.setText(""+editModel.addresses.get(0).address1)
+                viewModel.setAddress1(editModel.addresses.get(0).address1)
+                binding.edtSuite.setText(""+editModel.addresses.get(0).address2)
+                viewModel.setAddress2(editModel.addresses.get(0).address2)
+                binding.edtCity.setText(""+editModel.addresses.get(0).city)
+                viewModel.setCity(editModel.addresses.get(0).city)
+                binding.edtZip.setText(""+editModel.addresses.get(0).postcode)
+                viewModel.setPinCode(editModel.addresses.get(0).postcode.toString())
+                 binding.edtState.setText(""+editModel.addresses.get(0).state.toString())
+                viewModel.setState(editModel.addresses.get(0).state)
+
+                /*binding.edtStreet.setText(editModel.addresses.get(0).address1)
                 binding.edtSuite.setText(editModel.addresses.get(0).address2)
                 binding.edtCity.setText(editModel.addresses.get(0).city)
                 binding.edtState.setText(editModel.addresses.get(0).state)
                 binding.edtZip.setText(editModel.addresses.get(0).postcode.toString())
-
+*/
             }
             binding.edtCompany.setText("company")
             if (editModel.birth_date != null) {
@@ -216,8 +237,7 @@ class AddEditCustomer : Fragment() {
             viewModel.setState(address.get(0).adminArea)
             binding.edtZip.setText(address.get(0).postalCode)
             viewModel.setPinCode(address.get(0).postalCode)
-          //  binding.executePendingBindings()
-
+            //  binding.executePendingBindings()
 
 
             Log.e(TAG, "TextSetted")
@@ -256,5 +276,16 @@ class AddEditCustomer : Fragment() {
         Log.e(TAG, "DatePickerInside  ")
     }
 
+    private fun navigate() {
+
+        viewModel.data.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    findNavController().popBackStack()
+                }
+            }
+        })
+
+    }
 
 }

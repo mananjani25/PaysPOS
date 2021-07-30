@@ -113,6 +113,7 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
         getResult { apiService.createEmployee(data) }
 
     suspend fun createCustomer(data:CreateCustomerRequestModel) = getResult { apiService.createCustomer(data) }
+    suspend fun updateCustomer(id:Int,data:CreateCustomerRequestModel) = getResult { apiService.updateCustomer(id,data) }
 
     suspend fun updateEmployee(taxId: Int, data: CreateEmployeeRequestModel) =
         getResult { apiService.updateEmployee(taxId, data) }

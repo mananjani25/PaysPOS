@@ -257,9 +257,9 @@
                     android:background="@drawable/background_square_border_grey"
                     android:hint="Street"
                     android:imeOptions="actionNext"
-                    android:inputType="text"
+                    android:inputType="textNoSuggestions"
                     android:padding="@dimen/_5sdp"
-                    android:text="@{viewModel.address1}"
+                    android:text=""
                     android:textColor="@color/hintColor"
                     android:textSize="@dimen/_6mdpi" />
 
@@ -272,6 +272,7 @@
                     android:layout_marginEnd="@dimen/_15sdp"
                     android:background="@drawable/background_square_border_grey"
                     android:padding="@dimen/_5sdp"
+                    android:text=""
                     android:inputType="textNoSuggestions"
                     android:textColor="@color/hintColor"
                     android:textSize="@dimen/_6mdpi" />
