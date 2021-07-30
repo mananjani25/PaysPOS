@@ -30,7 +30,7 @@ data class CreateCustomerRequestModel(
             @SerializedName("phone_number")
             var phone_number: String = "",
             @SerializedName("_destroy")
-            var _destroy: String = "true"
+            var _destroy: String = "false"
 
         )
 
@@ -54,7 +54,7 @@ data class CreateCustomerRequestModel(
             @SerializedName(    "longitude")
             var longitude: Double = 0.0,
             @SerializedName("_destroy")
-            var _destroy: String = "true"
+            var _destroy: String = "false"
         )
 
 

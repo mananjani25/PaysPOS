@@ -164,7 +164,10 @@ class AddCustomerViewModel @Inject constructor(
                 data?.first_name = value?.data?.first_name!!
                 data?.last_name = value?.data?.last_name!!
 
-                data?.phones_attributes?.add(0, value.data?.phones_attributes?.get(0)!!)
+                data?.phones_attributes?.add(0, CreateCustomerRequestModel.Customer.Phone(phone_number = phoneNo.value.toString().replace(
+                    ("[\\D]").toRegex(),
+                    ""
+                )))
 
 //                    data?.phones_attributes.add(0,) =
 //                        value.data!!.phones_attributes?.get(0)?.phone_number!!.
@@ -174,10 +177,22 @@ class AddCustomerViewModel @Inject constructor(
                 data?.birthday_year = value.data!!.birthday_year
                 data?.company = value.data!!.company
 
-                data?.addresses_attributes?.add(0, value.data?.addresses_attributes!!.get(0))
+               // data?.addresses_attributes?.add(0, CreateCustomerRequestModel.Customer.Addresses())
+
+                data?.addresses_attributes?.add(
+                    0, CreateCustomerRequestModel.Customer.Addresses(
+                        address1 = straddress1.toString(),
+                        address2 = straddress2,
+                        city = strcity,
+                        state = strstate,
+                        postcode = strPin
+                    )
+                )
 
 
             }
+
+            Log.e(TAG,"addCustomerDataJson:  ${Gson().toJson(addCustomerData)}")
             Log.e(TAG, "isEdit:  ${isEdit}")
             Log.e(TAG, "customerID:  ${customerID}")
             viewModelScope.launch {
