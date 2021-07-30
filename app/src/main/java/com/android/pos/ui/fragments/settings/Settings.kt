@@ -17,12 +17,11 @@ import com.android.pos.data.remote.Constants.CREATE_TAX
 import com.android.pos.data.remote.Constants.CREATE_TIP
 import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.data.remote.Constants.ORDER_RECEIPTS
-import com.android.pos.data.remote.Constants.SERVICE_CHARGE
-import com.android.pos.data.remote.Constants.SETTING_KEY
 import com.android.pos.databinding.FragmentSettingsBinding
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.BusinessSettingAdapter
 import com.android.pos.ui.fragments.settings.discount.DiscountList
+import com.android.pos.ui.fragments.settings.employeerole.Employee
 import com.android.pos.ui.fragments.settings.notes.Notes
 import com.android.pos.ui.fragments.settings.servicecharge.ServiceChargeList
 import com.android.pos.ui.fragments.settings.tax.TaxesList
@@ -69,7 +68,7 @@ class Settings : Fragment() {
 
         findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<String>(KEY)
             ?.observe(viewLifecycleOwner) { it ->
-                Log.e("Settings","Settings $it")
+                Log.e("Settings", "Settings $it")
                 when (it) {
                     CREATE_TAX -> {
                         binding.txtBusiness.styleBold()
@@ -206,7 +205,7 @@ class Settings : Fragment() {
             binding.rvBusiness.visibility = View.GONE
             val frag: Fragment = Employee()
             loadFragment(frag)
-            binding.commonToolbar.txtSubTitle.setText("Employee")
+            binding.commonToolbar.txtSubTitle.setText("Team Member")
         }
         binding.txtReports.setOnClickListener {
             /*binding.txtBusiness.styleNormal()
