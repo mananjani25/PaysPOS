@@ -254,6 +254,8 @@ class DashboardCategoryNew : Fragment() {
             WindowManager.LayoutParams.MATCH_PARENT,
             WindowManager.LayoutParams.MATCH_PARENT
         )
+
+
         dialog.setContentView(R.layout.menu_pos)
         dialog.setCanceledOnTouchOutside(false)
 

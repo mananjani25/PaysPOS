@@ -31,7 +31,8 @@ class CustomerListViewModel @Inject constructor(
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
 
-    val customerList = posRepository.customerList()
+    fun customerList() = posRepository.customerList()
+
 
 
     fun getData() {
@@ -39,18 +40,19 @@ class CustomerListViewModel @Inject constructor(
 
 
     }
-    fun delete(id:Int){
+
+    fun delete(id: Int) {
         viewModelScope.launch {
             resource = posRepository.deleteCustomer(id)
 
-            when(resource.status){
-                Status.SUCCESS ->{
+            when (resource.status) {
+                Status.SUCCESS -> {
 
                     _showProgress.value = Event(false)
                     resource.data.let {
                         if (it?.status == 200) {
                             resource.data?.let {
-                           mdata.value = Event(it)
+                                mdata.value = Event(it)
                             }
                         } else {
                             _snackbarText.value = Event(resource.message)
@@ -58,11 +60,11 @@ class CustomerListViewModel @Inject constructor(
                     }
 
                 }
-                Status.LOADING ->{
+                Status.LOADING -> {
                     _showProgress.value = Event(true)
 
                 }
-                Status.ERROR ->{
+                Status.ERROR -> {
                     _snackbarText.value = Event(resource.message)
                     _showProgress.value = Event(false)
 

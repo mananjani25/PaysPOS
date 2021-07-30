@@ -91,7 +91,7 @@ class Customer : Fragment() {
                 when (it) {
                     CUSTOMERDETAILS -> {
                         Log.e(TAG, "UpdateLoadList")
-                        //   loadCustomerList()
+                         viewModel.customerList()
 
                     }
 
@@ -102,7 +102,7 @@ class Customer : Fragment() {
     }
 
     private fun loadCustomerList() {
-        viewModel.customerList.observe(viewLifecycleOwner, {
+        viewModel.customerList().observe(viewLifecycleOwner, {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {

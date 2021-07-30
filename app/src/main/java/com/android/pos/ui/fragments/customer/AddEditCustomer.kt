@@ -123,15 +123,15 @@ class AddEditCustomer : Fragment() {
             if (editModel.addresses.size > 0) {
                 binding.edtAddress.setText("United States")
 
-                binding.edtStreet.setText(""+editModel.addresses.get(0).address1)
+                binding.edtStreet.setText("" + editModel.addresses.get(0).address1)
                 viewModel.setAddress1(editModel.addresses.get(0).address1)
-                binding.edtSuite.setText(""+editModel.addresses.get(0).address2)
+                binding.edtSuite.setText("" + editModel.addresses.get(0).address2)
                 viewModel.setAddress2(editModel.addresses.get(0).address2)
-                binding.edtCity.setText(""+editModel.addresses.get(0).city)
+                binding.edtCity.setText("" + editModel.addresses.get(0).city)
                 viewModel.setCity(editModel.addresses.get(0).city)
-                binding.edtZip.setText(""+editModel.addresses.get(0).postcode)
+                binding.edtZip.setText("" + editModel.addresses.get(0).postcode)
                 viewModel.setPinCode(editModel.addresses.get(0).postcode.toString())
-                 binding.edtState.setText(""+editModel.addresses.get(0).state.toString())
+                binding.edtState.setText("" + editModel.addresses.get(0).state.toString())
                 viewModel.setState(editModel.addresses.get(0).state)
 
                 /*binding.edtStreet.setText(editModel.addresses.get(0).address1)
@@ -280,12 +280,12 @@ class AddEditCustomer : Fragment() {
 
     private fun navigate() {
 
-        Log.e(TAG,"POPBACKCUSTOMER")
+        Log.e(TAG, "POPBACKCUSTOMER")
         viewModel.data.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
                     val navControll = findNavController()
-                    navControll.previousBackStackEntry?.savedStateHandle?.set(KEY,CUSTOMERDETAILS)
+                    navControll.previousBackStackEntry?.savedStateHandle?.set(KEY, CUSTOMERDETAILS)
                     navControll.popBackStack()
                 }
             }
