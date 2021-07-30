@@ -91,7 +91,7 @@ class Customer : Fragment() {
                 when (it) {
                     CUSTOMERDETAILS -> {
                         Log.e(TAG, "UpdateLoadList")
-                        loadCustomerList()
+                        //   loadCustomerList()
 
                     }
 
@@ -148,11 +148,14 @@ class Customer : Fragment() {
                                                 getString(R.string.delete_customer_message)
                                             ) {
                                                 positiveButton(getString(R.string.tv_delete)) {
-                                                    // Do positive stuff here
                                                     Log.e(
                                                         "Delete",
                                                         "getDeleteItem  ${adapter.getItem(pos)}"
                                                     )
+
+                                                    viewModel.delete(adapter.getItem(pos).id)
+                                                    removeItem(pos)
+
                                                     // discountObject = discountListadapter.getItem(pos)
                                                     // viewModel.delete(discountListadapter.getItem(pos).id)
                                                 }
@@ -280,6 +283,16 @@ class Customer : Fragment() {
     }
 
     private fun swipeToDelete() {
+
+    }
+
+    fun removeItem(pos:Int){
+        var customerList = (binding.rvEmployeeList.adapter as CustomerListAdapter).list
+        customerList.removeAt(pos)
+        binding.rvEmployeeList.removeViewAt(pos)
+        (binding.rvEmployeeList.adapter as CustomerListAdapter).notifyItemRemoved(pos)
+        (binding.rvEmployeeList.adapter as CustomerListAdapter).notifyItemRangeChanged(pos,customerList.size)
+        (binding.rvEmployeeList.adapter as CustomerListAdapter).notifyDataSetChanged()
 
     }
 }
