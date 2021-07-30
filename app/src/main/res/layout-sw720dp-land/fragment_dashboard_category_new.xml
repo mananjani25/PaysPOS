@@ -47,62 +47,70 @@
 
         <LinearLayout
             android:id="@+id/linearMenu"
-            android:layout_width="wrap_content"
+            android:layout_width="@dimen/_140sdp"
             android:layout_height="0dp"
+            android:layout_marginBottom="@dimen/_20sdp"
             android:background="@drawable/background_button_menu"
             android:orientation="vertical"
-            android:paddingStart="@dimen/_20sdp"
-            android:paddingTop="@dimen/_10sdp"
-            android:paddingEnd="@dimen/_20sdp"
-            android:paddingBottom="@dimen/_10sdp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:id="@+id/txtTakeOut"
+            <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/background_button_menu"
-                android:fontFamily="@font/sf_pro_display_bold"
-                android:gravity="center"
-                android:paddingVertical="@dimen/_7sdp"
-                android:paddingStart="@dimen/_30sdp"
-                android:paddingEnd="@dimen/_30sdp"
-                android:text="@string/take_out"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_6mdpi" />
+                android:orientation="vertical"
+                android:paddingStart="@dimen/_20sdp"
+                android:paddingTop="@dimen/_10sdp"
+                android:paddingEnd="@dimen/_20sdp"
+                android:paddingBottom="@dimen/_10sdp"
+                android:visibility="gone">
 
-            <TextView
-                android:id="@+id/txtDineIn"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:background="@drawable/background_button_menu"
-                android:fontFamily="@font/sf_pro_display_bold"
-                android:gravity="center"
-                android:paddingVertical="@dimen/_7sdp"
-                android:paddingStart="@dimen/_30sdp"
-                android:paddingEnd="@dimen/_30sdp"
-                android:text="@string/dine_in"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_6mdpi" />
+                <TextView
+                    android:id="@+id/txtTakeOut"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/background_button_menu"
+                    android:fontFamily="@font/sf_pro_display_bold"
+                    android:gravity="center"
+                    android:paddingVertical="@dimen/_7sdp"
+                    android:text="@string/take_out"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_6mdpi" />
 
+                <TextView
+                    android:id="@+id/txtDineIn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:background="@drawable/background_button_menu"
+                    android:fontFamily="@font/sf_pro_display_bold"
+                    android:gravity="center"
+                    android:paddingVertical="@dimen/_7sdp"
+                    android:paddingStart="@dimen/_30sdp"
+                    android:paddingEnd="@dimen/_30sdp"
+                    android:text="@string/dine_in"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_6mdpi" />
 
-            <TextView
-                android:id="@+id/txtOpenOrder"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:background="@drawable/background_button_menu"
-                android:fontFamily="@font/sf_pro_display_bold"
-                android:gravity="center"
-                android:paddingVertical="@dimen/_7sdp"
-                android:paddingStart="@dimen/_30sdp"
-                android:paddingEnd="@dimen/_30sdp"
-                android:text="@string/open_order"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_6mdpi" />
+                <TextView
+                    android:id="@+id/txtOpenOrder"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:background="@drawable/background_button_menu"
+                    android:fontFamily="@font/sf_pro_display_bold"
+                    android:gravity="center"
+                    android:paddingVertical="@dimen/_7sdp"
+                    android:text="@string/open_order"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_6mdpi" />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <include
+                android:id="@+id/layoutCart"
+                layout="@layout/layout_cart_items" />
 
         </LinearLayout>
 

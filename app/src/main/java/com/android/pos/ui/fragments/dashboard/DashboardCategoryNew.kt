@@ -1,5 +1,6 @@
 package com.android.pos.ui.fragments.dashboard
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
 import android.content.Context
@@ -10,20 +11,23 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.*
+import androidx.appcompat.widget.AppCompatEditText
+import androidx.appcompat.widget.AppCompatImageView
+import androidx.appcompat.widget.AppCompatTextView
+import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.CategoryWithInventory
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.CategorySearchData
 import com.android.pos.data.model.CategoryTabModel
-import com.android.pos.data.model.responseModel.VenueDataResponse
-import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.HORIZONTAL
 import com.android.pos.data.remote.Constants.IS_CLOCKOUT
 import com.android.pos.data.remote.Constants.VERTICAL
@@ -31,31 +35,34 @@ import com.android.pos.databinding.FragmentDashboardCategoryNewBinding
 import com.android.pos.databinding.PopupDashboardBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.activities.MainActivity
+import com.android.pos.ui.adapter.CartAdapter
 import com.android.pos.ui.adapter.CategoryItemAdapter1
 import com.android.pos.ui.adapter.CategorySearchAdapter
 import com.android.pos.ui.adapter.CategoryTabAdapter1
 import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.SwipeHelper
+import com.android.pos.utils.callback.MyCallback
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.statusUtils.Status
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+
 @AndroidEntryPoint
-class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList {
+class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, MyCallback {
     private var cartList: List<CartModel>? = null
     private lateinit var binding: FragmentDashboardCategoryNewBinding
     private val TAG = "DashboardCategoryNew"
 
     private val viewModel by viewModels<DashBoardCategoryViewModel>()
-    private var categoryList: MutableList<VenueDataResponse.Data.Category> = arrayListOf()
     private var categoryList1: MutableList<CategoryWithInventory> = arrayListOf()
-    private var itemList: ArrayList<VenueDataResponse.Data.Category.Item> = arrayListOf()
     private var itemList1: ArrayList<TbItem?> = arrayListOf()
     private var categoryTabsList: ArrayList<String> = arrayListOf()
     private var tabList: ArrayList<CategoryTabModel> = arrayListOf()
     private lateinit var searchAdapter: CategorySearchAdapter
     private lateinit var searchList: ArrayList<CategorySearchData>
+    private lateinit var cartAdapter: CartAdapter
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -108,9 +115,50 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList {
 
     private fun getCartList() {
 
+        cartAdapter = CartAdapter()
+        cartAdapter.setCallback(this)
+        binding.layoutCart.rvCart.adapter = cartAdapter
+
+        object : SwipeHelper(activity, binding.layoutCart.rvCart) {
+            override fun instantiateUnderlayButton(
+                viewHolder: RecyclerView.ViewHolder?,
+                underlayButtons: MutableList<UnderlayButton?>
+            ) {
+
+                underlayButtons.add(UnderlayButton(
+                    "Delete",
+                    0,
+                    Color.parseColor("#FF3C30")
+                ) { pos ->
+
+                    alert(
+                        getString(R.string.app_name),
+                        getString(R.string.delete_item_message)
+                    ) {
+                        positiveButton(getString(R.string.tv_delete)) {
+                            // Do positive stuff here
+                            val item = cartAdapter.getItem(pos)
+
+                            viewModel.cartLogic(cartList, item, "DELETE")
+                        }
+                        negativeButton(R.string.tv_cancel) {
+                            // Do negative stuff here
+                        }
+                    }
+                })
+            }
+        }
+
         viewModel.mAllWords.observe(
             requireActivity(), {
                 cartList = it
+                if (cartList?.isNotEmpty()!!)
+                    cartAdapter.addCart(cartList?.get(0)?.items)
+
+                viewModel.itemCalculation(
+                    cartList?.get(0)?.items,
+                    binding.layoutCart.txtTotalAmount
+                )
             }
         )
     }
@@ -734,12 +782,78 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList {
 
     override fun onClick(item: TbItem) {
 
-        viewModel.cartLogic(cartList, item)
+        viewModel.cartLogic(cartList, item, "ADD")
 
     }
 
     override fun onClickedCreateItem() {
         findNavController().navigate(R.id.action_dashboardCategoryNew_to_createItem)
+    }
+
+    @SuppressLint("SetTextI18n")
+    override fun onItemClickListener(view: View?, data: TbItem) {
+
+        val dialog = Dialog(requireContext())
+        dialog.window?.requestFeature(Window.FEATURE_NO_TITLE)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+        val lp = WindowManager.LayoutParams()
+        lp.copyFrom(dialog.window!!.attributes)
+        lp.width = WindowManager.LayoutParams.WRAP_CONTENT
+        lp.height = WindowManager.LayoutParams.MATCH_PARENT
+        dialog.window!!.attributes = lp
+
+        dialog.setContentView(R.layout.dialog_update_quantity)
+
+        val imgClose: AppCompatImageView = dialog.findViewById(R.id.imgBack)
+        val txtSave: AppCompatTextView = dialog.findViewById(R.id.txtSave)
+        val txtTitle: AppCompatTextView = dialog.findViewById(R.id.txtTitle)
+        val txtQty: AppCompatTextView = dialog.findViewById(R.id.txtQty)
+        val llPlus: LinearLayoutCompat = dialog.findViewById(R.id.llPlus)
+        val llMinus: LinearLayoutCompat = dialog.findViewById(R.id.llMinus)
+        val btnRemove: AppCompatTextView = dialog.findViewById(R.id.btnRemove)
+        val btnAddDiscount: AppCompatTextView = dialog.findViewById(R.id.btnAddDiscount)
+        val edtNote: AppCompatEditText = dialog.findViewById(R.id.edtNote)
+
+        var qty = data.itemQuantity
+
+        txtQty.text = qty.toString()
+        txtTitle.text = data.name + "  $" + String.format(
+            "%.2f",
+            data.price
+        )
+
+        imgClose.setOnClickListener {
+            dialog.dismiss()
+        }
+        txtSave.setOnClickListener {
+            dialog.dismiss()
+            data.itemQuantity = qty
+            viewModel.cartLogic(cartList, data, "UPDATE")
+        }
+
+        llPlus.setOnClickListener {
+            qty += 1
+            txtQty.text = qty.toString()
+        }
+        llMinus.setOnClickListener {
+
+            if (qty > 1) {
+                qty -= 1
+            }
+            txtQty.text = qty.toString()
+        }
+        btnRemove.setOnClickListener {
+            viewModel.cartLogic(cartList, data, "DELETE")
+            dialog.dismiss()
+        }
+        btnAddDiscount.setOnClickListener {
+
+        }
+
+
+        dialog.setCanceledOnTouchOutside(false)
+        dialog.show()
     }
 
 

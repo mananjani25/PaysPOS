@@ -1,5 +1,7 @@
 package com.android.pos.ui.fragments.dashboard
 
+import android.annotation.SuppressLint
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.data.db.AppDatabase
@@ -20,6 +22,8 @@ class DashBoardCategoryViewModel @Inject constructor(
     private val prefProvider: PrefProvider
 ) : ViewModel() {
 
+    private var totalPrice: Double = 0.0
+
     val venueData = posRepository.syncVenueData()
 
 
@@ -27,22 +31,20 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     var mAllWords = posRepository.getCartList()
 
-    fun addCart(cartModel: CartModel) {
+    private fun addCart(cartModel: CartModel) {
 
         viewModelScope.launch {
             appDatabase.cartDao().add(cartModel)
         }
     }
 
-    fun cartLogic(cartList: List<CartModel>?, item: TbItem) {
+    fun cartLogic(cartList: List<CartModel>?, item: TbItem, type: String) {
 
-        val inventoryModelList = ArrayList<TbItem>()
 
-        if (cartList != null && cartList!!.isEmpty()) {
-
+        if (cartList != null && cartList.isEmpty()) {
+            val inventoryModelList = ArrayList<TbItem>()
             val cartModel = CartModel().apply {
                 terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
-
                 item.itemQuantity = 1
                 inventoryModelList.add(item)
                 items = inventoryModelList
@@ -52,23 +54,31 @@ class DashBoardCategoryViewModel @Inject constructor(
 
             val list = cartList?.get(0)?.items?.toMutableList()
 
-            var index = -1
+            if (type == "ADD" || type == "UPDATE") {
+                var index = -1
 
-            list?.forEachIndexed { pos, tbItem ->
-                if (tbItem.itemId == item.itemId) {
-                    index = pos
-                    return@forEachIndexed
+                list?.forEachIndexed { pos, tbItem ->
+                    if (tbItem.itemId == item.itemId) {
+                        index = pos
+                        return@forEachIndexed
+                    }
                 }
-            }
-            if (index != -1) {
-                val model = cartList?.get(0)?.items?.get(index)
-                if (model != null) {
-                    model.itemQuantity = model.itemQuantity + 1
-                    list?.set(index, model)
+                if (index != -1) {
+                    val model = cartList?.get(0)?.items?.get(index)
+                    if (model != null) {
+                        if (type == "UPDATE") {
+                            model.itemQuantity = item.itemQuantity
+                        } else
+                            model.itemQuantity = model.itemQuantity + 1
+                        list?.set(index, model)
+                    }
+                } else {
+                    item.itemQuantity = 1
+                    list?.add(item)
                 }
-            } else {
-                item.itemQuantity = 1
-                list?.add(item)
+            } else if (type == "DELETE") {
+
+                list?.remove(item)
             }
             val cartModel = CartModel().apply {
                 cartId = cartList?.get(0)?.cartId!!
@@ -78,5 +88,30 @@ class DashBoardCategoryViewModel @Inject constructor(
 
         }
     }
+
+    @SuppressLint("SetTextI18n")
+    fun itemCalculation(itemList: List<TbItem>?, txtTotalAmount: AppCompatTextView) {
+
+        var totalCount = 0
+        var subTotalPrice = 0.0
+        var totalTax = 0.0
+        var totalServiceCharge = 0.0
+        totalPrice = 0.0
+
+        itemList?.forEach {
+            totalCount += it.itemQuantity
+            subTotalPrice += it.price * it.itemQuantity
+        }
+
+
+        totalPrice = subTotalPrice + totalTax + totalServiceCharge
+
+        txtTotalAmount.text = "Pay $" + String.format(
+            "%.2f",
+            totalPrice
+        )
+
+    }
+
 
 }
