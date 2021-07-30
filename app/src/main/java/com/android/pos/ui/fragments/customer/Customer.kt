@@ -66,6 +66,7 @@ class Customer : Fragment() {
         dialog?.setContentView(R.layout.dialog_customer)
 
         // binding.lifecycleOwner = this
+        loadCustomerList()
         return binding.root
     }
 
@@ -75,7 +76,7 @@ class Customer : Fragment() {
         configureToolbar()
         //loadFragment()
         searchQuery()
-        loadCustomerList()
+
         binding.txtCrtNewCustomer.setOnClickListener {
             //dialog?.dismiss()
             binding.linearCustomerDialog.visibility = View.GONE

@@ -227,6 +227,10 @@
         <action
             android:id="@+id/action_settings_to_customerReceiptSettings"
             app:destination="@id/customerReceiptSettings" />
+        <action
+            android:id="@+id/action_settings_to_teamMemberTimeSheetFragment"
+            app:destination="@id/teamMemberTimeSheetFragment"
+            app:enterAnim="@anim/nav_default_enter_anim" />
 
     </fragment>
     <action
@@ -436,6 +440,11 @@
             app:argType="boolean" />
 
     </fragment>
+    <fragment
+        android:id="@+id/teamMemberTimeSheetFragment"
+        android:name="com.android.pos.ui.fragments.settings.teamrole.TeamMemberTimeSheetFragment"
+        android:label="fragment_team_member_time_sheet"
+        tools:layout="@layout/fragment_team_member_time_sheet" />
 
 
 </navigation>
