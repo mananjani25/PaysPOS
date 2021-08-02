@@ -8,11 +8,14 @@ import android.widget.Filter
 import android.widget.Filterable
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
+import com.android.pos.data.model.CustomerListResponse
 import com.android.pos.data.model.CustomerModel
 import com.android.pos.databinding.ViewCustomerListBinding
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.extensions.getColorCompat
 import com.google.gson.Gson
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 class CustomerListAdapter(
@@ -156,7 +159,7 @@ class CustomerListAdapter(
                       notifyDataSetChanged()
                   } else {*/
                 Log.e(TAG, "charSequence:  ${charSequence}")
-                var filterList: ArrayList<com.android.pos.data.model.CustomerListResponse.Data> =
+                /*var filterList: ArrayList<com.android.pos.data.model.CustomerListResponse.Data> =
                     arrayListOf()
                 for (model in this@CustomerListAdapter.list) {
                     Log.e("FilterProcess", "ModelName ${model.first_name.toLowerCase()}")
@@ -174,10 +177,27 @@ class CustomerListAdapter(
                 if (filterList.size != 0) {
                     this@CustomerListAdapter.filterList = filterList
                 }
-                /*}*/
+                *//*}*//*
                 val filterResult = FilterResults()
                 filterResult.values = filterList
-                return filterResult
+                return filterResult*/
+
+                val chatString = charSequence.toString()
+                filterList = if (charString.isEmpty()) {
+                    list
+                } else {
+                    val fList = ArrayList<CustomerListResponse.Data>()
+                    list.filter {
+                        (it.first_name.lowercase(Locale.getDefault())
+                            .contains(charString)) || (it.last_name.lowercase(Locale.getDefault())
+                            .contains(charString))
+                    }.forEach { fList.add(it) }
+
+                    fList
+                }
+
+                return FilterResults().apply { values = filterList }
+
 
             }
 

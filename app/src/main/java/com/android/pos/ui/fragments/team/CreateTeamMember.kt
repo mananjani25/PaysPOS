@@ -86,8 +86,7 @@ class CreateTeamMember : Fragment() {
             event.getContentIfNotHandled()?.let { baseResponse ->
                 activity?.let {
                     AlertUtils.showCustomAlertWithListenerWithOK(
-                        it, baseResponse.message
-                    ) { _, _ ->
+                        it, baseResponse.message) { _, _ ->
                         findNavController().popBackStack()
                     }
                 }

@@ -180,13 +180,16 @@
                         android:layout_height="0.5dp"
                         android:background="@color/colorNewBorder" />
 
-                    <EditText
+                    <com.santalu.maskedittext.MaskEditText
                         android:id="@+id/edtPhoneNo"
                         style="@style/CustomFontMediumStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@null"
+                        android:hint="(201) 555-0123"
                         android:inputType="number"
+                        android:maxLength="20"
+                        android:textColorHint="@color/hint_color_"
                         android:padding="@dimen/_5sdp"
                         android:text="@={viewModel.phoneNo}"
                         android:textColor="@color/hintColor"
@@ -271,9 +274,9 @@
                     android:layout_marginStart="@dimen/_15sdp"
                     android:layout_marginEnd="@dimen/_15sdp"
                     android:background="@drawable/background_square_border_grey"
+                    android:inputType="textNoSuggestions"
                     android:padding="@dimen/_5sdp"
                     android:text=""
-                    android:inputType="textNoSuggestions"
                     android:textColor="@color/hintColor"
                     android:textSize="@dimen/_6mdpi" />
 
@@ -292,10 +295,10 @@
                         android:layout_width="0sp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text=""
-                        android:inputType="textNoSuggestions"
                         android:background="@drawable/background_square_border_grey"
+                        android:inputType="textNoSuggestions"
                         android:padding="@dimen/_5sdp"
+                        android:text=""
                         android:textColor="@color/hintColor"
                         android:textSize="@dimen/_6mdpi" />
 
@@ -305,10 +308,10 @@
                         android:layout_width="0sp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text=""
-                        android:inputType="textNoSuggestions"
                         android:background="@drawable/background_square_border_grey"
+                        android:inputType="textNoSuggestions"
                         android:padding="@dimen/_5sdp"
+                        android:text=""
                         android:textColor="@color/hintColor"
                         android:textSize="@dimen/_6mdpi" />
 
@@ -319,9 +322,9 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:background="@drawable/background_square_border_grey"
+                        android:inputType="textNoSuggestions"
                         android:padding="@dimen/_5sdp"
                         android:text=""
-                        android:inputType="textNoSuggestions"
                         android:textColor="@color/hintColor"
                         android:textSize="@dimen/_6mdpi" />
 

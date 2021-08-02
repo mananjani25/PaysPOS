@@ -92,7 +92,6 @@ class AddEditCustomer : Fragment() {
         isEdit = requireArguments().getBoolean("isEdit", false)
         Log.e(TAG, "isEdit  $isEdit")
 
-
         searchPlaces()
 
         if (isEdit) {
@@ -269,11 +268,14 @@ class AddEditCustomer : Fragment() {
                     viewModel.addCustomerDetails.value?.data?.birthday_year = year.toString()
 
 
-                    binding.edtBirthDay.text = "$dayOfMonth" + "-" + (monthOfYear + 1) + "-" + year
+                    val mon = (monthOfYear + 1)
+                    binding.edtBirthDay.text = "" + mon + "/" + dayOfMonth + "/" + year
+
 
                 }
 
             }, mYear, mMonth, mDay)
+        datePicker.datePicker.maxDate = System.currentTimeMillis()
         datePicker.show()
         Log.e(TAG, "DatePickerInside  ")
     }
@@ -281,12 +283,24 @@ class AddEditCustomer : Fragment() {
     private fun navigate() {
 
         Log.e(TAG, "POPBACKCUSTOMER")
-        viewModel.data.observe(viewLifecycleOwner, { event ->
-            event.getContentIfNotHandled()?.let {
-                if (it) {
-                    val navControll = findNavController()
-                    navControll.previousBackStackEntry?.savedStateHandle?.set(KEY, CUSTOMERDETAILS)
-                    navControll.popBackStack()
+        viewModel._Basedata.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let { baseResponse ->
+                activity?.let {
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        it,
+                        baseResponse.message.toString(),
+                    )
+                    { _, _ ->
+
+                        val navControll = findNavController()
+                        navControll.previousBackStackEntry?.savedStateHandle?.set(
+                            com.android.pos.data.remote.Constants.KEY,
+                            com.android.pos.data.remote.Constants.CUSTOMERDETAILS
+                        )
+                        navControll.popBackStack()
+                    }
+
+
                 }
             }
         })

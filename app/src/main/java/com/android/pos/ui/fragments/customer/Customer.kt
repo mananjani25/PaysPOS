@@ -66,52 +66,25 @@ class Customer : Fragment() {
         dialog?.setContentView(R.layout.dialog_customer)
 
         // binding.lifecycleOwner = this
-        loadCustomerList()
+        // loadCustomerList()
+        loadCustomerLocalList()
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    private fun loadCustomerLocalList() {
 
-        configureToolbar()
-        //loadFragment()
-        searchQuery()
-
-        binding.txtCrtNewCustomer.setOnClickListener {
-            //dialog?.dismiss()
-            binding.linearCustomerDialog.visibility = View.GONE
-
-            val bundle: Bundle = bundleOf("isEdit" to false)
-            findNavController().navigate(R.id.action_customer_to_addEditCustomer, bundle)
-
-        }
-
-        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<String>(KEY)
-            ?.observe(viewLifecycleOwner) {
-                when (it) {
-                    CUSTOMERDETAILS -> {
-                        Log.e(TAG, "UpdateLoadList")
-                        viewModel.customerList()
-
-                    }
-
-                }
-
-            }
-
-    }
-
-    private fun loadCustomerList() {
         viewModel.customerList().observe(viewLifecycleOwner, {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
+
                         ProgressUtils.dismissProgressDialog()
-                        if (resource.data?.data != null) {
+                        if (resource.data != null) {
                             val list: ArrayList<CustomerModel> = arrayListOf()
 
+
                             val data =
-                                resource.data.data as ArrayList<com.android.pos.data.model.CustomerListResponse.Data>
+                                resource.data as ArrayList<com.android.pos.data.model.CustomerListResponse.Data>
 
                             Log.e(TAG, "getCustomerData ${Gson().toJson(data)}")
                             dynamicCustomerList.clear()
@@ -167,7 +140,6 @@ class Customer : Fragment() {
                                         })
 
                                 }
-
                             }
 
 
@@ -175,22 +147,151 @@ class Customer : Fragment() {
 
 
                     }
+                    Status.LOADING -> {
+
+                        ProgressUtils.showProgressDialog(requireActivity())
+                    }
                     Status.ERROR -> {
                         ProgressUtils.dismissProgressDialog()
                         binding.root.showAlert(resource.message)
 
                     }
-                    Status.LOADING -> {
-                        ProgressUtils.showProgressDialog(requireActivity())
-                    }
+
 
                 }
 
             }
 
 
-        })
+        }
+
+
+        )
+
     }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        configureToolbar()
+        //loadFragment()
+        searchQuery()
+
+        binding.txtCrtNewCustomer.setOnClickListener {
+            //dialog?.dismiss()
+            binding.linearCustomerDialog.visibility = View.GONE
+
+            val bundle: Bundle = bundleOf("isEdit" to false)
+            findNavController().navigate(R.id.action_customer_to_addEditCustomer, bundle)
+
+        }
+
+        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<String>(KEY)
+            ?.observe(viewLifecycleOwner) {
+                when (it) {
+                    CUSTOMERDETAILS -> {
+                        Log.e(TAG, "UpdateLoadList")
+                        viewModel.customerList()
+
+                    }
+
+                }
+
+            }
+
+    }
+
+
+/*private fun loadCustomerList() {
+    viewModel.customerList().observe(viewLifecycleOwner, {
+        it?.let { resource ->
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    ProgressUtils.dismissProgressDialog()
+                    if (resource.data?.data != null) {
+                        val list: ArrayList<CustomerModel> = arrayListOf()
+
+                        val data =
+                            resource.data.data as ArrayList<com.android.pos.data.model.CustomerListResponse.Data>
+
+                        Log.e(TAG, "getCustomerData ${Gson().toJson(data)}")
+                        dynamicCustomerList.clear()
+                        dynamicCustomerList.addAll(data)
+
+                        val adapter = CustomerListAdapter(requireContext(), data, object :
+                            CustomerListAdapter.CustomerInteface {
+                            override fun onCustomerSelect(
+                                pos: Int,
+                                model: com.android.pos.data.model.CustomerListResponse.Data
+                            ) {
+                                binding.layoutTool.txtSubTitle.setText(model.first_name + " " + model.last_name)
+                                loadFragment(model)
+                            }
+
+                        })
+
+                        binding.rvEmployeeList.adapter = adapter
+                        object : SwipeHelper(activity, binding.rvEmployeeList) {
+                            override fun instantiateUnderlayButton(
+                                viewHolder: RecyclerView.ViewHolder?,
+                                underlayButtons: MutableList<UnderlayButton>
+                            ) {
+                                underlayButtons.add(
+                                    UnderlayButton(
+                                        "Delete",
+                                        0,
+                                        Color.parseColor("#FF3C30")
+                                    ) { pos ->
+
+                                        Log.e(TAG, "UnderLAyButton")
+                                        alert(
+                                            getString(R.string.app_name),
+                                            getString(R.string.delete_customer_message)
+                                        ) {
+                                            positiveButton(getString(R.string.tv_delete)) {
+                                                Log.e(
+                                                    "Delete",
+                                                    "getDeleteItem  ${adapter.getItem(pos)}"
+                                                )
+
+                                                viewModel.delete(adapter.getItem(pos).id)
+                                                removeItem(pos)
+
+                                                // discountObject = discountListadapter.getItem(pos)
+                                                // viewModel.delete(discountListadapter.getItem(pos).id)
+                                            }
+                                            negativeButton(R.string.tv_cancel) {
+                                                // Do negative stuff here
+                                            }
+                                        }
+
+                                    })
+
+                            }
+
+                        }
+
+
+                    }
+
+
+                }
+                Status.ERROR -> {
+                    ProgressUtils.dismissProgressDialog()
+                    binding.root.showAlert(resource.message)
+
+                }
+                Status.LOADING -> {
+                    ProgressUtils.showProgressDialog(requireActivity())
+                }
+
+            }
+
+        }
+
+
+    })
+}*/
 
     private fun searchQuery() {
         binding.autoSearch.addTextChangedListener(object : TextWatcher {
@@ -212,10 +313,8 @@ class Customer : Fragment() {
                     )
                     (binding.rvEmployeeList.adapter as CustomerListAdapter?)?.notifyDataSetChanged()
 
-
                 }
                 binding.rvEmployeeList.adapter?.notifyDataSetChanged()
-
 
             }
 
