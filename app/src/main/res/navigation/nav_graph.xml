@@ -462,7 +462,7 @@
     <fragment
         android:id="@+id/userAccessPermissionListFragment"
         android:name="com.android.pos.ui.fragments.settings.teamrole.UserAccessPermissionListFragment"
-        android:label="UserAccessPermissionListFragment" >
+        android:label="UserAccessPermissionListFragment">
         <action
             android:id="@+id/action_userAccessPermissionListFragment_to_userAccessPermissionFragment"
             app:destination="@id/userAccessPermissionFragment" />
@@ -471,7 +471,6 @@
         android:id="@+id/userAccessPermissionFragment"
         android:name="com.android.pos.ui.fragments.settings.teamrole.UserAccessPermissionFragment"
         android:label="UserAccessPermissionFragment" />
-        android:label="SingleTeamMemberTimeSheetFragment" />/>
     <fragment
         android:id="@+id/paymentFragment"
         android:name="com.android.pos.ui.fragments.payment.PaymentFragment"
