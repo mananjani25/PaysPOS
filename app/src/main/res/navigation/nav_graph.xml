@@ -231,6 +231,9 @@
             android:id="@+id/action_settings_to_teamMemberTimeSheetFragment"
             app:destination="@id/teamMemberTimeSheetFragment"
             app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_settings_to_userAccessPermissionListFragment"
+            app:destination="@id/userAccessPermissionListFragment" />
 
     </fragment>
     <action
@@ -453,6 +456,18 @@
         android:id="@+id/singleTeamMemberTimeSheetFragment"
         android:name="com.android.pos.ui.fragments.settings.teamrole.SingleTeamMemberTimeSheetFragment"
         android:label="SingleTeamMemberTimeSheetFragment" />
+    <fragment
+        android:id="@+id/userAccessPermissionListFragment"
+        android:name="com.android.pos.ui.fragments.settings.teamrole.UserAccessPermissionListFragment"
+        android:label="UserAccessPermissionListFragment" >
+        <action
+            android:id="@+id/action_userAccessPermissionListFragment_to_userAccessPermissionFragment"
+            app:destination="@id/userAccessPermissionFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/userAccessPermissionFragment"
+        android:name="com.android.pos.ui.fragments.settings.teamrole.UserAccessPermissionFragment"
+        android:label="UserAccessPermissionFragment" />
 
 
 </navigation>

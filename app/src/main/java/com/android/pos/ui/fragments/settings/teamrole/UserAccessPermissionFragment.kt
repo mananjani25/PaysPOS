@@ -9,12 +9,13 @@ import androidx.databinding.DataBindingUtil
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.databinding.FragmentTeamMemberTimeSheetBinding
+import com.android.pos.databinding.FragmentUserAccessPermissionBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class UserAccessPermissionFragment : Fragment() {
 
-    private lateinit var binding: FragmentTeamMemberTimeSheetBinding
+    private lateinit var binding: FragmentUserAccessPermissionBinding
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -24,18 +25,13 @@ class UserAccessPermissionFragment : Fragment() {
         binding =
             DataBindingUtil.inflate(
                 inflater,
-                R.layout.fragment_team_member_time_sheet,
+                R.layout.fragment_user_access_permission,
                 container,
                 false
             )
 
         binding.lifecycleOwner = this
 
-        binding.llTestClick.setOnClickListener {
-            findNavController().navigate(
-                R.id.action_teamMemberTimeSheetFragment_to_singleTeamMemberTimeSheetFragment
-            )
-        }
         return binding.root
     }
 

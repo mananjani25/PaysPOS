@@ -9,7 +9,7 @@ import com.android.pos.data.model.responseModel.NoteResponse
 interface NotesDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun addNotes(noteModel: NoteResponse.Data): Long
+    suspend fun addNotes(noteModel: NoteResponse.Data): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addAllNotes(noteList: List<NoteResponse.Data>)

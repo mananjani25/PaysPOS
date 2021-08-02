@@ -99,7 +99,19 @@ class CreateTipsViewModel @Inject constructor(
                         resource.data.let { logInResponse ->
                             if (logInResponse?.status == 200) {
 
-                                resource.data?.let {createTipResponse->
+                                resource.data?.let { createTipResponse ->
+
+                                    val tip = GetTipReponse.Data(
+                                        name = createTipResponse.data.name,
+                                        id = createTipResponse.data.id,
+                                        locationId = createTipResponse.data.locationId,
+                                        isActive = createTipResponse.data.isActive,
+                                        rate = createTipResponse.data.rate,
+                                        createdAt = createTipResponse.data.createdAt,
+                                        updatedAt = createTipResponse.data.updatedAt,
+                                        sort = createTipResponse.data.sort
+                                    )
+                                    tipDiscountRepository.createTipsDatabase(tip)
                                     _data.value = Event(createTipResponse)
 
                                 }

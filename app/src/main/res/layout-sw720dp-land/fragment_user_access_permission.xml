@@ -71,8 +71,17 @@
                 android:background="@color/white"
                 android:orientation="vertical">
 
-                <androidx.appcompat.widget.AppCompatEditText
+                <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/tv_add_new_role_name"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_7mdpi"
+                    app:textAllCaps="false" />
+
+                <androidx.appcompat.widget.AppCompatEditText
+                    style="@style/CustomFontMediumStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -87,7 +96,7 @@
                     android:textSize="@dimen/_6sdp" />
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    style="@style/CustomFontRegularStyle"
+                    style="@style/CustomFontMediumStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_5sdp"
@@ -101,7 +110,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginBottom="@dimen/_10sdp"
+                    android:layout_marginBottom="@dimen/_5sdp"
                     android:orientation="horizontal">
 
                     <androidx.recyclerview.widget.RecyclerView
@@ -111,18 +120,17 @@
                         android:background="@drawable/background_tab_vertical"
                         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                         tools:itemCount="5"
-                        tools:listitem="@layout/view_user_permission_item" />
+                        tools:listitem="@layout/view_module_selected_item" />
 
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/_15sdp"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:orientation="vertical">
 
                         <androidx.appcompat.widget.AppCompatTextView
-                            style="@style/CustomFontBold"
+                            style="@style/CustomFontSemiBold"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:background="@drawable/bg_button_border"
@@ -135,11 +143,11 @@
                             app:textAllCaps="false" />
 
                         <androidx.appcompat.widget.AppCompatTextView
-                            style="@style/CustomFontBold"
+                            style="@style/CustomFontSemiBold"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/_5sdp"
-                            android:background="@drawable/bg_button_border_gray"
+                            android:background="@drawable/background_timesheet"
                             android:ems="6"
                             android:gravity="center"
                             android:padding="@dimen/_5sdp"
@@ -157,12 +165,12 @@
                         android:background="@drawable/background_tab_vertical"
                         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                         tools:itemCount="5"
-                        tools:listitem="@layout/view_user_permission_item" />
+                        tools:listitem="@layout/view_module_selected_item1" />
 
                 </LinearLayout>
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    style="@style/CustomFontRegularStyle"
+                    style="@style/CustomFontMediumStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_5sdp"
@@ -184,18 +192,17 @@
                         android:background="@drawable/background_tab_vertical"
                         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                         tools:itemCount="5"
-                        tools:listitem="@layout/view_user_permission_item" />
+                        tools:listitem="@layout/view_selected_team_member_item" />
 
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/_15sdp"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:orientation="vertical">
 
                         <androidx.appcompat.widget.AppCompatTextView
-                            style="@style/CustomFontBold"
+                            style="@style/CustomFontSemiBold"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:background="@drawable/bg_button_border"
@@ -208,11 +215,11 @@
                             app:textAllCaps="false" />
 
                         <androidx.appcompat.widget.AppCompatTextView
-                            style="@style/CustomFontBold"
+                            style="@style/CustomFontSemiBold"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/_5sdp"
-                            android:background="@drawable/bg_button_border_gray"
+                            android:background="@drawable/background_timesheet"
                             android:ems="6"
                             android:gravity="center"
                             android:padding="@dimen/_5sdp"
@@ -230,7 +237,7 @@
                         android:background="@drawable/background_tab_vertical"
                         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                         tools:itemCount="5"
-                        tools:listitem="@layout/view_user_permission_item" />
+                        tools:listitem="@layout/view_selected_tem_member_item1" />
 
                 </LinearLayout>
 
@@ -241,12 +248,12 @@
                     android:orientation="horizontal">
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontBold"
+                        style="@style/CustomFontSemiBold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginRight="@dimen/_10sdp"
                         android:background="@drawable/bg_button_border"
-                        android:ems="20"
+                        android:ems="15"
                         android:gravity="center"
                         android:padding="@dimen/_5sdp"
                         android:text="@string/tv_add_role"
@@ -255,11 +262,11 @@
                         app:textAllCaps="false" />
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontBold"
+                        style="@style/CustomFontSemiBold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/bg_button_border_gray"
-                        android:ems="20"
+                        android:background="@drawable/background_timesheet"
+                        android:ems="15"
                         android:gravity="center"
                         android:padding="@dimen/_5sdp"
                         android:text="@string/tv_cancel"
@@ -272,41 +279,41 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_5sdp"
+                    android:layout_marginTop="@dimen/_10sdp"
                     android:background="@drawable/background_timesheet"
                     android:orientation="horizontal"
-                    android:paddingTop="@dimen/_10sdp"
-                    android:paddingBottom="@dimen/_10sdp">
+                    android:paddingTop="@dimen/_8sdp"
+                    android:paddingBottom="@dimen/_8sdp">
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontBold"
+                        style="@style/CustomFontMediumStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/_10sdp"
                         android:layout_marginRight="@dimen/_10sdp"
                         android:text="@string/tv_role"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textSize="@dimen/_7mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontBold"
+                        style="@style/CustomFontMediumStyle"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_weight="2"
                         android:gravity="center"
                         android:text="@string/tv_team_member_with_role"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textSize="@dimen/_7mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontBold"
+                        style="@style/CustomFontMediumStyle"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:text="@string/tv_permission"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textSize="@dimen/_7mdpi" />
 
                 </LinearLayout>
 
@@ -316,7 +323,7 @@
                     android:background="@drawable/background_tab_vertical"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:itemCount="5"
-                    tools:listitem="@layout/view_user_permission_item" />
+                    tools:listitem="@layout/view_assigned_role_item" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
         </androidx.core.widget.NestedScrollView>

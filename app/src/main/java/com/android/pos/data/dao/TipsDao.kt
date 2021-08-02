@@ -9,7 +9,7 @@ import com.android.pos.data.model.responseModel.GetTipReponse
 interface TipsDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun addTips(tipModel: GetTipReponse.Data): Long
+    suspend fun addTips(tipModel: GetTipReponse.Data): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addAllTips(tipList: List<GetTipReponse.Data>)

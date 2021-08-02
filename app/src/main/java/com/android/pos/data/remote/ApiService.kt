@@ -185,22 +185,22 @@ interface ApiService {
     @DELETE(NOTE_UPDATE_DELETE)
     suspend fun deleteNote(
         @Path("id") noteId: Int,
-    ): BaseResponse
+    ): CreateNoteResponse
 
     @POST(NOTES)
-    suspend fun createNote(@Body createTax: CreateNoteRequest): BaseResponse
+    suspend fun createNote(@Body createTax: CreateNoteRequest): CreateNoteResponse
 
     @PUT(NOTE_UPDATE_DELETE)
     suspend fun updateNote(
         @Path("id") taxId: Int,
         @Body createTax: CreateNoteRequest
-    ): BaseResponse
+    ): CreateNoteResponse
 
     @PUT(NOTES_ACTIVE)
     suspend fun noteActive(
         @Path("id") noteId: Int,
         @Query("is_active") is_active: Boolean
-    ): BaseResponse
+    ): CreateNoteResponse
 
     @GET(EMPLOYEES)
     suspend fun employeesList(@Query("location_id") location_id: Int): EmployeeListResponse

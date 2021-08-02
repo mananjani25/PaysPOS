@@ -359,8 +359,10 @@
     <string name="tv_remove_all">Remove All</string>
     <string name="tv_select_team_member">Select Team Member</string>
     <string name="tv_add_role">Add Role</string>
-    <string name="tv_cancel">Cancel</string>
     <string name="tv_role">Role</string>
     <string name="tv_team_member_with_role">Team Member with Role</string>
     <string name="tv_permission">Permission</string>
+    <string name="tv_email">Email</string>
+    <string name="tv_add_new_role_name">Add New Role Name</string>
+    <string name="tv_assign_member">Assign Member</string>
 </resources>

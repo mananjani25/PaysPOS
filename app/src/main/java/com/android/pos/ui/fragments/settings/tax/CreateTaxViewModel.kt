@@ -132,8 +132,26 @@ class CreateTaxViewModel @Inject constructor(
                         resource.data.let { logInResponse ->
                             if (logInResponse?.status == 200) {
 
-                                resource.data?.let {
-                                    _data.value = Event(it)
+                                resource.data?.let { createTaxResponse ->
+                                    val tax =
+                                        GetTaxResponse.TaxData(
+                                            name = createTaxResponse.data.name,
+                                            id = createTaxResponse.data.id,
+                                            locationId = createTaxResponse.data.locationId,
+                                            rate = createTaxResponse.data.rate,
+                                            taxType = createTaxResponse.data.taxType,
+                                            isActive = createTaxResponse.data.isActive,
+                                            isDefault = createTaxResponse.data.isDefault,
+                                            isCustomAmount = createTaxResponse.data.isCustomAmount,
+                                            itemPricing = createTaxResponse.data.itemPricing,
+                                            itemIds = createTaxResponse.data.itemIds,
+                                            createdAt = createTaxResponse.data.createdAt,
+                                            updatedAt = createTaxResponse.data.updatedAt
+                                        )
+
+                                    taxServiceChargeRepository.createTaxDatabase(tax)
+
+                                    _data.value = Event(createTaxResponse)
 
                                 }
                             } else {

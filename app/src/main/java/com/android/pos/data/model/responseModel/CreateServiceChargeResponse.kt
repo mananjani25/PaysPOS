@@ -27,6 +27,8 @@ data class CreateServiceChargeResponse(
         @SerializedName("percentage")
         val percentage: Double,
         @SerializedName("updated_at")
-        val updatedAt: String
+        val updatedAt: String,
+        @SerializedName("is_active")
+        var isActive: Boolean = false
     )
 }

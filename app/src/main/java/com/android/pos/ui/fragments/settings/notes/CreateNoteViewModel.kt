@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.android.pos.R
 import com.android.pos.data.model.requestModel.CreateNoteRequest
 import com.android.pos.data.model.responseModel.BaseResponse
+import com.android.pos.data.model.responseModel.CreateNoteResponse
 import com.android.pos.data.model.responseModel.GetTaxResponse
 import com.android.pos.data.model.responseModel.NoteResponse
 import com.android.pos.data.remote.Constants.LOCATION_ID
@@ -32,8 +33,8 @@ class CreateNoteViewModel @Inject constructor(
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
 
-    private val _data = MutableLiveData<Event<BaseResponse?>>()
-    val data: LiveData<Event<BaseResponse?>> = _data
+    private val _data = MutableLiveData<Event<CreateNoteResponse?>>()
+    val data: LiveData<Event<CreateNoteResponse?>> = _data
 
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
@@ -44,7 +45,7 @@ class CreateNoteViewModel @Inject constructor(
 
     private lateinit var noteData: CreateNoteRequest
 
-    private lateinit var resource: Resource<BaseResponse>
+    private lateinit var resource: Resource<CreateNoteResponse>
 
     fun isEditData(isEdit: Boolean, taxId: Int) {
         this.taxId = taxId
@@ -92,8 +93,19 @@ class CreateNoteViewModel @Inject constructor(
                         resource.data.let { logInResponse ->
                             if (logInResponse?.status == 200) {
 
-                                resource.data?.let { baseResponse ->
-                                    _data.value = Event(baseResponse)
+                                resource.data?.let { noteResponse ->
+
+                                    val note = NoteResponse.Data(
+                                        createdAt = noteResponse.data.createdAt,
+                                        id = noteResponse.data.id,
+                                        isActive = noteResponse.data.isActive,
+                                        locationId = noteResponse.data.locationId,
+                                        name = noteResponse.data.name,
+                                        sort = noteResponse.data.sort,
+                                        updatedAt = noteResponse.data.updatedAt
+                                    )
+                                    posRepository.createNoteDatabase(note)
+                                    _data.value = Event(noteResponse)
 
                                 }
                             } else {
