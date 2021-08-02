@@ -249,5 +249,15 @@ class PosRepository @Inject constructor(
     fun getCartList(): LiveData<List<CartModel>> {
         return appDatabase.cartDao().allItem
     }
+
+    suspend fun addItemCart(cartModel: CartModel) {
+
+        appDatabase.cartDao().add(cartModel)
+    }
+
+    suspend fun deleteCart() {
+
+        appDatabase.cartDao().delete()
+    }
 }
 

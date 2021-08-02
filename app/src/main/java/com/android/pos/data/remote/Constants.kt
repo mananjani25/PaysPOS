@@ -15,6 +15,10 @@ object Constants {
     const val USERNAME = "userName"
     const val IS_CLOCKOUT = "isClockout"
 
+    const val UPDATE = "UPDATE"
+    const val DELETE = "DELETE"
+    const val ADD = "ADD"
+
 
     //Api End Points
     const val USERS_LOG_IN = "users/log_in"

@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/login">
+    app:startDestination="@id/dashboardCategoryNew">
 
 
     <fragment
@@ -352,6 +352,9 @@
             android:id="@+id/action_dashboardCategoryNew_to_customer"
             app:destination="@id/customer"
             app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_dashboardCategoryNew_to_paymentFragment"
+            app:destination="@id/paymentFragment" />
 
     </fragment>
     <action
@@ -445,6 +448,25 @@
         android:name="com.android.pos.ui.fragments.settings.teamrole.TeamMemberTimeSheetFragment"
         android:label="fragment_team_member_time_sheet"
         tools:layout="@layout/fragment_team_member_time_sheet" />
+    <fragment
+        android:id="@+id/paymentFragment"
+        android:name="com.android.pos.ui.fragments.payment.PaymentFragment"
+        android:label="PaymentFragment">
+        <action
+            android:id="@+id/action_paymentFragment_to_splitAmountFragment"
+            app:destination="@id/splitAmountFragment" />
+        <action
+            android:id="@+id/action_paymentFragment_to_customAmountFragment"
+            app:destination="@id/customAmountFragment" />
+    </fragment>
+    <dialog
+        android:id="@+id/splitAmountFragment"
+        android:name="com.android.pos.ui.dialog.SplitAmountFragment"
+        android:label="split_amount_fragment" />
+    <dialog
+        android:id="@+id/customAmountFragment"
+        android:name="com.android.pos.ui.dialog.CustomAmountFragment"
+        android:label="CustomAmountFragment" />
 
 
 </navigation>

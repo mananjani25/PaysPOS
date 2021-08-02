@@ -1,16 +1,17 @@
 package com.android.pos.ui.fragments.dashboard
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.app.Dialog
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import android.widget.*
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.PopupMenu
+import android.widget.TextView
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
@@ -28,11 +29,13 @@ import com.android.pos.data.entities.CategoryWithInventory
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.CategorySearchData
 import com.android.pos.data.model.CategoryTabModel
+import com.android.pos.data.remote.Constants.ADD
+import com.android.pos.data.remote.Constants.DELETE
 import com.android.pos.data.remote.Constants.HORIZONTAL
 import com.android.pos.data.remote.Constants.IS_CLOCKOUT
+import com.android.pos.data.remote.Constants.UPDATE
 import com.android.pos.data.remote.Constants.VERTICAL
 import com.android.pos.databinding.FragmentDashboardCategoryNewBinding
-import com.android.pos.databinding.PopupDashboardBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.CartAdapter
@@ -111,6 +114,55 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         //searchItem()
         getCartList()
 
+        binding.layoutCart.llShowMenu.setOnClickListener {
+            hideMenu()
+        }
+        binding.root.setOnClickListener {
+            if (binding.layoutCart.llCustomerDialog.visibility == View.VISIBLE) {
+                binding.layoutCart.llCustomerDialog.visibility = View.GONE
+            }
+        }
+
+        binding.layoutCart.txtClearItems.setOnClickListener {
+
+            alert(
+                getString(R.string.app_name),
+                getString(R.string.delete_items_message)
+            ) {
+                positiveButton(getString(R.string.tv_delete)) {
+                    // Do positive stuff here
+                    viewModel.deleteCart()
+                    hideMenu()
+                }
+                negativeButton(R.string.tv_cancel) {
+                    // Do negative stuff here
+                }
+            }
+
+        }
+
+
+        binding.layoutCart.txtTotalAmount.setOnClickListener {
+
+            val bundle = Bundle()
+            bundle.putDouble("totalPrice", viewModel.totalPrice)
+            bundle.putDouble("subTotalPrice", viewModel.subTotalPrice)
+            bundle.putDouble("totalTax", viewModel.totalTax)
+            bundle.putDouble("totalServiceCharge", viewModel.totalServiceCharge)
+
+            findNavController().navigate(
+                R.id.action_dashboardCategoryNew_to_paymentFragment,
+                bundle
+            )
+        }
+    }
+
+    private fun hideMenu() {
+        if (binding.layoutCart.llCustomerDialog.visibility == View.VISIBLE) {
+            binding.layoutCart.llCustomerDialog.visibility = View.GONE
+        } else {
+            binding.layoutCart.llCustomerDialog.visibility = View.VISIBLE
+        }
     }
 
     private fun getCartList() {
@@ -139,7 +191,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             // Do positive stuff here
                             val item = cartAdapter.getItem(pos)
 
-                            viewModel.cartLogic(cartList, item, "DELETE")
+                            viewModel.cartLogic(cartList, item, DELETE)
                         }
                         negativeButton(R.string.tv_cancel) {
                             // Do negative stuff here
@@ -167,82 +219,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 }
             }
         )
-    }
-
-    /*private fun searchItem() {
-        binding.layoutMenu.autoSearch.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if (binding.layoutMenu.autoSearch.text.isNotEmpty()) {
-                    searchbyKey(binding.layoutMenu.autoSearch.text.trim().toString())
-
-
-                }
-
-
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-
-            }
-
-        })
-    }*/
-
-
-    private fun searchbyKey(searchKey: String) {
-        Log.e(TAG, "searchKey:  $searchKey")
-        Log.e(TAG, "categoryListSearch  ${Gson().toJson(categoryList1)}")
-
-
-        var localVariable = ""
-
-        for (i in 0 until categoryList1.size) {
-
-            var dataSearch = categoryList1.get(i).inventoryLists?.filter {
-                if (it?.name?.toLowerCase().toString()
-                        .startsWith(searchKey.toLowerCase().toString())
-                ) {
-                    localVariable = it?.name!!
-                    Log.e(TAG, "localVariableInside  ${localVariable}")
-
-                    return@filter true
-
-                } else {
-                    return@filter false
-                }
-
-
-            }
-
-            if (localVariable.isNotEmpty()) {
-                Log.e(TAG, "localVariable  ${localVariable}")
-                break
-            }
-
-
-            /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                val filters =categoryList1.stream().filter {
-                    Log.e(TAG,"StreamItem  ${Gson().toJson(it)}")
-                     for (i in 0 until it.inventoryLists!!.size){
-
-
-                             return@filter (it.inventoryLists!!.get(i)?.name!!.startsWith(searchKey))
-
-                     }
-                     return@filter false
-
-
-                }
-
-                Log.e(TAG,"filtersItem  ${Gson().toJson(filters)}")
-            }*/
-        }
-
-
     }
 
 
@@ -293,14 +269,11 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     private fun onClick() {
         binding.layoutMenu.imgOptionMenu.setOnClickListener {
-//            showPopup(binding.viewPopup)
             showPopup(binding.layoutMenu.imgOptionMenu)
-            // showInfoDialog(binding.layoutMenu.imgOptionMenu, requireActivity())
         }
 
         binding.footer.linearMore.setOnClickListener {
             dialogPOSMenu()
-            //findNavController().navigate(R.id.action_dashboardCategoryNew_to_menuPOS)
 
         }
 
@@ -308,7 +281,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     private fun dialogPOSMenu() {
 
-        val dialog: Dialog = Dialog(requireContext(), android.R.style.Theme_Light)
+        val dialog = Dialog(requireContext(), android.R.style.Theme_Light)
 
         dialog.window?.requestFeature(Window.FEATURE_NO_TITLE)
 
@@ -375,19 +348,11 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             closeDialog(dialog)
         }
 
-
-
-
         dialog.show()
-
-
     }
 
     fun closeDialog(dialog: Dialog?) {
-
         dialog?.dismiss()
-
-
     }
 
     private fun horizontalTabList() {
@@ -398,17 +363,17 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         binding.rvTabLayout.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
 
-        var tabList = (binding.rvTabLayout.adapter as CategoryTabAdapter1).list
+        val tabList = (binding.rvTabLayout.adapter as CategoryTabAdapter1).list
 
         for (i in 0 until tabList.size) {
             tabList.get(i).type = HORIZONTAL
 
         }
         (binding.rvTabLayout.adapter as CategoryTabAdapter1).list = tabList
-        binding.rvTabLayout?.adapter?.notifyDataSetChanged()
+        binding.rvTabLayout.adapter?.notifyDataSetChanged()
 
 
-        val set: ConstraintSet = ConstraintSet()
+        val set = ConstraintSet()
         set.clone(binding.constraintParent)
 
         //Category TabList Horizontal View Set
@@ -476,7 +441,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     }
 
     private fun verticalTabList() {
-        var params: ViewGroup.LayoutParams = binding.rvTabLayout.layoutParams
+        val params: ViewGroup.LayoutParams = binding.rvTabLayout.layoutParams
         params.height = 0
         params.width = LinearLayout.LayoutParams.WRAP_CONTENT
 
@@ -485,17 +450,17 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         binding.rvTabLayout.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
 
-        var tabList = (binding.rvTabLayout.adapter as CategoryTabAdapter1).list
+        val tabList = (binding.rvTabLayout.adapter as CategoryTabAdapter1).list
 
         for (i in 0 until tabList.size) {
             tabList.get(i).type = VERTICAL
 
         }
         (binding.rvTabLayout.adapter as CategoryTabAdapter1).list = tabList
-        binding.rvTabLayout?.adapter?.notifyDataSetChanged()
+        binding.rvTabLayout.adapter?.notifyDataSetChanged()
 
 
-        val set: ConstraintSet = ConstraintSet()
+        val set = ConstraintSet()
         set.clone(binding.constraintParent)
 
         //Category TabList REcyclerViewTab View Set
@@ -577,7 +542,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             {
                 when (it.status) {
                     Status.SUCCESS -> {
-                        ProgressUtils.dismissProgressDialog()
+
                         val tbCategory = it.data
                         if (tbCategory != null) {
 
@@ -656,6 +621,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             }
 
                         }
+
+                        ProgressUtils.dismissProgressDialog()
                     }
                     Status.ERROR ->
                         ProgressUtils.dismissProgressDialog()
@@ -665,66 +632,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 }
             })
 
-    }
-
-
-    fun showInfoDialog(
-        anchorView: View,
-        activity: Activity
-    ): PopupWindow {
-
-        val popWindow = PopupWindow(activity)
-        val binding: PopupDashboardBinding =
-            PopupDashboardBinding.inflate(
-                LayoutInflater.from(activity),
-                activity.window.decorView.findViewById(R.id.content),
-                true
-            )
-
-
-
-        binding.txtHorizontal.setOnClickListener {
-            popWindow.dismiss()
-            horizontalTabList()
-        }
-        binding.txtVertical.setOnClickListener {
-            popWindow.dismiss()
-            verticalTabList()
-        }
-        popWindow.height = ViewGroup.LayoutParams.WRAP_CONTENT
-        (activity.getSystemService(Context.WINDOW_SERVICE) as WindowManager)
-        val root = activity.window.decorView.rootView as ViewGroup
-        applyDim(root, 0.5f)
-        popWindow.contentView = binding.root
-        popWindow.isOutsideTouchable = true
-        popWindow.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        popWindow.isFocusable = true
-        /* popWindow.showAsDropDown(
-             anchorView,
-             -(anchorView.x.toInt() - (anchorView.width / 2)),
-             (anchorView.height) - 20
-         )
-
- */        popWindow.showAsDropDown(anchorView, -(anchorView.width), (anchorView.height) - 20)
-
-        popWindow.setOnDismissListener {
-            clearDim(root)
-
-        }
-        return popWindow
-    }
-
-    fun applyDim(parent: ViewGroup, dimAmount: Float) {
-        val dim: Drawable = ColorDrawable(Color.BLACK)
-        dim.setBounds(0, 0, parent.width, parent.height)
-        dim.alpha = (255 * dimAmount).toInt()
-        val overlay = parent.overlay
-        overlay.add(dim)
-    }
-
-    fun clearDim(parent: ViewGroup) {
-        val overlay = parent.overlay
-        overlay.clear()
     }
 
     private fun showPopup(view: View) {
@@ -753,13 +660,13 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     fun resetTabbySearch(model: CategorySearchData) {
         var tabPos = -1
-        var tabList = (binding.rvTabLayout.adapter as CategoryTabAdapter1).list
+        val tabList = (binding.rvTabLayout.adapter as CategoryTabAdapter1).list
         Log.e(TAG, "searchTabList  ${Gson().toJson(tabList)}")
         Log.e(TAG, "searchmodel  ${Gson().toJson(model)}")
         for (i in 0 until tabList.size) {
 
-            if (tabList.get(i).id == model.categoryID) {
-                tabList.get(i).isSelected = true
+            if (tabList[i].id == model.categoryID) {
+                tabList[i].isSelected = true
                 tabPos = i
             } else {
                 tabList.get(i).isSelected = false
@@ -771,7 +678,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         (binding.rvTabLayout.adapter as CategoryTabAdapter1).list = tabList
         binding.rvTabLayout.adapter?.notifyDataSetChanged()
 
-        var listCategry = arrayListOf<TbItem?>()
+        val listCategry = arrayListOf<TbItem?>()
         listCategry.add(
             0,
             TbItem()
@@ -790,7 +697,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     override fun onClick(item: TbItem) {
 
-        viewModel.cartLogic(cartList, item, "ADD")
+        viewModel.cartLogic(cartList, item, ADD)
 
     }
 
@@ -816,7 +723,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         val imgClose: AppCompatImageView = dialog.findViewById(R.id.imgBack)
         val txtSave: AppCompatTextView = dialog.findViewById(R.id.txtSave)
         val txtTitle: AppCompatTextView = dialog.findViewById(R.id.txtTitle)
-        val txtQty: AppCompatTextView = dialog.findViewById(R.id.txtQty)
+        val txtQty: AppCompatEditText = dialog.findViewById(R.id.txtQty)
         val llPlus: LinearLayoutCompat = dialog.findViewById(R.id.llPlus)
         val llMinus: LinearLayoutCompat = dialog.findViewById(R.id.llMinus)
         val btnRemove: AppCompatTextView = dialog.findViewById(R.id.btnRemove)
@@ -825,7 +732,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         var qty = data.itemQuantity
 
-        txtQty.text = qty.toString()
+        txtQty.setText(qty.toString())
         txtTitle.text = data.name + "  $" + String.format(
             "%.2f",
             data.price
@@ -836,23 +743,23 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         }
         txtSave.setOnClickListener {
             dialog.dismiss()
-            data.itemQuantity = qty
-            viewModel.cartLogic(cartList, data, "UPDATE")
+            data.itemQuantity = txtQty.text.toString().toInt()
+            viewModel.cartLogic(cartList, data, UPDATE)
         }
 
         llPlus.setOnClickListener {
             qty += 1
-            txtQty.text = qty.toString()
+            txtQty.setText(qty.toString())
         }
         llMinus.setOnClickListener {
 
             if (qty > 1) {
                 qty -= 1
             }
-            txtQty.text = qty.toString()
+            txtQty.setText(qty.toString())
         }
         btnRemove.setOnClickListener {
-            viewModel.cartLogic(cartList, data, "DELETE")
+            viewModel.cartLogic(cartList, data, DELETE)
             dialog.dismiss()
         }
         btnAddDiscount.setOnClickListener {

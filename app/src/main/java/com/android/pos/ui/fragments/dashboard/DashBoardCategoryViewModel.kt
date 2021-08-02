@@ -1,6 +1,7 @@
 package com.android.pos.ui.fragments.dashboard
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,6 +9,9 @@ import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.ADD
+import com.android.pos.data.remote.Constants.DELETE
+import com.android.pos.data.remote.Constants.UPDATE
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,7 +26,11 @@ class DashBoardCategoryViewModel @Inject constructor(
     private val prefProvider: PrefProvider
 ) : ViewModel() {
 
-    private var totalPrice: Double = 0.0
+    var totalPrice: Double = 0.0
+    var totalCount = 0
+    var subTotalPrice = 0.0
+    var totalTax = 0.0
+    var totalServiceCharge = 0.0
 
     val venueData = posRepository.syncVenueData()
 
@@ -34,7 +42,13 @@ class DashBoardCategoryViewModel @Inject constructor(
     private fun addCart(cartModel: CartModel) {
 
         viewModelScope.launch {
-            appDatabase.cartDao().add(cartModel)
+            posRepository.addItemCart(cartModel)
+        }
+    }
+
+    fun deleteCart() {
+        viewModelScope.launch {
+            posRepository.deleteCart()
         }
     }
 
@@ -49,30 +63,30 @@ class DashBoardCategoryViewModel @Inject constructor(
             val list = cartList?.get(0)?.items?.toMutableList()
             if (list != null && list.isNotEmpty()) {
 
-                if (type == "ADD" || type == "UPDATE") {
+                if (type == ADD || type == UPDATE) {
                     var index = -1
 
-                    list?.forEachIndexed { pos, tbItem ->
+                    list.forEachIndexed { pos, tbItem ->
                         if (tbItem.itemId == item.itemId) {
                             index = pos
                             return@forEachIndexed
                         }
                     }
                     if (index != -1) {
-                        val model = cartList?.get(0)?.items?.get(index)
+                        val model = cartList[0].items?.get(index)
                         if (model != null) {
                             if (type == "UPDATE") {
                                 model.itemQuantity = item.itemQuantity
                             } else
                                 model.itemQuantity = model.itemQuantity + 1
-                            list?.set(index, model)
+                            list.set(index, model)
                         }
                     } else {
                         item.itemQuantity = 1
-                        list?.add(item)
+                        list.add(item)
                     }
-                } else if (type == "DELETE") {
-
+                } else if (type == DELETE) {
+                    // single item remove from cart
                     list.remove(item)
                 }
                 val cartModel = CartModel().apply {
@@ -80,6 +94,11 @@ class DashBoardCategoryViewModel @Inject constructor(
                     items = list
                 }
                 addCart(cartModel)
+
+                if (list.isEmpty()) {
+                    // delete carts
+                    deleteCart()
+                }
             }
 
 
@@ -100,15 +119,27 @@ class DashBoardCategoryViewModel @Inject constructor(
     @SuppressLint("SetTextI18n")
     fun itemCalculation(itemList: List<TbItem>?, txtTotalAmount: AppCompatTextView) {
 
-        var totalCount = 0
-        var subTotalPrice = 0.0
-        var totalTax = 0.0
-        var totalServiceCharge = 0.0
-        totalPrice = 0.0
 
-        itemList?.forEach {
-            totalCount += it.itemQuantity
-            subTotalPrice += it.price * it.itemQuantity
+        totalPrice = 0.0
+        totalCount = 0
+        subTotalPrice = 0.0
+        totalTax = 0.0
+        totalServiceCharge = 0.0
+
+        itemList?.forEach { item ->
+            totalCount += item.itemQuantity
+            subTotalPrice += item.price * item.itemQuantity
+
+            item.taxes?.forEach { tax ->
+                if (tax.isActive) {
+                    if (tax.taxType == "Percentage") {
+                        val itemTaxPrice = (tax.rate * (item.price * item.itemQuantity)) / 100
+                        Log.e("itemTaxPrice", "" + itemTaxPrice)
+                        totalTax += String.format("%.2f", itemTaxPrice)
+                            .toDouble()
+                    }
+                }
+            }
         }
 
 

@@ -103,7 +103,7 @@
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
-                <androidx.appcompat.widget.AppCompatTextView
+                <androidx.appcompat.widget.AppCompatEditText
                     android:id="@+id/txtQty"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="0dp"
@@ -111,6 +111,9 @@
                     android:layout_gravity="center"
                     android:layout_weight="1"
                     android:gravity="center"
+                    android:inputType="number"
+                    android:imeOptions="actionDone"
+                    android:background="@null"
                     android:padding="@dimen/_5sdp"
                     android:textColor="@color/viewTextColor"
                     android:textSize="@dimen/_6mdpi" />
