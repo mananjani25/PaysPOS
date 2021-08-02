@@ -41,7 +41,7 @@
             android:layout_marginEnd="@dimen/_10sdp"
             android:fontFamily="@font/sf_pro_display_semibold"
             android:padding="@dimen/_3sdp"
-            android:text="Home"
+            android:text="@string/tv_home"
             android:textColor="@color/txt_color_blue"
             android:textSize="@dimen/_7mdpi" />
     </LinearLayout>

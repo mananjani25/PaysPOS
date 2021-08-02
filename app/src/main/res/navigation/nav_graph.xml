@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/dashboardCategoryNew">
+    app:startDestination="@id/login">
 
 
     <fragment
@@ -447,7 +447,15 @@
         android:id="@+id/teamMemberTimeSheetFragment"
         android:name="com.android.pos.ui.fragments.settings.teamrole.TeamMemberTimeSheetFragment"
         android:label="fragment_team_member_time_sheet"
-        tools:layout="@layout/fragment_team_member_time_sheet" />
+        tools:layout="@layout/fragment_team_member_time_sheet">
+        <action
+            android:id="@+id/action_teamMemberTimeSheetFragment_to_singleTeamMemberTimeSheetFragment"
+            app:destination="@id/singleTeamMemberTimeSheetFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/singleTeamMemberTimeSheetFragment"
+        android:name="com.android.pos.ui.fragments.settings.teamrole.SingleTeamMemberTimeSheetFragment"
+        android:label="SingleTeamMemberTimeSheetFragment" />/>
     <fragment
         android:id="@+id/paymentFragment"
         android:name="com.android.pos.ui.fragments.payment.PaymentFragment"
