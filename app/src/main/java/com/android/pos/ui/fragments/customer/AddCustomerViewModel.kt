@@ -49,6 +49,8 @@ class AddCustomerViewModel @Inject constructor(
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
+    val _Basedata = MutableLiveData<Event<BaseResponse?>>()
+
     val addCustomerDetails = MutableLiveData(CreateCustomerRequestModel())
     val phoneNo = MutableLiveData<String>()
     var address1 = MutableLiveData<String>()
@@ -67,31 +69,25 @@ class AddCustomerViewModel @Inject constructor(
 
     fun setAddress1(adr: String) {
         this.straddress1 = adr
-
     }
 
     fun setAddress2(str: String) {
         this.straddress2 = str
-
     }
 
     fun setCity(str: String) {
         this.strcity = str
-
     }
 
     fun setState(str: String) {
         this.strstate = str
-
     }
 
     fun setPinCode(str: String) {
         this.strPin = str
-
     }
 
     private lateinit var resource: Resource<BaseResponse>
-
 
     fun isEditData(isEditData: Boolean, id: Int) {
         this.isEdit = isEditData
@@ -99,11 +95,7 @@ class AddCustomerViewModel @Inject constructor(
     }
 
     fun submit() {
-
-
         if (phoneNo.value != null) {
-
-
             addCustomerDetails.value?.data?.phones_attributes?.add(
                 0,
                 CreateCustomerRequestModel.Customer.Phone(
@@ -112,7 +104,6 @@ class AddCustomerViewModel @Inject constructor(
                         ("[\\D]").toRegex(),
                         ""
                     ),
-
                     )
             )
         }
@@ -164,10 +155,14 @@ class AddCustomerViewModel @Inject constructor(
                 data?.first_name = value?.data?.first_name!!
                 data?.last_name = value?.data?.last_name!!
 
-                data?.phones_attributes?.add(0, CreateCustomerRequestModel.Customer.Phone(phone_number = phoneNo.value.toString().replace(
-                    ("[\\D]").toRegex(),
-                    ""
-                )))
+                data?.phones_attributes?.add(
+                    0, CreateCustomerRequestModel.Customer.Phone(
+                        phone_number = phoneNo.value.toString().replace(
+                            ("[\\D]").toRegex(),
+                            ""
+                        )
+                    )
+                )
 
 //                    data?.phones_attributes.add(0,) =
 //                        value.data!!.phones_attributes?.get(0)?.phone_number!!.
@@ -177,7 +172,7 @@ class AddCustomerViewModel @Inject constructor(
                 data?.birthday_year = value.data!!.birthday_year
                 data?.company = value.data!!.company
 
-               // data?.addresses_attributes?.add(0, CreateCustomerRequestModel.Customer.Addresses())
+                // data?.addresses_attributes?.add(0, CreateCustomerRequestModel.Customer.Addresses())
 
                 data?.addresses_attributes?.add(
                     0, CreateCustomerRequestModel.Customer.Addresses(
@@ -192,7 +187,7 @@ class AddCustomerViewModel @Inject constructor(
 
             }
 
-            Log.e(TAG,"addCustomerDataJson:  ${Gson().toJson(addCustomerData)}")
+            Log.e(TAG, "addCustomerDataJson:  ${Gson().toJson(addCustomerData)}")
             Log.e(TAG, "isEdit:  ${isEdit}")
             Log.e(TAG, "customerID:  ${customerID}")
             viewModelScope.launch {
@@ -208,8 +203,8 @@ class AddCustomerViewModel @Inject constructor(
                         _showProgress.value = Event(false)
                         resource.data.let {
                             if (it?.status == 200) {
-                                resource.data?.let {
-                                    _data.value = Event(true)
+                                resource.data?.let { baseResponse ->
+                                    _Basedata.value = Event(baseResponse)
                                 }
                             } else {
                                 _snackbarText.value = Event(resource.message)

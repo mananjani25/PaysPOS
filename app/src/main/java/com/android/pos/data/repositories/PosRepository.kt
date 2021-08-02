@@ -172,7 +172,10 @@ class PosRepository @Inject constructor(
         networkCall = { apiHelperNew.employeesList(locationId) },
         saveCallResult = { appDatabase.employeeDao().addAllEmployee(it.data.employees) })
 
-    fun customerList() = performGetOperationNew(networkCall = { apiHelperNew.customerList() })
+    fun customerList() = performGetOperation(
+        databaseQuery = { appDatabase.customerDao().allCustomer },
+        networkCall = { apiHelperNew.customerList() },
+        saveCallResult = { appDatabase.customerDao().addAllCustomer(it.data) })
 
     suspend fun createEmployee(data: CreateEmployeeRequestModel) = apiHelperNew.createEmployee(data)
 
@@ -252,6 +255,16 @@ class PosRepository @Inject constructor(
 
     fun getCartList(): LiveData<List<CartModel>> {
         return appDatabase.cartDao().allItem
+    }
+
+    suspend fun addItemCart(cartModel: CartModel) {
+
+        appDatabase.cartDao().add(cartModel)
+    }
+
+    suspend fun deleteCart() {
+
+        appDatabase.cartDao().delete()
     }
 }
 

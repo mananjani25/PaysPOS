@@ -1,7 +1,10 @@
 package com.android.pos.data.model.requestModel
 
+import androidx.room.Entity
 import com.google.gson.annotations.SerializedName
 
+
+@Entity
 data class CreateCustomerRequestModel(
     @SerializedName("customer")
     var data: Customer? = Customer(),
@@ -31,7 +34,6 @@ data class CreateCustomerRequestModel(
             var phone_number: String = "",
             @SerializedName("_destroy")
             var _destroy: String = "false"
-
         )
 
         data class Addresses(

@@ -84,6 +84,7 @@
     <string name="delete_employee_message">Are you sure want to Delete Employee?</string>
     <string name="clockout_message">Are you sure want to Clockout?</string>
     <string name="delete_item_message">Are you sure want to Delete Item?</string>
+    <string name="delete_items_message">Are you sure want to Clear Item?</string>
 
     <string name="delete_category_message">Are you sure you want to delete category?</string>
     <string name="hide_category_message">Are you sure you want to hide category?</string>
@@ -365,4 +366,16 @@
     <string name="tv_email">Email</string>
     <string name="tv_add_new_role_name">Add New Role Name</string>
     <string name="tv_assign_member">Assign Member</string>
+    <string name="clear_items">Clear Items</string>
+    <string name="split_amount">Split Amount</string>
+    <string name="connect_a_reader_to_swipe_insert_or_tap">Connect a reader to swipe, insert or tap</string>
+    <string name="manual_credit_card_entry">Manual Credit Card Entry</string>
+    <string name="more">More</string>
+    <string name="send_payment_link">Send Payment Link</string>
+    <string name="pay_for_this_order">Pay For This Order</string>
+    <string name="payment_amount">Payment Amount</string>
+    <string name="split_by_amount">Split by amount</string>
+    <string name="split_in_to_equal_payment">Split in to equal payment</string>
+    <string name="custom">Custom</string>
+    <string name="number_of_splits">Number of Splits</string>
 </resources>

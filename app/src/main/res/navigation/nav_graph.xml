@@ -355,6 +355,9 @@
             android:id="@+id/action_dashboardCategoryNew_to_customer"
             app:destination="@id/customer"
             app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_dashboardCategoryNew_to_paymentFragment"
+            app:destination="@id/paymentFragment" />
 
     </fragment>
     <action
@@ -468,6 +471,26 @@
         android:id="@+id/userAccessPermissionFragment"
         android:name="com.android.pos.ui.fragments.settings.teamrole.UserAccessPermissionFragment"
         android:label="UserAccessPermissionFragment" />
+        android:label="SingleTeamMemberTimeSheetFragment" />/>
+    <fragment
+        android:id="@+id/paymentFragment"
+        android:name="com.android.pos.ui.fragments.payment.PaymentFragment"
+        android:label="PaymentFragment">
+        <action
+            android:id="@+id/action_paymentFragment_to_splitAmountFragment"
+            app:destination="@id/splitAmountFragment" />
+        <action
+            android:id="@+id/action_paymentFragment_to_customAmountFragment"
+            app:destination="@id/customAmountFragment" />
+    </fragment>
+    <dialog
+        android:id="@+id/splitAmountFragment"
+        android:name="com.android.pos.ui.dialog.SplitAmountFragment"
+        android:label="split_amount_fragment" />
+    <dialog
+        android:id="@+id/customAmountFragment"
+        android:name="com.android.pos.ui.dialog.CustomAmountFragment"
+        android:label="CustomAmountFragment" />
 
 
 </navigation>
