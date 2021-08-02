@@ -10,7 +10,7 @@ import com.android.pos.data.model.responseModel.GetTaxResponse
 interface TaxDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun addTax(taxModel: GetTaxResponse.TaxData): Long
+    suspend fun addTax(taxModel: GetTaxResponse.TaxData): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addAllTaxes(taxList: List<GetTaxResponse.TaxData>)

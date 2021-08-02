@@ -26,7 +26,7 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtTitle"
-                style="@style/CustomFontMediumStyle"
+                style="@style/CustomFontSemiBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -39,10 +39,10 @@
 
             <TextView
                 android:id="@+id/txtHome"
+                style="@style/CustomFontBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/_10sdp"
-                android:fontFamily="@font/sf_pro_display_semibold"
                 android:padding="@dimen/_3sdp"
                 android:text="@string/tv_home"
                 android:textColor="@color/txt_color_blue"
@@ -67,7 +67,7 @@
             android:orientation="vertical">
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/txtNewTax"
+                android:id="@+id/txtAddNewRole"
                 style="@style/CustomFontBold"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -83,7 +83,7 @@
                 app:textAllCaps="false" />
 
             <androidx.appcompat.widget.AppCompatTextView
-                style="@style/CustomFontRegularStyle"
+                style="@style/CustomFontSemiBold"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"

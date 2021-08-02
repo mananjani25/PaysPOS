@@ -3,7 +3,7 @@ package com.android.pos.data.model.responseModel
 
 import com.google.gson.annotations.SerializedName
 
-data class CreateDiscountResponse(
+data class CreateNoteResponse(
     @SerializedName("data")
     val `data`: Data,
     @SerializedName("message")
@@ -16,19 +16,17 @@ data class CreateDiscountResponse(
     data class Data(
         @SerializedName("created_at")
         val createdAt: String,
-        @SerializedName("discount_type")
-        val discountType: String,
         @SerializedName("id")
         val id: Int,
+        @SerializedName("is_active")
+        val isActive: Boolean,
         @SerializedName("location_id")
         val locationId: Int,
         @SerializedName("name")
         val name: String,
-        @SerializedName("percentage")
-        val percentage: Double,
+        @SerializedName("sort")
+        val sort: Int,
         @SerializedName("updated_at")
-        val updatedAt: String,
-        @SerializedName("is_active")
-        var isActive: Boolean = false,
+        val updatedAt: String
     )
 }

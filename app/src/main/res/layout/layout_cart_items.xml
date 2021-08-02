@@ -7,8 +7,8 @@
         android:id="@+id/llCart"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:visibility="visible">
 
         <androidx.appcompat.widget.AppCompatTextView
             style="@style/CustomFontBold"
@@ -23,6 +23,7 @@
             app:textAllCaps="false" />
 
         <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/llShowMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/background_button_menu"
@@ -50,14 +51,67 @@
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvCart"
+
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:padding="@dimen/_3sdp"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            tools:listitem="@layout/view_cart_item" />
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvCart"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/_3sdp"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/view_cart_item" />
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/llCustomerDialog"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/txtColor"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/txtCrtNewCustomer"
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:padding="@dimen/_7sdp"
+                    android:text="@string/add_customer"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_7mdpi" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:background="@color/colorCustomerDialogBorder" />
+
+                <TextView
+                    android:id="@+id/txtClearItems"
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:padding="@dimen/_7sdp"
+                    android:text="@string/clear_items"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_7mdpi" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:background="@color/colorCustomerDialogBorder" />
+
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+        </RelativeLayout>
 
 
         <androidx.appcompat.widget.LinearLayoutCompat
@@ -71,8 +125,8 @@
             android:paddingBottom="@dimen/_3sdp">
 
             <androidx.appcompat.widget.AppCompatTextView
-                style="@style/CustomFontBold"
                 android:id="@+id/txtSave"
+                style="@style/CustomFontBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"

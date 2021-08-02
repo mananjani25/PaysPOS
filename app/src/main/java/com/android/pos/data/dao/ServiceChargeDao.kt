@@ -10,7 +10,7 @@ import com.android.pos.data.model.responseModel.GetTipReponse
 interface ServiceChargeDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun addServiceCharge(serviceChargeModel: GetServiceChargeResponse.Data): Long
+    suspend fun addServiceCharge(serviceChargeModel: GetServiceChargeResponse.Data): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addAllServiceCharge(serviceChargeList: List<GetServiceChargeResponse.Data>)

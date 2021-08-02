@@ -27,6 +27,16 @@ data class CreateTaxResponse(
         @SerializedName("tax_type")
         val taxType: String,
         @SerializedName("updated_at")
-        val updatedAt: String
+        val updatedAt: String,
+        @SerializedName("is_active")
+        var isActive: Boolean = false,
+        @SerializedName("is_default")
+        val isDefault: Boolean,
+        @SerializedName("is_custom_amount")
+        val isCustomAmount: Boolean,
+        @SerializedName("item_pricing")
+        var itemPricing: String?,
+        @SerializedName("item_ids")
+        val itemIds: List<Int>
     )
 }

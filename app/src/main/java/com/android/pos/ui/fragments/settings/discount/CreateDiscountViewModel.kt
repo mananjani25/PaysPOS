@@ -111,7 +111,19 @@ class CreateDiscountViewModel @Inject constructor(
                         resource.data.let { logInResponse ->
                             if (logInResponse?.status == 200) {
 
-                                resource.data?.let {createDiscountResponse->
+                                resource.data?.let { createDiscountResponse ->
+
+                                    val discount = GetDiscountResponse.Data(
+                                        createdAt = createDiscountResponse.data.createdAt,
+                                        discountType = createDiscountResponse.data.discountType,
+                                        id = createDiscountResponse.data.id,
+                                        locationId = createDiscountResponse.data.locationId,
+                                        name = createDiscountResponse.data.name,
+                                        percentage = createDiscountResponse.data.percentage,
+                                        updatedAt = createDiscountResponse.data.updatedAt,
+                                        isActive = createDiscountResponse.data.isActive
+                                    )
+                                    tipDiscountRepository.createDiscountDatabase(discount)
                                     _data.value = Event(createDiscountResponse)
                                 }
                             } else {

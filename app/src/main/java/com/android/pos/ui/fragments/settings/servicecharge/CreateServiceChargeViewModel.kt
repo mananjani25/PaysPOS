@@ -114,6 +114,21 @@ class CreateServiceChargeViewModel @Inject constructor(
                             if (logInResponse?.status == 200) {
 
                                 resource.data?.let { createServiceChargeResponse ->
+
+                                    val serviceCharge = GetServiceChargeResponse.Data(
+                                        createdAt = createServiceChargeResponse.data.createdAt,
+                                        id = createServiceChargeResponse.data.id,
+                                        isEnabled = createServiceChargeResponse.data.isEnabled,
+                                        locationId = createServiceChargeResponse.data.locationId,
+                                        name = createServiceChargeResponse.data.name,
+                                        percentage = createServiceChargeResponse.data.percentage,
+                                        updatedAt = createServiceChargeResponse.data.updatedAt,
+                                        isActive = createServiceChargeResponse.data.isActive
+                                    )
+
+                                    taxServiceChargeRepository.createServiceChargeDatabase(
+                                        serviceCharge
+                                    )
                                     _data.value = Event(createServiceChargeResponse)
                                 }
                             } else {

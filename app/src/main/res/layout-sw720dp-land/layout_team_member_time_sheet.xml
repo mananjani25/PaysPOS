@@ -23,7 +23,7 @@
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txtTitle"
-            style="@style/CustomFontMediumStyle"
+            style="@style/CustomFontBold"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -35,11 +35,21 @@
             android:textSize="@dimen/_7mdpi" />
 
         <TextView
-            android:id="@+id/txtHome"
+            android:id="@+id/txtEmail"
+            style="@style/CustomFontBold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/_10sdp"
-            android:fontFamily="@font/sf_pro_display_semibold"
+            android:padding="@dimen/_3sdp"
+            android:text="@string/tv_email"
+            android:textSize="@dimen/_7mdpi" />
+
+        <TextView
+            android:id="@+id/txtHome"
+            style="@style/CustomFontBold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/_10sdp"
             android:padding="@dimen/_3sdp"
             android:text="@string/tv_home"
             android:textColor="@color/txt_color_blue"
@@ -59,7 +69,7 @@
         android:orientation="horizontal">
 
         <androidx.appcompat.widget.AppCompatTextView
-            style="@style/CustomFontBold"
+            style="@style/CustomFontSemiBold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -88,7 +98,7 @@
                 tools:ignore="ContentDescription" />
 
             <androidx.appcompat.widget.AppCompatTextView
-                style="@style/CustomFontBold"
+                style="@style/CustomFontSemiBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -98,7 +108,7 @@
         </LinearLayout>
 
         <androidx.appcompat.widget.AppCompatTextView
-            style="@style/CustomFontBold"
+            style="@style/CustomFontSemiBold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -127,7 +137,7 @@
                 tools:ignore="ContentDescription" />
 
             <androidx.appcompat.widget.AppCompatTextView
-                style="@style/CustomFontBold"
+                style="@style/CustomFontSemiBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -152,7 +162,7 @@
 
         <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/edtSearch"
-            style="@style/CustomFontRegularStyle"
+            style="@style/CustomFontSemiBold"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/_10sdp"

@@ -8,6 +8,7 @@ import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.TbCategory
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.requestModel.*
+import com.android.pos.data.model.responseModel.NoteResponse
 import com.android.pos.data.remote.ApiHelper
 import com.android.pos.utils.performGetOperation
 import com.android.pos.utils.performGetOperationDatabase
@@ -147,6 +148,9 @@ class PosRepository @Inject constructor(
 
     suspend fun createNote(data: CreateNoteRequest) = apiHelperNew.createNote(data)
 
+    suspend fun createNoteDatabase(data: NoteResponse.Data) =
+        appDatabase.notesDao().addNotes(data)
+
     suspend fun updateNote(taxId: Int, data: CreateNoteRequest) =
         apiHelperNew.updateNote(taxId, data)
 
@@ -251,6 +255,16 @@ class PosRepository @Inject constructor(
 
     fun getCartList(): LiveData<List<CartModel>> {
         return appDatabase.cartDao().allItem
+    }
+
+    suspend fun addItemCart(cartModel: CartModel) {
+
+        appDatabase.cartDao().add(cartModel)
+    }
+
+    suspend fun deleteCart() {
+
+        appDatabase.cartDao().delete()
     }
 }
 

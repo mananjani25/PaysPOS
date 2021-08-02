@@ -29,5 +29,9 @@ class TeamMemberSettings : Fragment() {
         binding.llTimeTracking.setOnClickListener {
             findNavController().navigate(R.id.action_settings_to_teamMemberTimeSheetFragment)
         }
+
+        binding.llUserAccessPermission.setOnClickListener {
+            findNavController().navigate(R.id.action_settings_to_userAccessPermissionListFragment)
+        }
     }
 }

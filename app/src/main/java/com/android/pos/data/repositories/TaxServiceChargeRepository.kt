@@ -6,6 +6,7 @@ import com.android.pos.data.db.IDataManager
 import com.android.pos.data.entities.TbCategory
 import com.android.pos.data.model.requestModel.CreateServiceChargeRequestModel
 import com.android.pos.data.model.requestModel.CreateTaxRequestModel
+import com.android.pos.data.model.responseModel.GetServiceChargeResponse
 import com.android.pos.data.model.responseModel.GetTaxResponse
 import com.android.pos.data.remote.ApiHelper
 import com.android.pos.utils.performGetOperation
@@ -25,6 +26,9 @@ class TaxServiceChargeRepository @Inject constructor(
             saveCallResult = { appDatabase.taxDao().addAllTaxes(it.data) })
 
     suspend fun createTax(data: CreateTaxRequestModel) = apiHelperNew.createTax(data)
+
+    suspend fun createTaxDatabase(data: GetTaxResponse.TaxData) =
+        appDatabase.taxDao().addTax(data)
 
     suspend fun updateTax(taxId: Int, data: CreateTaxRequestModel) =
         apiHelperNew.updateTax(taxId, data)
@@ -48,6 +52,9 @@ class TaxServiceChargeRepository @Inject constructor(
 
     suspend fun createServiceCharge(data: CreateServiceChargeRequestModel) =
         apiHelperNew.createServiceCharge(data)
+
+    suspend fun createServiceChargeDatabase(data: GetServiceChargeResponse.Data) =
+        appDatabase.serviceChargeDao().addServiceCharge(data)
 
     suspend fun updateServiceCharge(discountId: Int, data: CreateServiceChargeRequestModel) =
         apiHelperNew.updateServiceCharge(discountId, data)

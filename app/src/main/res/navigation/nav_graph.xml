@@ -231,6 +231,9 @@
             android:id="@+id/action_settings_to_teamMemberTimeSheetFragment"
             app:destination="@id/teamMemberTimeSheetFragment"
             app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_settings_to_userAccessPermissionListFragment"
+            app:destination="@id/userAccessPermissionListFragment" />
 
     </fragment>
     <action
@@ -352,6 +355,9 @@
             android:id="@+id/action_dashboardCategoryNew_to_customer"
             app:destination="@id/customer"
             app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_dashboardCategoryNew_to_paymentFragment"
+            app:destination="@id/paymentFragment" />
 
     </fragment>
     <action
@@ -453,6 +459,37 @@
         android:id="@+id/singleTeamMemberTimeSheetFragment"
         android:name="com.android.pos.ui.fragments.settings.teamrole.SingleTeamMemberTimeSheetFragment"
         android:label="SingleTeamMemberTimeSheetFragment" />
+    <fragment
+        android:id="@+id/userAccessPermissionListFragment"
+        android:name="com.android.pos.ui.fragments.settings.teamrole.UserAccessPermissionListFragment"
+        android:label="UserAccessPermissionListFragment">
+        <action
+            android:id="@+id/action_userAccessPermissionListFragment_to_userAccessPermissionFragment"
+            app:destination="@id/userAccessPermissionFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/userAccessPermissionFragment"
+        android:name="com.android.pos.ui.fragments.settings.teamrole.UserAccessPermissionFragment"
+        android:label="UserAccessPermissionFragment" />
+    <fragment
+        android:id="@+id/paymentFragment"
+        android:name="com.android.pos.ui.fragments.payment.PaymentFragment"
+        android:label="PaymentFragment">
+        <action
+            android:id="@+id/action_paymentFragment_to_splitAmountFragment"
+            app:destination="@id/splitAmountFragment" />
+        <action
+            android:id="@+id/action_paymentFragment_to_customAmountFragment"
+            app:destination="@id/customAmountFragment" />
+    </fragment>
+    <dialog
+        android:id="@+id/splitAmountFragment"
+        android:name="com.android.pos.ui.dialog.SplitAmountFragment"
+        android:label="split_amount_fragment" />
+    <dialog
+        android:id="@+id/customAmountFragment"
+        android:name="com.android.pos.ui.dialog.CustomAmountFragment"
+        android:label="CustomAmountFragment" />
 
 
 </navigation>

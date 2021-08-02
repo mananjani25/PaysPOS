@@ -9,7 +9,7 @@ import com.android.pos.data.model.responseModel.GetDiscountResponse
 interface DiscountDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun addDiscount(discountModel: GetDiscountResponse.Data): Long
+    suspend fun addDiscount(discountModel: GetDiscountResponse.Data): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addAllDiscount(discountList: List<GetDiscountResponse.Data>)
