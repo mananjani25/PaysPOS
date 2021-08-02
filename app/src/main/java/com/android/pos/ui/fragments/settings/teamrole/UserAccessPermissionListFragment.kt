@@ -12,7 +12,7 @@ import com.android.pos.databinding.FragmentTeamMemberTimeSheetBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class TeamMemberTimeSheetFragment : Fragment() {
+class UserAccessPermissionListFragment : Fragment() {
 
     private lateinit var binding: FragmentTeamMemberTimeSheetBinding
     override fun onCreateView(
