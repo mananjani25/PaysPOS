@@ -22,9 +22,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
+import com.android.pos.data.model.requestModel.CreateCustomerRequestModel
 import com.android.pos.data.remote.Constants.CUSTOMERDETAILS
 import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.databinding.FragmentAddEditCustomerBinding
+import com.android.pos.ui.adapter.AddressListAdapter
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
@@ -41,6 +43,7 @@ import java.util.*
 import com.google.android.libraries.places.api.net.PlacesClient
 import okhttp3.internal.notify
 import okhttp3.internal.notifyAll
+import kotlin.collections.ArrayList
 
 
 @AndroidEntryPoint
@@ -51,6 +54,8 @@ class AddEditCustomer : Fragment() {
     private val viewModel by viewModels<AddCustomerViewModel>()
     private var currentSelectedDate: Long? = null
     private lateinit var placesApi: PlaceAPI
+    private var listAddress: ArrayList<CreateCustomerRequestModel.Customer.Addresses> =
+        arrayListOf()
 
 
     override fun onCreateView(
@@ -65,7 +70,22 @@ class AddEditCustomer : Fragment() {
         setUpSnackBar()
         showObserveProgress()
         navigate()
+
         return binding.root
+    }
+
+    private fun setAddress(list: ArrayList<CreateCustomerRequestModel.Customer.Addresses>) {
+        listAddress.addAll(list)
+
+        binding.rvAddresses.adapter = AddressListAdapter(requireContext(), list,object :
+            AddressListAdapter.AddressInterface {
+            override fun onDeleteItem(pos: Int) {
+
+                (binding.rvAddresses.adapter as AddressListAdapter).list.removeAt(pos)
+                (binding.rvAddresses.adapter as AddressListAdapter).notifyItemRangeChanged(pos,(binding.rvAddresses.adapter as AddressListAdapter).list.size)
+            }
+
+        })
     }
 
     private fun showObserveProgress() {
@@ -88,11 +108,9 @@ class AddEditCustomer : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
+        onClick()
         isEdit = requireArguments().getBoolean("isEdit", false)
         Log.e(TAG, "isEdit  $isEdit")
-
-        searchPlaces()
 
         if (isEdit) {
             binding.txtCustomerType.setText("Edit Customer")
@@ -119,27 +137,29 @@ class AddEditCustomer : Fragment() {
                 viewModel.addCustomerDetails.value?.data?.email = editModel?.email
             }
 
-            if (editModel.addresses.size > 0) {
-                binding.edtAddress.setText("United States")
+            if (editModel.addresses.isNotEmpty()) {
+                val list: ArrayList<CreateCustomerRequestModel.Customer.Addresses> = arrayListOf()
 
-                binding.edtStreet.setText("" + editModel.addresses.get(0).address1)
-                viewModel.setAddress1(editModel.addresses.get(0).address1)
-                binding.edtSuite.setText("" + editModel.addresses.get(0).address2)
-                viewModel.setAddress2(editModel.addresses.get(0).address2)
-                binding.edtCity.setText("" + editModel.addresses.get(0).city)
-                viewModel.setCity(editModel.addresses.get(0).city)
-                binding.edtZip.setText("" + editModel.addresses.get(0).postcode)
-                viewModel.setPinCode(editModel.addresses.get(0).postcode.toString())
-                binding.edtState.setText("" + editModel.addresses.get(0).state.toString())
-                viewModel.setState(editModel.addresses.get(0).state)
-
-                /*binding.edtStreet.setText(editModel.addresses.get(0).address1)
-                binding.edtSuite.setText(editModel.addresses.get(0).address2)
-                binding.edtCity.setText(editModel.addresses.get(0).city)
-                binding.edtState.setText(editModel.addresses.get(0).state)
-                binding.edtZip.setText(editModel.addresses.get(0).postcode.toString())
-*/
+                for (i in editModel.addresses) {
+                    list.add(
+                        CreateCustomerRequestModel.Customer.Addresses(
+                            i.address1,
+                            i.address2,
+                            i.city,
+                            i.state,
+                            i.country,
+                            i.postcode.toString(),
+                            i.type_of_address.toString(),
+                            i.latitude.toDouble(),
+                            i.longitude.toDouble()
+                        )
+                    )
+                }
+                Log.e(TAG, "AddressEditlist  ${Gson().toJson(list)}")
+                setAddress(list)
             }
+
+
             binding.edtCompany.setText("company")
             if (editModel.birth_date != null) {
                 binding.edtBirthDay.setText("${editModel.birth_date}")
@@ -182,33 +202,43 @@ class AddEditCustomer : Fragment() {
  */
     }
 
-    private fun searchPlaces() {
-        placesApi = PlaceAPI.Builder().apiKey(getString(R.string.api_key)).build(requireActivity())
-        binding.edtStreet.setAdapter(PlacesAutoCompleteAdapter(requireContext(), placesApi))
-        binding.edtStreet.setOnItemClickListener { parent, view, position, id ->
-            val place = parent.getItemAtPosition(position) as Place
-
-            Log.e(TAG, "placeJson:  ${Gson().toJson(place)}")
-            //binding.edtStreet.setText("${place.description}")
-            placesApi.fetchPlaceDetails(place.id, object : OnPlacesDetailsListener {
-                override fun onError(errorMessage: String) {
-
-                }
-
-                override fun onPlaceDetailsFetched(placeDetails: PlaceDetails) {
-                    decodeLocation(placeDetails.lat, placeDetails.lng, placeDetails.name)
-
-                    Log.e(TAG, "placeDetails:  ${Gson().toJson(placeDetails.name)}")
-
-                }
-
-            })
+    private fun onClick() {
+        binding.imgAddressAdd.setOnClickListener {
+            var list = (binding.rvAddresses.adapter as AddressListAdapter).list
+            list.add(CreateCustomerRequestModel.Customer.Addresses())
+            (binding.rvAddresses.adapter as AddressListAdapter).list = list
+            (binding.rvAddresses.adapter as AddressListAdapter).notifyDataSetChanged()
 
         }
-
-
     }
 
+    /*  private fun searchPlaces() {
+          placesApi = PlaceAPI.Builder().apiKey(getString(R.string.api_key)).build(requireActivity())
+          binding.edtStreet.setAdapter(PlacesAutoCompleteAdapter(requireContext(), placesApi))
+          binding.edtStreet.setOnItemClickListener { parent, view, position, id ->
+              val place = parent.getItemAtPosition(position) as Place
+
+              Log.e(TAG, "placeJson:  ${Gson().toJson(place)}")
+              //binding.edtStreet.setText("${place.description}")
+              placesApi.fetchPlaceDetails(place.id, object : OnPlacesDetailsListener {
+                  override fun onError(errorMessage: String) {
+
+                  }
+
+                  override fun onPlaceDetailsFetched(placeDetails: PlaceDetails) {
+                      decodeLocation(placeDetails.lat, placeDetails.lng, placeDetails.name)
+
+                      Log.e(TAG, "placeDetails:  ${Gson().toJson(placeDetails.name)}")
+
+                  }
+
+              })
+
+          }
+
+
+      }
+  */
     private fun decodeLocation(lat: Double, lng: Double, place: String) {
         val gcd: Geocoder = Geocoder(requireContext(), Locale.getDefault())
         var address: List<Address> = gcd.getFromLocation(lat, lng, 1)
@@ -228,16 +258,17 @@ class AddEditCustomer : Fragment() {
 
             Log.e("Addredd", "adminArea:   ${address.get(0).adminArea}")
 
+            /*
             binding.edtStreet.setText(place)
-            viewModel.setAddress1(place)
-            binding.edtSuite.setText(place)
-            viewModel.setAddress2(place)
-            binding.edtCity.setText(address.get(0).locality)
-            viewModel.setCity(address.get(0).locality)
-            binding.edtState.setText(address.get(0).adminArea)
-            viewModel.setState(address.get(0).adminArea)
-            binding.edtZip.setText(address.get(0).postalCode)
-            viewModel.setPinCode(address.get(0).postalCode)
+             viewModel.setAddress1(place)
+             binding.edtSuite.setText(place)
+             viewModel.setAddress2(place)
+             binding.edtCity.setText(address.get(0).locality)
+             viewModel.setCity(address.get(0).locality)
+             binding.edtState.setText(address.get(0).adminArea)
+             viewModel.setState(address.get(0).adminArea)
+             binding.edtZip.setText(address.get(0).postalCode)
+             viewModel.setPinCode(address.get(0).postalCode)*/
             //  binding.executePendingBindings()
 
 

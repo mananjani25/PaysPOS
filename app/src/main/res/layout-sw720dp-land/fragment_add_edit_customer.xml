@@ -189,10 +189,10 @@
                         android:hint="(201) 555-0123"
                         android:inputType="number"
                         android:maxLength="20"
-                        android:textColorHint="@color/hint_color_"
                         android:padding="@dimen/_5sdp"
                         android:text="@={viewModel.phoneNo}"
                         android:textColor="@color/hintColor"
+                        android:textColorHint="@color/hint_color_"
                         android:textSize="@dimen/_6mdpi"
                         app:met_mask="(###) ###-####" />
 
@@ -225,17 +225,40 @@
                     android:textSize="@dimen/_6mdpi" />
 
 
-                <TextView
-                    style="@style/CustomFontSemiBold"
-                    android:layout_width="wrap_content"
+                <RelativeLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/_15sdp"
                     android:layout_marginTop="@dimen/_10sdp"
-                    android:text="Address"
-                    android:textColor="@color/color65"
-                    android:textSize="@dimen/_6mdpi" />
+                    android:layout_marginEnd="@dimen/_15sdp">
 
-                <EditText
+                    <TextView
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Address"
+                        android:textColor="@color/color65"
+                        android:textSize="@dimen/_6mdpi" />
+
+                    <ImageView
+                        android:id="@+id/imgAddressAdd"
+                        android:layout_width="@dimen/_12sdp"
+                        android:layout_height="@dimen/_12sdp"
+                        android:layout_alignParentEnd="true"
+                        android:src="@drawable/ic_add"
+                        app:tint="@color/txt_color_blue" />
+                </RelativeLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvAddresses"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:itemCount="1"
+                    tools:listitem="@layout/view_customer_address" />
+
+                <!--<EditText
                     android:id="@+id/edtAddress"
                     style="@style/CustomFontMediumStyle"
                     android:layout_width="match_parent"
@@ -330,7 +353,7 @@
 
 
                 </LinearLayout>
-
+-->
 
                 <EditText
                     android:id="@+id/edtAddress2"
