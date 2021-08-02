@@ -348,4 +348,19 @@
     <string name="remove_item">Remove Item</string>
     <string name="add_discount">Add Discount</string>
     <string name="pay">Pay</string>
+    <string name="tv_user_access_permission">User Access Permission</string>
+    <string name="tv_add_new_role">Add New Role</string>
+    <string name="tv_employee_role_list">Employee Role List</string>
+    <string name="tv_assign_permission">Assign Permission</string>
+    <string name="tv_assign_role">Assign Role</string>
+    <string name="tv_add_role_name">Add Role Name</string>
+    <string name="tv_select_module">Select Module</string>
+    <string name="tv_add_all">Add All</string>
+    <string name="tv_remove_all">Remove All</string>
+    <string name="tv_select_team_member">Select Team Member</string>
+    <string name="tv_add_role">Add Role</string>
+    <string name="tv_cancel">Cancel</string>
+    <string name="tv_role">Role</string>
+    <string name="tv_team_member_with_role">Team Member with Role</string>
+    <string name="tv_permission">Permission</string>
 </resources>
