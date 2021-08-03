@@ -1,6 +1,7 @@
 package com.android.pos.ui.adapter
 
 import android.annotation.SuppressLint
+import android.text.TextUtils
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -18,6 +19,7 @@ import com.android.pos.utils.callback.CustomCallback
 import com.android.pos.utils.callback.OperationCallback
 import com.android.pos.utils.extensions.getColorCompat
 import com.android.pos.utils.sticky_recycler.SectioningAdapter
+import org.w3c.dom.Text
 import java.util.*
 
 /**
@@ -104,19 +106,21 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
         var currentSection: Section? = null
         for (person in people) {
 
-            val sss = person.firstName?.uppercase(Locale.ROOT)?.get(0)
-            if (sss != alpha) {
-                if (currentSection != null) {
-                    sections.add(currentSection)
-                    sectionSortedList.add(currentSection)
+            if (!TextUtils.isEmpty(person.firstName)) {
+                val sss = person.firstName?.uppercase(Locale.ROOT)?.get(0)
+                if (sss != alpha) {
+                    if (currentSection != null) {
+                        sections.add(currentSection)
+                        sectionSortedList.add(currentSection)
+                    }
+                    currentSection = Section()
+                    if (sss != null) {
+                        alpha = sss
+                    }
+                    currentSection.alpha = alpha.toString()
                 }
-                currentSection = Section()
-                if (sss != null) {
-                    alpha = sss
-                }
-                currentSection.alpha = alpha.toString()
+                currentSection?.people?.add(person)
             }
-            currentSection?.people?.add(person)
         }
         if (currentSection != null) {
             sections.add(currentSection)

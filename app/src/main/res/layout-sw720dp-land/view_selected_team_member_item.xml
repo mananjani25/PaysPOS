@@ -4,6 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingDefaultResource">
 
+    <data>
+
+        <variable
+            name="selectedEmployeeModel"
+            type="com.android.pos.data.model.responseModel.EmployeeListResponse.Data.Employee" />
+    </data>
+
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
@@ -25,7 +32,7 @@
                 android:layout_weight="1"
                 android:gravity="start"
                 android:padding="@dimen/_5sdp"
-                android:text="Team Member One"
+                android:text="@{selectedEmployeeModel.name}"
                 android:textColor="@color/color65"
                 android:textSize="@dimen/_6mdpi" />
         </androidx.appcompat.widget.LinearLayoutCompat>

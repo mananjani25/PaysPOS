@@ -24,8 +24,11 @@ import javax.inject.Inject
 @HiltViewModel
 class UserPermissionViewModel @Inject constructor(
     private val taxServiceChargeRepository: TaxServiceChargeRepository,
-    private val prefProvider: PrefProvider
+    private val prefProvider: PrefProvider,
+    private val posRepository: PosRepository
 ) : ViewModel() {
+
+    val locationId = prefProvider.getValueInt(LOCATION_ID, 0)
 
     val createUserPermission =
         MutableLiveData(CreateTeamRoleRequestModel())
@@ -49,6 +52,8 @@ class UserPermissionViewModel @Inject constructor(
 
     private lateinit var resource: Resource<CreateServiceChargeResponse>
 
+
+    fun employeeData() = posRepository.employeesList(locationId)
 
     fun isEditData(isEdit: Boolean, taxId: Int) {
         this.roleId = taxId
