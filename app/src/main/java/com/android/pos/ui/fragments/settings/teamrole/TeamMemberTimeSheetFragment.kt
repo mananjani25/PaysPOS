@@ -8,13 +8,18 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
+import com.android.pos.data.model.TimeSheetListModel
 import com.android.pos.databinding.FragmentTeamMemberTimeSheetBinding
+import com.android.pos.ui.adapter.TeamMemberTimeSheetAdapter
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class TeamMemberTimeSheetFragment : Fragment() {
 
     private lateinit var binding: FragmentTeamMemberTimeSheetBinding
+    private lateinit var teamMemberTimeSheetAdapter: TeamMemberTimeSheetAdapter
+    val timeSheet = ArrayList<TimeSheetListModel>()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -36,6 +41,28 @@ class TeamMemberTimeSheetFragment : Fragment() {
                 R.id.action_teamMemberTimeSheetFragment_to_singleTeamMemberTimeSheetFragment
             )
         }
+
+        timeSheet.clear()
+        for (i in 1..5) {
+            timeSheet.add(
+                TimeSheetListModel(
+                    "John Smith",
+                    "08:30",
+                    "$10.00",
+                    "08:30",
+                    "08:30",
+                    "08:30",
+                    "08:30",
+                    "08:30",
+                    "08:30",
+                    "08:30"
+                )
+            )
+        }
+        teamMemberTimeSheetAdapter = TeamMemberTimeSheetAdapter(timeSheet)
+        binding.rvTeamTimeSheet.adapter = teamMemberTimeSheetAdapter
+        binding.lifecycleOwner = this
+
         return binding.root
     }
 

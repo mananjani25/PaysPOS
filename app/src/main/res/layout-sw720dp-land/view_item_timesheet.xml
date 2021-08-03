@@ -1,119 +1,135 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
     tools:ignore="MissingDefaultResource">
+
+    <data>
+
+        <variable
+            name="itemSheetModel"
+            type="com.android.pos.data.model.TimeSheetListModel" />
+
+        <variable
+            name="viewModel"
+            type="com.android.pos.ui.fragments.settings.servicecharge.ServiceChargeListViewModel" />
+    </data>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_5sdp"
-        android:orientation="horizontal"
-        android:paddingTop="@dimen/_10sdp"
-        android:paddingBottom="@dimen/_10sdp">
+        android:orientation="vertical">
 
-        <androidx.appcompat.widget.AppCompatTextView
-            style="@style/CustomFontSemiBold"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/_5sdp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="John Smith"
-            android:textColor="@color/txtColor"
-            android:textSize="@dimen/_6mdpi" />
+            android:layout_marginTop="@dimen/_5sdp"
+            android:orientation="horizontal"
+            android:paddingTop="@dimen/_10sdp"
+            android:paddingBottom="@dimen/_10sdp">
 
-        <androidx.appcompat.widget.AppCompatTextView
-            style="@style/CustomFontSemiBold"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:gravity="center"
-            android:text="8:30"
-            android:textColor="@color/txtColor"
-            android:textSize="@dimen/_6mdpi" />
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/CustomFontSemiBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/_5sdp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@{itemSheetModel.customerName}"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_6mdpi" />
 
-        <androidx.appcompat.widget.AppCompatTextView
-            style="@style/CustomFontSemiBold"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="$10.00"
-            android:textColor="@color/txtColor"
-            android:textSize="@dimen/_6mdpi" />
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/CustomFontSemiBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:gravity="center"
+                android:text="@{itemSheetModel.totalHours}"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_6mdpi" />
 
-        <androidx.appcompat.widget.AppCompatTextView
-            style="@style/CustomFontSemiBold"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="8:30"
-            android:textColor="@color/txtColor"
-            android:textSize="@dimen/_6mdpi" />
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/CustomFontSemiBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@{itemSheetModel.totalWage}"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_6mdpi" />
 
-        <androidx.appcompat.widget.AppCompatTextView
-            style="@style/CustomFontSemiBold"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="8:30"
-            android:textColor="@color/txtColor"
-            android:textSize="@dimen/_6mdpi" />
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/CustomFontSemiBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@{itemSheetModel.mon}"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_6mdpi" />
 
-        <androidx.appcompat.widget.AppCompatTextView
-            style="@style/CustomFontSemiBold"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="8:30"
-            android:textColor="@color/txtColor"
-            android:textSize="@dimen/_6mdpi" />
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/CustomFontSemiBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@{itemSheetModel.tue}"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_6mdpi" />
 
-        <androidx.appcompat.widget.AppCompatTextView
-            style="@style/CustomFontSemiBold"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="8:30"
-            android:textColor="@color/txtColor"
-            android:textSize="@dimen/_6mdpi" />
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/CustomFontSemiBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@{itemSheetModel.wed}"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_6mdpi" />
 
-        <androidx.appcompat.widget.AppCompatTextView
-            style="@style/CustomFontSemiBold"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="8:30"
-            android:textColor="@color/txtColor"
-            android:textSize="@dimen/_6mdpi" />
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/CustomFontSemiBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@{itemSheetModel.thu}"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_6mdpi" />
 
-        <androidx.appcompat.widget.AppCompatTextView
-            style="@style/CustomFontSemiBold"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="8:30"
-            android:textColor="@color/txtColor"
-            android:textSize="@dimen/_6mdpi" />
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/CustomFontSemiBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@{itemSheetModel.fri}"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_6mdpi" />
 
-        <androidx.appcompat.widget.AppCompatTextView
-            style="@style/CustomFontSemiBold"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="8:30"
-            android:textColor="@color/txtColor"
-            android:textSize="@dimen/_6mdpi" />
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/CustomFontSemiBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@{itemSheetModel.sat}"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_6mdpi" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/CustomFontSemiBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@{itemSheetModel.sun}"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_6mdpi" />
+        </LinearLayout>
+
     </LinearLayout>
-
-</LinearLayout>
+</layout>

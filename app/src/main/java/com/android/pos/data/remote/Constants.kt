@@ -62,6 +62,9 @@ object Constants {
     const val ITEMS = "items"
     const val REORDER_ITEM = "items/{id}/reorder"
 
+    const val TEAM_ROLES = "team_roles"
+    const val TEAM_ROLES_UPDATE_DELETE = "team_roles/{id}"
+
     const val VERTICAL = "vertical"
     const val HORIZONTAL = "horizontal"
 
