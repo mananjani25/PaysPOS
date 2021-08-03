@@ -8,6 +8,7 @@ import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.TbCategory
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.requestModel.*
+import com.android.pos.data.model.responseModel.EmployeeListResponse
 import com.android.pos.data.model.responseModel.NoteResponse
 import com.android.pos.data.remote.ApiHelper
 import com.android.pos.utils.performGetOperation
@@ -178,6 +179,9 @@ class PosRepository @Inject constructor(
         saveCallResult = { appDatabase.customerDao().addAllCustomer(it.data) })
 
     suspend fun createEmployee(data: CreateEmployeeRequestModel) = apiHelperNew.createEmployee(data)
+
+    suspend fun createEmployeeDatabase(data: EmployeeListResponse.Data.Employee) =
+        appDatabase.employeeDao().addEmployee(data)
 
     suspend fun createCustomer(data: CreateCustomerRequestModel) = apiHelperNew.createCustomer(data)
 

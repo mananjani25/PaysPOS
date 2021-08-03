@@ -9,7 +9,7 @@ import com.android.pos.data.model.responseModel.EmployeeListResponse
 interface EmployeeDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun addEmployee(employeeModel: EmployeeListResponse.Data.Employee): Long
+    suspend fun addEmployee(employeeModel: EmployeeListResponse.Data.Employee): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addAllEmployee(employeeList: List<EmployeeListResponse.Data.Employee>)

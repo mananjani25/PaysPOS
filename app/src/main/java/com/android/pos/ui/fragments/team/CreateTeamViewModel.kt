@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.android.pos.R
 import com.android.pos.data.model.requestModel.CreateEmployeeRequestModel
 import com.android.pos.data.model.responseModel.BaseResponse
+import com.android.pos.data.model.responseModel.CreateEmployeeResponse
 import com.android.pos.data.model.responseModel.EmployeeListResponse
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.repositories.PosRepository
@@ -36,14 +37,14 @@ class CreateTeamViewModel @Inject constructor(
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
 
-    private val _data = MutableLiveData<Event<BaseResponse?>>()
-    val data: LiveData<Event<BaseResponse?>> = _data
+    private val _data = MutableLiveData<Event<CreateEmployeeResponse?>>()
+    val data: LiveData<Event<CreateEmployeeResponse?>> = _data
 
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
     val createTaxDetails = MutableLiveData(CreateEmployeeRequestModel())
-    private lateinit var resource: Resource<BaseResponse>
+    private lateinit var resource: Resource<CreateEmployeeResponse>
 
 
     fun setTaxData(employeeModel: EmployeeListResponse.Data.Employee) {
@@ -107,8 +108,25 @@ class CreateTeamViewModel @Inject constructor(
                         resource.data.let { logInResponse ->
                             if (logInResponse?.status == 200) {
 
-                                resource.data?.let {baseResponse->
-                                    _data.value = Event(baseResponse)
+                                resource.data?.let { createEmployeeResponse ->
+
+                                    val employee = EmployeeListResponse.Data.Employee(
+                                        email = createEmployeeResponse.data.employee.email,
+                                        firstName = createEmployeeResponse.data.employee.firstName,
+                                        lastName = createEmployeeResponse.data.employee.lastName,
+                                        id = createEmployeeResponse.data.employee.id,
+                                        isActive = createEmployeeResponse.data.employee.isActive,
+                                        isClockedIn = true,
+                                        locationId = createEmployeeResponse.data.employee.locationId,
+                                        loggedinTerminalId = -1,
+                                        name = createEmployeeResponse.data.employee.firstName + " " + createEmployeeResponse.data.employee.lastName,
+                                        passcode = createEmployeeResponse.data.employee.passcode,
+                                        phoneNumber = createEmployeeResponse.data.employee.phoneNumber,
+                                        createdAt = "",
+                                        updatedAt = ""
+                                    )
+                                    posRepository.createEmployeeDatabase(employee)
+                                    _data.value = Event(createEmployeeResponse)
 
                                 }
                             } else {

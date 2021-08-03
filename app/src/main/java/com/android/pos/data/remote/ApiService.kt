@@ -206,7 +206,7 @@ interface ApiService {
     suspend fun employeesList(@Query("location_id") location_id: Int): EmployeeListResponse
 
     @POST(EMPLOYEES)
-    suspend fun createEmployee(@Body createEmployeeRequestModel: CreateEmployeeRequestModel): BaseResponse
+    suspend fun createEmployee(@Body createEmployeeRequestModel: CreateEmployeeRequestModel): CreateEmployeeResponse
 
     @POST(CUSTOMERS)
     suspend fun createCustomer(@Body createCustomerRequestModel: CreateCustomerRequestModel): BaseResponse
@@ -215,7 +215,7 @@ interface ApiService {
     suspend fun updateEmployee(
         @Path("id") taxId: Int,
         @Body createEmployeeRequestModel: CreateEmployeeRequestModel
-    ): BaseResponse
+    ): CreateEmployeeResponse
 
     @DELETE(EMPLOYEES_UPDATE_DELETE)
     suspend fun deleteEmployee(
