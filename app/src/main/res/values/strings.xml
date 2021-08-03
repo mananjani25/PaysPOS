@@ -74,6 +74,8 @@
     <string name="sercharge_name_validate">Please enter Service Charge Name</string>
     <string name="sercharge_rate_validate">Please enter valid Service Charge Rate</string>
 
+    <string name="role_name_validate">Please enter Role Name</string>
+
 
     <string name="delete_tax_message">Are you sure want to Delete Tax?</string>
     <string name="delete_tip_message">Are you sure want to Delete Tip?</string>

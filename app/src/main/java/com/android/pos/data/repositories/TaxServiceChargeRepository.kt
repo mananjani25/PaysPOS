@@ -6,6 +6,7 @@ import com.android.pos.data.db.IDataManager
 import com.android.pos.data.entities.TbCategory
 import com.android.pos.data.model.requestModel.CreateServiceChargeRequestModel
 import com.android.pos.data.model.requestModel.CreateTaxRequestModel
+import com.android.pos.data.model.requestModel.CreateTeamRoleRequestModel
 import com.android.pos.data.model.responseModel.GetServiceChargeResponse
 import com.android.pos.data.model.responseModel.GetTaxResponse
 import com.android.pos.data.remote.ApiHelper
@@ -69,5 +70,14 @@ class TaxServiceChargeRepository @Inject constructor(
 
     suspend fun deleteSerChargeDatabase(serChargeId: Int) =
         appDatabase.serviceChargeDao().deleteServiceChargeById(serChargeId)
+
+    suspend fun createTeamRole(data: CreateTeamRoleRequestModel) =
+        apiHelperNew.createTeamRole(data)
+
+    suspend fun createTeamRoleDatabase(data: GetServiceChargeResponse.Data) =
+        appDatabase.serviceChargeDao().addServiceCharge(data)
+
+    suspend fun updateTeamRole(discountId: Int, data: CreateTeamRoleRequestModel) =
+        apiHelperNew.updateTeamRole(discountId, data)
 
 }

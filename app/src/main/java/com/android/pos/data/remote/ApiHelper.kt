@@ -96,10 +96,10 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun getTeamRoleList() =
         getResult { apiService.getTeamRoles() }
 
-    suspend fun createTeamRole(data: CreateServiceChargeRequestModel) =
+    suspend fun createTeamRole(data: CreateTeamRoleRequestModel) =
         getResult { apiService.createTeamRoles(data) }
 
-    suspend fun updateTeamRole(teamRoleId: Int, data: CreateServiceChargeRequestModel) =
+    suspend fun updateTeamRole(teamRoleId: Int, data: CreateTeamRoleRequestModel) =
         getResult { apiService.updateTeamRoles(teamRoleId, data) }
 
     suspend fun deleteTeamRole(teamRoleId: Int) =

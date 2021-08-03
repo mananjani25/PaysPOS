@@ -5,6 +5,13 @@
     tools:context=".ui.fragments.settings.teamrole.TeamMemberTimeSheetFragment"
     tools:ignore="MissingDefaultResource">
 
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.android.pos.ui.fragments.settings.teamrole.UserPermissionViewModel" />
+    </data>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -254,6 +261,7 @@
                         android:layout_marginRight="@dimen/_10sdp"
                         android:background="@drawable/bg_button_border"
                         android:ems="15"
+                        android:onClick="@{() -> viewModel.submit()}"
                         android:gravity="center"
                         android:padding="@dimen/_5sdp"
                         android:text="@string/tv_add_role"

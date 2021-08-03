@@ -208,12 +208,12 @@ interface ApiService {
     suspend fun getTeamRoles(): GetServiceChargeResponse
 
     @POST(TEAM_ROLES)
-    suspend fun createTeamRoles(@Body createDiscount: CreateServiceChargeRequestModel): CreateServiceChargeResponse
+    suspend fun createTeamRoles(@Body createDiscount: CreateTeamRoleRequestModel): CreateServiceChargeResponse
 
     @PUT(TEAM_ROLES_UPDATE_DELETE)
     suspend fun updateTeamRoles(
         @Path("id") discountId: Int,
-        @Body createDiscount: CreateServiceChargeRequestModel
+        @Body createDiscount: CreateTeamRoleRequestModel
     ): CreateServiceChargeResponse
 
     @DELETE(TEAM_ROLES_UPDATE_DELETE)
