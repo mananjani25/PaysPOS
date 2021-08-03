@@ -1,6 +1,8 @@
 package com.android.pos.ui.fragments.orderassign
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -46,6 +48,22 @@ class AssignCustomerOrderFragment : Fragment() {
         adapter = AssignCustomerToOrderAdapter()
         binding.rvCustomerList.adapter = adapter
 
+
+        binding.etSearch.addTextChangedListener(object : TextWatcher {
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
+            }
+
+            override fun afterTextChanged(s: Editable) {
+
+                adapter.filter.filter(s.toString().trim())
+
+            }
+        })
+
     }
 
 
@@ -69,11 +87,11 @@ class AssignCustomerOrderFragment : Fragment() {
                     Status.LOADING -> {
 
                         binding.rvCustomerList.visibility = View.GONE
-                        binding.progressCircular.visibility = View.GONE
+                        binding.progressCircular.visibility = View.VISIBLE
                     }
                     Status.ERROR -> {
                         binding.rvCustomerList.visibility = View.GONE
-                        binding.progressCircular.visibility = View.VISIBLE
+                        binding.progressCircular.visibility = View.GONE
 
                     }
 
