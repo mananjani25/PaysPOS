@@ -12,6 +12,7 @@
     </data>
 
     <RelativeLayout
+        android:background="@color/white"
         android:id="@+id/relParent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

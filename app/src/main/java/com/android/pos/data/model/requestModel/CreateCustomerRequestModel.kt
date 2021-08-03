@@ -25,11 +25,13 @@ data class CreateCustomerRequestModel(
         @SerializedName("email")
         var email: String = "",
         @SerializedName("phones_attributes")
-        var phones_attributes: ArrayList<Phone>?= arrayListOf(),
+        var phones_attributes: ArrayList<Phone>? = arrayListOf(),
         @SerializedName("addresses_attributes")
         var addresses_attributes: ArrayList<Addresses>? = arrayListOf()
     ) {
         data class Phone(
+            @SerializedName("id")
+            var id: Int? = null,
             @SerializedName("phone_number")
             var phone_number: String = "",
             @SerializedName("_destroy")
@@ -37,6 +39,8 @@ data class CreateCustomerRequestModel(
         )
 
         data class Addresses(
+            @SerializedName("id")
+            var id: Int? = null,
             @SerializedName("address1")
             var address1: String = "",
             @SerializedName("address2")
@@ -53,7 +57,7 @@ data class CreateCustomerRequestModel(
             var type_of_address: String = "Shipping",
             @SerializedName("latitude")
             var latitude: Double = 0.0,
-            @SerializedName(    "longitude")
+            @SerializedName("longitude")
             var longitude: Double = 0.0,
             @SerializedName("_destroy")
             var _destroy: String = "false"

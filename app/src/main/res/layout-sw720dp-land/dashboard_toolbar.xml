@@ -23,7 +23,7 @@
                 android:fontFamily="@font/sf_pro_display_medium"
                 android:text="@string/keypad"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_7mdpi" />
+                android:textSize="@dimen/_6mdpi" />
 
             <TextView
                 android:id="@+id/txtProducts"
@@ -33,7 +33,7 @@
                 android:fontFamily="@font/sf_pro_display_medium"
                 android:text="@string/products"
                 android:textColor="@color/txt_color_blue"
-                android:textSize="@dimen/_7mdpi" />
+                android:textSize="@dimen/_6mdpi" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -42,7 +42,7 @@
                 android:fontFamily="@font/sf_pro_display_medium"
                 android:text="Services"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_7mdpi" />
+                android:textSize="@dimen/_6mdpi" />
 
 
         </androidx.appcompat.widget.LinearLayoutCompat>

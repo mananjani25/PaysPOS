@@ -47,7 +47,7 @@ data class CustomerListResponse(
             @SerializedName("city") val city: String,
             @SerializedName("state") val state: String,
             @SerializedName("country") val country: String,
-            @SerializedName("postcode") val postcode: Int,
+            @SerializedName("postcode") val postcode: String,
             @SerializedName("address_type") val address_type: String,
             @SerializedName("latitude") val latitude: String,
             @SerializedName("longitude") val longitude: String,

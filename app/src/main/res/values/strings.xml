@@ -149,7 +149,6 @@
     <string name="tv_apply_default_taxes">Apply default Taxes</string>
     <string name="tv_add_item">Add Item</string>
     <string name="tv_add_create_another"><![CDATA[Add & Create Another]]></string>
-    <string name="tv_cancel">Cancel</string>
     <string name="add_service_charge">Add Service Charge</string>
     <string name="enable_service_charge">Enable Service Charge</string>
     <string name="service_charge_name">Service Charge Name</string>
@@ -362,6 +361,7 @@
     <string name="tv_remove_all">Remove All</string>
     <string name="tv_select_team_member">Select Team Member</string>
     <string name="tv_add_role">Add Role</string>
+    <string name="tv_cancel">Cancel</string>
     <string name="tv_role">Role</string>
     <string name="tv_team_member_with_role">Team Member with Role</string>
     <string name="tv_permission">Permission</string>
@@ -380,4 +380,6 @@
     <string name="split_in_to_equal_payment">Split in to equal payment</string>
     <string name="custom">Custom</string>
     <string name="number_of_splits">Number of Splits</string>
+    <string name="add_a_note">Add a note</string>
+    <string name="add_customer_to_sale">Add Customer to Sale</string>
 </resources>

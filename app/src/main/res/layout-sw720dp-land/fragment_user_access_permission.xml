@@ -277,7 +277,7 @@
                         android:ems="15"
                         android:gravity="center"
                         android:padding="@dimen/_5sdp"
-                        android:text="@string/tv_cancel"
+                        android:text=""
                         android:textColor="@color/btnColor"
                         android:textSize="@dimen/_6mdpi"
                         app:textAllCaps="false" />

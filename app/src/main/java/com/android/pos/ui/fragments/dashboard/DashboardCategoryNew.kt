@@ -18,6 +18,7 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
@@ -54,6 +55,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, MyCallback {
+    private var singleItem: TbItem? = null
     private var cartList: List<CartModel>? = null
     private lateinit var binding: FragmentDashboardCategoryNewBinding
     private val TAG = "DashboardCategoryNew"
@@ -123,6 +125,13 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             }
         }
 
+        binding.layoutCart.txtCrtNewCustomer.setOnClickListener {
+
+            findNavController().navigate(
+                R.id.action_dashboardCategoryNew_to_assignCustomerOrderFragment
+            )
+        }
+
         binding.layoutCart.txtClearItems.setOnClickListener {
 
             alert(
@@ -177,15 +186,69 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 underlayButtons: MutableList<UnderlayButton?>
             ) {
 
+
                 underlayButtons.add(UnderlayButton(
-                    "Delete",
+                    "Add Note",
                     0,
-                    Color.parseColor("#FF3C30")
+                    Color.parseColor("#2997cc")
                 ) { pos ->
 
-                    alert(
-                        getString(R.string.app_name),
-                        getString(R.string.delete_item_message)
+
+                    setFragmentResultListener("request_key_note") { requestKey: String, bundle: Bundle ->
+                        val note = bundle.getString("note")
+
+                        singleItem!!.note = note.toString()
+                        singleItem?.let { viewModel.cartLogic(cartList, it, UPDATE) }
+                    }
+
+                    singleItem = cartAdapter.getItem(pos)
+                    val bundle = Bundle().apply {
+                        putString("note", singleItem!!.note)
+                    }
+
+                    findNavController().navigate(
+                        R.id.action_dashboardCategoryNew_to_addNoteDialog,
+                        bundle
+                    )
+                })
+
+
+                underlayButtons.add(UnderlayButton(
+                    "Add Discount",
+                    0,
+                    Color.parseColor("#2997cc")
+                ) { pos ->
+
+
+                    setFragmentResultListener("request_key_discount") { requestKey: String, bundle: Bundle ->
+                        val note = bundle.getString("note")
+
+                        singleItem!!.note = note.toString()
+                        singleItem?.let { viewModel.cartLogic(cartList, it, UPDATE) }
+                    }
+
+                    singleItem = cartAdapter.getItem(pos)
+                    val bundle = Bundle().apply {
+                        putString("note", singleItem!!.note)
+                    }
+
+                    findNavController().navigate(
+                        R.id.action_dashboardCategoryNew_to_addNoteDialog,
+                        bundle
+                    )
+                })
+
+
+                underlayButtons.add(
+                    UnderlayButton(
+                        "Delete",
+                        0,
+                        Color.parseColor("#FF3C30")
+                    ) { pos ->
+
+                        alert(
+                            getString(R.string.app_name),
+                            getString(R.string.delete_item_message)
                     ) {
                         positiveButton(getString(R.string.tv_delete)) {
                             // Do positive stuff here
@@ -730,6 +793,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         val btnAddDiscount: AppCompatTextView = dialog.findViewById(R.id.btnAddDiscount)
         val edtNote: AppCompatEditText = dialog.findViewById(R.id.edtNote)
 
+        edtNote.setText(data.note)
+
         var qty = data.itemQuantity
 
         txtQty.setText(qty.toString())
@@ -743,6 +808,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         }
         txtSave.setOnClickListener {
             dialog.dismiss()
+            data.note = edtNote.text.toString().trim()
             data.itemQuantity = txtQty.text.toString().toInt()
             viewModel.cartLogic(cartList, data, UPDATE)
         }
@@ -759,11 +825,15 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             txtQty.setText(qty.toString())
         }
         btnRemove.setOnClickListener {
+
+
             viewModel.cartLogic(cartList, data, DELETE)
             dialog.dismiss()
         }
         btnAddDiscount.setOnClickListener {
-
+            findNavController().navigate(
+                R.id.action_dashboardCategoryNew_to_addDiscountDialog
+            )
         }
 
 

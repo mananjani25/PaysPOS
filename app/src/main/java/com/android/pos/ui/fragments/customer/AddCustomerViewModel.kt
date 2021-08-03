@@ -52,6 +52,8 @@ class AddCustomerViewModel @Inject constructor(
     val _Basedata = MutableLiveData<Event<BaseResponse?>>()
 
     val addCustomerDetails = MutableLiveData(CreateCustomerRequestModel())
+    var listAddress: ArrayList<CreateCustomerRequestModel.Customer.Addresses> = arrayListOf()
+
     val phoneNo = MutableLiveData<String>()
     var address1 = MutableLiveData<String>()
     val address2 = MutableLiveData<String>()
@@ -65,6 +67,7 @@ class AddCustomerViewModel @Inject constructor(
     var strcity: String = ""
     var strstate = ""
     var strPin = ""
+    var isEmptyAddress = true
 
 
     fun setAddress1(adr: String) {
@@ -77,6 +80,11 @@ class AddCustomerViewModel @Inject constructor(
 
     fun setCity(str: String) {
         this.strcity = str
+    }
+
+    fun setAddressList(list: ArrayList<CreateCustomerRequestModel.Customer.Addresses>) {
+        this.listAddress.clear()
+        this.listAddress = list
     }
 
     fun setState(str: String) {
@@ -104,28 +112,44 @@ class AddCustomerViewModel @Inject constructor(
                         ("[\\D]").toRegex(),
                         ""
                     ),
-                    )
+                )
             )
         }
 
+
         Log.e("Address1", "address1: ${address1.value}")
         Log.e("Address1", "straddress1: ${straddress1}")
-        if (straddress1.isNotEmpty() && straddress2.isNotEmpty() && strcity.isNotEmpty() && strstate.isNotEmpty() && strPin.isNotEmpty()) {
 
-            addCustomerDetails.value?.data?.addresses_attributes?.add(
-                0, CreateCustomerRequestModel.Customer.Addresses(
-                    address1 = straddress1.toString(),
-                    address2 = straddress2,
-                    city = strcity,
-                    state = strstate,
-                    postcode = strPin
-                )
-            )
-
+        if (listAddress.isNotEmpty()) {
+            addCustomerDetails.value?.data?.addresses_attributes?.addAll(listAddress)
         }
 
 
         val value = addCustomerDetails.value
+        value?.data?.addresses_attributes?.forEach {
+            if (it.address1.isEmpty()) {
+
+                isEmptyAddress = true
+                return@forEach
+            } else if (it.address2.isEmpty()) {
+                isEmptyAddress = true
+                return@forEach
+            } else if (it.city.isEmpty()) {
+                isEmptyAddress = true
+                return@forEach
+            } else if (it.state.isEmpty()) {
+                isEmptyAddress = true
+                return@forEach
+            } else if (it.postcode.isEmpty()) {
+                //_snackbarText.value = Event(R.string.address_empty_validation)
+                isEmptyAddress = true
+                return@forEach
+            } else {
+                isEmptyAddress = false
+            }
+
+        }
+
         if (TextUtils.isEmpty(value?.data?.first_name?.trim())) {
             _snackbarText.value = Event(R.string.first_name_validate)
         } else if (TextUtils.isEmpty(value?.data?.last_name?.trim())) {
@@ -139,7 +163,11 @@ class AddCustomerViewModel @Inject constructor(
             _snackbarText.value = Event(R.string.valid_email_validate)
         } else if (value?.data?.addresses_attributes?.size == 0) {
             _snackbarText.value = Event(R.string.address_empty_validation)
-        } else if (TextUtils.isEmpty(value?.data?.company?.trim())) {
+        }
+        else if (isEmptyAddress){
+            _snackbarText.value = Event(R.string.address_empty_validation)
+        }
+        else if (TextUtils.isEmpty(value?.data?.company?.trim())) {
             _snackbarText.value = Event(R.string.company_name_validate)
         } else if (TextUtils.isEmpty(value?.data?.birth_day) || TextUtils.isEmpty(value?.data?.birth_month) || TextUtils.isEmpty(
                 value?.data?.birthday_year
@@ -174,15 +202,8 @@ class AddCustomerViewModel @Inject constructor(
 
                 // data?.addresses_attributes?.add(0, CreateCustomerRequestModel.Customer.Addresses())
 
-                data?.addresses_attributes?.add(
-                    0, CreateCustomerRequestModel.Customer.Addresses(
-                        address1 = straddress1.toString(),
-                        address2 = straddress2,
-                        city = strcity,
-                        state = strstate,
-                        postcode = strPin
-                    )
-                )
+                data?.addresses_attributes?.addAll(value?.data?.addresses_attributes!!)
+
 
 
             }

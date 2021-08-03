@@ -54,6 +54,7 @@
 
 
             <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/edtAmount"
                 style="@style/CustomFontSemiBold"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -62,6 +63,8 @@
                 android:layout_weight="0.1"
                 android:background="@drawable/background_square_border_grey"
                 android:hint="$0.00"
+                android:inputType="numberDecimal"
+                android:imeOptions="actionDone"
                 android:minWidth="@dimen/_250sdp"
                 android:padding="@dimen/_7sdp"
                 android:textColor="@color/txtColor"
