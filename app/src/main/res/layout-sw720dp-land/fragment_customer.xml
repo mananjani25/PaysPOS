@@ -82,7 +82,7 @@
                     android:background="@color/txtColor"
                     android:gravity="center"
                     android:orientation="vertical"
-                    android:visibility="visible">
+                    android:visibility="gone">
 
                     <TextView
                         android:id="@+id/txtCrtNewCustomer"

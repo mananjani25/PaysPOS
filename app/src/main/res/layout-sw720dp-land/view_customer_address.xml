@@ -19,8 +19,8 @@
 
         <ImageView
             android:id="@+id/imgDelete"
-            android:layout_width="@dimen/_14sdp"
-            android:layout_height="@dimen/_14sdp"
+            android:layout_width="@dimen/_12sdp"
+            android:layout_height="@dimen/_12sdp"
             android:layout_gravity="end"
             android:layout_marginEnd="@dimen/_15sdp"
             android:src="@drawable/ic_baseline_delete_24"
@@ -53,7 +53,7 @@
             android:imeOptions="actionNext"
             android:inputType="textNoSuggestions"
             android:padding="@dimen/_5sdp"
-            android:text="@{model.address1}"
+            android:text="@={model.address1}"
             android:textColor="@color/hintColor"
             android:textSize="@dimen/_6mdpi" />
 
@@ -67,7 +67,7 @@
             android:background="@drawable/background_square_border_grey"
             android:inputType="textNoSuggestions"
             android:padding="@dimen/_5sdp"
-            android:text="@{model.address2}"
+            android:text="@={model.address2}"
             android:textColor="@color/hintColor"
             android:textSize="@dimen/_6mdpi" />
 
@@ -89,7 +89,7 @@
                 android:background="@drawable/background_square_border_grey"
                 android:inputType="textNoSuggestions"
                 android:padding="@dimen/_5sdp"
-                android:text="@{model.city}"
+                android:text="@={model.city}"
                 android:textColor="@color/hintColor"
                 android:textSize="@dimen/_6mdpi" />
 
@@ -102,7 +102,7 @@
                 android:background="@drawable/background_square_border_grey"
                 android:inputType="textNoSuggestions"
                 android:padding="@dimen/_5sdp"
-                android:text="@{model.state}"
+                android:text="@={model.state}"
                 android:textColor="@color/hintColor"
                 android:textSize="@dimen/_6mdpi" />
 
@@ -115,7 +115,7 @@
                 android:background="@drawable/background_square_border_grey"
                 android:inputType="textNoSuggestions"
                 android:padding="@dimen/_5sdp"
-                android:text="@{model.postcode}"
+                android:text="@={model.postcode}"
                 android:textColor="@color/hintColor"
                 android:textSize="@dimen/_6mdpi" />
 
