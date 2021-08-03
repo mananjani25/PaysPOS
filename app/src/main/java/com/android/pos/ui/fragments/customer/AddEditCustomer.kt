@@ -1,48 +1,31 @@
 package com.android.pos.ui.fragments.customer
 
 import `in`.madapps.placesautocomplete.PlaceAPI
-import `in`.madapps.placesautocomplete.adapter.PlacesAutoCompleteAdapter
-import `in`.madapps.placesautocomplete.listener.OnPlacesDetailsListener
-import `in`.madapps.placesautocomplete.model.Place
-import `in`.madapps.placesautocomplete.model.PlaceDetails
+import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.location.Address
 import android.location.Geocoder
-import android.os.Build
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.DatePicker
-import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.android.pos.R
 import com.android.pos.data.model.requestModel.CreateCustomerRequestModel
-import com.android.pos.data.remote.Constants.CUSTOMERDETAILS
-import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.databinding.FragmentAddEditCustomerBinding
 import com.android.pos.ui.adapter.AddressListAdapter
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
-import com.google.android.libraries.places.api.Places
-import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
+import java.text.DateFormat
+import java.text.SimpleDateFormat
 import java.util.*
-import com.google.android.libraries.places.api.net.PlacesClient
-import okhttp3.internal.notify
-import okhttp3.internal.notifyAll
 import kotlin.collections.ArrayList
 
 
@@ -57,6 +40,8 @@ class AddEditCustomer : Fragment() {
     private var listAddress: ArrayList<CreateCustomerRequestModel.Customer.Addresses> =
         arrayListOf()
 
+    private lateinit var modelAddress: CreateCustomerRequestModel.Customer.Addresses
+    private lateinit var adapter: AddressListAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -74,18 +59,11 @@ class AddEditCustomer : Fragment() {
         return binding.root
     }
 
-    private fun setAddress(list: ArrayList<CreateCustomerRequestModel.Customer.Addresses>) {
-        listAddress.addAll(list)
+    private fun setAddress() {
 
-        binding.rvAddresses.adapter = AddressListAdapter(requireContext(), list,object :
-            AddressListAdapter.AddressInterface {
-            override fun onDeleteItem(pos: Int) {
+        adapter = AddressListAdapter()
+        binding.rvAddresses.adapter = adapter
 
-                (binding.rvAddresses.adapter as AddressListAdapter).list.removeAt(pos)
-                (binding.rvAddresses.adapter as AddressListAdapter).notifyItemRangeChanged(pos,(binding.rvAddresses.adapter as AddressListAdapter).list.size)
-            }
-
-        })
     }
 
     private fun showObserveProgress() {
@@ -107,7 +85,20 @@ class AddEditCustomer : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        modelAddress = CreateCustomerRequestModel.Customer.Addresses(
+            null,
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            0.0,
+            0.0,
+        )
 
+        setAddress()
         onClick()
         isEdit = requireArguments().getBoolean("isEdit", false)
         Log.e(TAG, "isEdit  $isEdit")
@@ -128,6 +119,14 @@ class AddEditCustomer : Fragment() {
             viewModel.addCustomerDetails.value?.data?.first_name = editModel?.first_name.toString()
             viewModel.addCustomerDetails.value?.data?.last_name = editModel?.last_name.toString()
 
+            Log.e(TAG,"Date  ${getDay(editModel?.birth_date!!)}")
+            Log.e(TAG,"Month  ${getMonth(editModel?.birth_date!!)}")
+            Log.e(TAG,"Year  ${getYear(editModel?.birth_date!!)}")
+            viewModel.addCustomerDetails.value?.data?.birth_day = getDay(editModel?.birth_date!!)
+            viewModel.addCustomerDetails.value?.data?.birthday_year = getYear(editModel?.birth_date!!)
+            viewModel.addCustomerDetails.value?.data?.birth_month = getMonth(editModel?.birth_date!!)
+
+
 
             if (editModel?.phones?.size != 0) {
                 viewModel.phoneNo.value =
@@ -138,25 +137,15 @@ class AddEditCustomer : Fragment() {
             }
 
             if (editModel.addresses.isNotEmpty()) {
-                val list: ArrayList<CreateCustomerRequestModel.Customer.Addresses> = arrayListOf()
+                var list:ArrayList<CreateCustomerRequestModel.Customer.Addresses> = arrayListOf()
 
-                for (i in editModel.addresses) {
-                    list.add(
-                        CreateCustomerRequestModel.Customer.Addresses(
-                            i.address1,
-                            i.address2,
-                            i.city,
-                            i.state,
-                            i.country,
-                            i.postcode.toString(),
-                            i.type_of_address.toString(),
-                            i.latitude.toDouble(),
-                            i.longitude.toDouble()
-                        )
-                    )
+                for (i in 0 until  editModel.addresses.size){
+                    list.add(CreateCustomerRequestModel.Customer.Addresses(editModel.addresses.get(i).id,editModel.addresses.get(i).address1,editModel.addresses.get(i).address2,editModel.addresses.get(i).city,editModel.addresses.get(i).state,editModel.addresses.get(i).country,editModel.addresses.get(i).postcode,editModel.addresses.get(i).type_of_address.toString(),0.0,0.0,))
+
                 }
-                Log.e(TAG, "AddressEditlist  ${Gson().toJson(list)}")
-                setAddress(list)
+
+
+                adapter.setAddress(list)
             }
 
 
@@ -168,6 +157,7 @@ class AddEditCustomer : Fragment() {
 
         } else {
             binding.txtCustomerType.setText("New Customer")
+            val list: ArrayList<CreateCustomerRequestModel.Customer.Addresses> = arrayListOf()
 
 
         }
@@ -181,36 +171,23 @@ class AddEditCustomer : Fragment() {
 
         }
 
-        /* binding.edtStreet.addTextChangedListener(object : TextWatcher {
-             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-
-             }
-
-             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-
-                     searchPlaces(binding.edtStreet.text.toString())
-
-
-
-             }
-
-             override fun afterTextChanged(s: Editable?) {
-
-             }
-
-         })
- */
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun onClick() {
         binding.imgAddressAdd.setOnClickListener {
-            var list = (binding.rvAddresses.adapter as AddressListAdapter).list
-            list.add(CreateCustomerRequestModel.Customer.Addresses())
-            (binding.rvAddresses.adapter as AddressListAdapter).list = list
-            (binding.rvAddresses.adapter as AddressListAdapter).notifyDataSetChanged()
+            adapter.addData(
+                modelAddress
+            )
 
         }
+
+        binding.txtSave.setOnClickListener {
+            viewModel.setAddressList(adapter.getList())
+            viewModel.submit()
+        }
     }
+
 
     /*  private fun searchPlaces() {
           placesApi = PlaceAPI.Builder().apiKey(getString(R.string.api_key)).build(requireActivity())
@@ -338,4 +315,19 @@ class AddEditCustomer : Fragment() {
 
     }
 
+    fun getDay(dat:String):String{
+        val format = SimpleDateFormat("dd/MM/yyyy")
+        val date = format.parse(dat)
+        return android.text.format.DateFormat.format("dd",date).toString()
+    }
+    fun getMonth(dat:String):String{
+        val format = SimpleDateFormat("dd/MM/yyyy")
+        val date = format.parse(dat)
+        return android.text.format.DateFormat.format("MM",date).toString()
+    }
+    fun getYear(dat:String):String{
+        val format = SimpleDateFormat("dd/MM/yyyy")
+        val date = format.parse(dat)
+        return android.text.format.DateFormat.format("yyyy",date).toString()
+    }
 }
