@@ -37,6 +37,7 @@ class TbItem : Parcelable {
 
     var modifierGroupIds: String = ""
     var shortDescription: String = ""
+    var note: String = ""
 
     var itemQuantity: Int = 0
     var isManualSales: Boolean = false

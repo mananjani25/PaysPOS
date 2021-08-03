@@ -2,12 +2,18 @@ package com.android.pos.ui.dialog
 
 import android.graphics.Point
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.*
+import android.widget.EditText
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import com.android.pos.R
 import com.android.pos.databinding.DailogCustomAmountBinding
+import com.android.pos.utils.AmountTextWatcher
 import dagger.hilt.android.AndroidEntryPoint
+import java.text.NumberFormat
+
 
 @AndroidEntryPoint
 class CustomAmountFragment : DialogFragment() {
@@ -24,6 +30,12 @@ class CustomAmountFragment : DialogFragment() {
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.dailog_custom_amount, container, false)
         binding.lifecycleOwner = this
+
+
+        binding.edtAmount.addTextChangedListener(AmountTextWatcher(binding.edtAmount))
+
+
+
         return binding.root
     }
 
@@ -38,5 +50,6 @@ class CustomAmountFragment : DialogFragment() {
         window.setLayout((width * 0.50).toInt(), WindowManager.LayoutParams.MATCH_PARENT)
         window.setGravity(Gravity.CENTER)
     }
+
 
 }

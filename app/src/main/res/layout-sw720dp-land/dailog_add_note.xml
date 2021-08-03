@@ -4,14 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingDefaultResource">
 
-    <data>
-
-        <variable
-            name="viewModel"
-            type="com.android.pos.ui.fragments.settings.notes.CreateNoteViewModel" />
-    </data>
-
-
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -41,7 +33,7 @@
                 android:layout_centerVertical="true"
                 android:layout_gravity="center"
                 android:gravity="center"
-                android:text="@string/create_note"
+                android:text="Add Note"
                 android:textSize="@dimen/_7mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -53,12 +45,11 @@
                 android:layout_gravity="center"
                 android:background="@color/btnColor"
                 android:gravity="center"
-                android:onClick="@{() -> viewModel.submit()}"
                 android:paddingStart="@dimen/_15sdp"
                 android:paddingTop="@dimen/_5sdp"
                 android:paddingEnd="@dimen/_15sdp"
                 android:paddingBottom="@dimen/_5sdp"
-                android:text="@string/create"
+                android:text="@string/save"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_7mdpi" />
 
@@ -89,16 +80,16 @@
 
 
             <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/edtNote"
                 style="@style/CustomFontSemiBold"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_5sdp"
                 android:background="@drawable/edt_border_light_gray"
-                android:hint="@string/note_title"
+                android:hint="@string/add_a_note"
                 android:imeOptions="actionDone"
                 android:inputType="textCapWords"
                 android:padding="@dimen/_5sdp"
-                android:text="@={viewModel.createNoteDetails.Note.name}"
                 android:textColor="@color/txtColor"
                 android:textColorHint="@color/hintColor"
                 android:textSize="@dimen/_6mdpi" />

@@ -358,6 +358,12 @@
         <action
             android:id="@+id/action_dashboardCategoryNew_to_paymentFragment"
             app:destination="@id/paymentFragment" />
+        <action
+            android:id="@+id/action_dashboardCategoryNew_to_addNoteDialog"
+            app:destination="@id/addNoteDialog" />
+        <action
+            android:id="@+id/action_dashboardCategoryNew_to_addDiscountDialog"
+            app:destination="@id/addDiscountDialog" />
 
     </fragment>
     <action
@@ -490,6 +496,14 @@
         android:id="@+id/customAmountFragment"
         android:name="com.android.pos.ui.dialog.CustomAmountFragment"
         android:label="CustomAmountFragment" />
+    <dialog
+        android:id="@+id/addNoteDialog"
+        android:name="com.android.pos.ui.dialog.AddNoteDialog"
+        android:label="AddNoteDialog" />
+    <dialog
+        android:id="@+id/addDiscountDialog"
+        android:name="com.android.pos.ui.dialog.AddDiscountDialog"
+        android:label="AddDiscountDialog" />
 
 
 </navigation>

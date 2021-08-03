@@ -34,8 +34,8 @@
 
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    style="@style/CustomFontSemiBold"
                     android:id="@+id/txtSplitAmount"
+                    style="@style/CustomFontSemiBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
@@ -70,6 +70,18 @@
                     android:text="$24.00"
                     android:textColor="@color/drawerBack"
                     android:textSize="@dimen/_12mdpi" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtSplitValue"
+                    style="@style/CustomFontBold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_2sdp"
+                    android:gravity="center"
+                    android:textColor="@color/drawerBack"
+                    android:textSize="@dimen/_12mdpi"
+                    android:visibility="gone" />
+
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontRegularStyle"
@@ -389,8 +401,8 @@
                     android:textSize="@dimen/_6mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    style="@style/CustomFontSemiBold"
                     android:id="@+id/txtTotal"
+                    style="@style/CustomFontSemiBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"

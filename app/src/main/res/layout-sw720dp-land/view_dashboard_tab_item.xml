@@ -16,10 +16,8 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_5sdp"
-        android:layout_marginTop="@dimen/_3sdp"
-        android:layout_marginEnd="@dimen/_5sdp"
-        android:layout_marginBottom="@dimen/_2sdp"
+        android:layout_marginStart="@dimen/_3sdp"
+        android:layout_marginEnd="@dimen/_3sdp"
         android:orientation="vertical">
 
         <TextView
@@ -27,6 +25,11 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
+            tools:text="Name"
+            android:paddingTop="@dimen/_5sdp"
+            android:paddingStart="@dimen/_1sdp"
+            android:paddingEnd="@dimen/_1sdp"
+            android:paddingBottom="@dimen/_5sdp"
             android:text="@{model.title}"
             android:textColor="@{model.isSelected ? @color/txtColor : @color/drawerItemUnselected}"
             android:textSize="@dimen/_6mdpi" />
@@ -35,8 +38,6 @@
             android:layout_width="match_parent"
             android:layout_height="2dp"
             android:layout_gravity="center"
-            android:layout_marginTop="@dimen/_3sdp"
-            android:layout_marginBottom="@dimen/_3sdp"
             android:background="@color/txtColor"
             android:visibility="@{model.isSelected ? View.VISIBLE : View.GONE}" />
 
