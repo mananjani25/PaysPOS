@@ -364,6 +364,9 @@
         <action
             android:id="@+id/action_dashboardCategoryNew_to_addDiscountDialog"
             app:destination="@id/addDiscountDialog" />
+        <action
+            android:id="@+id/action_dashboardCategoryNew_to_assignCustomerOrderFragment"
+            app:destination="@id/assignCustomerOrderFragment" />
 
     </fragment>
     <action
@@ -504,6 +507,11 @@
         android:id="@+id/addDiscountDialog"
         android:name="com.android.pos.ui.dialog.AddDiscountDialog"
         android:label="AddDiscountDialog" />
+    <fragment
+        android:id="@+id/assignCustomerOrderFragment"
+        android:name="com.android.pos.ui.fragments.orderassign.AssignCustomerOrderFragment"
+        android:label="assign_customer_order_fragment"
+        tools:layout="@layout/assign_customer_order_fragment" />
 
 
 </navigation>
