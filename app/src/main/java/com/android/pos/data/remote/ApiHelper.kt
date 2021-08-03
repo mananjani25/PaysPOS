@@ -75,7 +75,7 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun deleteDiscount(discountId: Int) =
         getResult { apiService.deleteDiscount(discountId) }
 
-    suspend fun deleteCustomer(customerId:Int) =
+    suspend fun deleteCustomer(customerId: Int) =
         getResult { apiService.deleteCustomer(customerId) }
 
     suspend fun getServiceChargeList() =
@@ -92,6 +92,18 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
 
     suspend fun deleteServiceCharge(serviceChargeId: Int) =
         getResult { apiService.deleteServiceCharge(serviceChargeId) }
+
+    suspend fun getTeamRoleList() =
+        getResult { apiService.getTeamRoles() }
+
+    suspend fun createTeamRole(data: CreateServiceChargeRequestModel) =
+        getResult { apiService.createTeamRoles(data) }
+
+    suspend fun updateTeamRole(teamRoleId: Int, data: CreateServiceChargeRequestModel) =
+        getResult { apiService.updateTeamRoles(teamRoleId, data) }
+
+    suspend fun deleteTeamRole(teamRoleId: Int) =
+        getResult { apiService.deleteTeamRole(teamRoleId) }
 
     suspend fun getNoteList() =
         getResult { apiService.getNoteList() }
@@ -115,8 +127,11 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun createEmployee(data: CreateEmployeeRequestModel) =
         getResult { apiService.createEmployee(data) }
 
-    suspend fun createCustomer(data:CreateCustomerRequestModel) = getResult { apiService.createCustomer(data) }
-    suspend fun updateCustomer(id:Int,data:CreateCustomerRequestModel) = getResult { apiService.updateCustomer(id,data) }
+    suspend fun createCustomer(data: CreateCustomerRequestModel) =
+        getResult { apiService.createCustomer(data) }
+
+    suspend fun updateCustomer(id: Int, data: CreateCustomerRequestModel) =
+        getResult { apiService.updateCustomer(id, data) }
 
     suspend fun updateEmployee(taxId: Int, data: CreateEmployeeRequestModel) =
         getResult { apiService.updateEmployee(taxId, data) }

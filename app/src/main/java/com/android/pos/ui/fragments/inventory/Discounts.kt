@@ -7,9 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
-import com.android.pos.data.model.DiscountListModel
 import com.android.pos.databinding.FragmentDiscountBinding
-import com.android.pos.ui.adapter.DiscountListAdapter
 
 class Discounts : Fragment() {
     private lateinit var binding: FragmentDiscountBinding

@@ -35,6 +35,8 @@ import com.android.pos.data.remote.Constants.SYNC_VENUE_DATA
 import com.android.pos.data.remote.Constants.TAXES
 import com.android.pos.data.remote.Constants.TAX_ACTIVE
 import com.android.pos.data.remote.Constants.TAX_UPDATE_DELETE
+import com.android.pos.data.remote.Constants.TEAM_ROLES
+import com.android.pos.data.remote.Constants.TEAM_ROLES_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.TIPS
 import com.android.pos.data.remote.Constants.TIPS_ACTIVE
 import com.android.pos.data.remote.Constants.TIPS_UPDATE_DELETE
@@ -201,6 +203,23 @@ interface ApiService {
         @Path("id") noteId: Int,
         @Query("is_active") is_active: Boolean
     ): CreateNoteResponse
+
+    @GET(TEAM_ROLES)
+    suspend fun getTeamRoles(): GetServiceChargeResponse
+
+    @POST(TEAM_ROLES)
+    suspend fun createTeamRoles(@Body createDiscount: CreateServiceChargeRequestModel): CreateServiceChargeResponse
+
+    @PUT(TEAM_ROLES_UPDATE_DELETE)
+    suspend fun updateTeamRoles(
+        @Path("id") discountId: Int,
+        @Body createDiscount: CreateServiceChargeRequestModel
+    ): CreateServiceChargeResponse
+
+    @DELETE(TEAM_ROLES_UPDATE_DELETE)
+    suspend fun deleteTeamRole(
+        @Path("id") discountId: Int
+    ): CreateServiceChargeResponse
 
     @GET(EMPLOYEES)
     suspend fun employeesList(@Query("location_id") location_id: Int): EmployeeListResponse
