@@ -11,8 +11,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.R
+import com.android.pos.data.model.CustomerListResponse
 import com.android.pos.data.model.requestModel.CreateCustomerRequestModel
 import com.android.pos.data.model.responseModel.BaseResponse
+import com.android.pos.data.model.responseModel.CreateCustomerReponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
@@ -67,7 +69,7 @@ class AddCustomerViewModel @Inject constructor(
     var strcity: String = ""
     var strstate = ""
     var strPin = ""
-    var isEmptyAddress = true
+    var isEmptyAddress = false
 
 
     fun setAddress1(adr: String) {
@@ -95,7 +97,7 @@ class AddCustomerViewModel @Inject constructor(
         this.strPin = str
     }
 
-    private lateinit var resource: Resource<BaseResponse>
+    private lateinit var resource: Resource<CreateCustomerReponse>
 
     fun isEditData(isEditData: Boolean, id: Int) {
         this.isEdit = isEditData
@@ -120,36 +122,35 @@ class AddCustomerViewModel @Inject constructor(
         Log.e("Address1", "address1: ${address1.value}")
         Log.e("Address1", "straddress1: ${straddress1}")
 
-        if (listAddress.isNotEmpty()) {
-            addCustomerDetails.value?.data?.addresses_attributes?.addAll(listAddress)
-        }
+
+        addCustomerDetails.value?.data?.addresses_attributes?.addAll(listAddress)
 
 
         val value = addCustomerDetails.value
-        value?.data?.addresses_attributes?.forEach {
-            if (it.address1.isEmpty()) {
+        /* value?.data?.addresses_attributes?.forEach {
+             if (it.address1.isEmpty()) {
 
-                isEmptyAddress = true
-                return@forEach
-            } else if (it.address2.isEmpty()) {
-                isEmptyAddress = true
-                return@forEach
-            } else if (it.city.isEmpty()) {
-                isEmptyAddress = true
-                return@forEach
-            } else if (it.state.isEmpty()) {
-                isEmptyAddress = true
-                return@forEach
-            } else if (it.postcode.isEmpty()) {
-                //_snackbarText.value = Event(R.string.address_empty_validation)
-                isEmptyAddress = true
-                return@forEach
-            } else {
-                isEmptyAddress = false
-            }
+                 isEmptyAddress = true
+                 return@forEach
+             } else if (it.address2.isEmpty()) {
+                 isEmptyAddress = false
+                 return@forEach
+             } else if (it.city.isEmpty()) {
+                 isEmptyAddress = false
+                 return@forEach
+             } else if (it.state.isEmpty()) {
+                 isEmptyAddress = false
+                 return@forEach
+             } else if (it.postcode.isEmpty()) {
+                 //_snackbarText.value = Event(R.string.address_empty_validation)
+                 isEmptyAddress = false
+                 return@forEach
+             } else {
+                 isEmptyAddress = false
+             }
 
-        }
-
+         }
+ */
         if (TextUtils.isEmpty(value?.data?.first_name?.trim())) {
             _snackbarText.value = Event(R.string.first_name_validate)
         } else if (TextUtils.isEmpty(value?.data?.last_name?.trim())) {
@@ -161,15 +162,12 @@ class AddCustomerViewModel @Inject constructor(
             _snackbarText.value = Event(R.string.email_validate)
         } else if (!Patterns.EMAIL_ADDRESS.matcher(value?.data?.email).matches()) {
             _snackbarText.value = Event(R.string.valid_email_validate)
-        } else if (value?.data?.addresses_attributes?.size == 0) {
-            _snackbarText.value = Event(R.string.address_empty_validation)
         }
-        else if (isEmptyAddress){
-            _snackbarText.value = Event(R.string.address_empty_validation)
-        }
-        else if (TextUtils.isEmpty(value?.data?.company?.trim())) {
+
+        /*else if (TextUtils.isEmpty(value?.data?.company?.trim())) {
             _snackbarText.value = Event(R.string.company_name_validate)
-        } else if (TextUtils.isEmpty(value?.data?.birth_day) || TextUtils.isEmpty(value?.data?.birth_month) || TextUtils.isEmpty(
+        }*/
+        else if (TextUtils.isEmpty(value?.data?.birth_day) || TextUtils.isEmpty(value?.data?.birth_month) || TextUtils.isEmpty(
                 value?.data?.birthday_year
             )
         ) {
@@ -192,18 +190,14 @@ class AddCustomerViewModel @Inject constructor(
                     )
                 )
 
-//                    data?.phones_attributes.add(0,) =
-//                        value.data!!.phones_attributes?.get(0)?.phone_number!!.
+
                 data?.email = value.data!!.email
                 data?.birth_day = value.data!!.birth_day
                 data?.birth_month = value.data!!.birth_month
                 data?.birthday_year = value.data!!.birthday_year
                 data?.company = value.data!!.company
 
-                // data?.addresses_attributes?.add(0, CreateCustomerRequestModel.Customer.Addresses())
-
                 data?.addresses_attributes?.addAll(value?.data?.addresses_attributes!!)
-
 
 
             }
@@ -222,10 +216,39 @@ class AddCustomerViewModel @Inject constructor(
                 when (resource.status) {
                     Status.SUCCESS -> {
                         _showProgress.value = Event(false)
+
                         resource.data.let {
                             if (it?.status == 200) {
-                                resource.data?.let { baseResponse ->
-                                    _Basedata.value = Event(baseResponse)
+
+                                resource.data?.let { customerListReposne ->
+
+                                    val model = CustomerListResponse.Data(
+                                        id = customerListReposne.data.id,
+                                        first_name = customerListReposne.data.first_name,
+                                        last_name = customerListReposne.data.last_name,
+                                        birth_date = customerListReposne.data.birth_date,
+                                        email = customerListReposne.data.email,
+                                        phones = customerListReposne.data.phones,
+                                        addresses = customerListReposne.data.addresses
+                                    )
+
+                                    if (isEdit) {
+                                        posRepository.updateCustomer(
+                                            customerListReposne.data.id,
+                                            customerListReposne.data.first_name,
+                                            customerListReposne.data.last_name,
+                                            customerListReposne.data.email,
+                                            customerListReposne.data.birth_date,
+                                            customerListReposne.data.phones,
+                                            customerListReposne.data.addresses
+                                        )
+
+
+                                    } else {
+                                        posRepository.addCustomer(model)
+                                    }
+                                    _Basedata.value = Event(customerListReposne)
+
                                 }
                             } else {
                                 _snackbarText.value = Event(resource.message)

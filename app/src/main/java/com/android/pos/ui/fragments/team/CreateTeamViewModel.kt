@@ -110,6 +110,7 @@ class CreateTeamViewModel @Inject constructor(
 
                                 resource.data?.let { createEmployeeResponse ->
 
+
                                     val employee = EmployeeListResponse.Data.Employee(
                                         email = createEmployeeResponse.data.employee.email,
                                         firstName = createEmployeeResponse.data.employee.firstName,

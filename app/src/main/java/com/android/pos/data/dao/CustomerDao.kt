@@ -20,6 +20,21 @@ interface CustomerDao {
     fun allCustomerList(): List<CustomerListResponse.Data>
 
     @Query("DELETE FROM TbCustomer where TbCustomer.id = :id")
-    suspend fun deleteEmployeeByID(id: Int)
+    suspend fun deleteCustomerByID(id: Int)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun addCustomer(customerModel: CustomerListResponse.Data): Long
+
+    @Query("UPDATE TbCustomer SET first_name = :fname,last_name = :lname,birth_date = :bDate,email = :email,phones = :phones,addresses = :address WHERE TbCustomer.id =:id")
+    suspend fun updateCustomer(
+        id: Int,
+        fname: String,
+        lname: String,
+        bDate: String,
+        email: String,
+        phones: List<CustomerListResponse.Data.Phones>,
+        address: List<CustomerListResponse.Data.Addresses>
+    )
+
 
 }
