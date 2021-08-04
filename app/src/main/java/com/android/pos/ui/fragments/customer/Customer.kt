@@ -29,7 +29,6 @@ import com.android.pos.ui.fragments.team.TeamListViewModel
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.SwipeHelper
 import com.android.pos.utils.SwipeHelperNew
-import com.android.pos.utils.ToastUtil
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.statusUtils.Status
@@ -124,28 +123,6 @@ class Customer : Fragment() {
                     Log.e(TAG, "posClicked  ${pos}")
                 })
 
-
-               /* underlayButtons.add(UnderlayButton(
-                    "Delete",
-                    0,
-                    Color.parseColor("#FF3C30")
-                ) { pos ->
-
-
-                    alert(
-                        getString(R.string.app_name),
-                        getString(R.string.delete_customer_message)
-                    ) {
-                        positiveButton(getString(R.string.tv_delete)) {
-
-
-                        }
-                        negativeButton(R.string.tv_cancel) {
-                            // Do negative stuff here
-                        }
-                    }
-                })
-*/
 
             }
 

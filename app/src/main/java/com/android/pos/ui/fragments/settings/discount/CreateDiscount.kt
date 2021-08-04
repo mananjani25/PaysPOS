@@ -44,6 +44,7 @@ class CreateDiscount : Fragment() {
         binding.tvSymbolPer.visibility = View.VISIBLE
 
         if (isEdit) {
+            binding.txtSave.text = getString(R.string.update)
             discountData = arguments?.getParcelable("discountObject")!!
 
             viewModel.setDiscountData(discountData)

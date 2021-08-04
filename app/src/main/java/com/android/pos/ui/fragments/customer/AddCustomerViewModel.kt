@@ -34,6 +34,7 @@ class AddCustomerViewModel @Inject constructor(
     private val posRepository: PosRepository,
     private val prefProvider: PrefProvider
 ) : ViewModel() {
+    private lateinit var resource: Resource<CreateCustomerReponse>
     private val TAG = "AddCustomerViewModel"
     private lateinit var addCustomerData: CreateCustomerRequestModel
     val locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 0)
@@ -97,7 +98,6 @@ class AddCustomerViewModel @Inject constructor(
         this.strPin = str
     }
 
-    private lateinit var resource: Resource<CreateCustomerReponse>
 
     fun isEditData(isEditData: Boolean, id: Int) {
         this.isEdit = isEditData
@@ -206,7 +206,8 @@ class AddCustomerViewModel @Inject constructor(
             Log.e(TAG, "isEdit:  ${isEdit}")
             Log.e(TAG, "customerID:  ${customerID}")
             viewModelScope.launch {
-                resource = if (isEdit) {
+
+            resource = if (isEdit) {
                     posRepository.updateCustomer(customerID, addCustomerData)
                 } else {
 

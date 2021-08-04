@@ -8,12 +8,10 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -28,7 +26,7 @@ import java.util.Queue;
 
 public abstract class SwipeHelper extends ItemTouchHelper.SimpleCallback {
 
-    public static final int BUTTON_WIDTH = 150;
+    public static final int BUTTON_WIDTH = 100;
     private final RecyclerView recyclerView;
     private List<UnderlayButton> buttons;
     private final GestureDetector gestureDetector;
@@ -36,20 +34,6 @@ public abstract class SwipeHelper extends ItemTouchHelper.SimpleCallback {
     private float swipeThreshold = 0.5f;
     private final Map<Integer, List<UnderlayButton>> buttonsBuffer;
     private final Queue<Integer> recoverQueue;
-
-    @Override
-    public float getMoveThreshold(@NonNull @NotNull RecyclerView.ViewHolder viewHolder) {
-
-
-
-        if ("normal".equalsIgnoreCase((String) viewHolder.itemView.getTag())) {
-            return makeMovementFlags(0, ItemTouchHelper.LEFT);
-        } else {
-            return 0;
-        }
-
-
-    }
 
     private final GestureDetector.SimpleOnGestureListener gestureListener = new GestureDetector.SimpleOnGestureListener() {
         @Override
@@ -118,16 +102,8 @@ public abstract class SwipeHelper extends ItemTouchHelper.SimpleCallback {
     }
 
     @Override
-    public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-        int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN;
-        int swipeFlags = ItemTouchHelper.LEFT;
-        return makeMovementFlags(dragFlags, swipeFlags);
-    }
-
-    @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-
-        int pos = viewHolder.getPosition();
+        int pos = viewHolder.getAdapterPosition();
 
         if (swipedPos != pos)
             recoverQueue.add(swipedPos);
@@ -163,7 +139,7 @@ public abstract class SwipeHelper extends ItemTouchHelper.SimpleCallback {
 
     @Override
     public void onChildDraw(@NotNull Canvas c, @NotNull RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
-        int pos = viewHolder.getPosition();
+        int pos = viewHolder.getAdapterPosition();
         float translationX = dX;
         View itemView = viewHolder.itemView;
 
@@ -265,7 +241,7 @@ public abstract class SwipeHelper extends ItemTouchHelper.SimpleCallback {
 
             // Draw Text
             p.setColor(Color.WHITE);
-            p.setTextSize(20f);
+            p.setTextSize(16f);
 
             Rect r = new Rect();
             float cHeight = rect.height();
