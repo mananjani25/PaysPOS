@@ -41,20 +41,20 @@ class CustomerListAdapter(
         fun bind(model: com.android.pos.data.model.CustomerListResponse.Data) {
 
             try {
-                if (filterList.get(layoutPosition).first_name != null && filterList.get(
-                        layoutPosition
+                if (filterList.get(bindingAdapterPosition).first_name != null && filterList.get(
+                        bindingAdapterPosition
                     ).last_name != null
                 ) {
                     binding.tvInitialName.setText(
-                        filterList.get(layoutPosition).first_name.first() + "" + filterList.get(
-                            layoutPosition
+                        filterList.get(bindingAdapterPosition).first_name.first() + "" + filterList.get(
+                            bindingAdapterPosition
                         ).last_name.first()
                     )
 
                 } else {
                     binding.tvInitialName.setText(
                         "${
-                            filterList.get(layoutPosition).first_name?.subSequence(
+                            filterList.get(bindingAdapterPosition).first_name?.subSequence(
                                 0,
                                 2
                             )
@@ -62,19 +62,19 @@ class CustomerListAdapter(
                     )
                 }
 
-                if (filterList.get(layoutPosition).email != null && filterList.get(layoutPosition).phones.size > 0) {
+                if (filterList.get(bindingAdapterPosition).email != null && filterList.get(bindingAdapterPosition).phones.size > 0) {
 
                     binding.txtNumber.setText(
                         "" + AlertUtils.usNumberFormat(
-                            filterList.get(layoutPosition).phones.get(
+                            filterList.get(bindingAdapterPosition).phones.get(
                                 0
                             ).phone_number
-                        ) + " | " + filterList.get(layoutPosition).email
+                        ) + " | " + filterList.get(bindingAdapterPosition).email
                     )
-                } else if (filterList.get(layoutPosition).phones.size > 0) {
+                } else if (filterList.get(bindingAdapterPosition).phones.size > 0) {
                     binding.txtNumber.setText(
                         "" + AlertUtils.usNumberFormat(
-                            filterList.get(layoutPosition).phones.get(
+                            filterList.get(bindingAdapterPosition).phones.get(
                                 0
                             ).phone_number
                         )
@@ -108,7 +108,7 @@ class CustomerListAdapter(
             }
         }
 
-        init {
+       /* init {
 
             binding.root.setOnClickListener {
                 isSelectedPos = layoutPosition
@@ -116,7 +116,7 @@ class CustomerListAdapter(
                 listner.onCustomerSelect(layoutPosition, filterList[layoutPosition])
             }
 
-        }
+        }*/
     }
 
 

@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.model.CustomerDetailModel
@@ -27,6 +28,7 @@ import com.android.pos.ui.adapter.CustomerListAdapter
 import com.android.pos.ui.fragments.team.TeamListViewModel
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.SwipeHelper
+import com.android.pos.utils.SwipeHelperNew
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.statusUtils.Status
@@ -96,6 +98,7 @@ class Customer : Fragment() {
                                     pos: Int,
                                     model: com.android.pos.data.model.CustomerListResponse.Data
                                 ) {
+
                                     binding.layoutTool.txtSubTitle.setText(model.first_name + " " + model.last_name)
                                     loadFragment(model)
                                 }
@@ -103,11 +106,43 @@ class Customer : Fragment() {
                             })
 
                             binding.rvEmployeeList.adapter = adapter
-                            object : SwipeHelper(activity, binding.rvEmployeeList) {
+
+                            object : SwipeHelperNew(activity, binding.rvEmployeeList) {
+                                override fun getMovementFlags(
+                                    recyclerView: RecyclerView,
+                                    viewHolder: RecyclerView.ViewHolder
+                                ): Int {
+                                    return makeMovementFlags(0, ItemTouchHelper.LEFT)
+                                }
+
                                 override fun instantiateUnderlayButton(
                                     viewHolder: RecyclerView.ViewHolder?,
-                                    underlayButtons: MutableList<UnderlayButton>
+                                    underlayButtons: MutableList<UnderlayButton?>
                                 ) {
+                                    underlayButtons.add(
+                                        UnderlayButton(
+                                            "Delete",
+                                            0,
+                                            Color.parseColor("#FF3C30")
+                                        ) {
+                                            Log.e(TAG, "DeletePosition : ${it}")
+                                        })
+                                }
+
+                            }
+
+                            /*object : SwipeHelper(activity, binding.rvEmployeeList) {
+                                override fun instantiateUnderlayButton(
+                                    viewHolder: RecyclerView.ViewHolder?,
+                                    underlayButtons: MutableList<UnderlayButton?>
+                                ) {
+                                    underlayButtons.add(UnderlayButton("Delete",0,Color.parseColor("#FF3C30")){
+                                        Log.e(TAG,"DeletePosition  ${it}")
+                                    })
+
+                                }
+
+                                *//*{
                                     underlayButtons.add(
                                         UnderlayButton(
                                             "Delete",
@@ -121,10 +156,6 @@ class Customer : Fragment() {
                                                 getString(R.string.delete_customer_message)
                                             ) {
                                                 positiveButton(getString(R.string.tv_delete)) {
-                                                    Log.e(
-                                                        "Delete",
-                                                        "getDeleteItem  ${adapter.getItem(pos)}"
-                                                    )
 
                                                     viewModel.delete(adapter.getItem(pos).id)
                                                     removeItem(pos)
@@ -139,8 +170,8 @@ class Customer : Fragment() {
 
                                         })
 
-                                }
-                            }
+                                }*//*
+                            }*/
 
 
                         }
@@ -301,20 +332,10 @@ class Customer : Fragment() {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
 
+                (binding.rvEmployeeList.adapter as CustomerListAdapter).filter.filter(
+                    binding.autoSearch.text.trim().toString()
+                )
 
-                if (binding.autoSearch.text.trim().isNotEmpty()) {
-                    (binding.rvEmployeeList.adapter as CustomerListAdapter).filter.filter(
-                        binding.autoSearch.text.trim().toString()
-                    )
-                } else {
-                    (binding.rvEmployeeList.adapter as CustomerListAdapter?)?.setList(
-                        requireContext(),
-                        dynamicCustomerList
-                    )
-                    (binding.rvEmployeeList.adapter as CustomerListAdapter?)?.notifyDataSetChanged()
-
-                }
-                binding.rvEmployeeList.adapter?.notifyDataSetChanged()
 
             }
 
