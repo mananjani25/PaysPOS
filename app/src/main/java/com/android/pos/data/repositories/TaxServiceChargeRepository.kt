@@ -71,6 +71,9 @@ class TaxServiceChargeRepository @Inject constructor(
     suspend fun deleteSerChargeDatabase(serChargeId: Int) =
         appDatabase.serviceChargeDao().deleteServiceChargeById(serChargeId)
 
+    fun getTeamRoleList() =
+        performGetOperationNew(networkCall = { apiHelperNew.getTeamRoleList() })
+
     suspend fun createTeamRole(data: CreateTeamRoleRequestModel) =
         apiHelperNew.createTeamRole(data)
 
@@ -79,5 +82,7 @@ class TaxServiceChargeRepository @Inject constructor(
 
     suspend fun updateTeamRole(discountId: Int, data: CreateTeamRoleRequestModel) =
         apiHelperNew.updateTeamRole(discountId, data)
+
+    suspend fun deleteTeamRole(data: Int) = apiHelperNew.deleteTeamRole(data)
 
 }

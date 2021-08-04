@@ -7,7 +7,7 @@ data class CreateTeamRoleRequestModel(
     @SerializedName("id")
     var id: Int? = null,
     @SerializedName("employee_ids")
-    val employeeIds: List<Int>? = null,
+    var employeeIds: List<Int>? = null,
     @SerializedName("name")
     var name: String = ""
 )

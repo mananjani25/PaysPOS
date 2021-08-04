@@ -4,17 +4,17 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.model.responseModel.EmployeeListResponse
-import com.android.pos.databinding.ViewSelectedTemMemberItem1Binding
+import com.android.pos.databinding.ViewSelectedTeamMemberItemBinding
 import com.android.pos.ui.fragments.settings.teamrole.UserPermissionViewModel
 
-class SelectedTeamMemberAdapter(val viewModel: UserPermissionViewModel) :
-    RecyclerView.Adapter<SelectedTeamMemberAdapter.MyViewHolder>() {
+class AllSelectedTeamMemberAdapter(val viewModel: UserPermissionViewModel) :
+    RecyclerView.Adapter<AllSelectedTeamMemberAdapter.MyViewHolder>() {
 
     var employeeList = ArrayList<EmployeeListResponse.Data.Employee>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val binding = ViewSelectedTemMemberItem1Binding.inflate(inflater, parent, false)
+        val binding = ViewSelectedTeamMemberItemBinding.inflate(inflater, parent, false)
 
         return MyViewHolder(binding)
     }
@@ -33,11 +33,10 @@ class SelectedTeamMemberAdapter(val viewModel: UserPermissionViewModel) :
         this.employeeList.apply {
             clear()
             addAll(employeeList)
-            notifyDataSetChanged()
         }
     }
 
-    inner class MyViewHolder(val discountItemBinding: ViewSelectedTemMemberItem1Binding) :
+    inner class MyViewHolder(val discountItemBinding: ViewSelectedTeamMemberItemBinding) :
         RecyclerView.ViewHolder(discountItemBinding.root) {
 
     }
