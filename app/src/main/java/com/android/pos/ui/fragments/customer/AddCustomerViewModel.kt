@@ -122,36 +122,35 @@ class AddCustomerViewModel @Inject constructor(
         Log.e("Address1", "address1: ${address1.value}")
         Log.e("Address1", "straddress1: ${straddress1}")
 
-        if (listAddress.isNotEmpty()) {
-            addCustomerDetails.value?.data?.addresses_attributes?.addAll(listAddress)
-        }
+
+        addCustomerDetails.value?.data?.addresses_attributes?.addAll(listAddress)
 
 
         val value = addCustomerDetails.value
-       /* value?.data?.addresses_attributes?.forEach {
-            if (it.address1.isEmpty()) {
+        /* value?.data?.addresses_attributes?.forEach {
+             if (it.address1.isEmpty()) {
 
-                isEmptyAddress = true
-                return@forEach
-            } else if (it.address2.isEmpty()) {
-                isEmptyAddress = false
-                return@forEach
-            } else if (it.city.isEmpty()) {
-                isEmptyAddress = false
-                return@forEach
-            } else if (it.state.isEmpty()) {
-                isEmptyAddress = false
-                return@forEach
-            } else if (it.postcode.isEmpty()) {
-                //_snackbarText.value = Event(R.string.address_empty_validation)
-                isEmptyAddress = false
-                return@forEach
-            } else {
-                isEmptyAddress = false
-            }
+                 isEmptyAddress = true
+                 return@forEach
+             } else if (it.address2.isEmpty()) {
+                 isEmptyAddress = false
+                 return@forEach
+             } else if (it.city.isEmpty()) {
+                 isEmptyAddress = false
+                 return@forEach
+             } else if (it.state.isEmpty()) {
+                 isEmptyAddress = false
+                 return@forEach
+             } else if (it.postcode.isEmpty()) {
+                 //_snackbarText.value = Event(R.string.address_empty_validation)
+                 isEmptyAddress = false
+                 return@forEach
+             } else {
+                 isEmptyAddress = false
+             }
 
-        }
-*/
+         }
+ */
         if (TextUtils.isEmpty(value?.data?.first_name?.trim())) {
             _snackbarText.value = Event(R.string.first_name_validate)
         } else if (TextUtils.isEmpty(value?.data?.last_name?.trim())) {
@@ -163,11 +162,8 @@ class AddCustomerViewModel @Inject constructor(
             _snackbarText.value = Event(R.string.email_validate)
         } else if (!Patterns.EMAIL_ADDRESS.matcher(value?.data?.email).matches()) {
             _snackbarText.value = Event(R.string.valid_email_validate)
-        } else if (value?.data?.addresses_attributes?.size == 0) {
-            _snackbarText.value = Event(R.string.address_empty_validation)
-        } else if (isEmptyAddress) {
-            _snackbarText.value = Event(R.string.address_empty_validation)
         }
+
         /*else if (TextUtils.isEmpty(value?.data?.company?.trim())) {
             _snackbarText.value = Event(R.string.company_name_validate)
         }*/
