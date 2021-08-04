@@ -34,7 +34,6 @@ class CustomerListViewModel @Inject constructor(
     fun customerList() = posRepository.customerList()
 
 
-
     fun getData() {
         _showProgress.value = Event(true)
 
@@ -52,7 +51,7 @@ class CustomerListViewModel @Inject constructor(
                     resource.data.let {
                         if (it?.status == 200) {
                             resource.data?.let {
-                                posRepository.deleteCustomer(id)
+                                posRepository.deleteCustomerDataBase(id)
                                 mdata.value = Event(it)
                             }
                         } else {

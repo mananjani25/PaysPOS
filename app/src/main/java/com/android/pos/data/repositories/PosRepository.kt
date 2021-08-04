@@ -7,6 +7,7 @@ import com.android.pos.data.db.IDataManager
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.TbCategory
 import com.android.pos.data.entities.TbItem
+import com.android.pos.data.model.CustomerListResponse
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.EmployeeListResponse
 import com.android.pos.data.model.responseModel.NoteResponse
@@ -182,6 +183,21 @@ class PosRepository @Inject constructor(
 
     suspend fun createEmployeeDatabase(data: EmployeeListResponse.Data.Employee) =
         appDatabase.employeeDao().addEmployee(data)
+
+    suspend fun addCustomer(data: CustomerListResponse.Data) =
+        appDatabase.customerDao().addCustomer(data)
+
+    suspend fun updateCustomer(
+        id: Int,
+        fname: String,
+        lName: String,
+        email: String,
+        bDate: String,
+        phNo: List<CustomerListResponse.Data.Phones>,
+        address: List<CustomerListResponse.Data.Addresses>
+    ) = appDatabase.customerDao().updateCustomer(id, fname, lName, bDate, email, phNo, address)
+
+    suspend fun deleteCustomerDataBase(id: Int) = appDatabase.customerDao().deleteCustomerByID(id)
 
     suspend fun createCustomer(data: CreateCustomerRequestModel) = apiHelperNew.createCustomer(data)
 

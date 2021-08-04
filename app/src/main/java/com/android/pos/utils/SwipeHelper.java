@@ -40,7 +40,7 @@ public abstract class SwipeHelper extends ItemTouchHelper.SimpleCallback {
     @Override
     public float getMoveThreshold(@NonNull @NotNull RecyclerView.ViewHolder viewHolder) {
 
-        Log.e("makeMovementFlags", viewHolder.itemView.getTag().toString());
+
 
         if ("normal".equalsIgnoreCase((String) viewHolder.itemView.getTag())) {
             return makeMovementFlags(0, ItemTouchHelper.LEFT);
@@ -118,9 +118,16 @@ public abstract class SwipeHelper extends ItemTouchHelper.SimpleCallback {
     }
 
     @Override
+    public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+        int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN;
+        int swipeFlags = ItemTouchHelper.LEFT;
+        return makeMovementFlags(dragFlags, swipeFlags);
+    }
+
+    @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
 
-        int pos = viewHolder.getAdapterPosition();
+        int pos = viewHolder.getBindingAdapterPosition();
 
         if (swipedPos != pos)
             recoverQueue.add(swipedPos);
@@ -156,7 +163,7 @@ public abstract class SwipeHelper extends ItemTouchHelper.SimpleCallback {
 
     @Override
     public void onChildDraw(@NotNull Canvas c, @NotNull RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
-        int pos = viewHolder.getAdapterPosition();
+        int pos = viewHolder.getBindingAdapterPosition();
         float translationX = dX;
         View itemView = viewHolder.itemView;
 

@@ -119,12 +119,14 @@ class AddEditCustomer : Fragment() {
             viewModel.addCustomerDetails.value?.data?.first_name = editModel?.first_name.toString()
             viewModel.addCustomerDetails.value?.data?.last_name = editModel?.last_name.toString()
 
-            Log.e(TAG,"Date  ${getDay(editModel?.birth_date!!)}")
-            Log.e(TAG,"Month  ${getMonth(editModel?.birth_date!!)}")
-            Log.e(TAG,"Year  ${getYear(editModel?.birth_date!!)}")
+            Log.e(TAG, "Date  ${getDay(editModel?.birth_date!!)}")
+            Log.e(TAG, "Month  ${getMonth(editModel?.birth_date!!)}")
+            Log.e(TAG, "Year  ${getYear(editModel?.birth_date!!)}")
             viewModel.addCustomerDetails.value?.data?.birth_day = getDay(editModel?.birth_date!!)
-            viewModel.addCustomerDetails.value?.data?.birthday_year = getYear(editModel?.birth_date!!)
-            viewModel.addCustomerDetails.value?.data?.birth_month = getMonth(editModel?.birth_date!!)
+            viewModel.addCustomerDetails.value?.data?.birthday_year =
+                getYear(editModel?.birth_date!!)
+            viewModel.addCustomerDetails.value?.data?.birth_month =
+                getMonth(editModel?.birth_date!!)
 
 
 
@@ -137,10 +139,23 @@ class AddEditCustomer : Fragment() {
             }
 
             if (editModel.addresses.isNotEmpty()) {
-                var list:ArrayList<CreateCustomerRequestModel.Customer.Addresses> = arrayListOf()
+                var list: ArrayList<CreateCustomerRequestModel.Customer.Addresses> = arrayListOf()
 
-                for (i in 0 until  editModel.addresses.size){
-                    list.add(CreateCustomerRequestModel.Customer.Addresses(editModel.addresses.get(i).id,editModel.addresses.get(i).address1,editModel.addresses.get(i).address2,editModel.addresses.get(i).city,editModel.addresses.get(i).state,editModel.addresses.get(i).country,editModel.addresses.get(i).postcode,editModel.addresses.get(i).type_of_address.toString(),0.0,0.0,))
+                for (i in 0 until editModel.addresses.size) {
+                    list.add(
+                        CreateCustomerRequestModel.Customer.Addresses(
+                            editModel.addresses.get(i).id,
+                            editModel.addresses.get(i).address1,
+                            editModel.addresses.get(i).address2,
+                            editModel.addresses.get(i).city,
+                            editModel.addresses.get(i).state,
+                            editModel.addresses.get(i).country,
+                            editModel.addresses.get(i).postcode,
+                            editModel.addresses.get(i).type_of_address.toString(),
+                            0.0,
+                            0.0,
+                        )
+                    )
 
                 }
 
@@ -157,7 +172,9 @@ class AddEditCustomer : Fragment() {
 
         } else {
             binding.txtCustomerType.setText("New Customer")
-            val list: ArrayList<CreateCustomerRequestModel.Customer.Addresses> = arrayListOf()
+            adapter.addData(modelAddress)
+            viewModel.setAddressList(adapter.getList())
+
 
 
         }
@@ -188,73 +205,6 @@ class AddEditCustomer : Fragment() {
         }
     }
 
-
-    /*  private fun searchPlaces() {
-          placesApi = PlaceAPI.Builder().apiKey(getString(R.string.api_key)).build(requireActivity())
-          binding.edtStreet.setAdapter(PlacesAutoCompleteAdapter(requireContext(), placesApi))
-          binding.edtStreet.setOnItemClickListener { parent, view, position, id ->
-              val place = parent.getItemAtPosition(position) as Place
-
-              Log.e(TAG, "placeJson:  ${Gson().toJson(place)}")
-              //binding.edtStreet.setText("${place.description}")
-              placesApi.fetchPlaceDetails(place.id, object : OnPlacesDetailsListener {
-                  override fun onError(errorMessage: String) {
-
-                  }
-
-                  override fun onPlaceDetailsFetched(placeDetails: PlaceDetails) {
-                      decodeLocation(placeDetails.lat, placeDetails.lng, placeDetails.name)
-
-                      Log.e(TAG, "placeDetails:  ${Gson().toJson(placeDetails.name)}")
-
-                  }
-
-              })
-
-          }
-
-
-      }
-  */
-    private fun decodeLocation(lat: Double, lng: Double, place: String) {
-        val gcd: Geocoder = Geocoder(requireContext(), Locale.getDefault())
-        var address: List<Address> = gcd.getFromLocation(lat, lng, 1)
-
-        Log.e(TAG, "CountryNAme ${address.get(0).countryName}")
-        if (address.size > 0) {
-
-
-/*
-
-            viewModel.address1.value = place.toString()
-            viewModel.address2.value = place.toString()
-            viewModel.city.value = address.get(0).locality.toString()
-            viewModel.state.value = address.get(0).adminArea.toString()
-            viewModel.pin.value = address.get(0).postalCode.toString()
-*/
-
-            Log.e("Addredd", "adminArea:   ${address.get(0).adminArea}")
-
-            /*
-            binding.edtStreet.setText(place)
-             viewModel.setAddress1(place)
-             binding.edtSuite.setText(place)
-             viewModel.setAddress2(place)
-             binding.edtCity.setText(address.get(0).locality)
-             viewModel.setCity(address.get(0).locality)
-             binding.edtState.setText(address.get(0).adminArea)
-             viewModel.setState(address.get(0).adminArea)
-             binding.edtZip.setText(address.get(0).postalCode)
-             viewModel.setPinCode(address.get(0).postalCode)*/
-            //  binding.executePendingBindings()
-
-
-            Log.e(TAG, "TextSetted")
-
-
-        }
-
-    }
 
     private fun showDatePicker() {
         val c = Calendar.getInstance();
@@ -315,19 +265,21 @@ class AddEditCustomer : Fragment() {
 
     }
 
-    fun getDay(dat:String):String{
+    fun getDay(dat: String): String {
         val format = SimpleDateFormat("dd/MM/yyyy")
         val date = format.parse(dat)
-        return android.text.format.DateFormat.format("dd",date).toString()
+        return android.text.format.DateFormat.format("dd", date).toString()
     }
-    fun getMonth(dat:String):String{
+
+    fun getMonth(dat: String): String {
         val format = SimpleDateFormat("dd/MM/yyyy")
         val date = format.parse(dat)
-        return android.text.format.DateFormat.format("MM",date).toString()
+        return android.text.format.DateFormat.format("MM", date).toString()
     }
-    fun getYear(dat:String):String{
+
+    fun getYear(dat: String): String {
         val format = SimpleDateFormat("dd/MM/yyyy")
         val date = format.parse(dat)
-        return android.text.format.DateFormat.format("yyyy",date).toString()
+        return android.text.format.DateFormat.format("yyyy", date).toString()
     }
 }

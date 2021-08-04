@@ -101,6 +101,9 @@ class PaymentFragment : Fragment() {
             findNavController().navigate(R.id.action_paymentFragment_to_customAmountFragment)
         }
 
+        binding.imgBack.setOnClickListener {
+            findNavController().popBackStack()
+        }
 
     }
 

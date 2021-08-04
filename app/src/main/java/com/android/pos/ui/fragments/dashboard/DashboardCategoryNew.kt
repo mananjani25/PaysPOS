@@ -4,14 +4,13 @@ import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Context
 import android.graphics.Color
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.PopupMenu
-import android.widget.TextView
+import android.view.ViewGroup
+import android.widget.*
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
@@ -150,8 +149,12 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         }
 
+        binding.layoutCart.imgInfo.setOnClickListener {
 
-        binding.layoutCart.txtTotalAmount.setOnClickListener {
+            showPopupWindow(it)
+        }
+
+        binding.layoutCart.btnPay.setOnClickListener {
 
             val bundle = Bundle()
             bundle.putDouble("totalPrice", viewModel.totalPrice)
@@ -249,18 +252,18 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         alert(
                             getString(R.string.app_name),
                             getString(R.string.delete_item_message)
-                    ) {
-                        positiveButton(getString(R.string.tv_delete)) {
-                            // Do positive stuff here
-                            val item = cartAdapter.getItem(pos)
+                        ) {
+                            positiveButton(getString(R.string.tv_delete)) {
+                                // Do positive stuff here
+                                val item = cartAdapter.getItem(pos)
 
-                            viewModel.cartLogic(cartList, item, DELETE)
+                                viewModel.cartLogic(cartList, item, DELETE)
+                            }
+                            negativeButton(R.string.tv_cancel) {
+                                // Do negative stuff here
+                            }
                         }
-                        negativeButton(R.string.tv_cancel) {
-                            // Do negative stuff here
-                        }
-                    }
-                })
+                    })
             }
         }
 
@@ -720,6 +723,50 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         popup.show()
     }
 
+
+    @SuppressLint("SetTextI18n")
+    private fun showPopupWindow(view: View) {
+
+        val popupView: View = layoutInflater.inflate(R.layout.info_popup_window, null)
+
+        val txtSubTotal: AppCompatTextView = popupView.findViewById(R.id.txtSubTotal)
+        val txtServiceCharge: AppCompatTextView = popupView.findViewById(R.id.txtServiceCharge)
+        val txtDiscount: AppCompatTextView = popupView.findViewById(R.id.txtDiscount)
+        val txtTotalAmount: AppCompatTextView = popupView.findViewById(R.id.txtTotalAmount)
+        val txtTotalTax: AppCompatTextView = popupView.findViewById(R.id.txtTotalTax)
+
+        txtSubTotal.text = "$" + String.format(
+            "%.2f",
+            viewModel.subTotalPrice
+        )
+        txtServiceCharge.text = "$" + String.format(
+            "%.2f",
+            viewModel.totalServiceCharge
+        )
+        txtDiscount.text = "$" + String.format(
+            "%.2f",
+            0.00
+        )
+        txtTotalAmount.text = binding.layoutCart.txtTotalAmount.text.toString()
+        txtTotalTax.text = "$" + String.format(
+            "%.2f",
+            viewModel.totalTax
+        )
+
+        val popupWindow = PopupWindow(
+            popupView,
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+        popupWindow.setBackgroundDrawable(BitmapDrawable())
+        popupWindow.isOutsideTouchable = true
+
+
+        popupWindow.setOnDismissListener(PopupWindow.OnDismissListener {
+            //TODO do sth here on dismiss
+        })
+        popupWindow.showAtLocation(view, Gravity.TOP, 600, 650);
+    }
 
     fun resetTabbySearch(model: CategorySearchData) {
         var tabPos = -1

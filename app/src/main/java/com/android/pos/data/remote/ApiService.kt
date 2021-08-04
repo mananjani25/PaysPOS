@@ -228,7 +228,7 @@ interface ApiService {
     suspend fun createEmployee(@Body createEmployeeRequestModel: CreateEmployeeRequestModel): CreateEmployeeResponse
 
     @POST(CUSTOMERS)
-    suspend fun createCustomer(@Body createCustomerRequestModel: CreateCustomerRequestModel): BaseResponse
+    suspend fun createCustomer(@Body createCustomerRequestModel: CreateCustomerRequestModel): CreateCustomerReponse
 
     @PUT(EMPLOYEES_UPDATE_DELETE)
     suspend fun updateEmployee(
@@ -263,7 +263,7 @@ interface ApiService {
     suspend fun updateCustomer(
         @Path("id") id: Int,
         @Body createCustomerRequestModel: CreateCustomerRequestModel
-    ): BaseResponse
+    ): CreateCustomerReponse
 
     @DELETE(CATEGORY_UPDATE_DELETE)
     suspend fun deleteCategoryCall(
