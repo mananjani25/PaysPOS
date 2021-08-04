@@ -103,9 +103,10 @@ class Customer : Fragment() {
                 ) { pos ->
 
 
+
                     alert(
                         getString(R.string.app_name),
-                        getString(R.string.delete_note_message)
+                        getString(R.string.delete_customer_message)
                     ) {
                         positiveButton(getString(R.string.tv_delete)) {
 
