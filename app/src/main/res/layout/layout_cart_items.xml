@@ -140,21 +140,58 @@
                 android:textSize="@dimen/_6mdpi"
                 app:textAllCaps="false" />
 
-            <androidx.appcompat.widget.AppCompatTextView
 
-                android:id="@+id/txtTotalAmount"
-                style="@style/CustomFontBold"
+            <RelativeLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/_2sdp"
                 android:layout_weight="1"
                 android:background="@drawable/bg_button_border"
-                android:gravity="center"
-                android:padding="@dimen/_5sdp"
-                android:text="@string/pay"
-                android:textColor="@color/white"
-                android:textSize="@dimen/_6mdpi" />
+                android:gravity="center">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="@dimen/_8sdp"
+                    android:id="@+id/imgInfo"
+                    android:layout_height="@dimen/_8sdp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/_2sdp"
+                    android:layout_marginEnd="@dimen/_2sdp"
+                    android:layout_alignParentEnd="true"
+                    app:srcCompat="@drawable/ic_info" />
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:gravity="center"
+                    android:layout_height="wrap_content">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:text="@string/pay"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_6mdpi" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtTotalAmount"
+                        style="@style/CustomFontBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/_4sdp"
+                        android:text="$200.00"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_8mdpi" />
+
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+            </RelativeLayout>
+
+
         </androidx.appcompat.widget.LinearLayoutCompat>
 
 

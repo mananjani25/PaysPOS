@@ -27,6 +27,8 @@ class AssignCustomerToOrderAdapter :
         fun bind(item: CustomerListResponse.Data) {
             binding.model = item
             binding.executePendingBindings()
+
+
         }
     }
 

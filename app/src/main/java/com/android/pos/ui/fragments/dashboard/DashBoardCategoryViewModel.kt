@@ -145,7 +145,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
         totalPrice = subTotalPrice + totalTax + totalServiceCharge
 
-        txtTotalAmount.text = "Pay $" + String.format(
+        txtTotalAmount.text = "$" + String.format(
             "%.2f",
             totalPrice
         )
