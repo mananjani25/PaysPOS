@@ -172,7 +172,9 @@ class AddEditCustomer : Fragment() {
 
         } else {
             binding.txtCustomerType.setText("New Customer")
-            val list: ArrayList<CreateCustomerRequestModel.Customer.Addresses> = arrayListOf()
+            adapter.addData(modelAddress)
+            viewModel.setAddressList(adapter.getList())
+
 
 
         }
@@ -203,73 +205,6 @@ class AddEditCustomer : Fragment() {
         }
     }
 
-
-    /*  private fun searchPlaces() {
-          placesApi = PlaceAPI.Builder().apiKey(getString(R.string.api_key)).build(requireActivity())
-          binding.edtStreet.setAdapter(PlacesAutoCompleteAdapter(requireContext(), placesApi))
-          binding.edtStreet.setOnItemClickListener { parent, view, position, id ->
-              val place = parent.getItemAtPosition(position) as Place
-
-              Log.e(TAG, "placeJson:  ${Gson().toJson(place)}")
-              //binding.edtStreet.setText("${place.description}")
-              placesApi.fetchPlaceDetails(place.id, object : OnPlacesDetailsListener {
-                  override fun onError(errorMessage: String) {
-
-                  }
-
-                  override fun onPlaceDetailsFetched(placeDetails: PlaceDetails) {
-                      decodeLocation(placeDetails.lat, placeDetails.lng, placeDetails.name)
-
-                      Log.e(TAG, "placeDetails:  ${Gson().toJson(placeDetails.name)}")
-
-                  }
-
-              })
-
-          }
-
-
-      }
-  */
-    private fun decodeLocation(lat: Double, lng: Double, place: String) {
-        val gcd: Geocoder = Geocoder(requireContext(), Locale.getDefault())
-        var address: List<Address> = gcd.getFromLocation(lat, lng, 1)
-
-        Log.e(TAG, "CountryNAme ${address.get(0).countryName}")
-        if (address.size > 0) {
-
-
-/*
-
-            viewModel.address1.value = place.toString()
-            viewModel.address2.value = place.toString()
-            viewModel.city.value = address.get(0).locality.toString()
-            viewModel.state.value = address.get(0).adminArea.toString()
-            viewModel.pin.value = address.get(0).postalCode.toString()
-*/
-
-            Log.e("Addredd", "adminArea:   ${address.get(0).adminArea}")
-
-            /*
-            binding.edtStreet.setText(place)
-             viewModel.setAddress1(place)
-             binding.edtSuite.setText(place)
-             viewModel.setAddress2(place)
-             binding.edtCity.setText(address.get(0).locality)
-             viewModel.setCity(address.get(0).locality)
-             binding.edtState.setText(address.get(0).adminArea)
-             viewModel.setState(address.get(0).adminArea)
-             binding.edtZip.setText(address.get(0).postalCode)
-             viewModel.setPinCode(address.get(0).postalCode)*/
-            //  binding.executePendingBindings()
-
-
-            Log.e(TAG, "TextSetted")
-
-
-        }
-
-    }
 
     private fun showDatePicker() {
         val c = Calendar.getInstance();

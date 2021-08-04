@@ -62,7 +62,10 @@ class CustomerListAdapter(
                     )
                 }
 
-                if (filterList.get(bindingAdapterPosition).email != null && filterList.get(bindingAdapterPosition).phones.size > 0) {
+                if (filterList.get(bindingAdapterPosition).email != null && filterList.get(
+                        bindingAdapterPosition
+                    ).phones.size > 0
+                ) {
 
                     binding.txtNumber.setText(
                         "" + AlertUtils.usNumberFormat(
@@ -108,7 +111,7 @@ class CustomerListAdapter(
             }
         }
 
-       /* init {
+        init {
 
             binding.root.setOnClickListener {
                 isSelectedPos = layoutPosition
@@ -116,7 +119,7 @@ class CustomerListAdapter(
                 listner.onCustomerSelect(layoutPosition, filterList[layoutPosition])
             }
 
-        }*/
+        }
     }
 
 

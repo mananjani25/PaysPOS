@@ -14,7 +14,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class CustomerListResponse(
     @SerializedName("data")
-    val data: List<Data>,
+    val `data`: List<Data>,
 ) : BaseResponse(), Parcelable {
 
     @Parcelize
@@ -26,6 +26,7 @@ data class CustomerListResponse(
         @SerializedName("last_name") val last_name: String,
         @SerializedName("birth_date") val birth_date: String,
         @SerializedName("email") val email: String,
+        @SerializedName("company")val company:String?=null,
         @TypeConverters(TypeConvertorPhone::class)
         @SerializedName("phones") val phones: List<Phones> = listOf(),
         @TypeConverters(TypeConvertorAddress::class)
