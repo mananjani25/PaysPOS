@@ -4,31 +4,36 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingDefaultResource">
 
+    <data>
+
+        <variable
+            name="permissionModule"
+            type="com.android.pos.data.model.PermissionModuleListModel" />
+
+        <variable
+            name="viewModel"
+            type="com.android.pos.ui.fragments.settings.teamrole.UserPermissionViewModel" />
+
+    </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:onClick="@{() -> viewModel.permissionModuleRemoved(permissionModule,true)}"
+        android:orientation="horizontal">
 
-        <androidx.appcompat.widget.LinearLayoutCompat
-            android:layout_width="match_parent"
+        <androidx.appcompat.widget.AppCompatTextView
+            style="@style/CustomFontMediumStyle"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-
-            <androidx.appcompat.widget.AppCompatTextView
-                style="@style/CustomFontMediumStyle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/_5sdp"
-                android:layout_weight="1"
-                android:gravity="start"
-                android:padding="@dimen/_5sdp"
-                android:text="Module One"
-                android:textColor="@color/color65"
-                android:textSize="@dimen/_6mdpi" />
-        </androidx.appcompat.widget.LinearLayoutCompat>
+            android:layout_gravity="center"
+            android:layout_marginStart="@dimen/_5sdp"
+            android:layout_weight="1"
+            android:gravity="start"
+            android:padding="@dimen/_5sdp"
+            android:text="@{permissionModule.moduleName}"
+            android:textColor="@color/color65"
+            android:textSize="@dimen/_6mdpi" />
 
 
     </androidx.appcompat.widget.LinearLayoutCompat>

@@ -1,11 +1,13 @@
 package com.android.pos.ui.fragments.settings.teamrole
 
 import android.text.TextUtils
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.R
+import com.android.pos.data.model.PermissionModuleListModel
 import com.android.pos.data.model.requestModel.CreateServiceChargeRequestModel
 import com.android.pos.data.model.requestModel.CreateTeamRoleRequestModel
 import com.android.pos.data.model.responseModel.*
@@ -36,8 +38,8 @@ class UserPermissionViewModel @Inject constructor(
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
 
-    private val _data = MutableLiveData<Event<CreateServiceChargeResponse?>>()
-    val data: LiveData<Event<CreateServiceChargeResponse?>> = _data
+    private val _data = MutableLiveData<Event<CreateRoleResponse?>>()
+    val data: LiveData<Event<CreateRoleResponse?>> = _data
 
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
@@ -50,16 +52,113 @@ class UserPermissionViewModel @Inject constructor(
 
     private lateinit var createTeamRoleRequestModel: CreateTeamRoleRequestModel
 
-    private lateinit var resource: Resource<CreateServiceChargeResponse>
-
+    private lateinit var resource: Resource<CreateRoleResponse>
 
     fun employeeData() = posRepository.employeesList(locationId)
+
+    private val _allEmployeeList = MutableLiveData<ArrayList<EmployeeListResponse.Data.Employee?>>()
+    val allEmployeeList: LiveData<ArrayList<EmployeeListResponse.Data.Employee?>> = _allEmployeeList
+
+    private val _selectedEmployeeList =
+        MutableLiveData<ArrayList<EmployeeListResponse.Data.Employee?>>()
+    val selectedEmployeeList: LiveData<ArrayList<EmployeeListResponse.Data.Employee?>> =
+        _selectedEmployeeList
+
+    val allEmployeeListToFeed = ArrayList<EmployeeListResponse.Data.Employee?>()
+    val selectedEmployeeListToFeed = ArrayList<EmployeeListResponse.Data.Employee?>()
+
+    private val _allModuleList = MutableLiveData<ArrayList<PermissionModuleListModel>>()
+    val allModuleList: LiveData<ArrayList<PermissionModuleListModel>> = _allModuleList
+
+    private val _selectedModuleList = MutableLiveData<ArrayList<PermissionModuleListModel>>()
+    val selectedModuleList: LiveData<ArrayList<PermissionModuleListModel>> =
+        _selectedModuleList
+
+
+    val allModuleListToFeed = ArrayList<PermissionModuleListModel>()
+    val selectedModuleListToFeed = ArrayList<PermissionModuleListModel>()
+
 
     fun isEditData(isEdit: Boolean, taxId: Int) {
         this.roleId = taxId
         this.isEdit = isEdit
     }
 
+    fun setEmployeeList(employeeList: List<EmployeeListResponse.Data.Employee>) {
+        allEmployeeListToFeed.clear()
+        allEmployeeListToFeed.addAll(employeeList as ArrayList<EmployeeListResponse.Data.Employee?>)
+    }
+
+    fun employeeRemoved(
+        employeeName: EmployeeListResponse.Data.Employee,
+        isEmployeeRemoved: Boolean
+    ) {
+        if (isEmployeeRemoved) {
+            allEmployeeListToFeed.remove(employeeName)
+            selectedEmployeeListToFeed.add(employeeName)
+
+        } else {
+            allEmployeeListToFeed.add(employeeName)
+            selectedEmployeeListToFeed.remove(employeeName)
+        }
+        passEmployeeDataToUI()
+    }
+
+    fun addAllEmployee() {
+        selectedEmployeeListToFeed.addAll(allEmployeeListToFeed)
+        allEmployeeListToFeed.removeAll(allEmployeeListToFeed)
+        passEmployeeDataToUI()
+    }
+
+    fun removeAllEmployee() {
+        allEmployeeListToFeed.addAll(selectedEmployeeListToFeed)
+        selectedEmployeeListToFeed.removeAll(selectedEmployeeListToFeed)
+        passEmployeeDataToUI()
+    }
+
+    fun passEmployeeDataToUI() {
+        _allEmployeeList.value = allEmployeeListToFeed
+        _selectedEmployeeList.value = selectedEmployeeListToFeed
+    }
+
+
+    fun setModuleList(timeSheet: ArrayList<PermissionModuleListModel>) {
+        allModuleListToFeed.clear()
+        allModuleListToFeed.addAll(timeSheet)
+    }
+
+    fun permissionModuleRemoved(
+        employeeName: PermissionModuleListModel,
+        isModuleRemoved: Boolean
+    ) {
+        if (isModuleRemoved) {
+            allModuleListToFeed.remove(employeeName)
+            selectedModuleListToFeed.add(employeeName)
+
+        } else {
+            allModuleListToFeed.add(employeeName)
+            selectedModuleListToFeed.remove(employeeName)
+        }
+        passModuleDataToUI()
+
+    }
+
+    fun addAllModule() {
+        selectedModuleListToFeed.addAll(allModuleListToFeed)
+        allModuleListToFeed.removeAll(allModuleListToFeed)
+        passModuleDataToUI()
+    }
+
+    fun removeAllModule() {
+        allModuleListToFeed.addAll(selectedModuleListToFeed)
+        selectedModuleListToFeed.removeAll(selectedModuleListToFeed)
+        passModuleDataToUI()
+    }
+
+    private fun passModuleDataToUI() {
+        _allModuleList.value = allModuleListToFeed
+        _selectedModuleList.value = selectedModuleListToFeed
+    }
 
     fun submit() {
         val value = createUserPermission.value
@@ -71,8 +170,15 @@ class UserPermissionViewModel @Inject constructor(
             createTeamRoleRequestModel = CreateTeamRoleRequestModel().apply {
                 if (isEdit) id = roleId
                 name = value!!.name
-            }
+                val idList = ArrayList<Int>()
+                selectedEmployeeListToFeed.forEach {
+                    if (it != null) {
+                        idList.add(it.id)
+                    }
+                }
+                employeeIds = idList
 
+            }
 
             viewModelScope.launch {
                 if (isEdit) {
@@ -92,20 +198,20 @@ class UserPermissionViewModel @Inject constructor(
 
                                 resource.data?.let { createTeamRole ->
 
-                                    /* val serviceCharge = GetServiceChargeResponse.Data(
-                                         createdAt = createServiceChargeResponse.data.createdAt,
-                                         id = createServiceChargeResponse.data.id,
-                                         isEnabled = createServiceChargeResponse.data.isEnabled,
-                                         locationId = createServiceChargeResponse.data.locationId,
-                                         name = createServiceChargeResponse.data.name,
-                                         percentage = createServiceChargeResponse.data.percentage,
-                                         updatedAt = createServiceChargeResponse.data.updatedAt,
-                                         isActive = createServiceChargeResponse.data.isActive
-                                     )
+                                    /*val serviceCharge = GetServiceChargeResponse.Data(
+                                        createdAt = createServiceChargeResponse.data.createdAt,
+                                        id = createServiceChargeResponse.data.id,
+                                        isEnabled = createServiceChargeResponse.data.isEnabled,
+                                        locationId = createServiceChargeResponse.data.locationId,
+                                        name = createServiceChargeResponse.data.name,
+                                        percentage = createServiceChargeResponse.data.percentage,
+                                        updatedAt = createServiceChargeResponse.data.updatedAt,
+                                        isActive = createServiceChargeResponse.data.isActive
+                                    )
 
-                                     taxServiceChargeRepository.createServiceChargeDatabase(
-                                         serviceCharge
-                                     )*/
+                                    taxServiceChargeRepository.createServiceChargeDatabase(
+                                        serviceCharge
+                                    )*/
                                     _data.value = Event(createTeamRole)
                                 }
                             } else {
@@ -128,4 +234,6 @@ class UserPermissionViewModel @Inject constructor(
         }
 
     }
+
+
 }

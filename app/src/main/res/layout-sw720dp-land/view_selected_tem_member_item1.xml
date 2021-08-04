@@ -4,31 +4,36 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingDefaultResource">
 
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.android.pos.ui.fragments.settings.teamrole.UserPermissionViewModel" />
+
+        <variable
+            name="selectedEmployeeModel"
+            type="com.android.pos.data.model.responseModel.EmployeeListResponse.Data.Employee" />
+    </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/llname"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:onClick="@{() -> viewModel.employeeRemoved(selectedEmployeeModel,false)}"
+        android:orientation="horizontal">
 
-        <androidx.appcompat.widget.LinearLayoutCompat
-            android:layout_width="match_parent"
+        <androidx.appcompat.widget.AppCompatTextView
+            style="@style/CustomFontMediumStyle"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-
-            <androidx.appcompat.widget.AppCompatTextView
-                style="@style/CustomFontMediumStyle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/_5sdp"
-                android:layout_weight="1"
-                android:gravity="start"
-                android:padding="@dimen/_5sdp"
-                android:text="Team Member Two"
-                android:textColor="@color/color65"
-                android:textSize="@dimen/_6mdpi" />
-        </androidx.appcompat.widget.LinearLayoutCompat>
+            android:layout_gravity="center"
+            android:layout_marginStart="@dimen/_5sdp"
+            android:layout_weight="1"
+            android:gravity="start"
+            android:padding="@dimen/_5sdp"
+            android:text="@{selectedEmployeeModel.name}"
+            android:textColor="@color/color65"
+            android:textSize="@dimen/_6mdpi" />
 
 
     </androidx.appcompat.widget.LinearLayoutCompat>

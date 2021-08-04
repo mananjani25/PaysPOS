@@ -11,9 +11,6 @@
             name="itemSheetModel"
             type="com.android.pos.data.model.SingleMemberTimeSheetListModel" />
 
-        <variable
-            name="viewModel"
-            type="com.android.pos.ui.fragments.settings.servicecharge.ServiceChargeListViewModel" />
     </data>
 
     <LinearLayout
