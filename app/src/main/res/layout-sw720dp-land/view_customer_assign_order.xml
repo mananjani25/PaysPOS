@@ -22,32 +22,34 @@
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
+            android:padding="@dimen/_3sdp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/_5sdp"
                 android:layout_weight="1"
                 android:gravity="start"
-                android:padding="@dimen/_6sdp"
                 android:text="@{model.first_name+ ' ' + model.last_name}"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_6mdpi" />
+                android:textSize="@dimen/_6mdpi"
+                tools:text="Vishal Patel" />
 
             <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtPhone"
                 style="@style/CustomFontSemiBold"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/_5sdp"
                 android:gravity="start"
-                android:padding="@dimen/_5sdp"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_6mdpi" />
+                android:textColor="@color/hint_color_"
+                android:textSize="@dimen/_5mdpi"
+                tools:text="(200) 300-4000" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 

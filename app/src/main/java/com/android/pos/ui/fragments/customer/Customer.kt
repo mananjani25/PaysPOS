@@ -332,9 +332,12 @@ class Customer : Fragment() {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
 
-                (binding.rvEmployeeList.adapter as CustomerListAdapter).filter.filter(
-                    binding.autoSearch.text.trim().toString()
-                )
+                if (s != null) {
+                    if (s.isNotEmpty())
+                        (binding.rvEmployeeList.adapter as CustomerListAdapter).filter.filter(
+                            binding.autoSearch.text.trim().toString()
+                        )
+                }
 
 
             }

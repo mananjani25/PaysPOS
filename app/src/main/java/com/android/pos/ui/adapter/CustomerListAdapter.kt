@@ -108,15 +108,15 @@ class CustomerListAdapter(
             }
         }
 
-       /* init {
+     init {
 
-            binding.root.setOnClickListener {
-                isSelectedPos = layoutPosition
-                notifyDataSetChanged()
-                listner.onCustomerSelect(layoutPosition, filterList[layoutPosition])
-            }
+         binding.root.setOnClickListener {
+             isSelectedPos = layoutPosition
+             notifyDataSetChanged()
+             listner.onCustomerSelect(layoutPosition, filterList[layoutPosition])
+         }
 
-        }*/
+     }
     }
 
 

@@ -150,17 +150,10 @@
                 android:background="@drawable/bg_button_border"
                 android:gravity="center">
 
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:layout_width="@dimen/_8sdp"
-                    android:id="@+id/imgInfo"
-                    android:layout_height="@dimen/_8sdp"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="@dimen/_2sdp"
-                    android:layout_marginEnd="@dimen/_2sdp"
-                    android:layout_alignParentEnd="true"
-                    app:srcCompat="@drawable/ic_info" />
+
 
                 <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/btnPay"
                     android:layout_width="match_parent"
                     android:gravity="center"
                     android:layout_height="wrap_content">
@@ -173,7 +166,7 @@
                         android:gravity="center"
                         android:text="@string/pay"
                         android:textColor="@color/white"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textSize="@dimen/_5mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtTotalAmount"
@@ -183,12 +176,20 @@
                         android:padding="@dimen/_4sdp"
                         android:text="$200.00"
                         android:textColor="@color/white"
-                        android:textSize="@dimen/_8mdpi" />
+                        android:textSize="@dimen/_7mdpi" />
 
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
-
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="@dimen/_8sdp"
+                    android:id="@+id/imgInfo"
+                    android:layout_height="@dimen/_8sdp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/_2sdp"
+                    android:layout_marginEnd="@dimen/_2sdp"
+                    android:layout_alignParentEnd="true"
+                    app:srcCompat="@drawable/ic_info" />
             </RelativeLayout>
 
 

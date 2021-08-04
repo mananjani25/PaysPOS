@@ -1,12 +1,14 @@
 package com.android.pos.ui.adapter
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.model.CustomerListResponse
 import com.android.pos.databinding.ViewCustomerAssignOrderBinding
+import com.android.pos.utils.AlertUtils
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -28,7 +30,19 @@ class AssignCustomerToOrderAdapter :
             binding.model = item
             binding.executePendingBindings()
 
+            val builder = StringBuilder()
+            if (item.phones.isNotEmpty()) {
+                item.phones.forEach {
+                    builder.append(AlertUtils.usNumberFormat(it.phone_number) + " | ")
+                }
+            }
 
+            if (builder.isNotEmpty()) {
+                binding.txtPhone.visibility = View.VISIBLE
+                binding.txtPhone.text = builder.substring(0, builder.length - 3).toString()
+            } else {
+                binding.txtPhone.visibility = View.GONE
+            }
         }
     }
 
