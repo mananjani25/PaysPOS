@@ -127,7 +127,7 @@ public abstract class SwipeHelper extends ItemTouchHelper.SimpleCallback {
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
 
-        int pos = viewHolder.getBindingAdapterPosition();
+        int pos = viewHolder.getPosition();
 
         if (swipedPos != pos)
             recoverQueue.add(swipedPos);
@@ -163,7 +163,7 @@ public abstract class SwipeHelper extends ItemTouchHelper.SimpleCallback {
 
     @Override
     public void onChildDraw(@NotNull Canvas c, @NotNull RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
-        int pos = viewHolder.getBindingAdapterPosition();
+        int pos = viewHolder.getPosition();
         float translationX = dX;
         View itemView = viewHolder.itemView;
 

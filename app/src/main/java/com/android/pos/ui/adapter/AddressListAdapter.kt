@@ -79,7 +79,6 @@ class AddressListAdapter() : RecyclerView.Adapter<AddressListAdapter.MyViewHolde
                             list[pos].state = address.get(0).adminArea
                             list[pos].postcode = address.get(0).postalCode
 
-
                         }
 
 

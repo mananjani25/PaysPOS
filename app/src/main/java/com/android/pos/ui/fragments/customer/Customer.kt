@@ -29,6 +29,7 @@ import com.android.pos.ui.fragments.team.TeamListViewModel
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.SwipeHelper
 import com.android.pos.utils.SwipeHelperNew
+import com.android.pos.utils.ToastUtil
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.statusUtils.Status
@@ -70,13 +71,15 @@ class Customer : Fragment() {
 
         binding.lifecycleOwner = this
         // loadCustomerList()
+        setUpRecyclerView()
         loadCustomerLocalList()
         return binding.root
     }
 
     private fun setUpRecyclerView() {
 
-        customerAdapter = CustomerListAdapter(requireContext(), dynamicCustomerList, object :
+
+        customerAdapter = CustomerListAdapter(  object :
             CustomerListAdapter.CustomerInteface {
             override fun onCustomerSelect(
                 pos: Int,
@@ -91,7 +94,8 @@ class Customer : Fragment() {
 
         binding.rvEmployeeList.adapter = customerAdapter
 
-        object : SwipeHelper(activity, binding.rvEmployeeList) {
+
+       object : SwipeHelper(activity, binding.rvEmployeeList) {
             override fun instantiateUnderlayButton(
                 viewHolder: RecyclerView.ViewHolder?,
                 underlayButtons: MutableList<UnderlayButton>
@@ -101,7 +105,31 @@ class Customer : Fragment() {
                     0,
                     Color.parseColor("#FF3C30")
                 ) { pos ->
+                   alert(
+                        getString(R.string.app_name),
+                        getString(R.string.delete_customer_message)
+                    ) {
+                        positiveButton(getString(R.string.tv_delete)) {
+                            viewModel.delete(customerAdapter.getList().get(pos).id)
 
+                        }
+                        negativeButton(R.string.tv_cancel) {
+                            // Do negative stuff here
+                        }
+                    }
+
+
+
+
+                    Log.e(TAG, "posClicked  ${pos}")
+                })
+
+
+               /* underlayButtons.add(UnderlayButton(
+                    "Delete",
+                    0,
+                    Color.parseColor("#FF3C30")
+                ) { pos ->
 
 
                     alert(
@@ -110,14 +138,14 @@ class Customer : Fragment() {
                     ) {
                         positiveButton(getString(R.string.tv_delete)) {
 
-                            viewModel.delete(customerAdapter.list.get(pos).id)
+
                         }
                         negativeButton(R.string.tv_cancel) {
                             // Do negative stuff here
                         }
                     }
                 })
-
+*/
 
             }
 
@@ -141,7 +169,8 @@ class Customer : Fragment() {
                             Log.e(TAG, "getCustomerData ${Gson().toJson(data)}")
                             dynamicCustomerList.clear()
                             dynamicCustomerList.addAll(data)
-                            setUpRecyclerView()
+                            customerAdapter.setList(data)
+                            //setUpRecyclerView()
 
 
                         }
@@ -208,7 +237,7 @@ class Customer : Fragment() {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
 
-                if (binding.autoSearch.text.trim().isNotEmpty()) {
+                if (binding.autoSearch.text.isNotEmpty()) {
                     customerAdapter.filter.filter(
                         binding.autoSearch.text.trim().toString()
                     )
