@@ -19,8 +19,6 @@ import kotlin.collections.ArrayList
 
 
 class CustomerListAdapter(
-    var context: Context,
-    var list: ArrayList<com.android.pos.data.model.CustomerListResponse.Data>,
     val listner: CustomerInteface
 ) :
     RecyclerView.Adapter<CustomerListAdapter.MyViewHolder>(), Filterable {
@@ -28,6 +26,7 @@ class CustomerListAdapter(
         arrayListOf()
     private val TAG = "CustomerListAdapter"
 
+   private  var list: ArrayList<com.android.pos.data.model.CustomerListResponse.Data> = arrayListOf()
     private var isSelectedPos: Int = -1
 
     init {
@@ -38,23 +37,24 @@ class CustomerListAdapter(
 
     inner class MyViewHolder(private val binding: ViewCustomerListBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(model: com.android.pos.data.model.CustomerListResponse.Data) {
+        fun bind(model: com.android.pos.data.model.CustomerListResponse.Data,pos:Int) {
+
 
             try {
-                if (filterList.get(bindingAdapterPosition).first_name != null && filterList.get(
-                        bindingAdapterPosition
+                if (filterList.get(pos).first_name != null && filterList.get(
+                        pos
                     ).last_name != null
                 ) {
                     binding.tvInitialName.setText(
-                        filterList.get(bindingAdapterPosition).first_name.first() + "" + filterList.get(
-                            bindingAdapterPosition
+                        filterList.get(pos).first_name.first() + "" + filterList.get(
+                            pos
                         ).last_name.first()
                     )
 
                 } else {
                     binding.tvInitialName.setText(
                         "${
-                            filterList.get(bindingAdapterPosition).first_name?.subSequence(
+                            filterList.get(pos).first_name?.subSequence(
                                 0,
                                 2
                             )
@@ -62,22 +62,22 @@ class CustomerListAdapter(
                     )
                 }
 
-                if (filterList.get(bindingAdapterPosition).email != null && filterList.get(
-                        bindingAdapterPosition
+                if (filterList.get(pos).email != null && filterList.get(
+                        pos
                     ).phones.size > 0
                 ) {
 
                     binding.txtNumber.setText(
                         "" + AlertUtils.usNumberFormat(
-                            filterList.get(bindingAdapterPosition).phones.get(
+                            filterList.get(pos).phones.get(
                                 0
                             ).phone_number
-                        ) + " | " + filterList.get(bindingAdapterPosition).email
+                        ) + " | " + filterList.get(pos).email
                     )
-                } else if (filterList.get(bindingAdapterPosition).phones.size > 0) {
+                } else if (filterList.get(pos).phones.size > 0) {
                     binding.txtNumber.setText(
                         "" + AlertUtils.usNumberFormat(
-                            filterList.get(bindingAdapterPosition).phones.get(
+                            filterList.get(pos).phones.get(
                                 0
                             ).phone_number
                         )
@@ -85,18 +85,19 @@ class CustomerListAdapter(
 
                 }
 
+
+                if (isSelectedPos == pos) {
+                    binding.layout.background = binding.root.context.getDrawable(R.color.txt_color_blue)
+                    binding.txtName.setTextColor(binding.root.context.getColorCompat(R.color.white))
+                    binding.txtNumber.setTextColor(binding.root.context.getColorCompat(R.color.white))
+                } else {
+                    binding.layout.background = binding.root.context.getDrawable(R.color.white)
+                    binding.txtName.setTextColor(binding.root.context.getColorCompat(R.color.txtColor))
+                    binding.txtNumber.setTextColor(binding.root.context.getColorCompat(R.color.colorB9))
+                }
+
                 binding.model = model
                 binding.executePendingBindings()
-
-                if (isSelectedPos == layoutPosition) {
-                    binding.layout.background = context.getDrawable(R.color.txt_color_blue)
-                    binding.txtName.setTextColor(context.getColorCompat(R.color.white))
-                    binding.txtNumber.setTextColor(context.getColorCompat(R.color.white))
-                } else {
-                    binding.layout.background = context.getDrawable(R.color.white)
-                    binding.txtName.setTextColor(context.getColorCompat(R.color.txtColor))
-                    binding.txtNumber.setTextColor(context.getColorCompat(R.color.colorB9))
-                }
 
                 /* binding.root.setOnClickListener {
 
@@ -127,13 +128,13 @@ class CustomerListAdapter(
         parent: ViewGroup,
         viewType: Int
     ): CustomerListAdapter.MyViewHolder {
-        val binding = ViewCustomerListBinding.inflate(LayoutInflater.from(context), parent, false)
+        val binding = ViewCustomerListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return MyViewHolder(binding)
 
     }
 
     override fun onBindViewHolder(holder: CustomerListAdapter.MyViewHolder, position: Int) {
-        holder.bind(filterList[position])
+        holder.bind(filterList[position],position)
     }
 
     override fun getItemCount(): Int {
@@ -146,6 +147,10 @@ class CustomerListAdapter(
         }
     }
 
+    fun getList():ArrayList<com.android.pos.data.model.CustomerListResponse.Data>{
+        return filterList
+    }
+
 
     interface CustomerInteface {
         fun onCustomerSelect(pos: Int, model: com.android.pos.data.model.CustomerListResponse.Data)
@@ -155,37 +160,7 @@ class CustomerListAdapter(
         return object : Filter() {
             override fun performFiltering(charSequence: CharSequence?): FilterResults {
                 val charString = charSequence.toString()
-                /*  if (charString.isEmpty()) {
-                      filterList.clear()
-                      filterList.addAll(list)
-                      Log.e("KeyWordEmpty", "KeyWord")
-                      notifyDataSetChanged()
-                  } else {*/
-                Log.e(TAG, "charSequence:  ${charSequence}")
-                /*var filterList: ArrayList<com.android.pos.data.model.CustomerListResponse.Data> =
-                    arrayListOf()
-                for (model in this@CustomerListAdapter.list) {
-                    Log.e("FilterProcess", "ModelName ${model.first_name.toLowerCase()}")
-                    Log.e("FilterProcess", "Character ${charString.toLowerCase()}")
 
-                    if (model.first_name.toLowerCase()
-                            .contains(charString.toLowerCase()) || model.last_name.toLowerCase()
-                            .contains(charString.toLowerCase())
-                    ) {
-                        filterList.add(model)
-                    }
-                }
-
-
-                if (filterList.size != 0) {
-                    this@CustomerListAdapter.filterList = filterList
-                }
-                *//*}*//*
-                val filterResult = FilterResults()
-                filterResult.values = filterList
-                return filterResult*/
-
-                val chatString = charSequence.toString()
                 filterList = if (charString.isEmpty()) {
                     list
                 } else {
@@ -220,54 +195,14 @@ class CustomerListAdapter(
         }
     }
 
-    /*fun setMovieList(context: Context?, movieList: ArrayList<CustomerModel>) {
-        this.context = context!!
-        if (this.list == null) {
-            this.list = list
-            this.movieListFiltered = list
-            notifyItemChanged(0, movieListFiltered?.size)
-        } else {
-            val result = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
-                override fun getOldListSize(): Int {
-                    return list.size
-                }
-
-                override fun getNewListSize(): Int {
-                    return movieList.size
-                }
-
-                override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-                    return list.get(oldItemPosition)
-                        .name.toLowerCase().startsWith(movieList[newItemPosition].name.toLowerCase())
-                }
-
-                override fun areContentsTheSame(
-                    oldItemPosition: Int,
-                    newItemPosition: Int
-                ): Boolean {
-                    val newMovie: CustomerModel = list.get(oldItemPosition)
-                    val oldMovie = movieList[newItemPosition]
-                    return newMovie.name.toLowerCase().startsWith(oldMovie.name.toLowerCase())
-                }
-            })
-            list = movieList
-            this.movieListFiltered = movieList
-            result.dispatchUpdatesTo(this)
-        }
-    }*/
-
-    fun setList(
-        context: Context,
-        list: ArrayList<com.android.pos.data.model.CustomerListResponse.Data>
-    ) {
-        this.filterList = list
-        this.context = context
-
-
-    }
-
     fun getItem(position: Int): com.android.pos.data.model.CustomerListResponse.Data {
         return filterList[position]
+    }
+
+    fun setList( listData: ArrayList<com.android.pos.data.model.CustomerListResponse.Data>){
+        this.list = listData
+        filterList = list
+        notifyDataSetChanged()
     }
 
 }
