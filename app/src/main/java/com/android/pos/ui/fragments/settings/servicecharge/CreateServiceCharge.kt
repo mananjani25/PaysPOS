@@ -8,6 +8,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.android.pos.R
 import com.android.pos.data.model.responseModel.GetServiceChargeResponse
 import com.android.pos.data.remote.Constants.ADD_SERVICE_CHARGE
 import com.android.pos.data.remote.Constants.KEY
@@ -41,6 +42,7 @@ class CreateServiceCharge : Fragment() {
         isEdit = arguments?.getBoolean("isEdit")!!
 
         if (isEdit) {
+            binding.txtSave.text = getString(R.string.update)
             serviceChargeData = arguments?.getParcelable("serviceChargeObject")!!
 
             viewModel.setDiscountData(serviceChargeData)
