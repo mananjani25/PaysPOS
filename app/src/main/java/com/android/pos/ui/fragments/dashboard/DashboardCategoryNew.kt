@@ -125,12 +125,25 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 binding.layoutCart.llCustomerDialog.visibility = View.GONE
             }
         }
+        if (prefProvider.getValue(CUSTOMER_NAME, "").toString().isNotEmpty()) {
+            binding.layoutCart.txtCustomerName.text =
+                prefProvider.getValue(CUSTOMER_NAME, "").toString()
+            binding.layoutCart.txtCrtNewCustomer.text = "Remove Customer"
+        }
 
         binding.layoutCart.txtCrtNewCustomer.setOnClickListener {
 
-            findNavController().navigate(
-                R.id.action_dashboardCategoryNew_to_assignCustomerOrderFragment
-            )
+            if (prefProvider.getValue(CUSTOMER_NAME, "").toString().isNotEmpty()) {
+                binding.layoutCart.txtCrtNewCustomer.text = "Add Customer"
+                binding.layoutCart.txtCustomerName.text = "Add Customer"
+                prefProvider.setValue(CUSTOMER_NAME, "")
+            } else {
+                findNavController().navigate(
+                    R.id.action_dashboardCategoryNew_to_assignCustomerOrderFragment
+                )
+            }
+
+
         }
 
         binding.layoutCart.txtClearItems.setOnClickListener {
@@ -282,6 +295,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 Log.e("request_key_customer", result.first_name)
                 prefProvider.setValue(CUSTOMER_NAME, result.first_name + " " + result.last_name)
                 binding.layoutCart.txtCustomerName.text = result.first_name + " " + result.last_name
+                binding.layoutCart.txtCrtNewCustomer.text = "Remove Customer"
             }
         }
     }
