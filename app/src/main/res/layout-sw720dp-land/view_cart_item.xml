@@ -12,6 +12,7 @@
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
+        android:padding="@dimen/_3sdp"
         android:background="?attr/selectableItemBackground"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
@@ -20,19 +21,16 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_weight="1"
-            android:paddingStart="@dimen/_4sdp"
-            android:paddingTop="@dimen/_4sdp"
-            android:paddingEnd="@dimen/_4sdp"
-            android:paddingBottom="@dimen/_2sdp">
+            android:layout_weight="1">
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:gravity="start"
                 android:text="@{model.name}"
+                tools:text="Item"
                 android:textColor="@color/drawerBack"
                 android:textSize="@dimen/_5mdpi" />
 
@@ -41,6 +39,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                tools:text="x 10"
                 android:layout_marginStart="@dimen/_5sdp"
                 android:text="@{`x `+model.itemQuantity}"
                 android:textColor="@color/color88"

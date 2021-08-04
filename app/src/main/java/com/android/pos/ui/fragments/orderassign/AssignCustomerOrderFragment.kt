@@ -8,17 +8,19 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.databinding.FragmentAssignCustomerOrderBinding
 import com.android.pos.ui.adapter.AssignCustomerToOrderAdapter
 import com.android.pos.ui.fragments.customer.CustomerListViewModel
+import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class AssignCustomerOrderFragment : Fragment() {
+class AssignCustomerOrderFragment : Fragment(), ItemCallback {
 
     companion object {
         fun newInstance() = AssignCustomerOrderFragment()
@@ -47,6 +49,7 @@ class AssignCustomerOrderFragment : Fragment() {
     private fun setupUI() {
 
         adapter = AssignCustomerToOrderAdapter()
+        adapter.setCallback(this)
         binding.rvCustomerList.adapter = adapter
 
 
@@ -111,5 +114,17 @@ class AssignCustomerOrderFragment : Fragment() {
 
         )
 
+    }
+
+    override fun onItemClickListener(view: View?, pos: Int) {
+
+        val customer = adapter.getItem(pos)
+
+        val result = Bundle().apply {
+            putParcelable("data", customer)
+        }
+        setFragmentResult("request_key_customer", result)
+
+        findNavController().navigateUp()
     }
 }

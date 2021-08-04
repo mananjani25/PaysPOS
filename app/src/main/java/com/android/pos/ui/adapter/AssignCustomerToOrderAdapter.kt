@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.model.CustomerListResponse
 import com.android.pos.databinding.ViewCustomerAssignOrderBinding
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.callback.ItemCallback
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -17,6 +18,15 @@ class AssignCustomerToOrderAdapter :
 
     private var mList = ArrayList<CustomerListResponse.Data>()
     private var filterList = ArrayList<CustomerListResponse.Data>()
+
+    private lateinit var mCallback: ItemCallback
+    fun setCallback(callback: ItemCallback) {
+        mCallback = callback
+    }
+
+    fun getItem(position: Int): CustomerListResponse.Data {
+        return filterList[position]
+    }
 
     fun add(categoryModel: List<CustomerListResponse.Data>) {
         this.mList = categoryModel as ArrayList<CustomerListResponse.Data>
@@ -37,11 +47,26 @@ class AssignCustomerToOrderAdapter :
                 }
             }
 
+            if (item.addresses.isNotEmpty()) {
+                binding.txtAddress1.visibility = View.VISIBLE
+                item.addresses.forEach {
+                    binding.txtAddress1.text = it.full_address
+                }
+            } else {
+                binding.txtAddress1.visibility = View.GONE
+            }
+
             if (builder.isNotEmpty()) {
                 binding.txtPhone.visibility = View.VISIBLE
                 binding.txtPhone.text = builder.substring(0, builder.length - 3).toString()
             } else {
                 binding.txtPhone.visibility = View.GONE
+            }
+        }
+
+        init {
+            binding.root.setOnClickListener {
+                mCallback.onItemClickListener(it, bindingAdapterPosition)
             }
         }
     }
@@ -81,9 +106,22 @@ class AssignCustomerToOrderAdapter :
                 } else {
                     val fList = ArrayList<CustomerListResponse.Data>()
 
+
+
+
                     mList.filter {
+
+                        val ss = StringBuilder()
+                        it.phones.forEach { phone ->
+                            ss.append(phone.phone_number)
+                        }
+                        val phone = ss.toString()
+
                         it.first_name.lowercase(Locale.getDefault()).contains(charSequence) or
-                                it.last_name.lowercase(Locale.getDefault()).contains(charSequence)
+                                it.last_name.lowercase(Locale.getDefault())
+                                    .contains(charSequence) or
+                                it.email.lowercase(Locale.getDefault()).contains(charSequence) or
+                                phone.contains(charSequence)
                     }.forEach { fList.add(it) }
 
                     fList

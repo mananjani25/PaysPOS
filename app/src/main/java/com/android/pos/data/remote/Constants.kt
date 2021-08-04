@@ -13,6 +13,7 @@ object Constants {
     const val LOCATION_ID = "locationId"
     const val EMAIL = "email"
     const val USERNAME = "userName"
+    const val CUSTOMER_NAME = "customer_name"
     const val IS_CLOCKOUT = "isClockout"
 
     const val UPDATE = "UPDATE"

@@ -29,7 +29,9 @@ import com.android.pos.data.entities.CategoryWithInventory
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.CategorySearchData
 import com.android.pos.data.model.CategoryTabModel
+import com.android.pos.data.model.CustomerListResponse
 import com.android.pos.data.remote.Constants.ADD
+import com.android.pos.data.remote.Constants.CUSTOMER_NAME
 import com.android.pos.data.remote.Constants.DELETE
 import com.android.pos.data.remote.Constants.HORIZONTAL
 import com.android.pos.data.remote.Constants.IS_CLOCKOUT
@@ -193,7 +195,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 underlayButtons.add(UnderlayButton(
                     "Add Note",
                     0,
-                    Color.parseColor("#2997cc")
+                    Color.parseColor("#FA9905")
                 ) { pos ->
 
 
@@ -222,22 +224,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     Color.parseColor("#2997cc")
                 ) { pos ->
 
-
-                    setFragmentResultListener("request_key_discount") { requestKey: String, bundle: Bundle ->
-                        val note = bundle.getString("note")
-
-                        singleItem!!.note = note.toString()
-                        singleItem?.let { viewModel.cartLogic(cartList, it, UPDATE) }
-                    }
-
-                    singleItem = cartAdapter.getItem(pos)
-                    val bundle = Bundle().apply {
-                        putString("note", singleItem!!.note)
-                    }
-
                     findNavController().navigate(
-                        R.id.action_dashboardCategoryNew_to_addNoteDialog,
-                        bundle
+                        R.id.action_dashboardCategoryNew_to_addDiscountDialog/*,
+                        bundle*/
                     )
                 })
 
@@ -285,6 +274,16 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 }
             }
         )
+
+        setFragmentResultListener("request_key_customer") { requestKey: String, bundle: Bundle ->
+            val result = bundle.getParcelable<CustomerListResponse.Data>("data")
+            if (result != null) {
+
+                Log.e("request_key_customer", result.first_name)
+                prefProvider.setValue(CUSTOMER_NAME, result.first_name + " " + result.last_name)
+                binding.layoutCart.txtCustomerName.text = result.first_name + " " + result.last_name
+            }
+        }
     }
 
 

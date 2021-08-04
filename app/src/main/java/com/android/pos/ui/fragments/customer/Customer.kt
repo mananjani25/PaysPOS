@@ -76,21 +76,6 @@ class Customer : Fragment() {
 
     private fun setUpRecyclerView() {
 
-        customerAdapter = CustomerListAdapter(requireContext(), dynamicCustomerList, object :
-            CustomerListAdapter.CustomerInteface {
-            override fun onCustomerSelect(
-                pos: Int,
-                model: com.android.pos.data.model.CustomerListResponse.Data
-            ) {
-
-                binding.layoutTool.txtSubTitle.setText(model.first_name + " " + model.last_name)
-                loadFragment(model)
-            }
-
-        })
-
-        binding.rvEmployeeList.adapter = customerAdapter
-
         object : SwipeHelper(activity, binding.rvEmployeeList) {
             override fun instantiateUnderlayButton(
                 viewHolder: RecyclerView.ViewHolder?,
@@ -122,6 +107,23 @@ class Customer : Fragment() {
             }
 
         }
+
+        customerAdapter = CustomerListAdapter(requireContext(), dynamicCustomerList, object :
+            CustomerListAdapter.CustomerInteface {
+            override fun onCustomerSelect(
+                pos: Int,
+                model: com.android.pos.data.model.CustomerListResponse.Data
+            ) {
+
+                binding.layoutTool.txtSubTitle.setText(model.first_name + " " + model.last_name)
+                loadFragment(model)
+            }
+
+        })
+
+        binding.rvEmployeeList.adapter = customerAdapter
+
+
     }
 
     private fun loadCustomerLocalList() {
