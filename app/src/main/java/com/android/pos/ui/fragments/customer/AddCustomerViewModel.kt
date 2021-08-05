@@ -86,7 +86,6 @@ class AddCustomerViewModel @Inject constructor(
     }
 
     fun setAddressList(list: ArrayList<CreateCustomerRequestModel.Customer.Addresses>) {
-        this.listAddress.clear()
         this.listAddress = list
     }
 
@@ -119,10 +118,7 @@ class AddCustomerViewModel @Inject constructor(
         }
 
 
-        Log.e("Address1", "address1: ${address1.value}")
-        Log.e("Address1", "straddress1: ${straddress1}")
-
-
+        Log.e(TAG, "listAddress:  ${Gson().toJson(listAddress)}")
         addCustomerDetails.value?.data?.addresses_attributes?.addAll(listAddress)
 
 
@@ -207,9 +203,10 @@ class AddCustomerViewModel @Inject constructor(
             Log.e(TAG, "customerID:  ${customerID}")
             viewModelScope.launch {
 
-            resource = if (isEdit) {
+                resource = if (isEdit) {
                     posRepository.updateCustomer(customerID, addCustomerData)
-                } else {
+                }
+                else {
 
                     posRepository.createCustomer(addCustomerData)
                 }
@@ -233,21 +230,9 @@ class AddCustomerViewModel @Inject constructor(
                                         addresses = customerListReposne.data.addresses
                                     )
 
-                                    if (isEdit) {
-                                        posRepository.updateCustomer(
-                                            customerListReposne.data.id,
-                                            customerListReposne.data.first_name,
-                                            customerListReposne.data.last_name,
-                                            customerListReposne.data.email,
-                                            customerListReposne.data.birth_date,
-                                            customerListReposne.data.phones,
-                                            customerListReposne.data.addresses
-                                        )
 
+                                    posRepository.addCustomer(model)
 
-                                    } else {
-                                        posRepository.addCustomer(model)
-                                    }
                                     _Basedata.value = Event(customerListReposne)
 
                                 }

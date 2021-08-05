@@ -610,7 +610,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     private fun configureDrawer() {
         binding.layoutMenu.txtKeypad.setOnClickListener {
-            (requireActivity() as MainActivity).enableDrawer()
+            findNavController().navigate(R.id.action_dashboardCategoryNew_to_manualSales)
+            // (requireActivity() as MainActivity).enableDrawer()
         }
 
 

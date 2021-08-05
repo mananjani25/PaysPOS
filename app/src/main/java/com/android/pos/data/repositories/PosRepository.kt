@@ -174,6 +174,8 @@ class PosRepository @Inject constructor(
         networkCall = { apiHelperNew.employeesList(locationId) },
         saveCallResult = { appDatabase.employeeDao().addAllEmployee(it.data.employees) })
 
+    suspend fun clearCustomerTb() = appDatabase.customerDao().deleteCustomerTb()
+
     fun customerList() = performGetOperation(
         databaseQuery = { appDatabase.customerDao().allCustomer },
         networkCall = { apiHelperNew.customerList() },
@@ -187,15 +189,7 @@ class PosRepository @Inject constructor(
     suspend fun addCustomer(data: CustomerListResponse.Data) =
         appDatabase.customerDao().addCustomer(data)
 
-    suspend fun updateCustomer(
-        id: Int,
-        fname: String,
-        lName: String,
-        email: String,
-        bDate: String,
-        phNo: List<CustomerListResponse.Data.Phones>,
-        address: List<CustomerListResponse.Data.Addresses>
-    ) = appDatabase.customerDao().updateCustomer(id, fname, lName, bDate, email, phNo, address)
+
 
     suspend fun deleteCustomerDataBase(id: Int) = appDatabase.customerDao().deleteCustomerByID(id)
 
