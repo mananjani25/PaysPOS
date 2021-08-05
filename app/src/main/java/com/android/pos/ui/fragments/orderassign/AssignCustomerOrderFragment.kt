@@ -72,6 +72,10 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
             findNavController().popBackStack()
         }
 
+        binding.txtCreateCustomer.setOnClickListener {
+            findNavController().navigate(R.id.action_assignCustomerOrderFragment_to_addEditCustomer)
+        }
+
     }
 
 
