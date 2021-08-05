@@ -23,27 +23,15 @@ import com.android.pos.data.typeconvert.TypeConvertorPhone
 
 
 @Database(
-    entities = [CharacterModel::class, TbCategory::class, TbItem::class, GetTaxResponse.TaxData::class,
+    entities = [CharacterModel::class, TbCategory::class, TbItem::class, TaxData::class,
         GetTipReponse.Data::class, GetDiscountResponse.Data::class, NoteResponse.Data::class,
         GetServiceChargeResponse.Data::class, EmployeeListResponse.Data.Employee::class, CartModel::class,
-        CustomerListResponse.Data::class, ModifierSet::class],
+        CustomerListResponse.Data::class, ModifierSet::class, TeamRole::class],
     version = 1
-    entities = [CharacterModel::class, TbCategory::class, TbItem::class, TaxData::class,
-        GetTipReponse.Data::class, GetDiscountResponse.Data::class,
-        NoteResponse.Data::class, GetServiceChargeResponse.Data::class,
-        EmployeeListResponse.Data.Employee::class, CartModel::class, CustomerListResponse.Data::class,
-       TeamRole::class],
-    version = 2
 )
 @TypeConverters(
     TypeConvertersIds::class, TypeConvertorAddress::class, TypeConvertorPhone::class,
-    TypeConvertersEmployee::class
-)
-@TypeConverters(
-    TypeConvertersIds::class,
-    TypeConvertorAddress::class,
-    TypeConvertorPhone::class,
-    TCModifier::class
+    TypeConvertersEmployee::class, TCModifier::class
 )
 
 
@@ -61,7 +49,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun employeeDao(): EmployeeDao
     abstract fun customerDao(): CustomerDao
     abstract fun teamRoleDao(): TeamRoleDao
-    abstract fun customerDao(): CustomerDao
     abstract fun modifierSetDao(): ModifierSetDao
 
     companion object {
