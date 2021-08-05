@@ -24,7 +24,7 @@ import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class Modifiers : Fragment() {
+class Modifiers : Fragment(), TextWatcher {
     private var isreOrder: Boolean = false
     var dragFrom = -1
     var dragTo = -1
@@ -38,7 +38,7 @@ class Modifiers : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentModifiersBinding.inflate(inflater, container, false)
-        //binding.lifecycleOwner = this
+        binding.lifecycleOwner = this
         return binding.root
     }
 
@@ -65,17 +65,7 @@ class Modifiers : Fragment() {
         adapter = ModifiersListAdapter()
         binding.rvModifiersList.adapter = adapter
 
-        binding.edtSearch.addTextChangedListener(object : TextWatcher {
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-            }
-
-            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
-            }
-
-            override fun afterTextChanged(s: Editable) {
-                adapter.filter.filter(s.toString().trim())
-            }
-        })
+        binding.edtSearch.addTextChangedListener(this)
     }
 
     private fun modifierSetsObserver() {
@@ -251,6 +241,16 @@ class Modifiers : Fragment() {
             }
         })
 
+    }
+
+    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+    }
+
+    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+    }
+
+    override fun afterTextChanged(s: Editable?) {
+        adapter.filter.filter(s.toString().trim())
     }
 
 }

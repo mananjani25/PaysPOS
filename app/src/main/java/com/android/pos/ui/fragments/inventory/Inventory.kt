@@ -20,6 +20,7 @@ import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.databinding.FragmentInventoryBinding
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.InventoryAdapter
+import com.android.pos.ui.fragments.settings.discount.DiscountList
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -113,7 +114,7 @@ class Inventory : Fragment() {
                 binding.commonToolbar.txtSubTitle.text = "Modifiers"
             }
             3 -> {
-                val discount: Fragment = Discounts()
+                val discount: Fragment = DiscountList()
                 loadFragment(discount)
                 binding.commonToolbar.txtSetItem.visibility = View.VISIBLE
                 binding.commonToolbar.txtSubTitle.text = "Discounts"
