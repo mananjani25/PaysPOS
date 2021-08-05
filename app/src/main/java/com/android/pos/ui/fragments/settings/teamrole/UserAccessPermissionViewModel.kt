@@ -1,14 +1,13 @@
 package com.android.pos.ui.fragments.settings.teamrole
 
 import android.text.TextUtils
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.R
+import com.android.pos.data.entities.TeamRole
 import com.android.pos.data.model.PermissionModuleListModel
-import com.android.pos.data.model.requestModel.CreateServiceChargeRequestModel
 import com.android.pos.data.model.requestModel.CreateTeamRoleRequestModel
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.Constants.LOCATION_ID
@@ -24,7 +23,7 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class UserPermissionViewModel @Inject constructor(
+class UserAccessPermissionViewModel @Inject constructor(
     private val taxServiceChargeRepository: TaxServiceChargeRepository,
     private val prefProvider: PrefProvider,
     private val posRepository: PosRepository
@@ -79,8 +78,12 @@ class UserPermissionViewModel @Inject constructor(
     val selectedModuleListToFeed = ArrayList<PermissionModuleListModel>()
 
 
-    fun isEditData(isEdit: Boolean, taxId: Int) {
-        this.roleId = taxId
+    fun setUserPermissionData(userPermissionData: TeamRole) {
+        createUserPermission.value?.name = userPermissionData.name
+    }
+
+    fun isEditData(isEdit: Boolean, roleId: Int) {
+        this.roleId = roleId
         this.isEdit = isEdit
     }
 

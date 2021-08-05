@@ -26,7 +26,7 @@ class TbItem : Parcelable {
     var sku: String = ""
     var isHide: Boolean = false
     var sort: Int = 0
-    var taxes: List<GetTaxResponse.TaxData>? = null
+    var taxes: List<TaxData>? = null
     var imageUrl: String? = null
     var thumbImageUrl: String? = null
     var createdAt: String = ""

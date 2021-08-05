@@ -30,6 +30,7 @@ import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.CategorySearchData
 import com.android.pos.data.model.CategoryTabModel
 import com.android.pos.data.model.CustomerListResponse
+import com.android.pos.data.model.responseModel.GetServiceChargeResponse
 import com.android.pos.data.remote.Constants.ADD
 import com.android.pos.data.remote.Constants.CUSTOMER_NAME
 import com.android.pos.data.remote.Constants.DELETE
@@ -39,7 +40,6 @@ import com.android.pos.data.remote.Constants.UPDATE
 import com.android.pos.data.remote.Constants.VERTICAL
 import com.android.pos.databinding.FragmentDashboardCategoryNewBinding
 import com.android.pos.di.PrefProvider
-import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.CartAdapter
 import com.android.pos.ui.adapter.CategoryItemAdapter1
 import com.android.pos.ui.adapter.CategorySearchAdapter
@@ -56,6 +56,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, MyCallback {
+    private var serviceChargesList: List<GetServiceChargeResponse.Data>? = null
     private var singleItem: TbItem? = null
     private var cartList: List<CartModel>? = null
     private lateinit var binding: FragmentDashboardCategoryNewBinding
@@ -74,8 +75,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     lateinit var prefProvider: PrefProvider
     override fun onAttach(context: Context) {
         super.onAttach(context)
-
-
     }
 
     override fun onCreateView(
@@ -115,7 +114,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         configureDrawer()
         onClick()
         //searchItem()
-        getCartList()
+
+        getServiceCharges()
+
+
 
         binding.layoutCart.llShowMenu.setOnClickListener {
             hideMenu()
@@ -182,6 +184,16 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 bundle
             )
         }
+    }
+
+    private fun getServiceCharges() {
+
+        viewModel.serviceCharges.observe(requireActivity(), {
+            serviceChargesList = it.data
+
+            getCartList()
+
+        })
     }
 
     private fun hideMenu() {
@@ -279,7 +291,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                     viewModel.itemCalculation(
                         cartList?.get(0)?.items,
-                        binding.layoutCart.txtTotalAmount
+                        binding.layoutCart.txtTotalAmount,
+                        serviceChargesList
                     )
                 } else {
                     binding.lltakeout.visibility = View.VISIBLE

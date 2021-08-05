@@ -12,6 +12,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
+import com.android.pos.data.entities.TaxData
 import com.android.pos.data.model.responseModel.GetTaxResponse
 import com.android.pos.databinding.FragmentTaxesBinding
 import com.android.pos.ui.adapter.TaxListAdapter
@@ -29,11 +30,11 @@ import dagger.hilt.android.AndroidEntryPoint
 class TaxesList : Fragment() {
 
     private var position: Int = -1
-    private lateinit var taxListUpdateDelete: ArrayList<GetTaxResponse.TaxData>
+    private lateinit var taxListUpdateDelete: ArrayList<TaxData>
     private lateinit var binding: FragmentTaxesBinding
     private val viewModel by viewModels<TaxListViewModel>()
     private lateinit var taxListadapter: TaxListAdapter
-    private lateinit var taxObject: GetTaxResponse.TaxData
+    private lateinit var taxObject: TaxData
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -162,8 +163,8 @@ class TaxesList : Fragment() {
 
     }
 
-    private fun setTaxData(taxList: List<GetTaxResponse.TaxData>) {
-        taxListUpdateDelete = taxList as ArrayList<GetTaxResponse.TaxData>
+    private fun setTaxData(taxList: List<TaxData>) {
+        taxListUpdateDelete = taxList as ArrayList<TaxData>
         taxListadapter.apply {
             addTaxes(taxList)
             notifyDataSetChanged()

@@ -1,61 +1,65 @@
-package com.android.pos.ui.fragments.settings.tax
+package com.android.pos.ui.fragments.inventory
 
-import android.util.Log
-import androidx.lifecycle.*
-import com.android.pos.data.entities.TaxData
-import com.android.pos.data.model.responseModel.CreateTaxResponse
-import com.android.pos.data.model.responseModel.GetTaxResponse
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.android.pos.data.entities.ModifierSet
+import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.repositories.PosRepository
-import com.android.pos.data.repositories.TaxServiceChargeRepository
 import com.android.pos.utils.Event
+import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
-class TaxListViewModel @Inject constructor(
-    private val taxServiceChargeRepository: TaxServiceChargeRepository
+class ModifierSetViewModel @Inject constructor(
+    private val posRepository: PosRepository,
 ) : ViewModel() {
+
+    val categories = posRepository.getCategoryList()
+    val unhideCategories = posRepository.unhideCategoryList()
+
+    fun modifierSets(): LiveData<Resource<List<ModifierSet>>> {
+        return posRepository.modifierSetsList()
+    }
 
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
 
-    private val _data = MutableLiveData<Event<CreateTaxResponse?>>()
-    val data: LiveData<Event<CreateTaxResponse?>> = _data
-
-    private val _notifydata = MutableLiveData<Event<Boolean?>>()
-    val notifydata: LiveData<Event<Boolean?>> = _notifydata
+    private val _data = MutableLiveData<Event<BaseResponse?>>()
+    val data: LiveData<Event<BaseResponse?>> = _data
 
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
+    fun deleteDatabase(catId: Int) {
+        viewModelScope.launch {
+            posRepository.deleteModifierSet(catId)
+        }
+    }
 
-    val getTaxList = taxServiceChargeRepository.getTaxList()
-
-    fun isTaxActive(taxDataItem: TaxData) {
-
-        // _showProgress.value = Event(true)
+    fun deleteCategory(catId: Int) {
+        _showProgress.value = Event(true)
 
         viewModelScope.launch {
-            taxDataItem.isActive = !taxDataItem.isActive
 
-            val resource =
-                taxServiceChargeRepository.taxActive(taxDataItem.id, taxDataItem.isActive)
 
+            val resource = posRepository.deleteCategoryCall(catId)
             when (resource.status) {
                 Status.SUCCESS -> {
 
-                    //   _showProgress.value = Event(false)
+                    _showProgress.value = Event(false)
 
                     resource.data.let {
                         if (it?.status == 200) {
                             resource.data?.let { baseResponse ->
-                                taxServiceChargeRepository.taxActiveDatabase(
-                                    taxDataItem.id,
-                                    taxDataItem.isActive
-                                )
-                                _notifydata.value = Event(true)
+                                _data.value = Event(baseResponse)
+
+                                posRepository.deleteModifierSet(catId)
 
                             }
                         } else {
@@ -63,38 +67,36 @@ class TaxListViewModel @Inject constructor(
                         }
 
                     }
-
                 }
 
                 Status.ERROR -> {
                     _snackbarText.value = Event(resource.message)
-                    //_showProgress.value = Event(false)
+                    _showProgress.value = Event(false)
                 }
 
                 Status.LOADING -> {
-                    // _showProgress.value = Event(true)
+                    _showProgress.value = Event(true)
                 }
             }
         }
-
-
     }
 
-    fun delete(id: Int) {
+
+    fun reOrderCategory(catId: Int, oldPos: Int, newPos: Int) {
         _showProgress.value = Event(true)
 
         viewModelScope.launch {
-            val resource = taxServiceChargeRepository.deleteTax(id)
+
+            val resource = posRepository.reOrderCategoryCall(catId, oldPos, newPos)
             when (resource.status) {
                 Status.SUCCESS -> {
+
                     _showProgress.value = Event(false)
 
                     resource.data.let {
                         if (it?.status == 200) {
-                            resource.data?.let { createTaxResponse ->
-                                taxServiceChargeRepository.deleteTaxDatabase(id)
-                                _data.value = Event(createTaxResponse)
-
+                            resource.data?.let { baseResponse ->
+                                _data.value = Event(baseResponse)
                             }
                         } else {
                             _snackbarText.value = Event(resource.message)
@@ -115,5 +117,16 @@ class TaxListViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+
+    fun reOrder(allModifierSet: ArrayList<ModifierSet>) {
+
+        if (allModifierSet.isNotEmpty()) {
+            viewModelScope.launch {
+                posRepository.updateModifierSort(allModifierSet)
+            }
+        }
+
     }
 }

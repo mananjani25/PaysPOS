@@ -3,6 +3,10 @@ package com.android.pos.data.model.responseModel
 
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import com.android.pos.data.entities.ModifierSet
+import com.android.pos.data.entities.TaxData
 import com.bumptech.glide.Glide
 import com.google.gson.annotations.SerializedName
 
@@ -19,7 +23,10 @@ data class VenueDataResponse(
 ) {
     data class Data(
         @SerializedName("categories")
-        val categories: List<Category>
+        val categories: List<Category>,
+        @SerializedName("modifier_sets")
+        val modifierSets: List<ModifierSet> = emptyList()
+
     ) {
         data class Category(
             @SerializedName("id")
@@ -69,11 +76,12 @@ data class VenueDataResponse(
                 val thumpImgUrl: String?,
                 @SerializedName("active")
                 val active: Boolean,
-                var taxes: List<GetTaxResponse.TaxData>? = null
+                var taxes: List<TaxData>? = null
 
 
             )
         }
+
     }
 
     object companion {

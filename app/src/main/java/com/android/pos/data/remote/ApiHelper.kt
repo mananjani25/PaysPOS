@@ -174,4 +174,7 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
 
     suspend fun reOrderItemCall(id: Int, oldPos: Int, newPos: Int) =
         getResult { apiService.reOrderItem(id, oldPos, newPos) }
+
+    suspend fun deleteModifierSetCall(id: Int) =
+        getResult { apiService.deleteModifierSetCall(id) }
 }

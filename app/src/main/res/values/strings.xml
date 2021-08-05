@@ -87,12 +87,14 @@
     <string name="clockout_message">Are you sure want to Clockout?</string>
     <string name="delete_item_message">Are you sure want to Delete Item?</string>
     <string name="delete_items_message">Are you sure want to Clear Item?</string>
+    <string name="delete_employee_role_message">Are you sure want to Delete Team Member Role?</string>
 
     <string name="delete_category_message">Are you sure you want to delete category?</string>
     <string name="hide_category_message">Are you sure you want to hide category?</string>
     <string name="hide_item_message">Are you sure you want to hide item?</string>
     <string name="unhide_category_message">Are you sure you want to unhide category?</string>
     <string name="unhide_item_message">Are you sure you want to unhide item?</string>
+    <string name="delete_modifier_message">Are you sure you want to delete modifier set?</string>
 
 
     <string name="tv_personal_info">Personal Info</string>
@@ -283,6 +285,7 @@
     <string name="keypad">Keypad</string>
     <string name="remove_tip">Remove Tip</string>
     <string name="update">Update</string>
+    <string name="update_role">Update Role</string>
     <string name="disc_percentage">Percentage</string>
     <string name="disc_amount">Amount</string>
     <string name="dollar_amount">Dollar</string>

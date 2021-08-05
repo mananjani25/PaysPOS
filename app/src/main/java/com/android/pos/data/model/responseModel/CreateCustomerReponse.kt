@@ -14,7 +14,7 @@ import kotlinx.parcelize.Parcelize
 data class CreateCustomerReponse(
     @SerializedName("data")
     val data: Data,
-):BaseResponse(),Parcelable {
+) : BaseResponse(), Parcelable {
 
     @Parcelize
     @Entity(tableName = "TbCustomer")
@@ -32,8 +32,6 @@ data class CreateCustomerReponse(
         var isSelcted: Boolean = false
     ) : Parcelable {
     }
-
-
 
 
 }

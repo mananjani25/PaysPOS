@@ -3,6 +3,7 @@ package com.android.pos.data.repositories
 import androidx.lifecycle.LiveData
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.db.IDataManager
+import com.android.pos.data.entities.TaxData
 import com.android.pos.data.entities.TbCategory
 import com.android.pos.data.model.requestModel.CreateServiceChargeRequestModel
 import com.android.pos.data.model.requestModel.CreateTaxRequestModel
@@ -28,7 +29,7 @@ class TaxServiceChargeRepository @Inject constructor(
 
     suspend fun createTax(data: CreateTaxRequestModel) = apiHelperNew.createTax(data)
 
-    suspend fun createTaxDatabase(data: GetTaxResponse.TaxData) =
+    suspend fun createTaxDatabase(data: TaxData) =
         appDatabase.taxDao().addTax(data)
 
     suspend fun updateTax(taxId: Int, data: CreateTaxRequestModel) =
@@ -72,7 +73,13 @@ class TaxServiceChargeRepository @Inject constructor(
         appDatabase.serviceChargeDao().deleteServiceChargeById(serChargeId)
 
     fun getTeamRoleList() =
-        performGetOperationNew(networkCall = { apiHelperNew.getTeamRoleList() })
+        performGetOperation(
+            databaseQuery = { appDatabase.teamRoleDao().allRoles },
+            networkCall = { apiHelperNew.getTeamRoleList() },
+            saveCallResult = { appDatabase.teamRoleDao().addAllRoles(it.data.teamRoles) })
+
+    /*fun getTeamRoleList() =
+        performGetOperationNew(networkCall = { apiHelperNew.getTeamRoleList() })*/
 
     suspend fun createTeamRole(data: CreateTeamRoleRequestModel) =
         apiHelperNew.createTeamRole(data)
@@ -84,5 +91,8 @@ class TaxServiceChargeRepository @Inject constructor(
         apiHelperNew.updateTeamRole(discountId, data)
 
     suspend fun deleteTeamRole(data: Int) = apiHelperNew.deleteTeamRole(data)
+
+    suspend fun deleteTeamRoleDatabase(teamRoleId: Int) =
+        appDatabase.teamRoleDao().deleteRoleById(teamRoleId)
 
 }

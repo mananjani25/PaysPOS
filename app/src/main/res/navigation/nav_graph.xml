@@ -483,7 +483,13 @@
     <fragment
         android:id="@+id/userAccessPermissionFragment"
         android:name="com.android.pos.ui.fragments.settings.teamrole.UserAccessPermissionFragment"
-        android:label="UserAccessPermissionFragment" />
+        android:label="UserAccessPermissionFragment">
+
+        <argument
+            android:name="isEdit"
+            android:defaultValue="false"
+            app:argType="boolean" />
+    </fragment>
     <fragment
         android:id="@+id/paymentFragment"
         android:name="com.android.pos.ui.fragments.payment.PaymentFragment"
@@ -515,7 +521,11 @@
         android:id="@+id/assignCustomerOrderFragment"
         android:name="com.android.pos.ui.fragments.orderassign.AssignCustomerOrderFragment"
         android:label="assign_customer_order_fragment"
-        tools:layout="@layout/assign_customer_order_fragment" />
+        tools:layout="@layout/assign_customer_order_fragment">
+        <action
+            android:id="@+id/action_assignCustomerOrderFragment_to_addEditCustomer"
+            app:destination="@id/addEditCustomer" />
+    </fragment>
     <fragment
         android:id="@+id/manualSales"
         android:name="com.android.pos.ui.fragments.manualsales.ManualSales"

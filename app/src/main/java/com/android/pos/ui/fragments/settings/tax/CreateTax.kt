@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
+import com.android.pos.data.entities.TaxData
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.responseModel.GetTaxResponse
 import com.android.pos.data.remote.Constants.ADD_TAX
@@ -39,7 +40,7 @@ class CreateTax : Fragment() {
     private var itemPricing: String = ""
 
     var isEdit: Boolean = false
-    private lateinit var taxData: GetTaxResponse.TaxData
+    private lateinit var taxData: TaxData
 
 
     override fun onCreateView(
