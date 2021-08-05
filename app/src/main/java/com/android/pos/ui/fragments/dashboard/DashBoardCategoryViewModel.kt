@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.TbItem
+import com.android.pos.data.model.responseModel.GetServiceChargeResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ADD
 import com.android.pos.data.remote.Constants.DELETE
@@ -36,6 +37,8 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
     val venueDataLocal = posRepository.venueDataLocal()
+
+    val serviceCharges = posRepository.serviceChargeList()
 
     var mAllWords = posRepository.getCartList()
 
@@ -117,7 +120,11 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     @SuppressLint("SetTextI18n")
-    fun itemCalculation(itemList: List<TbItem>?, txtTotalAmount: AppCompatTextView) {
+    fun itemCalculation(
+        itemList: List<TbItem>?,
+        txtTotalAmount: AppCompatTextView,
+        serviceChargesList: List<GetServiceChargeResponse.Data>?
+    ) {
 
 
         totalPrice = 0.0
@@ -141,6 +148,18 @@ class DashBoardCategoryViewModel @Inject constructor(
                 }
             }
         }
+
+        if (serviceChargesList != null && serviceChargesList.isNotEmpty()) {
+
+            serviceChargesList.forEach {
+                if (it.isEnabled) {
+                    totalServiceCharge = (subTotalPrice * it.percentage) / 100
+                    Log.e("totalServiceCharge", totalServiceCharge.toString())
+                }
+            }
+
+        }
+
 
 
         totalPrice = subTotalPrice + totalTax + totalServiceCharge

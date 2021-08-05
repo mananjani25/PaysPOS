@@ -94,6 +94,7 @@
     <string name="hide_item_message">Are you sure you want to hide item?</string>
     <string name="unhide_category_message">Are you sure you want to unhide category?</string>
     <string name="unhide_item_message">Are you sure you want to unhide item?</string>
+    <string name="delete_modifier_message">Are you sure you want to delete modifier set?</string>
 
 
     <string name="tv_personal_info">Personal Info</string>
@@ -384,4 +385,6 @@
     <string name="number_of_splits">Number of Splits</string>
     <string name="add_a_note">Add a note</string>
     <string name="add_customer_to_sale">Add Customer to Sale</string>
+    <string name="add_to_cart">Add to Cart</string>
+    <string name="direct_pay">Direct Pay</string>
 </resources>

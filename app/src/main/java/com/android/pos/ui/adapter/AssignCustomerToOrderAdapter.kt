@@ -117,11 +117,17 @@ class AssignCustomerToOrderAdapter :
                         }
                         val phone = ss.toString()
 
+                        var company = ""
+                        if (it.company != null) {
+                            company = it.company
+                        }
+
                         it.first_name.lowercase(Locale.getDefault()).contains(charSequence) or
                                 it.last_name.lowercase(Locale.getDefault())
                                     .contains(charSequence) or
                                 it.email.lowercase(Locale.getDefault()).contains(charSequence) or
-                                phone.contains(charSequence)
+                                phone.contains(charSequence) or
+                                company.lowercase(Locale.getDefault()).contains(charSequence)
                     }.forEach { fList.add(it) }
 
                     fList

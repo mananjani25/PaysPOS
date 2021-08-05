@@ -78,7 +78,7 @@ class Customer : Fragment() {
     private fun setUpRecyclerView() {
 
 
-        customerAdapter = CustomerListAdapter(  object :
+        customerAdapter = CustomerListAdapter(object :
             CustomerListAdapter.CustomerInteface {
             override fun onCustomerSelect(
                 pos: Int,
@@ -94,7 +94,7 @@ class Customer : Fragment() {
         binding.rvEmployeeList.adapter = customerAdapter
 
 
-       object : SwipeHelper(activity, binding.rvEmployeeList) {
+        object : SwipeHelper(activity, binding.rvEmployeeList) {
             override fun instantiateUnderlayButton(
                 viewHolder: RecyclerView.ViewHolder?,
                 underlayButtons: MutableList<UnderlayButton>
@@ -104,7 +104,7 @@ class Customer : Fragment() {
                     0,
                     Color.parseColor("#FF3C30")
                 ) { pos ->
-                   alert(
+                    alert(
                         getString(R.string.app_name),
                         getString(R.string.delete_customer_message)
                     ) {
@@ -131,6 +131,9 @@ class Customer : Fragment() {
 
     private fun loadCustomerLocalList() {
 
+
+        //viewModel.clearDataBase()
+
         viewModel.customerList().observe(viewLifecycleOwner, {
             it?.let { resource ->
                 when (resource.status) {
@@ -138,8 +141,6 @@ class Customer : Fragment() {
 
                         ProgressUtils.dismissProgressDialog()
                         if (resource.data != null) {
-                            val list: ArrayList<CustomerModel> = arrayListOf()
-
                             val data =
                                 resource.data as ArrayList<com.android.pos.data.model.CustomerListResponse.Data>
 

@@ -1,7 +1,5 @@
 package com.android.pos.ui.adapter
 
-import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Filter
@@ -9,11 +7,9 @@ import android.widget.Filterable
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.model.CustomerListResponse
-import com.android.pos.data.model.CustomerModel
 import com.android.pos.databinding.ViewCustomerListBinding
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.extensions.getColorCompat
-import com.google.gson.Gson
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -26,7 +22,8 @@ class CustomerListAdapter(
         arrayListOf()
     private val TAG = "CustomerListAdapter"
 
-   private  var list: ArrayList<com.android.pos.data.model.CustomerListResponse.Data> = arrayListOf()
+    private var list: ArrayList<com.android.pos.data.model.CustomerListResponse.Data> =
+        arrayListOf()
     private var isSelectedPos: Int = -1
 
     init {
@@ -37,7 +34,7 @@ class CustomerListAdapter(
 
     inner class MyViewHolder(private val binding: ViewCustomerListBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(model: com.android.pos.data.model.CustomerListResponse.Data,pos:Int) {
+        fun bind(model: com.android.pos.data.model.CustomerListResponse.Data, pos: Int) {
 
 
             try {
@@ -87,7 +84,8 @@ class CustomerListAdapter(
 
 
                 if (isSelectedPos == pos) {
-                    binding.layout.background = binding.root.context.getDrawable(R.color.txt_color_blue)
+                    binding.layout.background =
+                        binding.root.context.getDrawable(R.color.txt_color_blue)
                     binding.txtName.setTextColor(binding.root.context.getColorCompat(R.color.white))
                     binding.txtNumber.setTextColor(binding.root.context.getColorCompat(R.color.white))
                 } else {
@@ -128,13 +126,14 @@ class CustomerListAdapter(
         parent: ViewGroup,
         viewType: Int
     ): CustomerListAdapter.MyViewHolder {
-        val binding = ViewCustomerListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding =
+            ViewCustomerListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return MyViewHolder(binding)
 
     }
 
     override fun onBindViewHolder(holder: CustomerListAdapter.MyViewHolder, position: Int) {
-        holder.bind(filterList[position],position)
+        holder.bind(filterList[position], position)
     }
 
     override fun getItemCount(): Int {
@@ -147,7 +146,7 @@ class CustomerListAdapter(
         }
     }
 
-    fun getList():ArrayList<com.android.pos.data.model.CustomerListResponse.Data>{
+    fun getList(): ArrayList<com.android.pos.data.model.CustomerListResponse.Data> {
         return filterList
     }
 
@@ -158,40 +157,53 @@ class CustomerListAdapter(
 
     override fun getFilter(): Filter {
         return object : Filter() {
-            override fun performFiltering(charSequence: CharSequence?): FilterResults {
+            override fun performFiltering(charSequence: CharSequence): FilterResults {
                 val charString = charSequence.toString()
-
                 filterList = if (charString.isEmpty()) {
                     list
                 } else {
                     val fList = ArrayList<CustomerListResponse.Data>()
+
+
+
+
                     list.filter {
-                        (it.first_name.lowercase(Locale.getDefault())
-                            .contains(charString)) || (it.last_name.lowercase(Locale.getDefault())
-                            .contains(charString))
+
+                        val ss = StringBuilder()
+                        it.phones.forEach { phone ->
+                            ss.append(phone.phone_number)
+                        }
+                        val phone = ss.toString()
+
+                        var company = ""
+                        if (it.company != null) {
+                            company = it.company
+                        }
+
+                        it.first_name.lowercase(Locale.getDefault()).contains(charSequence) or
+                                it.last_name.lowercase(Locale.getDefault())
+                                    .contains(charSequence) or
+                                it.email.lowercase(Locale.getDefault()).contains(charSequence) or
+                                phone.contains(charSequence) or
+                                company.lowercase(Locale.getDefault()).contains(charSequence)
                     }.forEach { fList.add(it) }
 
                     fList
                 }
 
                 return FilterResults().apply { values = filterList }
-
-
             }
 
             override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
-                Log.e("FilterList", "countList  ${results?.count}")
 
-                if (results?.values != null) {
 
-                    filterList =
-                        results?.values as ArrayList<com.android.pos.data.model.CustomerListResponse.Data>
-                } else {
-                    filterList = list
+                if (results != null && results.count > 0) {
+                    filterList = results.values as ArrayList<CustomerListResponse.Data>
                 }
-                notifyDataSetChanged()
-            }
 
+                notifyDataSetChanged()
+
+            }
         }
     }
 
@@ -199,7 +211,7 @@ class CustomerListAdapter(
         return filterList[position]
     }
 
-    fun setList( listData: ArrayList<com.android.pos.data.model.CustomerListResponse.Data>){
+    fun setList(listData: ArrayList<com.android.pos.data.model.CustomerListResponse.Data>) {
         this.list = listData
         filterList = list
         notifyDataSetChanged()

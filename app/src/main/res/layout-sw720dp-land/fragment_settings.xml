@@ -58,9 +58,9 @@
                             android:id="@+id/rvBusiness"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_marginBottom="@dimen/_3sdp"
                             android:orientation="vertical"
                             android:visibility="gone"
-                            android:layout_marginBottom="@dimen/_3sdp"
                             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                             tools:listitem="@layout/view_business_setting" />
 
@@ -145,11 +145,11 @@
                             android:textColor="@color/txtColor"
                             android:textSize="@dimen/_6mdpi"
                             android:textStyle="normal" />
+
                         <View
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
                             android:background="@color/dividerColor" />
-
 
 
                     </LinearLayout>

@@ -7,17 +7,27 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.android.pos.data.dao.*
 import com.android.pos.data.entities.*
+import com.android.pos.data.entities.CartModel
+import com.android.pos.data.entities.ModifierSet
+import com.android.pos.data.entities.TbCategory
+import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.CharacterModel
 import com.android.pos.data.model.CustomerListResponse
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.Constants.DATABASE_NAME
 import com.android.pos.data.typeconvert.TypeConvertersEmployee
+import com.android.pos.data.typeconvert.TCModifier
 import com.android.pos.data.typeconvert.TypeConvertersIds
 import com.android.pos.data.typeconvert.TypeConvertorAddress
 import com.android.pos.data.typeconvert.TypeConvertorPhone
 
 
 @Database(
+    entities = [CharacterModel::class, TbCategory::class, TbItem::class, GetTaxResponse.TaxData::class,
+        GetTipReponse.Data::class, GetDiscountResponse.Data::class, NoteResponse.Data::class,
+        GetServiceChargeResponse.Data::class, EmployeeListResponse.Data.Employee::class, CartModel::class,
+        CustomerListResponse.Data::class, ModifierSet::class],
+    version = 1
     entities = [CharacterModel::class, TbCategory::class, TbItem::class, TaxData::class,
         GetTipReponse.Data::class, GetDiscountResponse.Data::class,
         NoteResponse.Data::class, GetServiceChargeResponse.Data::class,
@@ -28,6 +38,12 @@ import com.android.pos.data.typeconvert.TypeConvertorPhone
 @TypeConverters(
     TypeConvertersIds::class, TypeConvertorAddress::class, TypeConvertorPhone::class,
     TypeConvertersEmployee::class
+)
+@TypeConverters(
+    TypeConvertersIds::class,
+    TypeConvertorAddress::class,
+    TypeConvertorPhone::class,
+    TCModifier::class
 )
 
 
@@ -45,6 +61,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun employeeDao(): EmployeeDao
     abstract fun customerDao(): CustomerDao
     abstract fun teamRoleDao(): TeamRoleDao
+    abstract fun customerDao(): CustomerDao
+    abstract fun modifierSetDao(): ModifierSetDao
 
     companion object {
         @Volatile

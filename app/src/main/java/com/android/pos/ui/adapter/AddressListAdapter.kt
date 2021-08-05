@@ -5,6 +5,7 @@ import `in`.madapps.placesautocomplete.adapter.PlacesAutoCompleteAdapter
 import `in`.madapps.placesautocomplete.listener.OnPlacesDetailsListener
 import `in`.madapps.placesautocomplete.model.Place
 import `in`.madapps.placesautocomplete.model.PlaceDetails
+import android.annotation.SuppressLint
 import android.location.Address
 import android.location.Geocoder
 import android.util.Log
@@ -26,10 +27,7 @@ class AddressListAdapter() : RecyclerView.Adapter<AddressListAdapter.MyViewHolde
     private val TAG = "AddressListAdapter"
     private lateinit var placesApi: PlaceAPI
     private var list: ArrayList<CreateCustomerRequestModel.Customer.Addresses> = arrayListOf()
-    fun delete(pos: Int) {
-
-    }
-
+    @SuppressLint("NotifyDataSetChanged")
     fun addData(model: CreateCustomerRequestModel.Customer.Addresses) {
         list.add(model)
         notifyDataSetChanged()
@@ -48,7 +46,6 @@ class AddressListAdapter() : RecyclerView.Adapter<AddressListAdapter.MyViewHolde
             binding.edtStreet.setOnItemClickListener { parent, view, position, id ->
                 val place = parent.getItemAtPosition(position) as Place
 
-                Log.e(TAG, "placeJson:  ${Gson().toJson(place)}")
                 //binding.edtStreet.setText("${place.description}")
                 placesApi.fetchPlaceDetails(place.id, object : OnPlacesDetailsListener {
                     override fun onError(errorMessage: String) {
@@ -89,9 +86,6 @@ class AddressListAdapter() : RecyclerView.Adapter<AddressListAdapter.MyViewHolde
                 })
 
             }
-
-
-
 
             binding.model = model
             binding.executePendingBindings()
