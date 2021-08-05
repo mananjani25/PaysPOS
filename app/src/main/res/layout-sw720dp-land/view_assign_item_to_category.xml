@@ -32,6 +32,7 @@
                 profileImage="@{model.imageUrl != null ? model.imageUrl : null}"
                 android:layout_width="@dimen/_20sdp"
                 android:layout_height="@dimen/_20sdp"
+                thumbHolder="@{model.thumbImageUrl != null ? model.thumbImageUrl : null}"
                 android:layout_gravity="center"
                 app:srcCompat="@android:drawable/screen_background_dark_transparent" />
 

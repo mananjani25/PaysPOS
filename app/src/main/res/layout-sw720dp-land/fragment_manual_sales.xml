@@ -66,34 +66,182 @@
             android:orientation="horizontal"
             android:weightSum="3">
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1">
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/txtCustomerName"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="@drawable/background_sales_button"
+                    android:backgroundTint="@color/txtColorGray"
                     android:padding="@dimen/_10sdp"
                     android:text="Customer Name"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />
 
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvCart"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_above="@+id/relTotals"
+                    android:layout_below="@+id/txtCustomerName"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:layout_marginEnd="@dimen/_5sdp"
+                    android:orientation="vertical"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:listitem="@layout/view_manual_sale_item" />
 
-            </LinearLayout>
+
+                <RelativeLayout
+                    android:id="@+id/relTotals"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_gravity="bottom"
+                    android:gravity="bottom">
+
+                    <LinearLayout
+                        android:id="@+id/linearTotals"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/_5sdp"
+                            android:layout_marginEnd="@dimen/_5sdp">
+
+                            <TextView
+                                style="@style/CustomFontMediumStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/order_subtotal"
+                                android:textColor="@color/txtColor"
+                                android:textSize="@dimen/_7mdpi" />
+
+                            <TextView
+                                style="@style/CustomFontSemiBold"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_gravity="end"
+                                android:gravity="end"
+                                android:text="$3.50"
+                                android:textColor="@color/txtColor"
+                                android:textSize="@dimen/_7mdpi" />
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/_5sdp"
+                            android:layout_marginTop="@dimen/_5sdp"
+                            android:layout_marginEnd="@dimen/_5sdp">
+
+                            <TextView
+                                style="@style/CustomFontMediumStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Tax"
+                                android:textColor="@color/txtColor"
+                                android:textSize="@dimen/_7mdpi" />
+
+                            <TextView
+                                style="@style/CustomFontSemiBold"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_gravity="end"
+                                android:gravity="end"
+                                android:text="$1.20"
+                                android:textColor="@color/txtColor"
+                                android:textSize="@dimen/_7mdpi" />
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/_5sdp"
+                            android:layout_marginTop="@dimen/_5sdp"
+                            android:layout_marginEnd="@dimen/_5sdp"
+                            android:layout_marginBottom="@dimen/_10sdp">
+
+                            <TextView
+                                style="@style/CustomFontBold"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Total"
+                                android:textColor="@color/txtColor"
+                                android:textSize="@dimen/_7mdpi" />
+
+                            <TextView
+                                style="@style/CustomFontBold"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_gravity="end"
+                                android:gravity="end"
+                                android:text="$4.70"
+                                android:textColor="@color/txtColor"
+                                android:textSize="@dimen/_7mdpi" />
+                        </RelativeLayout>
+
+
+                    </LinearLayout>
+                </RelativeLayout>
+
+
+            </RelativeLayout>
 
             <View
                 android:layout_width="0.5dp"
                 android:layout_height="match_parent"
                 android:background="@color/gray_rect" />
 
-            <include
-                android:id="@+id/includeView"
-                layout="@layout/layout_keypad"
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="@dimen/_35sdp">
+
+                    <TextView
+                        style="@style/CustomFontRegularStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toStartOf="@+id/txtAmount"
+                        android:text="$"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_12mdpi" />
+
+                    <TextView
+                        android:id="@+id/txtAmount"
+                        style="@style/CustomFontRegularStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_12mdpi" />
+
+
+                </RelativeLayout>
+
+                <include
+                    android:id="@+id/includeView"
+                    layout="@layout/layout_keypad"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </LinearLayout>
 
             <View
                 android:layout_width="0.5dp"

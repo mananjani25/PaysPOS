@@ -384,4 +384,5 @@
     <string name="add_customer_to_sale">Add Customer to Sale</string>
     <string name="add_to_cart">Add to Cart</string>
     <string name="direct_pay">Direct Pay</string>
+    <string name="order_subtotal">Order Subtotal</string>
 </resources>

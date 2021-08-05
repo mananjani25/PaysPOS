@@ -61,6 +61,8 @@ data class VenueDataResponse(
                 val quantity: Int,
                 @SerializedName("sku")
                 val sku: String,
+                @SerializedName("thumb_image_url")
+                val thumbNail: String?,
                 @SerializedName("original_image_url")
                 val imgUrl: String?,
                 @SerializedName("thumb_image_url")
@@ -75,9 +77,9 @@ data class VenueDataResponse(
     }
 
     object companion {
-        @BindingAdapter("profileImage")
+        @BindingAdapter("profileImage","thumbHolder")
         @JvmStatic
-        fun loadImage(view: ImageView, imageUrl: String?) {
+        fun loadImage(view: ImageView, imageUrl: String?, thumbNail: String?) {
             if (imageUrl.isNullOrBlank() || imageUrl.trim() == "" || imageUrl.trim() == "null" || imageUrl.isNullOrEmpty()
             ) {
                 return
@@ -85,6 +87,7 @@ data class VenueDataResponse(
             } else {
                 Glide.with(view.context)
                     .load(imageUrl).centerCrop()
+                    .thumbnail(Glide.with(view.context).load(thumbNail))
                     .into(view)
             }
         }

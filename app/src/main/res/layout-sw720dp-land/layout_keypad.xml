@@ -162,7 +162,7 @@
             android:textSize="@dimen/_20ssp" />
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tvClear"
+            android:id="@+id/tvDot"
             style="@style/CustomFontRegularStyle"
             android:layout_width="0dp"
             android:layout_height="match_parent"

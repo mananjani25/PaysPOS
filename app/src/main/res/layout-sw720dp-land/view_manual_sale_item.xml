@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingDefaultResource">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/_5sdp"
+        android:weightSum="1">
+
+        <TextView
+            android:id="@+id/txtItem"
+            style="@style/CustomFontSemiBold"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.6"
+            android:ellipsize="end"
+            android:lines="1"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:text="Three layer ice cream"
+            android:textColor="@color/txtColor"
+            android:textSize="@dimen/_6mdpi" />
+
+        <TextView
+            android:id="@+id/txtQuantity"
+            style="@style/CustomFontSemiBold"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="0.1"
+            android:gravity="center"
+            android:text="x 1"
+            android:textColor="@color/color88"
+            android:textSize="@dimen/_6mdpi" />
+
+        <TextView
+            style="@style/CustomFontBold"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_weight="0.3"
+            android:gravity="end"
+            android:text="$3.50"
+            android:textColor="@color/txtColor"
+            android:textSize="@dimen/_6mdpi" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+</layout>
