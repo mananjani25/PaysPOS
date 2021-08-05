@@ -9,8 +9,10 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
+import com.android.pos.data.entities.TeamRole
 import com.android.pos.data.model.PermissionModuleListModel
 import com.android.pos.data.model.responseModel.EmployeeListResponse
+import com.android.pos.data.model.responseModel.GetUserPermissionListResponse
 import com.android.pos.databinding.FragmentUserAccessPermissionBinding
 import com.android.pos.ui.adapter.AllPermissionModuleAdapter
 import com.android.pos.ui.adapter.AllSelectedTeamMemberAdapter
@@ -28,11 +30,13 @@ import dagger.hilt.android.AndroidEntryPoint
 class UserAccessPermissionFragment : Fragment() {
 
     private lateinit var binding: FragmentUserAccessPermissionBinding
-    private val viewModel by viewModels<UserPermissionViewModel>()
+    private val viewModel by viewModels<UserAccessPermissionViewModel>()
     private lateinit var allSelectedTeamMemberAdapter: AllSelectedTeamMemberAdapter
     private lateinit var selectedTeamMemberAdapter: SelectedTeamMemberAdapter
     private lateinit var allPermissionModuleAdapter: AllPermissionModuleAdapter
     private lateinit var selectedPermissionModuleAdapter: SelectedPermissionModuleAdapter
+    private lateinit var userPermissionObject: TeamRole
+    var isEdit: Boolean = false
 
     val timeSheet = ArrayList<PermissionModuleListModel>()
     override fun onCreateView(
@@ -49,8 +53,18 @@ class UserAccessPermissionFragment : Fragment() {
                 false
             )
 
-        binding.viewModel = viewModel
         binding.lifecycleOwner = this
+        binding.viewModel = viewModel
+
+        isEdit = arguments?.getBoolean("isEdit")!!
+
+        if (isEdit) {
+            binding.addRole.text = getString(R.string.update_role)
+            userPermissionObject = arguments?.getParcelable("userPermissionObject")!!
+
+            viewModel.setUserPermissionData(userPermissionObject)
+            viewModel.isEditData(isEdit, userPermissionObject.id)
+        }
 
 
         setUpRecyclerView()

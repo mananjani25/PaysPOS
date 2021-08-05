@@ -205,7 +205,7 @@ interface ApiService {
     ): CreateNoteResponse
 
     @GET(TEAM_ROLES)
-    suspend fun getTeamRoles(): GetServiceChargeResponse
+    suspend fun getTeamRoles(): GetUserPermissionListResponse
 
     @POST(TEAM_ROLES)
     suspend fun createTeamRoles(@Body createDiscount: CreateTeamRoleRequestModel): CreateRoleResponse
@@ -219,7 +219,7 @@ interface ApiService {
     @DELETE(TEAM_ROLES_UPDATE_DELETE)
     suspend fun deleteTeamRole(
         @Path("id") discountId: Int
-    ): CreateRoleResponse
+    ): BaseResponse
 
     @GET(EMPLOYEES)
     suspend fun employeesList(@Query("location_id") location_id: Int): EmployeeListResponse

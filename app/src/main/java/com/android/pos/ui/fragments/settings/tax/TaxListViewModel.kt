@@ -2,6 +2,7 @@ package com.android.pos.ui.fragments.settings.tax
 
 import android.util.Log
 import androidx.lifecycle.*
+import com.android.pos.data.entities.TaxData
 import com.android.pos.data.model.responseModel.CreateTaxResponse
 import com.android.pos.data.model.responseModel.GetTaxResponse
 import com.android.pos.data.repositories.PosRepository
@@ -32,7 +33,7 @@ class TaxListViewModel @Inject constructor(
 
     val getTaxList = taxServiceChargeRepository.getTaxList()
 
-    fun isTaxActive(taxDataItem: GetTaxResponse.TaxData) {
+    fun isTaxActive(taxDataItem: TaxData) {
 
         // _showProgress.value = Event(true)
 

@@ -479,7 +479,13 @@
     <fragment
         android:id="@+id/userAccessPermissionFragment"
         android:name="com.android.pos.ui.fragments.settings.teamrole.UserAccessPermissionFragment"
-        android:label="UserAccessPermissionFragment" />
+        android:label="UserAccessPermissionFragment">
+
+        <argument
+            android:name="isEdit"
+            android:defaultValue="false"
+            app:argType="boolean" />
+    </fragment>
     <fragment
         android:id="@+id/paymentFragment"
         android:name="com.android.pos.ui.fragments.payment.PaymentFragment"

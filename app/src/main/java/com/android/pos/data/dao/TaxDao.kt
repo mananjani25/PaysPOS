@@ -2,6 +2,7 @@ package com.android.pos.data.dao
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import com.android.pos.data.entities.TaxData
 import com.android.pos.data.model.responseModel.CreateTaxResponse
 import com.android.pos.data.model.responseModel.GetTaxResponse
 
@@ -10,19 +11,19 @@ import com.android.pos.data.model.responseModel.GetTaxResponse
 interface TaxDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun addTax(taxModel: GetTaxResponse.TaxData): Long
+    suspend fun addTax(taxModel: TaxData): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun addAllTaxes(taxList: List<GetTaxResponse.TaxData>)
+    fun addAllTaxes(taxList: List<TaxData>)
 
     @get:Query("select * from TbTax")
-    val allTax: LiveData<List<GetTaxResponse.TaxData>>
+    val allTax: LiveData<List<TaxData>>
 
     @Query("select * from TbTax")
-    fun allTaxList(): List<GetTaxResponse.TaxData>
+    fun allTaxList(): List<TaxData>
 
     @Query("SELECT * from TbTax where TbTax.id  = :id LIMIT 1")
-    fun taxById(id: Int?): GetTaxResponse.TaxData
+    fun taxById(id: Int?): TaxData
 
     @Query("DELETE FROM TbTax")
     fun delete()
@@ -31,7 +32,7 @@ interface TaxDao {
     suspend fun deleteTaxById(id: Int)
 
     @Query("SELECT * FROM TbTax WHERE TbTax.id IN (:userIds)")
-    fun taxByIds(userIds: IntArray): List<GetTaxResponse.TaxData>
+    fun taxByIds(userIds: IntArray): List<TaxData>
 
     @Query("UPDATE TbTax SET isActive = :active WHERE  TbTax.id = :id")
     suspend fun activeTax(id: Int, active: Boolean?): Int

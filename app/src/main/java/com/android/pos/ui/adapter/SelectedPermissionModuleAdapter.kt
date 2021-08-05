@@ -5,10 +5,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.model.PermissionModuleListModel
 import com.android.pos.databinding.ViewModuleSelectedItem1Binding
-import com.android.pos.databinding.ViewSingleMemberItemTimesheetBinding
-import com.android.pos.ui.fragments.settings.teamrole.UserPermissionViewModel
+import com.android.pos.ui.fragments.settings.teamrole.UserAccessPermissionViewModel
 
-class SelectedPermissionModuleAdapter(val viewModel: UserPermissionViewModel) :
+class SelectedPermissionModuleAdapter(val viewModelAccess: UserAccessPermissionViewModel) :
     RecyclerView.Adapter<SelectedPermissionModuleAdapter.MyViewHolder>() {
 
     var selectedModule = ArrayList<PermissionModuleListModel>()
@@ -23,7 +22,7 @@ class SelectedPermissionModuleAdapter(val viewModel: UserPermissionViewModel) :
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val itemBinding = holder.discountItemBinding
         itemBinding.permissionModule = selectedModule[position]
-        itemBinding.viewModel = viewModel
+        itemBinding.viewModel = viewModelAccess
 
         itemBinding.executePendingBindings()
     }

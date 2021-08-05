@@ -3,6 +3,7 @@ package com.android.pos.data.model.responseModel
 
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
+import com.android.pos.data.entities.TaxData
 import com.bumptech.glide.Glide
 import com.google.gson.annotations.SerializedName
 
@@ -67,7 +68,7 @@ data class VenueDataResponse(
                 val thumpImgUrl: String?,
                 @SerializedName("active")
                 val active: Boolean,
-                var taxes: List<GetTaxResponse.TaxData>? = null
+                var taxes: List<TaxData>? = null
 
 
             )

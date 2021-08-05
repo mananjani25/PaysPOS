@@ -4,18 +4,24 @@ package com.android.pos.data.model.responseModel
 import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.android.pos.data.entities.TaxData
+import com.android.pos.data.entities.TeamRole
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class GetTaxResponse(
+data class GetUserPermissionListResponse(
     @SerializedName("data")
-    val `data`: List<TaxData>,
+    val `data`: Data,
     @SerializedName("message")
     val message: String,
     @SerializedName("status")
     val status: Int,
     @SerializedName("type")
     val type: String
-) : Parcelable
+) : Parcelable {
+    @Parcelize
+    data class Data(
+        @SerializedName("team_roles")
+        val teamRoles: List<TeamRole>
+    ) : Parcelable
+}

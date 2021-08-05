@@ -9,7 +9,7 @@
 
         <variable
             name="viewModel"
-            type="com.android.pos.ui.fragments.settings.teamrole.UserPermissionViewModel" />
+            type="com.android.pos.ui.fragments.settings.teamrole.UserAccessPermissionViewModel" />
     </data>
 
     <LinearLayout
@@ -256,6 +256,7 @@
                     android:orientation="horizontal">
 
                     <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/addRole"
                         style="@style/CustomFontSemiBold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

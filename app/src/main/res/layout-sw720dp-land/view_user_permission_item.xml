@@ -4,7 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingDefaultResource">
 
+    <data>
 
+        <variable
+            name="permissionListModel"
+            type="com.android.pos.data.entities.TeamRole" />
+    </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
@@ -31,7 +36,7 @@
                 android:layout_weight="1"
                 android:gravity="start"
                 android:padding="@dimen/_5sdp"
-                android:text="Employee"
+                android:text="@{permissionListModel.name}"
                 android:textColor="@color/color65"
                 android:textSize="@dimen/_6mdpi" />
 
@@ -43,7 +48,8 @@
                 android:gravity="start"
                 android:text="@string/tv_assign_role"
                 android:textColor="@color/btnColor"
-                android:textSize="@dimen/_6mdpi" />
+                android:textSize="@dimen/_6mdpi"
+                android:visibility="gone" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
@@ -51,7 +57,8 @@
                 android:layout_height="wrap_content"
                 android:padding="@dimen/_5sdp"
                 android:text="|"
-                android:textColor="@color/btnColor" />
+                android:textColor="@color/btnColor"
+                android:visibility="gone" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
@@ -60,7 +67,8 @@
                 android:layout_marginRight="@dimen/_5sdp"
                 android:text="@string/tv_assign_permission"
                 android:textColor="@color/btnColor"
-                android:textSize="@dimen/_6mdpi" />
+                android:textSize="@dimen/_6mdpi"
+                android:visibility="gone" />
         </androidx.appcompat.widget.LinearLayoutCompat>
 
         <View

@@ -3,14 +3,13 @@ package com.android.pos.ui.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.android.pos.data.model.responseModel.GetTipReponse
-import com.android.pos.databinding.ViewTipItemBinding
+import com.android.pos.data.entities.TeamRole
+import com.android.pos.data.model.responseModel.GetUserPermissionListResponse
 import com.android.pos.databinding.ViewUserPermissionItemBinding
-import com.android.pos.ui.fragments.settings.tip.TipListViewModel
 
-class UserPermissionListAdapter() : RecyclerView.Adapter<UserPermissionListAdapter.MyViewHolder>() {
+class UserPermissionListAdapter : RecyclerView.Adapter<UserPermissionListAdapter.MyViewHolder>() {
 
-    private val tipList = ArrayList<GetTipReponse.Data>()
+    private val permissionList = ArrayList<TeamRole>()
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -24,27 +23,25 @@ class UserPermissionListAdapter() : RecyclerView.Adapter<UserPermissionListAdapt
 
     override fun onBindViewHolder(holder: UserPermissionListAdapter.MyViewHolder, position: Int) {
         val itemBinding = holder.tipItemBinding
-      //  itemBinding.tipModel = tipList[position]
+        itemBinding.permissionListModel = permissionList[position]
 
         itemBinding.executePendingBindings()
     }
 
-    override fun getItemCount() = tipList.size
+    override fun getItemCount() = permissionList.size
 
-    fun addTips(tipList: List<GetTipReponse.Data>) {
+    fun addPermissionList(permissionList: List<TeamRole>) {
 
-        this.tipList.apply {
+        this.permissionList.apply {
             clear()
-            addAll(tipList)
+            addAll(permissionList)
         }
     }
 
-    fun getItem(position:Int): GetTipReponse.Data {
-        return tipList[position]
+    fun getItem(position: Int): TeamRole {
+        return permissionList[position]
     }
 
     inner class MyViewHolder(val tipItemBinding: ViewUserPermissionItemBinding) :
-        RecyclerView.ViewHolder(tipItemBinding.root){
-
-
-    }}
+        RecyclerView.ViewHolder(tipItemBinding.root)
+}

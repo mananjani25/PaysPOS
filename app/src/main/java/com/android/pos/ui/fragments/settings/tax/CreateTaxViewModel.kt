@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.R
+import com.android.pos.data.entities.TaxData
 import com.android.pos.data.model.requestModel.CreateTaxRequestModel
 import com.android.pos.data.model.responseModel.CreateTaxResponse
 import com.android.pos.data.model.responseModel.GetTaxResponse
@@ -56,7 +57,7 @@ class CreateTaxViewModel @Inject constructor(
         this.isEdit = isEdit
     }
 
-    fun setTaxData(taxData: GetTaxResponse.TaxData) {
+    fun setTaxData(taxData: TaxData) {
         createTaxDetails.value?.name = taxData.name!!
         createTaxDetails.value?.rate = taxData.rate
         enableTaxViewModel = taxData.isDefault
@@ -134,7 +135,7 @@ class CreateTaxViewModel @Inject constructor(
 
                                 resource.data?.let { createTaxResponse ->
                                     val tax =
-                                        GetTaxResponse.TaxData(
+                                        TaxData(
                                             name = createTaxResponse.data.name,
                                             id = createTaxResponse.data.id,
                                             locationId = createTaxResponse.data.locationId,

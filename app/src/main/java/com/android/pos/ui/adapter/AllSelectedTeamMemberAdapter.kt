@@ -5,9 +5,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.model.responseModel.EmployeeListResponse
 import com.android.pos.databinding.ViewSelectedTeamMemberItemBinding
-import com.android.pos.ui.fragments.settings.teamrole.UserPermissionViewModel
+import com.android.pos.ui.fragments.settings.teamrole.UserAccessPermissionViewModel
 
-class AllSelectedTeamMemberAdapter(val viewModel: UserPermissionViewModel) :
+class AllSelectedTeamMemberAdapter(val viewModelAccess: UserAccessPermissionViewModel) :
     RecyclerView.Adapter<AllSelectedTeamMemberAdapter.MyViewHolder>() {
 
     var employeeList = ArrayList<EmployeeListResponse.Data.Employee>()
@@ -22,7 +22,7 @@ class AllSelectedTeamMemberAdapter(val viewModel: UserPermissionViewModel) :
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val itemBinding = holder.discountItemBinding
         itemBinding.selectedEmployeeModel = employeeList[position]
-        itemBinding.viewModel = viewModel
+        itemBinding.viewModel = viewModelAccess
 
         itemBinding.executePendingBindings()
     }

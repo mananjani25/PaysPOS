@@ -8,7 +8,7 @@
 
         <variable
             name="taxModel"
-            type="com.android.pos.data.model.responseModel.GetTaxResponse.TaxData" />
+            type="com.android.pos.data.entities.TaxData" />
 
         <variable
             name="viewModel"
