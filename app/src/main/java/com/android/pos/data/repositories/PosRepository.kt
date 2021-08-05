@@ -294,5 +294,10 @@ class PosRepository @Inject constructor(
 
     suspend fun deleteModifierSetCall(id: Int) = apiHelperNew.deleteModifierSetCall(id)
     suspend fun deleteModifierSet(id: Int) = appDatabase.modifierSetDao().delete(id)
+
+    fun serviceChargeList() =
+        performGetOperationDatabase(databaseQuery = { appDatabase.serviceChargeDao().allServiceCharge })
+
+
 }
 
