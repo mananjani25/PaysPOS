@@ -183,7 +183,6 @@ class CustomerListAdapter(
                 Log.e("FilterList", "countList  ${results?.count}")
 
                 if (results?.values != null) {
-
                     filterList =
                         results?.values as ArrayList<com.android.pos.data.model.CustomerListResponse.Data>
                 } else {

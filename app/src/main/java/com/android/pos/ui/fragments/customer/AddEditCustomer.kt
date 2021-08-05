@@ -176,7 +176,6 @@ class AddEditCustomer : Fragment() {
             viewModel.setAddressList(adapter.getList())
 
 
-
         }
         binding.imgBack.setOnClickListener {
             findNavController().navigateUp()
