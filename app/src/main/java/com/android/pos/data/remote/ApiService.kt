@@ -311,4 +311,9 @@ interface ApiService {
         @Query("old_position") old_position: Int,
         @Query("new_position") new_position: Int,
     ): BaseResponse
+
+    @DELETE(CATEGORY_UPDATE_DELETE)
+    suspend fun deleteModifierSetCall(
+        @Path("id") noteId: Int,
+    ): BaseResponse
 }

@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.db.IDataManager
 import com.android.pos.data.entities.CartModel
+import com.android.pos.data.entities.ModifierSet
 import com.android.pos.data.entities.TbCategory
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.CustomerListResponse
@@ -15,7 +16,6 @@ import com.android.pos.data.remote.ApiHelper
 import com.android.pos.utils.performGetOperation
 import com.android.pos.utils.performGetOperationDatabase
 import com.android.pos.utils.performGetOperationNew
-import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 
@@ -32,7 +32,8 @@ class PosRepository @Inject constructor(
         databaseQuery = { appDatabase.categoryDao().categoryWithInventory()!! },
         networkCall = { apiHelperNew.syncVenueData() },
         saveCallResult = { response ->
-            val mCategory = response.data.categories
+            val mData = response.data
+            val mCategory = mData.categories
             val categoryModelList = ArrayList<TbCategory>()
             val inventoryModelList = ArrayList<TbItem>()
             mCategory.forEach { category ->
@@ -75,6 +76,8 @@ class PosRepository @Inject constructor(
 
             appDatabase.categoryDao().addAll(categoryModelList)
             appDatabase.itemDao().addAllItem(inventoryModelList)
+
+            appDatabase.modifierSetDao().addAll(mData.modifierSets)
         }
     )
 
@@ -109,8 +112,12 @@ class PosRepository @Inject constructor(
     fun getItemsList() =
         performGetOperationDatabase(databaseQuery = { appDatabase.itemDao().allItem!! })
 
+    fun modifierSetsList() =
+        performGetOperationDatabase(databaseQuery = { appDatabase.modifierSetDao().all })
+
     fun getInventory() =
-        performGetOperation(databaseQuery = { appDatabase.itemDao().allItem!! },
+        performGetOperation(
+            databaseQuery = { appDatabase.itemDao().allItem!! },
             networkCall = { apiHelperNew.getItemsCall() },
             saveCallResult = {
 
@@ -286,5 +293,12 @@ class PosRepository @Inject constructor(
 
         appDatabase.cartDao().delete()
     }
+
+    suspend fun updateModifierSort(allCategories: ArrayList<ModifierSet>) {
+        appDatabase.modifierSetDao().addAll(allCategories)
+    }
+
+    suspend fun deleteModifierSetCall(id: Int) = apiHelperNew.deleteModifierSetCall(id)
+    suspend fun deleteModifierSet(id: Int) = appDatabase.modifierSetDao().delete(id)
 }
 

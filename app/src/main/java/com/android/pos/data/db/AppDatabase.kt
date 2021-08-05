@@ -7,12 +7,14 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.android.pos.data.dao.*
 import com.android.pos.data.entities.CartModel
+import com.android.pos.data.entities.ModifierSet
 import com.android.pos.data.entities.TbCategory
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.CharacterModel
 import com.android.pos.data.model.CustomerListResponse
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.Constants.DATABASE_NAME
+import com.android.pos.data.typeconvert.TCModifier
 import com.android.pos.data.typeconvert.TypeConvertersIds
 import com.android.pos.data.typeconvert.TypeConvertorAddress
 import com.android.pos.data.typeconvert.TypeConvertorPhone
@@ -20,12 +22,17 @@ import com.android.pos.data.typeconvert.TypeConvertorPhone
 
 @Database(
     entities = [CharacterModel::class, TbCategory::class, TbItem::class, GetTaxResponse.TaxData::class,
-        GetTipReponse.Data::class, GetDiscountResponse.Data::class,
-        NoteResponse.Data::class, GetServiceChargeResponse.Data::class,
-        EmployeeListResponse.Data.Employee::class, CartModel::class, CustomerListResponse.Data::class],
-    version = 2
+        GetTipReponse.Data::class, GetDiscountResponse.Data::class, NoteResponse.Data::class,
+        GetServiceChargeResponse.Data::class, EmployeeListResponse.Data.Employee::class, CartModel::class,
+        CustomerListResponse.Data::class, ModifierSet::class],
+    version = 1
 )
-@TypeConverters(TypeConvertersIds::class,TypeConvertorAddress::class,TypeConvertorPhone::class)
+@TypeConverters(
+    TypeConvertersIds::class,
+    TypeConvertorAddress::class,
+    TypeConvertorPhone::class,
+    TCModifier::class
+)
 
 
 abstract class AppDatabase : RoomDatabase() {
@@ -40,7 +47,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun serviceChargeDao(): ServiceChargeDao
     abstract fun cartDao(): CartDao
     abstract fun employeeDao(): EmployeeDao
-    abstract fun customerDao():CustomerDao
+    abstract fun customerDao(): CustomerDao
+    abstract fun modifierSetDao(): ModifierSetDao
 
     companion object {
         @Volatile
