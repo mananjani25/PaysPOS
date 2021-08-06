@@ -16,4 +16,7 @@ class CartModel {
     var items: List<TbItem>? = null
     var isOpenOrder: Boolean = false
 
+
+
+
 }

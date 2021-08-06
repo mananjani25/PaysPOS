@@ -12,12 +12,22 @@
     </data>
 
     <RelativeLayout
-        android:background="@color/white"
         android:id="@+id/relParent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/white"
         android:orientation="horizontal"
         android:padding="@dimen/_5sdp">
+
+        <TextView
+            style="@style/CustomFontSemiBold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/_10sdp"
+            android:layout_toStartOf="@+id/imgClock"
+            android:text="John Smith"
+            android:textColor="@color/txt_color_blue"
+            android:textSize="@dimen/_7mdpi" />
 
         <ImageView
             android:id="@+id/imgClock"

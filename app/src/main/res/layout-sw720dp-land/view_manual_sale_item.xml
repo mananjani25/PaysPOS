@@ -7,7 +7,7 @@
 
         <variable
             name="model"
-            type="com.android.pos.data.model.ManualSaleCartModel" />
+            type="com.android.pos.data.entities.TbItem" />
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat
@@ -26,7 +26,6 @@
             android:lines="1"
             android:maxLines="1"
             android:singleLine="true"
-            android:text="@{model.itemName}"
             android:textColor="@color/txtColor"
             android:textSize="@dimen/_6mdpi" />
 
@@ -38,7 +37,6 @@
             android:layout_gravity="center"
             android:layout_weight="0.1"
             android:gravity="center"
-            android:text="@{model.quantity}"
             android:textColor="@color/color88"
             android:textSize="@dimen/_6mdpi" />
 
@@ -49,7 +47,6 @@
             android:layout_gravity="end"
             android:layout_weight="0.3"
             android:gravity="end"
-            android:text="@{model.price}"
             android:textColor="@color/txtColor"
             android:textSize="@dimen/_6mdpi" />
 

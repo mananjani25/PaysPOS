@@ -236,7 +236,7 @@
 
                 </RelativeLayout>
 
-                <include
+                    <include
                     android:id="@+id/includeView"
                     layout="@layout/layout_keypad"
                     android:layout_width="match_parent"
