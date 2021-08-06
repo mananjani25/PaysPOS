@@ -68,68 +68,11 @@ class DashboardCategory : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setVenueData()
-
         binding.layoutMenu.imgDrawer.setOnClickListener {
             (requireActivity() as MainActivity).enableDrawer()
         }
     }
 
-    private fun setVenueData() {
-        viewModel.venueData.observe(viewLifecycleOwner, {
-            it?.let { resource ->
-                when (resource.status) {
-                    Status.SUCCESS -> {
 
-                        ProgressUtils.dismissProgressDialog()
-
-                        resource.data?.let { category ->
-
-                            categoryList = category.data.categories.toMutableList()
-                            if (categoryList.isNotEmpty()) {
-                                categoryList.forEach {
-                                    categoryTabsList.add(it.name)
-                                    binding.tabLayout.addTab(
-                                        binding.tabLayout.newTab().setText(it.name)
-                                    )
-                                    itemList.addAll(it.items)
-
-                                }
-                                binding.viewPagerCategory.adapter = CategoryViewPagerAdapter(
-                                    requireActivity(),
-                                    categoryList,
-                                    binding.tabLayout.tabCount
-                                )
-
-
-                                TabLayoutMediator(
-                                    binding.tabLayout,
-                                    binding.viewPagerCategory
-                                ) { tab, position ->
-                                    tab.text = categoryList[position].name
-                                }.attach()
-                            }
-
-
-                        }
-                    }
-                    Status.ERROR -> {
-                        ProgressUtils.dismissProgressDialog()
-
-                    }
-                    Status.LOADING -> {
-                        try {
-                            val activity: Activity = requireActivity() as Activity
-                            if (!activity.isFinishing) {
-                                ProgressUtils.showProgressDialog(requireActivity())
-                            }
-                        } catch (ex: Exception) {
-                            ex.printStackTrace()
-                        }
-                    }
-                }
-            }
-        })
-    }
 
 }
