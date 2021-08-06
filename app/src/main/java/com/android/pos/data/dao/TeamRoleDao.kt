@@ -15,6 +15,9 @@ interface TeamRoleDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addAllRoles(roleList: List<TeamRole>)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun addAllRolesSuspend(roleList: List<TeamRole>)
+
     @get:Query("select * from TbTeamRole")
     val allRoles: LiveData<List<TeamRole>>
 
