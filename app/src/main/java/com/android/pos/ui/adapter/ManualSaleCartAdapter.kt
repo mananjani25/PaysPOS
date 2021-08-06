@@ -1,0 +1,62 @@
+package com.android.pos.ui.adapter
+
+import android.annotation.SuppressLint
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
+import com.android.pos.data.entities.TbItem
+
+import com.android.pos.databinding.ViewManualSaleItemBinding
+
+class ManualSaleCartAdapter : RecyclerView.Adapter<ManualSaleCartAdapter.MyViewHolder>() {
+    var list = ArrayList<TbItem>()
+
+
+    inner class MyViewHolder(private val binding: ViewManualSaleItemBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        fun bind(model: TbItem) {
+            binding.model = model
+            binding.executePendingBindings()
+        }
+
+
+    }
+
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ): ManualSaleCartAdapter.MyViewHolder {
+        val binding =
+            ViewManualSaleItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return MyViewHolder(binding)
+
+    }
+
+    override fun onBindViewHolder(holder: ManualSaleCartAdapter.MyViewHolder, position: Int) {
+        holder.bind(list[position])
+    }
+
+    override fun getItemCount(): Int {
+        return list.size
+    }
+
+    fun getList(): List<TbItem> {
+        return this.list
+    }
+
+    fun addItem(model: TbItem) {
+        this.list.apply {
+            add(model)
+        }
+
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun setList(cartList: List<TbItem>) {
+        this.list.apply {
+            clear()
+            addAll(cartList)
+        }
+        notifyDataSetChanged()
+    }
+}

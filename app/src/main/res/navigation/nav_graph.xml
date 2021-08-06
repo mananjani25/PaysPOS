@@ -369,7 +369,7 @@
             app:destination="@id/assignCustomerOrderFragment" />
         <action
             android:id="@+id/action_dashboardCategoryNew_to_manualSales"
-            app:destination="@id/manualSales"
+            app:destination="@id/manualSaleNew"
             app:enterAnim="@anim/nav_default_enter_anim" />
 
     </fragment>
@@ -529,8 +529,13 @@
     <fragment
         android:id="@+id/manualSales"
         android:name="com.android.pos.ui.fragments.manualsales.ManualSales"
-        tools:layout="@layout/fragment_manual_sales"
-        android:label="ManualSales" />
+        android:label="ManualSales"
+        tools:layout="@layout/fragment_manual_sales" />
+    <fragment
+        android:id="@+id/manualSaleNew"
+        android:name="com.android.pos.ui.fragments.manualsales.ManualSaleNew"
+        android:label="ManualSaleNew"
+        tools:layout="@layout/fragment_manual_sale_new" />
 
 
 </navigation>

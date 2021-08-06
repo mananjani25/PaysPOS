@@ -236,7 +236,7 @@
 
                 </RelativeLayout>
 
-                <include
+                    <include
                     android:id="@+id/includeView"
                     layout="@layout/layout_keypad"
                     android:layout_width="match_parent"
@@ -255,7 +255,9 @@
                 android:layout_weight="1"
                 android:orientation="vertical">
 
+
                 <EditText
+                    android:id="@+id/edtInventoryName"
                     style="@style/CustomFontBold"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -289,6 +291,7 @@
                     android:textSize="@dimen/_8mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtDirectPay"
                     style="@style/CustomFontBold"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -305,6 +308,7 @@
                     android:textSize="@dimen/_8mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtSave"
                     style="@style/CustomFontBold"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
