@@ -4,10 +4,7 @@ package com.android.pos.data.repositories
 import androidx.lifecycle.LiveData
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.db.IDataManager
-import com.android.pos.data.entities.CartModel
-import com.android.pos.data.entities.ModifierSet
-import com.android.pos.data.entities.TbCategory
-import com.android.pos.data.entities.TbItem
+import com.android.pos.data.entities.*
 import com.android.pos.data.model.CustomerListResponse
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.EmployeeListResponse
@@ -190,7 +187,7 @@ class PosRepository @Inject constructor(
 
     suspend fun createEmployee(data: CreateEmployeeRequestModel) = apiHelperNew.createEmployee(data)
 
-    suspend fun createEmployeeDatabase(data: EmployeeListResponse.Data.Employee) =
+    suspend fun createEmployeeDatabase(data: Employee) =
         appDatabase.employeeDao().addEmployee(data)
 
     suspend fun addCustomer(data: CustomerListResponse.Data) =

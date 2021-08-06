@@ -2,6 +2,7 @@ package com.android.pos.data.dao
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import com.android.pos.data.entities.Employee
 import com.android.pos.data.model.responseModel.EmployeeListResponse
 
 
@@ -9,19 +10,19 @@ import com.android.pos.data.model.responseModel.EmployeeListResponse
 interface EmployeeDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun addEmployee(employeeModel: EmployeeListResponse.Data.Employee): Long
+    suspend fun addEmployee(employeeModel: Employee): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun addAllEmployee(employeeList: List<EmployeeListResponse.Data.Employee>)
+    fun addAllEmployee(employeeList: List<Employee>)
 
     @get:Query("select * from TbEmployee")
-    val allEmployee: LiveData<List<EmployeeListResponse.Data.Employee>>
+    val allEmployee: LiveData<List<Employee>>
 
     @Query("select * from TbEmployee")
-    fun allEmployeeList(): List<EmployeeListResponse.Data.Employee>
+    fun allEmployeeList(): List<Employee>
 
     @Query("SELECT * from TbEmployee where TbEmployee.id  = :id LIMIT 1")
-    fun employeeById(id: Int?): EmployeeListResponse.Data.Employee
+    fun employeeById(id: Int?): Employee
 
     @Query("DELETE FROM TbEmployee")
     fun delete()
@@ -30,7 +31,7 @@ interface EmployeeDao {
     suspend fun deleteEmployeeById(id: Int)
 
     @Query("SELECT * FROM TbEmployee WHERE TbEmployee.id IN (:userIds)")
-    fun employeeByIds(userIds: IntArray): List<EmployeeListResponse.Data.Employee>
+    fun employeeByIds(userIds: IntArray): List<Employee>
 
     @Query("UPDATE TbEmployee SET isActive = :active WHERE  TbEmployee.id = :id")
     suspend fun activeEmployee(id: Int, active: Boolean?): Int
