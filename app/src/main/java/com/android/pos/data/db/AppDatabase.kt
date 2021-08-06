@@ -15,11 +15,7 @@ import com.android.pos.data.model.CharacterModel
 import com.android.pos.data.model.CustomerListResponse
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.Constants.DATABASE_NAME
-import com.android.pos.data.typeconvert.TypeConvertersEmployee
-import com.android.pos.data.typeconvert.TCModifier
-import com.android.pos.data.typeconvert.TypeConvertersIds
-import com.android.pos.data.typeconvert.TypeConvertorAddress
-import com.android.pos.data.typeconvert.TypeConvertorPhone
+import com.android.pos.data.typeconvert.*
 
 
 @Database(
@@ -31,7 +27,7 @@ import com.android.pos.data.typeconvert.TypeConvertorPhone
 )
 @TypeConverters(
     TypeConvertersIds::class, TypeConvertorAddress::class, TypeConvertorPhone::class,
-    TypeConvertersEmployee::class, TCModifier::class
+    TypeConvertersEmployee::class, TCModifier::class, TypeConvertersTax::class
 )
 
 
