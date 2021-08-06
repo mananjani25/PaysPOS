@@ -205,8 +205,7 @@ class AddCustomerViewModel @Inject constructor(
 
                 resource = if (isEdit) {
                     posRepository.updateCustomer(customerID, addCustomerData)
-                }
-                else {
+                } else {
 
                     posRepository.createCustomer(addCustomerData)
                 }

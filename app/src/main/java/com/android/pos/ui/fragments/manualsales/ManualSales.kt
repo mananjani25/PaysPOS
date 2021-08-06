@@ -6,10 +6,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.android.pos.R
 import com.android.pos.databinding.FragmentManualSalesBinding
+import com.android.pos.ui.adapter.ManualSaleCartAdapter
+import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.AlertUtils.showAlert
+import com.android.pos.utils.extensions.alert
 
 class ManualSales : Fragment() {
     private lateinit var binding: FragmentManualSalesBinding
+    lateinit var adapter: ManualSaleCartAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -25,6 +31,13 @@ class ManualSales : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         onClick()
         onClickCalculation()
+        setAdapter()
+    }
+
+    private fun setAdapter() {
+        adapter = ManualSaleCartAdapter()
+        binding.rvCart.adapter = adapter
+
     }
 
     private fun onClickCalculation() {
@@ -86,10 +99,23 @@ class ManualSales : Fragment() {
             findNavController().popBackStack()
         }
 
+        binding.txtAddToCart.setOnClickListener {
+            if (binding.edtInventoryName.text.trim().isEmpty()) {
+                AlertUtils.showCustomAlertWithListenerWithOK(
+                    requireActivity(),
+                    getString(R.string.modifier_empty_validation)
+                )
+                { _, _ ->
+
+
+                }
+            }
+        }
         binding.txtHome.setOnClickListener {
             findNavController().popBackStack()
         }
     }
+
 
     private fun calculateValue(number: String, delete: Boolean) {
         if (delete) {

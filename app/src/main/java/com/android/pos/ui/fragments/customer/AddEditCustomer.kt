@@ -169,14 +169,13 @@ class AddEditCustomer : Fragment() {
                 binding.edtBirthDay.setText("${editModel.birth_date}")
             }
 
-
         } else {
             binding.txtCustomerType.setText("New Customer")
             adapter.addData(modelAddress)
             viewModel.setAddressList(adapter.getList())
 
-
         }
+
         binding.imgBack.setOnClickListener {
             findNavController().navigateUp()
         }
