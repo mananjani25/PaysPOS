@@ -9,6 +9,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
+import com.android.pos.data.entities.Employee
 import com.android.pos.data.entities.TeamRole
 import com.android.pos.data.model.PermissionModuleListModel
 import com.android.pos.data.model.responseModel.EmployeeListResponse
@@ -58,13 +59,13 @@ class UserAccessPermissionFragment : Fragment() {
 
         isEdit = arguments?.getBoolean("isEdit")!!
 
-        if (isEdit) {
+        /*if (isEdit) {
             binding.addRole.text = getString(R.string.update_role)
             userPermissionObject = arguments?.getParcelable("userPermissionObject")!!
 
             viewModel.setUserPermissionData(userPermissionObject)
             viewModel.isEditData(isEdit, userPermissionObject.id)
-        }
+        }*/
 
 
         setUpRecyclerView()
@@ -83,14 +84,14 @@ class UserAccessPermissionFragment : Fragment() {
 
     private fun setAllUser() {
         viewModel.allEmployeeList.observe(viewLifecycleOwner, {
-            it as ArrayList<EmployeeListResponse.Data.Employee>
+            it as ArrayList<Employee>
             setEmployeeData(it)
         })
     }
 
     private fun setSelctedUser() {
         viewModel.selectedEmployeeList.observe(viewLifecycleOwner, {
-            it as ArrayList<EmployeeListResponse.Data.Employee>
+            it as ArrayList<Employee>
             selectedTeamMemberAdapter.addEmployee(it)
         })
     }
@@ -150,6 +151,15 @@ class UserAccessPermissionFragment : Fragment() {
                         resource.data?.let { employeeList ->
                             setEmployeeData(employeeList)
                             viewModel.setEmployeeList(employeeList)
+
+                            if (isEdit) {
+                                binding.addRole.text = getString(R.string.update_role)
+                                userPermissionObject =
+                                    arguments?.getParcelable("userPermissionObject")!!
+
+                                viewModel.setUserPermissionData(userPermissionObject)
+                                viewModel.isEditData(isEdit, userPermissionObject.id)
+                            }
                         }
                     }
                     Status.ERROR -> {
@@ -167,7 +177,7 @@ class UserAccessPermissionFragment : Fragment() {
         })
     }
 
-    private fun setEmployeeData(employeeList: List<EmployeeListResponse.Data.Employee>) {
+    private fun setEmployeeData(employeeList: List<Employee>) {
         allSelectedTeamMemberAdapter.apply {
             addEmployee(employeeList)
             notifyDataSetChanged()

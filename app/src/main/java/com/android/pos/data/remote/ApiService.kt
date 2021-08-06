@@ -208,13 +208,13 @@ interface ApiService {
     suspend fun getTeamRoles(): GetUserPermissionListResponse
 
     @POST(TEAM_ROLES)
-    suspend fun createTeamRoles(@Body createDiscount: CreateTeamRoleRequestModel): CreateRoleResponse
+    suspend fun createTeamRoles(@Body createDiscount: CreateTeamRoleRequestModel): GetUserPermissionListResponse
 
     @PUT(TEAM_ROLES_UPDATE_DELETE)
     suspend fun updateTeamRoles(
         @Path("id") discountId: Int,
         @Body createDiscount: CreateTeamRoleRequestModel
-    ): CreateRoleResponse
+    ): GetUserPermissionListResponse
 
     @DELETE(TEAM_ROLES_UPDATE_DELETE)
     suspend fun deleteTeamRole(

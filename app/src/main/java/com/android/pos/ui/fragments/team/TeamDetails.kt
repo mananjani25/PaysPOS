@@ -9,13 +9,14 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import com.android.pos.R
+import com.android.pos.data.entities.Employee
 import com.android.pos.data.model.responseModel.EmployeeListResponse
 import com.android.pos.databinding.FragmentTeamDetailsBinding
 import com.android.pos.utils.AlertUtils
 
 class TeamDetails : Fragment() {
 
-    private var model: EmployeeListResponse.Data.Employee? = null
+    private var model: Employee? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)

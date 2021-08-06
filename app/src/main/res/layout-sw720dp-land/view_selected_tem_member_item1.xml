@@ -12,7 +12,7 @@
 
         <variable
             name="selectedEmployeeModel"
-            type="com.android.pos.data.model.responseModel.EmployeeListResponse.Data.Employee" />
+            type="com.android.pos.data.entities.Employee" />
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat

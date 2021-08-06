@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
+import com.android.pos.data.entities.Employee
 import com.android.pos.data.model.responseModel.EmployeeListResponse
 import com.android.pos.databinding.FragmentCreateTeamMemberBinding
 import com.android.pos.utils.AlertUtils
@@ -21,7 +22,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class CreateTeamMember : Fragment() {
 
 
-    private var employeeModel: EmployeeListResponse.Data.Employee? = null
+    private var employeeModel: Employee? = null
     private val viewModel by viewModels<CreateTeamViewModel>()
 
     private lateinit var binding: FragmentCreateTeamMemberBinding

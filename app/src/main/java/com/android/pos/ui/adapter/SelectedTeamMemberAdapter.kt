@@ -3,6 +3,7 @@ package com.android.pos.ui.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.android.pos.data.entities.Employee
 import com.android.pos.data.model.responseModel.EmployeeListResponse
 import com.android.pos.databinding.ViewSelectedTemMemberItem1Binding
 import com.android.pos.ui.fragments.settings.teamrole.UserAccessPermissionViewModel
@@ -10,7 +11,7 @@ import com.android.pos.ui.fragments.settings.teamrole.UserAccessPermissionViewMo
 class SelectedTeamMemberAdapter(val viewModelAccess: UserAccessPermissionViewModel) :
     RecyclerView.Adapter<SelectedTeamMemberAdapter.MyViewHolder>() {
 
-    var employeeList = ArrayList<EmployeeListResponse.Data.Employee>()
+    var employeeList = ArrayList<Employee>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -29,7 +30,7 @@ class SelectedTeamMemberAdapter(val viewModelAccess: UserAccessPermissionViewMod
 
     override fun getItemCount() = employeeList.size
 
-    fun addEmployee(employeeList: List<EmployeeListResponse.Data.Employee>) {
+    fun addEmployee(employeeList: List<Employee>) {
         this.employeeList.apply {
             clear()
             addAll(employeeList)

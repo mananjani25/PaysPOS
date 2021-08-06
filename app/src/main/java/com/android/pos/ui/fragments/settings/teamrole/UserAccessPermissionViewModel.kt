@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.R
+import com.android.pos.data.entities.Employee
 import com.android.pos.data.entities.TeamRole
 import com.android.pos.data.model.PermissionModuleListModel
 import com.android.pos.data.model.requestModel.CreateTeamRoleRequestModel
@@ -37,8 +38,8 @@ class UserAccessPermissionViewModel @Inject constructor(
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
 
-    private val _data = MutableLiveData<Event<CreateRoleResponse?>>()
-    val data: LiveData<Event<CreateRoleResponse?>> = _data
+    private val _data = MutableLiveData<Event<GetUserPermissionListResponse?>>()
+    val data: LiveData<Event<GetUserPermissionListResponse?>> = _data
 
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
@@ -51,20 +52,20 @@ class UserAccessPermissionViewModel @Inject constructor(
 
     private lateinit var createTeamRoleRequestModel: CreateTeamRoleRequestModel
 
-    private lateinit var resource: Resource<CreateRoleResponse>
+    private lateinit var resource: Resource<GetUserPermissionListResponse>
 
     fun employeeData() = posRepository.employeesList(locationId)
 
-    private val _allEmployeeList = MutableLiveData<ArrayList<EmployeeListResponse.Data.Employee?>>()
-    val allEmployeeList: LiveData<ArrayList<EmployeeListResponse.Data.Employee?>> = _allEmployeeList
+    private val _allEmployeeList = MutableLiveData<ArrayList<Employee>>()
+    val allEmployeeList: LiveData<ArrayList<Employee>> = _allEmployeeList
 
     private val _selectedEmployeeList =
-        MutableLiveData<ArrayList<EmployeeListResponse.Data.Employee?>>()
-    val selectedEmployeeList: LiveData<ArrayList<EmployeeListResponse.Data.Employee?>> =
+        MutableLiveData<ArrayList<Employee>>()
+    val selectedEmployeeList: LiveData<ArrayList<Employee>> =
         _selectedEmployeeList
 
-    val allEmployeeListToFeed = ArrayList<EmployeeListResponse.Data.Employee?>()
-    val selectedEmployeeListToFeed = ArrayList<EmployeeListResponse.Data.Employee?>()
+    val allEmployeeListToFeed = ArrayList<Employee>()
+    val selectedEmployeeListToFeed = ArrayList<Employee>()
 
     private val _allModuleList = MutableLiveData<ArrayList<PermissionModuleListModel>>()
     val allModuleList: LiveData<ArrayList<PermissionModuleListModel>> = _allModuleList
@@ -80,6 +81,20 @@ class UserAccessPermissionViewModel @Inject constructor(
 
     fun setUserPermissionData(userPermissionData: TeamRole) {
         createUserPermission.value?.name = userPermissionData.name
+        selectedEmployeeListToFeed.clear()
+        selectedEmployeeListToFeed.addAll(userPermissionData.employees)
+        _selectedEmployeeList.value = selectedEmployeeListToFeed
+
+        allEmployeeListToFeed.forEach { allEmployees ->
+            selectedEmployeeListToFeed.forEach { selectedEmployee ->
+                if (allEmployees.id == selectedEmployee.id) {
+                 //   allEmployeeListToFeed.remove(allEmployees)
+                    _allEmployeeList.value = allEmployeeListToFeed
+
+                }
+            }
+        }
+
     }
 
     fun isEditData(isEdit: Boolean, roleId: Int) {
@@ -87,13 +102,13 @@ class UserAccessPermissionViewModel @Inject constructor(
         this.isEdit = isEdit
     }
 
-    fun setEmployeeList(employeeList: List<EmployeeListResponse.Data.Employee>) {
+    fun setEmployeeList(employeeList: List<Employee>) {
         allEmployeeListToFeed.clear()
-        allEmployeeListToFeed.addAll(employeeList as ArrayList<EmployeeListResponse.Data.Employee?>)
+        allEmployeeListToFeed.addAll(employeeList)
     }
 
     fun employeeRemoved(
-        employeeName: EmployeeListResponse.Data.Employee,
+        employeeName: Employee,
         isEmployeeRemoved: Boolean
     ) {
         if (isEmployeeRemoved) {
