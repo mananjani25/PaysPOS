@@ -291,6 +291,7 @@
                     android:textSize="@dimen/_8mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtDirectPay"
                     style="@style/CustomFontBold"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -307,6 +308,7 @@
                     android:textSize="@dimen/_8mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtSave"
                     style="@style/CustomFontBold"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
