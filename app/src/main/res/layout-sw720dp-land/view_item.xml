@@ -38,6 +38,7 @@
                     android:layout_width="@dimen/_20sdp"
                     android:layout_height="@dimen/_20sdp"
                     android:layout_gravity="center"
+                    thumbHolder="@{model.thumbImageUrl != null ? model.thumbImageUrl : null}"
                     android:scaleType="centerCrop"
                     app:srcCompat="@android:drawable/screen_background_dark_transparent" />
 

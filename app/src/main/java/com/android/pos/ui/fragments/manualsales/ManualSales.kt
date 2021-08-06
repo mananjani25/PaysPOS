@@ -24,6 +24,61 @@ class ManualSales : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         onClick()
+        onClickCalculation()
+    }
+
+    private fun onClickCalculation() {
+        binding.includeView.tvOne.setOnClickListener {
+            calculateValue("1", false)
+
+
+        }
+        binding.includeView.tvTwo.setOnClickListener {
+            calculateValue("2", false)
+
+        }
+
+        binding.includeView.tvThree.setOnClickListener {
+
+            calculateValue("3", false)
+        }
+        binding.includeView.tvFour.setOnClickListener {
+
+            calculateValue("4", false)
+        }
+        binding.includeView.tvFive.setOnClickListener {
+
+            calculateValue("5", false)
+        }
+
+        binding.includeView.tvSix.setOnClickListener {
+
+            calculateValue("6", false)
+        }
+        binding.includeView.tvSeven.setOnClickListener {
+
+            calculateValue("7", false)
+        }
+        binding.includeView.tvEight.setOnClickListener {
+
+            calculateValue("8", false)
+        }
+        binding.includeView.tvNine.setOnClickListener {
+
+            calculateValue("9", false)
+        }
+        binding.includeView.tvZero.setOnClickListener {
+
+            calculateValue("0", false)
+        }
+        binding.includeView.tvBack.setOnClickListener {
+            calculateValue("", true)
+        }
+
+        binding.includeView.tvDot.setOnClickListener {
+            calculateValue(".", false)
+        }
+
     }
 
     private fun onClick() {
@@ -35,4 +90,18 @@ class ManualSales : Fragment() {
             findNavController().popBackStack()
         }
     }
+
+    private fun calculateValue(number: String, delete: Boolean) {
+        if (delete) {
+            binding.txtAmount.text = removeLastCharacter(binding.txtAmount.text.toString())
+
+        } else {
+            binding.txtAmount.append(number)
+        }
+    }
+
+    private fun removeLastCharacter(str: String): String {
+        return str.substring(0, str.length - 1)
+    }
+
 }
