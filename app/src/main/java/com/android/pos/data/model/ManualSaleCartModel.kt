@@ -1,8 +1,10 @@
 package com.android.pos.data.model
 
+import com.android.pos.data.entities.TbItem
+
 data class ManualSaleCartModel(
-    val id: Int,
-    val itemName: String,
-    val quantity: Int,
-    val price: String
+    var id: Int = 0,
+    var customerName: String? = null,
+    var isTax: Boolean = false,
+    var itemPrice:String? = null,
 )

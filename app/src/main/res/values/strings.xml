@@ -302,6 +302,8 @@
     <string name="symbole">$</string>
     <string name="percentage_symbol">%</string>
     <string name="format">%.2f</string>
+    <string name="zero">0.00</string>
+    <string name="itemPrice">$ %s</string>
 
     <string name="horizontal">Horizontal</string>
     <string name="vertical">Vertical</string>
@@ -391,4 +393,5 @@
     <string name="add_to_cart">Add to Cart</string>
     <string name="direct_pay">Direct Pay</string>
     <string name="order_subtotal">Order Subtotal</string>
+    <string name="customer_item">Customer Item</string>
 </resources>

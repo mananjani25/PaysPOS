@@ -139,7 +139,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 binding.layoutCart.txtCrtNewCustomer.text = "Add Customer"
                 binding.layoutCart.txtCustomerName.text = "Add Customer"
                 prefProvider.setValue(CUSTOMER_NAME, "")
-            } else {
+            }
+            else {
                 findNavController().navigate(
                     R.id.action_dashboardCategoryNew_to_assignCustomerOrderFragment
                 )

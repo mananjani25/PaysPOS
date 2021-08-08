@@ -20,7 +20,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
 
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/linearMenu"
             android:layout_width="@dimen/_140sdp"
             android:layout_height="0dp"
@@ -33,6 +33,7 @@
 
 
             <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/linearHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
@@ -43,7 +44,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:gravity="center"
-                    android:padding="@dimen/_8sdp"
+                    android:padding="@dimen/_5sdp"
                     android:text="No Sale"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />
@@ -69,7 +70,9 @@
                     android:layout_height="1dp"
                     android:background="@color/view" />
 
+
                 <RelativeLayout
+                    android:id="@+id/relAddCustomer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="@dimen/_5sdp">
@@ -81,6 +84,7 @@
                         android:src="@drawable/ic_group" />
 
                     <TextView
+                        android:id="@+id/txtCustomerName"
                         style="@style/CustomFontSemiBold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -105,9 +109,102 @@
                     android:layout_height="1dp"
                     android:background="@color/view" />
 
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/llCustomerDialog"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/txtColor"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:id="@+id/txtCrtNewCustomer"
+                        style="@style/CustomFontMediumStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:padding="@dimen/_7sdp"
+                        android:text="@string/add_customer"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_7mdpi" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.5dp"
+                        android:background="@color/colorCustomerDialogBorder" />
+
+                    <TextView
+                        android:id="@+id/txtClearItems"
+                        style="@style/CustomFontMediumStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:padding="@dimen/_7sdp"
+                        android:text="@string/clear_items"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_7mdpi" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.5dp"
+                        android:background="@color/colorCustomerDialogBorder" />
+
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
 
             </androidx.appcompat.widget.LinearLayoutCompat>
-        </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvSaleCart"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:layout_above="@+id/linearCharge"
+                android:layout_below="@+id/linearHeader"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:layout_marginEnd="@dimen/_5sdp"
+                android:orientation="vertical"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/view_manual_sale_item" />
+
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/linearCharge"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_gravity="bottom"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:layout_marginEnd="@dimen/_10sdp"
+                android:layout_marginBottom="@dimen/_10sdp"
+                android:background="@drawable/background_sales_charge"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="@dimen/_5sdp">
+
+                <TextView
+                    style="@style/CustomFontBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Charge "
+                    android:textColor="@color/txt_color_blue"
+                    android:textSize="@dimen/_6mdpi" />
+
+                <TextView
+                    android:id="@+id/txtChargeAmount"
+                    style="@style/CustomFontBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="$0.00"
+                    android:textColor="@color/txt_color_blue"
+                    android:textSize="@dimen/_6mdpi" />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+        </RelativeLayout>
 
         <include
             android:id="@+id/footer"
