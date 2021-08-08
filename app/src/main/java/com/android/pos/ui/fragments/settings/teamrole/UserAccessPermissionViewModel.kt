@@ -44,9 +44,11 @@ class UserAccessPermissionViewModel @Inject constructor(
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
+    private val _showEmployeeListDialog = MutableLiveData<Event<Boolean>>()
+    val showEmployeeListDialog: LiveData<Event<Boolean>> = _showEmployeeListDialog
+
     private var roleId: Int = -1
 
-    private var enableSerChargeViewModel: Boolean = false
     private var isEdit: Boolean = false
 
 
@@ -55,6 +57,7 @@ class UserAccessPermissionViewModel @Inject constructor(
     private lateinit var resource: Resource<GetUserPermissionListResponse>
 
     fun employeeData() = posRepository.employeesList(locationId)
+    val getTeamRoleList = taxServiceChargeRepository.getTeamRoleList()
 
     private val _allEmployeeList = MutableLiveData<ArrayList<Employee>>()
     val allEmployeeList: LiveData<ArrayList<Employee>> = _allEmployeeList
@@ -85,15 +88,19 @@ class UserAccessPermissionViewModel @Inject constructor(
         selectedEmployeeListToFeed.addAll(userPermissionData.employees)
         _selectedEmployeeList.value = selectedEmployeeListToFeed
 
-        allEmployeeListToFeed.forEach { allEmployees ->
+        val myCollection = allEmployeeListToFeed
+        val iterator = myCollection.iterator()
+        while (iterator.hasNext()) {
+            val item = iterator.next()
             selectedEmployeeListToFeed.forEach { selectedEmployee ->
-                if (allEmployees.id == selectedEmployee.id) {
-                 //   allEmployeeListToFeed.remove(allEmployees)
+                if (item.id == selectedEmployee.id) {
+                    iterator.remove()
                     _allEmployeeList.value = allEmployeeListToFeed
 
                 }
             }
         }
+
 
     }
 
@@ -178,6 +185,10 @@ class UserAccessPermissionViewModel @Inject constructor(
         _selectedModuleList.value = selectedModuleListToFeed
     }
 
+    fun assignMember(teamRole: TeamRole) {
+        _showEmployeeListDialog.value = Event(true)
+    }
+
     fun submit() {
         val value = createUserPermission.value
         if (TextUtils.isEmpty(value?.name?.trim())) {
@@ -190,9 +201,7 @@ class UserAccessPermissionViewModel @Inject constructor(
                 name = value!!.name
                 val idList = ArrayList<Int>()
                 selectedEmployeeListToFeed.forEach {
-                    if (it != null) {
-                        idList.add(it.id)
-                    }
+                    idList.add(it.id)
                 }
                 employeeIds = idList
 
@@ -216,20 +225,11 @@ class UserAccessPermissionViewModel @Inject constructor(
 
                                 resource.data?.let { createTeamRole ->
 
-                                    /*val serviceCharge = GetServiceChargeResponse.Data(
-                                        createdAt = createServiceChargeResponse.data.createdAt,
-                                        id = createServiceChargeResponse.data.id,
-                                        isEnabled = createServiceChargeResponse.data.isEnabled,
-                                        locationId = createServiceChargeResponse.data.locationId,
-                                        name = createServiceChargeResponse.data.name,
-                                        percentage = createServiceChargeResponse.data.percentage,
-                                        updatedAt = createServiceChargeResponse.data.updatedAt,
-                                        isActive = createServiceChargeResponse.data.isActive
-                                    )
+                                    val role = createTeamRole.data.teamRoles
 
-                                    taxServiceChargeRepository.createServiceChargeDatabase(
-                                        serviceCharge
-                                    )*/
+                                    taxServiceChargeRepository.createTeamRoleDatabase(
+                                        role
+                                    )
                                     _data.value = Event(createTeamRole)
                                 }
                             } else {

@@ -12,13 +12,8 @@ import com.android.pos.R
 import com.android.pos.data.entities.Employee
 import com.android.pos.data.entities.TeamRole
 import com.android.pos.data.model.PermissionModuleListModel
-import com.android.pos.data.model.responseModel.EmployeeListResponse
-import com.android.pos.data.model.responseModel.GetUserPermissionListResponse
 import com.android.pos.databinding.FragmentUserAccessPermissionBinding
-import com.android.pos.ui.adapter.AllPermissionModuleAdapter
-import com.android.pos.ui.adapter.AllSelectedTeamMemberAdapter
-import com.android.pos.ui.adapter.SelectedPermissionModuleAdapter
-import com.android.pos.ui.adapter.SelectedTeamMemberAdapter
+import com.android.pos.ui.adapter.*
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
@@ -36,6 +31,7 @@ class UserAccessPermissionFragment : Fragment() {
     private lateinit var selectedTeamMemberAdapter: SelectedTeamMemberAdapter
     private lateinit var allPermissionModuleAdapter: AllPermissionModuleAdapter
     private lateinit var selectedPermissionModuleAdapter: SelectedPermissionModuleAdapter
+    private lateinit var assignTeamListAdapter: AssignTeamListAdapter
     private lateinit var userPermissionObject: TeamRole
     var isEdit: Boolean = false
 
@@ -59,13 +55,12 @@ class UserAccessPermissionFragment : Fragment() {
 
         isEdit = arguments?.getBoolean("isEdit")!!
 
-        /*if (isEdit) {
+        if (isEdit) {
             binding.addRole.text = getString(R.string.update_role)
             userPermissionObject = arguments?.getParcelable("userPermissionObject")!!
-
             viewModel.setUserPermissionData(userPermissionObject)
             viewModel.isEditData(isEdit, userPermissionObject.id)
-        }*/
+        }
 
 
         setUpRecyclerView()
@@ -77,6 +72,12 @@ class UserAccessPermissionFragment : Fragment() {
         setSelectedModule()
         navigate()
         observeShowProgress()
+        showEmployeeListDialog()
+        getUserPermissionListObserver()
+
+        binding.imgClose.setOnClickListener {
+            findNavController().navigateUp()
+        }
 
         return binding.root
     }
@@ -119,6 +120,8 @@ class UserAccessPermissionFragment : Fragment() {
         selectedTeamMemberAdapter = SelectedTeamMemberAdapter(viewModel)
         binding.rvSelectedMember.adapter = selectedTeamMemberAdapter
 
+        assignTeamListAdapter = AssignTeamListAdapter(viewModel)
+        binding.rvAssignRole.adapter = assignTeamListAdapter
 
         for (i in 1..5) {
             timeSheet.add(
@@ -153,12 +156,9 @@ class UserAccessPermissionFragment : Fragment() {
                             viewModel.setEmployeeList(employeeList)
 
                             if (isEdit) {
-                                binding.addRole.text = getString(R.string.update_role)
                                 userPermissionObject =
                                     arguments?.getParcelable("userPermissionObject")!!
-
                                 viewModel.setUserPermissionData(userPermissionObject)
-                                viewModel.isEditData(isEdit, userPermissionObject.id)
                             }
                         }
                     }
@@ -171,6 +171,33 @@ class UserAccessPermissionFragment : Fragment() {
                     Status.LOADING -> {
                         ProgressUtils.showProgressDialog(requireActivity())
                         binding.rvAllMember.visibility = View.GONE
+                    }
+                }
+            }
+        })
+    }
+
+    private fun getUserPermissionListObserver() {
+        viewModel.getTeamRoleList.observe(viewLifecycleOwner, {
+            it?.let { resource ->
+                when (resource.status) {
+                    Status.SUCCESS -> {
+                        ProgressUtils.dismissProgressDialog()
+                        binding.rvAssignRole.visibility = View.VISIBLE
+                        resource.data?.let { tipList ->
+                            assignTeamListAdapter.addPermissionList(
+                                tipList
+                            )
+                        }
+                    }
+                    Status.ERROR -> {
+                        ProgressUtils.dismissProgressDialog()
+                        binding.rvAssignRole.visibility = View.VISIBLE
+                        binding.root.showAlert(resource.message)
+                    }
+                    Status.LOADING -> {
+                        ProgressUtils.showProgressDialog(requireActivity())
+                        binding.rvAssignRole.visibility = View.GONE
                     }
                 }
             }
@@ -192,7 +219,7 @@ class UserAccessPermissionFragment : Fragment() {
                     AlertUtils.showCustomAlertWithListenerWithOK(
                         it, createRoleResponse.message
                     ) { _, _ ->
-                        findNavController().navigateUp()
+                        getUserPermissionListObserver()
                     }
                 }
 
@@ -208,6 +235,17 @@ class UserAccessPermissionFragment : Fragment() {
                     ProgressUtils.showProgressDialog(requireActivity())
                 } else {
                     ProgressUtils.dismissProgressDialog()
+                }
+            }
+        })
+    }
+
+    private fun showEmployeeListDialog() {
+
+        viewModel.showEmployeeListDialog.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+
                 }
             }
         })

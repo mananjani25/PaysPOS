@@ -51,12 +51,17 @@ class UserAccessPermissionListFragment : Fragment() {
         setUpRecyclerView()
         getUserPermissionListObserver()
         setupSnackbar()
-        deleteTip()
+        deleteEmployeeRole()
+        observeShowProgress()
 
         binding.txtAddNewRole.setOnClickListener {
             findNavController().navigate(
                 R.id.action_userAccessPermissionListFragment_to_userAccessPermissionFragment
             )
+        }
+
+        binding.imgClose.setOnClickListener {
+            findNavController().navigateUp()
         }
         return binding.root
     }
@@ -140,7 +145,7 @@ class UserAccessPermissionListFragment : Fragment() {
         })
     }
 
-    private fun deleteTip() {
+    private fun deleteEmployeeRole() {
 
         viewModel.data.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
@@ -167,6 +172,19 @@ class UserAccessPermissionListFragment : Fragment() {
             addPermissionList(permissionList)
             notifyDataSetChanged()
         }
+    }
+
+    private fun observeShowProgress() {
+
+        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    ProgressUtils.showProgressDialog(requireActivity())
+                } else {
+                    ProgressUtils.dismissProgressDialog()
+                }
+            }
+        })
     }
 
     private fun setupSnackbar() =
