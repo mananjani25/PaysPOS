@@ -44,9 +44,6 @@ class AssignTeamListAdapter(val viewModel: UserAccessPermissionViewModel) :
         }
     }
 
-    fun getItem(position: Int): TeamRole {
-        return permissionList[position]
-    }
 
     inner class MyViewHolder(val tipItemBinding: ViewAssignedRoleItemBinding) :
         RecyclerView.ViewHolder(tipItemBinding.root)

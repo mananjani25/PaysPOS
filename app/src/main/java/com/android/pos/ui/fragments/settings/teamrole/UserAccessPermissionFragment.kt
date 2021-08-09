@@ -252,7 +252,6 @@ class UserAccessPermissionFragment : Fragment() {
                 val bundle = Bundle()
                 bundle.putBoolean("isEdit", true)
                 bundle.putParcelable("teamRole", teamRole)
-                bundle.putSerializable("employeeList", employeeListGlobal as Serializable)
                 findNavController().navigate(
                     R.id.action_userAccessPermissionFragment_to_assignTeamMemberListDialog,
                     bundle

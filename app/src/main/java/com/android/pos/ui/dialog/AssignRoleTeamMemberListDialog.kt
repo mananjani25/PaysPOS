@@ -17,6 +17,8 @@ import com.android.pos.ui.adapter.AssignRoleTeamMemberListAdapter
 import com.android.pos.ui.fragments.settings.teamrole.UserAccessPermissionViewModel
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.extensions.showAlert
+import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -43,18 +45,16 @@ class AssignRoleTeamMemberListDialog : DialogFragment(), View.OnClickListener {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
-//        selectedId = arguments?.getInt("selectedId", -2)!!
-
         isEdit = arguments?.getBoolean("isEdit")!!
 
-        employeeList = arguments?.get("employeeList") as ArrayList<Employee>
-        roleList = arguments?.getParcelable("teamRole")!!
-
-        binding.lifecycleOwner = this
+        binding.imgBack.setOnClickListener(this)
+        binding.txtCancel.setOnClickListener(this)
+        binding.tvAssignRole.setOnClickListener(this)
 
         setAdapter()
         observeShowProgress()
         navigate()
+        loadTeams()
 
         return binding.root
     }
@@ -77,13 +77,8 @@ class AssignRoleTeamMemberListDialog : DialogFragment(), View.OnClickListener {
 
     private fun setAdapter() {
         adapter = AssignRoleTeamMemberListAdapter()
-        //adapter.setPos(selectedId)
         binding.rvEmployeeList.adapter = adapter
-        adapter.add(employeeList)
-        adapter.selectedItemFromEdit(roleList.employees)
-        binding.imgBack.setOnClickListener(this)
-        binding.txtCancel.setOnClickListener(this)
-        binding.tvAssignRole.setOnClickListener(this)
+
 
         binding.edtSearch.addTextChangedListener(object : TextWatcher {
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
@@ -146,4 +141,35 @@ class AssignRoleTeamMemberListDialog : DialogFragment(), View.OnClickListener {
             }
         })
     }
+
+    private fun loadTeams() {
+
+        viewModel.employeeData.observe(viewLifecycleOwner, {
+            it?.let { resource ->
+                when (resource.status) {
+                    Status.SUCCESS -> {
+                        ProgressUtils.dismissProgressDialog()
+                        binding.rvEmployeeList.visibility = View.VISIBLE
+                        resource.data?.let { employeeList ->
+                            adapter.add(employeeList)
+                            roleList = arguments?.getParcelable("teamRole")!!
+                            adapter.selectedItemFromEdit(roleList.employees)
+
+                        }
+                    }
+                    Status.ERROR -> {
+                        ProgressUtils.dismissProgressDialog()
+                        binding.rvEmployeeList.visibility = View.VISIBLE
+                        binding.root.showAlert(resource.message)
+
+                    }
+                    Status.LOADING -> {
+                        ProgressUtils.showProgressDialog(requireActivity())
+                        binding.rvEmployeeList.visibility = View.GONE
+                    }
+                }
+            }
+        })
+    }
+
 }
