@@ -39,6 +39,7 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/txtNoSale"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -162,10 +163,10 @@
                 android:id="@+id/rvSaleCart"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_5sdp"
                 android:layout_above="@+id/linearCharge"
                 android:layout_below="@+id/linearHeader"
                 android:layout_marginStart="@dimen/_5sdp"
+                android:layout_marginTop="@dimen/_5sdp"
                 android:layout_marginEnd="@dimen/_5sdp"
                 android:orientation="vertical"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
@@ -239,13 +240,17 @@
                     android:layout_height="wrap_content"
                     android:text="$"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_12mdpi" />
+                    android:textSize="@dimen/_12mdpi"
+                    android:visibility="visible" />
 
-                <TextView
+                <androidx.appcompat.widget.AppCompatEditText
                     android:id="@+id/txtAmount"
                     style="@style/CustomFontRegularStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:editable="true"
+                    android:enabled="false"
                     android:text="0.00"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_12mdpi" />

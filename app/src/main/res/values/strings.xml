@@ -303,7 +303,7 @@
     <string name="percentage_symbol">%</string>
     <string name="format">%.2f</string>
     <string name="zero">0.00</string>
-    <string name="itemPrice">$ %s</string>
+    <string name="itemPrice">%s</string>
 
     <string name="horizontal">Horizontal</string>
     <string name="vertical">Vertical</string>
@@ -394,5 +394,6 @@
     <string name="direct_pay">Direct Pay</string>
     <string name="order_subtotal">Order Subtotal</string>
     <string name="customer_item">Customer Item</string>
+    <string name="tv_modifier_all">Modifier All</string>
     <string name="tv_assign_role_to_employee">Assign Role to Employee</string>
 </resources>

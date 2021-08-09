@@ -15,7 +15,7 @@ import com.android.pos.data.entities.ModifierSet
 interface ModifierSetDao {
 
     @Insert(onConflict = REPLACE)
-    fun add(modifierModel: ModifierSet?): Long
+    suspend fun add(modifierModel: ModifierSet?): Long
 
     @Insert(onConflict = REPLACE)
     suspend fun addAll(modifierModel: List<ModifierSet>)
@@ -30,8 +30,8 @@ interface ModifierSetDao {
     @Query("select * from ModifierSet")
     fun allModifier(): List<ModifierSet?>?
 
-    @Query("SELECT * FROM ModifierSet WHERE id IN (:userIds)")
-    fun loadAllByIds(userIds: IntArray): List<ModifierSet?>?
+    @Query("SELECT * FROM ModifierSet WHERE itemIds IN (:itemIds)")
+    fun modifierSetByItem(itemIds: IntArray): LiveData<List<ModifierSet>>
 
 
     @Query("SELECT * from ModifierSet where ModifierSet.id  = :id LIMIT 1")

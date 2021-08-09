@@ -7,21 +7,30 @@ import android.widget.Filter
 import android.widget.Filterable
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.entities.ModifierSet
-import com.android.pos.databinding.ViewModifiersBinding
+import com.android.pos.databinding.ViewModifierSetsBinding
 import java.util.*
 import kotlin.collections.ArrayList
 
-class ModifiersListAdapter :
-    RecyclerView.Adapter<ModifiersListAdapter.MyViewHolder>(), Filterable {
+class ModifierSetsListAdapter(val isCreateItem: Boolean) :
+    RecyclerView.Adapter<ModifierSetsListAdapter.MyViewHolder>(), Filterable {
     var list = ArrayList<ModifierSet>()
     var filterList = ArrayList<ModifierSet>()
+    var selectedItemList = ArrayList<ModifierSet>()
 
-    inner class MyViewHolder(private val binding: ViewModifiersBinding) :
+    inner class MyViewHolder(private val binding: ViewModifierSetsBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(item: ModifierSet) {
             binding.model = item
             binding.executePendingBindings()
 
+
+            if (isCreateItem) {
+                binding.imgCheck.visibility = View.VISIBLE
+                binding.imgReorder.visibility = View.GONE
+            } else {
+                binding.imgCheck.visibility = View.GONE
+                binding.imgReorder.visibility = View.VISIBLE
+            }
 
             val builder = StringBuilder()
             if (item.modifiers.isNotEmpty()) {
@@ -39,21 +48,48 @@ class ModifiersListAdapter :
         }
 
         init {
+            binding.imgCheck.setOnClickListener {
+                filterList[layoutPosition].isChecked = !filterList[layoutPosition].isChecked
 
+                if (filterList[layoutPosition].isChecked) {
+                    selectedItemList.add(filterList[layoutPosition])
+                } else {
+                    selectedItemList.remove(filterList.get(layoutPosition))
+                }
+                notifyDataSetChanged()
+            }
         }
+
+    }
+
+    fun selectedItemList(): ArrayList<ModifierSet> {
+        return selectedItemList
+    }
+
+    fun selectedItemFromEdit(itemIds: ArrayList<ModifierSet>) {
+        selectedItemList.clear()
+        filterList.forEach { modifierSet ->
+            itemIds.forEach {
+                if (modifierSet.id == it.id) {
+                    modifierSet.isChecked = true
+                    selectedItemList.add(modifierSet)
+                }
+            }
+        }
+        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): ModifiersListAdapter.MyViewHolder {
+    ): ModifierSetsListAdapter.MyViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val binding = ViewModifiersBinding.inflate(inflater, parent, false)
+        val binding = ViewModifierSetsBinding.inflate(inflater, parent, false)
         return MyViewHolder(binding)
 
     }
 
-    override fun onBindViewHolder(holder: ModifiersListAdapter.MyViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ModifierSetsListAdapter.MyViewHolder, position: Int) {
 
         holder.bind(filterList.get(position))
     }

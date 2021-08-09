@@ -124,6 +124,14 @@
         android:label="CreateIModifierSet"
         tools:layout="@layout/create_modifier_set">
 
+        <action
+            android:id="@+id/action_createIModifierSet_to_itemDialog"
+            app:destination="@id/itemDialog" />
+
+        <argument
+            android:name="isEdit"
+            android:defaultValue="false"
+            app:argType="boolean" />
     </fragment>
     <fragment
         android:id="@+id/dashboardCategory"

@@ -35,7 +35,6 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     val venueData = posRepository.syncVenueData()
 
-
     val venueDataLocal = posRepository.venueDataLocal()
 
     val serviceCharges = posRepository.serviceChargeList()
@@ -59,10 +58,12 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
         if (cartList != null && cartList.isEmpty()) {
+            // empty cart hoy to new cart create kare
             val cartModel = addCartModel(item)
             addCart(cartModel)
         } else {
 
+            // already cart ma hoy to add/update/delete kare flag wise
             val list = cartList?.get(0)?.items?.toMutableList()
             if (list != null && list.isNotEmpty()) {
 

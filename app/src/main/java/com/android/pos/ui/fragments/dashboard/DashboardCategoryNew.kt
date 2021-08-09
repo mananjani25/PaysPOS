@@ -139,8 +139,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 binding.layoutCart.txtCrtNewCustomer.text = "Add Customer"
                 binding.layoutCart.txtCustomerName.text = "Add Customer"
                 prefProvider.setValue(CUSTOMER_NAME, "")
-            }
-            else {
+            } else {
                 findNavController().navigate(
                     R.id.action_dashboardCategoryNew_to_assignCustomerOrderFragment
                 )
@@ -271,7 +270,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             positiveButton(getString(R.string.tv_delete)) {
                                 // Do positive stuff here
                                 val item = cartAdapter.getItem(pos)
-
+                                cartAdapter.removeIitem(pos)
                                 viewModel.cartLogic(cartList, item, DELETE)
                             }
                             negativeButton(R.string.tv_cancel) {
@@ -835,7 +834,12 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     override fun onClick(item: TbItem) {
 
-        viewModel.cartLogic(cartList, item, ADD)
+        if (item.modifier_set_ids.isEmpty()) {
+            viewModel.cartLogic(cartList, item, ADD)
+        } else {
+
+            ItemPopup(item)
+        }
 
     }
 
@@ -846,6 +850,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     @SuppressLint("SetTextI18n")
     override fun onItemClickListener(view: View?, data: TbItem) {
 
+        ItemPopup(data)
+    }
+
+    private fun ItemPopup(data: TbItem) {
         val dialog = Dialog(requireContext())
         dialog.window?.requestFeature(Window.FEATURE_NO_TITLE)
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))

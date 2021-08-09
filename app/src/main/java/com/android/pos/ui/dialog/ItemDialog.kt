@@ -22,6 +22,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ItemDialog : DialogFragment(), View.OnClickListener {
+    private var where: String = ""
     private lateinit var adapter: ItemListAdapter
     private lateinit var binding: DialogItemsBinding
     private val viewModel by viewModels<ItemsViewModel>()
@@ -34,15 +35,25 @@ class ItemDialog : DialogFragment(), View.OnClickListener {
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.dialog_items, container, false)
         binding.lifecycleOwner = this
-
-//        selectedId = arguments?.getInt("selectedId", -2)!!
-
+        setupUI()
         setAdapter()
         categoriesObserver()
-        isEdit = arguments?.getBoolean("isEdit")!!
-
-
         return binding.root
+    }
+
+    private fun setupUI() {
+        isEdit = arguments?.getBoolean("isEdit")!!
+        where = arguments?.getString("where", "")!!
+
+        if (where == "tax") {
+            binding.txtTaxAll.text = getString(R.string.tv_tax_all)
+        } else if (where == "modifier") {
+            binding.txtTaxAll.text = getString(R.string.tv_modifier_all)
+        }
+        binding.imgBack.setOnClickListener(this)
+        binding.txtDone.setOnClickListener(this)
+        binding.txtTaxAll.setOnClickListener(this)
+        binding.txtExemptAll.setOnClickListener(this)
     }
 
     override fun onResume() {
@@ -71,12 +82,11 @@ class ItemDialog : DialogFragment(), View.OnClickListener {
                         binding.progressCircular.visibility = View.GONE
                         it.data?.let { it1 -> adapter.add(it1 as List<TbItem>) }
 
-                        // if (isEdit) {
-                        var itemIds = arguments?.getIntegerArrayList("itemIds")
+
+                        val itemIds = arguments?.getIntegerArrayList("itemIds")
                         if (itemIds != null) {
                             adapter.selectedItemFromEdit(itemIds)
                         }
-                        // }
                     }
                     Status.ERROR -> {
                         binding.rvItemList.visibility = View.GONE
@@ -97,13 +107,7 @@ class ItemDialog : DialogFragment(), View.OnClickListener {
     private fun setAdapter() {
 
         adapter = ItemListAdapter(true)
-        //adapter.setPos(selectedId)
         binding.rvItemList.adapter = adapter
-        binding.imgBack.setOnClickListener(this)
-        binding.txtDone.setOnClickListener(this)
-        binding.txtTaxAll.setOnClickListener(this)
-        binding.txtExemptAll.setOnClickListener(this)
-
         binding.edtSearch.addTextChangedListener(object : TextWatcher {
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
             }
@@ -121,8 +125,6 @@ class ItemDialog : DialogFragment(), View.OnClickListener {
     }
 
     override fun onClick(v: View?) {
-
-
         when (v?.id) {
             R.id.imgBack -> {
                 dismiss()

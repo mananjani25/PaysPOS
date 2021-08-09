@@ -2,36 +2,28 @@ package com.android.pos.utils
 
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import androidx.appcompat.widget.AppCompatEditText
-import java.lang.String.format
+import com.android.pos.data.entities.Modifier
 import java.text.NumberFormat
 import java.util.*
 
-class AmountTextWatcher(private val editText: AppCompatEditText, private val isManual: Boolean) :
+class PriceTextWatcher(private val editText: AppCompatEditText, private val data: Modifier) :
     TextWatcher {
     var current = ""
-    val TAG = "AmountTextWatcher"
     override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
         if (s.toString() != current) {
             editText.removeTextChangedListener(this)
 
-
             val cleanString: String = s.replace("""[$,.]""".toRegex(), "")
 
             val parsed = cleanString.toDouble()
-
-            val formatted =
-                if (isManual) {
-
-                    NumberFormat.getInstance().format((parsed / 100))
-                } else {
-                    NumberFormat.getCurrencyInstance(Locale.US).format((parsed / 100))
-                }
+            val formatted = NumberFormat.getCurrencyInstance(Locale.US).format((parsed / 100))
 
             current = formatted
             editText.setText(formatted.replace("""[,]""".toRegex(), ""))
             editText.setSelection(formatted.replace("""[,]""".toRegex(), "").length)
+
+            data.price = formatted.replace("""[$,]""".toRegex(), "").toDouble()
 
             editText.addTextChangedListener(this)
         }
