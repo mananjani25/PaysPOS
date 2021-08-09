@@ -74,7 +74,9 @@ data class VenueDataResponse(
                 val thumpImgUrl: String?,
                 @SerializedName("active")
                 val active: Boolean,
-                var taxes: List<TaxData>? = null
+                var taxes: List<TaxData>? = null,
+                @SerializedName("modifier_set_ids")
+                val modifierIds: List<Int>
 
 
             )

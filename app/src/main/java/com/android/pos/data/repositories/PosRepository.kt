@@ -5,9 +5,9 @@ import androidx.lifecycle.LiveData
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.db.IDataManager
 import com.android.pos.data.entities.*
+import com.android.pos.data.entities.ModifierSet
 import com.android.pos.data.model.CustomerListResponse
 import com.android.pos.data.model.requestModel.*
-import com.android.pos.data.model.responseModel.EmployeeListResponse
 import com.android.pos.data.model.responseModel.NoteResponse
 import com.android.pos.data.remote.ApiHelper
 import com.android.pos.utils.performGetOperation
@@ -65,6 +65,7 @@ class PosRepository @Inject constructor(
                         categoryId = category.id
                         categoryName = category.name
                         taxes = it.taxes
+                        modifier_set_ids = it.modifierIds
                     }
 
                     inventoryModelList.add(items)
@@ -111,6 +112,13 @@ class PosRepository @Inject constructor(
 
     fun modifierSetsList() =
         performGetOperationDatabase(databaseQuery = { appDatabase.modifierSetDao().all })
+
+    fun modifierSets() =
+        performGetOperation(databaseQuery = { appDatabase.modifierSetDao().all },
+            networkCall = { apiHelperNew.getModifierSetCall() },
+            saveCallResult = {
+                appDatabase.modifierSetDao().addAll(it.data)
+            })
 
     fun getInventory() =
         performGetOperation(
@@ -192,7 +200,6 @@ class PosRepository @Inject constructor(
 
     suspend fun addCustomer(data: CustomerListResponse.Data) =
         appDatabase.customerDao().addCustomer(data)
-
 
 
     suspend fun deleteCustomerDataBase(id: Int) = appDatabase.customerDao().deleteCustomerByID(id)
@@ -303,6 +310,19 @@ class PosRepository @Inject constructor(
     fun serviceChargeList() =
         performGetOperationDatabase(databaseQuery = { appDatabase.serviceChargeDao().allServiceCharge })
 
+    fun modifierSetList(ids: IntArray) =
+        performGetOperationDatabase(databaseQuery = {
+            appDatabase.modifierSetDao().modifierSetByItem(ids)
+        })
 
+    suspend fun createModifierSet(data: CreateModifierRequest) =
+        apiHelperNew.createModifierSet(data)
+
+    suspend fun addModifierSets(modifierSet: ModifierSet) {
+        appDatabase.modifierSetDao().add(modifierSet)
+    }
+
+    suspend fun updateModifierSets(mId: Int, data: CreateModifierRequest) =
+        apiHelperNew.updateModifierSets(mId, data)
 }
 

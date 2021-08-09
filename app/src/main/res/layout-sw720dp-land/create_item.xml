@@ -469,10 +469,12 @@
 
 
                 <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvModifiersList"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/_10sdp"
                     tools:itemCount="2"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:listitem="@layout/view_modifier_sets" />
 
                 <androidx.appcompat.widget.AppCompatTextView

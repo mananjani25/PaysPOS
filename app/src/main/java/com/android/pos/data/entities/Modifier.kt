@@ -5,17 +5,32 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class Modifier(
+class Modifier : Parcelable {
+
+
     @SerializedName("created_at")
-    val createdAt: String,
+    val createdAt: String = ""
+
     @SerializedName("id")
-    val id: Int,
+    val id: Int? = null
+
     @SerializedName("modifier_set_id")
-    val modifierSetId: Int,
+    val modifierSetId: Int? = null
+
     @SerializedName("name")
-    val name: String,
+    var name: String = ""
+
     @SerializedName("price")
-    val price: Int,
+    var price: Double = 0.00
+
     @SerializedName("updated_at")
-    val updatedAt: String
-) : Parcelable
+    val updatedAt: String = ""
+
+    @SerializedName("sort")
+    val sort: Int = 0
+
+    @SerializedName("_destroy")
+    var _destroy: Boolean = false
+
+    var isChecked: Boolean = false
+}

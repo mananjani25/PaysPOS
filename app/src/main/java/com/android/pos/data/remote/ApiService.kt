@@ -23,6 +23,8 @@ import com.android.pos.data.remote.Constants.ITEMS
 import com.android.pos.data.remote.Constants.ITEM_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.LOGIN_TERMINAL
 import com.android.pos.data.remote.Constants.LOGOUT
+import com.android.pos.data.remote.Constants.MODIFIER
+import com.android.pos.data.remote.Constants.MODIFIER_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.NOTES
 import com.android.pos.data.remote.Constants.NOTES_ACTIVE
 import com.android.pos.data.remote.Constants.NOTE_UPDATE_DELETE
@@ -312,8 +314,21 @@ interface ApiService {
         @Query("new_position") new_position: Int,
     ): BaseResponse
 
-    @DELETE(CATEGORY_UPDATE_DELETE)
+    @DELETE(MODIFIER_UPDATE_DELETE)
     suspend fun deleteModifierSetCall(
         @Path("id") noteId: Int,
     ): BaseResponse
+
+    @GET(MODIFIER)
+    suspend fun getModifierSet(): ModifierSetResponse
+
+
+    @POST(MODIFIER)
+    suspend fun createModifierSet(@Body createModifierRequest: CreateModifierRequest): CreateModifierSetResponse
+
+    @PUT(MODIFIER_UPDATE_DELETE)
+    suspend fun updateModifierSets(
+        @Path("id") mId: Int,
+        @Body createModifierRequest: CreateModifierRequest
+    ): CreateModifierSetResponse
 }

@@ -19,6 +19,7 @@ import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -40,10 +41,7 @@ import com.android.pos.data.remote.Constants.UPDATE
 import com.android.pos.data.remote.Constants.VERTICAL
 import com.android.pos.databinding.FragmentDashboardCategoryNewBinding
 import com.android.pos.di.PrefProvider
-import com.android.pos.ui.adapter.CartAdapter
-import com.android.pos.ui.adapter.CategoryItemAdapter1
-import com.android.pos.ui.adapter.CategorySearchAdapter
-import com.android.pos.ui.adapter.CategoryTabAdapter1
+import com.android.pos.ui.adapter.*
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.SwipeHelper
 import com.android.pos.utils.callback.MyCallback
@@ -834,7 +832,12 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     override fun onClick(item: TbItem) {
 
-        viewModel.cartLogic(cartList, item, ADD)
+        if (item.modifier_set_ids.isEmpty()) {
+            viewModel.cartLogic(cartList, item, ADD)
+        } else {
+
+            ItemPopup(item, true)
+        }
 
     }
 
@@ -845,6 +848,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     @SuppressLint("SetTextI18n")
     override fun onItemClickListener(view: View?, data: TbItem) {
 
+        ItemPopup(data, false)
+    }
+
+    private fun ItemPopup(data: TbItem, isItemClick: Boolean) {
         val dialog = Dialog(requireContext())
         dialog.window?.requestFeature(Window.FEATURE_NO_TITLE)
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -866,10 +873,27 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         val btnRemove: AppCompatTextView = dialog.findViewById(R.id.btnRemove)
         val btnAddDiscount: AppCompatTextView = dialog.findViewById(R.id.btnAddDiscount)
         val edtNote: AppCompatEditText = dialog.findViewById(R.id.edtNote)
+        val rvModifierSets: RecyclerView = dialog.findViewById(R.id.rvModifierSets)
+
+        var qty = data.itemQuantity
+        if (isItemClick) {
+
+            qty = 1
+            txtQty.setText(qty.toString())
+            btnRemove.visibility = View.GONE
+            btnAddDiscount.visibility = View.GONE
+            rvModifierSets.visibility = View.VISIBLE
+            val adapter = OrderModifierSetAdapter()
+            rvModifierSets.adapter = adapter
+
+            viewModel.modifierSet.observe(requireActivity(), {
+                it.data?.let { it1 -> adapter.add(it1) }
+            })
+        }
 
         edtNote.setText(data.note)
 
-        var qty = data.itemQuantity
+
 
         txtQty.setText(qty.toString())
         txtTitle.text = data.name + "  $" + String.format(

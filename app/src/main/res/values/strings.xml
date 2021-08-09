@@ -394,4 +394,6 @@
     <string name="direct_pay">Direct Pay</string>
     <string name="order_subtotal">Order Subtotal</string>
     <string name="customer_item">Customer Item</string>
+    <string name="tv_modifier_all">Modifier All</string>
+    <string name="tv_assign_role_to_employee">Assign Role to Employee</string>
 </resources>

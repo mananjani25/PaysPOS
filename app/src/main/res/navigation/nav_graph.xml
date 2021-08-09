@@ -124,6 +124,14 @@
         android:label="CreateIModifierSet"
         tools:layout="@layout/create_modifier_set">
 
+        <action
+            android:id="@+id/action_createIModifierSet_to_itemDialog"
+            app:destination="@id/itemDialog" />
+
+        <argument
+            android:name="isEdit"
+            android:defaultValue="false"
+            app:argType="boolean" />
     </fragment>
     <fragment
         android:id="@+id/dashboardCategory"
@@ -489,6 +497,9 @@
             android:name="isEdit"
             android:defaultValue="false"
             app:argType="boolean" />
+        <action
+            android:id="@+id/action_userAccessPermissionFragment_to_assignTeamMemberListDialog"
+            app:destination="@id/assignTeamMemberListDialog" />
     </fragment>
     <fragment
         android:id="@+id/paymentFragment"
@@ -553,6 +564,15 @@
             app:destination="@id/paymentFragment"
             app:enterAnim="@anim/nav_default_enter_anim" />
     </fragment>
+    <dialog
+        android:id="@+id/assignTeamMemberListDialog"
+        android:name="com.android.pos.ui.dialog.AssignRoleTeamMemberListDialog"
+        android:label="AssignTeamMemberListDialog" />
+
+    <argument
+        android:name="isEdit"
+        android:defaultValue="false"
+        app:argType="boolean" />
 
 
 </navigation>

@@ -14,6 +14,7 @@ import com.android.pos.data.entities.TbCategory
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.CreateItemBinding
+import com.android.pos.ui.adapter.ModifierSetsListAdapter
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
 import com.google.android.material.snackbar.Snackbar
@@ -27,6 +28,8 @@ class CreateItem : Fragment(), View.OnClickListener {
     private lateinit var itemObject: TbItem
     private lateinit var binding: CreateItemBinding
     private val viewModel by viewModels<CreateItemViewModel>()
+
+    private lateinit var adapter: ModifierSetsListAdapter
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -38,12 +41,28 @@ class CreateItem : Fragment(), View.OnClickListener {
 
         isEdit = arguments?.getBoolean("isEdit")!!
         setupData()
+        setAdapter()
         setupSnackbar()
         observeShowProgress()
+        getModifiers()
         return binding.root
     }
 
+    private fun getModifiers() {
+
+        viewModel.modifierSet.observe(requireActivity(), {
+
+            it.data?.let { it1 -> adapter.add(it1) }
+        })
+    }
+
+    private fun setAdapter() {
+        adapter = ModifierSetsListAdapter(true)
+        binding.rvModifiersList.adapter = adapter
+    }
+
     private fun setupData() {
+
 
         if (isEdit) {
             binding.txtSave.text = getString(R.string.update)

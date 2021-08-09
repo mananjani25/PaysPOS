@@ -26,6 +26,7 @@ class AssignTeamListAdapter(val viewModel: UserAccessPermissionViewModel) :
     override fun onBindViewHolder(holder: AssignTeamListAdapter.MyViewHolder, position: Int) {
         val itemBinding = holder.tipItemBinding
         itemBinding.permissionListModel = permissionList[position]
+        itemBinding.viewModel = viewModel
 
         val employees = permissionList[position].employees.map { it.name }
         itemBinding.teamMemberList.text = TextUtils.join(",", employees)
@@ -43,9 +44,6 @@ class AssignTeamListAdapter(val viewModel: UserAccessPermissionViewModel) :
         }
     }
 
-    fun getItem(position: Int): TeamRole {
-        return permissionList[position]
-    }
 
     inner class MyViewHolder(val tipItemBinding: ViewAssignedRoleItemBinding) :
         RecyclerView.ViewHolder(tipItemBinding.root)

@@ -44,19 +44,21 @@ class UserAccessPermissionViewModel @Inject constructor(
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
-    private val _showEmployeeListDialog = MutableLiveData<Event<Boolean>>()
-    val showEmployeeListDialog: LiveData<Event<Boolean>> = _showEmployeeListDialog
+    private val _showEmployeeListDialog = MutableLiveData<Event<TeamRole>>()
+    val showEmployeeListDialog: LiveData<Event<TeamRole>> = _showEmployeeListDialog
 
     private var roleId: Int = -1
 
     private var isEdit: Boolean = false
+
+    private lateinit var teamRole: TeamRole
 
 
     private lateinit var createTeamRoleRequestModel: CreateTeamRoleRequestModel
 
     private lateinit var resource: Resource<GetUserPermissionListResponse>
 
-    fun employeeData() = posRepository.employeesList(locationId)
+    val employeeData = posRepository.employeesList(locationId)
     val getTeamRoleList = taxServiceChargeRepository.getTeamRoleList()
 
     private val _allEmployeeList = MutableLiveData<ArrayList<Employee>>()
@@ -186,8 +188,63 @@ class UserAccessPermissionViewModel @Inject constructor(
     }
 
     fun assignMember(teamRole: TeamRole) {
-        _showEmployeeListDialog.value = Event(true)
+
+        _showEmployeeListDialog.value = Event(teamRole)
     }
+
+    fun assignRole(selectedItemList: ArrayList<Employee>, teamRole: TeamRole) {
+        //this.teamRole = teamRole
+        _showProgress.value = Event(true)
+        createTeamRoleRequestModel = CreateTeamRoleRequestModel().apply {
+            id = teamRole.id
+            name = teamRole.name
+            val idList = ArrayList<Int>()
+            selectedItemList.forEach {
+                idList.add(it.id)
+            }
+            employeeIds = idList
+
+        }
+        viewModelScope.launch {
+
+            resource = taxServiceChargeRepository.updateTeamRole(
+                teamRole.id,
+                createTeamRoleRequestModel
+            )
+
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+                    resource.data.let { logInResponse ->
+                        if (logInResponse?.status == 200) {
+
+                            resource.data?.let { createTeamRole ->
+
+                                val role = createTeamRole.data.teamRoles
+
+                                taxServiceChargeRepository.createTeamRoleDatabase(
+                                    role
+                                )
+                                _data.value = Event(createTeamRole)
+                            }
+                        } else {
+                            _snackbarText.value = Event(resource.message)
+                        }
+                    }
+                }
+
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
+                }
+
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
+            }
+        }
+    }
+
 
     fun submit() {
         val value = createUserPermission.value
@@ -230,6 +287,8 @@ class UserAccessPermissionViewModel @Inject constructor(
                                     taxServiceChargeRepository.createTeamRoleDatabase(
                                         role
                                     )
+
+                                    removeAllEmployee()
                                     _data.value = Event(createTeamRole)
                                 }
                             } else {

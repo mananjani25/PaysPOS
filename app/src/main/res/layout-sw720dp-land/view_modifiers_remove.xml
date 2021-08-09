@@ -1,69 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
     tools:ignore="MissingDefaultResource">
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/view" />
+    <data>
+
+        <variable
+            name="model"
+            type="com.android.pos.data.entities.Modifier" />
+    </data>
+
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="vertical">
 
-        <androidx.appcompat.widget.AppCompatImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginStart="@dimen/_5sdp"
-            app:srcCompat="@drawable/ic_remove_circle" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/view" />
 
-        <androidx.appcompat.widget.AppCompatEditText
-            style="@style/CustomFontSemiBold"
-            android:layout_width="0dp"
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginStart="@dimen/_5sdp"
-            android:layout_weight="1"
-            android:background="@null"
-            android:gravity="start"
-            android:padding="@dimen/_5sdp"
-            android:textColor="@color/viewTextColor"
-            android:textSize="@dimen/_6mdpi"
-            tools:text="Modifier one" />
+            android:orientation="horizontal">
 
-        <androidx.appcompat.widget.AppCompatEditText
-            style="@style/CustomFontMediumStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginStart="@dimen/_5sdp"
-            android:background="@null"
-            android:gravity="start"
-            android:hint="@string/_0_00"
-            android:padding="@dimen/_10sdp"
-            android:textColor="@color/txtColor"
-            android:textColorHint="@color/colorC5"
-            android:textSize="@dimen/_6mdpi" />
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/imgRemove"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="@dimen/_5sdp"
+                app:srcCompat="@drawable/ic_remove_circle" />
 
-        <androidx.appcompat.widget.AppCompatImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginStart="@dimen/_5sdp"
-            android:layout_marginEnd="@dimen/_10sdp"
-            app:srcCompat="@drawable/ic_baseline_menu" />
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/edtName"
+                style="@style/CustomFontSemiBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:layout_weight="1"
+                android:background="@null"
+                android:gravity="start"
+                android:padding="@dimen/_4sdp"
+                android:textColor="@color/viewTextColor"
+                android:textSize="@dimen/_6mdpi"
+                tools:text="Modifier one" />
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/edtPrice"
+                style="@style/CustomFontMediumStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:background="@null"
+                android:gravity="start"
+                android:inputType="numberDecimal"
+                android:hint="@string/_0_00"
+                android:padding="@dimen/_3sdp"
+                android:textColor="@color/txtColor"
+                android:textColorHint="@color/colorC5"
+                android:textSize="@dimen/_6mdpi" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:layout_marginEnd="@dimen/_10sdp"
+                app:srcCompat="@drawable/ic_baseline_menu" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.3dp"
+            android:background="@color/view" />
+
     </androidx.appcompat.widget.LinearLayoutCompat>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="0.3dp"
-        android:background="@color/view" />
-
-</androidx.appcompat.widget.LinearLayoutCompat>
+</layout>

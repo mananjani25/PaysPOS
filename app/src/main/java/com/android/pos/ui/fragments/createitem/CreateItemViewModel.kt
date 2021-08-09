@@ -9,9 +9,7 @@ import com.android.pos.R
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.requestModel.CreateItemRequestModel
 import com.android.pos.data.model.responseModel.BaseResponse
-import com.android.pos.data.model.responseModel.CreateDiscountResponse
 import com.android.pos.data.repositories.PosRepository
-import com.android.pos.data.repositories.UserRepository
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
@@ -35,6 +33,9 @@ class CreateItemViewModel @Inject constructor(
 
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
+
+    val modifierSet = posRepository.modifierSetsList()
+
 
     fun setData(itemObject: TbItem) {
         isEdit = true
