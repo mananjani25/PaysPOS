@@ -31,4 +31,6 @@ class Modifier : Parcelable {
 
     @SerializedName("_destroy")
     var _destroy: Boolean = false
+
+    var isChecked: Boolean = false
 }

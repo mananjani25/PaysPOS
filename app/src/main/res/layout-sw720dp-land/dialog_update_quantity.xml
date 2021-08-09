@@ -69,6 +69,14 @@
             android:orientation="vertical"
             android:padding="@dimen/_20sdp">
 
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvModifierSets"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:layout_marginBottom="@dimen/_10sdp"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
                 android:layout_width="match_parent"
@@ -76,7 +84,7 @@
                 android:layout_gravity="center"
                 android:paddingBottom="@dimen/_5sdp"
                 android:text="@string/quantity"
-                android:textColor="@color/drawerBack"
+                android:textColor="@color/viewTextColor"
                 android:textSize="@dimen/_5mdpi"
                 app:textAllCaps="true" />
 
@@ -110,10 +118,10 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_weight="1"
-                    android:gravity="center"
-                    android:inputType="number"
-                    android:imeOptions="actionDone"
                     android:background="@null"
+                    android:gravity="center"
+                    android:imeOptions="actionDone"
+                    android:inputType="number"
                     android:padding="@dimen/_5sdp"
                     android:textColor="@color/viewTextColor"
                     android:textSize="@dimen/_6mdpi" />
@@ -144,7 +152,7 @@
                 android:layout_marginTop="@dimen/_10sdp"
                 android:paddingBottom="@dimen/_5sdp"
                 android:text="@string/notes"
-                android:textColor="@color/drawerBack"
+                android:textColor="@color/viewTextColor"
                 android:textSize="@dimen/_5mdpi"
                 app:textAllCaps="true" />
 
