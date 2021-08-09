@@ -35,5 +35,6 @@ data class Employee(
     @SerializedName("loggedin_terminal_id")
     val loggedinTerminalId: Int,
     @SerializedName("updated_at")
-    val updatedAt: String
+    val updatedAt: String,
+    var isChecked: Boolean = false
 ) : Parcelable

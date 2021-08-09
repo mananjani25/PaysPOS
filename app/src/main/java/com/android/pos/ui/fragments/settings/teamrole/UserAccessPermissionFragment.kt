@@ -21,6 +21,7 @@ import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.statusUtils.Status
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import java.io.Serializable
 
 @AndroidEntryPoint
 class UserAccessPermissionFragment : Fragment() {
@@ -34,6 +35,7 @@ class UserAccessPermissionFragment : Fragment() {
     private lateinit var assignTeamListAdapter: AssignTeamListAdapter
     private lateinit var userPermissionObject: TeamRole
     var isEdit: Boolean = false
+    private lateinit var employeeListGlobal: List<Employee>
 
     val timeSheet = ArrayList<PermissionModuleListModel>()
     override fun onCreateView(
@@ -145,15 +147,16 @@ class UserAccessPermissionFragment : Fragment() {
 
     private fun loadTeams() {
 
-        viewModel.employeeData().observe(viewLifecycleOwner, {
+        viewModel.employeeData.observe(viewLifecycleOwner, {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
                         ProgressUtils.dismissProgressDialog()
                         binding.rvAllMember.visibility = View.VISIBLE
                         resource.data?.let { employeeList ->
-                            setEmployeeData(employeeList)
-                            viewModel.setEmployeeList(employeeList)
+                            employeeListGlobal = employeeList
+                            setEmployeeData(employeeListGlobal)
+                            viewModel.setEmployeeList(employeeListGlobal)
 
                             if (isEdit) {
                                 userPermissionObject =
@@ -219,6 +222,7 @@ class UserAccessPermissionFragment : Fragment() {
                     AlertUtils.showCustomAlertWithListenerWithOK(
                         it, createRoleResponse.message
                     ) { _, _ ->
+                        binding.tvRoleName.setText("")
                         getUserPermissionListObserver()
                     }
                 }
@@ -243,10 +247,17 @@ class UserAccessPermissionFragment : Fragment() {
     private fun showEmployeeListDialog() {
 
         viewModel.showEmployeeListDialog.observe(viewLifecycleOwner, { event ->
-            event.getContentIfNotHandled()?.let {
-                if (it) {
+            event.getContentIfNotHandled()?.let { teamRole ->
 
-                }
+                val bundle = Bundle()
+                bundle.putBoolean("isEdit", true)
+                bundle.putParcelable("teamRole", teamRole)
+                bundle.putSerializable("employeeList", employeeListGlobal as Serializable)
+                findNavController().navigate(
+                    R.id.action_userAccessPermissionFragment_to_assignTeamMemberListDialog,
+                    bundle
+                )
+
             }
         })
     }
