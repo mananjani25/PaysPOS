@@ -7,9 +7,11 @@
 
         <variable
             name="model"
-            type="com.android.pos.data.model.ManualSaleCartModel" />
-        <import type="android.text.TextUtils"/>
-        <import type="android.view.View"/>
+            type="com.android.pos.data.entities.TbItem" />
+
+        <import type="android.text.TextUtils" />
+
+        <import type="android.view.View" />
 
     </data>
 
@@ -24,12 +26,23 @@
             style="@style/CustomFontSemiBold"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="0.5"
+            android:layout_weight="0.6"
             android:ellipsize="end"
             android:lines="1"
             android:maxLines="1"
             android:singleLine="true"
-            android:text="@{model.tax ? `Tax` : `Custom Item`}"
+            android:text="@{model.name}"
+            android:textColor="@color/txtColor"
+            android:textSize="@dimen/_6mdpi" />
+
+        <TextView
+            android:id="@+id/txtQuantity"
+            style="@style/CustomFontSemiBold"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.1"
+            android:gravity="center"
+            android:text="@{`x `+model.itemQuantity}"
             android:textColor="@color/txtColor"
             android:textSize="@dimen/_6mdpi" />
 
@@ -40,9 +53,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:layout_weight="0.5"
-            android:text="@{model.itemPrice == null ?  String.format(@string/itemPrice,@string/zero): String.format(@string/itemPrice,model.itemPrice)}"
+            android:layout_weight="0.3"
             android:gravity="end"
+            android:text="@{`$`+String.valueOf(model.price)}"
             android:textColor="@color/txtColor"
             android:textSize="@dimen/_6mdpi" />
 

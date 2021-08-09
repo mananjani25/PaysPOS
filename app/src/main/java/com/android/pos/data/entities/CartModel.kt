@@ -15,6 +15,7 @@ class CartModel {
     var employeeID: Int = 0
     var items: List<TbItem>? = null
     var isOpenOrder: Boolean = false
+    var isMaual:Boolean = false
 
 
 

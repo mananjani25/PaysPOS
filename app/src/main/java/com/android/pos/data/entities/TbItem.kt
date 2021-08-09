@@ -42,5 +42,6 @@ class TbItem : Parcelable {
     var itemQuantity: Int = 0
     var isManualSales: Boolean = false
     var isChecked: Boolean = false
+    var isTax:Boolean = false
 
 }
