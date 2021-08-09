@@ -489,6 +489,9 @@
             android:name="isEdit"
             android:defaultValue="false"
             app:argType="boolean" />
+        <action
+            android:id="@+id/action_userAccessPermissionFragment_to_assignTeamMemberListDialog"
+            app:destination="@id/assignTeamMemberListDialog" />
     </fragment>
     <fragment
         android:id="@+id/paymentFragment"
@@ -535,12 +538,21 @@
         android:id="@+id/manualSaleNew"
         android:name="com.android.pos.ui.fragments.manualsales.ManualSaleNew"
         android:label="ManualSaleNew"
-        tools:layout="@layout/fragment_manual_sale_new" >
+        tools:layout="@layout/fragment_manual_sale_new">
         <action
             android:id="@+id/action_manualSaleNew_to_assignCustomerOrderFragment"
             app:destination="@id/assignCustomerOrderFragment"
             app:enterAnim="@anim/nav_default_enter_anim" />
     </fragment>
+    <dialog
+        android:id="@+id/assignTeamMemberListDialog"
+        android:name="com.android.pos.ui.dialog.AssignRoleTeamMemberListDialog"
+        android:label="AssignTeamMemberListDialog" />
+
+    <argument
+        android:name="isEdit"
+        android:defaultValue="false"
+        app:argType="boolean" />
 
 
 </navigation>
