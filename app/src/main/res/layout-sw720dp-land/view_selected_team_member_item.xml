@@ -12,14 +12,14 @@
 
         <variable
             name="selectedEmployeeModel"
-            type="com.android.pos.data.model.responseModel.EmployeeListResponse.Data.Employee" />
+            type="com.android.pos.data.entities.Employee" />
     </data>
 
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
-        android:onClick="@{() -> viewModel.employeeRemoved(selectedEmployeeModel,true)}"
         android:layout_height="wrap_content"
+        android:onClick="@{() -> viewModel.employeeRemoved(selectedEmployeeModel,true)}"
         android:orientation="horizontal">
 
         <androidx.appcompat.widget.AppCompatTextView

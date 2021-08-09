@@ -15,6 +15,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
+import com.android.pos.data.entities.Employee
 import com.android.pos.data.model.responseModel.EmployeeListResponse
 import com.android.pos.databinding.FragmentTeamListBinding
 import com.android.pos.ui.activities.MainActivity
@@ -36,7 +37,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
     private lateinit var binding: FragmentTeamListBinding
     private val viewModel by viewModels<TeamListViewModel>()
     var adapter: TeamsAdapter = TeamsAdapter()
-    private var empObject: EmployeeListResponse.Data.Employee? = null
+    private var empObject: Employee? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -138,7 +139,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
                         positiveButton(getString(R.string.tv_delete)) {
                             // Do positive stuff here
                             empObject =
-                                viewHolder?.itemView?.getTag(R.string.tv_order_id) as EmployeeListResponse.Data.Employee
+                                viewHolder?.itemView?.getTag(R.string.tv_order_id) as Employee
 
                             Log.e("Edit", empObject!!.id.toString())
                             viewModel.delete(empObject!!.id)
@@ -182,7 +183,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
                             adapter.setSelected(selectedPos)
 
                         adapter.setPeople(
-                            resource.data as MutableList<EmployeeListResponse.Data.Employee>,
+                            resource.data as MutableList<Employee>,
                             requireActivity()
                         )
 
@@ -227,7 +228,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
         }
     }
 
-    private fun loadTeamDetails(data: EmployeeListResponse.Data.Employee?) {
+    private fun loadTeamDetails(data: Employee?) {
 
 
         if (data != null) {
@@ -251,7 +252,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
         fm.beginTransaction().replace(binding.frameContainer.id, teamDetails).commit()
     }
 
-    override fun onItemClickListener(view: View?, data: EmployeeListResponse.Data.Employee) {
+    override fun onItemClickListener(view: View?, data: Employee) {
 
         Log.e("onItemClickListener", ">>>>")
         selectedPos = data.id
@@ -259,7 +260,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
         loadTeamDetails(empObject)
     }
 
-    override fun onItemClickListener(employee: EmployeeListResponse.Data.Employee) {
+    override fun onItemClickListener(employee: Employee) {
         Log.e("onItem ", ">>>> ${employee.firstName}")
 
         empObject = employee

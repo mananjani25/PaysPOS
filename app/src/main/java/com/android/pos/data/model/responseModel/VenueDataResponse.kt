@@ -85,7 +85,7 @@ data class VenueDataResponse(
     }
 
     object companion {
-        @BindingAdapter("profileImage","thumbHolder")
+        @BindingAdapter("profileImage", "thumbHolder")
         @JvmStatic
         fun loadImage(view: ImageView, imageUrl: String?, thumbNail: String?) {
             if (imageUrl.isNullOrBlank() || imageUrl.trim() == "" || imageUrl.trim() == "null" || imageUrl.isNullOrEmpty()

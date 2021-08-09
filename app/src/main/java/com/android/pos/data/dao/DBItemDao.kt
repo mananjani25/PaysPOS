@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.android.pos.data.entities.TbItem
+import com.google.android.material.tabs.TabItem
 
 /**
  * Created by vishal patel on 2/3/2018.
@@ -21,6 +22,9 @@ interface DBItemDao {
     @get:Query("select * from TbItem where TbItem.isHide = 1 GROUP by TbItem.itemId ORDER BY TbItem.sort ASC ")
     val allItem: LiveData<List<TbItem?>>?
 
+    /*@get:Query("select * from TbItem whe  re TbItem.isManualSales = 1")
+    val manualItems : LiveData<List<TabItem?>>?
+*/
     @get:Query("select * from TbItem where TbItem.isHide = 0 ORDER BY TbItem.sort ASC")
     val unhideItem: LiveData<List<TbItem>>
 

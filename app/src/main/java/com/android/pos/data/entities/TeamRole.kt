@@ -9,11 +9,11 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 @Entity(tableName = "TbTeamRole")
 data class TeamRole(
-    @SerializedName("employees")
-    val employees: List<Employee>,
     @PrimaryKey
     @SerializedName("id")
     val id: Int,
     @SerializedName("name")
-    val name: String
+    val name: String,
+    @SerializedName("employees")
+    val employees: List<Employee>
 ) : Parcelable

@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.R
+import com.android.pos.data.entities.Employee
 import com.android.pos.data.model.requestModel.CreateEmployeeRequestModel
 import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.model.responseModel.CreateEmployeeResponse
@@ -47,7 +48,7 @@ class CreateTeamViewModel @Inject constructor(
     private lateinit var resource: Resource<CreateEmployeeResponse>
 
 
-    fun setTaxData(employeeModel: EmployeeListResponse.Data.Employee) {
+    fun setTaxData(employeeModel: Employee) {
 
         createTaxDetails.value?.firstName = employeeModel.firstName
         createTaxDetails.value?.lastName = employeeModel.lastName
@@ -111,7 +112,7 @@ class CreateTeamViewModel @Inject constructor(
                                 resource.data?.let { createEmployeeResponse ->
 
 
-                                    val employee = EmployeeListResponse.Data.Employee(
+                                    val employee = Employee(
                                         email = createEmployeeResponse.data.employee.email,
                                         firstName = createEmployeeResponse.data.employee.firstName,
                                         lastName = createEmployeeResponse.data.employee.lastName,

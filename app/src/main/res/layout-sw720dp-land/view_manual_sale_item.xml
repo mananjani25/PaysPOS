@@ -3,6 +3,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingDefaultResource">
 
+    <data>
+
+        <variable
+            name="model"
+            type="com.android.pos.data.model.ManualSaleCartModel" />
+        <import type="android.text.TextUtils"/>
+        <import type="android.view.View"/>
+
+    </data>
+
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -14,35 +24,25 @@
             style="@style/CustomFontSemiBold"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="0.6"
+            android:layout_weight="0.5"
             android:ellipsize="end"
             android:lines="1"
             android:maxLines="1"
             android:singleLine="true"
-            android:text="Three layer ice cream"
+            android:text="@{model.tax ? `Tax` : `Custom Item`}"
             android:textColor="@color/txtColor"
             android:textSize="@dimen/_6mdpi" />
 
-        <TextView
-            android:id="@+id/txtQuantity"
-            style="@style/CustomFontSemiBold"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="0.1"
-            android:gravity="center"
-            android:text="x 1"
-            android:textColor="@color/color88"
-            android:textSize="@dimen/_6mdpi" />
 
         <TextView
+            android:id="@+id/txtItemPrice"
             style="@style/CustomFontBold"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:layout_weight="0.3"
+            android:layout_weight="0.5"
+            android:text="@{model.itemPrice == null ?  String.format(@string/itemPrice,@string/zero): String.format(@string/itemPrice,model.itemPrice)}"
             android:gravity="end"
-            android:text="$3.50"
             android:textColor="@color/txtColor"
             android:textSize="@dimen/_6mdpi" />
 

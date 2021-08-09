@@ -13,6 +13,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import com.android.pos.R
+import com.android.pos.data.entities.Employee
 import com.android.pos.data.model.responseModel.EmployeeListResponse
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.callback.CustomCallback
@@ -45,8 +46,8 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
     inner class Section {
         var alpha: String? = null
 
-        var people: MutableList<EmployeeListResponse.Data.Employee?>? =
-            emptyList<EmployeeListResponse.Data.Employee>().toMutableList()
+        var people: MutableList<Employee?>? =
+            emptyList<Employee>().toMutableList()
     }
 
     inner class ItemViewHolder internal constructor(itemView: View) :
@@ -66,7 +67,7 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
         var titleTextView: TextView = itemView.findViewById(R.id.txtHeader)
     }
 
-    private var people: MutableList<EmployeeListResponse.Data.Employee>? = null
+    private var people: MutableList<Employee>? = null
 
     private val sections = emptyList<Section>().toMutableList()
     private var sectionSortedList = emptyList<Section>().toMutableList()
@@ -75,12 +76,12 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
         return sectionSortedList
     }
 
-    fun getPeople(): MutableList<EmployeeListResponse.Data.Employee>? {
+    fun getPeople(): MutableList<Employee>? {
         return people
     }
 
     fun removeItem(
-        empObject: EmployeeListResponse.Data.Employee,
+        empObject: Employee,
         requireActivity: FragmentActivity
     ) {
 
@@ -90,7 +91,7 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
     }
 
     fun setPeople(
-        people: MutableList<EmployeeListResponse.Data.Employee>,
+        people: MutableList<Employee>,
         requireActivity: FragmentActivity
     ) {
         this.people = people
@@ -168,7 +169,7 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
     ) {
         val s = sectionSortedList[sectionIndex]
         val ivh = viewHolder as ItemViewHolder
-        val person = s.people?.get(itemIndex) as EmployeeListResponse.Data.Employee
+        val person = s.people?.get(itemIndex) as Employee
 
 
         //ivh.txtId.text = person.id.toString()

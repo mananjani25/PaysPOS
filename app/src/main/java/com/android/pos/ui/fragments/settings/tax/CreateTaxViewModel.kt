@@ -134,8 +134,8 @@ class CreateTaxViewModel @Inject constructor(
                             if (logInResponse?.status == 200) {
 
                                 resource.data?.let { createTaxResponse ->
-                                    val tax =
-                                        TaxData(
+                                    val tax = createTaxResponse.data
+                                       /* TaxData(
                                             name = createTaxResponse.data.name,
                                             id = createTaxResponse.data.id,
                                             locationId = createTaxResponse.data.locationId,
@@ -148,7 +148,7 @@ class CreateTaxViewModel @Inject constructor(
                                             itemIds = createTaxResponse.data.itemIds,
                                             createdAt = createTaxResponse.data.createdAt,
                                             updatedAt = createTaxResponse.data.updatedAt
-                                        )
+                                        )*/
 
                                     taxServiceChargeRepository.createTaxDatabase(tax)
 

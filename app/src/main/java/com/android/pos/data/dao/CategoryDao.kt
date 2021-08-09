@@ -54,4 +54,6 @@ interface CategoryDao {
 
     @Query("SELECT * FROM TbCategory WHERE TbCategory.id IN (:userIds)")
     fun categoryByIds(userIds: IntArray): List<TbCategory?>?
+
+
 }

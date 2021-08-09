@@ -294,11 +294,16 @@
     <string name="last_name_validate">Please Enter Last Name</string>
     <string name="phone_no_validate">Please Enter Phone No</string>
 
+    <string name="modifier_empty_validation">Please Enter Modifier Name</string>
+    <string name="amount_empty_validation">Please Enter Item Price</string>
+
     <string name="company_name_validate">Pleae Enter Company Name</string>
     <string name="tv_delete">Delete</string>
     <string name="symbole">$</string>
     <string name="percentage_symbol">%</string>
     <string name="format">%.2f</string>
+    <string name="zero">0.00</string>
+    <string name="itemPrice">$ %s</string>
 
     <string name="horizontal">Horizontal</string>
     <string name="vertical">Vertical</string>
@@ -388,4 +393,5 @@
     <string name="add_to_cart">Add to Cart</string>
     <string name="direct_pay">Direct Pay</string>
     <string name="order_subtotal">Order Subtotal</string>
+    <string name="customer_item">Customer Item</string>
 </resources>
