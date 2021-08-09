@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.databinding.FragmentModifiersBinding
-import com.android.pos.ui.adapter.ModifiersListAdapter
+import com.android.pos.ui.adapter.ModifierSetsListAdapter
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.SwipeHelper
@@ -29,7 +29,7 @@ class Modifiers : Fragment(), TextWatcher {
     var dragFrom = -1
     var dragTo = -1
     private lateinit var binding: FragmentModifiersBinding
-    private lateinit var adapter: ModifiersListAdapter
+    private lateinit var adapter: ModifierSetsListAdapter
     private val viewModel by viewModels<ModifierSetViewModel>()
 
     override fun onCreateView(
@@ -62,7 +62,7 @@ class Modifiers : Fragment(), TextWatcher {
     }
 
     private fun setAdapter() {
-        adapter = ModifiersListAdapter(false)
+        adapter = ModifierSetsListAdapter(false)
         binding.rvModifiersList.adapter = adapter
 
         binding.edtSearch.addTextChangedListener(this)
@@ -132,7 +132,7 @@ class Modifiers : Fragment(), TextWatcher {
                         getString(R.string.delete_modifier_message)
                     ) {
                         positiveButton(getString(R.string.tv_delete)) {
-                            viewModel.deleteDatabase(adapter.getItem(pos).id)
+                            adapter.getItem(pos).id?.let { viewModel.deleteModifierSet(it) }
                         }
                         negativeButton(R.string.tv_cancel) {
                             // Do negative stuff here

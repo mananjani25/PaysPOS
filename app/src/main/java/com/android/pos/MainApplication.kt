@@ -16,9 +16,4 @@ class MainApplication : Application() {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
     }
 
-
-    @BindingAdapter("app:srcCompat")
-    fun bindSrcCompat(imageView: AppCompatImageView?, drawable: Drawable?) {
-        // Your setter code goes here, like setDrawable or similar
-    }
 }

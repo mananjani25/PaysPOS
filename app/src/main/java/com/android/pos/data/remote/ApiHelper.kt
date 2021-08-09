@@ -177,4 +177,13 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
 
     suspend fun deleteModifierSetCall(id: Int) =
         getResult { apiService.deleteModifierSetCall(id) }
+
+    suspend fun getModifierSetCall() =
+        getResult { apiService.getModifierSet() }
+
+    suspend fun createModifierSet(data: CreateModifierRequest) =
+        getResult { apiService.createModifierSet(data) }
+
+    suspend fun updateModifierSets(mId: Int, data: CreateModifierRequest) =
+        getResult { apiService.updateModifierSets(mId, data) }
 }

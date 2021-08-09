@@ -8,19 +8,29 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 @Entity(tableName = "ModifierSet")
-data class ModifierSet(
+class ModifierSet : Parcelable {
     @SerializedName("created_at")
-    val createdAt: String,
+    var createdAt: String = ""
+
     @PrimaryKey
     @SerializedName("id")
-    val id: Int,
+    var id: Int? = null
+
     @SerializedName("item_ids")
-    val itemIds: String,
+    var itemIds: List<Int> = emptyList()
+
     @SerializedName("modifiers")
-    val modifiers: List<Modifier>,
+    var modifiers: List<Modifier> = emptyList()
+
     @SerializedName("name")
-    val name: String,
+    var name: String = ""
+
     @SerializedName("updated_at")
-    val updatedAt: String,
+    var updatedAt: String = ""
+
+    @SerializedName("location_id")
+    var locationId: Int = 0
+
     var isChecked: Boolean = false
-) : Parcelable
+
+}

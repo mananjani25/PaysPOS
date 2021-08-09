@@ -24,7 +24,7 @@ class ModifierSetViewModel @Inject constructor(
     val unhideCategories = posRepository.unhideCategoryList()
 
     fun modifierSets(): LiveData<Resource<List<ModifierSet>>> {
-        return posRepository.modifierSetsList()
+        return posRepository.modifierSets()
     }
 
     private val _snackbarText = MutableLiveData<Event<Any?>>()
@@ -42,13 +42,13 @@ class ModifierSetViewModel @Inject constructor(
         }
     }
 
-    fun deleteCategory(catId: Int) {
+    fun deleteModifierSet(id: Int) {
         _showProgress.value = Event(true)
 
         viewModelScope.launch {
 
 
-            val resource = posRepository.deleteCategoryCall(catId)
+            val resource = posRepository.deleteModifierSetCall(id)
             when (resource.status) {
                 Status.SUCCESS -> {
 
@@ -59,7 +59,7 @@ class ModifierSetViewModel @Inject constructor(
                             resource.data?.let { baseResponse ->
                                 _data.value = Event(baseResponse)
 
-                                posRepository.deleteModifierSet(catId)
+                                posRepository.deleteModifierSet(id)
 
                             }
                         } else {

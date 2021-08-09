@@ -49,6 +49,7 @@
                     android:textSize="@dimen/_7mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/btnSave"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -56,7 +57,6 @@
                     android:layout_gravity="center"
                     android:background="@color/btnColor"
                     android:gravity="center"
-                    android:onClick="@{() -> createModifierViewModel.submit()}"
                     android:paddingStart="@dimen/_25sdp"
                     android:paddingTop="@dimen/_5sdp"
                     android:paddingEnd="@dimen/_25sdp"
@@ -113,6 +113,7 @@
                     android:background="@color/view" />
 
                 <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/llAddItems"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -132,6 +133,7 @@
                         android:textSize="@dimen/_6mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtItemsTotal"
                         style="@style/CustomFontMediumStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -169,10 +171,12 @@
                     app:textAllCaps="true" />
 
                 <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvModifiers"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    tools:itemCount="2"
                     android:layout_marginBottom="@dimen/_10sdp"
+                    tools:itemCount="2"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:listitem="@layout/view_modifiers_remove" />
 
                 <androidx.appcompat.widget.LinearLayoutCompat
@@ -196,6 +200,7 @@
                         <androidx.appcompat.widget.AppCompatEditText
                             style="@style/CustomFontSemiBold"
                             android:layout_width="0dp"
+                            android:id="@+id/edtModifier"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:layout_marginStart="@dimen/_5sdp"
@@ -209,12 +214,14 @@
                             android:textSize="@dimen/_6mdpi" />
 
                         <androidx.appcompat.widget.AppCompatEditText
+                            android:id="@+id/edtPrice"
                             style="@style/CustomFontSemiBold"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:layout_marginStart="@dimen/_5sdp"
                             android:background="@null"
+                            android:inputType="numberDecimal"
                             android:gravity="start"
                             android:hint="@string/_0_00"
                             android:padding="@dimen/_5sdp"

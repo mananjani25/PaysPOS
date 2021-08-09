@@ -11,8 +11,8 @@ import com.android.pos.databinding.ViewModifierSetsBinding
 import java.util.*
 import kotlin.collections.ArrayList
 
-class ModifiersListAdapter(val isCreateItem: Boolean) :
-    RecyclerView.Adapter<ModifiersListAdapter.MyViewHolder>(), Filterable {
+class ModifierSetsListAdapter(val isCreateItem: Boolean) :
+    RecyclerView.Adapter<ModifierSetsListAdapter.MyViewHolder>(), Filterable {
     var list = ArrayList<ModifierSet>()
     var filterList = ArrayList<ModifierSet>()
     var selectedItemList = ArrayList<ModifierSet>()
@@ -82,14 +82,14 @@ class ModifiersListAdapter(val isCreateItem: Boolean) :
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): ModifiersListAdapter.MyViewHolder {
+    ): ModifierSetsListAdapter.MyViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = ViewModifierSetsBinding.inflate(inflater, parent, false)
         return MyViewHolder(binding)
 
     }
 
-    override fun onBindViewHolder(holder: ModifiersListAdapter.MyViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ModifierSetsListAdapter.MyViewHolder, position: Int) {
 
         holder.bind(filterList.get(position))
     }

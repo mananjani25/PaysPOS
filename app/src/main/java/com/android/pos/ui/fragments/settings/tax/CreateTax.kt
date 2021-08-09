@@ -14,7 +14,6 @@ import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.TaxData
 import com.android.pos.data.entities.TbItem
-import com.android.pos.data.model.responseModel.GetTaxResponse
 import com.android.pos.data.remote.Constants.ADD_TAX
 import com.android.pos.data.remote.Constants.CREATE_TAX
 import com.android.pos.data.remote.Constants.DIALOG_KEY
@@ -24,7 +23,6 @@ import com.android.pos.data.remote.Constants.SETTING_KEY
 import com.android.pos.databinding.DialogCreateNewTaxBinding
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
-import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.getNavigationResultLiveData
 import com.android.pos.utils.extensions.liveSnackBar
 import com.google.android.material.snackbar.Snackbar
@@ -104,14 +102,13 @@ class CreateTax : Fragment() {
         binding.llAllItemsDialog.setOnClickListener {
             val bundle = Bundle()
             if (isEdit) {
-
                 bundle.putBoolean("isEdit", true)
                 bundle.putIntegerArrayList("itemIds", itemIds)
-                findNavController().navigate(R.id.action_newTax_to_itemDialog, bundle)
             } else {
                 bundle.putIntegerArrayList("itemIds", itemIds)
-                findNavController().navigate(R.id.action_newTax_to_itemDialog, bundle)
             }
+            bundle.putString("where", "tax")
+            findNavController().navigate(R.id.action_newTax_to_itemDialog, bundle)
         }
 
         binding.llItemPricing.setOnClickListener {

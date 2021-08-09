@@ -15,7 +15,7 @@ import com.android.pos.data.entities.ModifierSet
 interface ModifierSetDao {
 
     @Insert(onConflict = REPLACE)
-    fun add(modifierModel: ModifierSet?): Long
+    suspend fun add(modifierModel: ModifierSet?): Long
 
     @Insert(onConflict = REPLACE)
     suspend fun addAll(modifierModel: List<ModifierSet>)

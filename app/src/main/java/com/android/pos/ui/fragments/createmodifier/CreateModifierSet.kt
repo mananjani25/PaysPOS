@@ -1,6 +1,8 @@
 package com.android.pos.ui.fragments.createmodifier
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,20 +11,30 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
+import com.android.pos.data.entities.Modifier
+import com.android.pos.data.entities.ModifierSet
+import com.android.pos.data.entities.TbItem
 import com.android.pos.data.remote.Constants
-import com.android.pos.databinding.CreateItemBinding
 import com.android.pos.databinding.CreateModifierSetBinding
-import com.android.pos.ui.activities.MainActivity
+import com.android.pos.ui.adapter.ModifierAdapter
 import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.extensions.getNavigationResultLiveData
 import com.android.pos.utils.extensions.liveSnackBar
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import java.text.NumberFormat
+import java.util.*
 
 @AndroidEntryPoint
-class CreateModifierSet : Fragment() {
-
+class CreateModifierSet : Fragment(), TextWatcher {
+    private var modifierSet: ModifierSet? = null
+    private var isEdit: Boolean = false
+    private lateinit var adapter: ModifierAdapter
     private lateinit var binding: CreateModifierSetBinding
     private val viewModel by viewModels<CreateModifierViewModel>()
+
+    private var itemIds = ArrayList<Int>()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -32,9 +44,71 @@ class CreateModifierSet : Fragment() {
         binding.lifecycleOwner = this
         binding.createModifierViewModel = viewModel
 
+        isEdit = arguments?.getBoolean("isEdit")!!
+        setupAdapter()
+        setupUI()
         setupSnackbar()
         observeShowProgress()
+        observeData()
         return binding.root
+    }
+
+
+    private fun setupUI() {
+
+        binding.edtModifier.addTextChangedListener(this)
+        binding.edtPrice.addTextChangedListener(this)
+
+        val resultDialogKey = getNavigationResultLiveData<ArrayList<TbItem>>(Constants.DIALOG_KEY)
+        resultDialogKey?.observe(viewLifecycleOwner) {
+            itemIds.clear()
+            if (it.size > 0) {
+                binding.txtItemsTotal.text = "" + it.size + " Items"
+            } else {
+                binding.txtItemsTotal.text = "No Items"
+            }
+
+            it.forEach {
+                itemIds.add(it.itemId)
+            }
+            viewModel.setItemIds(itemIds)
+        }
+
+        if (isEdit) {
+            binding.btnSave.text = getString(R.string.update)
+            modifierSet = arguments?.getParcelable("modifierObject")!!
+            itemIds = modifierSet!!.itemIds as ArrayList<Int>
+            viewModel.setItemIds(itemIds)
+            viewModel.setData(isEdit, modifierSet!!.name, modifierSet!!.id)
+            if (itemIds.size > 0) {
+                binding.txtItemsTotal.text = "" + itemIds.size + " Items"
+            } else {
+                binding.txtItemsTotal.text = "No Items"
+            }
+
+            adapter.addAll(modifierSet!!.modifiers)
+        }
+
+        binding.btnSave.setOnClickListener {
+            viewModel.setModifiers(adapter.getAll())
+            viewModel.setDeleteModifiers(adapter.getDelete())
+            viewModel.submit()
+        }
+    }
+
+    private fun setupAdapter() {
+
+        adapter = ModifierAdapter(isEdit)
+        binding.rvModifiers.adapter = adapter
+
+        binding.llAddItems.setOnClickListener {
+            val bundle = Bundle()
+            bundle.putString("where", "modifier")
+            if (isEdit) {
+                bundle.putIntegerArrayList("itemIds", itemIds)
+            }
+            findNavController().navigate(R.id.action_createIModifierSet_to_itemDialog, bundle)
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -65,5 +139,67 @@ class CreateModifierSet : Fragment() {
 
     private fun setupSnackbar() {
         binding.root.liveSnackBar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
+    }
+
+    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+    }
+
+    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+        if (s.hashCode() == binding.edtModifier.text.hashCode()) {
+            // do other things
+            binding.edtModifier.removeTextChangedListener(this)
+
+            if (s != null && s.length == 1) {
+                val model = Modifier().apply {
+                    name = binding.edtModifier.text.toString().trim()
+                    price = 0.00
+                }
+                adapter.add(model)
+            }
+            binding.edtModifier.text?.clear()
+            binding.edtModifier.clearFocus()
+            binding.edtModifier.addTextChangedListener(this)
+        }
+
+        if (s.hashCode() == binding.edtPrice.text.hashCode()) {
+            binding.edtPrice.removeTextChangedListener(this)
+
+            if (s != null && s.length == 1) {
+
+                val parsed = s.toString().toDouble()
+                val formatted = NumberFormat.getCurrencyInstance(Locale.US).format((parsed / 100))
+                val model = Modifier().apply {
+                    name = ""
+                    price = formatted.replace("""[$,]""".toRegex(), "").toDouble()
+                }
+                adapter.add(model)
+            }
+            binding.edtPrice.text?.clear()
+            binding.edtPrice.clearFocus()
+            binding.edtPrice.addTextChangedListener(this)
+        }
+
+        viewModel.setModifiers(adapter.getAll())
+
+    }
+
+    override fun afterTextChanged(s: Editable?) {
+    }
+
+    private fun observeData() {
+
+        viewModel.data.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    val navControll = findNavController()
+                    navControll.previousBackStackEntry?.savedStateHandle?.set(
+                        Constants.KEY,
+                        Constants.CREATEMODIFIER
+                    )
+                    navControll.popBackStack()
+                }
+            }
+        })
     }
 }

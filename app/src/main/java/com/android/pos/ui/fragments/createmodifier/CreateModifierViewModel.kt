@@ -6,20 +6,34 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.R
+import com.android.pos.data.entities.Modifier
+import com.android.pos.data.model.requestModel.CreateModifierRequest
 import com.android.pos.data.model.requestModel.CreateModifierRequestModel
+import com.android.pos.data.model.requestModel.ModifierSet
+import com.android.pos.data.model.responseModel.CreateModifierSetResponse
+import com.android.pos.data.remote.Constants
 import com.android.pos.data.repositories.PosRepository
-import com.android.pos.data.repositories.UserRepository
+import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
+import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
 class CreateModifierViewModel @Inject constructor(
-    private val userRepository: UserRepository
+    private val posRepository: PosRepository,
+    private val prefProvider: PrefProvider
 ) :
     ViewModel() {
+
+    private var modifierSetId: Int? = null
+    private var isEdit: Boolean = false
+    private var itemIdsViewModel = ArrayList<Int>()
+    var list = ArrayList<Modifier>()
+    var deleteList = ArrayList<Modifier>()
 
     val modifierDetails = MutableLiveData(CreateModifierRequestModel())
 
@@ -29,27 +43,60 @@ class CreateModifierViewModel @Inject constructor(
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
+    private var _data = MutableLiveData<Event<Boolean>>()
+    val data: LiveData<Event<Boolean>> = _data
+
+    fun setItemIds(itemIds: ArrayList<Int>) {
+        this.itemIdsViewModel = itemIds
+    }
+
     fun submit() {
 
-        if (TextUtils.isEmpty(modifierDetails.value?.modifierName?.trim())) {
+        val data = modifierDetails.value
+
+        if (TextUtils.isEmpty(data?.modifierName?.trim())) {
             _snackbarText.value = Event(R.string.modifier_name_validate)
         } else {
             _showProgress.value = Event(true)
 
-            val data = HashMap<String, String>()
-            /* data["email"] = loginDetails.value?.emailAddress.toString()
-             data["password"] = loginDetails.value?.password.toString()*/
+
+            val modifierSets = CreateModifierRequest().apply {
+
+                val modifierSets = ModifierSet().apply {
+                    name = data?.modifierName.toString()
+                    locationId = prefProvider.getValueInt(Constants.LOCATION_ID, -1)
+                    itemIds = itemIdsViewModel
+
+
+                    modifiersAttributes = if (isEdit) {
+                        list.addAll(deleteList)
+                        list
+                    } else {
+                        list
+                    }
+                }
+                modifierSet = modifierSets
+
+            }
 
             viewModelScope.launch {
-                val resource = userRepository.userLogIn(data)
+
+                val resource: Resource<CreateModifierSetResponse> = if (isEdit) {
+                    posRepository.updateModifierSets(modifierSetId!!, modifierSets)
+                } else {
+                    posRepository.createModifierSet(modifierSets)
+                }
+
                 when (resource.status) {
                     Status.SUCCESS -> {
                         _showProgress.value = Event(false)
 
-                        resource.data.let {
-                            if (it?.status == 200) {
+                        resource.data.let { modifierSetResponse ->
+                            if (modifierSetResponse?.status == 200) {
                                 resource.data?.let {
 
+                                    _data.value = Event(true)
+                                    posRepository.addModifierSets(it.data.modifierSet)
                                 }
                             } else {
                                 _snackbarText.value = Event(resource.message)
@@ -72,5 +119,20 @@ class CreateModifierViewModel @Inject constructor(
         }
 
     }
+
+    fun setModifiers(modifierList: ArrayList<Modifier>) {
+        this.list = modifierList
+    }
+
+    fun setData(edit: Boolean, name: String, id: Int?) {
+        isEdit = edit
+        modifierDetails.value?.modifierName = name
+        modifierSetId = id
+    }
+
+    fun setDeleteModifiers(delete: ArrayList<Modifier>) {
+        deleteList = delete
+    }
+
 
 }
