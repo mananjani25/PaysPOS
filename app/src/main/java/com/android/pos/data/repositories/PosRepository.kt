@@ -68,6 +68,7 @@ class PosRepository @Inject constructor(
                         categoryId = category.id
                         categoryName = category.name
                         taxes = it.taxes
+                        modifier_set_ids = it.modifierIds
                     }
 
                     inventoryModelList.add(items)
@@ -298,6 +299,10 @@ class PosRepository @Inject constructor(
     fun serviceChargeList() =
         performGetOperationDatabase(databaseQuery = { appDatabase.serviceChargeDao().allServiceCharge })
 
+    fun modifierSetList(ids: IntArray) =
+        performGetOperationDatabase(databaseQuery = {
+            appDatabase.modifierSetDao().modifierSetByItem(ids)
+        })
 
 }
 

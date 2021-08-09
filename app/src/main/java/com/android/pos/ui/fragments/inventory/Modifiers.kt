@@ -62,7 +62,7 @@ class Modifiers : Fragment(), TextWatcher {
     }
 
     private fun setAdapter() {
-        adapter = ModifiersListAdapter()
+        adapter = ModifiersListAdapter(false)
         binding.rvModifiersList.adapter = adapter
 
         binding.edtSearch.addTextChangedListener(this)

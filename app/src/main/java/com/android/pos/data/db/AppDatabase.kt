@@ -23,7 +23,7 @@ import com.android.pos.data.typeconvert.*
         GetTipReponse.Data::class, GetDiscountResponse.Data::class, NoteResponse.Data::class,
         GetServiceChargeResponse.Data::class, EmployeeListResponse.Data.Employee::class, CartModel::class,
         CustomerListResponse.Data::class, ModifierSet::class, TeamRole::class],
-    version = 2
+    version = 1
 )
 @TypeConverters(
     TypeConvertersIds::class, TypeConvertorAddress::class, TypeConvertorPhone::class,

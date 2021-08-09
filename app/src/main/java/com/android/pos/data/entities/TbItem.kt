@@ -6,6 +6,7 @@ import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.android.pos.data.model.responseModel.GetTaxResponse
 import com.android.pos.data.typeconvert.TypeConvertersTax
+import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
 
@@ -42,5 +43,6 @@ class TbItem : Parcelable {
     var itemQuantity: Int = 0
     var isManualSales: Boolean = false
     var isChecked: Boolean = false
+    var modifier_set_ids: List<Int> = emptyList()
 
 }

@@ -834,7 +834,12 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     override fun onClick(item: TbItem) {
 
-        viewModel.cartLogic(cartList, item, ADD)
+        if (item.modifier_set_ids.isEmpty()) {
+            viewModel.cartLogic(cartList, item, ADD)
+        } else {
+
+            ItemPopup(item)
+        }
 
     }
 
@@ -845,6 +850,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     @SuppressLint("SetTextI18n")
     override fun onItemClickListener(view: View?, data: TbItem) {
 
+        ItemPopup(data)
+    }
+
+    private fun ItemPopup(data: TbItem) {
         val dialog = Dialog(requireContext())
         dialog.window?.requestFeature(Window.FEATURE_NO_TITLE)
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))

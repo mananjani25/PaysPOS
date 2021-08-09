@@ -30,8 +30,8 @@ interface ModifierSetDao {
     @Query("select * from ModifierSet")
     fun allModifier(): List<ModifierSet?>?
 
-    @Query("SELECT * FROM ModifierSet WHERE id IN (:userIds)")
-    fun loadAllByIds(userIds: IntArray): List<ModifierSet?>?
+    @Query("SELECT * FROM ModifierSet WHERE itemIds IN (:itemIds)")
+    fun modifierSetByItem(itemIds: IntArray): LiveData<List<ModifierSet>>
 
 
     @Query("SELECT * from ModifierSet where ModifierSet.id  = :id LIMIT 1")

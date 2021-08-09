@@ -21,5 +21,6 @@ data class ModifierSet(
     @SerializedName("name")
     val name: String,
     @SerializedName("updated_at")
-    val updatedAt: String
+    val updatedAt: String,
+    var isChecked: Boolean = false
 ) : Parcelable
