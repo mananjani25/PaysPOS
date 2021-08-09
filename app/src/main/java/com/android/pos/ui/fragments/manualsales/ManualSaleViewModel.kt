@@ -70,6 +70,7 @@ class ManualSaleViewModel @Inject constructor(
 
                     }
 
+                    Log.e(TAG, "indexValue ${index}")
                     if (index != -1) {
                         val model = cartList[0].items?.get(index)
                         if (model != null) {

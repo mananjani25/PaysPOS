@@ -173,7 +173,7 @@
                 tools:listitem="@layout/view_manual_sale_item" />
 
 
-            <androidx.appcompat.widget.LinearLayoutCompat
+            <RelativeLayout
                 android:id="@+id/linearCharge"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -184,27 +184,47 @@
                 android:layout_marginBottom="@dimen/_10sdp"
                 android:background="@drawable/background_sales_charge"
                 android:gravity="center"
-                android:orientation="horizontal"
                 android:padding="@dimen/_5sdp">
 
-                <TextView
-                    style="@style/CustomFontBold"
-                    android:layout_width="wrap_content"
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/lnrCharge"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Charge "
-                    android:textColor="@color/txt_color_blue"
-                    android:textSize="@dimen/_6mdpi" />
+                    android:gravity="center"
+                    android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/txtChargeAmount"
-                    style="@style/CustomFontBold"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="$0.00"
-                    android:textColor="@color/txt_color_blue"
-                    android:textSize="@dimen/_6mdpi" />
+                    <TextView
+                        style="@style/CustomFontBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Charge "
+                        android:textColor="@color/txt_color_blue"
+                        android:textSize="@dimen/_6mdpi" />
 
-            </androidx.appcompat.widget.LinearLayoutCompat>
+                    <TextView
+                        android:id="@+id/txtChargeAmount"
+                        style="@style/CustomFontBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="$0.00"
+                        android:textColor="@color/txt_color_blue"
+                        android:textSize="@dimen/_6mdpi" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/imgInfo"
+                    android:layout_width="@dimen/_8sdp"
+                    android:layout_height="@dimen/_8sdp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/_2sdp"
+                    android:layout_marginEnd="@dimen/_2sdp"
+                    android:elevation="@dimen/_5sdp"
+                    android:tint="@color/txt_color_blue"
+                    app:srcCompat="@drawable/ic_info" />
+
+            </RelativeLayout>
         </RelativeLayout>
 
         <include

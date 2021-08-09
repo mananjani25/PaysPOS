@@ -1,11 +1,17 @@
 package com.android.pos.ui.fragments.manualsales
 
+import android.app.Dialog
 import android.graphics.Color
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.widget.PopupWindow
+import androidx.appcompat.widget.AppCompatEditText
+import androidx.appcompat.widget.AppCompatImageView
+import androidx.appcompat.widget.AppCompatTextView
+import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
@@ -30,7 +36,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ManualSaleNew : Fragment() {
+class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
     private lateinit var binding: FragmentManualSaleNewBinding
     private val TAG = "ManualSaleNew"
     private var cartList: List<CartModel>? = null
@@ -91,7 +97,7 @@ class ManualSaleNew : Fragment() {
 
                 viewModel.itemCalculation(
                     cartList?.get(0)?.items,
-                    binding.txtNoSale,
+                    binding.txtChargeAmount,
                     serviceChargesList
                 )
             } else {
@@ -139,6 +145,19 @@ class ManualSaleNew : Fragment() {
             dialogMenu()
         }
 
+        binding.lnrCharge.setOnClickListener {
+            val bundle = Bundle()
+            bundle.putDouble("totalPrice", viewModel.totalPrice)
+            bundle.putDouble("subTotalPrice", viewModel.subTotalPrice)
+            bundle.putDouble("totalTax", viewModel.totalTax)
+            bundle.putDouble("totalServiceCharge", viewModel.totalServiceCharge)
+
+            findNavController().navigate(R.id.action_manualSaleNew_to_paymentFragment,bundle)
+        }
+
+        binding.imgInfo.setOnClickListener {
+            showPopupWindow(it)
+        }
         binding.txtCrtNewCustomer.setOnClickListener {
             if (prefProvider.getValue(SALE_CUSTOMER_NAME, "").toString().isNotEmpty()) {
                 binding.txtCrtNewCustomer.text = "Add Customer"
@@ -286,6 +305,7 @@ class ManualSaleNew : Fragment() {
             binding.txtCrtNewCustomer.text = "Remove Customer"
         }
         cartAdapter = ManualSaleCartAdapter()
+        cartAdapter.setCallBack(this)
         binding.rvSaleCart.adapter = cartAdapter
 
         object : SwipeHelper(activity, binding.rvSaleCart) {
@@ -293,6 +313,46 @@ class ManualSaleNew : Fragment() {
                 viewHolder: RecyclerView.ViewHolder?,
                 underlayButtons: MutableList<UnderlayButton?>
             ) {
+                underlayButtons.add(UnderlayButton(
+                    "Add Note",
+                    0,
+                    Color.parseColor("#FA9905")
+                ) { pos ->
+
+                    setFragmentResultListener("request_key_note") { requestKey: String, bundle: Bundle ->
+                        val note = bundle.getString("note")
+
+                        cartItemModel.note = note.toString()
+
+                        cartItemModel?.let {
+                            viewModel.cartLogic(
+                                cartList,
+                                it,
+                                Constants.UPDATE
+                            )
+                        }
+                    }
+                    cartItemModel = cartAdapter.getItem(pos)
+                    val bundle = Bundle().apply {
+                        putString("note", cartItemModel.note)
+                    }
+
+                    findNavController().navigate(
+                        R.id.action_manualSaleNew_to_addNoteDialog,
+                        bundle
+                    )
+
+                })
+
+                underlayButtons.add(UnderlayButton(
+                    "Add Discount",
+                    0,
+                    Color.parseColor("#2997cc")
+                ) { pos ->
+
+                    findNavController().navigate(R.id.action_manualSaleNew_to_addDiscountDialog)
+                })
+
                 underlayButtons.add(
                     UnderlayButton(
                         "Delete",
@@ -360,16 +420,123 @@ class ManualSaleNew : Fragment() {
 
     }
 
-    private fun resetCart() {
-        cartItemModel = TbItem()
-        cartItemModel.apply {
-            price = 0.00
-            isManualSales = true
-            name = "Custom Item"
-            itemQuantity = 1
+    override fun onItemClicked(model: TbItem, position: Int) {
+        Log.e(TAG, "Itemmodel: ${Gson().toJson(model)}")
+        val dialog = Dialog(requireContext())
+        dialog.window?.requestFeature(Window.FEATURE_NO_TITLE)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
+        val lp = WindowManager.LayoutParams()
+        lp.copyFrom(dialog.window!!.attributes)
+        lp.width = WindowManager.LayoutParams.WRAP_CONTENT
+        lp.height = WindowManager.LayoutParams.MATCH_PARENT
+        dialog.window!!.attributes = lp
+
+        dialog.setContentView(R.layout.dialog_update_quantity)
+
+        val imgClose: AppCompatImageView = dialog.findViewById(R.id.imgBack)
+        val txtSave: AppCompatTextView = dialog.findViewById(R.id.txtSave)
+        val txtTitle: AppCompatTextView = dialog.findViewById(R.id.txtTitle)
+        val txtQty: AppCompatEditText = dialog.findViewById(R.id.txtQty)
+        val llPlus: LinearLayoutCompat = dialog.findViewById(R.id.llPlus)
+        val llMinus: LinearLayoutCompat = dialog.findViewById(R.id.llMinus)
+        val btnRemove: AppCompatTextView = dialog.findViewById(R.id.btnRemove)
+        val btnAddDiscount: AppCompatTextView = dialog.findViewById(R.id.btnAddDiscount)
+        val edtNote: AppCompatEditText = dialog.findViewById(R.id.edtNote)
+
+        edtNote.setText(model.note)
+        var qty = model.itemQuantity
+
+        txtQty.setText(qty.toString())
+        txtTitle.text = model.name + "  $" + String.format(
+            "%.2f",
+            model.price
+        )
+
+        imgClose.setOnClickListener {
+            dialog.dismiss()
         }
-        cartAdapter.addItem(cartItemModel)
+
+        txtSave.setOnClickListener {
+            dialog.dismiss()
+            model.note = edtNote.text.toString().trim()
+            model.itemQuantity = txtQty.text.toString().toInt()
+
+            viewModel.cartLogic(cartList, model, Constants.UPDATE)
+        }
+
+        llPlus.setOnClickListener {
+            qty += 1
+            txtQty.setText(qty.toString())
+        }
+        llMinus.setOnClickListener {
+
+            if (qty > 1) {
+                qty -= 1
+            }
+            txtQty.setText(qty.toString())
+        }
+
+        btnRemove.setOnClickListener {
+            Log.e(TAG, "modelRemove:  ${Gson().toJson(model)}")
+            viewModel.cartLogic(cartList, model, Constants.DELETE)
+            dialog.dismiss()
+        }
+
+        btnAddDiscount.setOnClickListener {
+            findNavController().navigate(
+                R.id.action_dashboardCategoryNew_to_addDiscountDialog
+            )
+        }
+
+
+        dialog.setCanceledOnTouchOutside(false)
+        dialog.show()
+
+
+    }
+
+    private fun showPopupWindow(view: View) {
+
+        val popupView: View = layoutInflater.inflate(R.layout.info_popup_window, null)
+
+        val txtSubTotal: AppCompatTextView = popupView.findViewById(R.id.txtSubTotal)
+        val txtServiceCharge: AppCompatTextView = popupView.findViewById(R.id.txtServiceCharge)
+        val txtDiscount: AppCompatTextView = popupView.findViewById(R.id.txtDiscount)
+        val txtTotalAmount: AppCompatTextView = popupView.findViewById(R.id.txtTotalAmount)
+        val txtTotalTax: AppCompatTextView = popupView.findViewById(R.id.txtTotalTax)
+
+        txtSubTotal.text = "$" + String.format(
+            "%.2f",
+            viewModel.subTotalPrice
+        )
+        txtServiceCharge.text = "$" + String.format(
+            "%.2f",
+            viewModel.totalServiceCharge
+        )
+        txtDiscount.text = "$" + String.format(
+            "%.2f",
+            0.00
+        )
+        txtTotalAmount.text = binding.txtChargeAmount.text.toString()
+        txtTotalTax.text = "$" + String.format(
+            "%.2f",
+            viewModel.totalTax
+        )
+
+        val popupWindow = PopupWindow(
+            popupView,
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+        popupWindow.setBackgroundDrawable(BitmapDrawable())
+        popupWindow.isOutsideTouchable = true
+
+
+        popupWindow.setOnDismissListener(PopupWindow.OnDismissListener {
+            //TODO do sth here on dismiss
+        })
+        popupWindow.showAtLocation(view, Gravity.TOP, 600, 650);
     }
 
 }

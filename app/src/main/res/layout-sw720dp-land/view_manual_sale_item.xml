@@ -19,6 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/_5sdp"
+        android:paddingVertical="@dimen/_4sdp"
         android:weightSum="1">
 
         <TextView
@@ -42,7 +43,6 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.1"
             android:gravity="center"
-            android:text="@{`x `+model.itemQuantity}"
             android:textColor="@color/txtColor"
             android:textSize="@dimen/_6mdpi" />
 

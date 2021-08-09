@@ -535,10 +535,22 @@
         android:id="@+id/manualSaleNew"
         android:name="com.android.pos.ui.fragments.manualsales.ManualSaleNew"
         android:label="ManualSaleNew"
-        tools:layout="@layout/fragment_manual_sale_new" >
+        tools:layout="@layout/fragment_manual_sale_new">
         <action
             android:id="@+id/action_manualSaleNew_to_assignCustomerOrderFragment"
             app:destination="@id/assignCustomerOrderFragment"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_manualSaleNew_to_addNoteDialog"
+            app:destination="@id/addNoteDialog"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_manualSaleNew_to_addDiscountDialog"
+            app:destination="@id/addDiscountDialog"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_manualSaleNew_to_paymentFragment"
+            app:destination="@id/paymentFragment"
             app:enterAnim="@anim/nav_default_enter_anim" />
     </fragment>
 
