@@ -32,7 +32,7 @@ class CustomAmountFragment : DialogFragment() {
         binding.lifecycleOwner = this
 
 
-        binding.edtAmount.addTextChangedListener(AmountTextWatcher(binding.edtAmount))
+        binding.edtAmount.addTextChangedListener(AmountTextWatcher(binding.edtAmount,false))
 
 
 

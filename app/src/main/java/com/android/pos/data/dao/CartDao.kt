@@ -27,4 +27,14 @@ interface CartDao {
 
     @Query("DELETE FROM CartModel where CartModel.isOpenOrder = 0 ")
     suspend fun delete()
+
+    @get:Query("select * from CartModel where CartModel.isMaual = 1")
+    val manualItem: LiveData<List<CartModel>>
+
+    @Query("DELETE FROM CartModel where CartModel.isMaual = 1")
+    suspend fun deleteManualSale()
+
+
+
+
 }

@@ -281,6 +281,10 @@ class PosRepository @Inject constructor(
     fun getCartList(): LiveData<List<CartModel>> {
         return appDatabase.cartDao().allItem
     }
+    fun getManualSaleList():LiveData<List<CartModel>>{
+        return  appDatabase.cartDao().manualItem
+    }
+
 
     suspend fun addItemCart(cartModel: CartModel) {
 
@@ -290,6 +294,10 @@ class PosRepository @Inject constructor(
     suspend fun deleteCart() {
 
         appDatabase.cartDao().delete()
+    }
+
+    suspend fun deleteManualSaleCart(){
+        appDatabase.cartDao().deleteManualSale()
     }
 
     suspend fun updateModifierSort(allCategories: ArrayList<ModifierSet>) {

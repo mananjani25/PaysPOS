@@ -139,8 +139,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 binding.layoutCart.txtCrtNewCustomer.text = "Add Customer"
                 binding.layoutCart.txtCustomerName.text = "Add Customer"
                 prefProvider.setValue(CUSTOMER_NAME, "")
-            }
-            else {
+            } else {
                 findNavController().navigate(
                     R.id.action_dashboardCategoryNew_to_assignCustomerOrderFragment
                 )
@@ -271,7 +270,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             positiveButton(getString(R.string.tv_delete)) {
                                 // Do positive stuff here
                                 val item = cartAdapter.getItem(pos)
-
+                                cartAdapter.removeIitem(pos)
                                 viewModel.cartLogic(cartList, item, DELETE)
                             }
                             negativeButton(R.string.tv_cancel) {

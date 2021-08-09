@@ -60,4 +60,10 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
         }
     }
 
+    fun removeIitem(pos:Int){
+        this.cartList.removeAt(pos)
+        notifyItemRemoved(pos)
+
+    }
+
 }

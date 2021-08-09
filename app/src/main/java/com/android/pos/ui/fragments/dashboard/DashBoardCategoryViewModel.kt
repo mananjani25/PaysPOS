@@ -35,7 +35,6 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     val venueData = posRepository.syncVenueData()
 
-
     val venueDataLocal = posRepository.venueDataLocal()
 
     val serviceCharges = posRepository.serviceChargeList()

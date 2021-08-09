@@ -44,5 +44,6 @@ class TbItem : Parcelable {
     var isManualSales: Boolean = false
     var isChecked: Boolean = false
     var modifier_set_ids: List<Int> = emptyList()
+    var isTax:Boolean = false
 
 }
