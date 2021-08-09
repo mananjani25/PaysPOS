@@ -39,6 +39,8 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     val serviceCharges = posRepository.serviceChargeList()
 
+    val modifierSet = posRepository.modifierSetsList()
+
     var mAllWords = posRepository.getCartList()
 
     private fun addCart(cartModel: CartModel) {

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingDefaultResource">
+
+    <data>
+
+        <variable
+            name="model"
+            type="com.android.pos.data.entities.Modifier" />
+    </data>
+
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/_2sdp"
+        android:background="@{model.isChecked ? @drawable/bg_squre_modifier_choose: @drawable/bg_squre_modifier}"
+        android:orientation="horizontal"
+        android:padding="@dimen/_2sdp">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/edtName"
+            style="@style/CustomFontSemiBold"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:background="@null"
+            android:gravity="start"
+            android:padding="@dimen/_4sdp"
+            android:text="@{model.name}"
+            android:textColor="@{model.isChecked ? @color/white: @color/viewTextColor}"
+            android:textSize="@dimen/_5mdpi"
+            tools:text="Modifier one" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/edtPrice"
+            style="@style/CustomFontSemiBold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@null"
+            android:gravity="start"
+            android:hint="@string/_0_00"
+            android:inputType="numberDecimal"
+            android:padding="@dimen/_3sdp"
+            android:text="@{@string/symbole +``+String.format(@string/format,model.price)}"
+            android:textColor="@{model.isChecked ? @color/white: @color/viewTextColor}"
+            android:textSize="@dimen/_5mdpi" />
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+</layout>
