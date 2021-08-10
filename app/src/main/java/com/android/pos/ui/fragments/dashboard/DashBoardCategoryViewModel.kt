@@ -112,7 +112,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         } else {
 
             // already cart ma hoy to add/update/delete kare flag wise
-            val list = cartList?.get(0)?.items?.toMutableList()
+            val list = cartList?. get(0)?.items?.toMutableList()
             if (list != null && list.isNotEmpty()) {
 
                 if (type == ADD || type == UPDATE) {
