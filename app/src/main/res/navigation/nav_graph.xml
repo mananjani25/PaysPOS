@@ -563,6 +563,10 @@
             android:id="@+id/action_manualSaleNew_to_paymentFragment"
             app:destination="@id/paymentFragment"
             app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_manualSaleNew_to_itemRenameDialog"
+            app:destination="@id/itemRenameDialog"
+            app:enterAnim="@anim/nav_default_enter_anim" />
     </fragment>
     <dialog
         android:id="@+id/assignTeamMemberListDialog"
@@ -573,6 +577,11 @@
         android:name="isEdit"
         android:defaultValue="false"
         app:argType="boolean" />
+    <dialog
+        android:id="@+id/itemRenameDialog"
+        android:name="com.android.pos.ui.dialog.ItemRenameDialog"
+        android:label="ItemRenameDialog"
+        tools:layout="@layout/dialog_rename_item" />
 
 
 </navigation>

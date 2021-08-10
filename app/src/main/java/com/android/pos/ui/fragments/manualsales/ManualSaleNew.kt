@@ -12,6 +12,7 @@ import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResultListener
@@ -36,8 +37,6 @@ import com.android.pos.utils.SwipeHelper
 import com.android.pos.utils.extensions.alert
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
-import java.text.NumberFormat
-import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -318,6 +317,33 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
                 viewHolder: RecyclerView.ViewHolder?,
                 underlayButtons: MutableList<UnderlayButton?>
             ) {
+                underlayButtons.add(
+                    UnderlayButton(
+                        "Rename",
+                        0,
+                        Color.parseColor("#08CAE3")
+                    ) { pos ->
+
+                        setFragmentResultListener("request_key_item_rename") { resultKey: String, bundle: Bundle ->
+                            val data = bundle.getString("item_name")
+                            cartItemModel.name = data.toString()
+                            cartItemModel?.let {
+                                viewModel.cartLogic(cartList, it, Constants.UPDATE)
+                            }
+
+
+                        }
+                        cartItemModel = cartAdapter.getItem(pos)
+                        val bundle: Bundle = bundleOf("item_name" to cartItemModel.name)
+
+                        findNavController().navigate(
+                            R.id.action_manualSaleNew_to_itemRenameDialog,
+                            bundle
+                        )
+
+                    }
+                )
+
                 underlayButtons.add(UnderlayButton(
                     "Add Note",
                     0,
