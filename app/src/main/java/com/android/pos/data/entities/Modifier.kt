@@ -15,7 +15,7 @@ class Modifier : Parcelable {
     val id: Int? = null
 
     @SerializedName("modifier_set_id")
-    val modifierSetId: Int? = null
+    var modifierSetId: Int? = null
 
     @SerializedName("name")
     var name: String = ""

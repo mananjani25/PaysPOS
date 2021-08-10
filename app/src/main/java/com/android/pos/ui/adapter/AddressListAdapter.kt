@@ -8,10 +8,12 @@ import `in`.madapps.placesautocomplete.model.PlaceDetails
 import android.annotation.SuppressLint
 import android.location.Address
 import android.location.Geocoder
+import android.os.Build
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.*
 
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
@@ -19,6 +21,7 @@ import com.android.pos.data.model.CustomerListResponse
 import com.android.pos.data.model.requestModel.CreateCustomerRequestModel
 import com.android.pos.databinding.ViewCustomerAddressBinding
 import com.google.gson.Gson
+import okhttp3.internal.notify
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -27,23 +30,77 @@ class AddressListAdapter() : RecyclerView.Adapter<AddressListAdapter.MyViewHolde
     private val TAG = "AddressListAdapter"
     private lateinit var placesApi: PlaceAPI
     private var list: ArrayList<CreateCustomerRequestModel.Customer.Addresses> = arrayListOf()
-    @SuppressLint("NotifyDataSetChanged")
+    private var country = arrayOf("United States", "Canada")
+
+
     fun addData(model: CreateCustomerRequestModel.Customer.Addresses) {
         list.add(model)
-        notifyDataSetChanged()
+        notifyItemInserted(list.size - 1)
     }
 
 
     inner class MyViewHolder(private val binding: ViewCustomerAddressBinding) :
         RecyclerView.ViewHolder(binding.root) {
+        val edtStreet: AutoCompleteTextView = binding.root.findViewById(R.id.edtStreet)
+        val edtSuite: EditText = binding.root.findViewById(R.id.edtSuite)
+        val edtCity: EditText = binding.root.findViewById(R.id.edtCity)
+        val edtState: EditText = binding.root.findViewById(R.id.edtState)
+        val edtZip: EditText = binding.root.findViewById(R.id.edtZip)
+
         fun bind(model: CreateCustomerRequestModel.Customer.Addresses, pos: Int) {
             if (pos == 0) {
                 binding.imgDelete.visibility = View.GONE
             } else {
                 binding.imgDelete.visibility = View.VISIBLE
             }
-            binding.edtStreet.setAdapter(PlacesAutoCompleteAdapter(binding.root.context, placesApi))
-            binding.edtStreet.setOnItemClickListener { parent, view, position, id ->
+
+        }
+
+        init {
+
+            binding.imgDelete.setOnClickListener {
+                list.removeAt(bindingAdapterPosition)
+                notifyItemRemoved(bindingAdapterPosition)
+
+            }
+            val adapter =
+                ArrayAdapter(binding.root.context, android.R.layout.simple_spinner_item, country)
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            binding.edtAddress.adapter = adapter
+
+            binding.edtAddress.onItemSelectedListener =
+                object : AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(
+                        parent: AdapterView<*>?,
+                        view: View?,
+                        position: Int,
+                        id: Long
+                    ) {
+                        if (Build.VERSION.SDK_INT < 23) {
+                            (parent?.getChildAt(0) as TextView).setTextAppearance(
+                                view?.context,
+                                R.style.SpinnerTheme
+                            )
+                        } else {
+                            (parent?.getChildAt(0) as TextView).setTextAppearance(R.style.SpinnerTheme); }
+
+
+                    }
+
+                    override fun onNothingSelected(parent: AdapterView<*>?) {
+
+                    }
+
+                }
+            //binding.edtAddress.setText("United States")
+
+            placesApi =
+                PlaceAPI.Builder().apiKey(binding.root.context.getString(R.string.api_key))
+                    .build(binding.root.context)
+
+
+            edtStreet.setAdapter(PlacesAutoCompleteAdapter(binding.root.context, placesApi))
+            edtStreet.setOnItemClickListener { parent, view, position, id ->
                 val place = parent.getItemAtPosition(position) as Place
 
                 //binding.edtStreet.setText("${place.description}")
@@ -55,29 +112,27 @@ class AddressListAdapter() : RecyclerView.Adapter<AddressListAdapter.MyViewHolde
                     override fun onPlaceDetailsFetched(placeDetails: PlaceDetails) {
                         decodeLocation(placeDetails.lat, placeDetails.lng, placeDetails.name)
 
-                        val gcd: Geocoder = Geocoder(binding.root.context, Locale.getDefault())
+                        val gcd: Geocoder = Geocoder(itemView.context, Locale.getDefault())
                         var address: List<Address> =
                             gcd.getFromLocation(placeDetails.lat, placeDetails.lng, 1)
                         Log.e(TAG, "CountryNAme ${address.get(0).countryName}")
 
                         if (address.isNotEmpty()) {
-                            binding.edtStreet.setText(placeDetails.name)
-                            binding.edtSuite.setText(placeDetails.name)
-                            binding.edtCity.setText(address.get(0).locality)
-                            binding.edtState.setText(address.get(0).adminArea)
-                            binding.edtZip.setText(address.get(0).postalCode)
 
 
-                            list[pos].address1 = placeDetails.name
-                            list[pos].address2 = placeDetails.name
-                            list[pos].city = address.get(0).locality
-                            list[pos].country = address.get(0).countryName
-                            list[pos].address2 = placeDetails.name
-                            list[pos].state = address.get(0).adminArea
-                            list[pos].postcode = address.get(0).postalCode
+                            list[layoutPosition].address1 = placeDetails.name
+                            list[layoutPosition].address2 = placeDetails.name
+                            list[layoutPosition].city = address[0].locality
+                            list[layoutPosition].country = "United States"
+
+                            list[layoutPosition].state = address[0].adminArea
+                            list[layoutPosition].postcode = address[0].postalCode
+                            notifyItemChanged(layoutPosition)
+
+                            Log.e(TAG, "Updatelist:  ${Gson().toJson(list)}")
+
 
                         }
-
 
                         Log.e(TAG, "placeDetails:  ${Gson().toJson(placeDetails.name)}")
 
@@ -87,23 +142,6 @@ class AddressListAdapter() : RecyclerView.Adapter<AddressListAdapter.MyViewHolde
 
             }
 
-            binding.model = model
-            binding.executePendingBindings()
-
-        }
-
-        init {
-            binding.imgDelete.setOnClickListener {
-                list.removeAt(bindingAdapterPosition)
-                notifyItemRemoved(bindingAdapterPosition)
-
-            }
-
-            binding.edtAddress.setText("United States")
-
-            placesApi =
-                PlaceAPI.Builder().apiKey(binding.root.context.getString(R.string.api_key))
-                    .build(binding.root.context)
 
         }
 
@@ -127,6 +165,19 @@ class AddressListAdapter() : RecyclerView.Adapter<AddressListAdapter.MyViewHolde
         Log.e(TAG, "BindListSize:  ${list.size}")
         holder.bind(list[position], position)
 
+        holder.edtStreet.setText(list[position].address1)
+        holder.edtZip.setText(list[position].postcode)
+        holder.edtCity.setText(list[position].city)
+        holder.edtSuite.setText(list[position].address2)
+        holder.edtState.setText(list[position].state)
+
+
+        /*  holder.edtStreet.setText(list[position].address1)
+          holder.edtSuite.setText(list[position].address2)
+          holder.edtCity.setText(list[position].city)
+          holder.edtState.setText(list[position].state)
+          holder.edtZip.setText(list[position].postcode)
+  */
 
     }
 
@@ -138,6 +189,7 @@ class AddressListAdapter() : RecyclerView.Adapter<AddressListAdapter.MyViewHolde
         return list
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     fun setAddress(listAdd: ArrayList<CreateCustomerRequestModel.Customer.Addresses>) {
         this.list = listAdd
         notifyDataSetChanged()

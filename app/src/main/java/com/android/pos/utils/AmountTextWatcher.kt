@@ -24,7 +24,7 @@ class AmountTextWatcher(private val editText: AppCompatEditText, private val isM
             val formatted =
                 if (isManual) {
 
-                    NumberFormat.getInstance().format((parsed / 100))
+                    NumberFormat.getCurrencyInstance(Locale.US).format((parsed / 100))
                 } else {
                     NumberFormat.getCurrencyInstance(Locale.US).format((parsed / 100))
                 }

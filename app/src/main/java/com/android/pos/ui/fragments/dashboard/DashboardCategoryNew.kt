@@ -17,9 +17,9 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -42,6 +42,7 @@ import com.android.pos.data.remote.Constants.VERTICAL
 import com.android.pos.databinding.FragmentDashboardCategoryNewBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.*
+import com.android.pos.ui.fragments.settings.tax.TaxListViewModel
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.SwipeHelper
 import com.android.pos.utils.callback.MyCallback
@@ -54,13 +55,15 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, MyCallback {
+
     private var serviceChargesList: List<GetServiceChargeResponse.Data>? = null
     private var singleItem: TbItem? = null
     private var cartList: List<CartModel>? = null
     private lateinit var binding: FragmentDashboardCategoryNewBinding
+    private val taxViewmodel by activityViewModels<TaxListViewModel>()
     private val TAG = "DashboardCategoryNew"
 
-    private val viewModel by viewModels<DashBoardCategoryViewModel>()
+    private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
     private var categoryList1: MutableList<CategoryWithInventory> = arrayListOf()
     private var itemList1: ArrayList<TbItem?> = arrayListOf()
     private var categoryTabsList: ArrayList<String> = arrayListOf()
@@ -285,6 +288,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 if (cartList?.isNotEmpty()!!) {
                     binding.layoutCart.llCart.visibility = View.VISIBLE
                     binding.lltakeout.visibility = View.GONE
+                    cartList?.get(0)?.items?.forEach {
+                        it.taxes = taxViewmodel.getTaxList.value?.data
+                    }
+
                     cartAdapter.addCart(cartList?.get(0)?.items)
 
                     viewModel.itemCalculation(
@@ -833,6 +840,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     override fun onClick(item: TbItem) {
 
         if (item.modifier_set_ids.isEmpty()) {
+            item.itemQuantity = item.itemQuantity + 1
             viewModel.cartLogic(cartList, item, ADD)
         } else {
 
@@ -875,19 +883,34 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         val edtNote: AppCompatEditText = dialog.findViewById(R.id.edtNote)
         val rvModifierSets: RecyclerView = dialog.findViewById(R.id.rvModifierSets)
 
+        var adapter: ItemModifierSetAdapter? = null
+
         var qty = data.itemQuantity
         if (isItemClick) {
-
             qty = 1
             txtQty.setText(qty.toString())
             btnRemove.visibility = View.GONE
             btnAddDiscount.visibility = View.GONE
-            rvModifierSets.visibility = View.VISIBLE
-            val adapter = OrderModifierSetAdapter()
+        }
+
+        if (data.modifier_set_ids.isNotEmpty()) {
+            adapter = ItemModifierSetAdapter()
             rvModifierSets.adapter = adapter
 
-            viewModel.modifierSet.observe(requireActivity(), {
-                it.data?.let { it1 -> adapter.add(it1) }
+            val intArray = IntArray(data.modifier_set_ids.size) { i ->
+                data.modifier_set_ids[i]
+            }
+            viewModel.modifierSet(intArray).observe(requireActivity(), {
+                if (it.data != null && it.data.isNotEmpty()) {
+                    rvModifierSets.visibility = View.VISIBLE
+                    it.data.let { it1 -> adapter.add(it1) }
+
+                    if (!isItemClick) {
+                        adapter.setData(data.modifiers)
+                    }
+
+                } else rvModifierSets.visibility = View.GONE
+
             })
         }
 
@@ -905,10 +928,20 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             dialog.dismiss()
         }
         txtSave.setOnClickListener {
+
+            val modifiers = adapter?.getSelectedModifiers()
+            if (modifiers != null) {
+                data.modifiers = modifiers
+            }
+
+
             dialog.dismiss()
             data.note = edtNote.text.toString().trim()
             data.itemQuantity = txtQty.text.toString().toInt()
-            viewModel.cartLogic(cartList, data, UPDATE)
+            if (isItemClick) {
+                viewModel.cartLogic(cartList, data, ADD)
+            } else
+                viewModel.cartLogic(cartList, data, UPDATE)
         }
 
         llPlus.setOnClickListener {

@@ -27,6 +27,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     private val prefProvider: PrefProvider
 ) : ViewModel() {
 
+    val TAG = "DashBoardCateViewModel"
     var totalPrice: Double = 0.0
     var totalCount = 0
     var subTotalPrice = 0.0
@@ -39,7 +40,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     val serviceCharges = posRepository.serviceChargeList()
 
-    val modifierSet = posRepository.modifierSetsList()
+    fun modifierSet(intArray: IntArray) = posRepository.modifierSetList(intArray)
 
     var mAllWords = posRepository.getCartList()
 
@@ -84,8 +85,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                             if (type == "UPDATE") {
                                 model.itemQuantity = item.itemQuantity
                             } else
-                                model.itemQuantity = model.itemQuantity + 1
-                            list.set(index, model)
+                                model.itemQuantity = item.itemQuantity
+                            list[index] = model
                         }
                     } else {
                         item.itemQuantity = 1
@@ -115,7 +116,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         val inventoryModelList = ArrayList<TbItem>()
         val cartModel = CartModel().apply {
             terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
-            item.itemQuantity = 1
+            item.itemQuantity = item.itemQuantity
             inventoryModelList.add(item)
             items = inventoryModelList
         }
@@ -150,6 +151,11 @@ class DashBoardCategoryViewModel @Inject constructor(
                     }
                 }
             }
+
+            item.modifiers.forEach {
+
+                Log.e("modifiers", it.name)
+            }
         }
 
         if (serviceChargesList != null && serviceChargesList.isNotEmpty()) {
@@ -164,6 +170,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
 
 
+        Log.e(TAG,"totalTax  ${totalTax}")
 
         totalPrice = subTotalPrice + totalTax + totalServiceCharge
 

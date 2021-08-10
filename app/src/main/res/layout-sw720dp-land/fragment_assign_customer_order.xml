@@ -57,7 +57,7 @@
                 android:background="@null"
                 android:drawableStart="@drawable/ic_search"
                 android:drawablePadding="@dimen/_10sdp"
-                android:hint="Name, Phone or Email"
+                android:hint="Name, Phone, Email or Company"
                 android:imeOptions="actionDone"
                 android:inputType="text"
                 android:padding="@dimen/_5sdp"

@@ -1,6 +1,7 @@
 package com.android.pos.ui.adapter
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.entities.TbItem
@@ -50,6 +51,20 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
         fun bind(item: TbItem) {
             binding.model = item
             binding.executePendingBindings()
+
+            binding.tvRate.text =
+                "$" + String.format(
+                    "%.2f", totalPrice(item)
+                )
+
+            if (item.modifiers.isNotEmpty()) {
+                binding.rvModifiers.visibility = View.VISIBLE
+                val adapter = CartItemModifierAdapter()
+                binding.rvModifiers.adapter = adapter
+                adapter.addAll(item.modifiers)
+            } else {
+                binding.rvModifiers.visibility = View.GONE
+            }
         }
 
         init {
@@ -60,10 +75,30 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
         }
     }
 
-    fun removeIitem(pos:Int){
+    fun removeIitem(pos: Int) {
         this.cartList.removeAt(pos)
         notifyItemRemoved(pos)
 
+    }
+
+
+    private fun totalPrice(model: TbItem): Double {
+
+        return if (model.modifiers.isNotEmpty()) {
+
+            var totalPrice = 0.0
+
+            val mList = model.modifiers
+            mList.forEach { items ->
+                totalPrice += items.price
+            }
+
+            (model.price * model.itemQuantity) + totalPrice
+        } else {
+
+            model.price * model.itemQuantity
+
+        }
     }
 
 }

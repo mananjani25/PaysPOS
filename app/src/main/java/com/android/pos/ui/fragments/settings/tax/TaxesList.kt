@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
@@ -32,7 +33,7 @@ class TaxesList : Fragment() {
     private var position: Int = -1
     private lateinit var taxListUpdateDelete: ArrayList<TaxData>
     private lateinit var binding: FragmentTaxesBinding
-    private val viewModel by viewModels<TaxListViewModel>()
+    private val viewModel by activityViewModels<TaxListViewModel>()
     private lateinit var taxListadapter: TaxListAdapter
     private lateinit var taxObject: TaxData
 
@@ -126,6 +127,7 @@ class TaxesList : Fragment() {
                         ProgressUtils.dismissProgressDialog()
                         binding.rvTaxList.visibility = View.VISIBLE
                         resource.data?.let { taxList -> setTaxData(taxList) }
+                        viewModel.setTaxData()
                     }
                     Status.ERROR -> {
                         ProgressUtils.dismissProgressDialog()

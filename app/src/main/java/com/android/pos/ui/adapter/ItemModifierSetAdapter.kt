@@ -4,24 +4,28 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.android.pos.data.entities.Modifier
 import com.android.pos.data.entities.ModifierSet
 import com.android.pos.databinding.ViewOrderModifierSetsBinding
 
-class OrderModifierSetAdapter :
-    RecyclerView.Adapter<OrderModifierSetAdapter.MyViewHolder>() {
+class ItemModifierSetAdapter :
+    RecyclerView.Adapter<ItemModifierSetAdapter.MyViewHolder>() {
     var filterList = ArrayList<ModifierSet>()
+    var selectedModifierList = ArrayList<Modifier>()
 
     inner class MyViewHolder(private val binding: ViewOrderModifierSetsBinding) :
         RecyclerView.ViewHolder(binding.root) {
+        private var adapter: ItemModifierAdapter? = null
+
         fun bind(item: ModifierSet) {
             binding.model = item
             binding.executePendingBindings()
 
             if (item.modifiers.isNotEmpty()) {
                 binding.rvModifiers.layoutManager = GridLayoutManager(binding.root.context, 3);
-                val adapter = OrderModifierAdapter()
+                adapter = ItemModifierAdapter()
                 binding.rvModifiers.adapter = adapter
-                adapter.addAll(item.modifiers)
+                adapter!!.addAll(item.modifiers)
             }
 
         }
@@ -30,16 +34,16 @@ class OrderModifierSetAdapter :
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): OrderModifierSetAdapter.MyViewHolder {
+    ): ItemModifierSetAdapter.MyViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = ViewOrderModifierSetsBinding.inflate(inflater, parent, false)
         return MyViewHolder(binding)
 
     }
 
-    override fun onBindViewHolder(holder: OrderModifierSetAdapter.MyViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ItemModifierSetAdapter.MyViewHolder, position: Int) {
 
-        holder.bind(filterList.get(position))
+        holder.bind(filterList[holder.bindingAdapterPosition])
     }
 
     override fun getItemCount(): Int {
@@ -61,4 +65,33 @@ class OrderModifierSetAdapter :
         return filterList
     }
 
+    fun getSelectedModifiers(): ArrayList<Modifier> {
+        selectedModifierList.clear()
+        filterList.forEach { modifierSet ->
+            modifierSet.modifiers.forEach {
+                if (it.isChecked) {
+                    it.modifierSetId = modifierSet.id
+                    selectedModifierList.add(it)
+                }
+            }
+        }
+        return selectedModifierList
+    }
+
+    fun setData(modifiers: List<Modifier>) {
+
+
+        filterList.forEach { modifierSet ->
+            modifierSet.modifiers.forEach { modifierSet_Modifier ->
+                modifiers.forEach {
+                    if (modifierSet_Modifier.id == it.id) {
+                        modifierSet_Modifier.isChecked = true
+                    }
+                }
+            }
+        }
+
+        notifyDataSetChanged()
+
+    }
 }

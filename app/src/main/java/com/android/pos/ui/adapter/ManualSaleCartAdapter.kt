@@ -13,17 +13,35 @@ import com.android.pos.databinding.ViewManualSaleItemBinding
 
 class ManualSaleCartAdapter : RecyclerView.Adapter<ManualSaleCartAdapter.MyViewHolder>() {
     var list = ArrayList<TbItem>()
+    private lateinit var listnerCall: ManualSaleInterface
 
 
     inner class MyViewHolder(private val binding: ViewManualSaleItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(model: TbItem, pos: Int) {
-
+            if (pos == list.size - 1) {
+                binding.txtQuantity.setText("x 1")
+            } else {
+                binding.txtQuantity.setText("x ${model.itemQuantity}")
+            }
             binding.model = model
             binding.executePendingBindings()
         }
 
+        init {
+            binding.root.setOnClickListener {
+                if (layoutPosition != list.size - 1) {
+                    listnerCall.onItemClicked(list.get(layoutPosition), layoutPosition)
+                }
+            }
 
+        }
+
+
+    }
+
+    fun setCallBack(listner: ManualSaleInterface) {
+        this.listnerCall = listner
     }
 
     override fun onCreateViewHolder(
@@ -51,7 +69,7 @@ class ManualSaleCartAdapter : RecyclerView.Adapter<ManualSaleCartAdapter.MyViewH
     @SuppressLint("NotifyDataSetChanged")
     fun addItem(model: TbItem) {
         this.list.add(model)
-        Log.e("TbListSize","TbListSize ${list.size}")
+        Log.e("TbListSize", "TbListSize ${list.size}")
         notifyDataSetChanged()
     }
 
@@ -67,13 +85,18 @@ class ManualSaleCartAdapter : RecyclerView.Adapter<ManualSaleCartAdapter.MyViewH
         this.list = cartList as ArrayList<TbItem>
         notifyDataSetChanged()
     }
-    fun getItem(position: Int):TbItem{
+
+    fun getItem(position: Int): TbItem {
         return list[position]
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun clearList(){
+    fun clearList() {
         this.list.clear()
         notifyDataSetChanged()
+    }
+
+    interface ManualSaleInterface {
+        fun onItemClicked(model: TbItem, position: Int)
     }
 }
