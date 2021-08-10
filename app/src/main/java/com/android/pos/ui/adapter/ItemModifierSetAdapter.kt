@@ -1,9 +1,11 @@
 package com.android.pos.ui.adapter
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.android.pos.R
 import com.android.pos.data.entities.ItemModifierSet
 import com.android.pos.data.entities.Modifier
 import com.android.pos.databinding.ViewOrderModifierSetsBinding
@@ -21,9 +23,19 @@ class ItemModifierSetAdapter :
             binding.model = item
             binding.executePendingBindings()
 
+            if (item.max_allowed == 0 && item.min_required == 0) {
+                binding.txtMinMax.visibility = View.GONE
+            } else {
+                binding.txtMinMax.visibility = View.VISIBLE
+                binding.txtMinMax.text =
+                    binding.root.context.getString(R.string.pick_up_min) + " " + item.min_required + " " + binding.root.context.getString(
+                        R.string.max
+                    ) + " " + item.max_allowed
+            }
+
             if (item.modifiers.isNotEmpty()) {
                 binding.rvModifiers.layoutManager = GridLayoutManager(binding.root.context, 3);
-                adapter = ItemModifierAdapter()
+                adapter = ItemModifierAdapter(item.max_allowed, item.min_required)
                 binding.rvModifiers.adapter = adapter
                 adapter!!.addAll(item.modifiers)
             }
@@ -94,4 +106,6 @@ class ItemModifierSetAdapter :
         notifyDataSetChanged()
 
     }
+
+
 }

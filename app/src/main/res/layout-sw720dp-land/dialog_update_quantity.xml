@@ -51,7 +51,7 @@
                 android:paddingTop="@dimen/_5sdp"
                 android:paddingEnd="@dimen/_15sdp"
                 android:paddingBottom="@dimen/_5sdp"
-                android:text="@string/save"
+                android:text="@string/add"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_7mdpi" />
 

@@ -396,4 +396,7 @@
     <string name="customer_item">Customer Item</string>
     <string name="tv_modifier_all">Modifier All</string>
     <string name="tv_assign_role_to_employee">Assign Role to Employee</string>
+    <string name="add">Add</string>
+    <string name="pick_up_min">Choose Min</string>
+    <string name="max"> - Max </string>
 </resources>
