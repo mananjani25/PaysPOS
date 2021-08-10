@@ -171,7 +171,15 @@ class AddEditCustomer : Fragment() {
 
         } else {
             binding.txtCustomerType.setText("New Customer")
-            adapter.addData(modelAddress)
+            var list: ArrayList<CreateCustomerRequestModel.Customer.Addresses> = arrayListOf()
+            var model =CreateCustomerRequestModel.Customer.Addresses()
+            model.apply {
+                latitude = 0.0
+                longitude = 0.0
+            }
+            list.add(model)
+
+            adapter.setAddress(list)
             viewModel.setAddressList(adapter.getList())
 
         }
@@ -191,9 +199,20 @@ class AddEditCustomer : Fragment() {
     @SuppressLint("NotifyDataSetChanged")
     private fun onClick() {
         binding.imgAddressAdd.setOnClickListener {
-            adapter.addData(
-                modelAddress
+            Log.e(
+                TAG,
+                "getaddress1:  ${adapter.getList().get(adapter.getList().size - 1).address1}"
             )
+            if (adapter.getList().get(adapter.getList().size - 1).address1.isNotEmpty()) {
+                modelAddress =  CreateCustomerRequestModel.Customer.Addresses()
+                modelAddress.apply {
+                    latitude = 0.0
+                    longitude = 0.0
+                }
+                adapter.addData(
+                    modelAddress
+                )
+            }
 
         }
 

@@ -30,8 +30,14 @@ class TaxListViewModel @Inject constructor(
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
-
     val getTaxList = taxServiceChargeRepository.getTaxList()
+
+    val taxList = MutableLiveData<List<TaxData>>()
+    fun setTaxData() {
+        taxList.value = getTaxList.value?.data!!
+
+    }
+
 
     fun isTaxActive(taxDataItem: TaxData) {
 

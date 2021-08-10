@@ -13,6 +13,7 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -28,6 +29,7 @@ import com.android.pos.data.remote.Constants.SALE_CUSTOMER_NAME
 import com.android.pos.databinding.FragmentManualSaleNewBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.ManualSaleCartAdapter
+import com.android.pos.ui.fragments.settings.tax.TaxListViewModel
 import com.android.pos.utils.AmountTextWatcher
 import com.android.pos.utils.SwipeHelper
 import com.android.pos.utils.extensions.alert
@@ -43,6 +45,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
     private lateinit var cartAdapter: ManualSaleCartAdapter
     private var cartItemModel = TbItem()
     private val viewModel by viewModels<ManualSaleViewModel>()
+    private val taxViewmodel by activityViewModels<TaxListViewModel>()
     private var serviceChargesList: List<GetServiceChargeResponse.Data>? = null
 
     @Inject
@@ -62,6 +65,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        Log.e(TAG, "getTaxList  ${Gson().toJson(taxViewmodel.taxList)}")
 
         binding.layoutMenu.imgSearch.visibility = View.GONE
         binding.layoutMenu.autoSearch.visibility = View.GONE
@@ -93,6 +98,10 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
             cartList = it
             Log.e(TAG, "manualCartList  ${Gson().toJson(it)}")
             if (cartList?.isNotEmpty()!!) {
+                cartList?.get(0)?.items?.forEach {
+                    it.taxes = taxViewmodel.getTaxList.value?.data
+                }
+
                 cartAdapter.setList(cartList?.get(0)?.items)
 
                 viewModel.itemCalculation(
@@ -152,7 +161,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
             bundle.putDouble("totalTax", viewModel.totalTax)
             bundle.putDouble("totalServiceCharge", viewModel.totalServiceCharge)
 
-            findNavController().navigate(R.id.action_manualSaleNew_to_paymentFragment,bundle)
+            findNavController().navigate(R.id.action_manualSaleNew_to_paymentFragment, bundle)
         }
 
         binding.imgInfo.setOnClickListener {
