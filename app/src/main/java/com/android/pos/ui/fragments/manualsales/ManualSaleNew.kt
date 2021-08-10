@@ -29,6 +29,7 @@ import com.android.pos.data.remote.Constants.SALE_CUSTOMER_NAME
 import com.android.pos.databinding.FragmentManualSaleNewBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.ManualSaleCartAdapter
+import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.settings.tax.TaxListViewModel
 import com.android.pos.utils.AmountTextWatcher
 import com.android.pos.utils.SwipeHelper
@@ -48,6 +49,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
     private var cartItemModel = TbItem()
     private val viewModel by viewModels<ManualSaleViewModel>()
     private val taxViewmodel by activityViewModels<TaxListViewModel>()
+    private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
     private var serviceChargesList: List<GetServiceChargeResponse.Data>? = null
 
     @Inject
@@ -61,8 +63,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
     ): View? {
         binding = FragmentManualSaleNewBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
-
         getServiceCharge()
+
         return binding.root
     }
 
@@ -75,7 +77,6 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
         binding.layoutMenu.autoSearch.visibility = View.GONE
         onConfig()
         onClickKeypad()
-        getServiceCharge()
         getCartList()
         onClick()
         listner()
@@ -99,7 +100,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
 
         viewModel.cartList.observe(requireActivity(), {
             cartList = it
-            Log.e(TAG, "manualCartList  ${Gson().toJson(it)}")
+            Log.e(TAG, "cartListBeforeTax  ${Gson().toJson(cartList)}")
             if (cartList?.isNotEmpty()!!) {
                 cartList?.get(0)?.items?.forEach {
                     it.taxes = taxViewmodel.getTaxList.value?.data
@@ -110,7 +111,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
                 viewModel.itemCalculation(
                     cartList?.get(0)?.items,
                     binding.txtChargeAmount,
-                    serviceChargesList
+                    dashboardViewModel.serviceCharges.value?.data
                 )
             } else {
 
@@ -273,8 +274,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
     }
 
     private fun addItemToCart(price: String, isAdd: Boolean) {
-        val replaceCurrency = price.replace("$","")
-        Log.e(TAG,"replaceCurrency  ${replaceCurrency}")
+        val replaceCurrency = price.replace("$", "")
+        Log.e(TAG, "replaceCurrency  ${replaceCurrency}")
 
         if (isAdd) {
             cartAdapter.getItem(cartAdapter.getList().size - 1)
