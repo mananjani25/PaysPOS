@@ -27,6 +27,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     private val prefProvider: PrefProvider
 ) : ViewModel() {
 
+    val TAG = "DashBoardCateViewModel"
     var totalPrice: Double = 0.0
     var totalCount = 0
     var subTotalPrice = 0.0
@@ -169,6 +170,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
 
 
+        Log.e(TAG,"totalTax  ${totalTax}")
 
         totalPrice = subTotalPrice + totalTax + totalServiceCharge
 

@@ -117,7 +117,7 @@ class ManualSaleViewModel @Inject constructor(
         serviceChargesList: List<GetServiceChargeResponse.Data>?
     ) {
 
-
+    Log.e(TAG,"serviceChargesList:  ${Gson().toJson(serviceChargesList)}")
         totalPrice = 0.0
         totalCount = 0
         subTotalPrice = 0.0
@@ -140,6 +140,7 @@ class ManualSaleViewModel @Inject constructor(
             }
         }
 
+        Log.e(TAG, "serviceChargesList:  ${Gson().toJson(serviceChargesList)}")
         if (serviceChargesList != null && serviceChargesList.isNotEmpty()) {
 
             serviceChargesList.forEach {

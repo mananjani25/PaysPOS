@@ -125,7 +125,7 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/sf_pro_display_regular"
                             android:padding="@dimen/_7sdp"
-                            android:text="Employee"
+                            android:text="Team Member"
                             android:textColor="@color/txtColor"
                             android:textSize="@dimen/_6mdpi"
                             android:textStyle="normal" />

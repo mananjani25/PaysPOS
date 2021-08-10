@@ -94,4 +94,7 @@ class TaxServiceChargeRepository @Inject constructor(
     suspend fun deleteTeamRoleDatabase(teamRoleId: Int) =
         appDatabase.teamRoleDao().deleteRoleById(teamRoleId)
 
+    suspend fun getTeamMemberTimeSheet(data: CreateTeamRoleRequestModel) =
+        apiHelperNew.getTeamMemberTimeSheet(data)
+
 }

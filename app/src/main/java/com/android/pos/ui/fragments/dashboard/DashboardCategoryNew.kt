@@ -17,6 +17,7 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -41,6 +42,7 @@ import com.android.pos.data.remote.Constants.VERTICAL
 import com.android.pos.databinding.FragmentDashboardCategoryNewBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.*
+import com.android.pos.ui.fragments.settings.tax.TaxListViewModel
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.SwipeHelper
 import com.android.pos.utils.callback.MyCallback
@@ -58,9 +60,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private var singleItem: TbItem? = null
     private var cartList: List<CartModel>? = null
     private lateinit var binding: FragmentDashboardCategoryNewBinding
+    private val taxViewmodel by activityViewModels<TaxListViewModel>()
     private val TAG = "DashboardCategoryNew"
 
-    private val viewModel by viewModels<DashBoardCategoryViewModel>()
+    private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
     private var categoryList1: MutableList<CategoryWithInventory> = arrayListOf()
     private var itemList1: ArrayList<TbItem?> = arrayListOf()
     private var categoryTabsList: ArrayList<String> = arrayListOf()
@@ -285,6 +288,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 if (cartList?.isNotEmpty()!!) {
                     binding.layoutCart.llCart.visibility = View.VISIBLE
                     binding.lltakeout.visibility = View.GONE
+                    cartList?.get(0)?.items?.forEach {
+                        it.taxes = taxViewmodel.getTaxList.value?.data
+                    }
+
                     cartAdapter.addCart(cartList?.get(0)?.items)
 
                     viewModel.itemCalculation(
