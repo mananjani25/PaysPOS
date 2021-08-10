@@ -1,0 +1,52 @@
+package com.android.pos.utils
+
+import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Context
+import android.view.inputmethod.InputMethodManager
+import androidx.appcompat.widget.AppCompatEditText
+import androidx.appcompat.widget.AppCompatTextView
+import com.android.pos.MainApplication
+import com.android.pos.R
+
+
+class MethodUtils {
+    companion object {
+
+        @SuppressLint("SetTextI18n")
+        fun setPriceEditText(appCompatEditText: AppCompatEditText, price: Double) {
+
+            appCompatEditText.setText(
+                MainApplication.getInstance()!!.getText(R.string.symbole)
+                    .toString() + String.format(
+                    "%.2f", price
+                )
+            )
+
+        }
+
+        @SuppressLint("SetTextI18n")
+        fun setPriceTextView(appCompatTextView: AppCompatTextView, price: Double) {
+
+            appCompatTextView.text = MainApplication.getInstance()!!.getText(R.string.symbole)
+                .toString() + String.format(
+                "%.2f", price
+            )
+
+        }
+
+        fun hideKeyboard(activity: Activity) {
+            try {
+                val inputManager =
+                    activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                activity.currentFocus?.let {
+                    inputManager.hideSoftInputFromWindow(
+                        activity.currentFocus!!.windowToken,
+                        InputMethodManager.HIDE_NOT_ALWAYS
+                    )
+                }
+            } catch (e: Exception) {
+            }
+        }
+    }
+}
