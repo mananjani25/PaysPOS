@@ -140,6 +140,7 @@ class ManualSaleViewModel @Inject constructor(
             }
         }
 
+        Log.e(TAG, "serviceChargesList:  ${Gson().toJson(serviceChargesList)}")
         if (serviceChargesList != null && serviceChargesList.isNotEmpty()) {
 
             serviceChargesList.forEach {
