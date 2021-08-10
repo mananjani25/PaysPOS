@@ -7,8 +7,8 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-@Entity(tableName = "ModifierSet")
-class ModifierSet : Parcelable {
+@Entity(tableName = "ItemModifierSet")
+class ItemModifierSet : Parcelable {
     @SerializedName("created_at")
     var createdAt: String = ""
 

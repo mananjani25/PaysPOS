@@ -82,12 +82,12 @@ class ModifierSetViewModel @Inject constructor(
     }
 
 
-    fun reOrderCategory(catId: Int, oldPos: Int, newPos: Int) {
+    fun reOrderModifier(catId: Int, oldPos: Int, newPos: Int) {
         _showProgress.value = Event(true)
 
         viewModelScope.launch {
 
-            val resource = posRepository.reOrderCategoryCall(catId, oldPos, newPos)
+            val resource = posRepository.reOrderModifierCall(catId, oldPos, newPos)
             when (resource.status) {
                 Status.SUCCESS -> {
 

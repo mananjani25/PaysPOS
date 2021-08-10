@@ -4,20 +4,20 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.android.pos.data.entities.ItemModifierSet
 import com.android.pos.data.entities.Modifier
-import com.android.pos.data.entities.ModifierSet
 import com.android.pos.databinding.ViewOrderModifierSetsBinding
 
 class ItemModifierSetAdapter :
     RecyclerView.Adapter<ItemModifierSetAdapter.MyViewHolder>() {
-    var filterList = ArrayList<ModifierSet>()
+    var filterList = ArrayList<ItemModifierSet>()
     var selectedModifierList = ArrayList<Modifier>()
 
     inner class MyViewHolder(private val binding: ViewOrderModifierSetsBinding) :
         RecyclerView.ViewHolder(binding.root) {
         private var adapter: ItemModifierAdapter? = null
 
-        fun bind(item: ModifierSet) {
+        fun bind(item: ItemModifierSet) {
             binding.model = item
             binding.executePendingBindings()
 
@@ -50,18 +50,18 @@ class ItemModifierSetAdapter :
         return filterList.size
     }
 
-    fun add(modifierSet: List<ModifierSet>) {
-        this.filterList = modifierSet as ArrayList<ModifierSet>
+    fun add(modifierSet: List<ItemModifierSet>) {
+        this.filterList = modifierSet as ArrayList<ItemModifierSet>
         notifyDataSetChanged()
 
     }
 
-    fun getItem(pos: Int): ModifierSet {
+    fun getItem(pos: Int): ItemModifierSet {
         return filterList[pos]
     }
 
 
-    fun getAll(): ArrayList<ModifierSet> {
+    fun getAll(): ArrayList<ItemModifierSet> {
         return filterList
     }
 

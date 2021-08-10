@@ -5,6 +5,7 @@ import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.android.pos.data.entities.ItemModifierSet
 import com.android.pos.data.entities.ModifierSet
 import com.android.pos.data.entities.TaxData
 import com.bumptech.glide.Glide
@@ -76,7 +77,9 @@ data class VenueDataResponse(
                 val active: Boolean,
                 var taxes: List<TaxData>? = null,
                 @SerializedName("modifier_set_ids")
-                val modifierIds: List<Int>
+                val modifierIds: List<Int>,
+                @SerializedName("modifier_sets")
+                val modifierSets: List<ItemModifierSet> = emptyList()
 
 
             )

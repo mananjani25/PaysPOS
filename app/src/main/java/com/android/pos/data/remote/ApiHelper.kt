@@ -186,4 +186,7 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
 
     suspend fun updateModifierSets(mId: Int, data: CreateModifierRequest) =
         getResult { apiService.updateModifierSets(mId, data) }
+
+    suspend fun reOrderModifierCall(id: Int, oldPos: Int, newPos: Int) =
+        getResult { apiService.reOrderModifier(id, oldPos, newPos) }
 }

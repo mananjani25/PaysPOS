@@ -30,6 +30,7 @@ import com.android.pos.data.remote.Constants.NOTES_ACTIVE
 import com.android.pos.data.remote.Constants.NOTE_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.REORDER_CATEGORY
 import com.android.pos.data.remote.Constants.REORDER_ITEM
+import com.android.pos.data.remote.Constants.REORDER_MODIFIER
 import com.android.pos.data.remote.Constants.SERVICE_CHARGE
 import com.android.pos.data.remote.Constants.SERVICE_CHARGE_ACTIVE
 import com.android.pos.data.remote.Constants.SERVICE_CHARGE_UPDATE_DELETE
@@ -331,4 +332,11 @@ interface ApiService {
         @Path("id") mId: Int,
         @Body createModifierRequest: CreateModifierRequest
     ): CreateModifierSetResponse
+
+    @PUT(REORDER_MODIFIER)
+    suspend fun reOrderModifier(
+        @Path("id") id: Int,
+        @Query("old_position") old_position: Int,
+        @Query("new_position") new_position: Int,
+    ): BaseResponse
 }

@@ -33,6 +33,7 @@ class PosRepository @Inject constructor(
             val mCategory = mData.categories
             val categoryModelList = ArrayList<TbCategory>()
             val inventoryModelList = ArrayList<TbItem>()
+            val modifierSetList = ArrayList<ItemModifierSet>()
             mCategory.forEach { category ->
                 val model = TbCategory().apply {
                     createdAt = ""
@@ -68,14 +69,15 @@ class PosRepository @Inject constructor(
                         modifier_set_ids = it.modifierIds
                     }
 
+                    modifierSetList.addAll(it.modifierSets)
+
                     inventoryModelList.add(items)
                 }
             }
 
             appDatabase.categoryDao().addAll(categoryModelList)
             appDatabase.itemDao().addAllItem(inventoryModelList)
-
-            appDatabase.modifierSetDao().addAll(mData.modifierSets)
+            appDatabase.itemModifierSetDao().addAll(modifierSetList)
         }
     )
 
@@ -281,8 +283,9 @@ class PosRepository @Inject constructor(
     fun getCartList(): LiveData<List<CartModel>> {
         return appDatabase.cartDao().allItem
     }
-    fun getManualSaleList():LiveData<List<CartModel>>{
-        return  appDatabase.cartDao().manualItem
+
+    fun getManualSaleList(): LiveData<List<CartModel>> {
+        return appDatabase.cartDao().manualItem
     }
 
 
@@ -296,7 +299,7 @@ class PosRepository @Inject constructor(
         appDatabase.cartDao().delete()
     }
 
-    suspend fun deleteManualSaleCart(){
+    suspend fun deleteManualSaleCart() {
         appDatabase.cartDao().deleteManualSale()
     }
 
@@ -312,7 +315,7 @@ class PosRepository @Inject constructor(
 
     fun modifierSetList(ids: IntArray) =
         performGetOperationDatabase(databaseQuery = {
-            appDatabase.modifierSetDao().modifierSetByItem(ids)
+            appDatabase.itemModifierSetDao().modifierSetByItem(ids)
         })
 
     suspend fun createModifierSet(data: CreateModifierRequest) =
@@ -324,5 +327,8 @@ class PosRepository @Inject constructor(
 
     suspend fun updateModifierSets(mId: Int, data: CreateModifierRequest) =
         apiHelperNew.updateModifierSets(mId, data)
+
+    suspend fun reOrderModifierCall(id: Int, oldPos: Int, newPos: Int) =
+        apiHelperNew.reOrderModifierCall(id, oldPos, newPos)
 }
 
