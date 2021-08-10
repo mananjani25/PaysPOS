@@ -215,10 +215,14 @@ class Customer : Fragment() {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
 
-                if (binding.autoSearch.text.isNotEmpty()) {
+
+                try {
                     customerAdapter.filter.filter(
                         binding.autoSearch.text.trim().toString()
                     )
+
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
             }
 
