@@ -11,6 +11,7 @@
     <dimen name="_14mdpi">@dimen/_14sdp</dimen>
     <dimen name="_16mdpi">@dimen/_16ssp</dimen>
     <dimen name="_5mdpi">@dimen/_5ssp</dimen>
+    <dimen name="_4mdpi">@dimen/_4ssp</dimen>
 
 
     <dimen name="full_swipe_edge_padding">90dp</dimen>

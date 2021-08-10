@@ -6,10 +6,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.entities.Modifier
 import com.android.pos.databinding.ViewOrderModifiersBinding
 
-class OrderModifierAdapter :
-    RecyclerView.Adapter<OrderModifierAdapter.MyViewHolder>() {
+class ItemModifierAdapter :
+    RecyclerView.Adapter<ItemModifierAdapter.MyViewHolder>() {
     var list = ArrayList<Modifier>()
-    var selectedItemList = ArrayList<Modifier>()
 
     inner class MyViewHolder(private val binding: ViewOrderModifiersBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -21,31 +20,26 @@ class OrderModifierAdapter :
         init {
 
             binding.root.setOnClickListener {
-                list[layoutPosition].isChecked = !list[layoutPosition].isChecked
-
-                if (list[layoutPosition].isChecked) {
-                    selectedItemList.add(list[layoutPosition])
-                } else {
-                    selectedItemList.remove(list.get(layoutPosition))
-                }
+                list[bindingAdapterPosition].isChecked = !list[bindingAdapterPosition].isChecked
                 notifyDataSetChanged()
             }
         }
+
     }
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): OrderModifierAdapter.MyViewHolder {
+    ): ItemModifierAdapter.MyViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = ViewOrderModifiersBinding.inflate(inflater, parent, false)
         return MyViewHolder(binding)
 
     }
 
-    override fun onBindViewHolder(holder: OrderModifierAdapter.MyViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ItemModifierAdapter.MyViewHolder, position: Int) {
 
-        holder.bind(list.get(position))
+        holder.bind(list[holder.bindingAdapterPosition])
     }
 
     override fun getItemCount(): Int {
@@ -70,5 +64,6 @@ class OrderModifierAdapter :
         list.addAll(modifiers)
         notifyDataSetChanged()
     }
+
 
 }
