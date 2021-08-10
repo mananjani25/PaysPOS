@@ -28,6 +28,9 @@ class TaxServiceChargeRepository @Inject constructor(
             networkCall = { apiHelperNew.getTaxList() },
             saveCallResult = { appDatabase.taxDao().addAllTaxes(it.data) })
 
+    suspend fun addAllTaxDatabase(data: List<TaxData>) =
+        appDatabase.taxDao().addAllTaxesSuspend(data)
+
     suspend fun createTax(data: CreateTaxRequestModel) = apiHelperNew.createTax(data)
 
     suspend fun createTaxDatabase(data: TaxData) =

@@ -25,6 +25,12 @@ class PosRepository @Inject constructor(
     fun syncVenueData() =
         performGetOperationNew(networkCall = { apiHelperNew.syncVenueData() })
 
+    /*fun syncVenueDetails() =
+        performGetOperationNew(networkCall = { apiHelperNew.syncVenueDetails() })*/
+
+    suspend fun syncVenueDetails() = apiHelperNew.syncVenueDetails()
+
+
     fun venueDataLocal() = performGetOperation(
         databaseQuery = { appDatabase.categoryDao().categoryWithInventory()!! },
         networkCall = { apiHelperNew.syncVenueData() },
@@ -160,6 +166,9 @@ class PosRepository @Inject constructor(
         networkCall = { apiHelperNew.getNoteList() },
         saveCallResult = { appDatabase.notesDao().addAllNotes(it.data) })
 
+    suspend fun addAllNotesDatabase(data: List<NoteResponse.Data>) =
+        appDatabase.notesDao().addAllNotesSuspend(data)
+
     suspend fun createNote(data: CreateNoteRequest) = apiHelperNew.createNote(data)
 
     suspend fun createNoteDatabase(data: NoteResponse.Data) =
@@ -281,8 +290,9 @@ class PosRepository @Inject constructor(
     fun getCartList(): LiveData<List<CartModel>> {
         return appDatabase.cartDao().allItem
     }
-    fun getManualSaleList():LiveData<List<CartModel>>{
-        return  appDatabase.cartDao().manualItem
+
+    fun getManualSaleList(): LiveData<List<CartModel>> {
+        return appDatabase.cartDao().manualItem
     }
 
 
@@ -296,7 +306,7 @@ class PosRepository @Inject constructor(
         appDatabase.cartDao().delete()
     }
 
-    suspend fun deleteManualSaleCart(){
+    suspend fun deleteManualSaleCart() {
         appDatabase.cartDao().deleteManualSale()
     }
 

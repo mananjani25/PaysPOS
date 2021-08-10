@@ -34,6 +34,7 @@ import com.android.pos.data.remote.Constants.SERVICE_CHARGE
 import com.android.pos.data.remote.Constants.SERVICE_CHARGE_ACTIVE
 import com.android.pos.data.remote.Constants.SERVICE_CHARGE_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.SYNC_VENUE_DATA
+import com.android.pos.data.remote.Constants.SYNC_VENUE_DETAILS
 import com.android.pos.data.remote.Constants.TAXES
 import com.android.pos.data.remote.Constants.TAX_ACTIVE
 import com.android.pos.data.remote.Constants.TAX_UPDATE_DELETE
@@ -79,6 +80,9 @@ interface ApiService {
 
     @GET(SYNC_VENUE_DATA)
     suspend fun syncVenueData(): VenueDataResponse
+
+    @GET(SYNC_VENUE_DETAILS)
+    suspend fun syncVenueDetails(): VenueDetailsResponse
 
     /* @GET(EMPLOYEES)
      suspend fun employeesList(@Query("location_id") location_id: Int): EmployeeListResponse

@@ -47,7 +47,9 @@ import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.SwipeHelper
 import com.android.pos.utils.callback.MyCallback
 import com.android.pos.utils.extensions.alert
+import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.statusUtils.Status
+import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -117,6 +119,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         //searchItem()
 
         getServiceCharges()
+        observeShowProgress()
+        setupSnackbar()
 
 
 
@@ -970,6 +974,25 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         dialog.setCanceledOnTouchOutside(false)
         dialog.show()
+    }
+
+    private fun observeShowProgress() {
+
+        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    ProgressUtils.showProgressDialog(requireActivity())
+                } else {
+                    ProgressUtils.dismissProgressDialog()
+                }
+            }
+        })
+
+    }
+
+    private fun setupSnackbar() {
+        binding.root.liveSnackBar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
+
     }
 
 
