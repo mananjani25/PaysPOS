@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:bind="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".ui.fragments.settings.teamrole.TeamMemberTimeSheetFragment"
     tools:ignore="MissingDefaultResource">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.android.pos.ui.fragments.settings.teamrole.TeamMemberSheetViewModel" />
+    </data>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,7 +22,8 @@
             android:id="@+id/includeView"
             layout="@layout/layout_team_member_time_sheet"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            bind:includeLayoutViewModel="@{viewModel}" />
 
 
         <androidx.appcompat.widget.AppCompatTextView
@@ -114,7 +123,8 @@
                 android:gravity="center"
                 android:text="@string/tv_break"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_6mdpi" />
+                android:textSize="@dimen/_6mdpi"
+                android:visibility="gone" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"

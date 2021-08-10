@@ -37,6 +37,7 @@ import com.android.pos.data.remote.Constants.SYNC_VENUE_DATA
 import com.android.pos.data.remote.Constants.TAXES
 import com.android.pos.data.remote.Constants.TAX_ACTIVE
 import com.android.pos.data.remote.Constants.TAX_UPDATE_DELETE
+import com.android.pos.data.remote.Constants.TEAM_MEMBER_TIMESHEET
 import com.android.pos.data.remote.Constants.TEAM_ROLES
 import com.android.pos.data.remote.Constants.TEAM_ROLES_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.TIPS
@@ -222,6 +223,9 @@ interface ApiService {
     suspend fun deleteTeamRole(
         @Path("id") discountId: Int
     ): BaseResponse
+
+    @GET(TEAM_MEMBER_TIMESHEET)
+    suspend fun getTeamMemberTimeSheet(): GetUserPermissionListResponse
 
     @GET(EMPLOYEES)
     suspend fun employeesList(@Query("location_id") location_id: Int): EmployeeListResponse

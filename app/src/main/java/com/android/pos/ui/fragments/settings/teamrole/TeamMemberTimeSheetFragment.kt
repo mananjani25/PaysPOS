@@ -1,17 +1,21 @@
 package com.android.pos.ui.fragments.settings.teamrole
 
+import android.app.DatePickerDialog
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.model.TimeSheetListModel
 import com.android.pos.databinding.FragmentTeamMemberTimeSheetBinding
 import com.android.pos.ui.adapter.TeamMemberTimeSheetAdapter
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.*
+import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
 class TeamMemberTimeSheetFragment : Fragment() {
@@ -19,6 +23,9 @@ class TeamMemberTimeSheetFragment : Fragment() {
     private lateinit var binding: FragmentTeamMemberTimeSheetBinding
     private lateinit var teamMemberTimeSheetAdapter: TeamMemberTimeSheetAdapter
     val timeSheet = ArrayList<TimeSheetListModel>()
+    private val viewModel by viewModels<TeamMemberSheetViewModel>()
+    private lateinit var date: DatePickerDialog.OnDateSetListener
+    val myCalendar = Calendar.getInstance()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -34,7 +41,8 @@ class TeamMemberTimeSheetFragment : Fragment() {
                 false
             )
 
-        binding.lifecycleOwner = this
+        binding.viewModel = viewModel
+
 
         binding.llTestClick.setOnClickListener {
             findNavController().navigate(
@@ -63,7 +71,35 @@ class TeamMemberTimeSheetFragment : Fragment() {
         binding.rvTeamTimeSheet.adapter = teamMemberTimeSheetAdapter
         binding.lifecycleOwner = this
 
+
+        date =
+            DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
+                myCalendar.set(Calendar.YEAR, year)
+                myCalendar.set(Calendar.MONTH, monthOfYear)
+                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+                viewModel.updateLabel(myCalendar)
+
+            }
+
+        viewModel.setCurrentDate(myCalendar)
+
+
+        datePickerObserver()
+
         return binding.root
+    }
+
+    private fun datePickerObserver() {
+        viewModel.dateSelection.observe(requireActivity(), { event ->
+            event.getContentIfNotHandled()?.let {
+
+                DatePickerDialog(
+                    requireActivity(), date, myCalendar
+                        .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                    myCalendar.get(Calendar.DAY_OF_MONTH)
+                ).show()
+            }
+        })
     }
 
 }

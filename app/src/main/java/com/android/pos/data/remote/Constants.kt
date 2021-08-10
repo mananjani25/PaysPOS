@@ -67,6 +67,9 @@ object Constants {
     const val TEAM_ROLES = "team_roles"
     const val TEAM_ROLES_UPDATE_DELETE = "team_roles/{id}"
 
+    const val TEAM_MEMBER_TIMESHEET = "team_roles/{id}"
+
+
     const val VERTICAL = "vertical"
     const val HORIZONTAL = "horizontal"
 

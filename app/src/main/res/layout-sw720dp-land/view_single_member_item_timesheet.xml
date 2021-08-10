@@ -75,7 +75,8 @@
                 android:gravity="center"
                 android:text="@{itemSheetModel.break1}"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_6mdpi" />
+                android:textSize="@dimen/_6mdpi"
+                android:visibility="gone" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
