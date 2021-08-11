@@ -3,6 +3,7 @@ package com.android.pos.ui.fragments.createmodifier
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +11,8 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.entities.Modifier
 import com.android.pos.data.entities.ModifierSet
@@ -32,6 +35,8 @@ class CreateModifierSet : Fragment(), TextWatcher {
     private lateinit var adapter: ModifierAdapter
     private lateinit var binding: CreateModifierSetBinding
     private val viewModel by viewModels<CreateModifierViewModel>()
+    var dragFrom = -1
+    var dragTo = -1
 
     private var itemIds = ArrayList<Int>()
 
@@ -75,7 +80,9 @@ class CreateModifierSet : Fragment(), TextWatcher {
         }
 
         if (isEdit) {
+            binding.txtTitle.text = getString(R.string.update_modifier_set)
             binding.btnSave.text = getString(R.string.update)
+
             modifierSet = arguments?.getParcelable("modifierObject")!!
             itemIds = modifierSet!!.itemIds as ArrayList<Int>
             viewModel.setItemIds(itemIds)
@@ -84,6 +91,10 @@ class CreateModifierSet : Fragment(), TextWatcher {
                 binding.txtItemsTotal.text = "" + itemIds.size + " Items"
             } else {
                 binding.txtItemsTotal.text = "No Items"
+            }
+
+            modifierSet!!.modifiers.sortedBy {
+                it.sort
             }
 
             adapter.addAll(modifierSet!!.modifiers)
@@ -104,11 +115,65 @@ class CreateModifierSet : Fragment(), TextWatcher {
         binding.llAddItems.setOnClickListener {
             val bundle = Bundle()
             bundle.putString("where", "modifier")
-            if (isEdit) {
-                bundle.putIntegerArrayList("itemIds", itemIds)
-            }
+//            if (isEdit) {
+            bundle.putIntegerArrayList("itemIds", itemIds)
+//            }
             findNavController().navigate(R.id.action_createIModifierSet_to_itemDialog, bundle)
         }
+
+        val touchHelper = ItemTouchHelper(object :
+            ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP + ItemTouchHelper.DOWN, 0) {
+
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+
+                val oldPos = viewHolder.bindingAdapterPosition
+                val newPos = target.bindingAdapterPosition
+                Log.e(
+                    "reorder after", "" + ":::" + ":::" +
+                            viewHolder.bindingAdapterPosition.toString() + " :::  " + target.bindingAdapterPosition.toString()
+                )
+                if (dragFrom == -1) {
+                    dragFrom = oldPos
+                }
+                dragTo = newPos
+
+                val a = adapter.getItem(dragFrom).sort
+                val b = adapter.getItem(dragTo).sort
+                Log.e("onItemMove", "$a:: $b")
+
+
+
+                adapter.onItemMove(viewHolder.bindingAdapterPosition, target.bindingAdapterPosition)
+
+                return true
+            }
+
+            override fun isLongPressDragEnabled(): Boolean {
+                return true
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+
+            }
+
+            override fun clearView(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder
+            ) {
+
+                if (dragFrom != -1 && dragTo != -1 && dragFrom != dragTo) {
+                }
+
+                dragFrom = -1
+                dragTo = -1
+            }
+        })
+
+        touchHelper.attachToRecyclerView(binding.rvModifiers)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

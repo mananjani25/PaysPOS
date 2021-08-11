@@ -3,14 +3,16 @@ package com.android.pos.ui.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.android.pos.data.entities.ModulePermission
 import com.android.pos.data.model.PermissionModuleListModel
+import com.android.pos.data.model.responseModel.GetTeamRoleModule
 import com.android.pos.databinding.ViewModuleSelectedItemBinding
 import com.android.pos.ui.fragments.settings.teamrole.UserAccessPermissionViewModel
 
 class AllPermissionModuleAdapter(val viewModelAccess: UserAccessPermissionViewModel) :
     RecyclerView.Adapter<AllPermissionModuleAdapter.MyViewHolder>() {
 
-    var allPermissionModule = ArrayList<PermissionModuleListModel>()
+    var allPermissionModule = ArrayList<ModulePermission>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -29,7 +31,7 @@ class AllPermissionModuleAdapter(val viewModelAccess: UserAccessPermissionViewMo
 
     override fun getItemCount() = allPermissionModule.size
 
-    fun addPermissionModule(allPermissionModule: List<PermissionModuleListModel>) {
+    fun addPermissionModule(allPermissionModule: List<ModulePermission>) {
         this.allPermissionModule.apply {
             clear()
             addAll(allPermissionModule)

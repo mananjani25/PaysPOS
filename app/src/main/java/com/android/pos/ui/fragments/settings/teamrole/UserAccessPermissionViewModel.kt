@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.R
 import com.android.pos.data.entities.Employee
+import com.android.pos.data.entities.ModulePermission
 import com.android.pos.data.entities.TeamRole
 import com.android.pos.data.model.PermissionModuleListModel
 import com.android.pos.data.model.requestModel.CreateTeamRoleRequestModel
@@ -51,8 +52,6 @@ class UserAccessPermissionViewModel @Inject constructor(
 
     private var isEdit: Boolean = false
 
-    private lateinit var teamRole: TeamRole
-
 
     private lateinit var createTeamRoleRequestModel: CreateTeamRoleRequestModel
 
@@ -60,6 +59,7 @@ class UserAccessPermissionViewModel @Inject constructor(
 
     val employeeData = posRepository.employeesList(locationId)
     val getTeamRoleList = taxServiceChargeRepository.getTeamRoleList()
+    val getTeamModules = taxServiceChargeRepository.getTeamModules()
 
     private val _allEmployeeList = MutableLiveData<ArrayList<Employee>>()
     val allEmployeeList: LiveData<ArrayList<Employee>> = _allEmployeeList
@@ -72,16 +72,16 @@ class UserAccessPermissionViewModel @Inject constructor(
     val allEmployeeListToFeed = ArrayList<Employee>()
     val selectedEmployeeListToFeed = ArrayList<Employee>()
 
-    private val _allModuleList = MutableLiveData<ArrayList<PermissionModuleListModel>>()
-    val allModuleList: LiveData<ArrayList<PermissionModuleListModel>> = _allModuleList
+    private val _allModuleList = MutableLiveData<ArrayList<ModulePermission>>()
+    val allModuleList: LiveData<ArrayList<ModulePermission>> = _allModuleList
 
-    private val _selectedModuleList = MutableLiveData<ArrayList<PermissionModuleListModel>>()
-    val selectedModuleList: LiveData<ArrayList<PermissionModuleListModel>> =
+    private val _selectedModuleList = MutableLiveData<ArrayList<ModulePermission>>()
+    val selectedModuleList: LiveData<ArrayList<ModulePermission>> =
         _selectedModuleList
 
 
-    val allModuleListToFeed = ArrayList<PermissionModuleListModel>()
-    val selectedModuleListToFeed = ArrayList<PermissionModuleListModel>()
+    val allModuleListToFeed = ArrayList<ModulePermission>()
+    val selectedModuleListToFeed = ArrayList<ModulePermission>()
 
 
     fun setUserPermissionData(userPermissionData: TeamRole) {
@@ -98,6 +98,27 @@ class UserAccessPermissionViewModel @Inject constructor(
                 if (item.id == selectedEmployee.id) {
                     iterator.remove()
                     _allEmployeeList.value = allEmployeeListToFeed
+
+                }
+            }
+        }
+
+
+    }
+
+    fun setModuleData(userPermissionData: TeamRole) {
+        selectedModuleListToFeed.clear()
+        selectedModuleListToFeed.addAll(userPermissionData.modulePermission)
+        _selectedModuleList.value = selectedModuleListToFeed
+
+        val myCollection = allModuleListToFeed
+        val iterator = myCollection.iterator()
+        while (iterator.hasNext()) {
+            val item = iterator.next()
+            selectedModuleListToFeed.forEach { selectedEmployee ->
+                if (item.id == selectedEmployee.id) {
+                    iterator.remove()
+                    _allModuleList.value = allModuleListToFeed
 
                 }
             }
@@ -149,13 +170,13 @@ class UserAccessPermissionViewModel @Inject constructor(
     }
 
 
-    fun setModuleList(timeSheet: ArrayList<PermissionModuleListModel>) {
+    fun setModuleList(timeSheet: List<ModulePermission>) {
         allModuleListToFeed.clear()
         allModuleListToFeed.addAll(timeSheet)
     }
 
     fun permissionModuleRemoved(
-        employeeName: PermissionModuleListModel,
+        employeeName: ModulePermission,
         isModuleRemoved: Boolean
     ) {
         if (isModuleRemoved) {
@@ -203,6 +224,12 @@ class UserAccessPermissionViewModel @Inject constructor(
                 idList.add(it.id)
             }
             employeeIds = idList
+
+            val moduleidList = ArrayList<Int>()
+            teamRole.modulePermission.forEach {
+                moduleidList.add(it.id)
+            }
+            moduleIds = moduleidList
 
         }
         viewModelScope.launch {
@@ -262,6 +289,12 @@ class UserAccessPermissionViewModel @Inject constructor(
                 }
                 employeeIds = idList
 
+                val moduleidList = ArrayList<Int>()
+                selectedModuleListToFeed.forEach {
+                    moduleidList.add(it.id)
+                }
+                moduleIds = moduleidList
+
             }
 
             viewModelScope.launch {
@@ -289,6 +322,7 @@ class UserAccessPermissionViewModel @Inject constructor(
                                     )
 
                                     removeAllEmployee()
+                                    removeAllModule()
                                     _data.value = Event(createTeamRole)
                                 }
                             } else {
