@@ -225,6 +225,12 @@ class UserAccessPermissionViewModel @Inject constructor(
             }
             employeeIds = idList
 
+            val moduleidList = ArrayList<Int>()
+            teamRole.modulePermission.forEach {
+                moduleidList.add(it.id)
+            }
+            moduleIds = moduleidList
+
         }
         viewModelScope.launch {
 

@@ -23,8 +23,8 @@ import com.android.pos.data.typeconvert.*
         GetTipReponse.Data::class, GetDiscountResponse.Data::class, NoteResponse.Data::class,
         GetServiceChargeResponse.Data::class, Employee::class, CartModel::class,
         CustomerListResponse.Data::class, ModifierSet::class, TeamRole::class, ItemModifierSet::class,
-        ModulePermission::class, CustomerListResponse.Data::class, ModifierSet::class, TeamRole::class, ItemModifierSet::class],
-    version = 2
+        ModulePermission::class],
+    version = 1
 )
 @TypeConverters(
     TypeConvertersIds::class,
