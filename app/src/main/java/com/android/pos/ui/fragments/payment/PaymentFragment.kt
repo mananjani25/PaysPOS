@@ -6,9 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.databinding.PaymentFragmentBinding
+import com.android.pos.utils.AlertUtils
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -22,7 +24,7 @@ class PaymentFragment : Fragment() {
         fun newInstance() = PaymentFragment()
     }
 
-    private lateinit var viewModel: PaymentViewModel
+    private val viewModel by viewModels<PaymentViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -31,6 +33,8 @@ class PaymentFragment : Fragment() {
 
         binding = PaymentFragmentBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
+        binding.model = viewModel
+
 
         setupData()
         callbackSetup()
@@ -63,6 +67,17 @@ class PaymentFragment : Fragment() {
     }
 
     private fun setupData() {
+
+        binding.llCash.setOnClickListener {
+
+            AlertUtils.showCustomAlertWithListenerWithOK(
+                requireContext(), getString(R.string.order_successfully)
+            ) { _, _ ->
+
+                viewModel.deleteCart()
+                findNavController().popBackStack()
+            }
+        }
 
 
         totalPrice = requireArguments().getDouble("totalPrice")
