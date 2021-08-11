@@ -82,7 +82,8 @@ class AddressListAdapter() : RecyclerView.Adapter<AddressListAdapter.MyViewHolde
                                 R.style.SpinnerTheme
                             )
                         } else {
-                            (parent?.getChildAt(0) as TextView).setTextAppearance(R.style.SpinnerTheme); }
+                            (parent?.getChildAt(0) as TextView).setTextAppearance(R.style.SpinnerTheme);
+                        }
 
 
                     }

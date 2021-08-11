@@ -63,7 +63,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private var singleItem: TbItem? = null
     private var cartList: List<CartModel>? = null
     private lateinit var binding: FragmentDashboardCategoryNewBinding
-    private val taxViewmodel by activityViewModels<TaxListViewModel>()
+
     private val TAG = "DashboardCategoryNew"
 
     private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
@@ -294,7 +294,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     binding.layoutCart.llCart.visibility = View.VISIBLE
                     binding.lltakeout.visibility = View.GONE
                     cartList?.get(0)?.items?.forEach {
-                        it.taxes = taxViewmodel.getTaxList.value?.data
+                        Log.e(TAG,"TaxList  ${Gson().toJson(viewModel.taxList.value)}")
+                        it.taxes = viewModel.taxList.value
                     }
 
                     cartAdapter.addCart(cartList?.get(0)?.items)

@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.CategoryWithInventory
+import com.android.pos.data.entities.TaxData
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.responseModel.GetServiceChargeResponse
 import com.android.pos.data.remote.Constants
@@ -52,6 +53,8 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     val serviceCharges = posRepository.serviceChargeList()
 
+    val taxList = MutableLiveData<List<TaxData>>()
+
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
     private val _snackbarText = MutableLiveData<Event<Any?>>()
@@ -74,6 +77,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                             resource.data?.let {
                                 taxServiceChargeRepository.addAllTaxDatabase(it.data.taxes)
+                                taxList.value = it.data.taxes
                                 //posRepository.addAllNotesDatabase(it.data.notes)
 
                             }
