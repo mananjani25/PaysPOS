@@ -34,6 +34,11 @@ class ModifierSetsListAdapter(val isCreateItem: Boolean) :
 
             val builder = StringBuilder()
             if (item.modifiers.isNotEmpty()) {
+
+                item.modifiers.sortedBy {
+                    it.sort
+                }
+
                 item.modifiers.forEach {
                     if (it.name.isNotEmpty())
                         builder.append(it.name.trim() + ",")

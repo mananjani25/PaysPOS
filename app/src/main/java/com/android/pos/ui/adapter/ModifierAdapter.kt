@@ -8,6 +8,8 @@ import com.android.pos.databinding.ViewModifiersRemoveBinding
 import com.android.pos.utils.EditTextWatcher
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.PriceTextWatcher
+import java.util.*
+import kotlin.collections.ArrayList
 
 class ModifierAdapter(private val isEdit: Boolean) :
     RecyclerView.Adapter<ModifierAdapter.MyViewHolder>() {
@@ -86,6 +88,25 @@ class ModifierAdapter(private val isEdit: Boolean) :
     fun addAll(modifiers: List<Modifier>) {
         list.addAll(modifiers)
         notifyDataSetChanged()
+    }
+
+    fun onItemMove(fromPosition: Int?, toPosition: Int?): Boolean {
+        fromPosition?.let {
+            toPosition?.let {
+                if (fromPosition < toPosition) {
+                    for (i in fromPosition until toPosition) {
+                        Collections.swap(list, i, i + 1)
+                    }
+                } else {
+                    for (i in fromPosition downTo toPosition + 1) {
+                        Collections.swap(list, i, i - 1)
+                    }
+                }
+                notifyItemMoved(fromPosition, toPosition)
+                return true
+            }
+        }
+        return false
     }
 
 }

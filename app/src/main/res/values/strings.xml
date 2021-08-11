@@ -403,4 +403,6 @@
     <string name="you_can_not_add_more_then">You can not add more then &#160;</string>
     <string name="items"> &#160;modifiers.</string>
     <string name="you_can_add">You can add minimum modifiers.</string>
+    <string name="update_modifier_set">Update Modifier Set</string>
+    <string name="order_successfully">Order Successfully</string>
 </resources>
