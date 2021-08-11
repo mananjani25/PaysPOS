@@ -567,6 +567,30 @@
             android:id="@+id/action_manualSaleNew_to_itemRenameDialog"
             app:destination="@id/itemRenameDialog"
             app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_manualSaleNew_to_menuPOS"
+            app:destination="@id/menuPOS"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_manualSaleNew_to_customer"
+            app:destination="@id/customer"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_manualSaleNew_to_reports"
+            app:destination="@id/reports"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_manualSaleNew_to_teamList"
+            app:destination="@id/teamList"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_manualSaleNew_to_inventory"
+            app:destination="@id/inventory"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_manualSaleNew_to_settings"
+            app:destination="@id/settings"
+            app:enterAnim="@anim/nav_default_enter_anim" />
     </fragment>
     <dialog
         android:id="@+id/assignTeamMemberListDialog"

@@ -25,6 +25,8 @@ import com.android.pos.data.typeconvert.*
         CustomerListResponse.Data::class, ModifierSet::class, TeamRole::class, ItemModifierSet::class,
         ModulePermission::class],
     version = 2
+        CustomerListResponse.Data::class, ModifierSet::class, TeamRole::class, ItemModifierSet::class],
+    version = 2
 )
 @TypeConverters(
     TypeConvertersIds::class,

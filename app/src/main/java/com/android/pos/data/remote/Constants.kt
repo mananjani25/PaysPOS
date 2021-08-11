@@ -93,6 +93,8 @@ object Constants {
     const val CREATE_NOTES = "create_notes"
     const val ADD_SERVICE_CHARGE = "add_service_charge"
 
+    const val TEAM_MEMBER = "team_member"
+
     const val DIALOG_KEY = "dialog_key"
     const val DIALOG_KEY_TAX = "dialog_key_tax"
     const val ADD_TAX = "Add Tax To Item Price"

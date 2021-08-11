@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.entities.TeamRole
 import com.android.pos.data.model.responseModel.GetUserPermissionListResponse
+import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentUserAccessPermissionListBinding
 import com.android.pos.ui.adapter.UserPermissionListAdapter
 import com.android.pos.utils.AlertUtils
@@ -61,8 +62,10 @@ class UserAccessPermissionListFragment : Fragment() {
         }
 
         binding.imgClose.setOnClickListener {
-            findNavController().navigateUp()
+            backPressManage()
         }
+
+
         return binding.root
     }
 
@@ -185,6 +188,14 @@ class UserAccessPermissionListFragment : Fragment() {
                 }
             }
         })
+    }
+    private fun backPressManage() {
+        val navController = findNavController()
+        navController.previousBackStackEntry?.savedStateHandle?.set(
+            Constants.KEY,
+            Constants.TEAM_MEMBER
+        )
+        navController.popBackStack()
     }
 
     private fun setupSnackbar() =

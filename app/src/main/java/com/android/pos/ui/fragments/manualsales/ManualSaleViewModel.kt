@@ -46,7 +46,13 @@ class ManualSaleViewModel @Inject constructor(
 
     fun deleteCart() {
         viewModelScope.launch {
+            totalPrice = 0.0
+            subTotalPrice = 0.0
+            totalTax = 0.0
+            totalServiceCharge =0.0
+            totalCount= 0
             posRepository.deleteManualSaleCart()
+
 
 
         }

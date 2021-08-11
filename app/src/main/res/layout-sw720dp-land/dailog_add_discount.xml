@@ -91,6 +91,8 @@
                 android:id="@+id/llKeypad"
                 layout="@layout/layout_discount_keypad" />
 
+
+
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
