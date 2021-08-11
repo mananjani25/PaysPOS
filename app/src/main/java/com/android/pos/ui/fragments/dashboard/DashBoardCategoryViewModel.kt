@@ -215,8 +215,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             }
 
             item.modifiers.forEach {
-
-                Log.e("modifiers", it.name)
+                subTotalPrice += it.price
             }
         }
 

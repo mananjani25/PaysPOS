@@ -293,10 +293,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 if (cartList?.isNotEmpty()!!) {
                     binding.layoutCart.llCart.visibility = View.VISIBLE
                     binding.lltakeout.visibility = View.GONE
-                    cartList?.get(0)?.items?.forEach {
-                        Log.e(TAG,"TaxList  ${Gson().toJson(viewModel.taxList.value)}")
-                        it.taxes = viewModel.taxList.value
-                    }
+//                    cartList?.get(0)?.items?.forEach {
+//                        Log.e(TAG,"TaxList  ${Gson().toJson(viewModel.taxList.value)}")
+//                        it.taxes = viewModel.taxList.value
+//                    }
 
                     cartAdapter.addCart(cartList?.get(0)?.items)
 
