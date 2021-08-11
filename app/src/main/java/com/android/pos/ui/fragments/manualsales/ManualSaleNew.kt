@@ -162,13 +162,16 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
         }
 
         binding.lnrCharge.setOnClickListener {
-            val bundle = Bundle()
-            bundle.putDouble("totalPrice", viewModel.totalPrice)
-            bundle.putDouble("subTotalPrice", viewModel.subTotalPrice)
-            bundle.putDouble("totalTax", viewModel.totalTax)
-            bundle.putDouble("totalServiceCharge", viewModel.totalServiceCharge)
 
-            findNavController().navigate(R.id.action_manualSaleNew_to_paymentFragment, bundle)
+            if (!binding.txtChargeAmount.text.toString().equals("$0.00")) {
+                val bundle = Bundle()
+                bundle.putDouble("totalPrice", viewModel.totalPrice)
+                bundle.putDouble("subTotalPrice", viewModel.subTotalPrice)
+                bundle.putDouble("totalTax", viewModel.totalTax)
+                bundle.putDouble("totalServiceCharge", viewModel.totalServiceCharge)
+
+                findNavController().navigate(R.id.action_manualSaleNew_to_paymentFragment, bundle)
+            }
         }
 
         binding.footer.linearMore.setOnClickListener {
@@ -199,6 +202,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
                 positiveButton(getString(R.string.tv_delete)) {
                     // Do positive stuff here
                     viewModel.deleteCart()
+                    binding.txtChargeAmount.setText("$0.00")
                     //resetCart()
                     dialogMenu()
 
@@ -330,24 +334,26 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
                         0,
                         Color.parseColor("#08CAE3")
                     ) { pos ->
+                        if (pos != cartAdapter.getList().size - 1) {
+                            Log.e(TAG, "pospospos  ${pos}")
+                            setFragmentResultListener("request_key_item_rename") { resultKey: String, bundle: Bundle ->
+                                val data = bundle.getString("item_name")
+                                cartItemModel.name = data.toString()
+                                cartItemModel?.let {
+                                    viewModel.cartLogic(cartList, it, Constants.UPDATE)
+                                }
 
-                        setFragmentResultListener("request_key_item_rename") { resultKey: String, bundle: Bundle ->
-                            val data = bundle.getString("item_name")
-                            cartItemModel.name = data.toString()
-                            cartItemModel?.let {
-                                viewModel.cartLogic(cartList, it, Constants.UPDATE)
+
                             }
+                            cartItemModel = cartAdapter.getItem(pos)
+                            val bundle: Bundle = bundleOf("item_name" to cartItemModel.name)
 
+                            findNavController().navigate(
+                                R.id.action_manualSaleNew_to_itemRenameDialog,
+                                bundle
+                            )
 
                         }
-                        cartItemModel = cartAdapter.getItem(pos)
-                        val bundle: Bundle = bundleOf("item_name" to cartItemModel.name)
-
-                        findNavController().navigate(
-                            R.id.action_manualSaleNew_to_itemRenameDialog,
-                            bundle
-                        )
-
                     }
                 )
 
@@ -356,29 +362,32 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
                     0,
                     Color.parseColor("#FA9905")
                 ) { pos ->
+                    if (pos != cartAdapter.getList().size - 1) {
 
-                    setFragmentResultListener("request_key_note") { requestKey: String, bundle: Bundle ->
-                        val note = bundle.getString("note")
+                        setFragmentResultListener("request_key_note") { requestKey: String, bundle: Bundle ->
+                            val note = bundle.getString("note")
 
-                        cartItemModel.note = note.toString()
+                            cartItemModel.note = note.toString()
 
-                        cartItemModel?.let {
-                            viewModel.cartLogic(
-                                cartList,
-                                it,
-                                Constants.UPDATE
-                            )
+                            cartItemModel?.let {
+                                viewModel.cartLogic(
+                                    cartList,
+                                    it,
+                                    Constants.UPDATE
+                                )
+                            }
                         }
-                    }
-                    cartItemModel = cartAdapter.getItem(pos)
-                    val bundle = Bundle().apply {
-                        putString("note", cartItemModel.note)
-                    }
+                        cartItemModel = cartAdapter.getItem(pos)
+                        val bundle = Bundle().apply {
+                            putString("note", cartItemModel.note)
+                        }
 
-                    findNavController().navigate(
-                        R.id.action_manualSaleNew_to_addNoteDialog,
-                        bundle
-                    )
+                        findNavController().navigate(
+                            R.id.action_manualSaleNew_to_addNoteDialog,
+                            bundle
+                        )
+
+                    }
 
                 })
 
@@ -387,8 +396,10 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
                     0,
                     Color.parseColor("#2997cc")
                 ) { pos ->
+                    if (pos != cartAdapter.getList().size - 1) {
 
-                    findNavController().navigate(R.id.action_manualSaleNew_to_addDiscountDialog)
+                        findNavController().navigate(R.id.action_manualSaleNew_to_addDiscountDialog)
+                    }
                 })
 
                 underlayButtons.add(
@@ -397,23 +408,24 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
                         0,
                         Color.parseColor("#FF3C30")
                     ) { pos ->
-                        alert(
-                            getString(R.string.app_name),
-                            getString(R.string.delete_item_message)
-                        ) {
-                            positiveButton(getString(R.string.tv_delete)) {
-                                // Do positive stuff here
-                                val item = cartAdapter.getItem(pos)
+                        if (pos != cartAdapter.getList().size - 1) {
+                            alert(
+                                getString(R.string.app_name),
+                                getString(R.string.delete_item_message)
+                            ) {
+                                positiveButton(getString(R.string.tv_delete)) {
+                                    // Do positive stuff here
+                                    val item = cartAdapter.getItem(pos)
 
-                                Log.e(TAG, "item ${Gson().toJson(item)}")
-                                viewModel.cartLogic(cartList, item, Constants.DELETE)
-                            }
-                            negativeButton(R.string.tv_cancel) {
-                                // Do negative stuff here
+                                    Log.e(TAG, "item ${Gson().toJson(item)}")
+                                    viewModel.cartLogic(cartList, item, Constants.DELETE)
+                                }
+                                negativeButton(R.string.tv_cancel) {
+                                    // Do negative stuff here
+                                }
                             }
                         }
                     })
-
             }
 
         }
@@ -502,7 +514,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
             model.note = edtNote.text.toString().trim()
             model.itemQuantity = txtQty.text.toString().toInt()
 
-            model.price = String.format("%.2f",(itemCost * model.itemQuantity)).toDouble()
+            model.price = String.format("%.2f", (itemCost * model.itemQuantity)).toDouble()
 
 
 

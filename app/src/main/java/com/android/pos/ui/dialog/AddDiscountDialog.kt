@@ -2,17 +2,24 @@ package com.android.pos.ui.dialog
 
 import android.graphics.Point
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.databinding.DailogAddDiscountBinding
+import com.android.pos.ui.fragments.settings.discount.DiscountListViewModel
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class AddDiscountDialog : DialogFragment() {
 
     private lateinit var binding: DailogAddDiscountBinding
+    private val viewModel by activityViewModels<DiscountListViewModel>()
+    private val TAG = "AddDiscountDialog"
 
     companion object {
         fun newInstance() = AddDiscountDialog()
@@ -27,7 +34,14 @@ class AddDiscountDialog : DialogFragment() {
 
         setupData()
 
+
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        Log.e(TAG,"getDiscountList  ${Gson().toJson(viewModel.getDiscountList.value)}")
     }
 
     private fun setupData() {

@@ -40,6 +40,10 @@ class ItemRenameDialog : DialogFragment() {
 
         }
 
+        binding.imgBack.setOnClickListener {
+            findNavController().navigateUp()
+        }
+
         binding.txtSave.setOnClickListener {
             val result = Bundle().apply {
                 putString("item_name", binding.edtItemName.text.toString().trim())
