@@ -13,10 +13,13 @@ import com.android.pos.data.remote.Constants.DISCOUNTS
 import com.android.pos.data.remote.Constants.DISCOUNTS_ACTIVE
 import com.android.pos.data.remote.Constants.DISCOUNTS_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.EMPLOYEES
+import com.android.pos.data.remote.Constants.EMPLOYEES_TIMESHEET
+import com.android.pos.data.remote.Constants.EMPLOYEES_TIMESHEET_DETAILS
 import com.android.pos.data.remote.Constants.EMPLOYEES_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.EMPLOYEE_CLOCK_IN
 import com.android.pos.data.remote.Constants.EMPLOYEE_LOG_IN
 import com.android.pos.data.remote.Constants.FORGOT_PASSWORD
+import com.android.pos.data.remote.Constants.GET_TEAM_MODULE
 import com.android.pos.data.remote.Constants.HIDE_CATEGORY
 import com.android.pos.data.remote.Constants.HIDE_ITEM
 import com.android.pos.data.remote.Constants.ITEMS
@@ -39,7 +42,6 @@ import com.android.pos.data.remote.Constants.SYNC_VENUE_DETAILS
 import com.android.pos.data.remote.Constants.TAXES
 import com.android.pos.data.remote.Constants.TAX_ACTIVE
 import com.android.pos.data.remote.Constants.TAX_UPDATE_DELETE
-import com.android.pos.data.remote.Constants.TEAM_MEMBER_TIMESHEET
 import com.android.pos.data.remote.Constants.TEAM_ROLES
 import com.android.pos.data.remote.Constants.TEAM_ROLES_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.TIPS
@@ -215,6 +217,9 @@ interface ApiService {
     @GET(TEAM_ROLES)
     suspend fun getTeamRoles(): GetUserPermissionListResponse
 
+    @GET(GET_TEAM_MODULE)
+    suspend fun getTeamModules(): GetTeamRoleModule
+
     @POST(TEAM_ROLES)
     suspend fun createTeamRoles(@Body createDiscount: CreateTeamRoleRequestModel): GetUserPermissionListResponse
 
@@ -229,11 +234,24 @@ interface ApiService {
         @Path("id") discountId: Int
     ): BaseResponse
 
-    @GET(TEAM_MEMBER_TIMESHEET)
-    suspend fun getTeamMemberTimeSheet(): GetUserPermissionListResponse
 
     @GET(EMPLOYEES)
     suspend fun employeesList(@Query("location_id") location_id: Int): EmployeeListResponse
+
+    @GET(EMPLOYEES_TIMESHEET)
+    suspend fun employeesTimeSheet(
+        @Query("start_date") startDate: String,
+        @Query("end_date") endDate: String,
+        @Query("team_role_id") teamRoleId: Int,
+
+        ): EmployeeListResponse
+
+    @GET(EMPLOYEES_TIMESHEET_DETAILS)
+    suspend fun employeesTimeSheetDetails(
+        @Query("start_date") startDate: String,
+        @Query("end_date") endDate: String,
+        @Query("team_id") teamId: Int,
+    ): EmployeeListResponse
 
     @POST(EMPLOYEES)
     suspend fun createEmployee(@Body createEmployeeRequestModel: CreateEmployeeRequestModel): CreateEmployeeResponse

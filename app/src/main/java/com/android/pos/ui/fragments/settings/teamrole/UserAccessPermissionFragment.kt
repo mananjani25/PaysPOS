@@ -10,8 +10,10 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.Employee
+import com.android.pos.data.entities.ModulePermission
 import com.android.pos.data.entities.TeamRole
 import com.android.pos.data.model.PermissionModuleListModel
+import com.android.pos.data.model.responseModel.GetTeamRoleModule
 import com.android.pos.databinding.FragmentUserAccessPermissionBinding
 import com.android.pos.ui.adapter.*
 import com.android.pos.utils.AlertUtils
@@ -21,7 +23,6 @@ import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.statusUtils.Status
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import java.io.Serializable
 
 @AndroidEntryPoint
 class UserAccessPermissionFragment : Fragment() {
@@ -37,7 +38,7 @@ class UserAccessPermissionFragment : Fragment() {
     var isEdit: Boolean = false
     private lateinit var employeeListGlobal: List<Employee>
 
-    val timeSheet = ArrayList<PermissionModuleListModel>()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -61,6 +62,7 @@ class UserAccessPermissionFragment : Fragment() {
             binding.addRole.text = getString(R.string.update_role)
             userPermissionObject = arguments?.getParcelable("userPermissionObject")!!
             viewModel.setUserPermissionData(userPermissionObject)
+            viewModel.setModuleData(userPermissionObject)
             viewModel.isEditData(isEdit, userPermissionObject.id)
         }
 
@@ -76,6 +78,7 @@ class UserAccessPermissionFragment : Fragment() {
         observeShowProgress()
         showEmployeeListDialog()
         getUserPermissionListObserver()
+        getModulesObserver()
 
         binding.imgClose.setOnClickListener {
             findNavController().navigateUp()
@@ -102,15 +105,15 @@ class UserAccessPermissionFragment : Fragment() {
 
     private fun setAllModule() {
         viewModel.allModuleList.observe(viewLifecycleOwner, {
-            it as ArrayList<PermissionModuleListModel>
-            allPermissionModuleAdapter.addPermissionModule(timeSheet)
+            it as ArrayList<ModulePermission>
+            allPermissionModuleAdapter.addPermissionModule(it)
         })
     }
 
     private fun setSelectedModule() {
         viewModel.selectedModuleList.observe(viewLifecycleOwner, {
-            it as ArrayList<PermissionModuleListModel>
-            selectedPermissionModuleAdapter.addPermissionModule(timeSheet)
+            it as ArrayList<ModulePermission>
+            selectedPermissionModuleAdapter.addPermissionModule(it)
         })
     }
 
@@ -125,20 +128,8 @@ class UserAccessPermissionFragment : Fragment() {
         assignTeamListAdapter = AssignTeamListAdapter(viewModel)
         binding.rvAssignRole.adapter = assignTeamListAdapter
 
-        for (i in 1..5) {
-            timeSheet.add(
-                PermissionModuleListModel(
-                    "Module$i"
-                )
-            )
-        }
-
-        viewModel.setModuleList(timeSheet)
-
         allPermissionModuleAdapter = AllPermissionModuleAdapter(viewModel)
         binding.rvAllModule.adapter = allPermissionModuleAdapter
-
-        allPermissionModuleAdapter.addPermissionModule(timeSheet)
 
 
         selectedPermissionModuleAdapter = SelectedPermissionModuleAdapter(viewModel)
@@ -162,6 +153,7 @@ class UserAccessPermissionFragment : Fragment() {
                                 userPermissionObject =
                                     arguments?.getParcelable("userPermissionObject")!!
                                 viewModel.setUserPermissionData(userPermissionObject)
+                                viewModel.setModuleData(userPermissionObject)
                             }
                         }
                     }
@@ -179,6 +171,35 @@ class UserAccessPermissionFragment : Fragment() {
             }
         })
     }
+
+    private fun getModulesObserver() {
+        viewModel.getTeamModules.observe(viewLifecycleOwner, {
+            it?.let { resource ->
+                when (resource.status) {
+                    Status.SUCCESS -> {
+                        ProgressUtils.dismissProgressDialog()
+                        binding.rvAllMember.visibility = View.VISIBLE
+                        resource.data?.let { moduleList ->
+                            allPermissionModuleAdapter.addPermissionModule(moduleList)
+                            viewModel.setModuleList(moduleList)
+
+                        }
+                    }
+                    Status.ERROR -> {
+                        ProgressUtils.dismissProgressDialog()
+                        binding.rvAllMember.visibility = View.VISIBLE
+                        binding.root.showAlert(resource.message)
+
+                    }
+                    Status.LOADING -> {
+                        ProgressUtils.showProgressDialog(requireActivity())
+                        binding.rvAllMember.visibility = View.GONE
+                    }
+                }
+            }
+        })
+    }
+
 
     private fun getUserPermissionListObserver() {
         viewModel.getTeamRoleList.observe(viewLifecycleOwner, {

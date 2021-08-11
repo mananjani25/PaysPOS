@@ -82,6 +82,14 @@ class TaxServiceChargeRepository @Inject constructor(
             networkCall = { apiHelperNew.getTeamRoleList() },
             saveCallResult = { appDatabase.teamRoleDao().addAllRoles(it.data.teamRoles) })
 
+    fun getTeamModules() =
+        performGetOperation(
+            databaseQuery = { appDatabase.moduleDao().allModules },
+            networkCall = { apiHelperNew.getTeamModules() },
+            saveCallResult = { appDatabase.moduleDao().addAllModules(it.data) })
+
+    /*fun getTeamModules() =
+        performGetOperationNew(networkCall = { apiHelperNew.getTeamModules() })*/
 
     suspend fun createTeamRole(data: CreateTeamRoleRequestModel) =
         apiHelperNew.createTeamRole(data)

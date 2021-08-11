@@ -7,15 +7,17 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-@Entity(tableName = "TbTeamRole")
-data class TeamRole(
+@Entity(tableName = "TbModule")
+data class ModulePermission(
+    @SerializedName("created_at")
+    val createdAt: String,
     @PrimaryKey
     @SerializedName("id")
     val id: Int,
     @SerializedName("name")
     val name: String,
-    @SerializedName("employees")
-    val employees: List<Employee>,
-    @SerializedName("module_permission")
-    val modulePermission: List<ModulePermission>,
+    @SerializedName("team_role_id")
+    val teamRoleId: Int,
+    @SerializedName("updated_at")
+    val updatedAt: String
 ) : Parcelable

@@ -22,12 +22,18 @@ import com.android.pos.data.typeconvert.*
     entities = [CharacterModel::class, TbCategory::class, TbItem::class, TaxData::class,
         GetTipReponse.Data::class, GetDiscountResponse.Data::class, NoteResponse.Data::class,
         GetServiceChargeResponse.Data::class, Employee::class, CartModel::class,
-        CustomerListResponse.Data::class, ModifierSet::class, TeamRole::class, ItemModifierSet::class],
-    version = 2
+        CustomerListResponse.Data::class, ModifierSet::class, TeamRole::class, ItemModifierSet::class,
+        ModulePermission::class],
+    version = 1
 )
 @TypeConverters(
-    TypeConvertersIds::class, TypeConvertorAddress::class, TypeConvertorPhone::class,
-    TypeConvertersEmployee::class, TCModifier::class, TypeConvertersTax::class
+    TypeConvertersIds::class,
+    TypeConvertorAddress::class,
+    TypeConvertorPhone::class,
+    TypeConvertersEmployee::class,
+    TCModifier::class,
+    TypeConvertersTax::class,
+    TypeConvertersModule::class
 )
 
 
@@ -45,6 +51,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun employeeDao(): EmployeeDao
     abstract fun customerDao(): CustomerDao
     abstract fun teamRoleDao(): TeamRoleDao
+    abstract fun moduleDao(): ModuleDao
     abstract fun modifierSetDao(): ModifierSetDao
     abstract fun itemModifierSetDao(): ItemModifierSetDao
 
