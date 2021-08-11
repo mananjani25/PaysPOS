@@ -17,6 +17,7 @@ import com.android.pos.data.remote.Constants.CREATE_TAX
 import com.android.pos.data.remote.Constants.CREATE_TIP
 import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.data.remote.Constants.ORDER_RECEIPTS
+import com.android.pos.data.remote.Constants.TEAM_MEMBER
 import com.android.pos.databinding.FragmentSettingsBinding
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.BusinessSettingAdapter
@@ -132,6 +133,20 @@ class Settings : Fragment() {
                         binding.txtEmployee.styleNormal()
                         binding.txtReports.styleNormal()
                         setAdapter(5)
+
+                    }
+                    TEAM_MEMBER -> {
+                        binding.txtBusiness.styleNormal()
+                        binding.txtHardware.styleNormal()
+                        binding.txtSecurity.styleNormal()
+                        binding.txtMarketing.styleNormal()
+                        binding.txtEmployee.styleBold()
+                        binding.txtReports.styleNormal()
+                        binding.rvBusiness.visibility = View.GONE
+                        val frag: Fragment = TeamMemberSettings()
+                        loadFragment(frag)
+                        binding.commonToolbar.txtSubTitle.setText("Team Member")
+
 
                     }
 

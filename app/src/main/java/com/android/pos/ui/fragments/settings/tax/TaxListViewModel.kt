@@ -35,7 +35,6 @@ class TaxListViewModel @Inject constructor(
     val taxList = MutableLiveData<List<TaxData>>()
     fun setTaxData() {
         taxList.value = getTaxList.value?.data!!
-
     }
 
 

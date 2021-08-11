@@ -165,15 +165,14 @@
                     android:orientation="vertical"
                     android:visibility="visible">
 
-                    <EditText
+                    <Spinner
                         android:id="@+id/edtCountry"
-                        style="@style/CustomFontMediumStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@null"
                         android:enabled="false"
                         android:padding="@dimen/_5sdp"
-                        android:text="United States"
+                        android:theme="@style/SpinnerTheme"
                         android:textColor="@color/txt_color_blue"
                         android:textSize="@dimen/_6mdpi" />
 

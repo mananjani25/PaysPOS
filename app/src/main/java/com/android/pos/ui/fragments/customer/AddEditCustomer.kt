@@ -1,16 +1,21 @@
 package com.android.pos.ui.fragments.customer
 
 import `in`.madapps.placesautocomplete.PlaceAPI
+import android.R
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.location.Address
 import android.location.Geocoder
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.DatePicker
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -42,6 +47,8 @@ class AddEditCustomer : Fragment() {
 
     private lateinit var modelAddress: CreateCustomerRequestModel.Customer.Addresses
     private lateinit var adapter: AddressListAdapter
+    private var country = arrayOf("United States", "Canada")
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -55,8 +62,42 @@ class AddEditCustomer : Fragment() {
         setUpSnackBar()
         showObserveProgress()
         navigate()
+        setPhoneCountry()
 
         return binding.root
+    }
+
+    private fun setPhoneCountry() {
+        val adapter =
+            ArrayAdapter(requireContext(), R.layout.simple_spinner_item, country)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
+        binding.edtCountry.adapter = adapter
+        binding.edtCountry.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+
+                if (Build.VERSION.SDK_INT < 23) {
+                    (parent?.getChildAt(0) as TextView).setTextAppearance(
+                        view?.context,
+                        com.android.pos.R.style.SpinnerTheme
+                    )
+                } else {
+                    (parent?.getChildAt(0) as TextView).setTextAppearance(com.android.pos.R.style.SpinnerTheme); }
+
+
+
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+
+            }
+
+        }
     }
 
     private fun setAddress() {
@@ -172,7 +213,7 @@ class AddEditCustomer : Fragment() {
         } else {
             binding.txtCustomerType.setText("New Customer")
             var list: ArrayList<CreateCustomerRequestModel.Customer.Addresses> = arrayListOf()
-            var model =CreateCustomerRequestModel.Customer.Addresses()
+            var model = CreateCustomerRequestModel.Customer.Addresses()
             model.apply {
                 latitude = 0.0
                 longitude = 0.0
@@ -204,7 +245,7 @@ class AddEditCustomer : Fragment() {
                 "getaddress1:  ${adapter.getList().get(adapter.getList().size - 1).address1}"
             )
             if (adapter.getList().get(adapter.getList().size - 1).address1.isNotEmpty()) {
-                modelAddress =  CreateCustomerRequestModel.Customer.Addresses()
+                modelAddress = CreateCustomerRequestModel.Customer.Addresses()
                 modelAddress.apply {
                     latitude = 0.0
                     longitude = 0.0

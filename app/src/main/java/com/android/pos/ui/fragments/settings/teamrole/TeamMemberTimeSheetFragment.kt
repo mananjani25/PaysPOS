@@ -11,6 +11,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.model.TimeSheetListModel
+import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentTeamMemberTimeSheetBinding
 import com.android.pos.ui.adapter.TeamMemberTimeSheetAdapter
 import dagger.hilt.android.AndroidEntryPoint
@@ -83,6 +84,10 @@ class TeamMemberTimeSheetFragment : Fragment() {
 
         viewModel.setCurrentDate(myCalendar)
 
+        binding.includeView.imgClose.setOnClickListener {
+            backPressManage()
+        }
+
 
         datePickerObserver()
 
@@ -100,6 +105,15 @@ class TeamMemberTimeSheetFragment : Fragment() {
                 ).show()
             }
         })
+    }
+
+    private fun backPressManage() {
+        val navController = findNavController()
+        navController.previousBackStackEntry?.savedStateHandle?.set(
+            Constants.KEY,
+            Constants.TEAM_MEMBER
+        )
+        navController.popBackStack()
     }
 
 }
