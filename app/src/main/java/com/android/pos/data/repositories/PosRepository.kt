@@ -25,6 +25,12 @@ class PosRepository @Inject constructor(
     fun syncVenueData() =
         performGetOperationNew(networkCall = { apiHelperNew.syncVenueData() })
 
+    /*fun syncVenueDetails() =
+        performGetOperationNew(networkCall = { apiHelperNew.syncVenueDetails() })*/
+
+    suspend fun syncVenueDetails() = apiHelperNew.syncVenueDetails()
+
+
     fun venueDataLocal() = performGetOperation(
         databaseQuery = { appDatabase.categoryDao().categoryWithInventory()!! },
         networkCall = { apiHelperNew.syncVenueData() },
@@ -161,6 +167,9 @@ class PosRepository @Inject constructor(
         databaseQuery = { appDatabase.notesDao().alllNotes },
         networkCall = { apiHelperNew.getNoteList() },
         saveCallResult = { appDatabase.notesDao().addAllNotes(it.data) })
+
+    suspend fun addAllNotesDatabase(data: List<NoteResponse.Data>) =
+        appDatabase.notesDao().addAllNotesSuspend(data)
 
     suspend fun createNote(data: CreateNoteRequest) = apiHelperNew.createNote(data)
 

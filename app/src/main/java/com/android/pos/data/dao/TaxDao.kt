@@ -16,6 +16,9 @@ interface TaxDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addAllTaxes(taxList: List<TaxData>)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun addAllTaxesSuspend(taxList: List<TaxData>)
+
     @get:Query("select * from TbTax")
     val allTax: LiveData<List<TaxData>>
 
