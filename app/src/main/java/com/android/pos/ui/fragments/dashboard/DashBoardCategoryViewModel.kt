@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.entities.CartModel
+import com.android.pos.data.entities.CategoryWithInventory
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.responseModel.GetServiceChargeResponse
 import com.android.pos.data.remote.Constants
@@ -19,6 +20,7 @@ import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.TaxServiceChargeRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
+import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -41,6 +43,10 @@ class DashBoardCategoryViewModel @Inject constructor(
     var totalServiceCharge = 0.0
 
     val venueData = posRepository.syncVenueData()
+
+    fun venueDataLocal(): LiveData<Resource<List<CategoryWithInventory?>>> {
+        return posRepository.venueDataLocal()
+    }
 
     val venueDataLocal = posRepository.venueDataLocal()
 
@@ -112,7 +118,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         } else {
 
             // already cart ma hoy to add/update/delete kare flag wise
-            val list = cartList?. get(0)?.items?.toMutableList()
+            val list = cartList?.get(0)?.items?.toMutableList()
             if (list != null && list.isNotEmpty()) {
 
                 if (type == ADD || type == UPDATE) {
@@ -129,9 +135,16 @@ class DashBoardCategoryViewModel @Inject constructor(
                         if (model != null) {
                             if (type == "UPDATE") {
                                 model.itemQuantity = item.itemQuantity
-                            } else
-                                model.itemQuantity = item.itemQuantity
-                            list[index] = model
+                                list[index] = model
+                            } else {
+                                if (index != -1) {
+                                    list[index] = item
+                                } else {
+                                    model.itemQuantity = item.itemQuantity
+                                    list[index] = model
+                                }
+                            }
+
                         }
                     } else {
                         item.itemQuantity = 1

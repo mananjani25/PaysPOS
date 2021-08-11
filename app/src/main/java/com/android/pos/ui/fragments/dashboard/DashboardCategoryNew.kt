@@ -19,7 +19,6 @@ import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResultListener
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -27,6 +26,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.CategoryWithInventory
+import com.android.pos.data.entities.Modifier
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.CategorySearchData
 import com.android.pos.data.model.CategoryTabModel
@@ -43,6 +43,7 @@ import com.android.pos.databinding.FragmentDashboardCategoryNewBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.*
 import com.android.pos.ui.fragments.settings.tax.TaxListViewModel
+import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.SwipeHelper
 import com.android.pos.utils.callback.MyCallback
@@ -640,7 +641,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     }
 
     private fun setVenueData() {
-        viewModel.venueDataLocal.observe(viewLifecycleOwner,
+        viewModel.venueDataLocal().observe(
+            viewLifecycleOwner,
             {
                 when (it.status) {
                     Status.SUCCESS -> {
@@ -933,19 +935,28 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         }
         txtSave.setOnClickListener {
 
-            val modifiers = adapter?.getSelectedModifiers()
-            if (modifiers != null) {
-                data.modifiers = modifiers
+
+            if (minMaxValidationCheck(adapter)) {
+
+                val modifiers = adapter?.getSelectedModifiers()
+                if (modifiers != null) {
+                    data.modifiers = modifiers
+                }
+
+                dialog.dismiss()
+                data.note = edtNote.text.toString().trim()
+                data.itemQuantity = txtQty.text.toString().toInt()
+                if (isItemClick) {
+                    viewModel.cartLogic(cartList, data, ADD)
+                } else
+                    viewModel.cartLogic(cartList, data, UPDATE)
+            } else {
+                AlertUtils.showCustomAlert(
+                    binding.root.context,
+                    binding.root.context.getString(R.string.you_can_add)
+                )
+
             }
-
-
-            dialog.dismiss()
-            data.note = edtNote.text.toString().trim()
-            data.itemQuantity = txtQty.text.toString().toInt()
-            if (isItemClick) {
-                viewModel.cartLogic(cartList, data, ADD)
-            } else
-                viewModel.cartLogic(cartList, data, UPDATE)
         }
 
         llPlus.setOnClickListener {
@@ -974,6 +985,35 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         dialog.setCanceledOnTouchOutside(false)
         dialog.show()
+    }
+
+    private fun minMaxValidationCheck(adapter: ItemModifierSetAdapter?): Boolean {
+        adapter?.getAll()?.forEach {
+            return (it.min_required == 0) || minLogic(
+                it.min_required,
+                it.modifiers
+            )
+        }
+        return true
+    }
+
+    private fun minLogic(
+        maxCount: Int,
+        modifiers: List<Modifier>
+    ): Boolean {
+
+        if (maxCount == 0) {
+            return true
+        }
+        var totalMinMax = 0
+
+        modifiers.forEach {
+            if (it.isChecked) {
+                totalMinMax += 1
+            }
+        }
+
+        return maxCount <= totalMinMax
     }
 
     private fun observeShowProgress() {
