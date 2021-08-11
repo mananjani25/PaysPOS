@@ -1,10 +1,13 @@
 package com.android.pos.ui.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.android.pos.R
 import com.android.pos.data.entities.Modifier
 import com.android.pos.databinding.ViewOrderModifiersBinding
+import com.android.pos.utils.AlertUtils
 
 class ItemModifierAdapter(private val maxAllowed: Int, private val minRequired: Int) :
     RecyclerView.Adapter<ItemModifierAdapter.MyViewHolder>() {
@@ -28,9 +31,19 @@ class ItemModifierAdapter(private val maxAllowed: Int, private val minRequired: 
                         list
                     )
                 ) {
-
+                    Log.e("minRequired", "ture")
                 } else {
+                    Log.e("minRequired", "false")
 
+                    AlertUtils.showCustomAlert(
+                        binding.root.context,
+                        binding.root.context.getString(R.string.you_can_not_add_more_then) + maxAllowed + binding.root.context.getString(
+                            R.string.items
+                        )
+                    )
+
+
+                    list[bindingAdapterPosition].isChecked = !list[bindingAdapterPosition].isChecked
                 }
 
 
