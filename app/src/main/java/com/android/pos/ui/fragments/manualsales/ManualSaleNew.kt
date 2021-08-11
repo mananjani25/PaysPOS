@@ -288,20 +288,40 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
         Log.e(TAG, "replaceCurrency  ${replaceCurrency}")
 
         if (isAdd) {
+            if (cartAdapter.getList().size == 1) {
+                var model = cartAdapter.getItem(cartAdapter.getList().size - 1)
+                model.name = "Custom Item 1"
+                viewModel.cartLogic(cartList, model, ADD)
+            } else {
+                var model = cartAdapter.getItem(cartAdapter.getList().size - 1)
+                Log.e(TAG, " name ${model.name}")
 
+                Log.e("Cart", "nameADDLOGIC  ${model.name}")
+
+                viewModel.cartLogic(cartList, model, ADD)
+
+            }
 
             Log.e(
                 TAG,
                 "getAddItem:  ${Gson().toJson(cartAdapter.getItem(cartAdapter.getList().size - 1))}"
             )
-            viewModel.cartLogic(cartList, cartAdapter.getItem(cartAdapter.getList().size - 1), ADD)
+
 
         } else {
 
             cartItemModel = TbItem()
+            var count = 1
+            if (cartAdapter.getList().size > 1) {
+                var model = cartAdapter.getItem(cartAdapter.getList().size - 2)
+                count =
+                    model.name.trim().toString().substring(model.name.length - 1, model.name.length)
+                        .toInt()
+                count++
+            }
             cartItemModel.apply {
                 this.itemQuantity = 1
-                this.name = "Custom Item"
+                this.name = "Custom Item ${count}"
                 this.price = replaceCurrency.toDouble()
                 this.isManualSales = true
 
