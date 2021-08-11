@@ -188,11 +188,13 @@ class Modifiers : Fragment(), TextWatcher {
                 ) {
 
                     if (dragFrom != -1 && dragTo != -1 && dragFrom != dragTo) {
-//                        reallyMoved(
-//                            adapter.getItem(dragFrom).sort,
-//                            adapter.getItem(dragTo).sort,
-//                            adapter.getItem(viewHolder.layoutPosition)?.id
-//                        )
+                        adapter.getItem(dragFrom).sort?.let {
+                            reallyMoved(
+                                it,
+                                adapter.getItem(dragTo).sort!!,
+                                adapter.getItem(viewHolder.layoutPosition).id
+                            )
+                        }
                     }
 
                     dragFrom = -1
@@ -204,11 +206,11 @@ class Modifiers : Fragment(), TextWatcher {
         touchHelper.attachToRecyclerView(binding.rvModifiersList)
     }
 
-    private fun reallyMoved(oldPos: Int, newPos: Int, categoryIdOld: Int?) {
-        if (categoryIdOld != null) {
+    private fun reallyMoved(oldPos: Int, newPos: Int, modifierSetId: Int?) {
+        if (modifierSetId != null) {
 
             isreOrder = true
-            viewModel.reOrderCategory(categoryIdOld, newPos, oldPos)
+            viewModel.reOrderModifier(modifierSetId, newPos, oldPos)
         }
 
     }

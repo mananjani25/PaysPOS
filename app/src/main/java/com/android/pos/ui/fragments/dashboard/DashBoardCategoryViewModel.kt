@@ -3,6 +3,8 @@ package com.android.pos.ui.fragments.dashboard
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.data.db.AppDatabase
@@ -14,7 +16,10 @@ import com.android.pos.data.remote.Constants.ADD
 import com.android.pos.data.remote.Constants.DELETE
 import com.android.pos.data.remote.Constants.UPDATE
 import com.android.pos.data.repositories.PosRepository
+import com.android.pos.data.repositories.TaxServiceChargeRepository
 import com.android.pos.di.PrefProvider
+import com.android.pos.utils.Event
+import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -24,7 +29,8 @@ import javax.inject.Inject
 class DashBoardCategoryViewModel @Inject constructor(
     private val posRepository: PosRepository,
     private val appDatabase: AppDatabase,
-    private val prefProvider: PrefProvider
+    private val prefProvider: PrefProvider,
+    private val taxServiceChargeRepository: TaxServiceChargeRepository
 ) : ViewModel() {
 
     val TAG = "DashBoardCateViewModel"
@@ -40,9 +46,48 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     val serviceCharges = posRepository.serviceChargeList()
 
+    private val _showProgress = MutableLiveData<Event<Boolean>>()
+    val showProgress: LiveData<Event<Boolean>> = _showProgress
+    private val _snackbarText = MutableLiveData<Event<Any?>>()
+    val snackbarText: LiveData<Event<Any?>> = _snackbarText
+
     fun modifierSet(intArray: IntArray) = posRepository.modifierSetList(intArray)
 
     var mAllWords = posRepository.getCartList()
+
+
+    init {
+        viewModelScope.launch {
+            val resource = posRepository.syncVenueDetails()
+
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+                    resource.data.let { venueDetailsResponse ->
+                        if (venueDetailsResponse?.status == 200) {
+
+                            resource.data?.let {
+                                taxServiceChargeRepository.addAllTaxDatabase(it.data.taxes)
+                                //posRepository.addAllNotesDatabase(it.data.notes)
+
+                            }
+                        } else {
+                            _snackbarText.value = Event(resource.message)
+                        }
+                    }
+                }
+
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
+                }
+
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
+            }
+        }
+    }
 
     private fun addCart(cartModel: CartModel) {
 
@@ -67,7 +112,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         } else {
 
             // already cart ma hoy to add/update/delete kare flag wise
-            val list = cartList?.get(0)?.items?.toMutableList()
+            val list = cartList?. get(0)?.items?.toMutableList()
             if (list != null && list.isNotEmpty()) {
 
                 if (type == ADD || type == UPDATE) {
@@ -170,7 +215,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
 
 
-        Log.e(TAG,"totalTax  ${totalTax}")
+        Log.e(TAG, "totalTax  ${totalTax}")
 
         totalPrice = subTotalPrice + totalTax + totalServiceCharge
 

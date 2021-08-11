@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.entities.Modifier
 import com.android.pos.databinding.ViewOrderModifiersBinding
 
-class ItemModifierAdapter :
+class ItemModifierAdapter(private val maxAllowed: Int, private val minRequired: Int) :
     RecyclerView.Adapter<ItemModifierAdapter.MyViewHolder>() {
     var list = ArrayList<Modifier>()
 
@@ -20,7 +20,20 @@ class ItemModifierAdapter :
         init {
 
             binding.root.setOnClickListener {
+
                 list[bindingAdapterPosition].isChecked = !list[bindingAdapterPosition].isChecked
+
+                if ((minRequired == 0) || maxLogic(
+                        maxAllowed,
+                        list
+                    )
+                ) {
+
+                } else {
+
+                }
+
+
                 notifyDataSetChanged()
             }
         }
@@ -65,5 +78,22 @@ class ItemModifierAdapter :
         notifyDataSetChanged()
     }
 
+    private fun maxLogic(
+        maxCount: Int,
+        modifiers: List<Modifier>
+    ): Boolean {
 
+        if (maxCount == 0) {
+            return true
+        }
+        var totalMinMax = 0
+
+        modifiers.forEach {
+            if (it.isChecked) {
+                totalMinMax += 1
+            }
+        }
+
+        return maxCount >= totalMinMax
+    }
 }

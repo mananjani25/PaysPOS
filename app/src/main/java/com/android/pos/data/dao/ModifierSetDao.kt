@@ -5,6 +5,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy.REPLACE
 import androidx.room.Query
+import androidx.room.Update
 import com.android.pos.data.entities.ModifierSet
 
 
@@ -17,10 +18,16 @@ interface ModifierSetDao {
     @Insert(onConflict = REPLACE)
     suspend fun add(modifierModel: ModifierSet?): Long
 
+    @Insert
+    suspend fun insert(modifierModel: ModifierSet)
+
+    @Update
+    fun update(modifierModel: ModifierSet)
+
     @Insert(onConflict = REPLACE)
     suspend fun addAll(modifierModel: List<ModifierSet>)
 
-    @get:Query("select * from ModifierSet")
+    @get:Query("select * from ModifierSet ORDER BY ModifierSet.sort ASC")
     val all: LiveData<List<ModifierSet>>
 
 

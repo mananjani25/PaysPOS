@@ -14,6 +14,9 @@ interface NotesDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addAllNotes(noteList: List<NoteResponse.Data>)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun addAllNotesSuspend(noteList: List<NoteResponse.Data>)
+
     @get:Query("select * from TbNotes")
     val alllNotes: LiveData<List<NoteResponse.Data>>
 
