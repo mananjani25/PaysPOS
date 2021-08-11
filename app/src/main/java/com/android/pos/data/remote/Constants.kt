@@ -35,6 +35,9 @@ object Constants {
     const val CUSTOMERS = "customers"
     const val EMPLOYEES_UPDATE_DELETE = "employees/{id}"
 
+    const val EMPLOYEES_TIMESHEET = "employees/timesheet"
+    const val EMPLOYEES_TIMESHEET_DETAILS = "employees/timesheet_details"
+
     const val SYNC_VENUE_DATA = "locations/sync_data"
     const val SYNC_VENUE_DETAILS = "locations/setting_data"
 
@@ -67,8 +70,9 @@ object Constants {
 
     const val TEAM_ROLES = "team_roles"
     const val TEAM_ROLES_UPDATE_DELETE = "team_roles/{id}"
+    const val GET_TEAM_MODULE = "team_roles/modules"
 
-    const val TEAM_MEMBER_TIMESHEET = "team_roles/{id}"
+
 
 
     const val VERTICAL = "vertical"

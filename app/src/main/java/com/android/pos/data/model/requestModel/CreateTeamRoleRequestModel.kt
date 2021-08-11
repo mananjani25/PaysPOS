@@ -9,5 +9,7 @@ data class CreateTeamRoleRequestModel(
     @SerializedName("employee_ids")
     var employeeIds: List<Int>? = null,
     @SerializedName("name")
-    var name: String = ""
+    var name: String = "",
+    @SerializedName("module_ids")
+    var moduleIds: List<Int>? = null
 )
