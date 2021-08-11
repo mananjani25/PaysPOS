@@ -496,8 +496,15 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
 
         txtSave.setOnClickListener {
             dialog.dismiss()
+            var itemCost = (model.price / model.itemQuantity).toDouble()
+
+
             model.note = edtNote.text.toString().trim()
             model.itemQuantity = txtQty.text.toString().toInt()
+
+            model.price = String.format("%.2f",(itemCost * model.itemQuantity)).toDouble()
+
+
 
             viewModel.cartLogic(cartList, model, Constants.UPDATE)
         }
