@@ -288,7 +288,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
         Log.e(TAG, "replaceCurrency  ${replaceCurrency}")
 
         if (isAdd) {
-            cartAdapter.getItem(cartAdapter.getList().size - 1)
+
 
             Log.e(
                 TAG,

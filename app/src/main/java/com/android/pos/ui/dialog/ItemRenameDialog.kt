@@ -37,7 +37,6 @@ class ItemRenameDialog : DialogFragment() {
         binding.apply {
             edtItemName.setText(data)
 
-
         }
 
         binding.imgBack.setOnClickListener {

@@ -4,7 +4,9 @@ import android.annotation.SuppressLint
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.android.pos.R
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.ManualSaleCartModel
@@ -18,12 +20,16 @@ class ManualSaleCartAdapter : RecyclerView.Adapter<ManualSaleCartAdapter.MyViewH
 
     inner class MyViewHolder(private val binding: ViewManualSaleItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
+
+        val txtItem :TextView = binding.root.findViewById(R.id.txtItem)
         fun bind(model: TbItem, pos: Int) {
             if (pos == list.size - 1) {
                 binding.txtQuantity.setText("x 1")
             } else {
                 binding.txtQuantity.setText("x ${model.itemQuantity}")
             }
+
+            txtItem.setText(list[pos].name)
             binding.model = model
             binding.executePendingBindings()
         }
