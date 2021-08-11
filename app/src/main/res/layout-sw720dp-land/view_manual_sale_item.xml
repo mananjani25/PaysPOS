@@ -22,19 +22,39 @@
         android:paddingVertical="@dimen/_4sdp"
         android:weightSum="1">
 
-        <TextView
-            android:id="@+id/txtItem"
-            style="@style/CustomFontSemiBold"
+        <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_weight="0.6"
-            android:ellipsize="end"
-            android:lines="1"
-            android:maxLines="1"
-            android:singleLine="true"
-            android:text="@{model.name}"
-            android:textColor="@color/txtColor"
-            android:textSize="@dimen/_6mdpi" />
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/txtItem"
+                style="@style/CustomFontSemiBold"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:lines="1"
+                android:maxLines="1"
+                android:singleLine="true"
+
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_6mdpi" />
+
+            <TextView
+                style="@style/CustomFontRegularStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:lines="1"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:text="@{model.note}"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_5mdpi" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
         <TextView
             android:id="@+id/txtQuantity"
