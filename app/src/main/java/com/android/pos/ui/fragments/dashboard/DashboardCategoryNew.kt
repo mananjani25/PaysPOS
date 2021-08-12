@@ -172,7 +172,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         }
 
-        binding.layoutCart.imgInfo.setOnClickListener {
+        binding.layoutCart.llInfo.setOnClickListener {
 
             showPopupWindow(it)
         }
@@ -189,6 +189,11 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 R.id.action_dashboardCategoryNew_to_paymentFragment,
                 bundle
             )
+        }
+
+        binding.layoutCart.llCartMenu.setOnClickListener {
+
+
         }
     }
 
@@ -938,15 +943,21 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
 
             if (minMaxValidationCheck(adapter)) {
+                dialog.dismiss()
+
+                data.note = edtNote.text.toString().trim()
+                data.itemQuantity = txtQty.text.toString().toInt()
 
                 val modifiers = adapter?.getSelectedModifiers()
                 if (modifiers != null) {
+                    modifiers.forEach {
+                        it.itemQuantity = data.itemQuantity
+                    }
                     data.modifiers = modifiers
                 }
 
-                dialog.dismiss()
-                data.note = edtNote.text.toString().trim()
-                data.itemQuantity = txtQty.text.toString().toInt()
+
+
                 if (isItemClick) {
                     viewModel.cartLogic(cartList, data, ADD)
                 } else

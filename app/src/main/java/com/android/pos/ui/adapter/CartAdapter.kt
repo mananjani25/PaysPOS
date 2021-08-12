@@ -90,7 +90,7 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
 
             val mList = model.modifiers
             mList.forEach { items ->
-                totalPrice += items.price
+                totalPrice += items.price * items.itemQuantity
             }
 
             (model.price * model.itemQuantity) + totalPrice

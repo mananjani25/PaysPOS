@@ -215,7 +215,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             }
 
             item.modifiers.forEach {
-                subTotalPrice += it.price
+                subTotalPrice += (it.price * it.itemQuantity)
             }
         }
 
