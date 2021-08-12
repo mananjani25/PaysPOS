@@ -47,5 +47,6 @@ class TbItem : Parcelable {
     var isTax: Boolean = false
     var modifiers: List<Modifier> = emptyList()
     var customItemCount: Int = 0
+    var discountPrice: Double = 0.0
 
 }

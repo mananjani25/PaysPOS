@@ -38,6 +38,7 @@ class ManualSaleViewModel @Inject constructor(
     var totalCount = 0
     var subTotalPrice = 0.0
     var totalTax = 0.0
+    var totalDiscount = 0.0
     var totalServiceCharge = 0.0
     private fun addCart(cartModel: CartModel) {
         viewModelScope.launch {
@@ -50,6 +51,7 @@ class ManualSaleViewModel @Inject constructor(
             totalPrice = 0.0
             subTotalPrice = 0.0
             totalTax = 0.0
+            totalDiscount = 0.0
             totalServiceCharge = 0.0
             totalCount = 0
             posRepository.deleteManualSaleCart()
@@ -136,6 +138,7 @@ class ManualSaleViewModel @Inject constructor(
         totalCount = 0
         subTotalPrice = 0.0
         totalTax = 0.0
+        totalDiscount = 0.0
         totalServiceCharge = 0.0
 
         itemList?.forEach { item ->
@@ -152,6 +155,10 @@ class ManualSaleViewModel @Inject constructor(
                     }
                 }
             }
+
+            totalDiscount = itemList?.map {
+                it.discountPrice
+            }.sum()
         }
 
         Log.e(TAG, "serviceChargesList:  ${Gson().toJson(serviceChargesList)}")
@@ -168,7 +175,7 @@ class ManualSaleViewModel @Inject constructor(
 
 
 
-        totalPrice = subTotalPrice + totalTax + totalServiceCharge
+        totalPrice = (subTotalPrice + totalTax + totalServiceCharge) - totalDiscount
 
         txtTotalAmount.text = "$" + String.format(
             "%.2f",

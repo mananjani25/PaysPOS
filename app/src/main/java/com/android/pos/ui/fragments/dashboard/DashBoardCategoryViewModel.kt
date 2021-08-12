@@ -18,9 +18,11 @@ import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.TaxServiceChargeRepository
 import com.android.pos.data.repositories.TipDiscountRepository
 import com.android.pos.di.PrefProvider
+import com.android.pos.ui.fragments.settings.discount.DiscountList
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
+import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -52,7 +54,11 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     val serviceCharges = posRepository.serviceChargeList()
 
-    val taxList = MutableLiveData<List<TaxData>>()
+
+    val taxList= posRepository.taxList()
+
+
+    val discountList = posRepository.disocuntList()
 
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
@@ -75,8 +81,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                         if (venueDetailsResponse?.status == 200) {
 
                             resource.data?.let {
+                                Log.e(TAG, "FullData  ${Gson().toJson(it)}")
                                 taxServiceChargeRepository.addAllTaxDatabase(it.data.taxes)
-                                taxList.value = it.data.taxes
+
                                 posRepository.addAllNotesDatabase(it.data.notes)
                                 tipDiscountRepository.addDiscount(it.data.discounts)
                                 taxServiceChargeRepository.addServiceCharges(it.data.service_charges)

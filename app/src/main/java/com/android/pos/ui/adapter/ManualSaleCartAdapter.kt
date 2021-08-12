@@ -1,6 +1,7 @@
 package com.android.pos.ui.adapter
 
 import android.annotation.SuppressLint
+import android.graphics.Paint
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -16,6 +17,7 @@ import com.android.pos.databinding.ViewManualSaleItemBinding
 class ManualSaleCartAdapter : RecyclerView.Adapter<ManualSaleCartAdapter.MyViewHolder>() {
     var list = ArrayList<TbItem>()
     private lateinit var listnerCall: ManualSaleInterface
+    val TAG = "ManualSaleCartAdapter"
 
 
     inner class MyViewHolder(private val binding: ViewManualSaleItemBinding) :
@@ -23,20 +25,26 @@ class ManualSaleCartAdapter : RecyclerView.Adapter<ManualSaleCartAdapter.MyViewH
 
         val txtItem: TextView = binding.root.findViewById(R.id.txtItem)
         fun bind(model: TbItem, pos: Int) {
-            if (pos == list.size - 1) {
-                binding.txtQuantity.setText("x 1")
-            } else {
-                binding.txtQuantity.setText("x ${model.itemQuantity}")
-            }
+            binding.txtQuantity.setText("x ${model.itemQuantity}")
 
             txtItem.setText(list[pos].name)
+            if (list[pos].discountPrice != 0.0) {
+                binding.txtItemPrice.setPaintFlags(binding.txtItemPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG)
+                val dPrice = list[pos].price - list[pos].discountPrice
+                Log.e(TAG, "PriceOriginal ${list[pos].price}")
+                Log.e(TAG, "PriceDiscount ${list[pos].discountPrice}")
+                binding.txtDiscountPrice.setText("$" + dPrice)
+            } else {
+                binding.txtItemPrice.setPaintFlags(0)
+                binding.txtDiscountPrice.setText("")
+            }
+
             binding.model = model
             binding.executePendingBindings()
         }
 
         init {
             binding.root.setOnClickListener {
-
                 listnerCall.onItemClicked(list.get(layoutPosition), layoutPosition)
 
             }

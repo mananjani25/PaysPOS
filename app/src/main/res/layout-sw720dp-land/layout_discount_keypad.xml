@@ -257,7 +257,7 @@
         android:orientation="horizontal">
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tvZero"
+            android:id="@+id/tvDZero"
             style="@style/CustomFontRegularStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -270,7 +270,7 @@
             android:textSize="@dimen/_6mdpi" />
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tvClear"
+            android:id="@+id/tvZero"
             style="@style/CustomFontRegularStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -284,7 +284,7 @@
 
 
         <ImageView
-            android:id="@+id/tvBack"
+            android:id="@+id/tvClear"
             style="@style/CustomFontRegularStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

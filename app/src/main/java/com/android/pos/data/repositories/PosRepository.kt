@@ -198,10 +198,22 @@ class PosRepository @Inject constructor(
         saveCallResult = { appDatabase.employeeDao().addAllEmployee(it.data.employees) })
 
     fun employeesTimeSheet(startDate: String, endDate: String, teamRoleId: Int) =
-        performGetOperationNew(networkCall = { apiHelperNew.employeesTimeSheet(startDate, endDate, teamRoleId) })
+        performGetOperationNew(networkCall = {
+            apiHelperNew.employeesTimeSheet(
+                startDate,
+                endDate,
+                teamRoleId
+            )
+        })
 
     fun employeesTimeSheetDetails(startDate: String, endDate: String, teamId: Int) =
-        performGetOperationNew(networkCall = { apiHelperNew.employeesTimeSheetDetails(startDate, endDate, teamId) })
+        performGetOperationNew(networkCall = {
+            apiHelperNew.employeesTimeSheetDetails(
+                startDate,
+                endDate,
+                teamId
+            )
+        })
 
     suspend fun clearCustomerTb() = appDatabase.customerDao().deleteCustomerTb()
 
@@ -327,6 +339,11 @@ class PosRepository @Inject constructor(
 
     fun serviceChargeList() =
         performGetOperationDatabase(databaseQuery = { appDatabase.serviceChargeDao().allServiceCharge })
+
+    fun disocuntList() =
+        performGetOperationDatabase(databaseQuery = { appDatabase.discountDao().allDiscount })
+
+    fun taxList() = performGetOperationDatabase(databaseQuery ={appDatabase.taxDao().allTax})
 
     fun modifierSetList(ids: IntArray) =
         performGetOperationDatabase(databaseQuery = {

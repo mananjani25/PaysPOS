@@ -23,9 +23,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
-import com.android.pos.data.entities.CartModel
-import com.android.pos.data.entities.TbItem
-import com.android.pos.data.entities.TbServiceCharge
+import com.android.pos.data.entities.*
 import com.android.pos.data.model.CustomerListResponse
 import com.android.pos.data.model.responseModel.GetServiceChargeResponse
 import com.android.pos.data.remote.Constants
@@ -41,6 +39,7 @@ import com.android.pos.utils.SwipeHelper
 import com.android.pos.utils.extensions.alert
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
+import java.lang.Exception
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -54,10 +53,11 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
 
     private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
     private var serviceChargesList: List<TbServiceCharge>? = null
+    private var discountList: List<TbDiscount>? = null
+    private var taxList: List<TaxData>? = null
 
     @Inject
     lateinit var prefProvider: PrefProvider
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -69,14 +69,27 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
         binding.footer.imgInfo.visibility = View.VISIBLE
         binding.footer.imgDelete.visibility = View.VISIBLE
         getServiceCharge()
-
+        getTaxList()
+        getDiscountList()
         return binding.root
+    }
+
+    private fun getDiscountList() {
+        dashboardViewModel.discountList.observe(requireActivity(), {
+            discountList = it.data
+        })
+    }
+
+
+    private fun getTaxList() {
+        dashboardViewModel.taxList.observe(requireActivity(), {
+            Log.e(TAG, "getTaxList:  ${Gson().toJson(it.data)}")
+            taxList = it.data
+        })
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        Log.e(TAG, "getTaxList  ${Gson().toJson(dashboardViewModel.taxList)}")
 
         binding.layoutMenu.imgSearch.visibility = View.GONE
         binding.layoutMenu.autoSearch.visibility = View.GONE
@@ -87,20 +100,6 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
         listner()
     }
 
-    private fun addEmptyItem() {
-        cartItemModel = TbItem()
-        cartItemModel.apply {
-            isTax = false
-            name = "Custom Item"
-            isManualSales = true
-            itemQuantity = 1
-            price = 0.00
-
-        }
-        cartAdapter.addItem(cartItemModel)
-
-    }
-
     private fun getCartList() {
 
         viewModel.cartList.observe(requireActivity(), {
@@ -108,9 +107,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
             Log.e(TAG, "cartListBeforeTax  ${Gson().toJson(cartList)}")
             if (cartList?.isNotEmpty()!!) {
                 cartList?.get(0)?.items?.forEach {
-                    it.taxes = dashboardViewModel.taxList.value
+                    it.taxes = taxList
                 }
-
                 cartAdapter.setList(cartList?.get(0)?.items)
 
                 viewModel.itemCalculation(
@@ -161,6 +159,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
                 bundle.putDouble("totalPrice", viewModel.totalPrice)
                 bundle.putDouble("subTotalPrice", viewModel.subTotalPrice)
                 bundle.putDouble("totalTax", viewModel.totalTax)
+                bundle.putDouble("totalDiscount", viewModel.totalDiscount)
                 bundle.putDouble("totalServiceCharge", viewModel.totalServiceCharge)
 
                 findNavController().navigate(R.id.action_manualSaleNew_to_paymentFragment, bundle)
@@ -183,7 +182,9 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
                 ) {
                     positiveButton(getString(R.string.tv_delete)) {
                         viewModel.deleteCart()
+
                         binding.txtChargeAmount.setText("$0.00")
+
                     }
                     negativeButton(R.string.tv_cancel) {
 
@@ -319,6 +320,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
 
             model.price = replaceCurrency.toDouble()
             model.itemQuantity = 1
+            model.discountPrice = 0.0
             model.isManualSales = true
 
 
@@ -352,27 +354,27 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
                         0,
                         Color.parseColor("#08CAE3")
                     ) { pos ->
-                        if (pos != cartAdapter.getList().size - 1) {
-                            Log.e(TAG, "pospospos  ${pos}")
-                            setFragmentResultListener("request_key_item_rename") { resultKey: String, bundle: Bundle ->
-                                val data = bundle.getString("item_name")
-                                cartItemModel.name = data.toString()
-                                cartItemModel?.let {
-                                    viewModel.cartLogic(cartList, it, Constants.UPDATE)
-                                }
 
-
+                        Log.e(TAG, "pospospos  ${pos}")
+                        setFragmentResultListener("request_key_item_rename") { resultKey: String, bundle: Bundle ->
+                            val data = bundle.getString("item_name")
+                            cartItemModel.name = data.toString()
+                            cartItemModel?.let {
+                                viewModel.cartLogic(cartList, it, Constants.UPDATE)
                             }
-                            cartItemModel = cartAdapter.getItem(pos)
-                            val bundle: Bundle = bundleOf("item_name" to cartItemModel.name)
 
-                            findNavController().navigate(
-                                R.id.action_manualSaleNew_to_itemRenameDialog,
-                                bundle
-                            )
 
                         }
+                        cartItemModel = cartAdapter.getItem(pos)
+                        val bundle: Bundle = bundleOf("item_name" to cartItemModel.name)
+
+                        findNavController().navigate(
+                            R.id.action_manualSaleNew_to_itemRenameDialog,
+                            bundle
+                        )
+
                     }
+
                 )
 
                 underlayButtons.add(UnderlayButton(
@@ -380,32 +382,31 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
                     0,
                     Color.parseColor("#FA9905")
                 ) { pos ->
-                    if (pos != cartAdapter.getList().size - 1) {
 
-                        setFragmentResultListener("request_key_note") { requestKey: String, bundle: Bundle ->
-                            val note = bundle.getString("note")
 
-                            cartItemModel.note = note.toString()
+                    setFragmentResultListener("request_key_note") { requestKey: String, bundle: Bundle ->
+                        val note = bundle.getString("note")
 
-                            cartItemModel?.let {
-                                viewModel.cartLogic(
-                                    cartList,
-                                    it,
-                                    Constants.UPDATE
-                                )
-                            }
+                        cartItemModel.note = note.toString()
+
+                        cartItemModel?.let {
+                            viewModel.cartLogic(
+                                cartList,
+                                it,
+                                Constants.UPDATE
+                            )
                         }
-                        cartItemModel = cartAdapter.getItem(pos)
-                        val bundle = Bundle().apply {
-                            putString("note", cartItemModel.note)
-                        }
-
-                        findNavController().navigate(
-                            R.id.action_manualSaleNew_to_addNoteDialog,
-                            bundle
-                        )
-
                     }
+                    cartItemModel = cartAdapter.getItem(pos)
+                    val bundle = Bundle().apply {
+                        putString("note", cartItemModel.note)
+                    }
+
+                    findNavController().navigate(
+                        R.id.action_manualSaleNew_to_addNoteDialog,
+                        bundle
+                    )
+
 
                 })
 
@@ -414,10 +415,30 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
                     0,
                     Color.parseColor("#2997cc")
                 ) { pos ->
-                    if (pos != cartAdapter.getList().size - 1) {
 
-                        findNavController().navigate(R.id.action_manualSaleNew_to_addDiscountDialog)
+                    setFragmentResultListener("request_key_discount") { requestKey: String, bundle: Bundle ->
+                        val result = bundle.getParcelable<TbDiscount>("data")
+                        if (result != null) {
+                            Log.e(TAG, "GetDiscountResult:  ${Gson().toJson(result)}")
+                            if (result.discountType == requireContext().getString(R.string.disc_percentage)) {
+                                val cartModel = cartAdapter.getItem(pos)
+                                cartModel.discountPrice = calculateDiscountPercentage(
+                                    cartAdapter.getItem(pos).price,
+                                    result.percentage
+                                )
+                                cartModel.isManualSales = true
+
+                                viewModel.cartLogic(cartList, cartModel, Constants.UPDATE)
+
+                            } else {
+                                Log.e(TAG, "DiscountInDollar")
+                            }
+
+
+                        }
                     }
+                    findNavController().navigate(R.id.action_manualSaleNew_to_addDiscountDialog)
+
                 })
 
                 underlayButtons.add(
@@ -426,23 +447,23 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
                         0,
                         Color.parseColor("#FF3C30")
                     ) { pos ->
-                        if (pos != cartAdapter.getList().size - 1) {
-                            alert(
-                                getString(R.string.app_name),
-                                getString(R.string.delete_item_message)
-                            ) {
-                                positiveButton(getString(R.string.tv_delete)) {
-                                    // Do positive stuff here
-                                    val item = cartAdapter.getItem(pos)
 
-                                    Log.e(TAG, "item ${Gson().toJson(item)}")
-                                    viewModel.cartLogic(cartList, item, Constants.DELETE)
-                                }
-                                negativeButton(R.string.tv_cancel) {
-                                    // Do negative stuff here
-                                }
+                        alert(
+                            getString(R.string.app_name),
+                            getString(R.string.delete_item_message)
+                        ) {
+                            positiveButton(getString(R.string.tv_delete)) {
+                                // Do positive stuff here
+                                val item = cartAdapter.getItem(pos)
+
+                                Log.e(TAG, "item ${Gson().toJson(item)}")
+                                viewModel.cartLogic(cartList, item, Constants.DELETE)
+                            }
+                            negativeButton(R.string.tv_cancel) {
+                                // Do negative stuff here
                             }
                         }
+
                     })
             }
 
@@ -559,7 +580,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
 
         btnAddDiscount.setOnClickListener {
             findNavController().navigate(
-                R.id.action_dashboardCategoryNew_to_addDiscountDialog
+                R.id.action_manualSaleNew_to_addDiscountDialog
             )
         }
 
@@ -590,7 +611,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
         )
         txtDiscount.text = "$" + String.format(
             "%.2f",
-            0.00
+            viewModel.totalDiscount
         )
         txtTotalAmount.text = binding.txtChargeAmount.text.toString()
         txtTotalTax.text = "$" + String.format(
@@ -690,4 +711,15 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
         dialog?.dismiss()
     }
 
+    fun calculateDiscountPercentage(originalPrice: Double, percentage: Double): Double {
+        val disPrice = Math.round((originalPrice * percentage) / 100).toDouble()
+        Log.e(TAG, "disPrice  ${disPrice}")
+        return if (disPrice < originalPrice) {
+            disPrice
+        } else {
+            0.0
+        }
+
+
+    }
 }
