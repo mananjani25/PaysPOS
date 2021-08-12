@@ -9,7 +9,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.entities.*
-import com.android.pos.data.model.responseModel.GetServiceChargeResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ADD
 import com.android.pos.data.remote.Constants.DELETE
@@ -20,6 +19,7 @@ import com.android.pos.data.repositories.TipDiscountRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.fragments.settings.discount.DiscountList
 import com.android.pos.utils.Event
+import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
 import com.google.gson.Gson
@@ -69,6 +69,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     var mAllWords = posRepository.getCartList()
 
+    var serviceChargesList: List<TbServiceCharge> = emptyList()
 
     init {
         viewModelScope.launch {
@@ -166,15 +167,20 @@ class DashBoardCategoryViewModel @Inject constructor(
                     // single item remove from cart
                     list.remove(item)
                 }
-                val cartModel = CartModel().apply {
-                    cartId = cartList[0].cartId
-                    items = list
-                }
+
+                val cartModel = cartList[0]
+                cartModel.items = list
                 addCart(cartModel)
 
                 if (list.isEmpty()) {
                     // delete carts
                     deleteCart()
+                }
+            } else {
+                val cartModel = cartList?.get(0)
+                cartModel?.items = list
+                if (cartModel != null) {
+                    addCart(cartModel)
                 }
             }
 
@@ -186,6 +192,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         val inventoryModelList = ArrayList<TbItem>()
         val cartModel = CartModel().apply {
             terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
+            serviceCharge = serviceChargesList
             item.itemQuantity = item.itemQuantity
             inventoryModelList.add(item)
             items = inventoryModelList
@@ -195,9 +202,8 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     @SuppressLint("SetTextI18n")
     fun itemCalculation(
-        itemList: List<TbItem>?,
-        txtTotalAmount: AppCompatTextView,
-        serviceChargesList: List<TbServiceCharge>?
+        cartList: List<CartModel>?,
+        txtTotalAmount: AppCompatTextView
     ) {
 
 
@@ -207,7 +213,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         totalTax = 0.0
         totalServiceCharge = 0.0
 
-        itemList?.forEach { item ->
+        cartList?.get(0)?.items?.forEach { item ->
             totalCount += item.itemQuantity
             subTotalPrice += item.price * item.itemQuantity
 
@@ -227,8 +233,9 @@ class DashBoardCategoryViewModel @Inject constructor(
             }
         }
 
-        if (serviceChargesList != null && serviceChargesList.isNotEmpty()) {
+        val serviceChargesList = cartList?.get(0)?.serviceCharge
 
+        if (serviceChargesList != null && serviceChargesList.isNotEmpty()) {
             serviceChargesList.forEach {
                 if (it.isEnabled) {
                     totalServiceCharge = (subTotalPrice * it.percentage) / 100
@@ -239,15 +246,18 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
 
 
-        Log.e(TAG, "totalTax  ${totalTax}")
-
         totalPrice = subTotalPrice + totalTax + totalServiceCharge
 
-        txtTotalAmount.text = "$" + String.format(
-            "%.2f",
-            totalPrice
-        )
+        MethodUtils.setPriceTextView(txtTotalAmount, totalPrice)
 
+
+    }
+
+    fun setServiceCharges(mList: List<TbServiceCharge>?) {
+
+        if (mList != null) {
+            this.serviceChargesList = mList
+        }
     }
 
 

@@ -406,4 +406,5 @@
     <string name="you_can_add">You can add minimum modifiers.</string>
     <string name="update_modifier_set">Update Modifier Set</string>
     <string name="order_successfully">Order Successfully</string>
+    <string name="edit_split_amount">Edit Split Amount</string>
 </resources>

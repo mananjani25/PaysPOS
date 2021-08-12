@@ -7,13 +7,10 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.android.pos.data.dao.*
 import com.android.pos.data.entities.*
-import com.android.pos.data.entities.CartModel
-import com.android.pos.data.entities.ModifierSet
-import com.android.pos.data.entities.TbCategory
-import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.CharacterModel
 import com.android.pos.data.model.CustomerListResponse
-import com.android.pos.data.model.responseModel.*
+import com.android.pos.data.model.responseModel.GetTipReponse
+import com.android.pos.data.model.responseModel.NoteResponse
 import com.android.pos.data.remote.Constants.DATABASE_NAME
 import com.android.pos.data.typeconvert.*
 
@@ -33,7 +30,8 @@ import com.android.pos.data.typeconvert.*
     TypeConvertersEmployee::class,
     TCModifier::class,
     TypeConvertersTax::class,
-    TypeConvertersModule::class
+    TypeConvertersModule::class,
+    TCServiceCharge::class
 )
 
 

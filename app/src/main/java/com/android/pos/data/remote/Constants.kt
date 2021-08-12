@@ -109,4 +109,6 @@ object Constants {
     const val MODIFIER_UPDATE_DELETE = "modifier_sets/{id}"
     const val MODIFIER = "modifier_sets"
     const val REORDER_MODIFIER = "modifier_sets/{id}/reorder"
+
+    const val ORDERS = "orders"
 }
