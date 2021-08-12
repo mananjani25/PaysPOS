@@ -121,16 +121,6 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
 
             }
 
-            if (cartAdapter.getList().isEmpty()) {
-                addEmptyItem()
-                Log.e(TAG, "CartListReload")
-            } else if (cartAdapter.getList()
-                    .get(cartAdapter.getList().size - 1).price.toString() != "0.0".toString()
-            ) {
-                addEmptyItem()
-                Log.e(TAG, "CartListReload")
-            }
-
 
         })
     }
@@ -286,410 +276,450 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
     private fun addItemToCart(price: String, isAdd: Boolean) {
         val replaceCurrency = price.replace("$", "")
         Log.e(TAG, "replaceCurrency  ${replaceCurrency}")
-
+        var count = 0
         if (isAdd) {
-            if (cartAdapter.getList().size == 1) {
-                var model = cartAdapter.getItem(cartAdapter.getList().size - 1)
+            var model = TbItem()
+            /*if (cartAdapter.getList().isEmpty()) {
                 model.name = "Custom Item 1"
-                viewModel.cartLogic(cartList, model, ADD)
             } else {
-                var model = cartAdapter.getItem(cartAdapter.getList().size - 1)
-                Log.e(TAG, " name ${model.name}")
-
-                Log.e("Cart", "nameADDLOGIC  ${model.name}")
-
-                viewModel.cartLogic(cartList, model, ADD)
-
-            }
-
-            Log.e(
-                TAG,
-                "getAddItem:  ${Gson().toJson(cartAdapter.getItem(cartAdapter.getList().size - 1))}"
-            )
+                var model = cartAdapter.getItem(0)
+                Log.e(TAG, "getJsonmodel  ${Gson().toJson(model)}")
 
 
-        } else {
-
-            cartItemModel = TbItem()
-            var count = 1
-            if (cartAdapter.getList().size > 1) {
-                var model = cartAdapter.getItem(cartAdapter.getList().size - 2)
                 count =
                     model.name.trim().toString().substring(model.name.length - 1, model.name.length)
                         .toInt()
                 count++
+                model.name = "Custom Item ${model.customItemCount++}"
+            }*/
+
+
+
+
+            var count = 0
+
+            if (cartList?.isNotEmpty() == true){
+                count = cartList?.get(0)?.items?.get(cartList?.get(0)?.items!!.size - 1)?.customItemCount!!
             }
-            cartItemModel.apply {
-                this.itemQuantity = 1
-                this.name = "Custom Item ${count}"
-                this.price = replaceCurrency.toDouble()
-                this.isManualSales = true
+        count++
 
-
-            }
-            cartAdapter.updateItem(cartItemModel, cartAdapter.getList().size - 1)
-
+        Log.e(TAG, "getcount:  ${count}")
+        model.customItemCount = count
+        model.name = "Custom Item ${count}"
+        if (binding.edtItemName.text?.isNotEmpty() == true) {
+            model.name = binding.edtItemName.text.toString()
+            count--
+            model.customItemCount = count
         }
 
+        model.price = replaceCurrency.toDouble()
+        model.itemQuantity = 1
+        model.isManualSales = true
+
+
+        Log.e(TAG, "Parsemodel  ${Gson().toJson(model)}")
+        viewModel.cartLogic(cartList, model, ADD)
+        binding.edtItemName.text?.clear()
+        /*if (cartAdapter.getList().size == 1) {
+            var model = cartAdapter.getItem(cartAdapter.getList().size - 1)
+            model.name = "Custom Item 1"
+            viewModel.cartLogic(cartList, model, ADD)
+        } else {
+            var model = cartAdapter.getItem(cartAdapter.getList().size - 1)
+            Log.e(TAG, " name ${model.name}")
+
+            Log.e("Cart", "nameADDLOGIC  ${model.name}")
+
+            viewModel.cartLogic(cartList, model, ADD)
+
+        }
+*/
+
+
+    } else
+    {
+
+        /*cartItemModel = TbItem()
+        var count = 1
+        if (cartAdapter.getList().size > 1) {
+            var model = cartAdapter.getItem(cartAdapter.getList())
+            count =
+                model.name.trim().toString().substring(model.name.length - 1, model.name.length)
+                    .toInt()
+            count++
+        }
+        cartItemModel.apply {
+            this.itemQuantity = 1
+            this.name = "Custom Item ${count}"
+            this.price = replaceCurrency.toDouble()
+            this.isManualSales = true
+
+
+        }
+        cartAdapter.updateItem(cartItemModel, cartAdapter.getList().size - 1)
+*/
     }
 
-    private fun onConfig() {
-        binding.txtAmount.addTextChangedListener(AmountTextWatcher(binding.txtAmount, true))
-        if (prefProvider.getValue(SALE_CUSTOMER_NAME, "").toString().isNotEmpty()) {
-            binding.txtCustomerName.text = prefProvider.getValue(SALE_CUSTOMER_NAME, "")
-            binding.txtCrtNewCustomer.text = "Remove Customer"
-        }
-        cartAdapter = ManualSaleCartAdapter()
-        cartAdapter.setCallBack(this)
-        binding.rvSaleCart.adapter = cartAdapter
+}
 
-        object : SwipeHelper(activity, binding.rvSaleCart) {
-            override fun instantiateUnderlayButton(
-                viewHolder: RecyclerView.ViewHolder?,
-                underlayButtons: MutableList<UnderlayButton?>
-            ) {
-                underlayButtons.add(
-                    UnderlayButton(
-                        "Rename",
-                        0,
-                        Color.parseColor("#08CAE3")
-                    ) { pos ->
-                        if (pos != cartAdapter.getList().size - 1) {
-                            Log.e(TAG, "pospospos  ${pos}")
-                            setFragmentResultListener("request_key_item_rename") { resultKey: String, bundle: Bundle ->
-                                val data = bundle.getString("item_name")
-                                cartItemModel.name = data.toString()
-                                cartItemModel?.let {
-                                    viewModel.cartLogic(cartList, it, Constants.UPDATE)
-                                }
+private fun onConfig() {
+    binding.txtAmount.addTextChangedListener(AmountTextWatcher(binding.txtAmount, true))
+    binding.txtAmount.setText("0.00")
+    if (prefProvider.getValue(SALE_CUSTOMER_NAME, "").toString().isNotEmpty()) {
+        binding.txtCustomerName.text = prefProvider.getValue(SALE_CUSTOMER_NAME, "")
+        binding.txtCrtNewCustomer.text = "Remove Customer"
+    }
+    cartAdapter = ManualSaleCartAdapter()
+    cartAdapter.setCallBack(this)
+    binding.rvSaleCart.adapter = cartAdapter
 
-
-                            }
-                            cartItemModel = cartAdapter.getItem(pos)
-                            val bundle: Bundle = bundleOf("item_name" to cartItemModel.name)
-
-                            findNavController().navigate(
-                                R.id.action_manualSaleNew_to_itemRenameDialog,
-                                bundle
-                            )
-
-                        }
-                    }
-                )
-
-                underlayButtons.add(UnderlayButton(
-                    "Add Note",
+    object : SwipeHelper(activity, binding.rvSaleCart) {
+        override fun instantiateUnderlayButton(
+            viewHolder: RecyclerView.ViewHolder?,
+            underlayButtons: MutableList<UnderlayButton?>
+        ) {
+            underlayButtons.add(
+                UnderlayButton(
+                    "Rename",
                     0,
-                    Color.parseColor("#FA9905")
+                    Color.parseColor("#08CAE3")
                 ) { pos ->
                     if (pos != cartAdapter.getList().size - 1) {
-
-                        setFragmentResultListener("request_key_note") { requestKey: String, bundle: Bundle ->
-                            val note = bundle.getString("note")
-
-                            cartItemModel.note = note.toString()
-
+                        Log.e(TAG, "pospospos  ${pos}")
+                        setFragmentResultListener("request_key_item_rename") { resultKey: String, bundle: Bundle ->
+                            val data = bundle.getString("item_name")
+                            cartItemModel.name = data.toString()
                             cartItemModel?.let {
-                                viewModel.cartLogic(
-                                    cartList,
-                                    it,
-                                    Constants.UPDATE
-                                )
+                                viewModel.cartLogic(cartList, it, Constants.UPDATE)
                             }
+
+
                         }
                         cartItemModel = cartAdapter.getItem(pos)
-                        val bundle = Bundle().apply {
-                            putString("note", cartItemModel.note)
-                        }
+                        val bundle: Bundle = bundleOf("item_name" to cartItemModel.name)
 
                         findNavController().navigate(
-                            R.id.action_manualSaleNew_to_addNoteDialog,
+                            R.id.action_manualSaleNew_to_itemRenameDialog,
                             bundle
                         )
 
                     }
+                }
+            )
 
-                })
+            underlayButtons.add(UnderlayButton(
+                "Add Note",
+                0,
+                Color.parseColor("#FA9905")
+            ) { pos ->
+                if (pos != cartAdapter.getList().size - 1) {
 
-                underlayButtons.add(UnderlayButton(
-                    "Add Discount",
+                    setFragmentResultListener("request_key_note") { requestKey: String, bundle: Bundle ->
+                        val note = bundle.getString("note")
+
+                        cartItemModel.note = note.toString()
+
+                        cartItemModel?.let {
+                            viewModel.cartLogic(
+                                cartList,
+                                it,
+                                Constants.UPDATE
+                            )
+                        }
+                    }
+                    cartItemModel = cartAdapter.getItem(pos)
+                    val bundle = Bundle().apply {
+                        putString("note", cartItemModel.note)
+                    }
+
+                    findNavController().navigate(
+                        R.id.action_manualSaleNew_to_addNoteDialog,
+                        bundle
+                    )
+
+                }
+
+            })
+
+            underlayButtons.add(UnderlayButton(
+                "Add Discount",
+                0,
+                Color.parseColor("#2997cc")
+            ) { pos ->
+                if (pos != cartAdapter.getList().size - 1) {
+
+                    findNavController().navigate(R.id.action_manualSaleNew_to_addDiscountDialog)
+                }
+            })
+
+            underlayButtons.add(
+                UnderlayButton(
+                    "Delete",
                     0,
-                    Color.parseColor("#2997cc")
+                    Color.parseColor("#FF3C30")
                 ) { pos ->
                     if (pos != cartAdapter.getList().size - 1) {
+                        alert(
+                            getString(R.string.app_name),
+                            getString(R.string.delete_item_message)
+                        ) {
+                            positiveButton(getString(R.string.tv_delete)) {
+                                // Do positive stuff here
+                                val item = cartAdapter.getItem(pos)
 
-                        findNavController().navigate(R.id.action_manualSaleNew_to_addDiscountDialog)
-                    }
-                })
-
-                underlayButtons.add(
-                    UnderlayButton(
-                        "Delete",
-                        0,
-                        Color.parseColor("#FF3C30")
-                    ) { pos ->
-                        if (pos != cartAdapter.getList().size - 1) {
-                            alert(
-                                getString(R.string.app_name),
-                                getString(R.string.delete_item_message)
-                            ) {
-                                positiveButton(getString(R.string.tv_delete)) {
-                                    // Do positive stuff here
-                                    val item = cartAdapter.getItem(pos)
-
-                                    Log.e(TAG, "item ${Gson().toJson(item)}")
-                                    viewModel.cartLogic(cartList, item, Constants.DELETE)
-                                }
-                                negativeButton(R.string.tv_cancel) {
-                                    // Do negative stuff here
-                                }
+                                Log.e(TAG, "item ${Gson().toJson(item)}")
+                                viewModel.cartLogic(cartList, item, Constants.DELETE)
+                            }
+                            negativeButton(R.string.tv_cancel) {
+                                // Do negative stuff here
                             }
                         }
-                    })
-            }
-
-        }
-
-        binding.layoutMenu.txtProducts.setTextColor(resources.getColor(R.color.txtColor))
-        binding.layoutMenu.txtKeypad.setTextColor(resources.getColor(R.color.txt_color_blue))
-
-    }
-
-    private fun calculateValue(number: String, delete: Boolean) {
-
-        if (delete && binding.txtAmount.text?.length!! > 1) {
-
-            binding.txtAmount.setText(removeLastCharacter(binding.txtAmount.text.toString()))
-        } else if (binding.txtAmount.text?.trim()!!.equals("0.00")) {
-            binding.txtAmount.setText("")
-            binding.txtAmount.append(number)
-        } else {
-            binding.txtAmount.append(number)
-        }
-        addItemToCart(binding.txtAmount.text.toString(), false)
-    }
-
-    private fun removeLastCharacter(str: String): String {
-        return str.substring(0, str.length - 1)
-    }
-
-    private fun getFirstValue(str: String): String {
-        return str.toString().substring(0, str.indexOf('.'))
-
-
-    }
-
-    private fun dialogMenu() {
-        if (binding.llCustomerDialog.visibility == View.VISIBLE) {
-            binding.llCustomerDialog.visibility = View.GONE
-        } else {
-            binding.llCustomerDialog.visibility = View.VISIBLE
-
+                    }
+                })
         }
 
     }
 
-    override fun onItemClicked(model: TbItem, position: Int) {
-        Log.e(TAG, "Itemmodel: ${Gson().toJson(model)}")
-        val dialog = Dialog(requireContext())
-        dialog.window?.requestFeature(Window.FEATURE_NO_TITLE)
-        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    binding.layoutMenu.txtProducts.setTextColor(resources.getColor(R.color.txtColor))
+    binding.layoutMenu.txtKeypad.setTextColor(resources.getColor(R.color.txt_color_blue))
 
-        val lp = WindowManager.LayoutParams()
-        lp.copyFrom(dialog.window!!.attributes)
-        lp.width = WindowManager.LayoutParams.WRAP_CONTENT
-        lp.height = WindowManager.LayoutParams.MATCH_PARENT
-        dialog.window!!.attributes = lp
+}
 
-        dialog.setContentView(R.layout.dialog_update_quantity)
+private fun calculateValue(number: String, delete: Boolean) {
 
-        val imgClose: AppCompatImageView = dialog.findViewById(R.id.imgBack)
-        val txtSave: AppCompatTextView = dialog.findViewById(R.id.txtSave)
-        val txtTitle: AppCompatTextView = dialog.findViewById(R.id.txtTitle)
-        val txtQty: AppCompatEditText = dialog.findViewById(R.id.txtQty)
-        val llPlus: LinearLayoutCompat = dialog.findViewById(R.id.llPlus)
-        val llMinus: LinearLayoutCompat = dialog.findViewById(R.id.llMinus)
-        val btnRemove: AppCompatTextView = dialog.findViewById(R.id.btnRemove)
-        val btnAddDiscount: AppCompatTextView = dialog.findViewById(R.id.btnAddDiscount)
-        val edtNote: AppCompatEditText = dialog.findViewById(R.id.edtNote)
+    if (delete && binding.txtAmount.text?.length!! > 1) {
 
-        edtNote.setText(model.note)
-        var qty = model.itemQuantity
+        binding.txtAmount.setText(removeLastCharacter(binding.txtAmount.text.toString()))
+    } else if (binding.txtAmount.text?.trim()!!.equals("0.00")) {
+        binding.txtAmount.setText("")
+        binding.txtAmount.append(number)
+    } else {
+        binding.txtAmount.append(number)
+    }
+    addItemToCart(binding.txtAmount.text.toString(), false)
+}
 
+private fun removeLastCharacter(str: String): String {
+    return str.substring(0, str.length - 1)
+}
+
+private fun getFirstValue(str: String): String {
+    return str.toString().substring(0, str.indexOf('.'))
+
+
+}
+
+private fun dialogMenu() {
+    if (binding.llCustomerDialog.visibility == View.VISIBLE) {
+        binding.llCustomerDialog.visibility = View.GONE
+    } else {
+        binding.llCustomerDialog.visibility = View.VISIBLE
+
+    }
+
+}
+
+override fun onItemClicked(model: TbItem, position: Int) {
+    Log.e(TAG, "Itemmodel: ${Gson().toJson(model)}")
+    val dialog = Dialog(requireContext())
+    dialog.window?.requestFeature(Window.FEATURE_NO_TITLE)
+    dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+    val lp = WindowManager.LayoutParams()
+    lp.copyFrom(dialog.window!!.attributes)
+    lp.width = WindowManager.LayoutParams.WRAP_CONTENT
+    lp.height = WindowManager.LayoutParams.MATCH_PARENT
+    dialog.window!!.attributes = lp
+
+    dialog.setContentView(R.layout.dialog_update_quantity)
+
+    val imgClose: AppCompatImageView = dialog.findViewById(R.id.imgBack)
+    val txtSave: AppCompatTextView = dialog.findViewById(R.id.txtSave)
+    val txtTitle: AppCompatTextView = dialog.findViewById(R.id.txtTitle)
+    val txtQty: AppCompatEditText = dialog.findViewById(R.id.txtQty)
+    val llPlus: LinearLayoutCompat = dialog.findViewById(R.id.llPlus)
+    val llMinus: LinearLayoutCompat = dialog.findViewById(R.id.llMinus)
+    val btnRemove: AppCompatTextView = dialog.findViewById(R.id.btnRemove)
+    val btnAddDiscount: AppCompatTextView = dialog.findViewById(R.id.btnAddDiscount)
+    val edtNote: AppCompatEditText = dialog.findViewById(R.id.edtNote)
+
+    edtNote.setText(model.note)
+    var qty = model.itemQuantity
+
+    txtQty.setText(qty.toString())
+    txtTitle.text = model.name + "  $" + String.format(
+        "%.2f",
+        model.price
+    )
+
+    imgClose.setOnClickListener {
+        dialog.dismiss()
+    }
+
+    txtSave.setOnClickListener {
+        dialog.dismiss()
+        var itemCost = (model.price / model.itemQuantity).toDouble()
+
+
+        model.note = edtNote.text.toString().trim()
+        model.itemQuantity = txtQty.text.toString().toInt()
+
+        model.price = String.format("%.2f", (itemCost * model.itemQuantity)).toDouble()
+
+
+
+        viewModel.cartLogic(cartList, model, Constants.UPDATE)
+    }
+
+    llPlus.setOnClickListener {
+        qty += 1
         txtQty.setText(qty.toString())
-        txtTitle.text = model.name + "  $" + String.format(
-            "%.2f",
-            model.price
-        )
+    }
+    llMinus.setOnClickListener {
 
-        imgClose.setOnClickListener {
-            dialog.dismiss()
+        if (qty > 1) {
+            qty -= 1
         }
-
-        txtSave.setOnClickListener {
-            dialog.dismiss()
-            var itemCost = (model.price / model.itemQuantity).toDouble()
-
-
-            model.note = edtNote.text.toString().trim()
-            model.itemQuantity = txtQty.text.toString().toInt()
-
-            model.price = String.format("%.2f", (itemCost * model.itemQuantity)).toDouble()
-
-
-
-            viewModel.cartLogic(cartList, model, Constants.UPDATE)
-        }
-
-        llPlus.setOnClickListener {
-            qty += 1
-            txtQty.setText(qty.toString())
-        }
-        llMinus.setOnClickListener {
-
-            if (qty > 1) {
-                qty -= 1
-            }
-            txtQty.setText(qty.toString())
-        }
-
-        btnRemove.setOnClickListener {
-            Log.e(TAG, "modelRemove:  ${Gson().toJson(model)}")
-            viewModel.cartLogic(cartList, model, Constants.DELETE)
-            dialog.dismiss()
-        }
-
-        btnAddDiscount.setOnClickListener {
-            findNavController().navigate(
-                R.id.action_dashboardCategoryNew_to_addDiscountDialog
-            )
-        }
-
-
-        dialog.setCanceledOnTouchOutside(false)
-        dialog.show()
-
-
+        txtQty.setText(qty.toString())
     }
 
-    private fun showPopupWindow(view: View) {
-
-        val popupView: View = layoutInflater.inflate(R.layout.info_popup_window, null)
-
-        val txtSubTotal: AppCompatTextView = popupView.findViewById(R.id.txtSubTotal)
-        val txtServiceCharge: AppCompatTextView = popupView.findViewById(R.id.txtServiceCharge)
-        val txtDiscount: AppCompatTextView = popupView.findViewById(R.id.txtDiscount)
-        val txtTotalAmount: AppCompatTextView = popupView.findViewById(R.id.txtTotalAmount)
-        val txtTotalTax: AppCompatTextView = popupView.findViewById(R.id.txtTotalTax)
-
-        txtSubTotal.text = "$" + String.format(
-            "%.2f",
-            viewModel.subTotalPrice
-        )
-        txtServiceCharge.text = "$" + String.format(
-            "%.2f",
-            viewModel.totalServiceCharge
-        )
-        txtDiscount.text = "$" + String.format(
-            "%.2f",
-            0.00
-        )
-        txtTotalAmount.text = binding.txtChargeAmount.text.toString()
-        txtTotalTax.text = "$" + String.format(
-            "%.2f",
-            viewModel.totalTax
-        )
-
-        val popupWindow = PopupWindow(
-            popupView,
-            ViewGroup.LayoutParams.WRAP_CONTENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        )
-        popupWindow.setBackgroundDrawable(BitmapDrawable())
-        popupWindow.isOutsideTouchable = true
-
-
-        popupWindow.setOnDismissListener(PopupWindow.OnDismissListener {
-            //TODO do sth here on dismiss
-        })
-        popupWindow.showAtLocation(view, Gravity.TOP, 600, 650);
+    btnRemove.setOnClickListener {
+        Log.e(TAG, "modelRemove:  ${Gson().toJson(model)}")
+        viewModel.cartLogic(cartList, model, Constants.DELETE)
+        dialog.dismiss()
     }
 
-    private fun dialogPOSMenu() {
-
-        val dialog = Dialog(requireContext(), android.R.style.Theme_Light)
-
-        dialog.window?.requestFeature(Window.FEATURE_NO_TITLE)
-
-        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.WHITE))
-        dialog.window?.setLayout(
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.MATCH_PARENT
+    btnAddDiscount.setOnClickListener {
+        findNavController().navigate(
+            R.id.action_dashboardCategoryNew_to_addDiscountDialog
         )
-
-
-        dialog.setContentView(R.layout.menu_pos)
-        dialog.setCanceledOnTouchOutside(false)
-
-        val imgClose: ImageView = dialog.findViewById(R.id.imgClose)
-        val footerView: View = dialog.findViewById(R.id.footer)
-
-        val imgCalculator: ImageView = footerView.findViewById(R.id.imgCalculator)
-        val txtCheckOut: TextView = footerView.findViewById(R.id.txtCheckOut)
-
-        val imgMore: ImageView = footerView.findViewById(R.id.imgMore)
-        val txtMore: TextView = footerView.findViewById(R.id.txtMore)
-        val linearMore: LinearLayout = footerView.findViewById(R.id.linearMore)
-        val linearHome: LinearLayout = dialog.findViewById(R.id.linearHome)
-        val linearOrders: LinearLayout = dialog.findViewById(R.id.linearOrders)
-        val linearTransaction: LinearLayout = dialog.findViewById(R.id.linearTransaction)
-        val linearCash: LinearLayout = dialog.findViewById(R.id.linearCash)
-        val linearReports: LinearLayout = dialog.findViewById(R.id.linearReports)
-        val linearCust: LinearLayout = dialog.findViewById(R.id.linearCust)
-        val linearTeam: LinearLayout = dialog.findViewById(R.id.linearTeam)
-        val linearInventory: LinearLayout = dialog.findViewById(R.id.linearInventory)
-        val linearSetting: LinearLayout = dialog.findViewById(R.id.linearSetting)
-        val linearSupport: LinearLayout = dialog.findViewById(R.id.linearSupport)
-
-        linearHome.setOnClickListener {
-            findNavController().popBackStack()
-            closeDialog(dialog)
-        }
-        linearCust.setOnClickListener {
-            findNavController().navigate(R.id.action_manualSaleNew_to_customer)
-            closeDialog(dialog)
-        }
-        linearReports.setOnClickListener {
-            findNavController().navigate(R.id.action_manualSaleNew_to_reports)
-            dialog.dismiss()
-        }
-        linearTeam.setOnClickListener {
-            findNavController().navigate(R.id.action_manualSaleNew_to_teamList)
-            dialog.dismiss()
-        }
-        linearInventory.setOnClickListener {
-            findNavController().navigate(R.id.action_manualSaleNew_to_inventory)
-            dialog.dismiss()
-        }
-        linearSetting.setOnClickListener {
-            findNavController().navigate(R.id.action_manualSaleNew_to_settings)
-            dialog.dismiss()
-        }
-
-        imgCalculator.setColorFilter(resources.getColor(R.color.txtColor))
-        txtCheckOut.setTextColor(resources.getColor(R.color.txtColor))
-        imgMore.setColorFilter(resources.getColor(R.color.txt_color_blue))
-        txtMore.setTextColor(resources.getColor(R.color.txt_color_blue))
-
-        imgClose.setOnClickListener {
-            closeDialog(dialog)
-        }
-
-        dialog.show()
     }
 
-    fun closeDialog(dialog: Dialog?) {
-        dialog?.dismiss()
+
+    dialog.setCanceledOnTouchOutside(false)
+    dialog.show()
+
+
+}
+
+private fun showPopupWindow(view: View) {
+
+    val popupView: View = layoutInflater.inflate(R.layout.info_popup_window, null)
+
+    val txtSubTotal: AppCompatTextView = popupView.findViewById(R.id.txtSubTotal)
+    val txtServiceCharge: AppCompatTextView = popupView.findViewById(R.id.txtServiceCharge)
+    val txtDiscount: AppCompatTextView = popupView.findViewById(R.id.txtDiscount)
+    val txtTotalAmount: AppCompatTextView = popupView.findViewById(R.id.txtTotalAmount)
+    val txtTotalTax: AppCompatTextView = popupView.findViewById(R.id.txtTotalTax)
+
+    txtSubTotal.text = "$" + String.format(
+        "%.2f",
+        viewModel.subTotalPrice
+    )
+    txtServiceCharge.text = "$" + String.format(
+        "%.2f",
+        viewModel.totalServiceCharge
+    )
+    txtDiscount.text = "$" + String.format(
+        "%.2f",
+        0.00
+    )
+    txtTotalAmount.text = binding.txtChargeAmount.text.toString()
+    txtTotalTax.text = "$" + String.format(
+        "%.2f",
+        viewModel.totalTax
+    )
+
+    val popupWindow = PopupWindow(
+        popupView,
+        ViewGroup.LayoutParams.WRAP_CONTENT,
+        ViewGroup.LayoutParams.WRAP_CONTENT
+    )
+    popupWindow.setBackgroundDrawable(BitmapDrawable())
+    popupWindow.isOutsideTouchable = true
+
+
+    popupWindow.setOnDismissListener(PopupWindow.OnDismissListener {
+        //TODO do sth here on dismiss
+    })
+    popupWindow.showAtLocation(view, Gravity.TOP, 600, 650);
+}
+
+private fun dialogPOSMenu() {
+
+    val dialog = Dialog(requireContext(), android.R.style.Theme_Light)
+
+    dialog.window?.requestFeature(Window.FEATURE_NO_TITLE)
+
+    dialog.window?.setBackgroundDrawable(ColorDrawable(Color.WHITE))
+    dialog.window?.setLayout(
+        WindowManager.LayoutParams.MATCH_PARENT,
+        WindowManager.LayoutParams.MATCH_PARENT
+    )
+
+
+    dialog.setContentView(R.layout.menu_pos)
+    dialog.setCanceledOnTouchOutside(false)
+
+    val imgClose: ImageView = dialog.findViewById(R.id.imgClose)
+    val footerView: View = dialog.findViewById(R.id.footer)
+
+    val imgCalculator: ImageView = footerView.findViewById(R.id.imgCalculator)
+    val txtCheckOut: TextView = footerView.findViewById(R.id.txtCheckOut)
+
+    val imgMore: ImageView = footerView.findViewById(R.id.imgMore)
+    val txtMore: TextView = footerView.findViewById(R.id.txtMore)
+    val linearMore: LinearLayout = footerView.findViewById(R.id.linearMore)
+    val linearHome: LinearLayout = dialog.findViewById(R.id.linearHome)
+    val linearOrders: LinearLayout = dialog.findViewById(R.id.linearOrders)
+    val linearTransaction: LinearLayout = dialog.findViewById(R.id.linearTransaction)
+    val linearCash: LinearLayout = dialog.findViewById(R.id.linearCash)
+    val linearReports: LinearLayout = dialog.findViewById(R.id.linearReports)
+    val linearCust: LinearLayout = dialog.findViewById(R.id.linearCust)
+    val linearTeam: LinearLayout = dialog.findViewById(R.id.linearTeam)
+    val linearInventory: LinearLayout = dialog.findViewById(R.id.linearInventory)
+    val linearSetting: LinearLayout = dialog.findViewById(R.id.linearSetting)
+    val linearSupport: LinearLayout = dialog.findViewById(R.id.linearSupport)
+
+    linearHome.setOnClickListener {
+        findNavController().popBackStack()
+        closeDialog(dialog)
     }
+    linearCust.setOnClickListener {
+        findNavController().navigate(R.id.action_manualSaleNew_to_customer)
+        closeDialog(dialog)
+    }
+    linearReports.setOnClickListener {
+        findNavController().navigate(R.id.action_manualSaleNew_to_reports)
+        dialog.dismiss()
+    }
+    linearTeam.setOnClickListener {
+        findNavController().navigate(R.id.action_manualSaleNew_to_teamList)
+        dialog.dismiss()
+    }
+    linearInventory.setOnClickListener {
+        findNavController().navigate(R.id.action_manualSaleNew_to_inventory)
+        dialog.dismiss()
+    }
+    linearSetting.setOnClickListener {
+        findNavController().navigate(R.id.action_manualSaleNew_to_settings)
+        dialog.dismiss()
+    }
+
+    imgCalculator.setColorFilter(resources.getColor(R.color.txtColor))
+    txtCheckOut.setTextColor(resources.getColor(R.color.txtColor))
+    imgMore.setColorFilter(resources.getColor(R.color.txt_color_blue))
+    txtMore.setTextColor(resources.getColor(R.color.txt_color_blue))
+
+    imgClose.setOnClickListener {
+        closeDialog(dialog)
+    }
+
+    dialog.show()
+}
+
+fun closeDialog(dialog: Dialog?) {
+    dialog?.dismiss()
+}
 
 }

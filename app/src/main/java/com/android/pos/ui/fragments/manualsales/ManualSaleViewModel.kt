@@ -49,10 +49,9 @@ class ManualSaleViewModel @Inject constructor(
             totalPrice = 0.0
             subTotalPrice = 0.0
             totalTax = 0.0
-            totalServiceCharge =0.0
-            totalCount= 0
+            totalServiceCharge = 0.0
+            totalCount = 0
             posRepository.deleteManualSaleCart()
-
 
 
         }
@@ -65,8 +64,15 @@ class ManualSaleViewModel @Inject constructor(
             addCart(model)
         } else {
             val list = cartList?.get(0)?.items?.toMutableList()
+            Log.e(TAG, "ViewModellist:  ${Gson().toJson(item)}")
             if (list != null && list.isNotEmpty()) {
-                if (type == ADD || type == UPDATE) {
+                if (type == ADD) {
+
+
+                    item.itemQuantity = 1
+                    list.add(item)
+
+                } else if (type == UPDATE) {
                     var index = -1
                     list.forEachIndexed { pos, tbItem ->
                         if (tbItem.itemId == item.itemId) {
@@ -75,7 +81,6 @@ class ManualSaleViewModel @Inject constructor(
                         }
 
                     }
-
                     Log.e(TAG, "indexValue ${index}")
                     if (index != -1) {
                         val model = cartList[0].items?.get(index)
@@ -88,12 +93,14 @@ class ManualSaleViewModel @Inject constructor(
                             list.set(index, model)
                         }
                     } else {
-                        item.itemQuantity = 1
-                        list.add(item)
+//                        item.itemQuantity = 1
+//                        list.add(item)
                     }
+
                 } else if (type == DELETE) {
                     list.remove(item)
                 }
+                Log.e(TAG, "AddedList  ${Gson().toJson(list)}")
                 val cartModel = CartModel().apply {
                     cartId = cartList[0].cartId
                     items = list
@@ -123,7 +130,7 @@ class ManualSaleViewModel @Inject constructor(
         serviceChargesList: List<GetServiceChargeResponse.Data>?
     ) {
 
-    Log.e(TAG,"serviceChargesList:  ${Gson().toJson(serviceChargesList)}")
+        Log.e(TAG, "serviceChargesList:  ${Gson().toJson(serviceChargesList)}")
         totalPrice = 0.0
         totalCount = 0
         subTotalPrice = 0.0
