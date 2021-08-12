@@ -9,16 +9,17 @@
 
         <variable
             name="itemSheetModel"
-            type="com.android.pos.data.model.TimeSheetListModel" />
+            type="com.android.pos.data.model.responseModel.GetEmployeesTimeSheetResponse.Data" />
 
         <variable
             name="viewModel"
-            type="com.android.pos.ui.fragments.settings.servicecharge.ServiceChargeListViewModel" />
+            type="com.android.pos.ui.fragments.settings.teamrole.TeamMemberSheetViewModel" />
     </data>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:onClick="@{() -> viewModel.employeeId(itemSheetModel)}"
         android:orientation="vertical">
 
         <LinearLayout
@@ -36,7 +37,7 @@
                 android:layout_marginLeft="@dimen/_5sdp"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="@{itemSheetModel.customerName}"
+                android:text="@{itemSheetModel.teamName}"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi" />
 
@@ -46,7 +47,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
                 android:gravity="center"
-                android:text="@{itemSheetModel.totalHours}"
+                android:text="@{``+itemSheetModel.totalHours}"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi" />
 
@@ -56,7 +57,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="@{itemSheetModel.totalWage}"
+                android:text="@{``+itemSheetModel.totalWage}"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi" />
 
@@ -66,7 +67,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="@{itemSheetModel.mon}"
+                android:text="@{itemSheetModel.dataOfWeek.mon}"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi" />
 
@@ -76,7 +77,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="@{itemSheetModel.tue}"
+                android:text="@{itemSheetModel.dataOfWeek.tue}"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi" />
 
@@ -86,7 +87,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="@{itemSheetModel.wed}"
+                android:text="@{itemSheetModel.dataOfWeek.wed}"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi" />
 
@@ -96,7 +97,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="@{itemSheetModel.thu}"
+                android:text="@{itemSheetModel.dataOfWeek.thu}"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi" />
 
@@ -106,7 +107,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="@{itemSheetModel.fri}"
+                android:text="@{itemSheetModel.dataOfWeek.fri}"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi" />
 
@@ -116,7 +117,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="@{itemSheetModel.sat}"
+                android:text="@{itemSheetModel.dataOfWeek.sat}"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi" />
 
@@ -126,7 +127,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="@{itemSheetModel.sun}"
+                android:text="@{itemSheetModel.dataOfWeek.sun}"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi" />
         </LinearLayout>

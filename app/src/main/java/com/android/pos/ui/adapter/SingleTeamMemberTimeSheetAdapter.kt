@@ -3,12 +3,14 @@ package com.android.pos.ui.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.android.pos.data.model.SingleMemberTimeSheetListModel
-import com.android.pos.databinding.ViewItemTimesheetBinding
+import com.android.pos.data.model.responseModel.GetEmployeeTimeSheetDetailsResponse
+import com.android.pos.data.model.responseModel.GetEmployeesTimeSheetResponse
 import com.android.pos.databinding.ViewSingleMemberItemTimesheetBinding
 
-class SingleTeamMemberTimeSheetAdapter(var timeSheet: ArrayList<SingleMemberTimeSheetListModel>) :
+class SingleTeamMemberTimeSheetAdapter :
     RecyclerView.Adapter<SingleTeamMemberTimeSheetAdapter.MyViewHolder>() {
+
+    var employeeTimeSheet = ArrayList<GetEmployeeTimeSheetDetailsResponse.Data>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -19,13 +21,13 @@ class SingleTeamMemberTimeSheetAdapter(var timeSheet: ArrayList<SingleMemberTime
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val itemBinding = holder.discountItemBinding
-        itemBinding.itemSheetModel = timeSheet[position]
+        itemBinding.itemSheetModel = employeeTimeSheet[position]
         //  itemBinding.viewModel = viewModel
 
         itemBinding.executePendingBindings()
     }
 
-    override fun getItemCount() = timeSheet.size
+    override fun getItemCount() = employeeTimeSheet.size
 
     inner class MyViewHolder(val discountItemBinding: ViewSingleMemberItemTimesheetBinding) :
         RecyclerView.ViewHolder(discountItemBinding.root) {
@@ -36,6 +38,14 @@ class SingleTeamMemberTimeSheetAdapter(var timeSheet: ArrayList<SingleMemberTime
                 notifyDataSetChanged()
             }
         }*/
+    }
+
+    fun teamTimesheetDetailsList(employeeTimeSheet: List<GetEmployeeTimeSheetDetailsResponse.Data>) {
+        this.employeeTimeSheet.apply {
+            clear()
+            addAll(employeeTimeSheet)
+            notifyDataSetChanged()
+        }
     }
 
 

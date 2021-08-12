@@ -43,7 +43,7 @@ class SingleTeamMemberSheetViewModel @Inject constructor(
     }*/
 
     fun setCurrentDate(myCalendar: Calendar) {
-        val myFormat = "dd/MM/yyyy" //In which you need put here
+        val myFormat = "MM/dd/yyyy" //In which you need put here
         val sdf = SimpleDateFormat(myFormat, Locale.getDefault())
         startDate.value = sdf.format(myCalendar.time)
         endDate.value = sdf.format(myCalendar.time)
@@ -55,7 +55,7 @@ class SingleTeamMemberSheetViewModel @Inject constructor(
     }
 
     fun updateLabel(myCalendar: Calendar) {
-        val myFormat = "dd/MM/yyyy" //In which you need put here
+        val myFormat = "MM/dd/yyyy" //In which you need put here
         val sdf = SimpleDateFormat(myFormat, Locale.getDefault())
 
         if (selectPicker1) {
@@ -68,7 +68,7 @@ class SingleTeamMemberSheetViewModel @Inject constructor(
     private fun validateDates(startDate: String?, endDate: String?): Boolean {
         var b = false
         try {
-            val myFormat = "dd/MM/yyyy" //In which you need put here
+            val myFormat = "MM/dd/yyyy" //In which you need put here
             val sdf = SimpleDateFormat(myFormat, Locale.getDefault())
             b = if (sdf.parse(startDate).before(sdf.parse(endDate))) {
                 true //If start date is before end date

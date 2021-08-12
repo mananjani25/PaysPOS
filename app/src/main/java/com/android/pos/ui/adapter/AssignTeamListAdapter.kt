@@ -28,8 +28,8 @@ class AssignTeamListAdapter(val viewModel: UserAccessPermissionViewModel) :
         itemBinding.permissionListModel = permissionList[position]
         itemBinding.viewModel = viewModel
 
-        val employees = permissionList[position].employees.map { it.name }
-        itemBinding.teamMemberList.text = TextUtils.join(",", employees)
+        val employees = permissionList[position].employees?.map { it.name }
+        itemBinding.teamMemberList.text = TextUtils.join(",", employees!!)
         itemBinding.executePendingBindings()
     }
 

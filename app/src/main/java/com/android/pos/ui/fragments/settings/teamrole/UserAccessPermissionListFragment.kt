@@ -50,7 +50,7 @@ class UserAccessPermissionListFragment : Fragment() {
         binding.lifecycleOwner = this
 
         setUpRecyclerView()
-        getUserPermissionListObserver()
+        getUserRoleListObserver()
         setupSnackbar()
         deleteEmployeeRole()
         observeShowProgress()
@@ -125,7 +125,7 @@ class UserAccessPermissionListFragment : Fragment() {
         }
     }
 
-    private fun getUserPermissionListObserver() {
+    private fun getUserRoleListObserver() {
         viewModel.getTeamRoleList.observe(viewLifecycleOwner, {
             it?.let { resource ->
                 when (resource.status) {
@@ -189,6 +189,7 @@ class UserAccessPermissionListFragment : Fragment() {
             }
         })
     }
+
     private fun backPressManage() {
         val navController = findNavController()
         navController.previousBackStackEntry?.savedStateHandle?.set(

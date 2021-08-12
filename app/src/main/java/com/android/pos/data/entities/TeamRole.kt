@@ -15,7 +15,7 @@ data class TeamRole(
     @SerializedName("name")
     val name: String,
     @SerializedName("employees")
-    val employees: List<Employee>,
+    val employees: List<Employee>?,
     @SerializedName("module_permission")
-    val modulePermission: List<ModulePermission>,
+    val modulePermission: List<ModulePermission>?,
 ) : Parcelable

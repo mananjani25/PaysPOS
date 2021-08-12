@@ -9,7 +9,7 @@
 
         <variable
             name="itemSheetModel"
-            type="com.android.pos.data.model.SingleMemberTimeSheetListModel" />
+            type="com.android.pos.data.model.responseModel.GetEmployeeTimeSheetDetailsResponse.Data" />
 
     </data>
 
@@ -43,7 +43,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1.5"
                 android:gravity="center"
-                android:text="@{itemSheetModel.clockIn}"
+                android:text="@{itemSheetModel.clockInTime}"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi" />
 
@@ -53,7 +53,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1.5"
                 android:gravity="center"
-                android:text="@{itemSheetModel.clockOut}"
+                android:text="@{itemSheetModel.clockOutTime}"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi" />
 
@@ -63,7 +63,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="@{itemSheetModel.wage}"
+                android:text="@{itemSheetModel.hourlyWages}"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi" />
 
@@ -73,7 +73,6 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="@{itemSheetModel.break1}"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi"
                 android:visibility="gone" />
@@ -84,7 +83,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="@{itemSheetModel.workingHours}"
+                android:text="@{itemSheetModel.actualInTime}"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi" />
 
