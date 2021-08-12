@@ -27,4 +27,7 @@ class Modifier : Parcelable {
     var _destroy: Boolean = false
 
     var isChecked: Boolean = false
+
+    @SerializedName("itemQuantity")
+    var itemQuantity: Int = 0
 }

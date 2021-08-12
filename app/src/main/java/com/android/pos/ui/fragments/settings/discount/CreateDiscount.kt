@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
+import com.android.pos.data.entities.TbDiscount
 import com.android.pos.data.model.responseModel.GetDiscountResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentCreateDiscountBinding
@@ -27,7 +28,7 @@ class CreateDiscount : Fragment() {
     private val viewModel by viewModels<CreateDiscountViewModel>()
 
     var isEdit: Boolean = false
-    private lateinit var discountData: GetDiscountResponse.Data
+    private lateinit var discountData: TbDiscount
 
     override fun onCreateView(
         inflater: LayoutInflater,

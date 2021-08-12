@@ -8,10 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.data.db.AppDatabase
-import com.android.pos.data.entities.CartModel
-import com.android.pos.data.entities.CategoryWithInventory
-import com.android.pos.data.entities.TaxData
-import com.android.pos.data.entities.TbItem
+import com.android.pos.data.entities.*
 import com.android.pos.data.model.responseModel.GetServiceChargeResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ADD
@@ -19,11 +16,11 @@ import com.android.pos.data.remote.Constants.DELETE
 import com.android.pos.data.remote.Constants.UPDATE
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.TaxServiceChargeRepository
+import com.android.pos.data.repositories.TipDiscountRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
-import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -34,7 +31,8 @@ class DashBoardCategoryViewModel @Inject constructor(
     private val posRepository: PosRepository,
     private val appDatabase: AppDatabase,
     private val prefProvider: PrefProvider,
-    private val taxServiceChargeRepository: TaxServiceChargeRepository
+    private val taxServiceChargeRepository: TaxServiceChargeRepository,
+    private val tipDiscountRepository: TipDiscountRepository
 ) : ViewModel() {
 
     val TAG = "DashBoardCateViewModel"
@@ -52,10 +50,9 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     val venueDataLocal = posRepository.venueDataLocal()
 
-    val serviceCharges = MutableLiveData<List<GetServiceChargeResponse.Data>>()
+    val serviceCharges = posRepository.serviceChargeList()
 
     val taxList = MutableLiveData<List<TaxData>>()
-
 
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
@@ -78,12 +75,11 @@ class DashBoardCategoryViewModel @Inject constructor(
                         if (venueDetailsResponse?.status == 200) {
 
                             resource.data?.let {
-                                Log.e(TAG, "venueDetailsResponse:  ${Gson().toJson(it)}")
                                 taxServiceChargeRepository.addAllTaxDatabase(it.data.taxes)
                                 taxList.value = it.data.taxes
-                                serviceCharges.value = it.data.serviceCharge
-
-                                //posRepository.addAllNotesDatabase(it.data.notes)
+                                posRepository.addAllNotesDatabase(it.data.notes)
+                                tipDiscountRepository.addDiscount(it.data.discounts)
+                                taxServiceChargeRepository.addServiceCharges(it.data.service_charges)
 
                             }
                         } else {
@@ -194,7 +190,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     fun itemCalculation(
         itemList: List<TbItem>?,
         txtTotalAmount: AppCompatTextView,
-        serviceChargesList: List<GetServiceChargeResponse.Data>?
+        serviceChargesList: List<TbServiceCharge>?
     ) {
 
 
@@ -220,7 +216,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             }
 
             item.modifiers.forEach {
-                subTotalPrice += it.price
+                subTotalPrice += (it.price * it.itemQuantity)
             }
         }
 

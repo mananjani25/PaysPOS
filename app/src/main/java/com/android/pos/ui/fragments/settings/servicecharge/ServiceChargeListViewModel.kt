@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.model.responseModel.CreateDiscountResponse
 import com.android.pos.data.model.responseModel.CreateServiceChargeResponse
 import com.android.pos.data.model.responseModel.CreateTaxResponse
@@ -36,7 +37,7 @@ class ServiceChargeListViewModel @Inject constructor(
 
     val getDiscountList = taxServiceChargeRepository.getServiceChargeList()
 
-    fun isSerChargeActive(serChargeItem: GetServiceChargeResponse.Data) {
+    fun isSerChargeActive(serChargeItem: TbServiceCharge) {
 
         // _showProgress.value = Event(true)
 
@@ -44,7 +45,10 @@ class ServiceChargeListViewModel @Inject constructor(
             serChargeItem.isEnabled = !serChargeItem.isEnabled
 
             val resource =
-                taxServiceChargeRepository.serChargeActive(serChargeItem.id, serChargeItem.isEnabled)
+                taxServiceChargeRepository.serChargeActive(
+                    serChargeItem.id,
+                    serChargeItem.isEnabled
+                )
 
             when (resource.status) {
                 Status.SUCCESS -> {

@@ -3,6 +3,7 @@ package com.android.pos.ui.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.model.responseModel.GetServiceChargeResponse
 import com.android.pos.databinding.ViewServiceChargeItemBinding
 import com.android.pos.ui.fragments.settings.servicecharge.ServiceChargeListViewModel
@@ -10,7 +11,7 @@ import com.android.pos.ui.fragments.settings.servicecharge.ServiceChargeListView
 class ServiceChargeListAdapter(val viewModel: ServiceChargeListViewModel) :
     RecyclerView.Adapter<ServiceChargeListAdapter.MyViewHolder>() {
 
-    var serviceChargeList = ArrayList<GetServiceChargeResponse.Data>()
+    var serviceChargeList = ArrayList<TbServiceCharge>()
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -34,7 +35,7 @@ class ServiceChargeListAdapter(val viewModel: ServiceChargeListViewModel) :
     override fun getItemCount() = serviceChargeList.size
 
 
-    fun addServiceCharge(discountList: List<GetServiceChargeResponse.Data>) {
+    fun addServiceCharge(discountList: List<TbServiceCharge>) {
 
         this.serviceChargeList.apply {
             clear()
@@ -42,7 +43,7 @@ class ServiceChargeListAdapter(val viewModel: ServiceChargeListViewModel) :
         }
     }
 
-    fun getItem(position: Int): GetServiceChargeResponse.Data {
+    fun getItem(position: Int): TbServiceCharge {
         return serviceChargeList[position]
     }
 

@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.TbItem
+import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.model.responseModel.GetServiceChargeResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ADD
@@ -127,7 +128,7 @@ class ManualSaleViewModel @Inject constructor(
     fun itemCalculation(
         itemList: List<TbItem>?,
         txtTotalAmount: TextView,
-        serviceChargesList: List<GetServiceChargeResponse.Data>?
+        serviceChargesList: List<TbServiceCharge>?
     ) {
 
         Log.e(TAG, "serviceChargesList:  ${Gson().toJson(serviceChargesList)}")

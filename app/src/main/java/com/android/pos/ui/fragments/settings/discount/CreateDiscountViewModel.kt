@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.R
+import com.android.pos.data.entities.TbDiscount
 import com.android.pos.data.model.requestModel.CreateDiscountRequestModel
 import com.android.pos.data.model.requestModel.CreateTaxRequestModel
 import com.android.pos.data.model.responseModel.*
@@ -56,7 +57,7 @@ class CreateDiscountViewModel @Inject constructor(
         this.discountTypeViewModel = discountType
     }
 
-    fun setDiscountData(discountData: GetDiscountResponse.Data) {
+    fun setDiscountData(discountData: TbDiscount) {
         createDiscountDetails.value?.name = discountData.name
         createDiscountDetails.value?.percentage = discountData.percentage
         discountTypeViewModel = discountData.discountType
@@ -113,7 +114,7 @@ class CreateDiscountViewModel @Inject constructor(
 
                                 resource.data?.let { createDiscountResponse ->
 
-                                    val discount = GetDiscountResponse.Data(
+                                    val discount = TbDiscount(
                                         createdAt = createDiscountResponse.data.createdAt,
                                         discountType = createDiscountResponse.data.discountType,
                                         id = createDiscountResponse.data.id,
