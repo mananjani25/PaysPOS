@@ -21,7 +21,7 @@ class ManualSaleCartAdapter : RecyclerView.Adapter<ManualSaleCartAdapter.MyViewH
     inner class MyViewHolder(private val binding: ViewManualSaleItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        val txtItem :TextView = binding.root.findViewById(R.id.txtItem)
+        val txtItem: TextView = binding.root.findViewById(R.id.txtItem)
         fun bind(model: TbItem, pos: Int) {
             if (pos == list.size - 1) {
                 binding.txtQuantity.setText("x 1")
