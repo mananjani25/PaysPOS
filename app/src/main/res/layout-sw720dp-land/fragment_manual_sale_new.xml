@@ -134,6 +134,7 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="0.5dp"
+                        android:visibility="gone"
                         android:background="@color/colorCustomerDialogBorder" />
 
                     <TextView
@@ -144,11 +145,13 @@
                         android:layout_gravity="center"
                         android:gravity="center"
                         android:padding="@dimen/_7sdp"
+                        android:visibility="gone"
                         android:text="@string/clear_items"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_7mdpi" />
 
                     <View
+                        android:visibility="gone"
                         android:layout_width="match_parent"
                         android:layout_height="0.5dp"
                         android:background="@color/colorCustomerDialogBorder" />
@@ -212,17 +215,6 @@
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/imgInfo"
-                    android:layout_width="@dimen/_8sdp"
-                    android:layout_height="@dimen/_8sdp"
-                    android:layout_alignParentEnd="true"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="@dimen/_2sdp"
-                    android:layout_marginEnd="@dimen/_2sdp"
-                    android:elevation="@dimen/_5sdp"
-                    android:tint="@color/txt_color_blue"
-                    app:srcCompat="@drawable/ic_info" />
 
             </RelativeLayout>
         </RelativeLayout>

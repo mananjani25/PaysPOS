@@ -26,7 +26,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_weight="0.6"
+            android:layout_weight="0.5"
             android:gravity="center"
             android:orientation="vertical">
 
@@ -78,6 +78,15 @@
             android:text="@{`$`+String.valueOf(model.price)}"
             android:textColor="@color/txtColor"
             android:textSize="@dimen/_6mdpi" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/imgOption"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.1"
+            android:src="@drawable/ic_dot_menu"
+            android:tint="@color/txtColor"
+            android:visibility="invisible" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 </layout>

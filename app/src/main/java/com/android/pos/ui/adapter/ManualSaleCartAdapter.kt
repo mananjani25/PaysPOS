@@ -36,9 +36,9 @@ class ManualSaleCartAdapter : RecyclerView.Adapter<ManualSaleCartAdapter.MyViewH
 
         init {
             binding.root.setOnClickListener {
-                if (layoutPosition != list.size - 1) {
-                    listnerCall.onItemClicked(list.get(layoutPosition), layoutPosition)
-                }
+
+                listnerCall.onItemClicked(list.get(layoutPosition), layoutPosition)
+
             }
 
         }
