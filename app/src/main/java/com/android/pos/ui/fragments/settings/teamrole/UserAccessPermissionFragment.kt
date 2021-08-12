@@ -62,7 +62,7 @@ class UserAccessPermissionFragment : Fragment() {
             binding.addRole.text = getString(R.string.update_role)
             userPermissionObject = arguments?.getParcelable("userPermissionObject")!!
             viewModel.setUserPermissionData(userPermissionObject)
-            viewModel.setModuleData(userPermissionObject)
+           // viewModel.setModuleData(userPermissionObject)
             viewModel.isEditData(isEdit, userPermissionObject.id)
         }
 

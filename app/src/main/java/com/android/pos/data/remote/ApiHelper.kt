@@ -30,6 +30,12 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun employeesList(locationId: Int) =
         getResult { apiService.employeesList(locationId) }
 
+    suspend fun employeesTimeSheet(startDate: String, endDate: String, teamRoleId: Int) =
+        getResult { apiService.employeesTimeSheet(startDate, endDate, teamRoleId) }
+
+    suspend fun employeesTimeSheetDetails(startDate: String, endDate: String, teamId: Int) =
+        getResult { apiService.employeesTimeSheetDetails(startDate, endDate, teamId) }
+
     suspend fun customerList() =
         getResult { apiService.customerList() }
 
