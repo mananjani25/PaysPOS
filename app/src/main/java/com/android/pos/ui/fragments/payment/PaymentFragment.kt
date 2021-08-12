@@ -1,5 +1,6 @@
 package com.android.pos.ui.fragments.payment
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,16 +10,27 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
+import com.android.pos.data.entities.CartModel
 import com.android.pos.databinding.PaymentFragmentBinding
-import com.android.pos.utils.AlertUtils
+import com.android.pos.di.PrefProvider
+import com.android.pos.utils.MethodUtils
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
-class PaymentFragment : Fragment() {
+open class PaymentFragment : Fragment(), View.OnClickListener {
 
+    private var cartList: CartModel? = null
     private var splitValue: Int = -1
     private var totalPrice: Double = 0.0
+    private var subTotalPrice: Double = 0.0
+    private var totalTax: Double = 0.0
+    private var totalServiceCharge: Double = 0.0
     private lateinit var binding: PaymentFragmentBinding
+
+    @Inject
+    lateinit var prefProvider: PrefProvider
+
 
     companion object {
         fun newInstance() = PaymentFragment()
@@ -35,6 +47,7 @@ class PaymentFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.model = viewModel
 
+        cartList = requireArguments().getParcelable("cartList")
 
         setupData()
         callbackSetup()
@@ -42,6 +55,7 @@ class PaymentFragment : Fragment() {
         return binding.root
     }
 
+    @SuppressLint("SetTextI18n")
     private fun callbackSetup() {
 
         setFragmentResultListener("request_key_split") { requestKey: String, bundle: Bundle ->
@@ -49,14 +63,10 @@ class PaymentFragment : Fragment() {
 
             val splitAfterAmount = totalPrice / splitValue
 
-            (getString(R.string.symbole) + String.format(
-                "%.2f",
-                splitAfterAmount
-            )).also { binding.txtTotalAmount.text = it }
+            MethodUtils.setPriceTextView(binding.txtTotalAmount, splitAfterAmount)
+            val totalAmountFormat = MethodUtils.roundOffAmount(totalPrice)
 
-            val totalAmountFormat = getString(R.string.symbole) + String.format("%.2f", totalPrice)
-
-            binding.txtSplitAmount.text = "Edit Split Amount"
+            binding.txtSplitAmount.text = getString(R.string.edit_split_amount)
 
             binding.txtSplitValue.text =
                 "Out of $totalAmountFormat Total, Payment 1 of $splitValue"
@@ -68,56 +78,61 @@ class PaymentFragment : Fragment() {
 
     private fun setupData() {
 
-        binding.llCash.setOnClickListener {
+        totalPrice = requireArguments().getDouble("totalPrice")
+        subTotalPrice = requireArguments().getDouble("subTotalPrice")
+        totalTax = requireArguments().getDouble("totalTax")
+        totalServiceCharge = requireArguments().getDouble("totalServiceCharge")
 
-            AlertUtils.showCustomAlertWithListenerWithOK(
-                requireContext(), getString(R.string.order_successfully)
-            ) { _, _ ->
+        MethodUtils.setPriceTextView(binding.txtTotalAmount, totalPrice)
+        MethodUtils.setPriceTextView(binding.txtSubTotal, subTotalPrice)
+        MethodUtils.setPriceTextView(binding.txtTax, totalTax)
+        MethodUtils.setPriceTextView(binding.txtTotal, totalPrice)
 
-                viewModel.deleteCart()
+
+        binding.txtSplitAmount.setOnClickListener(this)
+        binding.txtCustom.setOnClickListener(this)
+        binding.imgBack.setOnClickListener(this)
+        binding.llCash.setOnClickListener(this)
+
+
+    }
+
+    override fun onClick(v: View?) {
+        when (v?.id) {
+            R.id.imgBack -> {
                 findNavController().popBackStack()
             }
-        }
+
+            R.id.llCash -> {
+
+                val myRequest = cartList?.let {
+                    viewModel.createOrderRequest(
+                        it,
+                        subTotalPrice,
+                        totalPrice,
+                        totalServiceCharge,
+                        totalTax
+                    )
+                }
+                if (myRequest != null) {
+                    viewModel.submit(myRequest)
+                }
 
 
-        totalPrice = requireArguments().getDouble("totalPrice")
-        val subTotalPrice = requireArguments().getDouble("subTotalPrice")
-        val totalTax = requireArguments().getDouble("totalTax")
-        val totalServiceCharge = requireArguments().getDouble("totalServiceCharge")
+            }
+            R.id.txtCustom -> {
+                findNavController().navigate(R.id.action_paymentFragment_to_customAmountFragment)
+            }
+            R.id.txtSplitAmount -> {
 
-
-        (getString(R.string.symbole) + String.format(
-            "%.2f",
-            totalPrice
-        )).also { binding.txtTotalAmount.text = it }
-
-        (getString(R.string.symbole) + String.format(
-            "%.2f",
-            subTotalPrice
-        )).also { binding.txtSubTotal.text = it }
-
-        (getString(R.string.symbole) + String.format(
-            "%.2f",
-            totalTax
-        )).also { binding.txtTax.text = it }
-
-        (getString(R.string.symbole) + String.format(
-            "%.2f",
-            totalPrice
-        )).also { binding.txtTotal.text = it }
-
-        binding.txtSplitAmount.setOnClickListener {
-            val bundle = Bundle()
-            bundle.putDouble("totalPrice", totalPrice)
-            bundle.putInt("splitValue", splitValue)
-            findNavController().navigate(R.id.action_paymentFragment_to_splitAmountFragment, bundle)
-        }
-        binding.txtCustom.setOnClickListener {
-            findNavController().navigate(R.id.action_paymentFragment_to_customAmountFragment)
-        }
-
-        binding.imgBack.setOnClickListener {
-            findNavController().popBackStack()
+                val bundle = Bundle()
+                bundle.putDouble("totalPrice", totalPrice)
+                bundle.putInt("splitValue", splitValue)
+                findNavController().navigate(
+                    R.id.action_paymentFragment_to_splitAmountFragment,
+                    bundle
+                )
+            }
         }
 
     }

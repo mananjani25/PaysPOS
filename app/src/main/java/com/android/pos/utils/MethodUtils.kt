@@ -35,6 +35,19 @@ class MethodUtils {
 
         }
 
+        fun roundOffAmount(price: Double): String {
+            return MainApplication.getInstance()!!.getText(R.string.symbole)
+                .toString() + String.format("%.2f", price)
+        }
+
+        fun roundOffAmountDouble(price: Double): Double {
+            return String.format("%.2f", price).toDouble()
+        }
+
+        fun roundOffAmountString(price: Double): String {
+            return String.format("%.2f", price)
+        }
+
         fun hideKeyboard(activity: Activity) {
             try {
                 val inputManager =

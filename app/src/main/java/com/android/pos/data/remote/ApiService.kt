@@ -31,6 +31,7 @@ import com.android.pos.data.remote.Constants.MODIFIER_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.NOTES
 import com.android.pos.data.remote.Constants.NOTES_ACTIVE
 import com.android.pos.data.remote.Constants.NOTE_UPDATE_DELETE
+import com.android.pos.data.remote.Constants.ORDERS
 import com.android.pos.data.remote.Constants.REORDER_CATEGORY
 import com.android.pos.data.remote.Constants.REORDER_ITEM
 import com.android.pos.data.remote.Constants.REORDER_MODIFIER
@@ -365,4 +366,7 @@ interface ApiService {
         @Query("old_position") old_position: Int,
         @Query("new_position") new_position: Int,
     ): BaseResponse
+
+    @POST(ORDERS)
+    suspend fun createOrder(@Body orderRequestModel: OrderRequestModel): BaseResponse
 }

@@ -205,4 +205,7 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
 
     suspend fun reOrderModifierCall(id: Int, oldPos: Int, newPos: Int) =
         getResult { apiService.reOrderModifier(id, oldPos, newPos) }
+
+    suspend fun createOrder(data: OrderRequestModel) =
+        getResult { apiService.createOrder(data) }
 }

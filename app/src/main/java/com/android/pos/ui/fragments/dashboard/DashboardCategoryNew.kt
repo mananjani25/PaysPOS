@@ -28,7 +28,6 @@ import com.android.pos.data.entities.*
 import com.android.pos.data.model.CategorySearchData
 import com.android.pos.data.model.CategoryTabModel
 import com.android.pos.data.model.CustomerListResponse
-import com.android.pos.data.model.responseModel.GetServiceChargeResponse
 import com.android.pos.data.remote.Constants.ADD
 import com.android.pos.data.remote.Constants.CUSTOMER_NAME
 import com.android.pos.data.remote.Constants.DELETE
@@ -39,7 +38,6 @@ import com.android.pos.data.remote.Constants.VERTICAL
 import com.android.pos.databinding.FragmentDashboardCategoryNewBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.*
-import com.android.pos.ui.fragments.settings.tax.TaxListViewModel
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.SwipeHelper
@@ -58,7 +56,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     private var serviceChargesList: List<TbServiceCharge>? = null
     private var singleItem: TbItem? = null
-    private var cartList: List<CartModel>? = null
+    private var cartList: List<CartModel> = emptyList()
     private lateinit var binding: FragmentDashboardCategoryNewBinding
 
     private val TAG = "DashboardCategoryNew"
@@ -181,6 +179,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             bundle.putDouble("subTotalPrice", viewModel.subTotalPrice)
             bundle.putDouble("totalTax", viewModel.totalTax)
             bundle.putDouble("totalServiceCharge", viewModel.totalServiceCharge)
+            bundle.putParcelable("cartList", cartList[0])
 
             findNavController().navigate(
                 R.id.action_dashboardCategoryNew_to_paymentFragment,
@@ -292,20 +291,15 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         viewModel.mAllWords.observe(
             requireActivity(), {
                 cartList = it
-                if (cartList?.isNotEmpty()!!) {
+                if (cartList.isNotEmpty()) {
                     binding.layoutCart.llCart.visibility = View.VISIBLE
                     binding.lltakeout.visibility = View.GONE
-//                    cartList?.get(0)?.items?.forEach {
-//                        Log.e(TAG,"TaxList  ${Gson().toJson(viewModel.taxList.value)}")
-//                        it.taxes = viewModel.taxList.value
-//                    }
 
-                    cartAdapter.addCart(cartList?.get(0)?.items)
+                    cartAdapter.addCart(cartList[0].items)
 
                     viewModel.itemCalculation(
-                        cartList?.get(0)?.items,
-                        binding.layoutCart.txtTotalAmount,
-                        serviceChargesList
+                        cartList,
+                        binding.layoutCart.txtTotalAmount
                     )
                 } else {
                     binding.lltakeout.visibility = View.VISIBLE
@@ -850,6 +844,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         if (item.modifier_set_ids.isEmpty()) {
             item.itemQuantity = item.itemQuantity + 1
+            if (cartList.isEmpty())
+                viewModel.setServiceCharges(serviceChargesList)
             viewModel.cartLogic(cartList, item, ADD)
         } else {
 
@@ -953,7 +949,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     data.modifiers = modifiers
                 }
 
-
+                if (cartList.isEmpty())
+                    viewModel.setServiceCharges(serviceChargesList)
 
                 if (isItemClick) {
                     viewModel.cartLogic(cartList, data, ADD)
