@@ -24,10 +24,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
-import com.android.pos.data.entities.CartModel
-import com.android.pos.data.entities.CategoryWithInventory
-import com.android.pos.data.entities.Modifier
-import com.android.pos.data.entities.TbItem
+import com.android.pos.data.entities.*
 import com.android.pos.data.model.CategorySearchData
 import com.android.pos.data.model.CategoryTabModel
 import com.android.pos.data.model.CustomerListResponse
@@ -59,7 +56,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, MyCallback {
 
-    private var serviceChargesList: List<GetServiceChargeResponse.Data>? = null
+    private var serviceChargesList: List<TbServiceCharge>? = null
     private var singleItem: TbItem? = null
     private var cartList: List<CartModel>? = null
     private lateinit var binding: FragmentDashboardCategoryNewBinding
@@ -172,7 +169,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         }
 
-        binding.layoutCart.imgInfo.setOnClickListener {
+        binding.layoutCart.llInfo.setOnClickListener {
 
             showPopupWindow(it)
         }
@@ -189,6 +186,11 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 R.id.action_dashboardCategoryNew_to_paymentFragment,
                 bundle
             )
+        }
+
+        binding.layoutCart.llCartMenu.setOnClickListener {
+
+
         }
     }
 
@@ -938,15 +940,21 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
 
             if (minMaxValidationCheck(adapter)) {
+                dialog.dismiss()
+
+                data.note = edtNote.text.toString().trim()
+                data.itemQuantity = txtQty.text.toString().toInt()
 
                 val modifiers = adapter?.getSelectedModifiers()
                 if (modifiers != null) {
+                    modifiers.forEach {
+                        it.itemQuantity = data.itemQuantity
+                    }
                     data.modifiers = modifiers
                 }
 
-                dialog.dismiss()
-                data.note = edtNote.text.toString().trim()
-                data.itemQuantity = txtQty.text.toString().toInt()
+
+
                 if (isItemClick) {
                     viewModel.cartLogic(cartList, data, ADD)
                 } else

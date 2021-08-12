@@ -1,20 +1,14 @@
 package com.android.pos.data.repositories
 
-import androidx.lifecycle.LiveData
 import com.android.pos.data.db.AppDatabase
-import com.android.pos.data.db.IDataManager
 import com.android.pos.data.entities.TaxData
-import com.android.pos.data.entities.TbCategory
+import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.entities.TeamRole
 import com.android.pos.data.model.requestModel.CreateServiceChargeRequestModel
 import com.android.pos.data.model.requestModel.CreateTaxRequestModel
 import com.android.pos.data.model.requestModel.CreateTeamRoleRequestModel
-import com.android.pos.data.model.responseModel.GetServiceChargeResponse
-import com.android.pos.data.model.responseModel.GetTaxResponse
 import com.android.pos.data.remote.ApiHelper
 import com.android.pos.utils.performGetOperation
-import com.android.pos.utils.performGetOperationNew
-import com.android.pos.utils.statusUtils.Resource
 import javax.inject.Inject
 
 class TaxServiceChargeRepository @Inject constructor(
@@ -56,10 +50,14 @@ class TaxServiceChargeRepository @Inject constructor(
             networkCall = { apiHelperNew.getServiceChargeList() },
             saveCallResult = { appDatabase.serviceChargeDao().addAllServiceCharge(it.data) })
 
+    suspend fun addServiceCharges(serviceChargeList: List<TbServiceCharge>) {
+        appDatabase.serviceChargeDao().addServiceCharges(serviceChargeList)
+    }
+
     suspend fun createServiceCharge(data: CreateServiceChargeRequestModel) =
         apiHelperNew.createServiceCharge(data)
 
-    suspend fun createServiceChargeDatabase(data: GetServiceChargeResponse.Data) =
+    suspend fun createServiceChargeDatabase(data: TbServiceCharge) =
         appDatabase.serviceChargeDao().addServiceCharge(data)
 
     suspend fun updateServiceCharge(discountId: Int, data: CreateServiceChargeRequestModel) =

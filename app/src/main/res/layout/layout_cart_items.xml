@@ -10,17 +10,35 @@
         android:orientation="vertical"
         android:visibility="visible">
 
-        <androidx.appcompat.widget.AppCompatTextView
-            style="@style/CustomFontBold"
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/llCartMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/color"
-            android:gravity="center"
-            android:padding="@dimen/_5sdp"
-            android:text="@string/take_out_order"
-            android:textColor="@color/txtColor"
-            android:textSize="@dimen/_6mdpi"
-            app:textAllCaps="false" />
+            android:orientation="horizontal">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/CustomFontBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+
+                android:layout_weight="1"
+                android:gravity="center"
+                android:padding="@dimen/_5sdp"
+                android:text="@string/take_out_order"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_6mdpi"
+                app:textAllCaps="false" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:padding="@dimen/_4sdp"
+                android:visibility="gone"
+                app:srcCompat="@drawable/ic_dots" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/llShowMenu"
@@ -33,11 +51,11 @@
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtCustomerName"
                 style="@style/CustomFontSemiBold"
-                android:background="?attr/selectableItemBackground"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_weight="1"
+                android:background="?attr/selectableItemBackground"
                 android:gravity="start"
                 android:padding="@dimen/_6sdp"
                 android:text="@string/add_customer"
@@ -127,21 +145,36 @@
             android:paddingEnd="@dimen/_3sdp"
             android:paddingBottom="@dimen/_3sdp">
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/txtSave"
-                style="@style/CustomFontBold"
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/llInfo"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginEnd="@dimen/_2sdp"
                 android:layout_weight="1"
                 android:background="@drawable/background_button_menu"
                 android:gravity="center"
-                android:padding="@dimen/_5sdp"
-                android:text="@string/save"
-                android:textColor="@color/viewTextColor"
-                android:textSize="@dimen/_6mdpi"
-                app:textAllCaps="false" />
+                android:orientation="horizontal">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtSave"
+                    style="@style/CustomFontBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:padding="@dimen/_5sdp"
+                    android:text="Info"
+                    android:textColor="@color/viewTextColor"
+                    android:textSize="@dimen/_6mdpi"
+                    app:textAllCaps="false" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    app:srcCompat="@drawable/ic_info" />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
 
 
             <RelativeLayout
@@ -183,15 +216,6 @@
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/imgInfo"
-                    android:layout_width="@dimen/_8sdp"
-                    android:layout_height="@dimen/_8sdp"
-                    android:layout_alignParentEnd="true"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="@dimen/_2sdp"
-                    android:layout_marginEnd="@dimen/_2sdp"
-                    app:srcCompat="@drawable/ic_info" />
             </RelativeLayout>
 
 

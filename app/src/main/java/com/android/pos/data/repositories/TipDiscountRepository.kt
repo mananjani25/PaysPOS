@@ -1,17 +1,12 @@
 package com.android.pos.data.repositories
 
-import androidx.lifecycle.LiveData
 import com.android.pos.data.db.AppDatabase
-import com.android.pos.data.db.IDataManager
-import com.android.pos.data.entities.TbCategory
+import com.android.pos.data.entities.TbDiscount
 import com.android.pos.data.model.requestModel.CreateDiscountRequestModel
 import com.android.pos.data.model.requestModel.CreateTipRequestModel
-import com.android.pos.data.model.responseModel.GetDiscountResponse
 import com.android.pos.data.model.responseModel.GetTipReponse
 import com.android.pos.data.remote.ApiHelper
 import com.android.pos.utils.performGetOperation
-import com.android.pos.utils.performGetOperationNew
-import com.android.pos.utils.statusUtils.Resource
 import javax.inject.Inject
 
 class TipDiscountRepository @Inject constructor(
@@ -48,9 +43,13 @@ class TipDiscountRepository @Inject constructor(
         networkCall = { apiHelperNew.getDiscountsList() },
         saveCallResult = { appDatabase.discountDao().addAllDiscount(it.data) })
 
+    suspend fun addDiscount(list: List<TbDiscount>) {
+        appDatabase.discountDao().addDiscounts(list)
+    }
+
     suspend fun createDiscount(data: CreateDiscountRequestModel) = apiHelperNew.createDiscount(data)
 
-    suspend fun createDiscountDatabase(data: GetDiscountResponse.Data) =
+    suspend fun createDiscountDatabase(data: TbDiscount) =
         appDatabase.discountDao().addDiscount(data)
 
     suspend fun updateDiscount(discountId: Int, data: CreateDiscountRequestModel) =
