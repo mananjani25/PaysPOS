@@ -197,11 +197,15 @@ class PosRepository @Inject constructor(
         networkCall = { apiHelperNew.employeesList(locationId) },
         saveCallResult = { appDatabase.employeeDao().addAllEmployee(it.data.employees) })
 
-    fun employeesTimeSheet(startDate: String, endDate: String, teamRoleId: Int) =
-        performGetOperationNew(networkCall = { apiHelperNew.employeesTimeSheet(startDate, endDate, teamRoleId) })
+    /*fun employeesTimeSheet(startDate: String, endDate: String, teamRoleId: String) =
+        performGetOperationNew(networkCall = { apiHelperNew.employeesTimeSheet(startDate, endDate, teamRoleId) })*/
 
-    fun employeesTimeSheetDetails(startDate: String, endDate: String, teamId: Int) =
-        performGetOperationNew(networkCall = { apiHelperNew.employeesTimeSheetDetails(startDate, endDate, teamId) })
+    suspend fun employeesTimeSheet(startDate: String, endDate: String, teamRoleId: String) = apiHelperNew.employeesTimeSheet(startDate, endDate, teamRoleId)
+
+    suspend fun employeesTimeSheetDetails(startDate: String, endDate: String, teamRoleId: String) = apiHelperNew.employeesTimeSheetDetails(startDate, endDate, teamRoleId)
+
+    /*fun employeesTimeSheetDetails(startDate: String, endDate: String, teamId: String) =
+        performGetOperationNew(networkCall = { apiHelperNew.employeesTimeSheetDetails(startDate, endDate, teamId) })*/
 
     suspend fun clearCustomerTb() = appDatabase.customerDao().deleteCustomerTb()
 

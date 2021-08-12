@@ -153,7 +153,7 @@ class AssignRoleTeamMemberListDialog : DialogFragment(), View.OnClickListener {
                         resource.data?.let { employeeList ->
                             adapter.add(employeeList)
                             roleList = arguments?.getParcelable("teamRole")!!
-                            adapter.selectedItemFromEdit(roleList.employees)
+                            adapter.selectedItemFromEdit(roleList.employees!!)
 
                         }
                     }

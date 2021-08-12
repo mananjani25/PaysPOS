@@ -19,6 +19,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:onClick="@{() -> viewModel.employeeId(itemSheetModel)}"
         android:orientation="vertical">
 
         <LinearLayout
@@ -46,7 +47,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
                 android:gravity="center"
-                android:text="@{itemSheetModel.totalHours}"
+                android:text="@{``+itemSheetModel.totalHours}"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi" />
 
@@ -56,7 +57,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="@{itemSheetModel.totalWage}"
+                android:text="@{``+itemSheetModel.totalWage}"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi" />
 

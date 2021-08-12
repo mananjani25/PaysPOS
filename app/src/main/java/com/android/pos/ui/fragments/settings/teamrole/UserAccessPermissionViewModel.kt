@@ -87,7 +87,7 @@ class UserAccessPermissionViewModel @Inject constructor(
     fun setUserPermissionData(userPermissionData: TeamRole) {
         createUserPermission.value?.name = userPermissionData.name
         selectedEmployeeListToFeed.clear()
-        selectedEmployeeListToFeed.addAll(userPermissionData.employees)
+        selectedEmployeeListToFeed.addAll(userPermissionData.employees!!)
         _selectedEmployeeList.value = selectedEmployeeListToFeed
 
         val myCollection = allEmployeeListToFeed
@@ -108,7 +108,7 @@ class UserAccessPermissionViewModel @Inject constructor(
 
     fun setModuleData(userPermissionData: TeamRole) {
         selectedModuleListToFeed.clear()
-        selectedModuleListToFeed.addAll(userPermissionData.modulePermission)
+        selectedModuleListToFeed.addAll(userPermissionData.modulePermission!!)
         _selectedModuleList.value = selectedModuleListToFeed
 
         val myCollection = allModuleListToFeed
@@ -226,7 +226,7 @@ class UserAccessPermissionViewModel @Inject constructor(
             employeeIds = idList
 
             val moduleidList = ArrayList<Int>()
-            teamRole.modulePermission.forEach {
+            teamRole.modulePermission?.forEach {
                 moduleidList.add(it.id)
             }
             moduleIds = moduleidList

@@ -9,23 +9,24 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import com.android.pos.R
-import com.android.pos.data.model.SingleMemberTimeSheetListModel
+import com.android.pos.data.model.responseModel.GetEmployeesTimeSheetResponse
 import com.android.pos.databinding.FragmentSingleTeamMemberTimeSheetBinding
 import com.android.pos.ui.adapter.SingleTeamMemberTimeSheetAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 @AndroidEntryPoint
 class SingleTeamMemberTimeSheetFragment : Fragment() {
 
+    private lateinit var employeeModel: GetEmployeesTimeSheetResponse.Data
     private lateinit var binding: FragmentSingleTeamMemberTimeSheetBinding
     private lateinit var teamMemberTimeSheetAdapter: SingleTeamMemberTimeSheetAdapter
-    val timeSheet = ArrayList<SingleMemberTimeSheetListModel>()
     private val viewModel by viewModels<TeamMemberSheetViewModel>()
-    private lateinit var date: DatePickerDialog.OnDateSetListener
+    private lateinit var startDate: DatePickerDialog.OnDateSetListener
+    private lateinit var endDate: DatePickerDialog.OnDateSetListener
     val myCalendar = Calendar.getInstance()
+    val myCalendar1 = Calendar.getInstance()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,54 +39,98 @@ class SingleTeamMemberTimeSheetFragment : Fragment() {
                 container,
                 false
             )
-
-        for (i in 1..5) {
-            timeSheet.add(
-                SingleMemberTimeSheetListModel(
-                    "John Smith",
-                    "08:30",
-                    "$10.00",
-                    "08:30",
-                    "08:30",
-                    "08:30"
-                )
-            )
-        }
-
-        teamMemberTimeSheetAdapter = SingleTeamMemberTimeSheetAdapter(timeSheet)
-        binding.rvSingleTimeSheet.adapter = teamMemberTimeSheetAdapter
+        employeeModel = arguments?.getParcelable("employeeModel")!!
 
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
 
-        date =
+
+        startDatePickerObserver()
+        endDatePickerObserver()
+
+        setUpRecyclerView()
+        getEmployeesTimeSheetDetailsObserver()
+
+        binding.tvEmployeeName.text = employeeModel.teamName
+        binding.tvEmployeeId.text = "Employee ID: #" + employeeModel.teamId
+        binding.includeView.spRoles.visibility = View.GONE
+        binding.includeView.edtSearch.visibility = View.GONE
+
+
+        startDate =
             DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
                 myCalendar.set(Calendar.YEAR, year)
                 myCalendar.set(Calendar.MONTH, monthOfYear)
                 myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-                viewModel.updateLabel(myCalendar)
 
+                viewModel.updateLabel(myCalendar)
+                viewModel.apiCallTimeSheetDetails(employeeModel.teamId.toString())
+            }
+
+        endDate =
+            DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
+                myCalendar1.set(Calendar.YEAR, year)
+                myCalendar1.set(Calendar.MONTH, monthOfYear)
+                myCalendar1.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+
+                viewModel.updateLabel(myCalendar1)
+                viewModel.apiCallTimeSheetDetails(employeeModel.teamId.toString())
             }
 
         viewModel.setCurrentDate(myCalendar)
 
-
-        datePickerObserver()
+        viewModel.apiCallTimeSheetDetails(employeeModel.teamId.toString())
 
         return binding.root
     }
 
-    private fun datePickerObserver() {
-        viewModel.dateSelection.observe(requireActivity(), { event ->
+    private fun startDatePickerObserver() {
+        viewModel.startDateSelection.observe(requireActivity(), { event ->
             event.getContentIfNotHandled()?.let {
 
                 DatePickerDialog(
-                    requireActivity(), date, myCalendar
+                    requireActivity(), startDate, myCalendar
                         .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
                     myCalendar.get(Calendar.DAY_OF_MONTH)
+
+                ).show()
+            }
+
+        })
+    }
+
+    private fun endDatePickerObserver() {
+        viewModel.endDateSelection.observe(requireActivity(), { event ->
+            event.getContentIfNotHandled()?.let {
+
+                DatePickerDialog(
+                    requireActivity(), endDate, myCalendar1
+                        .get(Calendar.YEAR), myCalendar1.get(Calendar.MONTH),
+                    myCalendar1.get(Calendar.DAY_OF_MONTH)
+
                 ).show()
             }
         })
     }
+
+
+    private fun setUpRecyclerView() {
+        teamMemberTimeSheetAdapter = SingleTeamMemberTimeSheetAdapter()
+        binding.rvSingleTimeSheet.adapter = teamMemberTimeSheetAdapter
+    }
+
+    private fun getEmployeesTimeSheetDetailsObserver() {
+        viewModel.timeSheetDetails.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let { timeSheet ->
+                binding.rvSingleTimeSheet.visibility = View.VISIBLE
+                teamMemberTimeSheetAdapter.teamTimesheetDetailsList(
+                    timeSheet.data
+                )
+
+            }
+        })
+
+    }
+
 
 }

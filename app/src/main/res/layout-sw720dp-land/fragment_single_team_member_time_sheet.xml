@@ -27,11 +27,11 @@
 
 
         <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvEmployeeName"
             style="@style/CustomFontBold"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="John Smith Time Sheet"
             android:textColor="@color/txtColor"
             android:textSize="@dimen/_10mdpi" />
 
@@ -43,11 +43,11 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontMediumStyle"
+                android:id="@+id/tvEmployeeId"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/_5sdp"
                 android:gravity="center"
-                android:text="Employee ID:#4324"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi" />
 

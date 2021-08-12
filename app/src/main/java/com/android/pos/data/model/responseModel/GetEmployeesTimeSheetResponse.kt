@@ -1,8 +1,11 @@
 package com.android.pos.data.model.responseModel
 
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class GetEmployeesTimeSheetResponse(
     @SerializedName("data")
     val `data`: List<Data>,
@@ -12,7 +15,8 @@ data class GetEmployeesTimeSheetResponse(
     val status: Int,
     @SerializedName("type")
     val type: String
-) {
+) : Parcelable {
+    @Parcelize
     data class Data(
         @SerializedName("data_of_week")
         val dataOfWeek: DataOfWeek,
@@ -26,7 +30,8 @@ data class GetEmployeesTimeSheetResponse(
         val totalHours: String,
         @SerializedName("total_wage")
         val totalWage: Int
-    ) {
+    ) : Parcelable {
+        @Parcelize
         data class DataOfWeek(
             @SerializedName("Fri")
             val fri: String,
@@ -42,6 +47,6 @@ data class GetEmployeesTimeSheetResponse(
             val tue: String,
             @SerializedName("Wed")
             val wed: String
-        )
+        ) : Parcelable
     }
 }

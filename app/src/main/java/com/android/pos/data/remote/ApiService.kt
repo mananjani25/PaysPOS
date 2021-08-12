@@ -242,7 +242,7 @@ interface ApiService {
     suspend fun employeesTimeSheet(
         @Query("start_date") startDate: String,
         @Query("end_date") endDate: String,
-        @Query("team_role_id") teamRoleId: Int,
+        @Query("team_role_id") teamRoleId: String,
 
         ): GetEmployeesTimeSheetResponse
 
@@ -250,8 +250,8 @@ interface ApiService {
     suspend fun employeesTimeSheetDetails(
         @Query("start_date") startDate: String,
         @Query("end_date") endDate: String,
-        @Query("team_id") teamId: Int,
-    ): EmployeeListResponse
+        @Query("team_id") teamId: String,
+    ): GetEmployeeTimeSheetDetailsResponse
 
     @POST(EMPLOYEES)
     suspend fun createEmployee(@Body createEmployeeRequestModel: CreateEmployeeRequestModel): CreateEmployeeResponse
