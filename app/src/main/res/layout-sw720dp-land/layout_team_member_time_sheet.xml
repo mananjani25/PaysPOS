@@ -161,7 +161,7 @@
             </LinearLayout>
 
             <Spinner
-                android:id="@+id/spinTerminal"
+                android:id="@+id/spRoles"
                 android:layout_width="200dp"
                 android:layout_height="50dp"
                 android:layout_gravity="center"

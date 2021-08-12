@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.android.pos.data.model.responseModel.BaseResponse
+import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.TaxServiceChargeRepository
 import com.android.pos.utils.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,6 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TeamMemberSheetViewModel @Inject constructor(
+    private val posRepository: PosRepository,
     private val taxServiceChargeRepository: TaxServiceChargeRepository
 ) : ViewModel() {
 
@@ -35,12 +37,8 @@ class TeamMemberSheetViewModel @Inject constructor(
     private val _dateSelection = MutableLiveData<Event<Unit>>()
     val dateSelection: LiveData<Event<Unit>> = _dateSelection
 
-    /*init {
-        val myFormat = "dd/MM/yyyy" //In which you need put here
-        val sdf = SimpleDateFormat(myFormat, Locale.getDefault())
-        startDate.value = sdf.format(myCalendar.time)
-        endDate.value = sdf.format(myCalendar.time)
-    }*/
+    val getEmployeesTimeSheet = posRepository.employeesTimeSheet()
+    val getTeamRoleList = taxServiceChargeRepository.getTeamRoleList()
 
     fun setCurrentDate(myCalendar: Calendar) {
         val myFormat = "dd/MM/yyyy" //In which you need put here

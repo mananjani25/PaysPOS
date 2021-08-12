@@ -244,7 +244,7 @@ interface ApiService {
         @Query("end_date") endDate: String,
         @Query("team_role_id") teamRoleId: Int,
 
-        ): EmployeeListResponse
+        ): GetEmployeesTimeSheetResponse
 
     @GET(EMPLOYEES_TIMESHEET_DETAILS)
     suspend fun employeesTimeSheetDetails(

@@ -1,0 +1,47 @@
+package com.android.pos.data.model.responseModel
+
+
+import com.google.gson.annotations.SerializedName
+
+data class GetEmployeesTimeSheetResponse(
+    @SerializedName("data")
+    val `data`: List<Data>,
+    @SerializedName("message")
+    val message: String,
+    @SerializedName("status")
+    val status: Int,
+    @SerializedName("type")
+    val type: String
+) {
+    data class Data(
+        @SerializedName("data_of_week")
+        val dataOfWeek: DataOfWeek,
+        @SerializedName("team_id")
+        val teamId: Int,
+        @SerializedName("team_name")
+        val teamName: String,
+        @SerializedName("team_role")
+        val teamRole: Int,
+        @SerializedName("total_hours")
+        val totalHours: String,
+        @SerializedName("total_wage")
+        val totalWage: Int
+    ) {
+        data class DataOfWeek(
+            @SerializedName("Fri")
+            val fri: String,
+            @SerializedName("Mon")
+            val mon: String,
+            @SerializedName("Sat")
+            val sat: String,
+            @SerializedName("Sun")
+            val sun: String,
+            @SerializedName("Thu")
+            val thu: String,
+            @SerializedName("Tue")
+            val tue: String,
+            @SerializedName("Wed")
+            val wed: String
+        )
+    }
+}
