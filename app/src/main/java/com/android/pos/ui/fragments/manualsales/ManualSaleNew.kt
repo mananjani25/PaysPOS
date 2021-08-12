@@ -85,6 +85,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
         dashboardViewModel.taxList.observe(requireActivity(), {
             Log.e(TAG, "getTaxList:  ${Gson().toJson(it.data)}")
             taxList = it.data
+            getCartList()
         })
     }
 
@@ -430,7 +431,14 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
 
                                 viewModel.cartLogic(cartList, cartModel, Constants.UPDATE)
 
-                            } else {
+                            } else if (cartAdapter.getItem(pos).price > result.percentage) {
+                                val cartModel = cartAdapter.getItem(pos)
+                                cartModel.discountPrice = result.percentage
+                                cartModel.isManualSales = true
+                                viewModel.cartLogic(cartList, cartModel, Constants.UPDATE)
+
+
+
                                 Log.e(TAG, "DiscountInDollar")
                             }
 
@@ -549,12 +557,26 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
             dialog.dismiss()
             var itemCost = (model.price / model.itemQuantity).toDouble()
 
+            Log.e(TAG, "discountOriginal ${model.discountPrice}")
+            if (model.discountPrice != 0.0) {
+                val dis = model.discountPrice / model.itemQuantity
+                Log.e(TAG, "discountdis:  ${dis}")
+                model.discountPrice =
+                    String.format("%.2f", (dis * txtQty.text.toString().toInt())).toDouble()
+                Log.e(
+                    TAG,
+                    "discountCountPrice  ${
+                        String.format("%.2f", (dis * model.itemQuantity)).toDouble()
+                    }"
+                )
+            }
 
             model.note = edtNote.text.toString().trim()
             model.itemQuantity = txtQty.text.toString().toInt()
 
             model.price = String.format("%.2f", (itemCost * model.itemQuantity)).toDouble()
 
+            Log.e(TAG, "discountPriceDialog ${model.discountPrice}")
 
 
             viewModel.cartLogic(cartList, model, Constants.UPDATE)

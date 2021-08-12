@@ -198,6 +198,7 @@
                     android:id="@+id/btnAddDiscount"
                     style="@style/CustomFontBold"
                     android:layout_width="match_parent"
+                    android:visibility="gone"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginTop="@dimen/_10sdp"

@@ -23,6 +23,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
     private var cartList: CartModel? = null
     private var splitValue: Int = -1
     private var totalPrice: Double = 0.0
+    private var totalDiscount: Double = 0.0
     private var subTotalPrice: Double = 0.0
     private var totalTax: Double = 0.0
     private var totalServiceCharge: Double = 0.0
@@ -82,11 +83,17 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         subTotalPrice = requireArguments().getDouble("subTotalPrice")
         totalTax = requireArguments().getDouble("totalTax")
         totalServiceCharge = requireArguments().getDouble("totalServiceCharge")
+        totalDiscount = requireArguments().getDouble("totalDiscount")
 
         MethodUtils.setPriceTextView(binding.txtTotalAmount, totalPrice)
         MethodUtils.setPriceTextView(binding.txtSubTotal, subTotalPrice)
         MethodUtils.setPriceTextView(binding.txtTax, totalTax)
         MethodUtils.setPriceTextView(binding.txtTotal, totalPrice)
+        MethodUtils.setPriceTextView(binding.txtDiscount, totalDiscount)
+        MethodUtils.setPriceTextView(binding.txtServiceCharge, totalServiceCharge)
+        if (totalDiscount == 0.0) {
+            binding.linearDiscount.visibility = View.GONE
+        }
 
 
         binding.txtSplitAmount.setOnClickListener(this)

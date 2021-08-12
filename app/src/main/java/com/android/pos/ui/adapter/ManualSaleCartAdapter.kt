@@ -33,6 +33,7 @@ class ManualSaleCartAdapter : RecyclerView.Adapter<ManualSaleCartAdapter.MyViewH
                 val dPrice = list[pos].price - list[pos].discountPrice
                 Log.e(TAG, "PriceOriginal ${list[pos].price}")
                 Log.e(TAG, "PriceDiscount ${list[pos].discountPrice}")
+
                 binding.txtDiscountPrice.setText("$" + dPrice)
             } else {
                 binding.txtItemPrice.setPaintFlags(0)
