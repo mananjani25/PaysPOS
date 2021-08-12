@@ -24,10 +24,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
-import com.android.pos.data.entities.CartModel
-import com.android.pos.data.entities.CategoryWithInventory
-import com.android.pos.data.entities.Modifier
-import com.android.pos.data.entities.TbItem
+import com.android.pos.data.entities.*
 import com.android.pos.data.model.CategorySearchData
 import com.android.pos.data.model.CategoryTabModel
 import com.android.pos.data.model.CustomerListResponse
@@ -59,7 +56,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, MyCallback {
 
-    private var serviceChargesList: List<GetServiceChargeResponse.Data>? = null
+    private var serviceChargesList: List<TbServiceCharge>? = null
     private var singleItem: TbItem? = null
     private var cartList: List<CartModel>? = null
     private lateinit var binding: FragmentDashboardCategoryNewBinding

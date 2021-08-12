@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
+import com.android.pos.data.entities.TbDiscount
 import com.android.pos.data.model.responseModel.GetDiscountResponse
 import com.android.pos.databinding.ViewDiscountItemBinding
 import com.android.pos.ui.fragments.settings.discount.DiscountListViewModel
@@ -11,7 +12,7 @@ import com.android.pos.ui.fragments.settings.discount.DiscountListViewModel
 class DiscountListAdapter(val viewModel: DiscountListViewModel) :
     RecyclerView.Adapter<DiscountListAdapter.MyViewHolder>() {
 
-    var discountList = ArrayList<GetDiscountResponse.Data>()
+    var discountList = ArrayList<TbDiscount>()
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -29,9 +30,16 @@ class DiscountListAdapter(val viewModel: DiscountListViewModel) :
         itemBinding.discountModel = discountList[position]
         val context = itemBinding.root.context
         if (discountList[position].discountType == context.getString(R.string.disc_percentage)) {
-            itemBinding.tvRate.setText("" + String.format(context.getString(R.string.format),discountList[position].percentage) +  " "+context.getString(R.string.percentage_symbol))
+            itemBinding.tvRate.text =
+                "" + String.format(
+                    context.getString(R.string.format),
+                    discountList[position].percentage
+                ) + " " + context.getString(R.string.percentage_symbol)
         } else {
-            itemBinding.tvRate.setText(context.getString(R.string.symbole) +  " "+String.format(context.getString(R.string.format),discountList[position].percentage))
+            itemBinding.tvRate.text = context.getString(R.string.symbole) + " " + String.format(
+                context.getString(R.string.format),
+                discountList[position].percentage
+            )
         }
 
         itemBinding.viewModel = viewModel
@@ -42,7 +50,7 @@ class DiscountListAdapter(val viewModel: DiscountListViewModel) :
     override fun getItemCount() = discountList.size
 
 
-    fun addDiscount(discountList: List<GetDiscountResponse.Data>) {
+    fun addDiscount(discountList: List<TbDiscount>) {
 
         this.discountList.apply {
             clear()
@@ -50,7 +58,7 @@ class DiscountListAdapter(val viewModel: DiscountListViewModel) :
         }
     }
 
-    fun getItem(position: Int): GetDiscountResponse.Data {
+    fun getItem(position: Int): TbDiscount {
         return discountList[position]
     }
 

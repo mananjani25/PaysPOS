@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.android.pos.data.entities.TbDiscount
 import com.android.pos.data.model.responseModel.CreateDiscountResponse
 import com.android.pos.data.model.responseModel.CreateTaxResponse
 import com.android.pos.data.model.responseModel.GetDiscountResponse
@@ -34,7 +35,7 @@ class DiscountListViewModel @Inject constructor(
 
     val getDiscountList = tipDiscountRepository.getDiscountsList()
 
-    fun isDiscountActive(discountDataItem: GetDiscountResponse.Data) {
+    fun isDiscountActive(discountDataItem: TbDiscount) {
 
         // _showProgress.value = Event(true)
 

@@ -11,6 +11,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
+import com.android.pos.data.entities.TbDiscount
 import com.android.pos.data.model.responseModel.GetDiscountResponse
 import com.android.pos.databinding.DiscountFragmentBinding
 import com.android.pos.ui.adapter.DiscountListAdapter
@@ -30,10 +31,10 @@ class DiscountList : Fragment() {
     private lateinit var binding: DiscountFragmentBinding
 
     private var position: Int = -1
-    private lateinit var discountListUpdateDelete: ArrayList<GetDiscountResponse.Data>
+    private lateinit var discountListUpdateDelete: ArrayList<TbDiscount>
     private val viewModel by activityViewModels<DiscountListViewModel>()
     private lateinit var discountListadapter: DiscountListAdapter
-    private lateinit var discountObject: GetDiscountResponse.Data
+    private lateinit var discountObject: TbDiscount
 
 
     override fun onCreateView(
@@ -167,8 +168,8 @@ class DiscountList : Fragment() {
 
     }
 
-    private fun setTaxData(taxList: List<GetDiscountResponse.Data>) {
-        discountListUpdateDelete = taxList as ArrayList<GetDiscountResponse.Data>
+    private fun setTaxData(taxList: List<TbDiscount>) {
+        discountListUpdateDelete = taxList as ArrayList<TbDiscount>
         discountListadapter.apply {
             addDiscount(taxList)
             notifyDataSetChanged()

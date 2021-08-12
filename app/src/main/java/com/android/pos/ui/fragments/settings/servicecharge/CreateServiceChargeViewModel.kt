@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.R
+import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.model.requestModel.CreateServiceChargeRequestModel
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.Constants.LOCATION_ID
@@ -53,7 +54,7 @@ class CreateServiceChargeViewModel @Inject constructor(
     }
 
 
-    fun setDiscountData(discountData: GetServiceChargeResponse.Data) {
+    fun setDiscountData(discountData: TbServiceCharge) {
         createServiceChargeDetails.value?.name = discountData.name
         createServiceChargeDetails.value?.percentage = discountData.percentage
         enableSerChargeViewModel = discountData.isEnabled
@@ -115,7 +116,7 @@ class CreateServiceChargeViewModel @Inject constructor(
 
                                 resource.data?.let { createServiceChargeResponse ->
 
-                                    val serviceCharge = GetServiceChargeResponse.Data(
+                                    val serviceCharge = TbServiceCharge(
                                         createdAt = createServiceChargeResponse.data.createdAt,
                                         id = createServiceChargeResponse.data.id,
                                         isEnabled = createServiceChargeResponse.data.isEnabled,

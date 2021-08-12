@@ -2,6 +2,8 @@ package com.android.pos.data.model.responseModel
 
 
 import com.android.pos.data.entities.TaxData
+import com.android.pos.data.entities.TbDiscount
+import com.android.pos.data.entities.TbServiceCharge
 import com.google.gson.annotations.SerializedName
 
 data class VenueDetailsResponse(
@@ -34,13 +36,17 @@ data class VenueDetailsResponse(
         @SerializedName("logo")
         val logo: Logo,
         @SerializedName("notes")
-        val notes: List<Note>,
+        val notes: List<NoteResponse.Data>,
         @SerializedName("phone_number")
         val phoneNumber: String,
         @SerializedName("start_time_for_report_summary")
         val startTimeForReportSummary: String,
         @SerializedName("taxes")
         val taxes: List<TaxData>,
+        @SerializedName("discounts")
+        val discounts: List<TbDiscount>,
+        @SerializedName("service_charges")
+        val service_charges: List<TbServiceCharge>,
         @SerializedName("terminals")
         val terminals: List<Terminal>,
         @SerializedName("time_zone")
@@ -120,24 +126,6 @@ data class VenueDetailsResponse(
                 val userId: Int
             )
         }
-
-        data class Note(
-            @SerializedName("created_at")
-            val createdAt: String,
-            @SerializedName("id")
-            val id: Int,
-            @SerializedName("is_active")
-            val isActive: Boolean,
-            @SerializedName("location_id")
-            val locationId: Int,
-            @SerializedName("name")
-            val name: String,
-            @SerializedName("sort")
-            val sort: Int,
-            @SerializedName("updated_at")
-            val updatedAt: String
-        )
-
 
         data class Terminal(
             @SerializedName("created_at")

@@ -8,7 +8,7 @@
 
         <variable
             name="serviceChargeModel"
-            type="com.android.pos.data.model.responseModel.GetServiceChargeResponse.Data" />
+            type="com.android.pos.data.entities.TbServiceCharge" />
 
         <variable
             name="viewModel"

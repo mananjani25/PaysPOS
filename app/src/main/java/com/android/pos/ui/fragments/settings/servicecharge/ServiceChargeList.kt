@@ -11,6 +11,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
+import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.model.responseModel.GetServiceChargeResponse
 import com.android.pos.databinding.ServiceChargeFragmentBinding
 import com.android.pos.ui.adapter.ServiceChargeListAdapter
@@ -30,10 +31,10 @@ class ServiceChargeList : Fragment() {
     private lateinit var binding: ServiceChargeFragmentBinding
 
     private var position: Int = -1
-    private lateinit var discountListUpdateDelete: ArrayList<GetServiceChargeResponse.Data>
+    private lateinit var discountListUpdateDelete: ArrayList<TbServiceCharge>
     private val viewModel by viewModels<ServiceChargeListViewModel>()
     private lateinit var serviceChargeListadapter: ServiceChargeListAdapter
-    private lateinit var serviceChargeObject: GetServiceChargeResponse.Data
+    private lateinit var serviceChargeObject: TbServiceCharge
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -163,8 +164,8 @@ class ServiceChargeList : Fragment() {
 
     }
 
-    private fun setTaxData(taxList: List<GetServiceChargeResponse.Data>) {
-        discountListUpdateDelete = taxList as ArrayList<GetServiceChargeResponse.Data>
+    private fun setTaxData(taxList: List<TbServiceCharge>) {
+        discountListUpdateDelete = taxList as ArrayList<TbServiceCharge>
         serviceChargeListadapter.apply {
             addServiceCharge(taxList)
             notifyDataSetChanged()
