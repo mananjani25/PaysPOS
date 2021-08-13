@@ -65,14 +65,17 @@ abstract class BaseDataSource {
 //                   {"data":{},"type":"Error","status":400,"message":"Invalid Email or Password"}
         try {
             val jsonObject = JSONObject(errorBody.trim())
-            return jsonObject.getString("message")
+            if (jsonObject.has("error")) {
+                return jsonObject.getString("error")
+            } else {
+                return jsonObject.getString("message")
+            }
+
         } catch (e: Exception) {
             e.printStackTrace()
-            val jsonObject = JSONObject(errorBody.trim())
-            return jsonObject.getString("error")
+            return "Server Error"
         }
 
-        return ""
     }
 
 }

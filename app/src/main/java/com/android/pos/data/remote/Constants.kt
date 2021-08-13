@@ -16,10 +16,12 @@ object Constants {
     const val CUSTOMER_NAME = "customer_name"
     const val SALE_CUSTOMER_NAME = "sale_customer_name"
     const val IS_CLOCKOUT = "isClockout"
-
+    const val EMPLOYEE_ID = "employee_id"
     const val UPDATE = "UPDATE"
     const val DELETE = "DELETE"
     const val ADD = "ADD"
+    const val ORDER_TYPE_ID = "order_type_id"
+    const val ORDER_TYPE_NAME = "order_type_name"
 
 
     //Api End Points
@@ -40,6 +42,7 @@ object Constants {
 
     const val SYNC_VENUE_DATA = "locations/sync_data"
     const val SYNC_VENUE_DETAILS = "locations/setting_data"
+    const val ORDER_TYPES = "order_types"
 
     const val TAXES = "taxes"
     const val TAX_UPDATE_DELETE = "taxes/{id}"

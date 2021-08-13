@@ -20,7 +20,7 @@ import com.android.pos.data.typeconvert.*
         GetTipReponse.Data::class, TbDiscount::class, NoteResponse.Data::class,
         TbServiceCharge::class, Employee::class, CartModel::class,
         CustomerListResponse.Data::class, ModifierSet::class, TeamRole::class, ItemModifierSet::class,
-        ModulePermission::class],
+        ModulePermission::class, TbOrderType::class],
     version = 2
 )
 @TypeConverters(
@@ -52,6 +52,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun moduleDao(): ModuleDao
     abstract fun modifierSetDao(): ModifierSetDao
     abstract fun itemModifierSetDao(): ItemModifierSetDao
+    abstract fun orderTypeDao(): OrderTypeDao
 
     companion object {
         @Volatile

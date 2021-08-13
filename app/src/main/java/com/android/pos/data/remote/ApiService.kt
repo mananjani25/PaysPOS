@@ -33,6 +33,7 @@ import com.android.pos.data.remote.Constants.NOTES
 import com.android.pos.data.remote.Constants.NOTES_ACTIVE
 import com.android.pos.data.remote.Constants.NOTE_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.ORDERS
+import com.android.pos.data.remote.Constants.ORDER_TYPES
 import com.android.pos.data.remote.Constants.REORDER_CATEGORY
 import com.android.pos.data.remote.Constants.REORDER_ITEM
 import com.android.pos.data.remote.Constants.REORDER_MODIFIER
@@ -65,7 +66,7 @@ interface ApiService {
 
     @FormUrlEncoded
     @POST(EMPLOYEE_CLOCK_IN)
-    suspend fun employeeClockIn(@FieldMap options: HashMap<String, String>): BaseResponse
+    suspend fun employeeClockIn(@FieldMap options: HashMap<String, String>): ClockInReponse
 
     @FormUrlEncoded
     @POST(EMPLOYEE_LOG_IN)
@@ -88,6 +89,9 @@ interface ApiService {
 
     @GET(SYNC_VENUE_DETAILS)
     suspend fun syncVenueDetails(): VenueDetailsResponse
+
+    @GET(ORDER_TYPES)
+    suspend fun orderTypes(): OrderTypeResponse
 
     /* @GET(EMPLOYEES)
      suspend fun employeesList(@Query("location_id") location_id: Int): EmployeeListResponse

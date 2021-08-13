@@ -218,6 +218,13 @@ class PosRepository @Inject constructor(
         networkCall = { apiHelperNew.customerList() },
         saveCallResult = { appDatabase.customerDao().addAllCustomer(it.data) })
 
+    fun orderTypes() =
+        performGetOperation(databaseQuery = { appDatabase.orderTypeDao().orderTypes },
+            networkCall = { apiHelperNew.orderTypes() },
+            saveCallResult = {
+                appDatabase.orderTypeDao().addAll(it.data)
+            })
+
     suspend fun createEmployee(data: CreateEmployeeRequestModel) = apiHelperNew.createEmployee(data)
 
     suspend fun createEmployeeDatabase(data: Employee) =
@@ -360,5 +367,7 @@ class PosRepository @Inject constructor(
         apiHelperNew.reOrderModifierCall(id, oldPos, newPos)
 
     suspend fun createOrder(data: OrderRequestModel) = apiHelperNew.createOrder(data)
+
+
 }
 
