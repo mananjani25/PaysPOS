@@ -32,7 +32,7 @@ class TbItem : Parcelable {
     var thumbImageUrl: String? = null
     var createdAt: String = ""
     var updatedAt: String = ""
-
+    var customItemID:Int = 0
     var categoryId: Int = 0
     var categoryName: String = ""
 
@@ -46,7 +46,11 @@ class TbItem : Parcelable {
     var modifier_set_ids: List<Int> = emptyList()
     var isTax: Boolean = false
     var modifiers: List<Modifier> = emptyList()
+
     var customItemCount: Int = 0
     var discountPrice: Double = 0.0
+    var isDiscountDefault = false
+    var discountId:Int = 0
+
 
 }

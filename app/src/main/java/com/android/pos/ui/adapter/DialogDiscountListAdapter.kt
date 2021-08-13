@@ -110,4 +110,15 @@ class DialogDiscountListAdapter : RecyclerView.Adapter<DialogDiscountListAdapter
         selectedPosition = -1
         notifyDataSetChanged()
     }
+
+    fun setSelected(id:Int?) {
+        for (i in 0 until discountList.size){
+            if (id == discountList[i].id){
+                selectedPosition = i
+                notifyDataSetChanged()
+            }
+        }
+
+    }
+
 }

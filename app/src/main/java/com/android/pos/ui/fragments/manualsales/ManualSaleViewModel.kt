@@ -70,35 +70,41 @@ class ManualSaleViewModel @Inject constructor(
             Log.e(TAG, "ViewModellist:  ${Gson().toJson(item)}")
             if (list != null && list.isNotEmpty()) {
                 if (type == ADD) {
-
-
                     item.itemQuantity = 1
                     list.add(item)
 
                 } else if (type == UPDATE) {
                     var index = -1
                     list.forEachIndexed { pos, tbItem ->
-                        if (tbItem.itemId == item.itemId) {
+                        if (tbItem.customItemID == item.customItemID) {
                             index = pos
                             return@forEachIndexed
                         }
 
                     }
                     Log.e(TAG, "indexValue ${index}")
+                    val model = cartList[0].items?.get(index)
                     if (index != -1) {
-                        val model = cartList[0].items?.get(index)
                         if (model != null) {
                             if (type == "UPDATE") {
                                 model.itemQuantity = item.itemQuantity
+                                model.discountPrice = item.discountPrice
+                                model.price = item.price
+                                model.discountId = item.discountId
+
+                                list.set(index, model)
+
+
                             } else {
                                 model.itemQuantity = model.itemQuantity++
+
                             }
-                            list.set(index, model)
+
                         }
-                    } else {
-//                        item.itemQuantity = 1
-//                        list.add(item)
                     }
+
+                    Log.e(TAG, "UPDATEINDEX  ${index}")
+
 
                 } else if (type == DELETE) {
                     list.remove(item)
@@ -118,7 +124,7 @@ class ManualSaleViewModel @Inject constructor(
                     deleteCart()
                 }
 
-*/
+    */
             }
 
         }
@@ -143,7 +149,7 @@ class ManualSaleViewModel @Inject constructor(
 
         itemList?.forEach { item ->
             totalCount += item.itemQuantity
-            subTotalPrice += item.price * item.itemQuantity
+            subTotalPrice += item.price
 
             item.taxes?.forEach { tax ->
                 if (tax.isActive) {

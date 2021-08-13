@@ -26,13 +26,17 @@ class ManualSaleCartAdapter : RecyclerView.Adapter<ManualSaleCartAdapter.MyViewH
         val txtItem: TextView = binding.root.findViewById(R.id.txtItem)
         fun bind(model: TbItem, pos: Int) {
             binding.txtQuantity.setText("x ${model.itemQuantity}")
+            binding.txtItemPrice.setText("$"+model.price)
 
             txtItem.setText(list[pos].name)
             if (list[pos].discountPrice != 0.0) {
                 binding.txtItemPrice.setPaintFlags(binding.txtItemPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG)
                 val dPrice = list[pos].price - list[pos].discountPrice
+
+
                 Log.e(TAG, "PriceOriginal ${list[pos].price}")
                 Log.e(TAG, "PriceDiscount ${list[pos].discountPrice}")
+
 
                 binding.txtDiscountPrice.setText("$" + dPrice)
             } else {

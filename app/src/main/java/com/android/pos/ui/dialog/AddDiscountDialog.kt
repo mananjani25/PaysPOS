@@ -11,6 +11,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
 import com.android.pos.data.entities.TbDiscount
+import com.android.pos.data.entities.TbItem
 import com.android.pos.databinding.DailogAddDiscountBinding
 import com.android.pos.ui.adapter.DialogDiscountListAdapter
 import com.android.pos.ui.fragments.settings.discount.DiscountListViewModel
@@ -27,6 +28,8 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
     private lateinit var discountAdapter: DialogDiscountListAdapter
     private var discountModel: TbDiscount? = null
     private var selectedListPos: Int = -1
+    private var isFromDetails = false
+    private var defaultModel: TbItem? = null
 
     companion object {
         fun newInstance() = AddDiscountDialog()
@@ -43,6 +46,12 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         setDiscountList()
         setupData()
         setKeyPad()
+        isFromDetails = requireArguments().getBoolean("isFromDetails", false)
+        defaultModel = requireArguments().getParcelable("model")
+        discountAdapter.setSelected(defaultModel?.discountId)
+        if (defaultModel?.discountId == 0){
+         binding.edtAmount.append(""+defaultModel?.discountPrice)
+        }
 
         binding.edtAmount.addTextChangedListener(AmountTextWatcher(binding.edtAmount, true))
 
@@ -134,20 +143,36 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         }
 
         binding.txtSave.setOnClickListener {
-            if (binding.edtAmount.text?.isNotEmpty() == true && !(binding.edtAmount.text.toString().equals("$0.00"))) {
+            if (binding.edtAmount.text?.isNotEmpty() == true && !(binding.edtAmount.text.toString()
+                    .equals("$0.00"))
+            ) {
                 val replaceCurrency = binding.edtAmount.text.toString().replace("$", "")
                 discountModel = TbDiscount("", "", 0, 0, "", replaceCurrency.toDouble(), "")
                 val result = Bundle().apply {
                     putParcelable("data", discountModel)
                 }
-                setFragmentResult("request_key_discount", result)
+                if (isFromDetails) {
+                    setFragmentResult("request_key_discount_details", result)
+                } else {
+
+                    setFragmentResult("request_key_discount", result)
+                }
                 findNavController().navigateUp()
             } else if (selectedListPos != -1) {
                 val result = Bundle().apply {
                     putParcelable("data", discountAdapter.getItem(selectedListPos))
                 }
-                Log.e(TAG,"ParsingData  ${Gson().toJson(discountAdapter.getItem(selectedListPos))}")
-                setFragmentResult("request_key_discount", result)
+                Log.e(
+                    TAG,
+                    "ParsingData  ${Gson().toJson(discountAdapter.getItem(selectedListPos))}"
+                )
+
+                if (isFromDetails) {
+                    setFragmentResult("request_key_discount_details", result)
+                } else {
+
+                    setFragmentResult("request_key_discount", result)
+                }
                 findNavController().navigateUp()
 
             }

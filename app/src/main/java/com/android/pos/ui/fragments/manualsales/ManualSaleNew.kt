@@ -39,7 +39,6 @@ import com.android.pos.utils.SwipeHelper
 import com.android.pos.utils.extensions.alert
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
-import java.lang.Exception
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -324,6 +323,17 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
             model.discountPrice = 0.0
             model.isManualSales = true
 
+            if (cartAdapter.getList().isEmpty()) {
+                model.customItemID = 1
+            } else {
+
+                var id = cartAdapter.getItem(cartAdapter.getList().size - 1).customItemID
+                id++
+                Log.e(TAG, "CustomItemid:  ${id}")
+                model.customItemID = id
+
+            }
+
 
             Log.e(TAG, "Parsemodel  ${Gson().toJson(model)}")
             viewModel.cartLogic(cartList, model, ADD)
@@ -427,14 +437,17 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
                                     cartAdapter.getItem(pos).price,
                                     result.percentage
                                 )
-                                cartModel.isManualSales = true
+                                cartModel.discountId = result.id
+                                cartModel.isDiscountDefault = true
 
+                                Log.e(TAG, "cartModelPArseMsd   ${Gson().toJson(cartModel)}")
                                 viewModel.cartLogic(cartList, cartModel, Constants.UPDATE)
 
                             } else if (cartAdapter.getItem(pos).price > result.percentage) {
                                 val cartModel = cartAdapter.getItem(pos)
                                 cartModel.discountPrice = result.percentage
-                                cartModel.isManualSales = true
+                                cartModel.isDiscountDefault = false
+
                                 viewModel.cartLogic(cartList, cartModel, Constants.UPDATE)
 
 
@@ -445,7 +458,11 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
 
                         }
                     }
-                    findNavController().navigate(R.id.action_manualSaleNew_to_addDiscountDialog)
+                    val bundle = bundleOf("isFromDetails" to false)
+                    findNavController().navigate(
+                        R.id.action_manualSaleNew_to_addDiscountDialog,
+                        bundle
+                    )
 
                 })
 
@@ -561,15 +578,17 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
             if (model.discountPrice != 0.0) {
                 val dis = model.discountPrice / model.itemQuantity
                 Log.e(TAG, "discountdis:  ${dis}")
+
                 model.discountPrice =
                     String.format("%.2f", (dis * txtQty.text.toString().toInt())).toDouble()
                 Log.e(
                     TAG,
                     "discountCountPrice  ${
-                        String.format("%.2f", (dis * model.itemQuantity)).toDouble()
+                        String.format("%.2f", (dis * txtQty.text.toString().toInt())).toDouble()
                     }"
                 )
             }
+
 
             model.note = edtNote.text.toString().trim()
             model.itemQuantity = txtQty.text.toString().toInt()
@@ -578,6 +597,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
 
             Log.e(TAG, "discountPriceDialog ${model.discountPrice}")
 
+            Log.e(TAG, "ParseModelMy:  ${Gson().toJson(model)}")
 
             viewModel.cartLogic(cartList, model, Constants.UPDATE)
         }
@@ -601,9 +621,34 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
         }
 
         btnAddDiscount.setOnClickListener {
-            findNavController().navigate(
-                R.id.action_manualSaleNew_to_addDiscountDialog
-            )
+            setFragmentResultListener("request_key_discount_details") { requestKey: String, bundle: Bundle ->
+                val result = bundle.getParcelable<TbDiscount>("data")
+                if (result != null) {
+                    Log.e(TAG, "GetDiscountResult:  ${Gson().toJson(result)}")
+                    if (result.discountType == requireContext().getString(R.string.disc_percentage)) {
+
+                        model.discountPrice = calculateDiscountPercentage(
+                            model.price,
+                            result.percentage
+                        )
+                        model.discountId = result.id
+                        model.isManualSales = true
+                        Log.e(TAG, "insideDiscountmodel:  ${Gson().toJson(model)}")
+                        viewModel.cartLogic(cartList, model, Constants.UPDATE)
+
+                    } else if (model.price > result.percentage) {
+
+                        model.discountPrice = result.percentage
+                        model.isManualSales = true
+                        viewModel.cartLogic(cartList, model, Constants.UPDATE)
+                    }
+                }
+            }
+            val bundle = Bundle().apply {
+                putBoolean("isFromDetails", true)
+                putParcelable("model", model)
+            }
+            findNavController().navigate(R.id.action_manualSaleNew_to_addDiscountDialog, bundle)
         }
 
 
