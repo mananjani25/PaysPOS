@@ -1,9 +1,10 @@
-package com.android.pos.ui.fragments.settings
+package com.android.pos.ui.fragments.settings.kitchenreceipt
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CompoundButton
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -13,7 +14,7 @@ import com.android.pos.data.remote.Constants.ORDER_RECEIPTS
 import com.android.pos.data.remote.Constants.SETTING_KEY
 import com.android.pos.databinding.FragmentKitchenReceiptSettingsBinding
 
-class KitchenReceiptSettings : Fragment() {
+class KitchenReceiptSettings : Fragment(),CompoundButton.OnCheckedChangeListener {
 
     private lateinit var binding: FragmentKitchenReceiptSettingsBinding
     override fun onCreateView(
@@ -36,5 +37,9 @@ class KitchenReceiptSettings : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+    }
+
+    override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
+       // if(buttonView?.id==)
     }
 }

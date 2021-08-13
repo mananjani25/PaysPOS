@@ -58,6 +58,7 @@ class UserAccessPermissionViewModel @Inject constructor(
     private lateinit var resource: Resource<GetUserPermissionListResponse>
 
     val employeeData = posRepository.employeesList(locationId)
+    val getEmployeeListDatabse = posRepository.getEmployeeListDatabse()
     val getTeamRoleList = taxServiceChargeRepository.getTeamRoleList()
     val getTeamModules = taxServiceChargeRepository.getTeamModules()
 

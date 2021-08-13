@@ -22,6 +22,8 @@ class CartModel : Parcelable {
     var isOpenOrder: Boolean = false
     var isMaual: Boolean = false
     var note: String = ""
+    var orderType: String = ""
+    var orderTypeId: Int = 0
 
 
 }

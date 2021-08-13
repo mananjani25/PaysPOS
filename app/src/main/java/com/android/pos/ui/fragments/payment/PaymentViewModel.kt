@@ -90,22 +90,21 @@ open class PaymentViewModel @Inject constructor(
 
         val orderAttributeRequestModel = OrderAttributeRequestModel()
 
-        orderAttributeRequestModel.date = "2021-08-12"
+        orderAttributeRequestModel.date = "2021-08-13"
         orderAttributeRequestModel.deliveryType = "Pickup"
         orderAttributeRequestModel.employeeId = cartModel.employeeID
-        orderAttributeRequestModel.indexOfDate = ""
         orderAttributeRequestModel.locationId = cartModel.locationId
         orderAttributeRequestModel.terminalId = cartModel.terminalId
         orderAttributeRequestModel.note = cartModel.note
         orderAttributeRequestModel.offlineId = randomOfflineId()
-        orderAttributeRequestModel.openOrderType = ""
-        orderAttributeRequestModel.orderTypeId = 0
-        orderAttributeRequestModel.paymentStatus = ""
+        orderAttributeRequestModel.openOrderType = cartModel.orderType
+        orderAttributeRequestModel.orderTypeId = cartModel.orderTypeId
+        orderAttributeRequestModel.paymentStatus = "Paid"
         orderAttributeRequestModel.serviceChargeEnabled = true
         orderAttributeRequestModel.taxEnabled = true
         orderAttributeRequestModel.subTotal = MethodUtils.roundOffAmountDouble(subTotalPrice)
         orderAttributeRequestModel.totalAmount = MethodUtils.roundOffAmountDouble(totalPrice)
-        orderAttributeRequestModel.totalCashDiscount = 0.0
+        // orderAttributeRequestModel.totalCashDiscount = 0.0
         orderAttributeRequestModel.totalDiscount = 0.0
         orderAttributeRequestModel.totalServiceCharges =
             MethodUtils.roundOffAmountDouble(totalServiceCharge)
@@ -239,7 +238,7 @@ open class PaymentViewModel @Inject constructor(
 
     private fun randomOfflineId(): String {
 
-        val locationId = prefProvider.getValue(Constants.LOCATION_ID, "")
+        val locationId = prefProvider.getValueInt(Constants.LOCATION_ID, -1).toString()
         val timestamp = System.currentTimeMillis().toString()
         val ss = locationId + timestamp.takeLast(4)
         val reqLent = 12 - ss.length

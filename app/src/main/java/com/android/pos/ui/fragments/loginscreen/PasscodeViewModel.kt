@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.data.model.responseModel.BaseResponse
+import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.IS_CLOCKOUT
 import com.android.pos.data.remote.Constants.PASSCODE
 import com.android.pos.data.remote.Constants.TERMINAL_ID
@@ -91,6 +92,7 @@ class PasscodeViewModel @Inject constructor(
                             if (it?.status == 200) {
                                 resource.data?.let {
 
+                                    prefProvider.setValueInt(EMPLOYEE_ID, it.data.employeeId)
                                     prefProvider.setValue(PASSCODE, passcode)
                                     employeeLogin(data)
 

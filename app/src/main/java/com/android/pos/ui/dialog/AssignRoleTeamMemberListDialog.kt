@@ -144,7 +144,7 @@ class AssignRoleTeamMemberListDialog : DialogFragment(), View.OnClickListener {
 
     private fun loadTeams() {
 
-        viewModel.employeeData.observe(viewLifecycleOwner, {
+        viewModel.getEmployeeListDatabse.observe(viewLifecycleOwner, {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
