@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.entities.TbItem
 import com.android.pos.databinding.ViewCartItemBinding
+import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.callback.MyCallback
 
 class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
@@ -52,10 +53,7 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
             binding.model = item
             binding.executePendingBindings()
 
-            binding.tvRate.text =
-                "$" + String.format(
-                    "%.2f", totalPrice(item)
-                )
+            MethodUtils.setPriceTextView(binding.tvRate, totalPrice(item))
 
             if (item.modifiers.isNotEmpty()) {
                 binding.rvModifiers.visibility = View.VISIBLE

@@ -26,8 +26,6 @@ class OrderAttributeRequestModel {
     @SerializedName("id")
     var id: Int? = null
 
-    @SerializedName("index_of_date")
-    var indexOfDate: String = ""
 
     @SerializedName("location_id")
     var locationId: Int = 0
@@ -71,8 +69,8 @@ class OrderAttributeRequestModel {
     @SerializedName("total_amount")
     var totalAmount: Double = 0.0
 
-    @SerializedName("total_cash_discount")
-    var totalCashDiscount: Double = 0.0
+//    @SerializedName("total_cash_discount")
+//    var totalCashDiscount: Double = 0.0
 
     @SerializedName("total_discount")
     var totalDiscount: Double = 0.0

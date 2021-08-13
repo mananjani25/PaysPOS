@@ -17,7 +17,6 @@ import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.TaxServiceChargeRepository
 import com.android.pos.data.repositories.TipDiscountRepository
 import com.android.pos.di.PrefProvider
-import com.android.pos.ui.fragments.settings.discount.DiscountList
 import com.android.pos.utils.Event
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.statusUtils.Resource
@@ -50,12 +49,16 @@ class DashBoardCategoryViewModel @Inject constructor(
         return posRepository.venueDataLocal()
     }
 
+    fun orderTypes(): LiveData<Resource<List<TbOrderType>>> {
+        return posRepository.orderTypes()
+    }
+
     val venueDataLocal = posRepository.venueDataLocal()
 
     val serviceCharges = posRepository.serviceChargeList()
 
 
-    val taxList= posRepository.taxList()
+    val taxList = posRepository.taxList()
 
 
     val discountList = posRepository.disocuntList()
@@ -192,6 +195,10 @@ class DashBoardCategoryViewModel @Inject constructor(
         val inventoryModelList = ArrayList<TbItem>()
         val cartModel = CartModel().apply {
             terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
+            employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
+            locationId = prefProvider.getValueInt(Constants.LOCATION_ID, -1)
+            orderTypeId = prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
+            orderType = prefProvider.getValue(Constants.ORDER_TYPE_NAME, "").toString()
             serviceCharge = serviceChargesList
             item.itemQuantity = item.itemQuantity
             inventoryModelList.add(item)
@@ -213,40 +220,42 @@ class DashBoardCategoryViewModel @Inject constructor(
         totalTax = 0.0
         totalServiceCharge = 0.0
 
-        cartList?.get(0)?.items?.forEach { item ->
-            totalCount += item.itemQuantity
-            subTotalPrice += item.price * item.itemQuantity
+        if (cartList != null && cartList.isNotEmpty()) {
+            cartList[0].items?.forEach { item ->
+                totalCount += item.itemQuantity
+                subTotalPrice += item.price * item.itemQuantity
 
-            item.taxes?.forEach { tax ->
-                if (tax.isActive) {
-                    if (tax.taxType == "Percentage") {
-                        val itemTaxPrice = (tax.rate * (item.price * item.itemQuantity)) / 100
-                        Log.e("itemTaxPrice", "" + itemTaxPrice)
-                        totalTax += String.format("%.2f", itemTaxPrice)
-                            .toDouble()
+                item.taxes?.forEach { tax ->
+                    if (tax.isActive) {
+                        if (tax.taxType == "Percentage") {
+                            val itemTaxPrice = (tax.rate * (item.price * item.itemQuantity)) / 100
+                            Log.e("itemTaxPrice", "" + itemTaxPrice)
+                            totalTax += String.format("%.2f", itemTaxPrice)
+                                .toDouble()
+                        }
                     }
                 }
-            }
 
-            item.modifiers.forEach {
-                subTotalPrice += (it.price * it.itemQuantity)
-            }
-        }
-
-        val serviceChargesList = cartList?.get(0)?.serviceCharge
-
-        if (serviceChargesList != null && serviceChargesList.isNotEmpty()) {
-            serviceChargesList.forEach {
-                if (it.isEnabled) {
-                    totalServiceCharge = (subTotalPrice * it.percentage) / 100
-                    Log.e("totalServiceCharge", totalServiceCharge.toString())
+                item.modifiers.forEach {
+                    subTotalPrice += (it.price * it.itemQuantity)
                 }
             }
 
+            val serviceChargesList = cartList[0].serviceCharge
+
+            if (serviceChargesList != null && serviceChargesList.isNotEmpty()) {
+                serviceChargesList.forEach {
+                    if (it.isEnabled) {
+                        totalServiceCharge = (subTotalPrice * it.percentage) / 100
+                        Log.e("totalServiceCharge", totalServiceCharge.toString())
+                    }
+                }
+
+            }
+
+
+            totalPrice = subTotalPrice + totalTax + totalServiceCharge
         }
-
-
-        totalPrice = subTotalPrice + totalTax + totalServiceCharge
 
         MethodUtils.setPriceTextView(txtTotalAmount, totalPrice)
 

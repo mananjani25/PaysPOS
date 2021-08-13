@@ -33,6 +33,8 @@ import com.android.pos.data.remote.Constants.CUSTOMER_NAME
 import com.android.pos.data.remote.Constants.DELETE
 import com.android.pos.data.remote.Constants.HORIZONTAL
 import com.android.pos.data.remote.Constants.IS_CLOCKOUT
+import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
+import com.android.pos.data.remote.Constants.ORDER_TYPE_NAME
 import com.android.pos.data.remote.Constants.UPDATE
 import com.android.pos.data.remote.Constants.VERTICAL
 import com.android.pos.databinding.FragmentDashboardCategoryNewBinding
@@ -41,6 +43,7 @@ import com.android.pos.ui.adapter.*
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.SwipeHelper
+import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.callback.MyCallback
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.liveSnackBar
@@ -52,7 +55,8 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, MyCallback {
+class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, MyCallback,
+    ItemCallback, View.OnClickListener {
 
     private var serviceChargesList: List<TbServiceCharge>? = null
     private var singleItem: TbItem? = null
@@ -69,6 +73,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private lateinit var searchAdapter: CategorySearchAdapter
     private lateinit var searchList: ArrayList<CategorySearchData>
     private lateinit var cartAdapter: CartAdapter
+    private lateinit var orderTypeAdapter: OrderTypeAdapter
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -84,6 +89,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         prefProvider.setValueboolean(IS_CLOCKOUT, false)
         binding = FragmentDashboardCategoryNewBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
+
+        hideOrderType()
 
         binding.footer.imgClock.setOnClickListener {
             alert(
@@ -112,17 +119,18 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         setVenueData()
         configureDrawer()
         onClick()
-        //searchItem()
-
+        getOrderTypes()
         getServiceCharges()
         observeShowProgress()
         setupSnackbar()
 
+        binding.layoutCart.llShowMenu.setOnClickListener(this)
+        binding.layoutCart.txtCrtNewCustomer.setOnClickListener(this)
+        binding.layoutCart.txtClearItems.setOnClickListener(this)
+        binding.layoutCart.llInfo.setOnClickListener(this)
+        binding.layoutCart.btnPay.setOnClickListener(this)
+        binding.layoutCart.llCartMenu.setOnClickListener(this)
 
-
-        binding.layoutCart.llShowMenu.setOnClickListener {
-            hideMenu()
-        }
         binding.root.setOnClickListener {
             if (binding.layoutCart.llCustomerDialog.visibility == View.VISIBLE) {
                 binding.layoutCart.llCustomerDialog.visibility = View.GONE
@@ -134,63 +142,17 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             binding.layoutCart.txtCrtNewCustomer.text = "Remove Customer"
         }
 
-        binding.layoutCart.txtCrtNewCustomer.setOnClickListener {
 
-            if (prefProvider.getValue(CUSTOMER_NAME, "").toString().isNotEmpty()) {
-                binding.layoutCart.txtCrtNewCustomer.text = "Add Customer"
-                binding.layoutCart.txtCustomerName.text = "Add Customer"
-                prefProvider.setValue(CUSTOMER_NAME, "")
-            } else {
-                findNavController().navigate(
-                    R.id.action_dashboardCategoryNew_to_assignCustomerOrderFragment
-                )
-            }
+    }
 
+    private fun getOrderTypes() {
+        orderTypeAdapter = OrderTypeAdapter()
+        orderTypeAdapter.setCallback(this)
+        binding.rvOrderType.adapter = orderTypeAdapter
 
-        }
-
-        binding.layoutCart.txtClearItems.setOnClickListener {
-
-            alert(
-                getString(R.string.app_name),
-                getString(R.string.delete_items_message)
-            ) {
-                positiveButton(getString(R.string.tv_delete)) {
-                    // Do positive stuff here
-                    viewModel.deleteCart()
-                    hideMenu()
-                }
-                negativeButton(R.string.tv_cancel) {
-                    // Do negative stuff here
-                }
-            }
-
-        }
-
-        binding.layoutCart.llInfo.setOnClickListener {
-
-            showPopupWindow(it)
-        }
-
-        binding.layoutCart.btnPay.setOnClickListener {
-
-            val bundle = Bundle()
-            bundle.putDouble("totalPrice", viewModel.totalPrice)
-            bundle.putDouble("subTotalPrice", viewModel.subTotalPrice)
-            bundle.putDouble("totalTax", viewModel.totalTax)
-            bundle.putDouble("totalServiceCharge", viewModel.totalServiceCharge)
-            bundle.putParcelable("cartList", cartList[0])
-
-            findNavController().navigate(
-                R.id.action_dashboardCategoryNew_to_paymentFragment,
-                bundle
-            )
-        }
-
-        binding.layoutCart.llCartMenu.setOnClickListener {
-
-
-        }
+        viewModel.orderTypes().observe(requireActivity(), {
+            it.data?.let { it1 -> orderTypeAdapter.addAll(it1) }
+        })
     }
 
     private fun getServiceCharges() {
@@ -292,9 +254,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             requireActivity(), {
                 cartList = it
                 if (cartList.isNotEmpty()) {
-                    binding.layoutCart.llCart.visibility = View.VISIBLE
-                    binding.lltakeout.visibility = View.GONE
 
+                    binding.layoutCart.rvCart.visibility = View.VISIBLE
+                    binding.layoutCart.llPayment.visibility = View.VISIBLE
                     cartAdapter.addCart(cartList[0].items)
 
                     viewModel.itemCalculation(
@@ -302,8 +264,12 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         binding.layoutCart.txtTotalAmount
                     )
                 } else {
-                    binding.lltakeout.visibility = View.VISIBLE
-                    binding.layoutCart.llCart.visibility = View.GONE
+                    viewModel.itemCalculation(
+                        cartList,
+                        binding.layoutCart.txtTotalAmount
+                    )
+                    binding.layoutCart.rvCart.visibility = View.GONE
+                    binding.layoutCart.llPayment.visibility = View.GONE
                 }
             }
         )
@@ -320,6 +286,18 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         }
     }
 
+    private fun hideOrderType() {
+
+        if (prefProvider.getValueInt(ORDER_TYPE_ID, -1) != -1) {
+
+            binding.layoutCart.llCart.visibility = View.VISIBLE
+            binding.lltakeout.visibility = View.GONE
+
+        } else {
+            binding.lltakeout.visibility = View.VISIBLE
+            binding.layoutCart.llCart.visibility = View.GONE
+        }
+    }
 
     private fun searchCategory() {
 
@@ -450,7 +428,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         dialog.show()
     }
 
-    fun closeDialog(dialog: Dialog?) {
+    private fun closeDialog(dialog: Dialog?) {
         dialog?.dismiss()
     }
 
@@ -803,7 +781,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         popupWindow.showAtLocation(view, Gravity.TOP, 600, 650);
     }
 
-    fun resetTabbySearch(model: CategorySearchData) {
+    private fun resetTabbySearch(model: CategorySearchData) {
         var tabPos = -1
         val tabList = (binding.rvTabLayout.adapter as CategoryTabAdapter1).list
         Log.e(TAG, "searchTabList  ${Gson().toJson(tabList)}")
@@ -1039,6 +1017,77 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private fun setupSnackbar() {
         binding.root.liveSnackBar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
 
+    }
+
+    override fun onItemClickListener(view: View?, pos: Int) {
+        val orderType = orderTypeAdapter.getItem(pos)
+        prefProvider.setValueInt(ORDER_TYPE_ID, orderType.id)
+        prefProvider.setValue(ORDER_TYPE_NAME, orderType.name)
+
+        hideOrderType()
+    }
+
+    override fun onClick(v: View?) {
+
+        when (v?.id) {
+
+            R.id.llShowMenu -> {
+                hideMenu()
+            }
+            R.id.txtCrtNewCustomer -> {
+                if (prefProvider.getValue(CUSTOMER_NAME, "").toString().isNotEmpty()) {
+                    binding.layoutCart.txtCrtNewCustomer.text = "Add Customer"
+                    binding.layoutCart.txtCustomerName.text = "Add Customer"
+                    prefProvider.setValue(CUSTOMER_NAME, "")
+                } else {
+                    findNavController().navigate(
+                        R.id.action_dashboardCategoryNew_to_assignCustomerOrderFragment
+                    )
+                }
+
+            }
+            R.id.txtClearItems -> {
+                alert(
+                    getString(R.string.app_name),
+                    getString(R.string.delete_items_message)
+                ) {
+                    positiveButton(getString(R.string.tv_delete)) {
+                        // Do positive stuff here
+                        viewModel.deleteCart()
+
+                        hideMenu()
+                    }
+                    negativeButton(R.string.tv_cancel) {
+                        // Do negative stuff here
+                    }
+                }
+
+            }
+
+            R.id.llInfo -> {
+                showPopupWindow(v)
+            }
+
+            R.id.btnPay -> {
+
+                if (cartList.isNotEmpty()) {
+                    val bundle = Bundle()
+                    bundle.putDouble("totalPrice", viewModel.totalPrice)
+                    bundle.putDouble("subTotalPrice", viewModel.subTotalPrice)
+                    bundle.putDouble("totalTax", viewModel.totalTax)
+                    bundle.putDouble("totalServiceCharge", viewModel.totalServiceCharge)
+                    bundle.putParcelable("cartList", cartList[0])
+
+                    findNavController().navigate(
+                        R.id.action_dashboardCategoryNew_to_paymentFragment,
+                        bundle
+                    )
+                }
+            }
+            R.id.llCartMenu -> {
+
+            }
+        }
     }
 
 
