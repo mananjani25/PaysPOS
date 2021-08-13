@@ -62,7 +62,7 @@ class UserAccessPermissionFragment : Fragment() {
             binding.addRole.text = getString(R.string.update_role)
             userPermissionObject = arguments?.getParcelable("userPermissionObject")!!
             viewModel.setUserPermissionData(userPermissionObject)
-           // viewModel.setModuleData(userPermissionObject)
+            // viewModel.setModuleData(userPermissionObject)
             viewModel.isEditData(isEdit, userPermissionObject.id)
         }
 
@@ -243,7 +243,9 @@ class UserAccessPermissionFragment : Fragment() {
                     AlertUtils.showCustomAlertWithListenerWithOK(
                         it, createRoleResponse.message
                     ) { _, _ ->
-                        binding.tvRoleName.setText("")
+                        if (!isEdit) {
+                            binding.tvRoleName.setText("")
+                        }
                         getUserPermissionListObserver()
                     }
                 }

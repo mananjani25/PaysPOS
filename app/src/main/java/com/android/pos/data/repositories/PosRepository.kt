@@ -197,6 +197,10 @@ class PosRepository @Inject constructor(
         networkCall = { apiHelperNew.employeesList(locationId) },
         saveCallResult = { appDatabase.employeeDao().addAllEmployee(it.data.employees) })
 
+    fun getEmployeeListDatabse() =
+        performGetOperationDatabase(databaseQuery = { appDatabase.employeeDao().allEmployee  })
+
+
     /*fun employeesTimeSheet(startDate: String, endDate: String, teamRoleId: String) =
         performGetOperationNew(networkCall = { apiHelperNew.employeesTimeSheet(startDate, endDate, teamRoleId) })*/
 

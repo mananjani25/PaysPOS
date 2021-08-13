@@ -51,7 +51,7 @@ class SingleTeamMemberTimeSheetFragment : Fragment() {
         setUpRecyclerView()
         getEmployeesTimeSheetDetailsObserver()
 
-        binding.tvEmployeeName.text = employeeModel.teamName
+        binding.tvEmployeeName.text = employeeModel.teamName+" Time Sheet"
         binding.tvEmployeeId.text = "Employee ID: #" + employeeModel.teamId
         binding.includeView.spRoles.visibility = View.GONE
         binding.includeView.edtSearch.visibility = View.GONE

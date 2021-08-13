@@ -303,7 +303,7 @@
         android:label="CustomerReceiptSettings" />
     <fragment
         android:id="@+id/kitchenReceiptSettings"
-        android:name="com.android.pos.ui.fragments.settings.KitchenReceiptSettings"
+        android:name="com.android.pos.ui.fragments.settings.kitchenreceipt.KitchenReceiptSettings"
         android:label="KitchenReceiptSettings" />
 
     <fragment

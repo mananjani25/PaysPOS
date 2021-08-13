@@ -7,20 +7,6 @@
     android:orientation="vertical"
     tools:ignore="MissingDefaultResource">
 
-    <androidx.appcompat.widget.AppCompatTextView
-        style="@style/CustomFontBold"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="@dimen/_5sdp"
-        android:text="Guest 1"
-        android:textColor="@color/viewTextColor"
-        android:textSize="@dimen/_6mdpi" />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/view" />
-
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"

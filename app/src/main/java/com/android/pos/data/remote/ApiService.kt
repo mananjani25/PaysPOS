@@ -24,6 +24,7 @@ import com.android.pos.data.remote.Constants.HIDE_CATEGORY
 import com.android.pos.data.remote.Constants.HIDE_ITEM
 import com.android.pos.data.remote.Constants.ITEMS
 import com.android.pos.data.remote.Constants.ITEM_UPDATE_DELETE
+import com.android.pos.data.remote.Constants.KITCHEN_RECEIPT_SETTINGS
 import com.android.pos.data.remote.Constants.LOGIN_TERMINAL
 import com.android.pos.data.remote.Constants.LOGOUT
 import com.android.pos.data.remote.Constants.MODIFIER
@@ -369,4 +370,7 @@ interface ApiService {
 
     @POST(ORDERS)
     suspend fun createOrder(@Body orderRequestModel: OrderRequestModel): BaseResponse
+
+    @GET(KITCHEN_RECEIPT_SETTINGS)
+    suspend fun getKitchenReceiptSettings(): GetKitchenReceiptSettingsResponse
 }

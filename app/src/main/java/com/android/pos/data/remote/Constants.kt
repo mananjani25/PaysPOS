@@ -73,6 +73,8 @@ object Constants {
     const val GET_TEAM_MODULE = "team_roles/modules"
 
 
+    const val KITCHEN_RECEIPT_SETTINGS = "/kitchen_receipts"
+
 
 
     const val VERTICAL = "vertical"

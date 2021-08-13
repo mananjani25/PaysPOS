@@ -38,22 +38,22 @@
                 android:textSize="@dimen/_6mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvclockIntime"
                 style="@style/CustomFontSemiBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1.5"
                 android:gravity="center"
-                android:text="@{itemSheetModel.clockInTime}"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvclockOuttime"
                 style="@style/CustomFontSemiBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1.5"
                 android:gravity="center"
-                android:text="@{itemSheetModel.clockOutTime}"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi" />
 

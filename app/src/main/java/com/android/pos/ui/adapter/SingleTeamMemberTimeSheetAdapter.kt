@@ -23,6 +23,10 @@ class SingleTeamMemberTimeSheetAdapter :
         val itemBinding = holder.discountItemBinding
         itemBinding.itemSheetModel = employeeTimeSheet[position]
         //  itemBinding.viewModel = viewModel
+        itemBinding.tvclockIntime.text =
+            employeeTimeSheet[position].date + "\n" + employeeTimeSheet[position].clockInTime
+        itemBinding.tvclockOuttime.text =
+            employeeTimeSheet[position].clockOutDate + "\n" + employeeTimeSheet[position].clockOutTime
 
         itemBinding.executePendingBindings()
     }

@@ -29,7 +29,7 @@ data class GetEmployeesTimeSheetResponse(
         @SerializedName("total_hours")
         val totalHours: String,
         @SerializedName("total_wage")
-        val totalWage: Int
+        val totalWage: Double
     ) : Parcelable {
         @Parcelize
         data class DataOfWeek(
