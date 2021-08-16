@@ -57,14 +57,21 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         }
 
 
-        binding.edtAmount.addTextChangedListener(AmountTextWatcher(binding.edtAmount, true))
+        if (binding.swtDiscountType.isChecked) {
+            binding.edtAmount.addTextChangedListener(AmountTextWatcher(binding.edtAmount, true))
+        }else{
+            binding.edtAmount.addTextChangedListener(AmountTextWatcher(binding.edtAmount, false))
+        }
 
         binding.swtDiscountType.setOnCheckedChangeListener { buttonView, isChecked ->
+
             if (isChecked) {
+                binding.edtAmount.addTextChangedListener(AmountTextWatcher(binding.edtAmount, true))
 
             } else {
 
-                          }
+                binding.edtAmount.addTextChangedListener(AmountTextWatcher(binding.edtAmount, false))
+            }
 
         }
 

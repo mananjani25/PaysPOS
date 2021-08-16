@@ -132,6 +132,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         Log.e(TAG, "secondValue  $secondValue")
         val newVal = totalPrice + 1
         var thirdValue = calculateCashOption(newVal)
+        Log.e(TAG, "thirdValuethirdValue:   ${thirdValue}")
         if (secondValue.toDouble() == thirdValue) {
             if (secondValue > 1000) {
                 thirdValue += 100
@@ -147,11 +148,15 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             fourthValue += 50
         }
 
-        binding.txtOriginalAmount.text = requireActivity().resources.getString(R.string.symbole)+ DecimalFormat("###.##").format(totalPrice)
+        binding.txtOriginalAmount.text =
+            requireActivity().resources.getString(R.string.symbole) + DecimalFormat("###.##").format(
+                totalPrice
+            )
         binding.txtSecondAmount.text =
             requireActivity().resources.getString(R.string.symbole) + secondValue.toDouble()
         binding.txtThirdAmount.text = getString(R.string.symbole) + thirdValue.toDouble()
-        binding.txtFourthAmount.text = requireActivity().resources.getString(R.string.symbole) + fourthValue.toDouble()
+        binding.txtFourthAmount.text =
+            requireActivity().resources.getString(R.string.symbole) + fourthValue.toDouble()
 
     }
 
@@ -188,12 +193,20 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             val myValue = value.toInt()
             Log.e(TAG, "myValue:  ${myValue}")
             var searchIndex: Int = -1
-            arrAmount.forEachIndexed { index, i ->
-                if (i >= value) {
-                    searchIndex = i
-                }
-            }
+            val filterValue = arrAmount.filter {
+                it >= value
+            }.first()
+            searchIndex = arrAmount.indexOf(filterValue)
+            Log.e(TAG, "filterValue:  ${filterValue}")
             Log.e(TAG, "searchIndex:  ${searchIndex}")
+
+           /* arrAmount.forEachIndexed { index, i ->
+                if (i >= value) {
+                     = i
+                    return@forEachIndexed
+                }
+            }*/
+
             if (arrAmount.contains(myValue)) {
                 searchIndex += 1
             }
