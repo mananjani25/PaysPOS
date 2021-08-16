@@ -15,11 +15,9 @@ import com.android.pos.R
 import com.android.pos.data.entities.CartModel
 import com.android.pos.databinding.PaymentFragmentBinding
 import com.android.pos.di.PrefProvider
-import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
 import dagger.hilt.android.AndroidEntryPoint
-import java.text.DecimalFormat
 import javax.inject.Inject
 import kotlin.math.ceil
 import kotlin.math.floor
@@ -27,6 +25,9 @@ import kotlin.math.floor
 @AndroidEntryPoint
 open class PaymentFragment : Fragment(), View.OnClickListener {
 
+    private var fourthValue: Double = 0.0
+    private var thirdValue: Double = 0.0
+    private var secondValue: Int = 0
     private var cartList: CartModel? = null
     private var splitValue: Int = -1
     private var totalPrice: Double = 0.0
@@ -34,6 +35,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
     private var subTotalPrice: Double = 0.0
     private var totalTax: Double = 0.0
     private var totalServiceCharge: Double = 0.0
+    private var paymentAmount: Double = 0.0
     private lateinit var binding: PaymentFragmentBinding
     private val TAG = "PaymentFragment"
 
@@ -117,10 +119,14 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         }
 
 
-        binding.txtSplitAmount.setOnClickListener(this)
+        // binding.txtSplitAmount.setOnClickListener(this)
         binding.txtCustom.setOnClickListener(this)
         binding.imgBack.setOnClickListener(this)
         binding.llCash.setOnClickListener(this)
+        binding.txtOriginalAmount.setOnClickListener(this)
+        binding.txtSecondAmount.setOnClickListener(this)
+        binding.txtThirdAmount.setOnClickListener(this)
+        binding.txtFourthAmount.setOnClickListener(this)
 
 
     }
@@ -128,10 +134,10 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
     @SuppressLint("SetTextI18n")
     private fun getCashPaymentOptionList(totalPrice: Double) {
         Log.e(TAG, "totalPrice  $totalPrice")
-        val secondValue = floor(totalPrice + 1).toInt()
+        secondValue = floor(totalPrice + 1).toInt()
         Log.e(TAG, "secondValue  $secondValue")
         val newVal = totalPrice + 1
-        var thirdValue = calculateCashOption(newVal)
+        thirdValue = calculateCashOption(newVal)
         Log.e(TAG, "thirdValuethirdValue:   ${thirdValue}")
         if (secondValue.toDouble() == thirdValue) {
             if (secondValue > 1000) {
@@ -141,7 +147,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             }
 
         }
-        var fourthValue = calculateCashOption(thirdValue)
+        fourthValue = calculateCashOption(thirdValue)
         if (thirdValue == fourthValue) {
             fourthValue += 100
         } else {
@@ -225,20 +231,28 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 findNavController().popBackStack()
             }
 
+            R.id.txtOriginalAmount -> {
+
+                paymentAmount = totalPrice
+                makePayment()
+            }
+            R.id.txtSecondAmount -> {
+                paymentAmount = secondValue.toDouble()
+                makePayment()
+            }
+            R.id.txtThirdAmount -> {
+                paymentAmount = thirdValue
+                makePayment()
+            }
+            R.id.txtFourthAmount -> {
+                paymentAmount = fourthValue
+                makePayment()
+            }
+
+
             R.id.llCash -> {
 
-                val myRequest = cartList?.let {
-                    viewModel.createOrderRequest(
-                        it,
-                        subTotalPrice,
-                        totalPrice,
-                        totalServiceCharge,
-                        totalTax
-                    )
-                }
-                if (myRequest != null) {
-                    viewModel.submit(myRequest)
-                }
+                makePayment()
 
 
             }
@@ -257,6 +271,21 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             }
         }
 
+    }
+
+    private fun makePayment() {
+        val myRequest = cartList?.let {
+            viewModel.createOrderRequest(
+                it,
+                subTotalPrice,
+                totalPrice,
+                totalServiceCharge,
+                totalTax
+            )
+        }
+        if (myRequest != null) {
+            viewModel.submit(myRequest)
+        }
     }
 
 
@@ -280,13 +309,14 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         viewModel.data.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
 
-                viewModel.deleteCart()
+                val bundle = Bundle()
+                bundle.putDouble("totalPrice", totalPrice)
+                bundle.putDouble("paymentAmount", paymentAmount)
+                findNavController().navigate(
+                    R.id.action_paymentFragment_to_orderCompleteFragment,
+                    bundle
+                )
 
-                AlertUtils.showCustomAlertWithListenerWithOK(
-                    requireActivity(), it.message
-                ) { _, _ ->
-                    findNavController().popBackStack()
-                }
 
             }
         })

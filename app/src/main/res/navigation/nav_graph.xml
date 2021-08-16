@@ -511,6 +511,9 @@
         <action
             android:id="@+id/action_paymentFragment_to_customAmountFragment"
             app:destination="@id/customAmountFragment" />
+        <action
+            android:id="@+id/action_paymentFragment_to_orderCompleteFragment"
+            app:destination="@id/orderCompleteFragment" />
     </fragment>
     <dialog
         android:id="@+id/splitAmountFragment"
@@ -527,7 +530,12 @@
     <dialog
         android:id="@+id/addDiscountDialog"
         android:name="com.android.pos.ui.dialog.AddDiscountDialog"
-        android:label="AddDiscountDialog" />
+        android:label="AddDiscountDialog">
+        <argument
+            android:name="isFromDetails"
+            android:defaultValue="false"
+            app:argType="boolean" />
+    </dialog>
     <fragment
         android:id="@+id/assignCustomerOrderFragment"
         android:name="com.android.pos.ui.fragments.orderassign.AssignCustomerOrderFragment"
@@ -606,6 +614,18 @@
         android:name="com.android.pos.ui.dialog.ItemRenameDialog"
         android:label="ItemRenameDialog"
         tools:layout="@layout/dialog_rename_item" />
+    <fragment
+        android:id="@+id/orderCompleteFragment"
+        android:name="com.android.pos.ui.fragments.payment.OrderCompleteFragment"
+        android:label="OrderCompleteFragment">
+        <action
+            android:id="@+id/action_orderCompleteFragment_to_dashboardCategoryNew"
+            app:destination="@id/dashboardCategoryNew"
+            app:launchSingleTop="true" />
+        <action
+            android:id="@+id/action_orderCompleteFragment_to_assignCustomerOrderFragment"
+            app:destination="@id/assignCustomerOrderFragment" />
+    </fragment>
 
 
 </navigation>

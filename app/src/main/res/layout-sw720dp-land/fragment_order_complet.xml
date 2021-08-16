@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingDefaultResource">
+
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/imgBack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:padding="@dimen/_5sdp"
+                android:visibility="gone"
+                app:srcCompat="@drawable/ic_arrow_back"
+                app:tint="@color/black" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtHome"
+                style="@style/CustomFontBold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center"
+                android:padding="@dimen/_5sdp"
+                android:text="@string/tv_home"
+                android:textColor="@color/btnColorDark_"
+                android:textSize="@dimen/_6sdp"
+                android:visibility="visible" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtTitle"
+                style="@style/CustomFontSemiBold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_7mdpi"
+                tools:text="$12.50 Cash" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtAddCustomer"
+                style="@style/CustomFontBold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center"
+                android:padding="@dimen/_5sdp"
+                android:text="@string/add_customer"
+                android:textColor="@color/btnColorDark_"
+                android:textSize="@dimen/_6sdp" />
+
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/view" />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_15sdp"
+                android:orientation="vertical">
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="@dimen/_10sdp">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtChangeAmount"
+                        style="@style/CustomFontBold"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_10sdp"
+                        android:gravity="center"
+                        android:text="No Change"
+                        android:textColor="@color/drawerBack"
+                        android:textSize="@dimen/_12mdpi" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtSplitValue"
+                        style="@style/CustomFontBold"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_2sdp"
+                        android:gravity="center"
+                        android:textColor="@color/drawerBack"
+                        android:textSize="@dimen/_12mdpi"
+                        android:visibility="gone" />
+
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtPaymentAmount"
+                        style="@style/CustomFontMediumStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/_15sdp"
+                        android:gravity="center"
+                        android:padding="@dimen/_5sdp"
+                        android:text="Out of $12.50"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_7mdpi" />
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:id="@+id/llSendReceipt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="@dimen/_10sdp"
+                        android:paddingStart="@dimen/_30sdp"
+                        android:paddingEnd="@dimen/_30sdp"
+                        android:visibility="gone">
+
+
+                        <androidx.appcompat.widget.AppCompatEditText
+                            android:id="@+id/edtEmail"
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center"
+                            android:layout_weight="0.1"
+                            android:background="@drawable/background_square_border_grey"
+                            android:hint="@string/email_receipt"
+                            android:imeOptions="actionDone"
+                            android:inputType="textEmailAddress"
+                            android:minWidth="@dimen/_250sdp"
+                            android:padding="@dimen/_7sdp"
+                            android:textColor="@color/txtColor"
+                            android:textColorHint="@color/hintColor"
+                            android:textSize="@dimen/_6mdpi"
+                            android:visibility="gone"
+                            app:textAllCaps="true" />
+
+                        <androidx.appcompat.widget.AppCompatEditText
+                            android:id="@+id/edtPhoneNo"
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center"
+                            android:layout_weight="0.1"
+                            android:background="@drawable/background_square_border_grey"
+                            android:digits="0123456789"
+                            android:hint="@string/phone_number"
+                            android:imeOptions="actionDone"
+                            android:inputType="phone"
+                            android:minWidth="@dimen/_250sdp"
+                            android:padding="@dimen/_7sdp"
+                            android:textColor="@color/txtColor"
+                            android:textColorHint="@color/hintColor"
+                            android:textSize="@dimen/_6mdpi"
+                            android:visibility="gone"
+                            app:textAllCaps="true" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/txtSend"
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="@dimen/_10sdp"
+                            android:background="@color/btnColorDark_"
+                            android:gravity="center"
+                            android:minWidth="@dimen/_250sdp"
+                            android:paddingStart="@dimen/_15sdp"
+                            android:paddingTop="@dimen/_5sdp"
+                            android:paddingEnd="@dimen/_15sdp"
+                            android:paddingBottom="@dimen/_5sdp"
+                            android:text="Send Receipt"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/_6mdpi" />
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:id="@+id/llOptions"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/CustomFontRegularStyle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="@dimen/_15sdp"
+                            android:gravity="center"
+                            android:padding="@dimen/_5sdp"
+                            android:text="@string/how_would_the_customer_like_their_receipt"
+                            android:textColor="@color/txtColor"
+                            android:textSize="@dimen/_10mdpi" />
+
+                        <androidx.appcompat.widget.LinearLayoutCompat
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:orientation="horizontal">
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/llPrint"
+                                style="@style/CustomFontBold"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="@dimen/_3sdp"
+                                android:layout_weight="1"
+                                android:background="@color/btnColorDark_"
+                                android:gravity="center"
+                                android:minWidth="@dimen/_120sdp"
+                                android:padding="@dimen/_5sdp"
+                                android:text="@string/print"
+                                android:textColor="@color/white"
+                                android:textSize="@dimen/_7mdpi" />
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/llEmail"
+                                style="@style/CustomFontBold"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="@dimen/_3sdp"
+                                android:layout_weight="1"
+                                android:background="@color/btnColorDark_"
+                                android:gravity="center"
+                                android:minWidth="@dimen/_120sdp"
+                                android:padding="@dimen/_5sdp"
+                                android:text="@string/tv_email"
+                                android:textColor="@color/white"
+                                android:textSize="@dimen/_7mdpi" />
+
+                        </androidx.appcompat.widget.LinearLayoutCompat>
+
+                        <androidx.appcompat.widget.LinearLayoutCompat
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:orientation="horizontal">
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/llMessage"
+                                style="@style/CustomFontBold"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="@dimen/_3sdp"
+                                android:layout_weight="1"
+                                android:background="@color/btnColorDark_"
+                                android:gravity="center"
+                                android:minWidth="@dimen/_120sdp"
+                                android:padding="@dimen/_5sdp"
+                                android:text="@string/text_message"
+                                android:textColor="@color/white"
+                                android:textSize="@dimen/_7mdpi" />
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/llNoReceipt"
+                                style="@style/CustomFontBold"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="@dimen/_3sdp"
+                                android:layout_weight="1"
+                                android:background="@color/btnColorDark_"
+                                android:gravity="center"
+                                android:minWidth="@dimen/_120sdp"
+                                android:padding="@dimen/_5sdp"
+                                android:text="@string/no_receipt"
+                                android:textColor="@color/white"
+                                android:textSize="@dimen/_7mdpi" />
+
+                        </androidx.appcompat.widget.LinearLayoutCompat>
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+        </ScrollView>
+    </androidx.appcompat.widget.LinearLayoutCompat>
+</layout>

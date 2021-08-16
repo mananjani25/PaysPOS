@@ -409,4 +409,10 @@
     <string name="order_successfully">Order Successfully</string>
     <string name="edit_split_amount">Edit Split Amount</string>
     <string name="tv_show_category">Show Category</string>
+    <string name="how_would_the_customer_like_their_receipt">How would the customer like their receipt?</string>
+    <string name="no_receipt">No Receipt</string>
+    <string name="text_message">Text Message</string>
+    <string name="print">Print</string>
+    <string name="email_receipt">Email Receipt</string>
+    <string name="phone_number">Phone Number</string>
 </resources>

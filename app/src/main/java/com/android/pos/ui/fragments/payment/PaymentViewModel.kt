@@ -39,13 +39,6 @@ open class PaymentViewModel @Inject constructor(
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
 
-    fun deleteCart() {
-        viewModelScope.launch {
-            posRepository.deleteCart()
-        }
-
-    }
-
     fun submit(orderRequestModel: OrderRequestModel) {
 
         _showProgress.value = Event(true)
@@ -56,18 +49,19 @@ open class PaymentViewModel @Inject constructor(
 
             when (resource.status) {
                 Status.SUCCESS -> {
-
-                    resource.data.let { logInResponse ->
-                        if (logInResponse?.status == 200) {
+                    _showProgress.value = Event(false)
+                    resource.data.let { response ->
+                        if (response?.status == 200) {
 
                             resource.data?.let { response ->
                                 _data.value = Event(response)
                             }
+                            posRepository.deleteCart()
                         } else {
                             _snackbarText.value = Event(resource.message)
                         }
                     }
-                    _showProgress.value = Event(false)
+
                 }
 
                 Status.ERROR -> {
