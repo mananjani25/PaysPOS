@@ -517,7 +517,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
         //binding.txtAmount.setText("${binding.txtAmount.text.toString().replace("""[$]""".toRegex(), "")}")
         var newText = StringBuilder(str).insert(0,"%").toString()
 
-        binding.txtAmount.setText(""+newText)
+
         Log.e(
             TAG,
             "afterTextSet  ${binding.txtAmount.text.toString().replace("""[$]""".toRegex(), "%")}"

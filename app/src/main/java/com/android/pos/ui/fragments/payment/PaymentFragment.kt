@@ -196,12 +196,12 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             Log.e(TAG, "filterValue:  ${filterValue}")
             Log.e(TAG, "searchIndex:  ${searchIndex}")
 
-           /* arrAmount.forEachIndexed { index, i ->
-                if (i >= value) {
-                     = i
-                    return@forEachIndexed
-                }
-            }*/
+            /* arrAmount.forEachIndexed { index, i ->
+                 if (i >= value) {
+                      = i
+                     return@forEachIndexed
+                 }
+             }*/
 
             if (arrAmount.contains(myValue)) {
                 searchIndex += 1
