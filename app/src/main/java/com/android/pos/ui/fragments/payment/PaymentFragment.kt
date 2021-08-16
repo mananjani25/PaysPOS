@@ -127,7 +127,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
     @SuppressLint("SetTextI18n")
     private fun getCashPaymentOptionList(totalPrice: Double) {
-        Log.e(TAG, "totalPrice  ${totalPrice}")
+        Log.e(TAG, "totalPrice  $totalPrice")
         val secondValue = floor(totalPrice + 1).toInt()
         Log.e(TAG, "secondValue  $secondValue")
         val newVal = totalPrice + 1

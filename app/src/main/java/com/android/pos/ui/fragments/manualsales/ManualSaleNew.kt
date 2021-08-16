@@ -154,7 +154,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
 
         binding.lnrCharge.setOnClickListener {
 
-            if (!binding.txtChargeAmount.text.toString().equals("$0.00")) {
+            if (binding.txtChargeAmount.text.toString() != "$0.00") {
                 val bundle = Bundle()
                 bundle.putDouble("totalPrice", viewModel.totalPrice)
                 bundle.putDouble("subTotalPrice", viewModel.subTotalPrice)
