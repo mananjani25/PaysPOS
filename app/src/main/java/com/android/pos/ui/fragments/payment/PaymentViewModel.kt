@@ -54,17 +54,18 @@ open class PaymentViewModel @Inject constructor(
 
             when (resource.status) {
                 Status.SUCCESS -> {
-                    _showProgress.value = Event(false)
+
                     resource.data.let { logInResponse ->
                         if (logInResponse?.status == 200) {
 
-                            resource.data?.let { createTaxResponse ->
-                                _data.value = Event(createTaxResponse)
+                            resource.data?.let { response ->
+                                _data.value = Event(response)
                             }
                         } else {
                             _snackbarText.value = Event(resource.message)
                         }
                     }
+                    _showProgress.value = Event(false)
                 }
 
                 Status.ERROR -> {

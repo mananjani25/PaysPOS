@@ -14,7 +14,9 @@ import com.android.pos.R
 import com.android.pos.data.entities.CartModel
 import com.android.pos.databinding.PaymentFragmentBinding
 import com.android.pos.di.PrefProvider
+import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.MethodUtils
+import com.android.pos.utils.ProgressUtils
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -53,9 +55,13 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
         setupData()
         callbackSetup()
+        observeShowProgress()
+        observeData()
+
 
         return binding.root
     }
+
 
     @SuppressLint("SetTextI18n")
     private fun callbackSetup() {
@@ -96,12 +102,10 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             binding.linearDiscount.visibility = View.GONE
         } else {
             binding.linearDiscount.visibility = View.VISIBLE
-            binding.txtDiscount.setText(
-                "- " +
-                        MainApplication.getInstance()!!.getText(R.string.symbole)
-                            .toString() + String.format(
-                    "%.2f", totalDiscount
-                )
+            binding.txtDiscount.text = "- " +
+                    MainApplication.getInstance()!!.getText(R.string.symbole)
+                        .toString() + String.format(
+                "%.2f", totalDiscount
             )
         }
 
@@ -155,4 +159,36 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
     }
 
 
+    private fun observeShowProgress() {
+
+        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    ProgressUtils.showProgressDialog(requireActivity())
+                } else {
+                    ProgressUtils.dismissProgressDialog()
+                }
+            }
+        })
+
+    }
+
+
+    private fun observeData() {
+
+        viewModel.data.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+
+                viewModel.deleteCart()
+
+                AlertUtils.showCustomAlertWithListenerWithOK(
+                    requireActivity(), it.message
+                ) { _, _ ->
+                    findNavController().popBackStack()
+                }
+
+            }
+        })
+
+    }
 }
