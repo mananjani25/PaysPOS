@@ -145,9 +145,9 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         }
 
         binding.txtOriginalAmount.text =
-            requireActivity().resources.getString(R.string.symbole) + DecimalFormat("###.##").format(
+            requireActivity().resources.getString(R.string.symbole) +
                 totalPrice
-            )
+
         binding.txtSecondAmount.text =
             requireActivity().resources.getString(R.string.symbole) + secondValue.toDouble()
         binding.txtThirdAmount.text = getString(R.string.symbole) + thirdValue.toDouble()
@@ -196,12 +196,12 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             Log.e(TAG, "filterValue:  ${filterValue}")
             Log.e(TAG, "searchIndex:  ${searchIndex}")
 
-           /* arrAmount.forEachIndexed { index, i ->
-                if (i >= value) {
-                     = i
-                    return@forEachIndexed
-                }
-            }*/
+            /* arrAmount.forEachIndexed { index, i ->
+                 if (i >= value) {
+                      = i
+                     return@forEachIndexed
+                 }
+             }*/
 
             if (arrAmount.contains(myValue)) {
                 searchIndex += 1
