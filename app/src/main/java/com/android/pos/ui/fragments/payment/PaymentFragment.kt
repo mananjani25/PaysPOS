@@ -148,15 +148,11 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             fourthValue += 50
         }
 
-        binding.txtOriginalAmount.text =
-            requireActivity().resources.getString(R.string.symbole) + DecimalFormat("###.##").format(
-                totalPrice
-            )
-        binding.txtSecondAmount.text =
-            requireActivity().resources.getString(R.string.symbole) + secondValue.toDouble()
-        binding.txtThirdAmount.text = getString(R.string.symbole) + thirdValue.toDouble()
-        binding.txtFourthAmount.text =
-            requireActivity().resources.getString(R.string.symbole) + fourthValue.toDouble()
+        MethodUtils.setPriceTextView(binding.txtOriginalAmount, totalPrice)
+        MethodUtils.setPriceTextView(binding.txtSecondAmount, secondValue.toDouble())
+        MethodUtils.setPriceTextView(binding.txtThirdAmount, thirdValue)
+        MethodUtils.setPriceTextView(binding.txtFourthAmount, fourthValue)
+
 
     }
 

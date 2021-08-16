@@ -48,6 +48,8 @@ open class PaymentViewModel @Inject constructor(
 
     fun submit(orderRequestModel: OrderRequestModel) {
 
+        _showProgress.value = Event(true)
+
         viewModelScope.launch {
 
             val resource = posRepository.createOrder(orderRequestModel)
@@ -91,7 +93,7 @@ open class PaymentViewModel @Inject constructor(
 
         val orderAttributeRequestModel = OrderAttributeRequestModel()
 
-        orderAttributeRequestModel.date = "2021-08-13"
+        orderAttributeRequestModel.date = "2021-08-16"
         orderAttributeRequestModel.deliveryType = "Pickup"
         orderAttributeRequestModel.employeeId = cartModel.employeeID
         orderAttributeRequestModel.locationId = cartModel.locationId

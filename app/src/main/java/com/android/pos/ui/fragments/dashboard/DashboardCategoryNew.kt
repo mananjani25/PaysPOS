@@ -130,12 +130,20 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         binding.layoutCart.llInfo.setOnClickListener(this)
         binding.layoutCart.btnPay.setOnClickListener(this)
         binding.layoutCart.llCartMenu.setOnClickListener(this)
+        binding.layoutCart.imgOrderMenu.setOnClickListener(this)
 
         binding.root.setOnClickListener {
             if (binding.layoutCart.llCustomerDialog.visibility == View.VISIBLE) {
                 binding.layoutCart.llCustomerDialog.visibility = View.GONE
             }
         }
+
+        binding.root.setOnClickListener {
+            if (binding.layoutCart.llOrderMenu.visibility == View.VISIBLE) {
+                binding.layoutCart.llOrderMenu.visibility = View.GONE
+            }
+        }
+
         if (prefProvider.getValue(CUSTOMER_NAME, "").toString().isNotEmpty()) {
             binding.layoutCart.txtCustomerName.text =
                 prefProvider.getValue(CUSTOMER_NAME, "").toString()
@@ -170,6 +178,14 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             binding.layoutCart.llCustomerDialog.visibility = View.GONE
         } else {
             binding.layoutCart.llCustomerDialog.visibility = View.VISIBLE
+        }
+    }
+
+    private fun hideOrderMenu() {
+        if (binding.layoutCart.llOrderMenu.visibility == View.VISIBLE) {
+            binding.layoutCart.llOrderMenu.visibility = View.GONE
+        } else {
+            binding.layoutCart.llOrderMenu.visibility = View.VISIBLE
         }
     }
 
@@ -1033,6 +1049,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
             R.id.llShowMenu -> {
                 hideMenu()
+            }
+            R.id.imgOrderMenu -> {
+                hideOrderMenu()
             }
             R.id.txtCrtNewCustomer -> {
                 if (prefProvider.getValue(CUSTOMER_NAME, "").toString().isNotEmpty()) {

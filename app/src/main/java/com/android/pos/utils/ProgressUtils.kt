@@ -7,7 +7,9 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.view.LayoutInflater
 import android.view.WindowManager
+import androidx.fragment.app.FragmentActivity
 import com.android.pos.R
+import java.lang.Exception
 
 
 /**
@@ -55,7 +57,11 @@ object ProgressUtils {
         if (!builder!!.isShowing) {
             val activity: Activity = context as Activity
             if (!activity.isFinishing) {
-                builder!!.show()
+                try {
+                    builder!!.show()
+                } catch (e: Exception) {
+                }
+
             }
         }
     }
@@ -93,5 +99,6 @@ object ProgressUtils {
 
         if (builder != null && builder!!.isShowing) builder!!.dismiss()
     }
+
 
 }
