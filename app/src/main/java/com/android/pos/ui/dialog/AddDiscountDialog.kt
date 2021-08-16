@@ -50,24 +50,21 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         isFromDetails = requireArguments().getBoolean("isFromDetails", false)
         defaultModel = requireArguments().getParcelable("model")
         discountAdapter.setSelected(defaultModel?.discountId)
+        val e = Log.e(TAG, "discountModeldiscountModel:   ${Gson().toJson(discountModel)}")
 
         if (defaultModel?.discountId == 0) {
             binding.edtAmount.append("" + defaultModel?.discountPrice)
         }
-        if (defaultModel?.discountType == getString(R.string.disc_percentage)) {
-            binding.edtAmount.text.toString().replace("$", "%")
-        }
+
 
         binding.edtAmount.addTextChangedListener(AmountTextWatcher(binding.edtAmount, true))
 
         binding.swtDiscountType.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
-                binding.edtAmount.text.toString().replace("$", "%")
 
             } else {
 
-                binding.edtAmount.text.toString().replace("%", "$")
-            }
+                          }
 
         }
 
@@ -204,8 +201,8 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
             } else {
                 val discount = TbDiscount("", "", 0, 0, "", 0.0, "")
-                val result  = Bundle().apply {
-                    putParcelable("data",discount)
+                val result = Bundle().apply {
+                    putParcelable("data", discount)
                 }
 
 
@@ -252,9 +249,11 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
             binding.edtAmount.append(number)
         }
         if (binding.swtDiscountType.isChecked) {
-            binding.edtAmount.text.toString().replace("$", "%")
+            val newText = binding.edtAmount.text.toString().replace("$", "")
+            //binding.edtAmount.setText(newText)
         } else {
-            binding.edtAmount.text.toString().replace("%", "$")
+            val newText = binding.edtAmount.text.toString().replace("", "$")
+            //binding.edtAmount.setText(newText)
         }
 
 

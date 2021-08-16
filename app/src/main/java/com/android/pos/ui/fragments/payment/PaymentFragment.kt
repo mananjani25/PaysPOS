@@ -2,6 +2,7 @@ package com.android.pos.ui.fragments.payment
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,7 +17,10 @@ import com.android.pos.databinding.PaymentFragmentBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.MethodUtils
 import dagger.hilt.android.AndroidEntryPoint
+import java.text.DecimalFormat
 import javax.inject.Inject
+import kotlin.math.ceil
+import kotlin.math.floor
 
 @AndroidEntryPoint
 open class PaymentFragment : Fragment(), View.OnClickListener {
@@ -29,6 +33,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
     private var totalTax: Double = 0.0
     private var totalServiceCharge: Double = 0.0
     private lateinit var binding: PaymentFragmentBinding
+    private val TAG = "PaymentFragment"
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -86,6 +91,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         totalServiceCharge = requireArguments().getDouble("totalServiceCharge")
         totalDiscount = requireArguments().getDouble("totalDiscount")
 
+        getCashPaymentOptionList(totalPrice)
+
         MethodUtils.setPriceTextView(binding.txtTotalAmount, totalPrice)
         MethodUtils.setPriceTextView(binding.txtSubTotal, subTotalPrice)
         MethodUtils.setPriceTextView(binding.txtTax, totalTax)
@@ -112,6 +119,91 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         binding.llCash.setOnClickListener(this)
 
 
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun getCashPaymentOptionList(totalPrice: Double) {
+        Log.e(TAG, "totalPrice  ${totalPrice}")
+        val secondValue = floor(totalPrice + 1).toInt()
+        Log.e(TAG, "secondValue  $secondValue")
+        val newVal = totalPrice + 1
+        var thirdValue = calculateCashOption(newVal)
+        if (secondValue.toDouble() == thirdValue) {
+            if (secondValue > 1000) {
+                thirdValue += 100
+            } else {
+                thirdValue += 50
+            }
+
+        }
+        var fourthValue = calculateCashOption(thirdValue)
+        if (thirdValue == fourthValue) {
+            fourthValue += 100
+        } else {
+            fourthValue += 50
+        }
+
+        binding.txtOriginalAmount.text = requireActivity().resources.getString(R.string.symbole)+ DecimalFormat("###.##").format(totalPrice)
+        binding.txtSecondAmount.text =
+            requireActivity().resources.getString(R.string.symbole) + secondValue.toDouble()
+        binding.txtThirdAmount.text = getString(R.string.symbole) + thirdValue.toDouble()
+        binding.txtFourthAmount.text = requireActivity().resources.getString(R.string.symbole) + fourthValue.toDouble()
+
+    }
+
+    private fun calculateCashOption(value: Double): Double {
+        if (value > 1000) {
+            return ceil(value / 100) * 100
+
+        } else if (value > 500) {
+            return ceil(value / 50) * 50
+        } else {
+            val arrAmount = arrayOf(
+                5,
+                10,
+                20,
+                50,
+                100,
+                110,
+                120,
+                150,
+                200,
+                210,
+                220,
+                250,
+                300,
+                310,
+                320,
+                350,
+                400,
+                410,
+                420,
+                450,
+                500
+            )
+            val myValue = value.toInt()
+            Log.e(TAG, "myValue:  ${myValue}")
+            var searchIndex: Int = -1
+            arrAmount.forEachIndexed { index, i ->
+                if (i >= value) {
+                    searchIndex = i
+                }
+            }
+            Log.e(TAG, "searchIndex:  ${searchIndex}")
+            if (arrAmount.contains(myValue)) {
+                searchIndex += 1
+            }
+
+            if (searchIndex >= arrAmount.size) {
+                return 550.0
+            } else {
+                val lastAmount = arrAmount[searchIndex]
+                return lastAmount.toDouble()
+            }
+
+
+//            if (searchIndex > 0)
+        }
     }
 
     override fun onClick(v: View?) {
