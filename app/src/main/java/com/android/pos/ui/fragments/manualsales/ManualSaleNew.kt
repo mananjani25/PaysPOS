@@ -39,6 +39,7 @@ import com.android.pos.utils.SwipeHelper
 import com.android.pos.utils.extensions.alert
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
+import java.lang.StringBuilder
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -512,6 +513,15 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
             binding.txtAmount.append(number)
         }
         addItemToCart(binding.txtAmount.text.toString(), false)
+        val str = binding.txtAmount.text.toString().replace("""[$]""".toRegex(), "")
+        //binding.txtAmount.setText("${binding.txtAmount.text.toString().replace("""[$]""".toRegex(), "")}")
+        var newText = StringBuilder(str).insert(0,"%").toString()
+
+        binding.txtAmount.setText(""+newText)
+        Log.e(
+            TAG,
+            "afterTextSet  ${binding.txtAmount.text.toString().replace("""[$]""".toRegex(), "%")}"
+        )
     }
 
     private fun removeLastCharacter(str: String): String {
