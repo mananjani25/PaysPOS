@@ -71,25 +71,44 @@
                 android:visibility="visible">
 
 
-                <androidx.appcompat.widget.AppCompatEditText
-                    android:id="@+id/edtAmount"
-                    style="@style/CustomFontSemiBold"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:layout_marginStart="@dimen/_10sdp"
-                    android:layout_marginEnd="@dimen/_10sdp"
-                    android:layout_marginBottom="@dimen/_10sdp"
-                    android:layout_weight="0.1"
-                    android:background="@drawable/background_square_border_grey"
-                    android:enabled="false"
-                    android:gravity="end"
-                    android:hint="$0.00"
-                    android:padding="@dimen/_7sdp"
-                    android:textColor="@color/txtColor"
-                    android:textColorHint="@color/hintColor"
-                    android:textSize="@dimen/_6mdpi"
-                    app:textAllCaps="true" />
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="1">
+
+                    <androidx.appcompat.widget.AppCompatEditText
+                        android:id="@+id/edtAmount"
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/_10sdp"
+                        android:layout_marginEnd="@dimen/_10sdp"
+                        android:layout_marginBottom="@dimen/_10sdp"
+                        android:layout_weight="0.5"
+                        android:background="@drawable/background_square_border_grey"
+                        android:enabled="false"
+                        android:hint="$0.00"
+                        android:padding="@dimen/_7sdp"
+                        android:textColor="@color/txtColor"
+                        android:textColorHint="@color/hintColor"
+                        android:textSize="@dimen/_6mdpi"
+                        app:textAllCaps="true" />
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/swtDiscountType"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="0.5"
+                        android:checked="true"
+                        android:padding="@dimen/_7sdp"
+                        android:text="@string/disc_percentage"
+                        android:textSize="@dimen/_6mdpi"
+                        app:theme="@style/AppTheme" />
+
+                </LinearLayout>
+
 
                 <include
                     android:id="@+id/llKeypad"

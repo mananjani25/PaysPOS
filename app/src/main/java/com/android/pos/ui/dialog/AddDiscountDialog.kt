@@ -10,6 +10,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
+import com.android.pos.R
 import com.android.pos.data.entities.TbDiscount
 import com.android.pos.data.entities.TbItem
 import com.android.pos.databinding.DailogAddDiscountBinding
@@ -49,11 +50,26 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         isFromDetails = requireArguments().getBoolean("isFromDetails", false)
         defaultModel = requireArguments().getParcelable("model")
         discountAdapter.setSelected(defaultModel?.discountId)
-        if (defaultModel?.discountId == 0){
-         binding.edtAmount.append(""+defaultModel?.discountPrice)
+
+        if (defaultModel?.discountId == 0) {
+            binding.edtAmount.append("" + defaultModel?.discountPrice)
+        }
+        if (defaultModel?.discountType == getString(R.string.disc_percentage)) {
+            binding.edtAmount.text.toString().replace("$", "%")
         }
 
         binding.edtAmount.addTextChangedListener(AmountTextWatcher(binding.edtAmount, true))
+
+        binding.swtDiscountType.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                binding.edtAmount.text.toString().replace("$", "%")
+
+            } else {
+
+                binding.edtAmount.text.toString().replace("%", "$")
+            }
+
+        }
 
         return binding.root
     }
@@ -147,7 +163,21 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                     .equals("$0.00"))
             ) {
                 val replaceCurrency = binding.edtAmount.text.toString().replace("$", "")
-                discountModel = TbDiscount("", "", 0, 0, "", replaceCurrency.toDouble(), "")
+
+                discountModel =
+                    if (binding.swtDiscountType.isChecked) {
+                        TbDiscount(
+                            "",
+                            getString(R.string.disc_percentage),
+                            0,
+                            0,
+                            "",
+                            replaceCurrency.toDouble(),
+                            ""
+                        )
+                    } else {
+                        TbDiscount("", "", 0, 0, "", replaceCurrency.toDouble(), "")
+                    }
                 val result = Bundle().apply {
                     putParcelable("data", discountModel)
                 }
@@ -162,10 +192,22 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                 val result = Bundle().apply {
                     putParcelable("data", discountAdapter.getItem(selectedListPos))
                 }
-                Log.e(
-                    TAG,
-                    "ParsingData  ${Gson().toJson(discountAdapter.getItem(selectedListPos))}"
-                )
+
+
+                if (isFromDetails) {
+                    setFragmentResult("request_key_discount_details", result)
+                } else {
+
+                    setFragmentResult("request_key_discount", result)
+                }
+                findNavController().navigateUp()
+
+            } else {
+                val discount = TbDiscount("", "", 0, 0, "", 0.0, "")
+                val result  = Bundle().apply {
+                    putParcelable("data",discount)
+                }
+
 
                 if (isFromDetails) {
                     setFragmentResult("request_key_discount_details", result)
@@ -209,6 +251,12 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         } else {
             binding.edtAmount.append(number)
         }
+        if (binding.swtDiscountType.isChecked) {
+            binding.edtAmount.text.toString().replace("$", "%")
+        } else {
+            binding.edtAmount.text.toString().replace("%", "$")
+        }
+
 
     }
 

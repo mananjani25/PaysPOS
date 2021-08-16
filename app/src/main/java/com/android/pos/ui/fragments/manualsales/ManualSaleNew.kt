@@ -438,6 +438,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
                                     result.percentage
                                 )
                                 cartModel.discountId = result.id
+                                cartModel.discountType = result.discountType
                                 cartModel.isDiscountDefault = true
 
                                 Log.e(TAG, "cartModelPArseMsd   ${Gson().toJson(cartModel)}")
@@ -447,7 +448,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
                                 val cartModel = cartAdapter.getItem(pos)
                                 cartModel.discountPrice = result.percentage
                                 cartModel.isDiscountDefault = false
-
+                                cartModel.discountType = result.discountType
                                 viewModel.cartLogic(cartList, cartModel, Constants.UPDATE)
 
 
@@ -561,10 +562,17 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
         var qty = model.itemQuantity
 
         txtQty.setText(qty.toString())
-        txtTitle.text = model.name + "  $" + String.format(
-            "%.2f",
-            model.price
-        )
+        if (model.discountPrice != 0.0) {
+            txtTitle.text = model.name + "  $" + String.format(
+                "%.2f",
+                (model.price - model.discountPrice)
+            )
+        } else {
+            txtTitle.text = model.name + "  $" + String.format(
+                "%.2f",
+                model.price
+            )
+        }
 
         imgClose.setOnClickListener {
             dialog.dismiss()
@@ -632,16 +640,34 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
                             result.percentage
                         )
                         model.discountId = result.id
+                        model.discountType = result.discountType
                         model.isManualSales = true
                         Log.e(TAG, "insideDiscountmodel:  ${Gson().toJson(model)}")
                         viewModel.cartLogic(cartList, model, Constants.UPDATE)
+                        txtTitle.text = model.name + "  $" + String.format(
+                            "%.2f",
+                            (model.price - model.discountPrice)
+                        )
 
                     } else if (model.price > result.percentage) {
 
                         model.discountPrice = result.percentage
+                        model.discountType = result.discountType
                         model.isManualSales = true
+
                         viewModel.cartLogic(cartList, model, Constants.UPDATE)
+                        txtTitle.text = model.name + "  $" + String.format(
+                            "%.2f",
+                            (model.price - model.discountPrice)
+                        )
                     }
+                } else {
+                    model.discountPrice = 0.0
+                    model.discountType = ""
+                    model.isManualSales = true
+                    viewModel.cartLogic(cartList, model, Constants.UPDATE)
+
+
                 }
             }
             val bundle = Bundle().apply {

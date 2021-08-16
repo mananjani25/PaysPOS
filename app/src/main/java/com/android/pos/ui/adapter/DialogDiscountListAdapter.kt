@@ -26,8 +26,6 @@ class DialogDiscountListAdapter : RecyclerView.Adapter<DialogDiscountListAdapter
                     binding.root.context.getDrawable(R.drawable.background_drawer_button)
                 binding.txtValue.setTextColor(binding.root.context.resources.getColor(R.color.txtColor))
                 binding.txtName.setTextColor(binding.root.context.resources.getColor(R.color.txtColor))
-
-
             }
 
             val context = binding.root.context

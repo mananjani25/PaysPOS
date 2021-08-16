@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.android.pos.MainApplication
 import com.android.pos.R
 import com.android.pos.data.entities.CartModel
 import com.android.pos.databinding.PaymentFragmentBinding
@@ -89,10 +90,19 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         MethodUtils.setPriceTextView(binding.txtSubTotal, subTotalPrice)
         MethodUtils.setPriceTextView(binding.txtTax, totalTax)
         MethodUtils.setPriceTextView(binding.txtTotal, totalPrice)
-        MethodUtils.setPriceTextView(binding.txtDiscount, totalDiscount)
+        //MethodUtils.setPriceTextView(binding.txtDiscount, totalDiscount)
         MethodUtils.setPriceTextView(binding.txtServiceCharge, totalServiceCharge)
         if (totalDiscount == 0.0) {
             binding.linearDiscount.visibility = View.GONE
+        } else {
+            binding.linearDiscount.visibility = View.VISIBLE
+            binding.txtDiscount.setText(
+                "- " +
+                        MainApplication.getInstance()!!.getText(R.string.symbole)
+                            .toString() + String.format(
+                    "%.2f", totalDiscount
+                )
+            )
         }
 
 
