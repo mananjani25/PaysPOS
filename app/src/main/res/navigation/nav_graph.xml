@@ -299,7 +299,7 @@
         app:destination="@id/createTeamMember" />
     <fragment
         android:id="@+id/customerReceiptSettings"
-        android:name="com.android.pos.ui.fragments.settings.CustomerReceiptSettings"
+        android:name="com.android.pos.ui.fragments.settings.customerreceipt.CustomerReceiptSettings"
         android:label="CustomerReceiptSettings" />
     <fragment
         android:id="@+id/kitchenReceiptSettings"

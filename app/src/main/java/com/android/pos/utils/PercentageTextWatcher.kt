@@ -2,14 +2,11 @@ package com.android.pos.utils
 
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import androidx.appcompat.widget.AppCompatEditText
-import java.lang.String.format
 import java.text.NumberFormat
 import java.util.*
 
-class AmountTextWatcher(private val editText: AppCompatEditText, private val isManual: Boolean) :
-    TextWatcher {
+class PercentageTextWatcher(private val editText: AppCompatEditText) : TextWatcher {
     var current = ""
     val TAG = "AmountTextWatcher"
     override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
@@ -17,22 +14,18 @@ class AmountTextWatcher(private val editText: AppCompatEditText, private val isM
             editText.removeTextChangedListener(this)
 
 
-            val cleanString: String = s.replace("""[$,.]""".toRegex(), "")
+            val cleanString: String = s.replace("""[$,.%]""".toRegex(), "")
 
 
             val parsed = cleanString.toDouble()
 
-            val formatted =
-                if (isManual) {
+            val formatted = NumberFormat.getCurrencyInstance(Locale.US).format((parsed / 100))
 
-                    NumberFormat.getCurrencyInstance(Locale.US).format((parsed / 100))
-                } else {
-                    NumberFormat.getCurrencyInstance(Locale.US).format((parsed / 100))
-                }
 
             current = formatted
-            editText.setText(formatted.replace("""[,]""".toRegex(), ""))
-            editText.setSelection(formatted.replace("""[,]""".toRegex(), "").length)
+
+            editText.setText(formatted.replace("""[$,%]""".toRegex(), ""))
+            editText.setSelection(formatted.replace("""[$,%]""".toRegex(), "").length)
 
             editText.addTextChangedListener(this)
         }

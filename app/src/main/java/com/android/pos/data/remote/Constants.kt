@@ -22,6 +22,9 @@ object Constants {
     const val ADD = "ADD"
     const val ORDER_TYPE_ID = "order_type_id"
     const val ORDER_TYPE_NAME = "order_type_name"
+    const val MEDIUM ="medium"
+    const val SMALL ="small"
+    const val LARGE = "large"
 
 
     //Api End Points
@@ -76,8 +79,11 @@ object Constants {
     const val GET_TEAM_MODULE = "team_roles/modules"
 
 
-    const val KITCHEN_RECEIPT_SETTINGS = "/kitchen_receipts"
+    const val KITCHEN_RECEIPT_SETTINGS = "kitchen_receipts"
+    const val KITCHEN_RECEIPT_UPDATE_SEETINGS = "kitchen_receipts/{id}"
 
+    const val CUSTOMER_RECEIPT_SETTINGS = "customer_receipts"
+    const val CUSTOMER_RECEIPTS_UPDATE_SETTINGS = "customer_receipts/{id}"
 
 
     const val VERTICAL = "vertical"

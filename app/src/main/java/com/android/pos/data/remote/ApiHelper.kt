@@ -212,6 +212,12 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun getKitchenReceiptSettings() =
         getResult { apiService.getKitchenReceiptSettings() }
 
+    suspend fun getCustomerReceiptSettings() =
+        getResult { apiService.getCustomerReceiptSettings() }
+
+    suspend fun updateKitchenSettings(id: Int, model: UpdateKitchenReceiptRequestModel) =
+        getResult { apiService.updateKitchenReceiptSettings(id, model) }
+
     suspend fun orderTypes() =
         getResult { apiService.orderTypes() }
 }

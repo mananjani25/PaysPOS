@@ -66,7 +66,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
     ): View? {
         binding = FragmentManualSaleNewBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
-        binding.footer.imgInfo.visibility = View.VISIBLE
+        binding.footer.imgInfo.visibility = View.GONE
         binding.footer.imgDelete.visibility = View.VISIBLE
         getServiceCharge()
         getTaxList()
@@ -153,7 +153,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
             dialogMenu()
         }
 
-        binding.lnrCharge.setOnClickListener {
+        binding.btnPay.setOnClickListener {
 
             if (binding.txtChargeAmount.text.toString() != "$0.00") {
                 val bundle = Bundle()
@@ -171,7 +171,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
             dialogPOSMenu()
         }
 
-        binding.footer.imgInfo.setOnClickListener {
+        binding.llInfo.setOnClickListener {
             showPopupWindow(it)
         }
         binding.footer.imgDelete.setOnClickListener {
@@ -515,7 +515,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
         addItemToCart(binding.txtAmount.text.toString(), false)
         val str = binding.txtAmount.text.toString().replace("""[$]""".toRegex(), "")
         //binding.txtAmount.setText("${binding.txtAmount.text.toString().replace("""[$]""".toRegex(), "")}")
-        var newText = StringBuilder(str).insert(0,"%").toString()
+        var newText = StringBuilder(str).insert(0, "%").toString()
 
 
         Log.e(

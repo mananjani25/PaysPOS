@@ -7,6 +7,7 @@ import com.android.pos.data.entities.TeamRole
 import com.android.pos.data.model.requestModel.CreateServiceChargeRequestModel
 import com.android.pos.data.model.requestModel.CreateTaxRequestModel
 import com.android.pos.data.model.requestModel.CreateTeamRoleRequestModel
+import com.android.pos.data.model.requestModel.UpdateKitchenReceiptRequestModel
 import com.android.pos.data.remote.ApiHelper
 import com.android.pos.utils.performGetOperation
 import com.android.pos.utils.performGetOperationNew
@@ -107,8 +108,14 @@ class TaxServiceChargeRepository @Inject constructor(
     suspend fun getTeamMemberTimeSheet(data: CreateTeamRoleRequestModel) =
         apiHelperNew.getTeamMemberTimeSheet(data)
 
-    fun getKitchenReceiptSettings() =
-        performGetOperationNew(networkCall = { apiHelperNew.getKitchenReceiptSettings() })
+    suspend fun getKitchenReceiptSettings() =
+        apiHelperNew.getKitchenReceiptSettings()
+
+    suspend fun getCustomerReceiptSettings() =
+        apiHelperNew.getCustomerReceiptSettings()
+
+    suspend fun updateKitchenReceiptSettings(id:Int?,model:UpdateKitchenReceiptRequestModel)=
+        apiHelperNew.updateKitchenSettings(id!!,model)
 
 
 }
