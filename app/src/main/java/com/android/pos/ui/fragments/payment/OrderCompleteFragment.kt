@@ -102,7 +102,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener {
                 findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
             }
             R.id.txtSend -> {
-
+                MethodUtils.hideKeyboard(requireActivity())
             }
             R.id.imgBack -> {
                 MethodUtils.hideKeyboard(requireActivity())

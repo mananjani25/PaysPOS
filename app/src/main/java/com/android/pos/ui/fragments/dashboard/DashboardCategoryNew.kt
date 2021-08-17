@@ -58,6 +58,7 @@ import javax.inject.Inject
 class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, MyCallback,
     ItemCallback, View.OnClickListener {
 
+    private var assignCustomer: CustomerListResponse.Data? = null
     private var serviceChargesList: List<TbServiceCharge>? = null
     private var singleItem: TbItem? = null
     private var cartList: List<CartModel> = emptyList()
@@ -298,6 +299,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 prefProvider.setValue(CUSTOMER_NAME, result.first_name + " " + result.last_name)
                 binding.layoutCart.txtCustomerName.text = result.first_name + " " + result.last_name
                 binding.layoutCart.txtCrtNewCustomer.text = "Remove Customer"
+                assignCustomer = result
             }
         }
     }
