@@ -77,7 +77,9 @@ object Constants {
 
 
     const val KITCHEN_RECEIPT_SETTINGS = "/kitchen_receipts"
+    const val KITCHEN_RECEIPT_UPDATE_SEETINGS = "/kitchen_receipts/{id}"
 
+    const val CUSTOMER_RECEIPT_SETTINGS = "/customer_receipts"
 
 
     const val VERTICAL = "vertical"

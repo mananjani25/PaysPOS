@@ -8,6 +8,7 @@ import com.android.pos.data.remote.Constants.CATEGORY
 import com.android.pos.data.remote.Constants.CATEGORY_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.CLOCK_OUT
 import com.android.pos.data.remote.Constants.CUSTOMERS
+import com.android.pos.data.remote.Constants.CUSTOMER_RECEIPT_SETTINGS
 import com.android.pos.data.remote.Constants.CUSTOMER_UPDATE
 import com.android.pos.data.remote.Constants.DISCOUNTS
 import com.android.pos.data.remote.Constants.DISCOUNTS_ACTIVE
@@ -25,6 +26,7 @@ import com.android.pos.data.remote.Constants.HIDE_ITEM
 import com.android.pos.data.remote.Constants.ITEMS
 import com.android.pos.data.remote.Constants.ITEM_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.KITCHEN_RECEIPT_SETTINGS
+import com.android.pos.data.remote.Constants.KITCHEN_RECEIPT_UPDATE_SEETINGS
 import com.android.pos.data.remote.Constants.LOGIN_TERMINAL
 import com.android.pos.data.remote.Constants.LOGOUT
 import com.android.pos.data.remote.Constants.MODIFIER
@@ -235,6 +237,7 @@ interface ApiService {
         @Body createDiscount: CreateTeamRoleRequestModel
     ): GetUserPermissionListResponse
 
+
     @DELETE(TEAM_ROLES_UPDATE_DELETE)
     suspend fun deleteTeamRole(
         @Path("id") discountId: Int
@@ -377,6 +380,15 @@ interface ApiService {
 
     @GET(KITCHEN_RECEIPT_SETTINGS)
     suspend fun getKitchenReceiptSettings(): GetKitchenReceiptSettingsResponse
+
+    @PUT(KITCHEN_RECEIPT_UPDATE_SEETINGS)
+    suspend fun updateKitchenReceiptSettings(
+        @Path("id") id: Int,
+        @Body requestModel: UpdateKitchenReceiptRequestModel
+    ): BaseResponse
+
+    /*@GET(CUSTOMER_RECEIPT_SETTINGS)
+    suspend fun getCustomerReceiptSettings():*/
 
 
 }
