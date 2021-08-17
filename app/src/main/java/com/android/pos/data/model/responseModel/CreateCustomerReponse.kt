@@ -4,6 +4,8 @@ import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
+import com.android.pos.data.entities.TbAddress
+import com.android.pos.data.entities.TbPhones
 import com.android.pos.data.model.CustomerListResponse
 import com.android.pos.data.typeconvert.TypeConvertorAddress
 import com.android.pos.data.typeconvert.TypeConvertorPhone
@@ -26,9 +28,9 @@ data class CreateCustomerReponse(
         @SerializedName("birth_date") val birth_date: String,
         @SerializedName("email") val email: String,
         @TypeConverters(TypeConvertorPhone::class)
-        @SerializedName("phones") val phones: List<CustomerListResponse.Data.Phones> = listOf(),
+        @SerializedName("phones") val phones: List<TbPhones> = listOf(),
         @TypeConverters(TypeConvertorAddress::class)
-        @SerializedName("addresses") val addresses: List<CustomerListResponse.Data.Addresses> = listOf(),
+        @SerializedName("addresses") val addresses: List<TbAddress> = listOf(),
         var isSelcted: Boolean = false
     ) : Parcelable {
     }

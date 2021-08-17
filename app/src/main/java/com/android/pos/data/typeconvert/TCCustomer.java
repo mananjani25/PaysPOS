@@ -2,34 +2,36 @@ package com.android.pos.data.typeconvert;
 
 import androidx.room.TypeConverter;
 
-import com.android.pos.data.entities.TbAddress;
-import com.android.pos.data.model.CustomerListResponse;
-import com.android.pos.data.model.responseModel.GetTaxResponse;
+import com.android.pos.data.entities.TbCustomer;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class TypeConvertorAddress {
+import static java.util.Arrays.*;
+
+public class TCCustomer {
     private static final Gson gson = new Gson();
 
     @TypeConverter
-    public static List<TbAddress> stringToSomeObjectList(String data) {
+    public static TbCustomer stringToSomeObjectList(String data) {
         if (data == null) {
-            return Collections.emptyList();
+            return null;
         }
 
-        Type listType = new TypeToken<List<TbAddress>>() {
+        Type listType = new TypeToken<TbCustomer>() {
         }.getType();
 
         return gson.fromJson(data, listType);
     }
 
     @TypeConverter
-    public static String someObjectListToString(List<TbAddress> someObjects) {
+    public static String someObjectListToString(TbCustomer someObjects) {
         return gson.toJson(someObjects);
     }
+
 
 }

@@ -9,14 +9,21 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
-import com.android.pos.data.model.CustomerListResponse
+import com.android.pos.data.entities.TbCustomer
+import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentOrderCompletBinding
+import com.android.pos.di.PrefProvider
 import com.android.pos.utils.MethodUtils
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class OrderCompleteFragment : Fragment(), View.OnClickListener {
     private var totalPrice: Double = 0.0
     private var paymentAmount: Double = 0.0
 
+    @Inject
+    lateinit var prefProvider: PrefProvider
     private lateinit var binding: FragmentOrderCompletBinding
 
     override fun onCreateView(
@@ -41,9 +48,15 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener {
         if (totalPrice != paymentAmount) {
             binding.txtChangeAmount.text =
                 MethodUtils.roundOffAmount(paymentAmount - totalPrice) + " Change"
-            binding.txtPaymentAmount.text = "Out of " + MethodUtils.roundOffAmount(paymentAmount)
-
         }
+        binding.txtPaymentAmount.text = "Out of " + MethodUtils.roundOffAmount(paymentAmount)
+
+        if (prefProvider.getValue(Constants.CUSTOMER_NAME, "").toString().isNotEmpty()) {
+            binding.txtAddCustomer.visibility = View.GONE
+        } else {
+            binding.txtAddCustomer.visibility = View.VISIBLE
+        }
+
 
         binding.txtHome.setOnClickListener(this)
         binding.txtAddCustomer.setOnClickListener(this)
@@ -55,7 +68,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener {
         binding.imgBack.setOnClickListener(this)
 
         setFragmentResultListener("request_key_customer") { requestKey: String, bundle: Bundle ->
-            val result = bundle.getParcelable<CustomerListResponse.Data>("data")
+            val result = bundle.getParcelable<TbCustomer>("data")
             if (result != null) {
                 Log.e("request_key_customer", result.first_name)
 
@@ -67,7 +80,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener {
 
         when (v?.id) {
             R.id.txtHome -> {
+                removeCustomer()
                 findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
+
             }
             R.id.txtAddCustomer -> {
                 findNavController().navigate(R.id.action_orderCompleteFragment_to_assignCustomerOrderFragment)
@@ -96,9 +111,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener {
                 MethodUtils.hideKeyboard(requireActivity())
             }
             R.id.llNoReceipt -> {
+                removeCustomer()
                 findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
             }
             R.id.llPrint -> {
+                removeCustomer()
                 findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
             }
             R.id.txtSend -> {
@@ -116,4 +133,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener {
     }
 
 
+    fun removeCustomer() {
+        prefProvider.setValue(Constants.CUSTOMER_NAME, "")
+    }
 }

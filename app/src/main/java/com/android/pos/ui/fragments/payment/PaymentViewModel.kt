@@ -7,7 +7,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.entities.CartModel
+import com.android.pos.data.entities.TbCustomer
 import com.android.pos.data.entities.TbItem
+import com.android.pos.data.entities.TbPhones
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.remote.Constants
@@ -15,6 +17,7 @@ import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
 import com.android.pos.utils.MethodUtils
+import com.android.pos.utils.TimeFormatUtils
 import com.android.pos.utils.statusUtils.Status
 import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -87,7 +90,7 @@ open class PaymentViewModel @Inject constructor(
 
         val orderAttributeRequestModel = OrderAttributeRequestModel()
 
-        orderAttributeRequestModel.date = "2021-08-16"
+        orderAttributeRequestModel.date = TimeFormatUtils.getCurrentDate()
         orderAttributeRequestModel.deliveryType = "Pickup"
         orderAttributeRequestModel.employeeId = cartModel.employeeID
         orderAttributeRequestModel.locationId = cartModel.locationId
@@ -115,12 +118,100 @@ open class PaymentViewModel @Inject constructor(
             orderServiceChargesAttributes(cartModel, subTotalPrice)
         orderAttributeRequestModel.orderItemsAttributes = orderItemsAttributes(cartModel)
 
+        if (cartModel.customer != null)
+            orderAttributeRequestModel.customerAttributes = customerAttributes(cartModel)
+
 
         val orderRequestModel = OrderRequestModel(true, orderAttributeRequestModel)
 
         Log.e("orderRequestModel", ":  ${Gson().toJson(orderRequestModel)}")
 
         return orderRequestModel
+    }
+
+    private fun customerAttributes(cartModel: CartModel): CustomerAttributes {
+
+        val customerAttributes = CustomerAttributes().apply {
+            id = cartModel.customer?.id ?: 0
+            birthDate = cartModel.customer?.birth_date.toString()
+            firstName = cartModel.customer?.first_name.toString()
+            lastName = cartModel.customer?.last_name.toString()
+            companyName = cartModel.customer?.company.toString()
+            locationId = cartModel.locationId
+            phonesAttributes = phonesAttributes(cartModel.customer?.id, cartModel.customer?.phones)
+            emailsAttributes = emailsAttributes(cartModel.customer?.id, cartModel.customer?.email)
+            addressesAttributes = addressesAttributes(cartModel.customer?.id, cartModel.customer)
+        }
+
+        return customerAttributes
+
+    }
+
+    private fun addressesAttributes(
+        id: Int?,
+        customer: TbCustomer?
+    ): List<CustomerAttributes.AddressesAttribute> {
+
+        val addressesAttributeList: ArrayList<CustomerAttributes.AddressesAttribute> =
+            arrayListOf()
+        customer?.addresses?.forEach {
+
+            val addressesAttribute = CustomerAttributes.AddressesAttribute().apply {
+                address1 = it.address1
+                address2 = it.address2
+                address3 = ""
+                addressableId = it.id
+                //  addressableType = it.address_type
+                city = it.city
+                country = it.country
+                destroy = false
+                latitude = 0.0
+                longitude = 0.0
+                postcode = it.postcode
+                state = it.state
+                typeOfAddress = it.type_of_address.toString()
+            }
+            addressesAttributeList.add(addressesAttribute)
+        }
+
+        return addressesAttributeList
+    }
+
+    private fun emailsAttributes(
+        custId: Int?,
+        emailId: String?
+    ): List<CustomerAttributes.EmailsAttribute> {
+
+        val phonesAttributeList: ArrayList<CustomerAttributes.EmailsAttribute> =
+            arrayListOf()
+        val email = CustomerAttributes.EmailsAttribute().apply {
+            destroy = false
+            customerId = custId!!
+            emailAddress = emailId.toString()
+        }
+        phonesAttributeList.add(email)
+        return phonesAttributeList
+
+    }
+
+    private fun phonesAttributes(
+        custId: Int?,
+        phones: List<TbPhones>?
+    ): List<CustomerAttributes.PhonesAttribute> {
+
+        val phonesAttributeList: ArrayList<CustomerAttributes.PhonesAttribute> =
+            arrayListOf()
+        phones?.forEach {
+
+            val phone = CustomerAttributes.PhonesAttribute().apply {
+                destroy = false
+                customerId = custId!!
+                phoneNumber = it.phone_number
+            }
+            phonesAttributeList.add(phone)
+        }
+
+        return phonesAttributeList
     }
 
     private fun orderItemsAttributes(cartModel: CartModel): List<OrderItemsAttribute> {
@@ -151,9 +242,30 @@ open class PaymentViewModel @Inject constructor(
             orderItemsAttribute.totalPrice =
                 MethodUtils.roundOffAmountDouble(item.price * item.itemQuantity)
             orderItemsAttribute.orderItemTaxesAttributes = orderItemTaxesAttributes(item)
+            orderItemsAttribute.orderItemModifiersAttributes = orderItemModifierAttributes(item)
             orderItemsAttributeList.add(orderItemsAttribute)
         }
         return orderItemsAttributeList
+    }
+
+    private fun orderItemModifierAttributes(item: TbItem): List<OrderItemModifierAttribute> {
+
+        val orderItemModifierAttributeList: ArrayList<OrderItemModifierAttribute> =
+            arrayListOf()
+
+        item.modifiers.forEach {
+
+            val orderItemModifierAttribute = OrderItemModifierAttribute().apply {
+                name = it.name
+                price = it.price
+                order_item_id = item.itemId
+                modifier_set_id = it.modifierSetId!!
+                quantity = it.itemQuantity
+            }
+            orderItemModifierAttributeList.add(orderItemModifierAttribute)
+        }
+
+        return orderItemModifierAttributeList
     }
 
     private fun orderItemTaxesAttributes(items: TbItem): List<OrderItemTaxesAttribute> {

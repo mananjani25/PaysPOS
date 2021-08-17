@@ -12,6 +12,7 @@ import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
+import com.android.pos.data.entities.TbCustomer
 import com.android.pos.databinding.FragmentAssignCustomerOrderBinding
 import com.android.pos.ui.adapter.AssignCustomerToOrderAdapter
 import com.android.pos.ui.fragments.customer.CustomerListViewModel
@@ -89,7 +90,7 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
                         if (resource.data != null) {
 
                             val data =
-                                resource.data as ArrayList<com.android.pos.data.model.CustomerListResponse.Data>
+                                resource.data as ArrayList<TbCustomer>
                             adapter.add(data)
                         }
                         binding.rvCustomerList.visibility = View.VISIBLE

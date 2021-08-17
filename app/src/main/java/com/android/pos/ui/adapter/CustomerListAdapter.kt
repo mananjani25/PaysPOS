@@ -6,6 +6,7 @@ import android.widget.Filter
 import android.widget.Filterable
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
+import com.android.pos.data.entities.TbCustomer
 import com.android.pos.data.model.CustomerListResponse
 import com.android.pos.databinding.ViewCustomerListBinding
 import com.android.pos.utils.AlertUtils
@@ -18,11 +19,11 @@ class CustomerListAdapter(
     val listner: CustomerInteface
 ) :
     RecyclerView.Adapter<CustomerListAdapter.MyViewHolder>(), Filterable {
-    private var filterList: ArrayList<com.android.pos.data.model.CustomerListResponse.Data> =
+    private var filterList: ArrayList<TbCustomer> =
         arrayListOf()
     private val TAG = "CustomerListAdapter"
 
-    private var list: ArrayList<com.android.pos.data.model.CustomerListResponse.Data> =
+    private var list: ArrayList<TbCustomer> =
         arrayListOf()
     private var isSelectedPos: Int = -1
 
@@ -34,7 +35,7 @@ class CustomerListAdapter(
 
     inner class MyViewHolder(private val binding: ViewCustomerListBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(model: com.android.pos.data.model.CustomerListResponse.Data, pos: Int) {
+        fun bind(model: TbCustomer, pos: Int) {
 
 
             try {
@@ -146,13 +147,13 @@ class CustomerListAdapter(
         }
     }
 
-    fun getList(): ArrayList<com.android.pos.data.model.CustomerListResponse.Data> {
+    fun getList(): ArrayList<TbCustomer> {
         return filterList
     }
 
 
     interface CustomerInteface {
-        fun onCustomerSelect(pos: Int, model: com.android.pos.data.model.CustomerListResponse.Data)
+        fun onCustomerSelect(pos: Int, model: TbCustomer)
     }
 
     override fun getFilter(): Filter {
@@ -162,7 +163,7 @@ class CustomerListAdapter(
                 filterList = if (charString.isEmpty()) {
                     list
                 } else {
-                    val fList = ArrayList<CustomerListResponse.Data>()
+                    val fList = ArrayList<TbCustomer>()
 
 
 
@@ -198,7 +199,7 @@ class CustomerListAdapter(
 
 
                 if (results != null && results.count > 0) {
-                    filterList = results.values as ArrayList<CustomerListResponse.Data>
+                    filterList = results.values as ArrayList<TbCustomer>
                 }
 
                 notifyDataSetChanged()
@@ -207,11 +208,11 @@ class CustomerListAdapter(
         }
     }
 
-    fun getItem(position: Int): com.android.pos.data.model.CustomerListResponse.Data {
+    fun getItem(position: Int): TbCustomer {
         return filterList[position]
     }
 
-    fun setList(listData: ArrayList<com.android.pos.data.model.CustomerListResponse.Data>) {
+    fun setList(listData: ArrayList<TbCustomer>) {
         this.list = listData
         filterList = list
         notifyDataSetChanged()

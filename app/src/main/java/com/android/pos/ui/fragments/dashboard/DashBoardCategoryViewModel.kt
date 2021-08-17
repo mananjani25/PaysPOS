@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.entities.*
+import com.android.pos.data.model.CustomerListResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ADD
 import com.android.pos.data.remote.Constants.DELETE
@@ -42,6 +43,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     var subTotalPrice = 0.0
     var totalTax = 0.0
     var totalServiceCharge = 0.0
+    var assignCustomer: TbCustomer? = null
 
     val venueData = posRepository.syncVenueData()
 
@@ -200,6 +202,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             orderTypeId = prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
             orderType = prefProvider.getValue(Constants.ORDER_TYPE_NAME, "").toString()
             serviceCharge = serviceChargesList
+            customer = assignCustomer
             item.itemQuantity = item.itemQuantity
             inventoryModelList.add(item)
             items = inventoryModelList
@@ -267,6 +270,10 @@ class DashBoardCategoryViewModel @Inject constructor(
         if (mList != null) {
             this.serviceChargesList = mList
         }
+    }
+
+    fun addCustomer(customer: TbCustomer?) {
+        assignCustomer = customer
     }
 
 

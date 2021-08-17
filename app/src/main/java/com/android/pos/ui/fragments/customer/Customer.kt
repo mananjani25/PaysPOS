@@ -17,6 +17,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
+import com.android.pos.data.entities.TbCustomer
 import com.android.pos.data.model.CustomerDetailModel
 import com.android.pos.data.model.CustomerModel
 import com.android.pos.data.model.responseModel.EmployeeListResponse
@@ -41,7 +42,7 @@ class Customer : Fragment() {
     private lateinit var binding: FragmentCustomerBinding
     private lateinit var customerAdapter: CustomerListAdapter
     private val viewModel by viewModels<CustomerListViewModel>()
-    private val dynamicCustomerList: ArrayList<com.android.pos.data.model.CustomerListResponse.Data> =
+    private val dynamicCustomerList: ArrayList<TbCustomer> =
         arrayListOf()
     private var dialog: Dialog? = null
     private val TAG = "Customer"
@@ -82,7 +83,7 @@ class Customer : Fragment() {
             CustomerListAdapter.CustomerInteface {
             override fun onCustomerSelect(
                 pos: Int,
-                model: com.android.pos.data.model.CustomerListResponse.Data
+                model: TbCustomer
             ) {
 
                 binding.layoutTool.txtSubTitle.setText(model.first_name + " " + model.last_name)
@@ -142,7 +143,7 @@ class Customer : Fragment() {
                         ProgressUtils.dismissProgressDialog()
                         if (resource.data != null) {
                             val data =
-                                resource.data as ArrayList<com.android.pos.data.model.CustomerListResponse.Data>
+                                resource.data as ArrayList<TbCustomer>
 
                             Log.e(TAG, "getCustomerData ${Gson().toJson(data)}")
                             dynamicCustomerList.clear()
@@ -233,7 +234,7 @@ class Customer : Fragment() {
         })
     }
 
-    private fun loadFragment(model: com.android.pos.data.model.CustomerListResponse.Data) {
+    private fun loadFragment(model: TbCustomer) {
 
 
         val frag = CustomerDetails.newInstance(model)

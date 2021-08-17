@@ -10,7 +10,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
-import com.android.pos.data.model.CustomerDetailModel
+import com.android.pos.data.entities.TbCustomer
 import com.android.pos.databinding.FragmentCustomerBinding
 import com.android.pos.databinding.FragmentCustomerDetailsBinding
 import com.android.pos.utils.AlertUtils
@@ -19,12 +19,12 @@ import com.google.gson.Gson
 class CustomerDetails : Fragment() {
 
     private lateinit var binding: FragmentCustomerDetailsBinding
-    lateinit var customerModel: com.android.pos.data.model.CustomerListResponse.Data
+    lateinit var customerModel: TbCustomer
     val TAG = "CustomerDetails"
 
     companion object {
         private val CUSTOMER_MODEL = "customer_model"
-        fun newInstance(model: com.android.pos.data.model.CustomerListResponse.Data): CustomerDetails {
+        fun newInstance(model: TbCustomer): CustomerDetails {
             val args = Bundle()
             args.putParcelable(CUSTOMER_MODEL, model)
             val fragment = CustomerDetails()
@@ -50,7 +50,7 @@ class CustomerDetails : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         customerModel =
-            requireArguments().getParcelable<com.android.pos.data.model.CustomerListResponse.Data>(
+            requireArguments().getParcelable<TbCustomer>(
                 CUSTOMER_MODEL
             )!!
         binding.model = customerModel

@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName
 class OrderAttributeRequestModel {
 
     @SerializedName("customer_attributes")
-    val customerAttributes: CustomerAttributes? = null
+    var customerAttributes: CustomerAttributes? = null
 
     @SerializedName("date")
     var date: String = ""
@@ -88,77 +88,77 @@ class OrderAttributeRequestModel {
 
 data class CustomerAttributes(
     @SerializedName("addresses_attributes")
-    val addressesAttributes: List<AddressesAttribute>,
+    var addressesAttributes: List<AddressesAttribute> = emptyList(),
     @SerializedName("birth_date")
-    val birthDate: String,
+    var birthDate: String = "",
     @SerializedName("company_name")
-    val companyName: String,
+    var companyName: String = "",
     @SerializedName("emails_attributes")
-    val emailsAttributes: List<EmailsAttribute>,
+    var emailsAttributes: List<EmailsAttribute> = emptyList(),
     @SerializedName("first_name")
-    val firstName: String,
+    var firstName: String = "",
     @SerializedName("id")
-    val id: Int,
+    var id: Int = 0,
     @SerializedName("last_name")
-    val lastName: String,
+    var lastName: String = "",
     @SerializedName("location_id")
-    val locationId: Int,
+    var locationId: Int = 0,
     @SerializedName("note")
-    val note: String,
+    var note: String = "",
     @SerializedName("phones_attributes")
-    val phonesAttributes: List<PhonesAttribute>
+    var phonesAttributes: List<PhonesAttribute> = emptyList()
 ) {
     data class AddressesAttribute(
         @SerializedName("address_1")
-        val address1: String,
+        var address1: String = "",
         @SerializedName("address_2")
-        val address2: String,
+        var address2: String = "",
         @SerializedName("address_3")
-        val address3: String,
+        var address3: String = "",
         @SerializedName("addressable_id")
-        val addressableId: Int,
+        var addressableId: Int? = null,
         @SerializedName("addressable_type")
-        val addressableType: String,
+        var addressableType: String = "",
         @SerializedName("city")
-        val city: String,
+        var city: String = "",
         @SerializedName("country")
-        val country: String,
+        var country: String = "",
         @SerializedName("_destroy")
-        val destroy: String,
+        var destroy: Boolean = false,
         @SerializedName("id")
-        val id: Int,
+        var id: Int? = null,
         @SerializedName("latitude")
-        val latitude: Int,
+        var latitude: Double = 0.0,
         @SerializedName("longitude")
-        val longitude: Int,
+        var longitude: Double = 0.0,
         @SerializedName("postcode")
-        val postcode: String,
+        var postcode: String = "",
         @SerializedName("state")
-        val state: String,
+        var state: String = "",
         @SerializedName("type_of_address")
-        val typeOfAddress: String
+        var typeOfAddress: String = ""
     )
 
     data class EmailsAttribute(
         @SerializedName("customer_id")
-        val customerId: Int,
+        var customerId: Int = 0,
         @SerializedName("_destroy")
-        val destroy: String,
+        var destroy: Boolean = false,
         @SerializedName("email_address")
-        val emailAddress: String,
+        var emailAddress: String = "",
         @SerializedName("id")
-        val id: Int
+        var id: Int? = null
     )
 
     data class PhonesAttribute(
         @SerializedName("customer_id")
-        val customerId: Int,
+        var customerId: Int = 0,
         @SerializedName("_destroy")
-        val destroy: String,
+        var destroy: Boolean = false,
         @SerializedName("id")
-        val id: Int,
+        var id: Int? = null,
         @SerializedName("phone_number")
-        val phoneNumber: String
+        var phoneNumber: String = ""
     )
 }
 
@@ -228,6 +228,9 @@ class OrderItemsAttribute {
 
     @SerializedName("total_price")
     var totalPrice: Double = 0.0
+
+    @SerializedName("order_item_modifiers_attributes")
+    var orderItemModifiersAttributes: List<OrderItemModifierAttribute> = emptyList()
 }
 
 class OrderItemTaxesAttribute {
@@ -259,6 +262,29 @@ class OrderItemTaxesAttribute {
     var taxType: String = ""
 }
 
+class OrderItemModifierAttribute {
+    @SerializedName("id")
+    var id: Int? = null
+
+    @SerializedName("order_item_id")
+    var order_item_id: Int? = null
+
+    @SerializedName("name")
+    var name: String = ""
+
+    @SerializedName("order_id")
+    var orderId: Int? = null
+
+    @SerializedName("price")
+    var price: Double = 0.0
+
+    @SerializedName("quantity")
+    var quantity: Int = 0
+
+    @SerializedName("modifier_set_id")
+    var modifier_set_id: Int = 0
+
+}
 
 data class OrderServiceChargesAttribute(
     @SerializedName("amount")

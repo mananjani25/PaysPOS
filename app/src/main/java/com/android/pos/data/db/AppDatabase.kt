@@ -19,9 +19,9 @@ import com.android.pos.data.typeconvert.*
     entities = [CharacterModel::class, TbCategory::class, TbItem::class, TaxData::class,
         GetTipReponse.Data::class, TbDiscount::class, NoteResponse.Data::class,
         TbServiceCharge::class, Employee::class, CartModel::class,
-        CustomerListResponse.Data::class, ModifierSet::class, TeamRole::class, ItemModifierSet::class,
+        TbCustomer::class, ModifierSet::class, TeamRole::class, ItemModifierSet::class,
         ModulePermission::class, TbOrderType::class],
-    version = 1
+    version = 2
 )
 @TypeConverters(
     TypeConvertersIds::class,
@@ -31,7 +31,8 @@ import com.android.pos.data.typeconvert.*
     TCModifier::class,
     TypeConvertersTax::class,
     TypeConvertersModule::class,
-    TCServiceCharge::class
+    TCServiceCharge::class,
+    TCCustomer::class
 )
 
 

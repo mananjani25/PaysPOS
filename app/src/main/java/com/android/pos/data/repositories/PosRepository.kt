@@ -230,7 +230,7 @@ class PosRepository @Inject constructor(
     suspend fun createEmployeeDatabase(data: Employee) =
         appDatabase.employeeDao().addEmployee(data)
 
-    suspend fun addCustomer(data: CustomerListResponse.Data) =
+    suspend fun addCustomer(data: TbCustomer) =
         appDatabase.customerDao().addCustomer(data)
 
 

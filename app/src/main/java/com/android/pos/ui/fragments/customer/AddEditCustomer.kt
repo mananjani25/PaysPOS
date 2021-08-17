@@ -19,6 +19,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.android.pos.data.entities.TbCustomer
 import com.android.pos.data.model.requestModel.CreateCustomerRequestModel
 import com.android.pos.databinding.FragmentAddEditCustomerBinding
 import com.android.pos.ui.adapter.AddressListAdapter
@@ -147,8 +148,8 @@ class AddEditCustomer : Fragment() {
         if (isEdit) {
             binding.txtCustomerType.setText("Edit Customer")
 
-            val editModel: com.android.pos.data.model.CustomerListResponse.Data? =
-                requireArguments().getParcelable<com.android.pos.data.model.CustomerListResponse.Data>(
+            val editModel: TbCustomer? =
+                requireArguments().getParcelable<TbCustomer>(
                     "dataModel"
                 )
 

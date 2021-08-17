@@ -11,6 +11,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.R
+import com.android.pos.data.entities.TbCustomer
 import com.android.pos.data.model.CustomerListResponse
 import com.android.pos.data.model.requestModel.CreateCustomerRequestModel
 import com.android.pos.data.model.responseModel.BaseResponse
@@ -219,7 +220,7 @@ class AddCustomerViewModel @Inject constructor(
 
                                 resource.data?.let { customerListReposne ->
 
-                                    val model = CustomerListResponse.Data(
+                                    val model = TbCustomer(
                                         id = customerListReposne.data.id,
                                         first_name = customerListReposne.data.first_name,
                                         last_name = customerListReposne.data.last_name,

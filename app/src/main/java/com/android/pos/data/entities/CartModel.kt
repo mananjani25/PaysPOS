@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
+import com.android.pos.data.model.CustomerListResponse
 import com.android.pos.data.typeconvert.TypeConvertersItems
 import kotlinx.parcelize.Parcelize
 
@@ -24,6 +25,7 @@ class CartModel : Parcelable {
     var note: String = ""
     var orderType: String = ""
     var orderTypeId: Int = 0
+    var customer: TbCustomer? = null
 
 
 }

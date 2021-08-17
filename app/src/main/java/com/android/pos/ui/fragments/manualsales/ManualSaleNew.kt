@@ -136,7 +136,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
 
     private fun listner() {
         setFragmentResultListener("request_key_customer") { requestKey: String, bundle: Bundle ->
-            val result = bundle.getParcelable<CustomerListResponse.Data>("data")
+            val result = bundle.getParcelable<TbCustomer>("data")
             if (result != null) {
                 prefProvider.setValue(
                     SALE_CUSTOMER_NAME,

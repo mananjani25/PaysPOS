@@ -2,6 +2,7 @@ package com.android.pos.data.typeconvert;
 
 import androidx.room.TypeConverter;
 
+import com.android.pos.data.entities.TbPhones;
 import com.android.pos.data.model.CustomerListResponse;
 import com.android.pos.data.model.responseModel.GetTaxResponse;
 import com.google.gson.Gson;
@@ -15,19 +16,19 @@ public class TypeConvertorPhone {
     private static final Gson gson = new Gson();
 
     @TypeConverter
-    public static List<CustomerListResponse.Data.Phones> stringToSomeObjectList(String data) {
+    public static List<TbPhones> stringToSomeObjectList(String data) {
         if (data == null) {
             return Collections.emptyList();
         }
 
-        Type listType = new TypeToken<List<CustomerListResponse.Data.Phones>>() {
+        Type listType = new TypeToken<List<TbPhones>>() {
         }.getType();
 
         return gson.fromJson(data, listType);
     }
 
     @TypeConverter
-    public static String someObjectListToString(List<CustomerListResponse.Data.Phones> someObjects) {
+    public static String someObjectListToString(List<TbPhones> someObjects) {
         return gson.toJson(someObjects);
     }
 

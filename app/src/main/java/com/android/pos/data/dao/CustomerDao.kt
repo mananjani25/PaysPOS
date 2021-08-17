@@ -5,25 +5,26 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.android.pos.data.entities.TbCustomer
 import com.android.pos.data.model.CustomerListResponse
 
 @Dao
 interface CustomerDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun addAllCustomer(customerList: List<CustomerListResponse.Data>)
+    fun addAllCustomer(customerList: List<TbCustomer>)
 
     @get:Query("select * from TbCustomer ORDER BY TbCustomer.id DESC")
-    val allCustomer: LiveData<List<CustomerListResponse.Data>>
+    val allCustomer: LiveData<List<TbCustomer>>
 
     @Query("select * from TbCustomer")
-    fun allCustomerList(): List<CustomerListResponse.Data>
+    fun allCustomerList(): List<TbCustomer>
 
     @Query("DELETE FROM TbCustomer where TbCustomer.id = :id")
     suspend fun deleteCustomerByID(id: Int)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun addCustomer(customerModel: CustomerListResponse.Data): Long
+    suspend fun addCustomer(customerModel: TbCustomer): Long
 
     @Query("DELETE FROM TbCustomer")
     suspend fun deleteCustomerTb()

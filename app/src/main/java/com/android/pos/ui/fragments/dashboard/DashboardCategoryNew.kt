@@ -27,7 +27,6 @@ import com.android.pos.R
 import com.android.pos.data.entities.*
 import com.android.pos.data.model.CategorySearchData
 import com.android.pos.data.model.CategoryTabModel
-import com.android.pos.data.model.CustomerListResponse
 import com.android.pos.data.remote.Constants.ADD
 import com.android.pos.data.remote.Constants.CUSTOMER_NAME
 import com.android.pos.data.remote.Constants.DELETE
@@ -51,14 +50,17 @@ import com.android.pos.utils.statusUtils.Status
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
+import java.text.SimpleDateFormat
+import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 
 @AndroidEntryPoint
 class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, MyCallback,
     ItemCallback, View.OnClickListener {
 
-    private var assignCustomer: CustomerListResponse.Data? = null
+    private var assignCustomer: TbCustomer? = null
     private var serviceChargesList: List<TbServiceCharge>? = null
     private var singleItem: TbItem? = null
     private var cartList: List<CartModel> = emptyList()
@@ -292,7 +294,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         )
 
         setFragmentResultListener("request_key_customer") { requestKey: String, bundle: Bundle ->
-            val result = bundle.getParcelable<CustomerListResponse.Data>("data")
+            val result = bundle.getParcelable<TbCustomer>("data")
             if (result != null) {
 
                 Log.e("request_key_customer", result.first_name)
@@ -840,8 +842,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         if (item.modifier_set_ids.isEmpty()) {
             item.itemQuantity = item.itemQuantity + 1
-            if (cartList.isEmpty())
+            if (cartList.isEmpty()) {
                 viewModel.setServiceCharges(serviceChargesList)
+            }
+
             viewModel.cartLogic(cartList, item, ADD)
         } else {
 
@@ -945,8 +949,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     data.modifiers = modifiers
                 }
 
-                if (cartList.isEmpty())
+                if (cartList.isEmpty()) {
                     viewModel.setServiceCharges(serviceChargesList)
+                }
 
                 if (isItemClick) {
                     viewModel.cartLogic(cartList, data, ADD)
@@ -1097,6 +1102,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     bundle.putDouble("subTotalPrice", viewModel.subTotalPrice)
                     bundle.putDouble("totalTax", viewModel.totalTax)
                     bundle.putDouble("totalServiceCharge", viewModel.totalServiceCharge)
+                    cartList[0].customer = assignCustomer
                     bundle.putParcelable("cartList", cartList[0])
 
                     findNavController().navigate(

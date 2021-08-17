@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
 import androidx.recyclerview.widget.RecyclerView
+import com.android.pos.data.entities.TbCustomer
 import com.android.pos.data.model.CustomerListResponse
 import com.android.pos.databinding.ViewCustomerAssignOrderBinding
 import com.android.pos.utils.AlertUtils
@@ -16,27 +17,27 @@ import kotlin.collections.ArrayList
 class AssignCustomerToOrderAdapter :
     RecyclerView.Adapter<AssignCustomerToOrderAdapter.MyViewHolder>(), Filterable {
 
-    private var mList = ArrayList<CustomerListResponse.Data>()
-    private var filterList = ArrayList<CustomerListResponse.Data>()
+    private var mList = ArrayList<TbCustomer>()
+    private var filterList = ArrayList<TbCustomer>()
 
     private lateinit var mCallback: ItemCallback
     fun setCallback(callback: ItemCallback) {
         mCallback = callback
     }
 
-    fun getItem(position: Int): CustomerListResponse.Data {
+    fun getItem(position: Int): TbCustomer {
         return filterList[position]
     }
 
-    fun add(categoryModel: List<CustomerListResponse.Data>) {
-        this.mList = categoryModel as ArrayList<CustomerListResponse.Data>
+    fun add(categoryModel: List<TbCustomer>) {
+        this.mList = categoryModel as ArrayList<TbCustomer>
         this.filterList = categoryModel
         notifyDataSetChanged()
     }
 
     inner class MyViewHolder(private val binding: ViewCustomerAssignOrderBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: CustomerListResponse.Data) {
+        fun bind(item: TbCustomer) {
             binding.model = item
             binding.executePendingBindings()
 
@@ -104,7 +105,7 @@ class AssignCustomerToOrderAdapter :
                 filterList = if (charString.isEmpty()) {
                     mList
                 } else {
-                    val fList = ArrayList<CustomerListResponse.Data>()
+                    val fList = ArrayList<TbCustomer>()
 
 
 
@@ -140,7 +141,7 @@ class AssignCustomerToOrderAdapter :
 
 
                 if (results != null && results.count > 0) {
-                    filterList = results.values as ArrayList<CustomerListResponse.Data>
+                    filterList = results.values as ArrayList<TbCustomer>
                 }
 
                 notifyDataSetChanged()
