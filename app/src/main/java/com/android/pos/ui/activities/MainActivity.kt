@@ -1,6 +1,5 @@
 package com.android.pos.ui.activities
 
-import android.app.Activity
 import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -10,31 +9,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
 import android.widget.ImageView
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.android.pos.R
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.IS_CLOCKOUT
 import com.android.pos.data.remote.Constants.PASSCODE
 import com.android.pos.data.remote.Constants.TERMINAL_ID
-import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.UserRepository
 import com.android.pos.databinding.ParentActivityBinding
 import com.android.pos.di.PrefProvider
-import com.android.pos.ui.fragments.loginscreen.LoginViewModel
-import com.android.pos.utils.Event
-import com.android.pos.utils.ProgressUtils
-import com.android.pos.utils.extensions.AlertDialogHelper
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
@@ -101,6 +91,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.menuOrders -> {
                     disableDrawer()
+                    navController?.navigate(R.id.action_global_orders)
                     return@setNavigationItemSelectedListener true
                 }
                 R.id.menuTransactions -> {

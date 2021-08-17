@@ -116,4 +116,8 @@ object Constants {
     const val REORDER_MODIFIER = "modifier_sets/{id}/reorder"
 
     const val ORDERS = "orders"
+
+    const val ACTIVE_ORDER = "active_order"
+    const val UPCOMING_ORDER = "upcoming_order"
+    const val COMPLETED_ORDER = "completed_order"
 }

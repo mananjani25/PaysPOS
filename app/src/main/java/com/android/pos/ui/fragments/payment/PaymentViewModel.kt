@@ -239,8 +239,8 @@ open class PaymentViewModel @Inject constructor(
             orderItemsAttribute.totalPrice =
                 MethodUtils.roundOffAmountDouble(item.price * item.itemQuantity)
             orderItemsAttribute.orderItemTaxesAttributes = orderItemTaxesAttributes(item)
-            orderItemsAttribute.orderItemModifiersAttributes =
-                orderItemModifierAttributes(item, cartModel.terminalId)
+//            orderItemsAttribute.orderItemModifiersAttributes =
+//                orderItemModifierAttributes(item, cartModel.terminalId)
             orderItemsAttributeList.add(orderItemsAttribute)
         }
         return orderItemsAttributeList

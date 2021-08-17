@@ -379,6 +379,9 @@
             android:id="@+id/action_dashboardCategoryNew_to_manualSales"
             app:destination="@id/manualSaleNew"
             app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_dashboardCategoryNew_to_orders"
+            app:destination="@id/orders" />
 
     </fragment>
     <action
@@ -626,6 +629,13 @@
             android:id="@+id/action_orderCompleteFragment_to_assignCustomerOrderFragment"
             app:destination="@id/assignCustomerOrderFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/orders"
+        android:name="com.android.pos.ui.fragments.orders.Orders"
+        android:label="Orders" />
+    <action
+        android:id="@+id/action_global_orders"
+        app:destination="@id/orders" />
 
 
 </navigation>

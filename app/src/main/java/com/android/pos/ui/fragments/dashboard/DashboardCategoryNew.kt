@@ -50,10 +50,7 @@ import com.android.pos.utils.statusUtils.Status
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
-import java.text.SimpleDateFormat
-import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 
 @AndroidEntryPoint
@@ -433,6 +430,12 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         }
         linearSetting.setOnClickListener {
             findNavController().navigate(R.id.action_dashboardCategoryNew_to_settings)
+            dialog.dismiss()
+        }
+
+        linearOrders.setOnClickListener {
+
+            findNavController().navigate(R.id.action_dashboardCategoryNew_to_orders)
             dialog.dismiss()
         }
 
