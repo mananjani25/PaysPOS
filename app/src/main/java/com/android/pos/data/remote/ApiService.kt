@@ -377,4 +377,6 @@ interface ApiService {
 
     @GET(KITCHEN_RECEIPT_SETTINGS)
     suspend fun getKitchenReceiptSettings(): GetKitchenReceiptSettingsResponse
+
+
 }

@@ -17,6 +17,7 @@ import com.android.pos.databinding.DailogAddDiscountBinding
 import com.android.pos.ui.adapter.DialogDiscountListAdapter
 import com.android.pos.ui.fragments.settings.discount.DiscountListViewModel
 import com.android.pos.utils.AmountTextWatcher
+import com.android.pos.utils.PercentageTextWatcher
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -58,19 +59,23 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
 
         if (binding.swtDiscountType.isChecked) {
-            binding.edtAmount.addTextChangedListener(AmountTextWatcher(binding.edtAmount, true))
-        }else{
-            binding.edtAmount.addTextChangedListener(AmountTextWatcher(binding.edtAmount, false))
+            binding.txtCurrency.setText("%")
+            binding.edtAmount.addTextChangedListener(PercentageTextWatcher(binding.edtAmount))
+        } else {
+            binding.txtCurrency.setText("$")
+            binding.edtAmount.addTextChangedListener(PercentageTextWatcher(binding.edtAmount))
         }
 
         binding.swtDiscountType.setOnCheckedChangeListener { buttonView, isChecked ->
 
             if (isChecked) {
-                binding.edtAmount.addTextChangedListener(AmountTextWatcher(binding.edtAmount, true))
+                binding.txtCurrency.setText("%")
+                binding.edtAmount.addTextChangedListener(PercentageTextWatcher(binding.edtAmount))
 
             } else {
 
-                binding.edtAmount.addTextChangedListener(AmountTextWatcher(binding.edtAmount, false))
+                binding.txtCurrency.setText("$")
+                binding.edtAmount.addTextChangedListener(PercentageTextWatcher(binding.edtAmount))
             }
 
         }
@@ -255,15 +260,6 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         } else {
             binding.edtAmount.append(number)
         }
-        if (binding.swtDiscountType.isChecked) {
-            val newText = binding.edtAmount.text.toString().replace("$", "")
-            //binding.edtAmount.setText(newText)
-        } else {
-            val newText = binding.edtAmount.text.toString().replace("", "$")
-            //binding.edtAmount.setText(newText)
-        }
-
-
     }
 
     private fun removeLastCharacter(str: String): String {

@@ -103,13 +103,10 @@ class ManualSaleViewModel @Inject constructor(
                         }
                     }
 
-                    Log.e(TAG, "UPDATEINDEX  ${index}")
-
-
                 } else if (type == DELETE) {
                     list.remove(item)
                 }
-                Log.e(TAG, "AddedList  ${Gson().toJson(list)}")
+
                 val cartModel = CartModel().apply {
                     cartId = cartList[0].cartId
                     items = list
