@@ -1084,7 +1084,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         // Do positive stuff here
                         viewModel.deleteCart()
 
-                        hideMenu()
+                        hideOrderMenu()
                     }
                     negativeButton(R.string.tv_cancel) {
                         // Do negative stuff here
