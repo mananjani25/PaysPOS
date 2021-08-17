@@ -85,6 +85,5 @@ data class GetCustomerReceiptSettingsResponse(
 
         val updatedAt: String = "",
 
-
         )
 }

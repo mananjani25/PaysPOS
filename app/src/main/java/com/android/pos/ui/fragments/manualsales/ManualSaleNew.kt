@@ -567,10 +567,12 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
         val btnRemove: AppCompatTextView = dialog.findViewById(R.id.btnRemove)
         val btnAddDiscount: AppCompatTextView = dialog.findViewById(R.id.btnAddDiscount)
         val edtNote: AppCompatEditText = dialog.findViewById(R.id.edtNote)
+        val edtItemName: AppCompatEditText = dialog.findViewById(R.id.edtItemName)
 
         edtNote.setText(model.note)
         var qty = model.itemQuantity
 
+        edtItemName.setText(model.name)
         txtQty.setText(qty.toString())
         if (model.discountPrice != 0.0) {
             txtTitle.text = model.name + "  $" + String.format(
@@ -610,12 +612,9 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
 
             model.note = edtNote.text.toString().trim()
             model.itemQuantity = txtQty.text.toString().toInt()
+            model.name = edtItemName.text.toString()
 
             model.price = String.format("%.2f", (itemCost * model.itemQuantity)).toDouble()
-
-            Log.e(TAG, "discountPriceDialog ${model.discountPrice}")
-
-            Log.e(TAG, "ParseModelMy:  ${Gson().toJson(model)}")
 
             viewModel.cartLogic(cartList, model, Constants.UPDATE)
         }

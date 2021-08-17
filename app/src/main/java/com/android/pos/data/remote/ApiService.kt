@@ -8,6 +8,7 @@ import com.android.pos.data.remote.Constants.CATEGORY
 import com.android.pos.data.remote.Constants.CATEGORY_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.CLOCK_OUT
 import com.android.pos.data.remote.Constants.CUSTOMERS
+import com.android.pos.data.remote.Constants.CUSTOMER_RECEIPTS_UPDATE_SETTINGS
 import com.android.pos.data.remote.Constants.CUSTOMER_RECEIPT_SETTINGS
 import com.android.pos.data.remote.Constants.CUSTOMER_UPDATE
 import com.android.pos.data.remote.Constants.DISCOUNTS
@@ -389,6 +390,10 @@ interface ApiService {
 
     @GET(CUSTOMER_RECEIPT_SETTINGS)
     suspend fun getCustomerReceiptSettings(): GetCustomerReceiptSettingsResponse
+
+    @PUT(CUSTOMER_RECEIPTS_UPDATE_SETTINGS)
+    suspend fun updateCustomerReceiptSettings(@Path("id")id:Int,@Body requestModel:UpdateCustomerReceiptRequestModel):GetCustomerReceiptSettingsResponse
+
 
 
 }

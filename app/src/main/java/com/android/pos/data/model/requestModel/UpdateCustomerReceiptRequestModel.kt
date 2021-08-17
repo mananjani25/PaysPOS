@@ -3,75 +3,64 @@ package com.android.pos.data.model.requestModel
 import com.google.gson.annotations.SerializedName
 
 data class UpdateCustomerReceiptRequestModel(
-    @SerializedName("id")
-    val id: Int? = null,
     @SerializedName("fonts")
-    val fonts: String = "",
+    var fonts: String = "",
     @SerializedName("show_order_id_top")
-    val showOrderIdTop: Boolean = false,
+    var showOrderIdTop: Boolean = false,
     @SerializedName("show_modifiers")
-    val showModifiers: Boolean = false,
+    var showModifiers: Boolean = false,
     @SerializedName("show_order_note")
 
     val showOrderNote: Boolean = false,
 
     @SerializedName("show_split_amount")
-    val showSplitAmount: Boolean = false,
+    var showSplitAmount: Boolean = false,
     @SerializedName("show_rolled_over")
 
-    val showRolledOver: Boolean = false,
+    var showRolledOver: Boolean = false,
     @SerializedName("rolled_over_number")
 
     val rolledOverNumber: Int? = null,
     @SerializedName("show_order_type")
 
-    val showOrderType: Boolean = false,
+    var showOrderType: Boolean = false,
     @SerializedName("show_team")
 
     val showTeam: Boolean = false,
     @SerializedName("show_order_time")
-    val showOrderTime: Boolean = false,
+    var showOrderTime: Boolean = false,
     @SerializedName("show_print_time")
 
-    val showPrintTime: Boolean = false,
+    var showPrintTime: Boolean = false,
     @SerializedName("show_refund_amount")
-    val showRefundAmount: Boolean = false,
+    var showRefundAmount: Boolean = false,
     @SerializedName("show_venue_logo")
 
-    val showVenueLogo: Boolean = false,
+    var showVenueLogo: Boolean = false,
     @SerializedName("show_venue_phone")
 
     val showVenuePhone: Boolean = false,
     @SerializedName("show_venue_address")
 
-    val showVenueAddress: Boolean = false,
+    var showVenueAddress: Boolean = false,
     @SerializedName("show_website_address")
-    val showWebsiteAddress: Boolean = false,
+    var showWebsiteAddress: Boolean = false,
     @SerializedName("show_customer_name")
-    val showCustomerName: Boolean = false,
+    var showCustomerName: Boolean = false,
     @SerializedName("show_customer_phone")
-    val showCustomerPhone: Boolean = false,
+    var showCustomerPhone: Boolean = false,
     @SerializedName("show_customer_address")
-    val showCustomerAddress: Boolean = false,
+    var showCustomerAddress: Boolean = false,
     @SerializedName("show_tip_suggestion")
-    val showTipSuggestion: Boolean = false,
+    var showTipSuggestion: Boolean = false,
     @SerializedName("show_tip_line_for_cash")
-    val showTipLineForCash: Boolean = false,
+    var showTipLineForCash: Boolean = false,
     @SerializedName("show_qr_code")
-    val showQrCode: Boolean = false,
+    var showQrCode: Boolean = false,
     @SerializedName("show_custom_note")
 
-    val showCustomNote: Boolean = false,
+    var showCustomNote: Boolean = false,
     @SerializedName("custom_note")
-
     val customNote: String = "",
-    @SerializedName("location_id")
 
-    val locationId: Int? = null,
-    @SerializedName("created_at")
-
-    val createdAt: String = "",
-    @SerializedName("updated_at")
-
-    val updatedAt: String = "",
-)
+    )

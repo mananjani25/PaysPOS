@@ -86,6 +86,7 @@ object Constants {
     const val CUSTOMER_RECEIPTS_UPDATE_SETTINGS = "customer_receipts/{id}"
 
 
+
     const val VERTICAL = "vertical"
     const val HORIZONTAL = "horizontal"
 

@@ -73,6 +73,38 @@
                 android:orientation="vertical"
                 android:padding="@dimen/_20sdp">
 
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:paddingBottom="@dimen/_5sdp"
+                    android:text="CUSTOM  ITEM  NAME"
+                    android:textColor="@color/viewTextColor"
+                    android:textSize="@dimen/_5mdpi"
+                    app:textAllCaps="true" />
+
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/edtItemName"
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top"
+                    android:layout_marginTop="@dimen/_3sdp"
+                    android:background="@drawable/edt_border_light_gray"
+                    android:ellipsize="end"
+                    android:gravity="top"
+                    android:inputType="textMultiLine"
+                    android:minLines="1"
+                    android:padding="@dimen/_5sdp"
+                    android:singleLine="true"
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/hintColor"
+                    android:textSize="@dimen/_6ssp" />
+
+
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvModifierSets"
                     android:layout_width="match_parent"
@@ -176,45 +208,49 @@
                     android:textColorHint="@color/hintColor"
                     android:textSize="@dimen/_6ssp" />
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/btnRemove"
-                    style="@style/CustomFontBold"
+                <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
                     android:layout_marginTop="@dimen/_10sdp"
                     android:layout_marginBottom="@dimen/_5sdp"
-                    android:background="@drawable/bg_button_border_gray"
-                    android:gravity="center"
-                    android:padding="@dimen/_5sdp"
-                    android:text="@string/remove_item"
-                    android:textColor="@color/btnColor"
-                    android:textSize="@dimen/_6mdpi"
-                    app:textAllCaps="false" />
+                    android:orientation="horizontal"
+                    android:weightSum="2">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="" />
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/btnRemove"
+                        style="@style/CustomFontBold"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginEnd="@dimen/_5sdp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_button_border_gray"
+                        android:gravity="center"
+                        android:padding="@dimen/_5sdp"
+                        android:text="@string/remove_item"
+                        android:textColor="@color/btnColor"
+                        android:textSize="@dimen/_6mdpi"
+                        app:textAllCaps="false" />
 
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/btnAddDiscount"
-                    style="@style/CustomFontBold"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="@dimen/_10sdp"
-                    android:layout_marginBottom="@dimen/_5sdp"
-                    android:background="@drawable/bg_button_border_gray"
-                    android:gravity="center"
-                    android:padding="@dimen/_5sdp"
-                    android:text="@string/add_discount"
-                    android:textColor="@color/btnColor"
-                    android:textSize="@dimen/_6mdpi"
-                    android:visibility="visible"
-                    app:textAllCaps="false" />
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/btnAddDiscount"
+                        style="@style/CustomFontBold"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="@dimen/_5sdp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_button_border_gray"
+                        android:gravity="center"
+                        android:padding="@dimen/_5sdp"
+                        android:text="@string/add_discount"
+                        android:textColor="@color/btnColor"
+                        android:textSize="@dimen/_6mdpi"
+                        android:visibility="visible"
+                        app:textAllCaps="false" />
 
+                </androidx.appcompat.widget.LinearLayoutCompat>
 
             </androidx.appcompat.widget.LinearLayoutCompat>
         </androidx.core.widget.NestedScrollView>

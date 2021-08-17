@@ -4,10 +4,7 @@ import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.entities.TaxData
 import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.entities.TeamRole
-import com.android.pos.data.model.requestModel.CreateServiceChargeRequestModel
-import com.android.pos.data.model.requestModel.CreateTaxRequestModel
-import com.android.pos.data.model.requestModel.CreateTeamRoleRequestModel
-import com.android.pos.data.model.requestModel.UpdateKitchenReceiptRequestModel
+import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.remote.ApiHelper
 import com.android.pos.utils.performGetOperation
 import com.android.pos.utils.performGetOperationNew
@@ -116,6 +113,9 @@ class TaxServiceChargeRepository @Inject constructor(
 
     suspend fun updateKitchenReceiptSettings(id:Int?,model:UpdateKitchenReceiptRequestModel)=
         apiHelperNew.updateKitchenSettings(id!!,model)
+
+    suspend fun updateCustomerReceiptSettings(id:Int,model:UpdateCustomerReceiptRequestModel) =
+        apiHelperNew.updateCustomerSettings(id,model)
 
 
 }

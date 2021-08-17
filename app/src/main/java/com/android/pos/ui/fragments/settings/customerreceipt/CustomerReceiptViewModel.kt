@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.data.db.AppDatabase
+import com.android.pos.data.model.requestModel.UpdateCustomerReceiptRequestModel
 import com.android.pos.data.model.responseModel.GetCustomerReceiptSettingsResponse
 import com.android.pos.data.repositories.TaxServiceChargeRepository
 import com.android.pos.di.PrefProvider
@@ -24,12 +25,12 @@ class CustomerReceiptViewModel @Inject constructor(
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     private val _showProgress = MutableLiveData<Event<Boolean>>()
 
-    private val customerData = MutableLiveData<GetCustomerReceiptSettingsResponse>()
+    val customerData = MutableLiveData<GetCustomerReceiptSettingsResponse>()
 
     private val _data = MutableLiveData<Event<String>>()
     val data: LiveData<Event<String>> = _data
     val showProgress: LiveData<Event<Boolean>> = _showProgress
-
+    val customerId = MutableLiveData<Int>()
 
 
     init {
@@ -45,6 +46,7 @@ class CustomerReceiptViewModel @Inject constructor(
                     _showProgress.value = Event(false)
                     resource.data.let {
                         customerData.value = it
+                        customerId.value = it?.data?.id!!
 
                     }
 
@@ -58,6 +60,28 @@ class CustomerReceiptViewModel @Inject constructor(
         }
 
 
+    }
+
+    fun updateCustomer(model: UpdateCustomerReceiptRequestModel) {
+        _showProgress.value = Event(true)
+        viewModelScope.launch {
+            val resource =
+                taxServiceChargeRepository.updateCustomerReceiptSettings(customerId.value!!, model)
+            when (resource.status) {
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
+                Status.SUCCESS -> {
+
+                    _showProgress.value = Event(false)
+                    _data.value = Event(resource.data?.message!!)
+                }
+                Status.ERROR -> {
+                    _snackbarText.value = Event(true)
+                }
+
+            }
+        }
     }
 
 }

@@ -49,6 +49,7 @@
             android:textSize="@dimen/_6mdpi" />
 
         <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/swtOrderTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
@@ -82,6 +83,7 @@
             android:textSize="@dimen/_6mdpi" />
 
         <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/swtPrintTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
@@ -139,6 +141,7 @@
             android:textSize="@dimen/_6mdpi" />
 
         <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/swtRfundAmt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
@@ -196,6 +199,7 @@
             android:textSize="@dimen/_6mdpi" />
 
         <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/swtLogo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
@@ -229,6 +233,7 @@
             android:textSize="@dimen/_6mdpi" />
 
         <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/swtPhoto"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
@@ -262,6 +267,7 @@
             android:textSize="@dimen/_6mdpi" />
 
         <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/swtWebAddress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
@@ -295,6 +301,7 @@
             android:textSize="@dimen/_6mdpi" />
 
         <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/swtAddress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
@@ -358,6 +365,7 @@
             android:textSize="@dimen/_6mdpi" />
 
         <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/swtName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
@@ -391,6 +399,7 @@
             android:textSize="@dimen/_6mdpi" />
 
         <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/swtPhone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
@@ -424,6 +433,7 @@
             android:textSize="@dimen/_6mdpi" />
 
         <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/swtCustAddress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
@@ -482,6 +492,7 @@
             android:textSize="@dimen/_6mdpi" />
 
         <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/swtTipSuggestion"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
@@ -544,6 +555,7 @@
             android:textSize="@dimen/_6mdpi" />
 
         <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/swtTipCash"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
@@ -606,6 +618,7 @@
             android:textSize="@dimen/_6mdpi" />
 
         <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/swtQrCode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
@@ -668,6 +681,7 @@
             android:textSize="@dimen/_6mdpi" />
 
         <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/swtCustomNote"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
