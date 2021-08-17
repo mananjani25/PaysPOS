@@ -6,10 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.data.db.AppDatabase
-import com.android.pos.data.entities.CartModel
-import com.android.pos.data.entities.TbCustomer
-import com.android.pos.data.entities.TbItem
-import com.android.pos.data.entities.TbPhones
+import com.android.pos.data.entities.*
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.remote.Constants
@@ -242,13 +239,17 @@ open class PaymentViewModel @Inject constructor(
             orderItemsAttribute.totalPrice =
                 MethodUtils.roundOffAmountDouble(item.price * item.itemQuantity)
             orderItemsAttribute.orderItemTaxesAttributes = orderItemTaxesAttributes(item)
-            orderItemsAttribute.orderItemModifiersAttributes = orderItemModifierAttributes(item)
+            orderItemsAttribute.orderItemModifiersAttributes =
+                orderItemModifierAttributes(item, cartModel.terminalId)
             orderItemsAttributeList.add(orderItemsAttribute)
         }
         return orderItemsAttributeList
     }
 
-    private fun orderItemModifierAttributes(item: TbItem): List<OrderItemModifierAttribute> {
+    private fun orderItemModifierAttributes(
+        item: TbItem,
+        terminalId: Int
+    ): List<OrderItemModifierAttribute> {
 
         val orderItemModifierAttributeList: ArrayList<OrderItemModifierAttribute> =
             arrayListOf()
@@ -261,11 +262,43 @@ open class PaymentViewModel @Inject constructor(
                 order_item_id = item.itemId
                 modifier_set_id = it.modifierSetId!!
                 quantity = it.itemQuantity
+                order_item_taxes_attributes = orderModifierTaxesAttributes(item, it, terminalId)
             }
             orderItemModifierAttributeList.add(orderItemModifierAttribute)
         }
 
         return orderItemModifierAttributeList
+    }
+
+    private fun orderModifierTaxesAttributes(
+        items: TbItem,
+        modifier: Modifier,
+        terminalId: Int
+    ): List<OrderModifierTaxesAttribute> {
+
+        val orderItemTaxesAttributeList: ArrayList<OrderModifierTaxesAttribute> =
+            arrayListOf()
+
+        items.taxes?.forEach { tax ->
+            val orderModifierTaxesAttribute = OrderModifierTaxesAttribute()
+            orderModifierTaxesAttribute.order_item_id = items.itemId
+            orderModifierTaxesAttribute.order_item_modifier_id = modifier.id
+            orderModifierTaxesAttribute.tax_id = tax.id
+            orderModifierTaxesAttribute.isDefault = tax.isDefault
+            orderModifierTaxesAttribute.is_tax_removed = false
+            orderModifierTaxesAttribute.is_modifier = true
+            orderModifierTaxesAttribute.category_id = items.categoryId
+            orderModifierTaxesAttribute.terminal_id = terminalId
+            orderModifierTaxesAttribute.modifier_id = modifier.id!!
+            orderModifierTaxesAttribute.timestamp = System.currentTimeMillis().toString()
+            orderModifierTaxesAttribute.name = tax.name.toString()
+            orderModifierTaxesAttribute.amount = tax.rate
+            orderItemTaxesAttributeList.add(orderModifierTaxesAttribute)
+        }
+
+
+        return orderItemTaxesAttributeList
+
     }
 
     private fun orderItemTaxesAttributes(items: TbItem): List<OrderItemTaxesAttribute> {

@@ -262,6 +262,50 @@ class OrderItemTaxesAttribute {
     var taxType: String = ""
 }
 
+class OrderModifierTaxesAttribute {
+    @SerializedName("id")
+    var id: Int? = null
+
+    @SerializedName("order_item_id")
+    var order_item_id: Int? = null
+
+    @SerializedName("order_item_modifier_id")
+    var order_item_modifier_id: Int? = null
+
+    @SerializedName("order_id")
+    var order_id: Int? = null
+
+    @SerializedName("tax_id")
+    var tax_id: Int? = null
+
+    @SerializedName("amount")
+    var amount: Double = 0.0
+
+    @SerializedName("is_default")
+    var isDefault: Boolean = false
+
+    @SerializedName("is_tax_removed")
+    var is_tax_removed: Boolean = false
+
+    @SerializedName("is_modifier")
+    var is_modifier: Boolean = true
+
+    @SerializedName("category_id")
+    var category_id: Int = 0
+
+    @SerializedName("terminal_id")
+    var terminal_id: Int = 0
+
+    @SerializedName("modifier_id")
+    var modifier_id: Int = 0
+
+    @SerializedName("timestamp")
+    var timestamp: String = ""
+
+    @SerializedName("name")
+    var name: String = ""
+}
+
 class OrderItemModifierAttribute {
     @SerializedName("id")
     var id: Int? = null
@@ -283,6 +327,9 @@ class OrderItemModifierAttribute {
 
     @SerializedName("modifier_set_id")
     var modifier_set_id: Int = 0
+
+    @SerializedName("order_item_taxes_attributes")
+    var order_item_taxes_attributes: List<OrderModifierTaxesAttribute> = emptyList()
 
 }
 
