@@ -28,8 +28,7 @@ class MethodUtils {
         @SuppressLint("SetTextI18n")
         fun setPriceTextView(appCompatTextView: AppCompatTextView, price: Double) {
 
-            appCompatTextView.text = MainApplication.getInstance()!!.getText(R.string.symbole)
-                .toString() + String.format(
+            appCompatTextView.text = MainApplication.getInstance()!!.getText(R.string.symbole).toString() + String.format(
                 "%.2f", price
             )
 

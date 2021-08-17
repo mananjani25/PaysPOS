@@ -51,8 +51,8 @@
             android:background="@color/view" />
 
         <androidx.appcompat.widget.LinearLayoutCompat
-            android:layout_width="match_parent"
             android:id="@+id/llKitchenReceiptSettings"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 

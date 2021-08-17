@@ -385,10 +385,10 @@ interface ApiService {
     suspend fun updateKitchenReceiptSettings(
         @Path("id") id: Int,
         @Body requestModel: UpdateKitchenReceiptRequestModel
-    ): BaseResponse
+    ): GetKitchenReceiptSettingsResponse
 
-    /*@GET(CUSTOMER_RECEIPT_SETTINGS)
-    suspend fun getCustomerReceiptSettings():*/
+    @GET(CUSTOMER_RECEIPT_SETTINGS)
+    suspend fun getCustomerReceiptSettings(): GetCustomerReceiptSettingsResponse
 
 
 }

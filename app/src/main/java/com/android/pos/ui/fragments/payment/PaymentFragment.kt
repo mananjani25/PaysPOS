@@ -144,9 +144,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             fourthValue += 50
         }
 
-        binding.txtOriginalAmount.text =
-            requireActivity().resources.getString(R.string.symbole) +
-                totalPrice
+        MethodUtils.setPriceTextView(binding.txtOriginalAmount, totalPrice)
 
         binding.txtSecondAmount.text =
             requireActivity().resources.getString(R.string.symbole) + secondValue.toDouble()
