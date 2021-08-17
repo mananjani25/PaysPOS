@@ -1,0 +1,105 @@
+package com.android.pos.ui.fragments.payment
+
+import android.util.Patterns
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.android.pos.R
+import com.android.pos.data.model.requestModel.CreateNoteRequest
+import com.android.pos.data.model.responseModel.BaseResponse
+import com.android.pos.data.repositories.PosRepository
+import com.android.pos.di.PrefProvider
+import com.android.pos.utils.Event
+import com.android.pos.utils.statusUtils.Resource
+import com.android.pos.utils.statusUtils.Status
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+
+@HiltViewModel
+class OrderCompleteViewModel @Inject constructor(
+    private val posRepository: PosRepository,
+    private val prefProvider: PrefProvider
+) : ViewModel() {
+
+    val createNoteDetails = MutableLiveData(CreateNoteRequest())
+
+    private val _snackbarText = MutableLiveData<Event<Any?>>()
+    val snackbarText: LiveData<Event<Any?>> = _snackbarText
+
+    private val _data = MutableLiveData<Event<BaseResponse?>>()
+    val data: LiveData<Event<BaseResponse?>> = _data
+
+    private val _showProgress = MutableLiveData<Event<Boolean>>()
+    val showProgress: LiveData<Event<Boolean>> = _showProgress
+
+    private lateinit var resource: Resource<BaseResponse>
+
+
+    fun submit(type: String, email: String, phoneNumber: String, orderID: Int) {
+
+
+        if (type == "Email" && email.isEmpty()) {
+            _snackbarText.value = Event(R.string.email_validate)
+        } else if (type == "Email" && !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            _snackbarText.value = Event(R.string.valid_email_validate)
+        } else if (type == "Message" && phoneNumber.isEmpty()) {
+            _snackbarText.value = Event(R.string.phone_validate)
+        } else if (type == "Message" && phoneNumber.replace(("[\\D]").toRegex(), "").length > 10) {
+            _snackbarText.value = Event(R.string.valid_phone_validate)
+        } else {
+            _showProgress.value = Event(true)
+
+            val data = HashMap<String, String>()
+            if (type == "Email") {
+                data["email"] = email
+            } else {
+                data["phone_no"] = phoneNumber.replace(("[\\D]").toRegex(), "")
+            }
+
+            data["id"] = orderID.toString()
+
+            viewModelScope.launch {
+
+                resource = if (type == "Email") {
+                    posRepository.emailReceipt(data)
+                } else
+                    posRepository.phoneReceipt(data)
+
+
+                when (resource.status) {
+                    Status.SUCCESS -> {
+                        _showProgress.value = Event(false)
+                        resource.data.let { baseResponse ->
+                            if (baseResponse?.status == 200) {
+
+                                resource.data?.let { response ->
+
+                                    _data.value = Event(response)
+
+                                }
+                            } else {
+                                _snackbarText.value = Event(resource.message)
+                            }
+                        }
+                    }
+
+                    Status.ERROR -> {
+                        _snackbarText.value = Event(resource.message)
+                        _showProgress.value = Event(false)
+                    }
+
+                    Status.LOADING -> {
+                        _showProgress.value = Event(true)
+                    }
+                }
+            }
+
+        }
+
+    }
+
+
+}

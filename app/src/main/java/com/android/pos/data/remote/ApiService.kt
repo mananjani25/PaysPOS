@@ -36,6 +36,8 @@ import com.android.pos.data.remote.Constants.NOTES
 import com.android.pos.data.remote.Constants.NOTES_ACTIVE
 import com.android.pos.data.remote.Constants.NOTE_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.ORDERS
+import com.android.pos.data.remote.Constants.ORDER_EMAIL_RECEIPT
+import com.android.pos.data.remote.Constants.ORDER_PHONE_RECEIPT
 import com.android.pos.data.remote.Constants.ORDER_TYPES
 import com.android.pos.data.remote.Constants.REORDER_CATEGORY
 import com.android.pos.data.remote.Constants.REORDER_ITEM
@@ -377,7 +379,7 @@ interface ApiService {
     ): BaseResponse
 
     @POST(ORDERS)
-    suspend fun createOrder(@Body orderRequestModel: OrderRequestModel): BaseResponse
+    suspend fun createOrder(@Body orderRequestModel: OrderRequestModel): CreateOrderResponse
 
     @GET(KITCHEN_RECEIPT_SETTINGS)
     suspend fun getKitchenReceiptSettings(): GetKitchenReceiptSettingsResponse
@@ -394,6 +396,14 @@ interface ApiService {
     @PUT(CUSTOMER_RECEIPTS_UPDATE_SETTINGS)
     suspend fun updateCustomerReceiptSettings(@Path("id")id:Int,@Body requestModel:UpdateCustomerReceiptRequestModel):GetCustomerReceiptSettingsResponse
 
+
+
+    @POST(ORDER_EMAIL_RECEIPT)
+    suspend fun emailReceipt(@QueryMap options: HashMap<String, String>): BaseResponse
+
+
+    @POST(ORDER_PHONE_RECEIPT)
+    suspend fun phoneReceipt(@QueryMap options: HashMap<String, String>): BaseResponse
 
 
 }

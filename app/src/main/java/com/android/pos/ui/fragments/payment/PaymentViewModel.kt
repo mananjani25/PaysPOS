@@ -8,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.entities.*
 import com.android.pos.data.model.requestModel.*
-import com.android.pos.data.model.responseModel.BaseResponse
+import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
@@ -32,8 +32,8 @@ open class PaymentViewModel @Inject constructor(
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
 
-    private val _data = MutableLiveData<Event<BaseResponse?>>()
-    val data: LiveData<Event<BaseResponse?>> = _data
+    private val _data = MutableLiveData<Event<CreateOrderResponse?>>()
+    val data: LiveData<Event<CreateOrderResponse?>> = _data
 
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
@@ -53,10 +53,11 @@ open class PaymentViewModel @Inject constructor(
                     resource.data.let { response ->
                         if (response?.status == 200) {
 
-                            resource.data?.let { response ->
-                                _data.value = Event(response)
-                            }
                             posRepository.deleteCart()
+                            resource.data?.let { createOrderResponse ->
+                                _data.value = Event(createOrderResponse)
+                            }
+
                         } else {
                             _snackbarText.value = Event(resource.message)
                         }

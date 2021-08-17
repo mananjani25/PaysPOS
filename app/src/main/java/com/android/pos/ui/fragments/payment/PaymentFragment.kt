@@ -18,8 +18,6 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
 import dagger.hilt.android.AndroidEntryPoint
-import java.text.SimpleDateFormat
-import java.util.*
 import javax.inject.Inject
 import kotlin.math.ceil
 import kotlin.math.floor
@@ -314,6 +312,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 val bundle = Bundle()
                 bundle.putDouble("totalPrice", totalPrice)
                 bundle.putDouble("paymentAmount", paymentAmount)
+                bundle.putInt("orderID", it.data.order.id)
                 findNavController().navigate(
                     R.id.action_paymentFragment_to_orderCompleteFragment,
                     bundle

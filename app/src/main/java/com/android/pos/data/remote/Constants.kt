@@ -123,6 +123,8 @@ object Constants {
     const val REORDER_MODIFIER = "modifier_sets/{id}/reorder"
 
     const val ORDERS = "orders"
+    const val ORDER_EMAIL_RECEIPT = "orders/send_order_email_receipt"
+    const val ORDER_PHONE_RECEIPT = "orders/sms_order_detail"
 
     const val ACTIVE_ORDER = "active_order"
     const val UPCOMING_ORDER = "upcoming_order"

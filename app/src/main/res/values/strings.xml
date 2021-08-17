@@ -28,7 +28,7 @@
     <string name="phone">Phone Number</string>
     <string name="address_empty_validation">Please Enter Full Address</string>
     <string name="birth_date_validation">Please Enter Birth Date</string>
-
+`
     <string name="buttonOne">1</string>
     <string name="buttonTwo">2</string>
     <string name="buttonThree">3</string>
@@ -415,4 +415,6 @@
     <string name="print">Print</string>
     <string name="email_receipt">Email Receipt</string>
     <string name="phone_number">Phone Number</string>
+    <string name="phone_validate">Please enter Phone Number</string>
+    <string name="valid_phone_validate">Please enter valid Phone Number</string>
 </resources>
