@@ -7,20 +7,28 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.TbCustomer
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentOrderCompletBinding
 import com.android.pos.di.PrefProvider
+import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.MethodUtils
+import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.extensions.liveSnackBar
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class OrderCompleteFragment : Fragment(), View.OnClickListener {
+    private var orderID: Int = 0
+    private var type: String = ""
     private var totalPrice: Double = 0.0
     private var paymentAmount: Double = 0.0
+    private val viewModel by viewModels<OrderCompleteViewModel>()
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -38,9 +46,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setupSnackbar()
+        observeShowProgress()
 
         totalPrice = requireArguments().getDouble("totalPrice")
         paymentAmount = requireArguments().getDouble("paymentAmount")
+        orderID = requireArguments().getInt("orderID")
 
         binding.txtTitle.text =
             MethodUtils.roundOffAmount(paymentAmount) + " cash"
@@ -88,6 +99,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener {
                 findNavController().navigate(R.id.action_orderCompleteFragment_to_assignCustomerOrderFragment)
             }
             R.id.llMessage -> {
+                type = "Message"
                 binding.llSendReceipt.visibility = View.VISIBLE
                 binding.edtEmail.visibility = View.GONE
                 binding.imgBack.visibility = View.VISIBLE
@@ -99,6 +111,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener {
                 MethodUtils.hideKeyboard(requireActivity())
             }
             R.id.llEmail -> {
+
+                type = "Email"
 
                 binding.llSendReceipt.visibility = View.VISIBLE
                 binding.edtEmail.visibility = View.VISIBLE
@@ -119,21 +133,68 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener {
                 findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
             }
             R.id.txtSend -> {
+
                 MethodUtils.hideKeyboard(requireActivity())
+                viewModel.submit(
+                    type,
+                    binding.edtEmail.text.toString().trim(),
+                    binding.edtPhoneNo.text.toString().trim(),
+                    orderID
+                )
+
+
             }
             R.id.imgBack -> {
-                MethodUtils.hideKeyboard(requireActivity())
-                binding.llSendReceipt.visibility = View.GONE
-                binding.imgBack.visibility = View.GONE
-                binding.txtHome.visibility = View.VISIBLE
-                binding.txtAddCustomer.visibility = View.VISIBLE
-                binding.llOptions.visibility = View.VISIBLE
+                backpress()
             }
         }
+    }
+
+    private fun backpress() {
+        MethodUtils.hideKeyboard(requireActivity())
+        binding.edtPhoneNo.text?.clear()
+        binding.edtEmail.text?.clear()
+        binding.llSendReceipt.visibility = View.GONE
+        binding.imgBack.visibility = View.GONE
+        binding.txtHome.visibility = View.VISIBLE
+        binding.txtAddCustomer.visibility = View.VISIBLE
+        binding.llOptions.visibility = View.VISIBLE
     }
 
 
     fun removeCustomer() {
         prefProvider.setValue(Constants.CUSTOMER_NAME, "")
+    }
+
+    private fun observeShowProgress() {
+
+        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    ProgressUtils.showProgressDialog(requireActivity())
+                } else {
+                    ProgressUtils.dismissProgressDialog()
+                }
+            }
+        })
+
+        viewModel.data.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let { baseResponse ->
+                activity?.let {
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        it, baseResponse.message
+                    ) { _, _ ->
+                        backpress()
+                    }
+                }
+            }
+        })
+
+
+    }
+
+    private fun setupSnackbar() {
+        binding.root.liveSnackBar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
+
     }
 }

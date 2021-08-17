@@ -220,4 +220,10 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
 
     suspend fun orderTypes() =
         getResult { apiService.orderTypes() }
+
+    suspend fun emailReceipt(data: HashMap<String, String>) =
+        getResult { apiService.emailReceipt(data) }
+
+    suspend fun phoneReceipt(data: HashMap<String, String>) =
+        getResult { apiService.phoneReceipt(data) }
 }

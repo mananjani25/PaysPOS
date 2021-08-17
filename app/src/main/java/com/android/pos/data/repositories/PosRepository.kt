@@ -369,5 +369,7 @@ class PosRepository @Inject constructor(
     suspend fun createOrder(data: OrderRequestModel) = apiHelperNew.createOrder(data)
 
 
+    suspend fun emailReceipt(data: HashMap<String, String>) = apiHelperNew.emailReceipt(data)
+    suspend fun phoneReceipt(data: HashMap<String, String>) = apiHelperNew.phoneReceipt(data)
 }
 
