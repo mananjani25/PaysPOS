@@ -382,6 +382,10 @@
         <action
             android:id="@+id/action_dashboardCategoryNew_to_orders"
             app:destination="@id/orders" />
+        <action
+            android:id="@+id/action_dashboardCategoryNew_to_transactionFragment"
+            app:destination="@id/transactionFragment"
+            app:enterAnim="@anim/nav_default_enter_anim" />
 
     </fragment>
     <action
@@ -636,6 +640,13 @@
     <action
         android:id="@+id/action_global_orders"
         app:destination="@id/orders" />
+    <fragment
+        android:id="@+id/transactionFragment"
+        android:name="com.android.pos.ui.fragments.transactions.TransactionFragment"
+        android:label="TransactionFragment" />
+    <action
+        android:id="@+id/action_global_transactionFragment"
+        app:destination="@id/transactionFragment" />
 
 
 </navigation>

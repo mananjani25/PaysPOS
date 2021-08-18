@@ -371,6 +371,11 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         }
 
+        binding.footer.linearTransaction.setOnClickListener {
+            findNavController().navigate(R.id.action_dashboardCategoryNew_to_transactionFragment)
+        }
+
+
     }
 
     private fun dialogPOSMenu() {
@@ -436,6 +441,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         linearOrders.setOnClickListener {
 
             findNavController().navigate(R.id.action_dashboardCategoryNew_to_orders)
+            dialog.dismiss()
+        }
+        linearTransaction.setOnClickListener {
+            findNavController().navigate(R.id.action_dashboardCategoryNew_to_transactionFragment)
             dialog.dismiss()
         }
 

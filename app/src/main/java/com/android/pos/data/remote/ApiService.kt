@@ -55,6 +55,7 @@ import com.android.pos.data.remote.Constants.TEAM_ROLES_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.TIPS
 import com.android.pos.data.remote.Constants.TIPS_ACTIVE
 import com.android.pos.data.remote.Constants.TIPS_UPDATE_DELETE
+import com.android.pos.data.remote.Constants.TRANSACTION_LIST
 import com.android.pos.data.remote.Constants.USERS_LOG_IN
 import retrofit2.http.*
 
@@ -393,9 +394,14 @@ interface ApiService {
     @GET(CUSTOMER_RECEIPT_SETTINGS)
     suspend fun getCustomerReceiptSettings(): GetCustomerReceiptSettingsResponse
 
-    @PUT(CUSTOMER_RECEIPTS_UPDATE_SETTINGS)
-    suspend fun updateCustomerReceiptSettings(@Path("id")id:Int,@Body requestModel:UpdateCustomerReceiptRequestModel):GetCustomerReceiptSettingsResponse
+    @GET(TRANSACTION_LIST)
+    suspend fun getTransactionList(): GetTransactionListResponse
 
+    @PUT(CUSTOMER_RECEIPTS_UPDATE_SETTINGS)
+    suspend fun updateCustomerReceiptSettings(
+        @Path("id") id: Int,
+        @Body requestModel: UpdateCustomerReceiptRequestModel
+    ): GetCustomerReceiptSettingsResponse
 
 
     @POST(ORDER_EMAIL_RECEIPT)
