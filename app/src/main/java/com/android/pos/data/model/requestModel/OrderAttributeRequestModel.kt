@@ -141,7 +141,7 @@ data class CustomerAttributes(
 
     data class EmailsAttribute(
         @SerializedName("customer_id")
-        var customerId: Int = 0,
+        var customerId: Int? = null,
         @SerializedName("_destroy")
         var destroy: Boolean = false,
         @SerializedName("email_address")
@@ -152,7 +152,7 @@ data class CustomerAttributes(
 
     data class PhonesAttribute(
         @SerializedName("customer_id")
-        var customerId: Int = 0,
+        var customerId: Int? = null,
         @SerializedName("_destroy")
         var destroy: Boolean = false,
         @SerializedName("id")

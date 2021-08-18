@@ -130,7 +130,7 @@ open class PaymentViewModel @Inject constructor(
     private fun customerAttributes(cartModel: CartModel): CustomerAttributes {
 
         val customerAttributes = CustomerAttributes().apply {
-            id = cartModel.customer?.id ?: 0
+           // id = cartModel.customer?.id ?: 0
             birthDate = cartModel.customer?.birth_date.toString()
             firstName = cartModel.customer?.first_name.toString()
             lastName = cartModel.customer?.last_name.toString()
@@ -184,7 +184,7 @@ open class PaymentViewModel @Inject constructor(
             arrayListOf()
         val email = CustomerAttributes.EmailsAttribute().apply {
             destroy = false
-            customerId = custId!!
+            // customerId = custId!!
             emailAddress = emailId.toString()
         }
         phonesAttributeList.add(email)
@@ -203,7 +203,7 @@ open class PaymentViewModel @Inject constructor(
 
             val phone = CustomerAttributes.PhonesAttribute().apply {
                 destroy = false
-                customerId = custId!!
+                //   customerId = custId!!
                 phoneNumber = it.phone_number
             }
             phonesAttributeList.add(phone)
