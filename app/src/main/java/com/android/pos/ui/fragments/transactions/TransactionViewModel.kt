@@ -98,7 +98,7 @@ class TransactionViewModel @Inject constructor(
         _showProgress.value = Event(true)
 
         viewModelScope.launch {
-            val resource = taxServiceChargeRepository.getTransactionList()
+            val resource = taxServiceChargeRepository.getTransactionList(100)
 
             when (resource.status) {
                 Status.SUCCESS -> {

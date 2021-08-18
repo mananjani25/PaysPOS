@@ -111,8 +111,8 @@ class TaxServiceChargeRepository @Inject constructor(
     suspend fun getCustomerReceiptSettings() =
         apiHelperNew.getCustomerReceiptSettings()
 
-    suspend fun getTransactionList() =
-        apiHelperNew.getTransactionList()
+    suspend fun getTransactionList(perPage:Int) =
+        apiHelperNew.getTransactionList(perPage)
 
     suspend fun updateKitchenReceiptSettings(id: Int?, model: UpdateKitchenReceiptRequestModel) =
         apiHelperNew.updateKitchenSettings(id!!, model)
