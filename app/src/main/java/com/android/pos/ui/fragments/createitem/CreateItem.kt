@@ -15,6 +15,7 @@ import com.android.pos.data.entities.TbItem
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.CreateItemBinding
 import com.android.pos.ui.adapter.ModifierSetsListAdapter
+import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
 import com.google.android.material.snackbar.Snackbar
@@ -45,6 +46,7 @@ class CreateItem : Fragment(), View.OnClickListener {
         setupSnackbar()
         observeShowProgress()
         getModifiers()
+        navigate()
         return binding.root
     }
 
@@ -133,5 +135,21 @@ class CreateItem : Fragment(), View.OnClickListener {
                 findNavController().navigate(R.id.action_createItem_to_itemEditTitleDialog)
             }
         }
+    }
+
+    private fun navigate() {
+
+        viewModel.data.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let { createTaxResponse ->
+                activity?.let {
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        it, createTaxResponse.message
+                    ) { _, _ ->
+                        findNavController().navigateUp()
+                    }
+                }
+
+            }
+        })
     }
 }

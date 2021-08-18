@@ -292,7 +292,7 @@ interface ApiService {
     @POST(CLOCK_OUT)
     suspend fun hideItem(@FieldMap options: HashMap<String, String>): BaseResponse
 
-    @POST(EMPLOYEES)
+    @POST(ITEMS)
     suspend fun createItem(@Body createItemRequestModel: CreateItemRequestModel): BaseResponse
 
     @PUT(NOTE_UPDATE_DELETE)
@@ -395,7 +395,7 @@ interface ApiService {
     suspend fun getCustomerReceiptSettings(): GetCustomerReceiptSettingsResponse
 
     @GET(TRANSACTION_LIST)
-    suspend fun getTransactionList(): GetTransactionListResponse
+    suspend fun getTransactionList(@Query("per_page") perPage: Int): GetTransactionListResponse
 
     @PUT(CUSTOMER_RECEIPTS_UPDATE_SETTINGS)
     suspend fun updateCustomerReceiptSettings(

@@ -9,7 +9,10 @@ import com.android.pos.R
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.requestModel.CreateItemRequestModel
 import com.android.pos.data.model.responseModel.BaseResponse
+import com.android.pos.data.model.responseModel.CreateItemResponse
+import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.repositories.PosRepository
+import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
@@ -19,7 +22,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CreateItemViewModel @Inject constructor(
-    private val posRepository: PosRepository
+    private val posRepository: PosRepository,
+    private val prefProvider: PrefProvider
 ) :
     ViewModel() {
 
@@ -34,21 +38,24 @@ class CreateItemViewModel @Inject constructor(
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
+    private val _data = MutableLiveData<Event<BaseResponse?>>()
+    val data: LiveData<Event<BaseResponse?>> = _data
+
     val modifierSet = posRepository.modifierSetsList()
 
 
     fun setData(itemObject: TbItem) {
         isEdit = true
         itemId = itemObject.itemId
-        itemDetails.value?.itemName = itemObject.name
+        itemDetails.value?.name = itemObject.name
         itemDetails.value?.price = itemObject.price
         itemDetails.value?.sku = ""
-        itemDetails.value?.description = itemObject.shortDescription
+        itemDetails.value?.desc = itemObject.shortDescription
     }
 
     fun submit() {
         val value = itemDetails.value
-        if (TextUtils.isEmpty(value?.itemName?.trim())) {
+        if (TextUtils.isEmpty(value?.name?.trim())) {
             _snackbarText.value = Event(R.string.item_name_validate)
         } else if (TextUtils.isEmpty(
                 value?.price?.toString()?.trim()
@@ -64,19 +71,24 @@ class CreateItemViewModel @Inject constructor(
 
             if (isEdit) {
                 itemData = CreateItemRequestModel().apply {
-                    id = itemId
-                    itemName = value!!.itemName
+                    id = itemId!!
+                    name = value!!.name
                     price = value.price
-                    sku = ""
-                    description = value.description
+                    sku = value.sku
+                    desc = value.desc
+                    categoryId = 2
+                    locationId = prefProvider.getValueInt(LOCATION_ID, -1)
                 }
 
             } else {
                 itemData = CreateItemRequestModel().apply {
-                    itemName = value!!.itemName
+                    name = value!!.name
                     price = value.price
-                    sku = ""
-                    description = value.description
+                    sku = value.sku
+                    desc = value.desc
+                    quantity = 10
+                    categoryId = 2
+                    locationId = prefProvider.getValueInt(LOCATION_ID, -1)
 
                 }
             }
@@ -93,8 +105,8 @@ class CreateItemViewModel @Inject constructor(
 
                         resource.data.let {
                             if (it?.status == 200) {
-                                resource.data?.let {
-
+                                resource.data?.let { createItemResponse ->
+                                    _data.value = Event(createItemResponse)
                                 }
                             } else {
                                 _snackbarText.value = Event(resource.message)
