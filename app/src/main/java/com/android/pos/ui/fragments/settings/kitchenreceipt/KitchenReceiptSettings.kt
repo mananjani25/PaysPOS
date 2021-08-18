@@ -80,6 +80,7 @@ class KitchenReceiptSettings : Fragment(), CompoundButton.OnCheckedChangeListene
             Log.e(TAG, "KitchenReceiptRespone  ${Gson().toJson(it)}")
             when (it.data.fonts) {
                 SMALL -> {
+
                     binding.rdGroup.check(binding.radioSmall.id)
                 }
                 LARGE -> {
@@ -92,6 +93,7 @@ class KitchenReceiptSettings : Fragment(), CompoundButton.OnCheckedChangeListene
 
             }
 
+            setTextSize(it.data.fonts)
             binding.swtShowCategory.isChecked = it.data.showCategory
             binding.swtSameGrpItem.isChecked = it.data.showItemsInGroup
             binding.swtTeamMember.isChecked = it.data.showTeamMember
@@ -101,6 +103,23 @@ class KitchenReceiptSettings : Fragment(), CompoundButton.OnCheckedChangeListene
             binding.swtPhone.isChecked = it.data.showCustomerPhone
             binding.swtAddress.isChecked = it.data.showCustomerAddress
 
+            if (it.data.showCustomerName) {
+                binding.txtName.visibility = View.VISIBLE
+            } else {
+                binding.txtName.visibility = View.GONE
+            }
+            if (it.data.showCustomerPhone) {
+                binding.txtPhone.visibility = View.VISIBLE
+            } else {
+                binding.txtPhone.visibility = View.GONE
+
+            }
+            if (it.data.showCustomerAddress) {
+                binding.txtAddress.visibility = View.VISIBLE
+            } else {
+                binding.txtAddress.visibility = View.VISIBLE
+            }
+
         })
 
     }
@@ -108,11 +127,56 @@ class KitchenReceiptSettings : Fragment(), CompoundButton.OnCheckedChangeListene
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         onClick()
+        onChecked()
+        binding.rdGroup.setOnCheckedChangeListener { group, checkedId ->
+            when (checkedId) {
+                binding.radioLarge.id -> {
+                    setTextSize(LARGE)
+                }
+                binding.radioMedium.id -> {
+                    setTextSize(MEDIUM)
+                }
+                binding.radioSmall.id -> {
+                    setTextSize(SMALL)
+                }
+
+            }
+
+        }
+
+
+    }
+
+    private fun onChecked() {
+        binding.swtName.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                binding.txtName.visibility = View.VISIBLE
+            } else {
+                binding.txtName.visibility = View.GONE
+            }
+        }
+
+        binding.swtPhone.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                binding.txtPhone.visibility = View.VISIBLE
+            } else {
+                binding.txtPhone.visibility = View.GONE
+            }
+        }
+
+        binding.swtAddress.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                binding.txtAddress.visibility = View.VISIBLE
+            } else {
+                binding.txtAddress.visibility = View.GONE
+            }
+        }
 
 
     }
 
     private fun onClick() {
+
         binding.txtSave.setOnClickListener {
             var model: UpdateKitchenReceiptRequestModel = UpdateKitchenReceiptRequestModel()
             when (binding.rdGroup.checkedRadioButtonId) {
@@ -139,6 +203,90 @@ class KitchenReceiptSettings : Fragment(), CompoundButton.OnCheckedChangeListene
 
 
         }
+    }
+
+    private fun setTextSize(type: String) {
+
+        when (type) {
+            SMALL -> {
+                binding.txtKitchenPreview.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.txtDineIn.textSize = requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.txtOrderId.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.txtReceiptId.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.txtEmployee.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.txtDateTime.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.txtGuestNo.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.txtName.textSize = requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.txtPhone.textSize = requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.txtAddress.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.txtDineIn.textSize = requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.txtDineIn.textSize = requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.txtDineIn.textSize = requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.txtDineIn.textSize = requireContext().resources.getDimension(R.dimen._5mdpi)
+
+
+            }
+            MEDIUM -> {
+
+                binding.txtKitchenPreview.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.txtDineIn.textSize = requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.txtOrderId.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.txtReceiptId.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.txtEmployee.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.txtDateTime.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.txtGuestNo.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.txtName.textSize = requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.txtPhone.textSize = requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.txtAddress.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.txtDineIn.textSize = requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.txtDineIn.textSize = requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.txtDineIn.textSize = requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.txtDineIn.textSize = requireContext().resources.getDimension(R.dimen._6mdpi)
+
+            }
+
+
+            LARGE -> {
+                binding.txtKitchenPreview.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.txtDineIn.textSize = requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.txtOrderId.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.txtReceiptId.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.txtEmployee.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.txtDateTime.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.txtGuestNo.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.txtName.textSize = requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.txtPhone.textSize = requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.txtAddress.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.txtDineIn.textSize = requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.txtDineIn.textSize = requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.txtDineIn.textSize = requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.txtDineIn.textSize = requireContext().resources.getDimension(R.dimen._7mdpi)
+
+            }
+        }
+
+
     }
 
 
