@@ -75,6 +75,89 @@
                     android:background="@color/view"
                     android:visibility="gone" />
 
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/llCartMenu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/color"
+                    android:orientation="horizontal">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontBold"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:padding="@dimen/_5sdp"
+                        android:text="@string/manual_sale"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_6mdpi"
+                        app:textAllCaps="false" />
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/imgOrderMenu"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:padding="@dimen/_4sdp"
+                        android:visibility="visible"
+                        app:srcCompat="@drawable/ic_dots" />
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/llOrderMenu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/txtColor"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:id="@+id/txtAddDiscount"
+                        style="@style/CustomFontMediumStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:paddingStart="@dimen/_5sdp"
+                        android:paddingTop="@dimen/_5sdp"
+                        android:paddingEnd="@dimen/_5sdp"
+                        android:paddingBottom="@dimen/_3sdp"
+                        android:text="@string/add_discount"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_6mdpi"
+                        android:visibility="gone" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.5dp"
+                        android:background="@color/colorCustomerDialogBorder"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/txtClearCart"
+                        style="@style/CustomFontMediumStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:paddingStart="@dimen/_5sdp"
+                        android:paddingTop="@dimen/_3sdp"
+                        android:paddingEnd="@dimen/_5sdp"
+                        android:paddingBottom="@dimen/_5sdp"
+                        android:text="@string/clear_items"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_6mdpi" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.5dp"
+                        android:background="@color/colorCustomerDialogBorder" />
+
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
 
                 <RelativeLayout
                     android:id="@+id/relAddCustomer"
@@ -176,8 +259,8 @@
                 android:layout_marginTop="@dimen/_5sdp"
                 android:layout_marginEnd="@dimen/_5sdp"
                 android:orientation="vertical"
-                tools:itemCount="1"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:itemCount="1"
                 tools:listitem="@layout/view_manual_sale_item" />
 
 
@@ -187,7 +270,6 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
                 android:layout_gravity="bottom"
-                android:layout_marginBottom="@dimen/_10sdp"
                 android:background="@drawable/background_sales_charge"
                 android:gravity="center"
                 android:padding="@dimen/_5sdp">
@@ -203,7 +285,6 @@
                         android:id="@+id/llPayment"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-
                         android:orientation="horizontal">
 
 

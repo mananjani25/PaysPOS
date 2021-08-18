@@ -68,8 +68,8 @@
                     android:id="@+id/rvOrderType"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    tools:itemCount="2"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:itemCount="2"
                     tools:listitem="@layout/view_order_type" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>

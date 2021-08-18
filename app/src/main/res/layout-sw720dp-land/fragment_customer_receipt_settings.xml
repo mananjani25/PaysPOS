@@ -299,8 +299,8 @@
                             android:layout_gravity="center"
                             android:checked="true"
                             android:padding="@dimen/_5sdp"
-                            app:thumbTint="@color/btnColor"
-                            app:trackTint="@color/colorE2" />
+                            app:srcCompat="@drawable/ic_arrow_forward"
+                            app:theme="@style/AppTheme" />
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
                     <View
@@ -357,8 +357,8 @@
                             android:layout_gravity="center"
                             android:checked="true"
                             android:padding="@dimen/_5sdp"
-                            app:thumbTint="@color/btnColor"
-                            app:trackTint="@color/colorE2" />
+                            app:srcCompat="@drawable/ic_arrow_forward"
+                            app:theme="@style/AppTheme" />
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
                     <View
@@ -415,8 +415,8 @@
                             android:layout_gravity="center"
                             android:checked="true"
                             android:padding="@dimen/_5sdp"
-                            app:thumbTint="@color/btnColor"
-                            app:trackTint="@color/colorE2" />
+                            app:srcCompat="@drawable/ic_arrow_forward"
+                            app:theme="@style/AppTheme" />
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
                     <View
@@ -473,8 +473,8 @@
                             android:layout_gravity="center"
                             android:checked="true"
                             android:padding="@dimen/_5sdp"
-                            app:thumbTint="@color/btnColor"
-                            app:trackTint="@color/colorE2" />
+                            app:srcCompat="@drawable/ic_arrow_forward"
+                            app:theme="@style/AppTheme" />
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
                     <View
@@ -531,8 +531,8 @@
                             android:layout_gravity="center"
                             android:checked="true"
                             android:padding="@dimen/_5sdp"
-                            app:thumbTint="@color/btnColor"
-                            app:trackTint="@color/colorE2" />
+                            app:srcCompat="@drawable/ic_arrow_forward"
+                            app:theme="@style/AppTheme" />
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
                     <View
@@ -620,8 +620,8 @@
                             android:layout_gravity="center"
                             android:checked="true"
                             android:padding="@dimen/_5sdp"
-                            app:thumbTint="@color/btnColor"
-                            app:trackTint="@color/colorE2" />
+                            app:srcCompat="@drawable/ic_arrow_forward"
+                            app:theme="@style/AppTheme" />
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
                     <View
