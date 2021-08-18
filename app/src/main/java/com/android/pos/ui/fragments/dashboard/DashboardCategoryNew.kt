@@ -231,11 +231,66 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     0,
                     Color.parseColor("#2997cc")
                 ) { pos ->
+                    val data = cartAdapter.getItem(pos)
+
+                    setFragmentResultListener("request_key_discount_details") { requestKey: String, bundle: Bundle ->
+                        val result = bundle.getParcelable<TbDiscount>("data")
+
+                        if (result != null) {
+                            Log.e(TAG, "GetDiscountResult:  ${Gson().toJson(result)}")
+                            if (result.discountType == requireContext().getString(R.string.disc_percentage)) {
+
+                                data.discountPrice = calculateDiscountPercentage(
+                                    totalPrice(data),
+                                    result.percentage
+                                )
+
+                                data.discountId = result.id
+                                data.discountType = result.discountType
+                                data.isManualSales = false
+                                Log.e(TAG, "insideDiscountmodel:  ${Gson().toJson(data)}")
+                                viewModel.cartLogic(cartList, data, UPDATE)
+
+
+                            } else if (data.price > result.percentage) {
+
+                                data.discountPrice = result.percentage
+                                data.discountId = 0
+                                data.discountType = result.discountType
+                                data.isManualSales = false
+                                // discountPrice = data.discountPrice
+
+                                viewModel.cartLogic(cartList, data, UPDATE)
+
+                            } else {
+                                /*  data.discountPrice = 0.0
+                                  data.discountType = ""
+                                  data.isManualSales = false
+                                  data.discountId = 0
+                                  discountPrice = data.discountPrice*/
+
+                            }
+
+                        } else {
+                            data.discountPrice = 0.0
+                            data.discountType = ""
+                            data.isManualSales = false
+                            data.discountId = 0
+                             viewModel.cartLogic(cartList, data, UPDATE)
+                        }
+
+                    }
+
+                    val bundle = Bundle().apply {
+                        putBoolean("isFromDetails", true)
+                        putParcelable("model", cartAdapter.getItem(pos))
+                    }
 
                     findNavController().navigate(
-                        R.id.action_dashboardCategoryNew_to_addDiscountDialog/*,
-                        bundle*/
+                        R.id.action_dashboardCategoryNew_to_addDiscountDialog,
+                        bundle
                     )
+
                 })
 
 

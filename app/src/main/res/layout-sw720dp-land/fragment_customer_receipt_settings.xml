@@ -322,7 +322,7 @@
                             android:fontFamily="@font/sf_pro_display_semibold"
                             android:gravity="start"
                             android:padding="@dimen/_5sdp"
-                            android:text="@string/tv_show_addons_modifiers"
+                            android:text="SHOW MODIFIERS"
                             android:textColor="@color/viewTextColor"
                             android:textSize="@dimen/_6mdpi" />
                     </androidx.appcompat.widget.LinearLayoutCompat>
@@ -345,7 +345,7 @@
                             android:fontFamily="@font/sf_pro_display_semibold"
                             android:gravity="start"
                             android:padding="@dimen/_5sdp"
-                            android:text="@string/tv_addons_modifiers"
+                            android:text="Modifiers"
                             android:textColor="@color/viewTextColor"
                             android:textSize="@dimen/_6mdpi" />
 
@@ -703,6 +703,7 @@
                 android:padding="@dimen/_5sdp">
 
                 <include
+                    android:id="@+id/layoutCustomerReceipt"
                     layout="@layout/layout_customer_receipt_preview"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
