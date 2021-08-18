@@ -122,8 +122,26 @@ class CustomerReceiptSettings : Fragment() {
             }
         }
 
+        binding.customerReciptPart2.swtAddress.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked){
 
+                binding.layoutCustomerReceipt.txtAddress.visibility = View.VISIBLE
+            }
+            else{
+                binding.layoutCustomerReceipt.txtAddress.visibility = View.GONE
+            }
 
+        }
+
+        
+        binding.customerReciptPart2.swtPhone.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked){
+                binding.layoutCustomerReceipt.txtNumber.visibility = View.VISIBLE
+            }
+            else{
+                binding.layoutCustomerReceipt.txtNumber.visibility = View.GONE
+            }
+        }
         binding.swtOrderId.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
                 binding.layoutCustomerReceipt.txtOrderId.visibility = View.VISIBLE
