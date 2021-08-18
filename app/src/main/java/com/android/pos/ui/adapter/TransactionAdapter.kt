@@ -9,6 +9,8 @@ import com.android.pos.data.model.responseModel.GetTransactionListResponse
 import com.android.pos.databinding.ViewItemTimesheetBinding
 import com.android.pos.databinding.ViewTransactionItemBinding
 import com.android.pos.ui.fragments.transactions.TransactionViewModel
+import com.android.pos.utils.TimeFormatUtils.convertCurrentDate
+import com.android.pos.utils.TimeFormatUtils.convertCurrentTime
 import kotlin.collections.ArrayList
 
 class TransactionAdapter(val viewModel: TransactionViewModel) :
@@ -28,6 +30,11 @@ class TransactionAdapter(val viewModel: TransactionViewModel) :
         val itemBinding = holder.discountItemBinding
         itemBinding.itemSheetModel = filterList[position]
         itemBinding.viewModel = viewModel
+
+        itemBinding.tvDate.text =
+            convertCurrentDate(filterList[position].createdAt) + "\n" + convertCurrentTime(
+                filterList[position].createdAt
+            )
 
         itemBinding.executePendingBindings()
     }
@@ -66,10 +73,10 @@ class TransactionAdapter(val viewModel: TransactionViewModel) :
                 } else {
                     val fList = ArrayList<GetTransactionListResponse.Data.Payment>()
 
-                   /* employeeTimeSheet.filter {
-                        it.teamName.lowercase(Locale.getDefault()).contains(charSequence)
+                    /* employeeTimeSheet.filter {
+                         it.teamName.lowercase(Locale.getDefault()).contains(charSequence)
 
-                    }.forEach { fList.add(it) }*/
+                     }.forEach { fList.add(it) }*/
 
                     fList
                 }
@@ -81,7 +88,8 @@ class TransactionAdapter(val viewModel: TransactionViewModel) :
 
 
                 if (results != null && results.count > 0) {
-                    filterList = results.values as ArrayList<GetTransactionListResponse.Data.Payment>
+                    filterList =
+                        results.values as ArrayList<GetTransactionListResponse.Data.Payment>
                 }
 
                 notifyDataSetChanged()
