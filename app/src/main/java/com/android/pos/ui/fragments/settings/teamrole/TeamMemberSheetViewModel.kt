@@ -95,7 +95,7 @@ class TeamMemberSheetViewModel @Inject constructor(
         if (roleId == "-1") {
             roleIdViewMOdel = ""
         }
-
+        _showProgress.value = Event(true)
         viewModelScope.launch {
             val resource = posRepository.employeesTimeSheet(
                 startDate.value.toString(),
@@ -132,6 +132,8 @@ class TeamMemberSheetViewModel @Inject constructor(
     }
 
     fun apiCallTimeSheetDetails(teamId: String) {
+        _showProgress.value = Event(true)
+
         viewModelScope.launch {
             val resource = posRepository.employeesTimeSheetDetails(
                 startDate.value.toString(),

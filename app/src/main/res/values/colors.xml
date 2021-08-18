@@ -37,6 +37,7 @@
 
     <color name="colorDashBack">#F3F4F6</color>
     <color name="drawerBack">#292E32</color>
+    <color name="drawerBack50">#80292E32</color>
 
 
     <color name="txtColorGray">#F8F8F8</color>
@@ -82,4 +83,5 @@
     <color name="color70">#707070</color>
     <color name="colorM9">#FEFEFE</color>
     <color name="colorR1">#08CAE3</color>
+    <color name="colorF">#FAFAFA</color>
 </resources>

@@ -8,6 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.pos.R
 import com.android.pos.data.model.responseModel.GetEmployeesTimeSheetResponse
 import com.android.pos.databinding.FragmentSingleTeamMemberTimeSheetBinding
@@ -115,6 +117,12 @@ class SingleTeamMemberTimeSheetFragment : Fragment() {
 
 
     private fun setUpRecyclerView() {
+        binding.rvSingleTimeSheet.addItemDecoration(
+            DividerItemDecoration(
+                context,
+                LinearLayoutManager.VERTICAL
+            )
+        )
         teamMemberTimeSheetAdapter = SingleTeamMemberTimeSheetAdapter()
         binding.rvSingleTimeSheet.adapter = teamMemberTimeSheetAdapter
     }

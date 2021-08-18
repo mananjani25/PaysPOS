@@ -5,15 +5,17 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.pos.R
 import com.android.pos.data.entities.TeamRole
 import com.android.pos.data.remote.Constants
@@ -26,7 +28,6 @@ import com.android.pos.utils.statusUtils.Status
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
-import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
 class TeamMemberTimeSheetFragment : Fragment(), AdapterView.OnItemSelectedListener {
@@ -36,7 +37,7 @@ class TeamMemberTimeSheetFragment : Fragment(), AdapterView.OnItemSelectedListen
     private val viewModel by viewModels<TeamMemberSheetViewModel>()
     private lateinit var startDate: DatePickerDialog.OnDateSetListener
     private lateinit var endDate: DatePickerDialog.OnDateSetListener
-    private lateinit var teamRoleListGlobal: ArrayList<TeamRole>
+    private var teamRoleListGlobal: ArrayList<TeamRole> = arrayListOf()
     val myCalendar = Calendar.getInstance()
     val myCalendar1 = Calendar.getInstance()
 
@@ -165,6 +166,14 @@ class TeamMemberTimeSheetFragment : Fragment(), AdapterView.OnItemSelectedListen
 
 
     private fun setUpRecyclerView() {
+
+        binding.rvTeamTimeSheet.addItemDecoration(
+            DividerItemDecoration(
+                context,
+                LinearLayoutManager.VERTICAL
+            )
+        )
+
         teamMemberTimeSheetAdapter = TeamMemberTimeSheetAdapter(viewModel)
         binding.rvTeamTimeSheet.adapter = teamMemberTimeSheetAdapter
     }
@@ -190,8 +199,9 @@ class TeamMemberTimeSheetFragment : Fragment(), AdapterView.OnItemSelectedListen
                         ProgressUtils.dismissProgressDialog()
                         resource.data?.let { roleList ->
 
-                            teamRoleListGlobal = roleList as ArrayList<TeamRole>
+                            teamRoleListGlobal.clear()
                             teamRoleListGlobal.add(0, TeamRole(-1, "All Roles", null, null))
+                            teamRoleListGlobal.addAll(roleList as ArrayList<TeamRole>)
                             val roleName = teamRoleListGlobal.map { it.name }
 
                             setUpSpinnerAdapter(roleName as ArrayList<String>)

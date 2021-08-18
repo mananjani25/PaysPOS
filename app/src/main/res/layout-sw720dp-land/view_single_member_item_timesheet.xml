@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingDefaultResource">
 
@@ -21,10 +20,10 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_5sdp"
+            android:background="?attr/selectableItemBackground"
             android:orientation="horizontal"
-            android:paddingTop="@dimen/_10sdp"
-            android:paddingBottom="@dimen/_10sdp">
+            android:paddingTop="@dimen/_5sdp"
+            android:paddingBottom="@dimen/_5sdp">
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
@@ -35,7 +34,7 @@
                 android:gravity="center"
                 android:text="1"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_6mdpi" />
+                android:textSize="@dimen/_5mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvclockIntime"
@@ -45,7 +44,7 @@
                 android:layout_weight="1.5"
                 android:gravity="center"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_6mdpi" />
+                android:textSize="@dimen/_5mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvclockOuttime"
@@ -55,7 +54,7 @@
                 android:layout_weight="1.5"
                 android:gravity="center"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_6mdpi" />
+                android:textSize="@dimen/_5mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
@@ -65,7 +64,7 @@
                 android:gravity="center"
                 android:text="@{itemSheetModel.hourlyWages}"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_6mdpi" />
+                android:textSize="@dimen/_5mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
@@ -74,7 +73,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_6mdpi"
+                android:textSize="@dimen/_5mdpi"
                 android:visibility="gone" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -85,7 +84,7 @@
                 android:gravity="center"
                 android:text="@{itemSheetModel.actualInTime}"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_6mdpi" />
+                android:textSize="@dimen/_5mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
@@ -95,7 +94,7 @@
                 android:gravity="center"
                 android:text="@{itemSheetModel.totalWage}"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_6mdpi" />
+                android:textSize="@dimen/_5mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
@@ -105,7 +104,7 @@
                 android:gravity="center"
                 android:text="Print Report"
                 android:textColor="@color/btnColor"
-                android:textSize="@dimen/_6mdpi" />
+                android:textSize="@dimen/_5mdpi" />
 
         </LinearLayout>
 

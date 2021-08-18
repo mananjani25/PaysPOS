@@ -20,7 +20,6 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_5sdp"
             android:orientation="horizontal">
 
             <androidx.appcompat.widget.AppCompatImageView
@@ -28,54 +27,47 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginStart="@dimen/_5sdp"
+                android:padding="@dimen/_5sdp"
                 android:src="@drawable/ic_cancel_black" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtTitle"
                 style="@style/CustomFontBold"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:padding="@dimen/_3sdp"
                 android:text="@string/tv_team_member_timesheet"
                 android:textColor="@color/viewTextColor"
-                android:textSize="@dimen/_7mdpi" />
+                android:textSize="@dimen/_6mdpi" />
 
-            <TextView
-                android:id="@+id/txtEmail"
-                style="@style/CustomFontBold"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/_10sdp"
-                android:padding="@dimen/_3sdp"
-                android:text="@string/tv_email"
-                android:textSize="@dimen/_7mdpi" />
 
             <TextView
                 android:id="@+id/txtHome"
                 style="@style/CustomFontBold"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
                 android:layout_marginEnd="@dimen/_10sdp"
-                android:padding="@dimen/_3sdp"
+                android:gravity="center"
+                android:padding="@dimen/_5sdp"
                 android:text="@string/tv_home"
                 android:textColor="@color/txt_color_blue"
-                android:textSize="@dimen/_7mdpi" />
+                android:textSize="@dimen/_6mdpi" />
         </LinearLayout>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
-            android:layout_marginTop="@dimen/_5sdp"
             android:layout_marginBottom="@dimen/_5sdp"
             android:background="@color/gray_rect" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="start"
             android:orientation="horizontal">
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -87,18 +79,18 @@
                 android:layout_marginRight="@dimen/_5sdp"
                 android:text="@string/tv_start_date"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_6mdpi" />
+                android:textSize="@dimen/_5mdpi" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/background_tab_vertical"
+                android:background="@drawable/background_square_border_grey"
                 android:onClick="@{() -> includeLayoutViewModel.datePicker(true)}"
                 android:orientation="horizontal"
                 android:paddingLeft="@dimen/_5sdp"
-                android:paddingTop="@dimen/_6sdp"
+                android:paddingTop="@dimen/_3sdp"
                 android:paddingRight="@dimen/_10sdp"
-                android:paddingBottom="@dimen/_6sdp">
+                android:paddingBottom="@dimen/_3sdp">
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -106,6 +98,7 @@
                     android:layout_gravity="center"
                     android:layout_marginRight="@dimen/_5sdp"
                     app:srcCompat="@drawable/calendar"
+                    app:tint="@color/color65"
                     tools:ignore="ContentDescription" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -114,9 +107,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:gravity="center"
                     android:text="@{includeLayoutViewModel.startDate}"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_6mdpi" />
+                    android:textSize="@dimen/_5mdpi"
+                    tools:text="2021-08-10" />
             </LinearLayout>
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -128,18 +123,18 @@
                 android:layout_marginRight="@dimen/_5sdp"
                 android:text="@string/tv_end_date"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_6mdpi" />
+                android:textSize="@dimen/_5mdpi" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/background_tab_vertical"
+                android:background="@drawable/background_square_border_grey"
                 android:onClick="@{() -> includeLayoutViewModel.datePicker(false)}"
                 android:orientation="horizontal"
                 android:paddingLeft="@dimen/_5sdp"
-                android:paddingTop="@dimen/_6sdp"
+                android:paddingTop="@dimen/_3sdp"
                 android:paddingRight="@dimen/_10sdp"
-                android:paddingBottom="@dimen/_6sdp">
+                android:paddingBottom="@dimen/_3sdp">
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -147,6 +142,7 @@
                     android:layout_gravity="center"
                     android:layout_marginRight="@dimen/_5sdp"
                     app:srcCompat="@drawable/calendar"
+                    app:tint="@color/color65"
                     tools:ignore="ContentDescription" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -157,38 +153,43 @@
                     android:layout_gravity="center"
                     android:text="@{includeLayoutViewModel.endDate}"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_6mdpi" />
+                    android:textSize="@dimen/_5mdpi"
+                    tools:text="2021-08-10" />
             </LinearLayout>
 
             <Spinner
                 android:id="@+id/spRoles"
                 android:layout_width="@dimen/_80sdp"
-                android:layout_height="@dimen/_23sdp"
+                android:layout_height="@dimen/_14sdp"
                 android:layout_gravity="center"
-                android:layout_marginLeft="@dimen/_5sdp"
+                android:layout_marginStart="@dimen/_5sdp"
                 android:background="@drawable/bg_spinner"
                 android:imeOptions="actionNext"
                 android:inputType="text"
                 android:overlapAnchor="false"
                 android:spinnerMode="dropdown"
-                android:textSize="@dimen/_6mdpi" />
+                android:textSize="@dimen/_5mdpi" />
 
             <androidx.appcompat.widget.AppCompatEditText
                 android:id="@+id/edtSearch"
                 style="@style/CustomFontSemiBold"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
+                android:minWidth="@dimen/_90sdp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/_10sdp"
                 android:layout_marginRight="@dimen/_10sdp"
-                android:background="@drawable/background_tab_vertical"
+                android:background="@drawable/background_square_border_grey"
                 android:drawableStart="@drawable/ic_search"
-                android:drawablePadding="@dimen/_10sdp"
+                android:drawablePadding="@dimen/_5sdp"
+                android:paddingStart="@dimen/_5sdp"
+                android:paddingEnd="@dimen/_5sdp"
                 android:imeOptions="actionDone"
                 android:inputType="text"
-                android:padding="@dimen/_5sdp"
+                android:hint="@string/search_name"
+                android:padding="@dimen/_2sdp"
                 android:textColor="@color/black"
-                android:textColorHint="@color/hintColor"
-                android:textSize="@dimen/_6mdpi" />
+                android:textColorHint="@color/drawerBack50"
+                android:textSize="@dimen/_5mdpi" />
         </LinearLayout>
 
 
