@@ -63,10 +63,11 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
         binding = FragmentManualSaleNewBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
         binding.footer.imgInfo.visibility = View.GONE
-        binding.footer.imgDelete.visibility = View.VISIBLE
+        binding.footer.imgDelete.visibility = View.GONE
         getServiceCharge()
         getTaxList()
         getDiscountList()
+        getCartList()
         return binding.root
     }
 
@@ -92,7 +93,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
         binding.layoutMenu.autoSearch.visibility = View.GONE
         onConfig()
         onClickKeypad()
-        getCartList()
+
         onClick()
         listner()
     }
@@ -145,6 +146,32 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
     }
 
     private fun onClick() {
+
+        binding.imgOrderMenu.setOnClickListener {
+
+
+            hideClearCart()
+        }
+
+        binding.txtClearCart.setOnClickListener {
+            if (cartList?.isNotEmpty() == true) {
+                alert(
+                    getString(R.string.app_name),
+                    getString(R.string.delete_items_message)
+                ) {
+                    positiveButton(getString(R.string.tv_delete)) {
+                        viewModel.deleteCart()
+
+                        binding.txtChargeAmount.setText("$0.00")
+
+                    }
+                    negativeButton(R.string.tv_cancel) {
+
+                    }
+                }
+                hideClearCart()
+            }
+        }
         binding.relAddCustomer.setOnClickListener {
             dialogMenu()
         }
@@ -230,6 +257,9 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
         binding.root.setOnClickListener {
             if (binding.llCustomerDialog.visibility == View.VISIBLE) {
                 binding.llCustomerDialog.visibility = View.GONE
+            }
+            if (binding.llOrderMenu.visibility == View.VISIBLE) {
+                binding.llOrderMenu.visibility = View.GONE
             }
 
         }
@@ -823,5 +853,13 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
         }
 
 
+    }
+
+    fun hideClearCart() {
+        if (binding.llOrderMenu.visibility == View.VISIBLE) {
+            binding.llOrderMenu.visibility = View.GONE
+        } else {
+            binding.llOrderMenu.visibility = View.VISIBLE
+        }
     }
 }
