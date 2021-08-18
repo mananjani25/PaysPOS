@@ -12,10 +12,10 @@ data class CreateItemRequestModel(
     var cost: Double = 0.0,
     @SerializedName("desc")
     var desc: String = "",
-    @SerializedName("id")
+    /*@SerializedName("id")
     var id: Int = -1,
     @SerializedName("kitchen_name")
-    var kitchenName: Int = -1,
+    var kitchenName: Int = -1,*/
     @SerializedName("location_id")
     var locationId: Int = -1,
     @SerializedName("modifier_set_ids")

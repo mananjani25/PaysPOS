@@ -71,7 +71,7 @@ class CreateItemViewModel @Inject constructor(
 
             if (isEdit) {
                 itemData = CreateItemRequestModel().apply {
-                    id = itemId!!
+                    //id = itemId!!
                     name = value!!.name
                     price = value.price
                     sku = value.sku
