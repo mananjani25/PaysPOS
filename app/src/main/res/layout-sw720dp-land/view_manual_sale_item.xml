@@ -73,7 +73,7 @@
             android:layout_weight="0.3"
             android:orientation="vertical">
 
-            <TextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtItemPrice"
                 style="@style/CustomFontBold"
                 android:layout_width="match_parent"
@@ -87,7 +87,7 @@
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi" />
 
-            <TextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtDiscountPrice"
                 style="@style/CustomFontBold"
                 android:layout_width="wrap_content"

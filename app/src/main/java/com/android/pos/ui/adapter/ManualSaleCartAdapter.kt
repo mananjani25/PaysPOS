@@ -13,6 +13,7 @@ import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.ManualSaleCartModel
 
 import com.android.pos.databinding.ViewManualSaleItemBinding
+import com.android.pos.utils.MethodUtils
 
 class ManualSaleCartAdapter : RecyclerView.Adapter<ManualSaleCartAdapter.MyViewHolder>() {
     var list = ArrayList<TbItem>()
@@ -26,14 +27,15 @@ class ManualSaleCartAdapter : RecyclerView.Adapter<ManualSaleCartAdapter.MyViewH
         val txtItem: TextView = binding.root.findViewById(R.id.txtItem)
         fun bind(model: TbItem, pos: Int) {
             binding.txtQuantity.setText("x ${model.itemQuantity}")
-            binding.txtItemPrice.setText("$" + model.price)
+            MethodUtils.setPriceTextView(binding.txtItemPrice, model.price)
+
 
             txtItem.setText(list[pos].name)
             if (list[pos].discountPrice != 0.0) {
                 binding.txtItemPrice.setPaintFlags(binding.txtItemPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG)
                 val dPrice = list[pos].price - list[pos].discountPrice
 
-                binding.txtDiscountPrice.setText("$" + dPrice)
+                MethodUtils.setPriceTextView(binding.txtDiscountPrice, dPrice)
             } else {
                 binding.txtItemPrice.setPaintFlags(0)
                 binding.txtDiscountPrice.setText("")

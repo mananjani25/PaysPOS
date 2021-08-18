@@ -94,6 +94,10 @@ class CustomerReceiptSettings : Fragment() {
         }
     }
 
+    private fun onChecked() {
+
+    }
+
     private fun observeData() {
         viewModel.customerData.observe(requireActivity(), {
             val model = it.data
