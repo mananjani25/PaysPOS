@@ -16,6 +16,7 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResultListener
@@ -27,6 +28,7 @@ import com.android.pos.R
 import com.android.pos.data.entities.*
 import com.android.pos.data.model.CategorySearchData
 import com.android.pos.data.model.CategoryTabModel
+import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ADD
 import com.android.pos.data.remote.Constants.CUSTOMER_NAME
 import com.android.pos.data.remote.Constants.DELETE
@@ -200,8 +202,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 viewHolder: RecyclerView.ViewHolder?,
                 underlayButtons: MutableList<UnderlayButton?>
             ) {
-
-
                 underlayButtons.add(UnderlayButton(
                     "Add Note",
                     0,
@@ -790,7 +790,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         )
         txtDiscount.text = "$" + String.format(
             "%.2f",
-            0.00
+            viewModel.totalDiscount
         )
         txtTotalAmount.text = binding.layoutCart.txtTotalAmount.text.toString()
         txtTotalTax.text = "$" + String.format(
@@ -899,6 +899,13 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         val btnAddDiscount: AppCompatTextView = dialog.findViewById(R.id.btnAddDiscount)
         val edtNote: AppCompatEditText = dialog.findViewById(R.id.edtNote)
         val rvModifierSets: RecyclerView = dialog.findViewById(R.id.rvModifierSets)
+        val txtCustomItemName: AppCompatTextView = dialog.findViewById(R.id.txtCustomItemName)
+        val edtItemName: AppCompatEditText = dialog.findViewById(R.id.edtItemName)
+
+        edtItemName.visibility = View.GONE
+        txtCustomItemName.visibility = View.GONE
+        var discountPrice = data.discountPrice / data.itemQuantity
+
 
         var adapter: ItemModifierSetAdapter? = null
 
@@ -936,10 +943,22 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
 
         txtQty.setText(qty.toString())
-        txtTitle.text = data.name + "  $" + String.format(
+
+        if (data.discountPrice != 0.0) {
+            txtTitle.text = data.name + "  $" + String.format(
+                "%.2f",
+                (totalPrice(data) - data.discountPrice)
+            )
+        } else {
+            txtTitle.text = data.name + "  $" + String.format(
+                "%.2f",
+                totalPrice(data)
+            )
+        }
+        /*txtTitle.text = data.name + "  $" + String.format(
             "%.2f",
             data.price
-        )
+        )*/
 
         imgClose.setOnClickListener {
             dialog.dismiss()
@@ -952,6 +971,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                 data.note = edtNote.text.toString().trim()
                 data.itemQuantity = txtQty.text.toString().toInt()
+                if (!isItemClick) {
+                    data.discountPrice = (discountPrice * txtQty.text.toString().toInt())
+                }
+
 
                 val modifiers = adapter?.getSelectedModifiers()
                 if (modifiers != null) {
@@ -981,6 +1004,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         llPlus.setOnClickListener {
             qty += 1
             txtQty.setText(qty.toString())
+
+
         }
         llMinus.setOnClickListener {
 
@@ -988,6 +1013,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 qty -= 1
             }
             txtQty.setText(qty.toString())
+
+
         }
         btnRemove.setOnClickListener {
 
@@ -996,8 +1023,70 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             dialog.dismiss()
         }
         btnAddDiscount.setOnClickListener {
+            setFragmentResultListener("request_key_discount_details") { requestKey: String, bundle: Bundle ->
+                val result = bundle.getParcelable<TbDiscount>("data")
+                if (result != null) {
+                    Log.e(TAG, "GetDiscountResult:  ${Gson().toJson(result)}")
+                    if (result.discountType == requireContext().getString(R.string.disc_percentage)) {
+
+                        data.discountPrice = calculateDiscountPercentage(
+                            totalPrice(data),
+                            result.percentage
+                        )
+                        discountPrice = data.discountPrice
+                        data.discountId = result.id
+                        data.discountType = result.discountType
+                        data.isManualSales = false
+                        Log.e(TAG, "insideDiscountmodel:  ${Gson().toJson(data)}")
+                        //   viewModel.cartLogic(cartList, data, Constants.UPDATE)
+                        txtTitle.text = data.name + "  $" + String.format(
+                            "%.2f",
+                            (totalPrice(data) - data.discountPrice)
+                        )
+
+                    } else if (data.price > result.percentage) {
+
+                        data.discountPrice = result.percentage
+                        data.discountId = 0
+                        data.discountType = result.discountType
+                        data.isManualSales = false
+                        discountPrice = data.discountPrice
+
+                        //viewModel.cartLogic(cartList, data, Constants.UPDATE)
+                        txtTitle.text = data.name + "  $" + String.format(
+                            "%.2f",
+                            (totalPrice(data) - data.discountPrice)
+                        )
+                    }
+                    else{
+                      /*  data.discountPrice = 0.0
+                        data.discountType = ""
+                        data.isManualSales = false
+                        data.discountId = 0
+                        discountPrice = data.discountPrice*/
+
+                    }
+
+                } else {
+                    data.discountPrice = 0.0
+                    data.discountType = ""
+                    data.isManualSales = false
+                    data.discountId = 0
+                    discountPrice = data.discountPrice
+                    // viewModel.cartLogic(cartList, data, Constants.UPDATE)
+                }
+
+            }
+
+
+            val bundle = Bundle().apply {
+                putBoolean("isFromDetails", true)
+                putParcelable("model", data)
+            }
+
             findNavController().navigate(
-                R.id.action_dashboardCategoryNew_to_addDiscountDialog
+                R.id.action_dashboardCategoryNew_to_addDiscountDialog,
+                bundle
             )
         }
 
@@ -1113,6 +1202,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     bundle.putDouble("totalPrice", viewModel.totalPrice)
                     bundle.putDouble("subTotalPrice", viewModel.subTotalPrice)
                     bundle.putDouble("totalTax", viewModel.totalTax)
+                    bundle.putDouble("totalDiscount", viewModel.totalDiscount)
                     bundle.putDouble("totalServiceCharge", viewModel.totalServiceCharge)
                     cartList[0].customer = assignCustomer
                     bundle.putParcelable("cartList", cartList[0])
@@ -1126,6 +1216,37 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             R.id.llCartMenu -> {
 
             }
+        }
+    }
+
+    fun calculateDiscountPercentage(originalPrice: Double, percentage: Double): Double {
+        val disPrice = Math.round((originalPrice * percentage) / 100).toDouble()
+        Log.e(TAG, "disPrice  ${disPrice}")
+        return if (disPrice < originalPrice) {
+            disPrice
+        } else {
+            0.0
+        }
+
+
+    }
+
+    private fun totalPrice(model: TbItem): Double {
+
+        return if (model.modifiers.isNotEmpty()) {
+
+            var totalPrice = 0.0
+
+            val mList = model.modifiers
+            mList.forEach { items ->
+                totalPrice += items.price * items.itemQuantity
+            }
+
+            (model.price * model.itemQuantity) + totalPrice
+        } else {
+
+            model.price * model.itemQuantity
+
         }
     }
 

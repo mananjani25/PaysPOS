@@ -27,25 +27,43 @@
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
                 android:layout_weight="1">
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    style="@style/CustomFontSemiBold"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="start"
-                    android:text="@{model.name}"
-                    android:textColor="@color/drawerBack"
-                    android:textSize="@dimen/_5mdpi"
-                    tools:text="Item" />
+                    android:orientation="vertical">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="start"
+                        android:text="@{model.name}"
+                        android:textColor="@color/drawerBack"
+                        android:textSize="@dimen/_5mdpi"
+                        tools:text="Item" />
+
+                    <TextView
+                        android:id="@+id/txtNote"
+                        style="@style/CustomFontRegularStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:lines="1"
+                        android:maxLines="1"
+                        android:singleLine="true"
+                        android:text="@{model.note}"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_5mdpi" />
+
+                </LinearLayout>
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontSemiBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
                     android:layout_marginStart="@dimen/_5sdp"
                     android:text="@{`x `+model.itemQuantity}"
                     android:textColor="@color/color88"
@@ -54,18 +72,38 @@
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tvRate"
-                style="@style/CustomFontSemiBold"
+            <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
                 android:layout_marginEnd="@dimen/_5sdp"
-                android:gravity="start"
-                android:textColor="@color/drawerBack"
-                android:textSize="@dimen/_5mdpi"
-                tools:text="$20.00" />
+                android:orientation="vertical">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvRate"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="start"
+                    android:textColor="@color/drawerBack"
+                    android:textSize="@dimen/_5mdpi"
+                    tools:text="$20.00" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvDiscountRate"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/_2sdp"
+                    android:gravity="start"
+                    android:textColor="@color/colorRed"
+                    android:textSize="@dimen/_5mdpi"
+
+                    tools:text="$20.00" />
+
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
