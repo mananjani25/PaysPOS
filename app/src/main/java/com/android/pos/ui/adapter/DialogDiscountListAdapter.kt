@@ -1,5 +1,6 @@
 package com.android.pos.ui.adapter
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -104,11 +105,13 @@ class DialogDiscountListAdapter : RecyclerView.Adapter<DialogDiscountListAdapter
 
     }*/
 
+    @SuppressLint("NotifyDataSetChanged")
     fun clearSelectedItem() {
         selectedPosition = -1
         notifyDataSetChanged()
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     fun setSelected(id:Int?) {
         for (i in 0 until discountList.size){
             if (id == discountList[i].id){

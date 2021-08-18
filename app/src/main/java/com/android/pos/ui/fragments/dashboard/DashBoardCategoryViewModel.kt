@@ -42,6 +42,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     var subTotalPrice = 0.0
     var totalTax = 0.0
     var totalServiceCharge = 0.0
+    var totalDiscount = 0.0
     var assignCustomer: TbCustomer? = null
 
     val venueData = posRepository.syncVenueData()
@@ -219,6 +220,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         totalPrice = 0.0
         totalCount = 0
         subTotalPrice = 0.0
+        totalDiscount = 0.0
         totalTax = 0.0
         totalServiceCharge = 0.0
 
@@ -237,6 +239,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                         }
                     }
                 }
+
 
                 item.modifiers.forEach {
                     subTotalPrice += (it.price * it.itemQuantity)
@@ -266,8 +269,13 @@ class DashBoardCategoryViewModel @Inject constructor(
 
             }
 
+           totalDiscount  = cartList.get(0)?.items!!.map {
+                it.discountPrice
+            }.sum()
+            Log.e(TAG,"totalDiscount:  ${totalDiscount}")
 
-            totalPrice = subTotalPrice + totalTax + totalServiceCharge
+
+            totalPrice = (subTotalPrice + totalTax + totalServiceCharge) - totalDiscount
         }
 
         MethodUtils.setPriceTextView(txtTotalAmount, totalPrice)
