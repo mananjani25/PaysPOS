@@ -12,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.model.requestModel.UpdateCustomerReceiptRequestModel
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.SMALL
 import com.android.pos.databinding.FragmentCustomerReceiptSettingsBinding
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
@@ -52,6 +53,7 @@ class CustomerReceiptSettings : Fragment() {
         observeShowProgress()
         updateDate()
         onClick()
+        onChecked()
         return binding.root
     }
 
@@ -95,6 +97,7 @@ class CustomerReceiptSettings : Fragment() {
     }
 
     private fun onChecked() {
+
 
     }
 
@@ -168,5 +171,15 @@ class CustomerReceiptSettings : Fragment() {
                 }
             }
         })
+    }
+
+    private fun setTextSize(type: String) {
+        when(type){
+            SMALL ->{
+
+
+            }
+        }
+
     }
 }
