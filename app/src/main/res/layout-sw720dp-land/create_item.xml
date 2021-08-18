@@ -151,7 +151,7 @@
                     android:imeOptions="actionNext"
                     android:inputType="textCapWords"
                     android:padding="@dimen/_5sdp"
-                    android:text="@={createItemVewModel.itemDetails.itemName}"
+                    android:text="@={createItemVewModel.itemDetails.name}"
                     android:textColor="@color/black"
                     android:textColorHint="@color/hintColor"
                     android:textSize="@dimen/_6mdpi" />
@@ -473,8 +473,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/_10sdp"
-                    tools:itemCount="2"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:itemCount="2"
                     tools:listitem="@layout/view_modifier_sets" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -498,7 +498,7 @@
                     android:inputType="textMultiLine"
                     android:minLines="3"
                     android:padding="@dimen/_5sdp"
-                    android:text="@={createItemVewModel.itemDetails.description}"
+                    android:text="@={createItemVewModel.itemDetails.desc}"
                     android:textColor="@color/black"
                     android:textColorHint="@color/hintColor"
                     android:textSize="@dimen/_6ssp" />

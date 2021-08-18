@@ -97,7 +97,7 @@ open class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.offlineId = randomOfflineId()
         orderAttributeRequestModel.openOrderType = cartModel.orderType
         orderAttributeRequestModel.orderTypeId = cartModel.orderTypeId
-        orderAttributeRequestModel.paymentStatus = "Paid"
+        orderAttributeRequestModel.paymentStatus = 1
         orderAttributeRequestModel.serviceChargeEnabled = true
         orderAttributeRequestModel.taxEnabled = true
         orderAttributeRequestModel.subTotal = MethodUtils.roundOffAmountDouble(subTotalPrice)

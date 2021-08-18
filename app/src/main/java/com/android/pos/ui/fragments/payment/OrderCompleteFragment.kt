@@ -83,6 +83,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener {
             if (result != null) {
                 Log.e("request_key_customer", result.first_name)
 
+                viewModel.assignCustomer(orderID, result.id)
             }
         }
     }
@@ -185,6 +186,19 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener {
                         it, baseResponse.message
                     ) { _, _ ->
                         backpress()
+                    }
+                }
+            }
+        })
+
+        viewModel.data1.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let { baseResponse ->
+                binding.txtAddCustomer.visibility = View.GONE
+                activity?.let {
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        it, baseResponse.message
+                    ) { _, _ ->
+
                     }
                 }
             }

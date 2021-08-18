@@ -23,7 +23,7 @@ data class CreateOrderResponse(
             @SerializedName("delivery_employee_id")
             val deliveryEmployeeId: Any,
             @SerializedName("delivery_type")
-            val deliveryType: Int,
+            val deliveryType: String,
             @SerializedName("discount_type_id")
             val discountTypeId: Any,
             @SerializedName("dynamic_discount_id")
@@ -59,7 +59,7 @@ data class CreateOrderResponse(
             @SerializedName("order_type_id")
             val orderTypeId: Int,
             @SerializedName("payment_status")
-            val paymentStatus: Int,
+            val paymentStatus: String,
             @SerializedName("service_charge_enabled")
             val serviceChargeEnabled: Boolean,
             @SerializedName("sub_total")

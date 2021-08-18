@@ -52,7 +52,7 @@ class OrderAttributeRequestModel {
     var paymentAttributes: PaymentAttributes? = null
 
     @SerializedName("payment_status")
-    var paymentStatus: String = ""
+    var paymentStatus: Int = 0
 
     @SerializedName("service_charge_enabled")
     var serviceChargeEnabled: Boolean = false

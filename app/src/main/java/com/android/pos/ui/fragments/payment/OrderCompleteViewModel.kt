@@ -32,6 +32,9 @@ class OrderCompleteViewModel @Inject constructor(
     private val _data = MutableLiveData<Event<BaseResponse?>>()
     val data: LiveData<Event<BaseResponse?>> = _data
 
+    private val _data1 = MutableLiveData<Event<BaseResponse?>>()
+    val data1: LiveData<Event<BaseResponse?>> = _data1
+
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
@@ -99,6 +102,41 @@ class OrderCompleteViewModel @Inject constructor(
 
         }
 
+    }
+
+    fun assignCustomer(orderID: Int, custId: Int) {
+
+        viewModelScope.launch {
+
+            val resource = posRepository.assignCustomerOrder(orderID, custId, 0)
+
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+                    resource.data.let { baseResponse ->
+                        if (baseResponse?.status == 200) {
+
+                            resource.data?.let { response ->
+
+                                _data1.value = Event(response)
+
+                            }
+                        } else {
+                            _snackbarText.value = Event(resource.message)
+                        }
+                    }
+                }
+
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
+                }
+
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
+            }
+        }
     }
 
 

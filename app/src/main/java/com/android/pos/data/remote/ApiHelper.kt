@@ -221,8 +221,8 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun updateKitchenSettings(id: Int, model: UpdateKitchenReceiptRequestModel) =
         getResult { apiService.updateKitchenReceiptSettings(id, model) }
 
-    suspend fun getTransactionList() =
-        getResult { apiService.getTransactionList() }
+    suspend fun getTransactionList(perPage:Int) =
+        getResult { apiService.getTransactionList(perPage) }
 
     suspend fun orderTypes() =
         getResult { apiService.orderTypes() }
@@ -232,4 +232,7 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
 
     suspend fun phoneReceipt(data: HashMap<String, String>) =
         getResult { apiService.phoneReceipt(data) }
+
+    suspend fun assignCustomerOrder(orderId: Int, customerId: Int, newPos: Int) =
+        getResult { apiService.assignCustomerOrder(orderId, customerId, newPos) }
 }

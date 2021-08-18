@@ -841,7 +841,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             "%.2f",
             viewModel.totalServiceCharge
         )
-        txtDiscount.text = "$" + String.format(
+        txtDiscount.text = "- $" + String.format(
             "%.2f",
             viewModel.totalDiscount
         )

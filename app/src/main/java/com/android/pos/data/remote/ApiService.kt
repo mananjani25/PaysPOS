@@ -36,6 +36,7 @@ import com.android.pos.data.remote.Constants.NOTES
 import com.android.pos.data.remote.Constants.NOTES_ACTIVE
 import com.android.pos.data.remote.Constants.NOTE_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.ORDERS
+import com.android.pos.data.remote.Constants.ORDER_ASSIGN_CUSTOMER
 import com.android.pos.data.remote.Constants.ORDER_EMAIL_RECEIPT
 import com.android.pos.data.remote.Constants.ORDER_PHONE_RECEIPT
 import com.android.pos.data.remote.Constants.ORDER_TYPES
@@ -292,7 +293,7 @@ interface ApiService {
     @POST(CLOCK_OUT)
     suspend fun hideItem(@FieldMap options: HashMap<String, String>): BaseResponse
 
-    @POST(EMPLOYEES)
+    @POST(ITEMS)
     suspend fun createItem(@Body createItemRequestModel: CreateItemRequestModel): BaseResponse
 
     @PUT(NOTE_UPDATE_DELETE)
@@ -395,7 +396,7 @@ interface ApiService {
     suspend fun getCustomerReceiptSettings(): GetCustomerReceiptSettingsResponse
 
     @GET(TRANSACTION_LIST)
-    suspend fun getTransactionList(): GetTransactionListResponse
+    suspend fun getTransactionList(@Query("per_page") perPage: Int): GetTransactionListResponse
 
     @PUT(CUSTOMER_RECEIPTS_UPDATE_SETTINGS)
     suspend fun updateCustomerReceiptSettings(
@@ -412,4 +413,10 @@ interface ApiService {
     suspend fun phoneReceipt(@QueryMap options: HashMap<String, String>): BaseResponse
 
 
+    @PUT(ORDER_ASSIGN_CUSTOMER)
+    suspend fun assignCustomerOrder(
+        @Path("id") orderId: Int,
+        @Query("customer_id") customer_id: Int,
+        @Query("customer_address_id") customer_address_id: Int,
+    ): BaseResponse
 }
