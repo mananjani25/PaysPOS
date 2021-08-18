@@ -157,15 +157,17 @@
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:id="@+id/linearItem"
                 android:layout_width="match_parent"
-                android:orientation="vertical"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/_5sdp">
+                android:layout_margin="@dimen/_5sdp"
+                android:orientation="vertical">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
                     <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtChicken"
                         style="@style/CustomFontBold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -175,13 +177,14 @@
                         android:textSize="@dimen/_6mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtChickerPrice"
                         style="@style/CustomFontBold"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="end"
                         android:gravity="end"
-                        android:text="$9.99"
                         android:padding="@dimen/_5sdp"
+                        android:text="$9.99"
                         android:textColor="@color/viewTextColor"
                         android:textSize="@dimen/_6mdpi" />
 
@@ -190,12 +193,14 @@
                         android:layout_height="1dp"
                         android:background="@color/view" />
                 </LinearLayout>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
                     <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtExtraSp"
                         style="@style/CustomFontRegularStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -206,6 +211,7 @@
                         android:textSize="@dimen/_6mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtExtraPrice"
                         style="@style/CustomFontBold"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -224,6 +230,7 @@
                     android:orientation="horizontal">
 
                     <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtExtraSp2"
                         style="@style/CustomFontRegularStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -234,6 +241,7 @@
                         android:textSize="@dimen/_6mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtExtraPrice2"
                         style="@style/CustomFontBold"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -252,6 +260,7 @@
                     android:orientation="horizontal">
 
                     <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtExtraSp3"
                         style="@style/CustomFontRegularStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -262,6 +271,7 @@
                         android:textSize="@dimen/_6mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtExtraPrice3"
                         style="@style/CustomFontBold"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -272,17 +282,15 @@
                         android:textSize="@dimen/_6mdpi" />
 
                 </LinearLayout>
-
-
 
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:layout_width="match_parent"
-                android:visibility="gone"
                 android:layout_height="match_parent"
                 android:layout_margin="@dimen/_5sdp"
+                android:visibility="gone"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:itemCount="1"
                 tools:listitem="@layout/view_receipt_item_name" />
@@ -683,6 +691,7 @@
             </LinearLayout>
 
             <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtCustDetailsLabel"
                 style="@style/CustomFontBold"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -709,6 +718,7 @@
                 android:orientation="vertical">
 
                 <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtCustomerName"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -717,6 +727,7 @@
                     android:textSize="@dimen/_7mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtCustomerPhone"
                     style="@style/CustomFontMediumStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -726,6 +737,7 @@
                     android:textSize="@dimen/_6mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtCusAddress"
                     style="@style/CustomFontMediumStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -744,6 +756,7 @@
                 android:orientation="vertical">
 
                 <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtOrderNoteLable"
                     style="@style/CustomFontBold"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -753,6 +766,7 @@
                     android:textSize="@dimen/_7mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtSugarLabel"
                     style="@style/CustomFontRegularStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -762,6 +776,7 @@
                     android:textSize="@dimen/_6mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtWebSiteName"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

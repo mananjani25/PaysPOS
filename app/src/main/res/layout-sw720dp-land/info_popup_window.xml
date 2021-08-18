@@ -173,7 +173,7 @@
                         android:layout_weight="1"
                         android:gravity="end"
                         android:text="$0.00"
-                        android:textColor="@color/drawerBack"
+                        android:textColor="@color/colorRed"
                         android:textSize="@dimen/_5mdpi" />
 
                 </androidx.appcompat.widget.LinearLayoutCompat>

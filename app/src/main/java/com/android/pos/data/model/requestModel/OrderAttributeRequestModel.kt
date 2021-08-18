@@ -52,7 +52,7 @@ class OrderAttributeRequestModel {
     var paymentAttributes: PaymentAttributes? = null
 
     @SerializedName("payment_status")
-    var paymentStatus: String = ""
+    var paymentStatus: Int = 0
 
     @SerializedName("service_charge_enabled")
     var serviceChargeEnabled: Boolean = false
@@ -141,7 +141,7 @@ data class CustomerAttributes(
 
     data class EmailsAttribute(
         @SerializedName("customer_id")
-        var customerId: Int = 0,
+        var customerId: Int? = null,
         @SerializedName("_destroy")
         var destroy: Boolean = false,
         @SerializedName("email_address")
@@ -152,7 +152,7 @@ data class CustomerAttributes(
 
     data class PhonesAttribute(
         @SerializedName("customer_id")
-        var customerId: Int = 0,
+        var customerId: Int? = null,
         @SerializedName("_destroy")
         var destroy: Boolean = false,
         @SerializedName("id")

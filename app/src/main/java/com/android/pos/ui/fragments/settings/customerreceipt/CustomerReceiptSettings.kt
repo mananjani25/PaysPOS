@@ -12,6 +12,8 @@ import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.model.requestModel.UpdateCustomerReceiptRequestModel
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.LARGE
+import com.android.pos.data.remote.Constants.MEDIUM
 import com.android.pos.data.remote.Constants.SMALL
 import com.android.pos.databinding.FragmentCustomerReceiptSettingsBinding
 import com.android.pos.utils.AlertUtils
@@ -97,6 +99,58 @@ class CustomerReceiptSettings : Fragment() {
     }
 
     private fun onChecked() {
+        binding.rdGroup.setOnCheckedChangeListener { group, checkedId ->
+
+            when (checkedId) {
+                binding.radioLarge.id -> {
+                    setTextSize(LARGE)
+                }
+                binding.radioMedium.id -> {
+                    setTextSize(MEDIUM)
+                }
+                binding.radioSmall.id -> {
+                    setTextSize(SMALL)
+                }
+
+            }
+        }
+        binding.customerReciptPart2.swtLogo.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                binding.layoutCustomerReceipt.imgIcon.visibility = View.VISIBLE
+            } else {
+                binding.layoutCustomerReceipt.imgIcon.visibility = View.GONE
+            }
+        }
+
+        binding.customerReciptPart2.swtAddress.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked){
+
+                binding.layoutCustomerReceipt.txtAddress.visibility = View.VISIBLE
+            }
+            else{
+                binding.layoutCustomerReceipt.txtAddress.visibility = View.GONE
+            }
+
+        }
+
+        
+        binding.customerReciptPart2.swtPhone.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked){
+                binding.layoutCustomerReceipt.txtNumber.visibility = View.VISIBLE
+            }
+            else{
+                binding.layoutCustomerReceipt.txtNumber.visibility = View.GONE
+            }
+        }
+        binding.swtOrderId.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                binding.layoutCustomerReceipt.txtOrderId.visibility = View.VISIBLE
+            } else {
+                binding.layoutCustomerReceipt.txtOrderId.visibility = View.GONE
+
+            }
+
+        }
 
 
     }
@@ -117,6 +171,7 @@ class CustomerReceiptSettings : Fragment() {
                 }
             }
 
+            setTextSize(model.fonts)
             binding.swtOrderId.isChecked = model.showOrderIdTop
             binding.swtAddons.isChecked = model.showModifiers
             binding.swtOrderNote.isChecked = model.showSplitAmount
@@ -135,6 +190,33 @@ class CustomerReceiptSettings : Fragment() {
             binding.customerReciptPart2.swtTipCash.isChecked = model.showTipLineForCash
             binding.customerReciptPart2.swtQrCode.isChecked = model.showQrCode
             binding.customerReciptPart2.swtCustomNote.isChecked = model.showCustomNote
+
+            if (model.showOrderIdTop) {
+                binding.layoutCustomerReceipt.txtOrderId.visibility = View.VISIBLE
+            } else {
+                binding.layoutCustomerReceipt.txtOrderId.visibility = View.GONE
+            }
+
+            if (model.showVenueLogo) {
+                binding.layoutCustomerReceipt.imgIcon.visibility = View.VISIBLE
+            } else {
+                binding.layoutCustomerReceipt.imgIcon.visibility = View.GONE
+            }
+
+            if (model.showVenueAddress){
+                binding.layoutCustomerReceipt.txtAddress.visibility = View.VISIBLE
+
+            }
+            else{
+                binding.layoutCustomerReceipt.txtAddress.visibility = View.GONE
+            }
+            if (model.showVenuePhone){
+                binding.layoutCustomerReceipt.txtNumber.visibility = View.VISIBLE
+
+            }
+            else{
+                binding.layoutCustomerReceipt.txtNumber.visibility = View.GONE
+            }
 
         })
 
@@ -174,8 +256,322 @@ class CustomerReceiptSettings : Fragment() {
     }
 
     private fun setTextSize(type: String) {
-        when(type){
-            SMALL ->{
+        when (type) {
+            SMALL -> {
+                binding.layoutCustomerReceipt.txtTitle.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.layoutCustomerReceipt.txtFood.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.layoutCustomerReceipt.txtAddress.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.layoutCustomerReceipt.txtNumber.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.layoutCustomerReceipt.txtWebSite.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.layoutCustomerReceipt.txtOrderId.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.layoutCustomerReceipt.txtReceiptId.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.layoutCustomerReceipt.txtEmployee.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.layoutCustomerReceipt.txtDateTime.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.layoutCustomerReceipt.txtChicken.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.layoutCustomerReceipt.txtChickerPrice.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.layoutCustomerReceipt.txtExtraSp.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.layoutCustomerReceipt.txtExtraPrice.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.layoutCustomerReceipt.txtExtraSp2.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.layoutCustomerReceipt.txtExtraPrice2.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.layoutCustomerReceipt.txtExtraSp3.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.layoutCustomerReceipt.txtExtraPrice3.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.layoutCustomerReceipt.txtSubTotalLabel.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.layoutCustomerReceipt.txtSubTotal.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.layoutCustomerReceipt.txtRefundLAbel.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.layoutCustomerReceipt.txtRefundAmount.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.layoutCustomerReceipt.txtServiceLabel.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.layoutCustomerReceipt.txtServiceChargeAmt.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.layoutCustomerReceipt.txtDiscountLable.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.layoutCustomerReceipt.txtDiscountAmount.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.layoutCustomerReceipt.txtCashDiscounLabel.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.layoutCustomerReceipt.txtCashDiscountAmt.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.layoutCustomerReceipt.txtTotlPriceLabel.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.layoutCustomerReceipt.txtTotalPriceAmt.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.layoutCustomerReceipt.txtChrgAmountLabel.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.layoutCustomerReceipt.txtChargeAmount.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.layoutCustomerReceipt.txtAdditionalTip.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.layoutCustomerReceipt.txtEnterLabel.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.layoutCustomerReceipt.txtEntertainAmt.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.layoutCustomerReceipt.txtName.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.layoutCustomerReceipt.txtPrice.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.layoutCustomerReceipt.txtTip.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.layoutCustomerReceipt.txtTipAmt.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.layoutCustomerReceipt.txtTotalLabel.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.layoutCustomerReceipt.txtTotalAmt.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.layoutCustomerReceipt.txtTransactionIDLabel.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.layoutCustomerReceipt.txtTransactionIDAmt.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.layoutCustomerReceipt.txtTransactionTypeLable.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.layoutCustomerReceipt.txtTransactionTypeAmt.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.layoutCustomerReceipt.txtCustDetailsLabel.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.layoutCustomerReceipt.txtCustomerName.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.layoutCustomerReceipt.txtCustomerPhone.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.layoutCustomerReceipt.txtCusAddress.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.layoutCustomerReceipt.txtOrderNoteLable.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.layoutCustomerReceipt.txtSugarLabel.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.layoutCustomerReceipt.txtWebSiteName.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+
+            }
+
+            MEDIUM -> {
+                binding.layoutCustomerReceipt.txtTitle.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.layoutCustomerReceipt.txtFood.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.layoutCustomerReceipt.txtAddress.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.layoutCustomerReceipt.txtNumber.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.layoutCustomerReceipt.txtWebSite.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.layoutCustomerReceipt.txtOrderId.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.layoutCustomerReceipt.txtReceiptId.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.layoutCustomerReceipt.txtEmployee.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.layoutCustomerReceipt.txtDateTime.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.layoutCustomerReceipt.txtChicken.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.layoutCustomerReceipt.txtChickerPrice.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.layoutCustomerReceipt.txtExtraSp.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.layoutCustomerReceipt.txtExtraPrice.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.layoutCustomerReceipt.txtExtraSp2.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.layoutCustomerReceipt.txtExtraPrice2.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.layoutCustomerReceipt.txtExtraSp3.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.layoutCustomerReceipt.txtExtraPrice3.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.layoutCustomerReceipt.txtSubTotalLabel.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.layoutCustomerReceipt.txtSubTotal.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.layoutCustomerReceipt.txtRefundLAbel.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.layoutCustomerReceipt.txtRefundAmount.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.layoutCustomerReceipt.txtServiceLabel.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.layoutCustomerReceipt.txtServiceChargeAmt.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.layoutCustomerReceipt.txtDiscountLable.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.layoutCustomerReceipt.txtDiscountAmount.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.layoutCustomerReceipt.txtCashDiscounLabel.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.layoutCustomerReceipt.txtCashDiscountAmt.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.layoutCustomerReceipt.txtTotlPriceLabel.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.layoutCustomerReceipt.txtTotalPriceAmt.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.layoutCustomerReceipt.txtChrgAmountLabel.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.layoutCustomerReceipt.txtChargeAmount.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.layoutCustomerReceipt.txtAdditionalTip.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.layoutCustomerReceipt.txtEnterLabel.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.layoutCustomerReceipt.txtEntertainAmt.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.layoutCustomerReceipt.txtName.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.layoutCustomerReceipt.txtPrice.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.layoutCustomerReceipt.txtTip.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.layoutCustomerReceipt.txtTipAmt.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.layoutCustomerReceipt.txtTotalLabel.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.layoutCustomerReceipt.txtTotalAmt.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.layoutCustomerReceipt.txtTransactionIDLabel.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.layoutCustomerReceipt.txtTransactionIDAmt.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.layoutCustomerReceipt.txtTransactionTypeLable.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.layoutCustomerReceipt.txtTransactionTypeAmt.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.layoutCustomerReceipt.txtCustDetailsLabel.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.layoutCustomerReceipt.txtCustomerName.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.layoutCustomerReceipt.txtCustomerPhone.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.layoutCustomerReceipt.txtCusAddress.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.layoutCustomerReceipt.txtOrderNoteLable.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.layoutCustomerReceipt.txtSugarLabel.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.layoutCustomerReceipt.txtWebSiteName.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+
+            }
+
+            LARGE -> {
+                binding.layoutCustomerReceipt.txtTitle.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.layoutCustomerReceipt.txtFood.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.layoutCustomerReceipt.txtAddress.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.layoutCustomerReceipt.txtNumber.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.layoutCustomerReceipt.txtWebSite.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.layoutCustomerReceipt.txtOrderId.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.layoutCustomerReceipt.txtReceiptId.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.layoutCustomerReceipt.txtEmployee.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.layoutCustomerReceipt.txtDateTime.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.layoutCustomerReceipt.txtChicken.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.layoutCustomerReceipt.txtChickerPrice.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.layoutCustomerReceipt.txtExtraSp.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.layoutCustomerReceipt.txtExtraPrice.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.layoutCustomerReceipt.txtExtraSp2.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.layoutCustomerReceipt.txtExtraPrice2.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.layoutCustomerReceipt.txtExtraSp3.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.layoutCustomerReceipt.txtExtraPrice3.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.layoutCustomerReceipt.txtSubTotalLabel.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.layoutCustomerReceipt.txtSubTotal.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.layoutCustomerReceipt.txtRefundLAbel.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.layoutCustomerReceipt.txtRefundAmount.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.layoutCustomerReceipt.txtServiceLabel.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.layoutCustomerReceipt.txtServiceChargeAmt.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.layoutCustomerReceipt.txtDiscountLable.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.layoutCustomerReceipt.txtDiscountAmount.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.layoutCustomerReceipt.txtCashDiscounLabel.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.layoutCustomerReceipt.txtCashDiscountAmt.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.layoutCustomerReceipt.txtTotlPriceLabel.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.layoutCustomerReceipt.txtTotalPriceAmt.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.layoutCustomerReceipt.txtChrgAmountLabel.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.layoutCustomerReceipt.txtChargeAmount.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.layoutCustomerReceipt.txtAdditionalTip.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.layoutCustomerReceipt.txtEnterLabel.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.layoutCustomerReceipt.txtEntertainAmt.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.layoutCustomerReceipt.txtName.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.layoutCustomerReceipt.txtPrice.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.layoutCustomerReceipt.txtTip.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.layoutCustomerReceipt.txtTipAmt.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.layoutCustomerReceipt.txtTotalLabel.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.layoutCustomerReceipt.txtTotalAmt.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.layoutCustomerReceipt.txtTransactionIDLabel.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.layoutCustomerReceipt.txtTransactionIDAmt.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.layoutCustomerReceipt.txtTransactionTypeLable.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.layoutCustomerReceipt.txtTransactionTypeAmt.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.layoutCustomerReceipt.txtCustDetailsLabel.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.layoutCustomerReceipt.txtCustomerName.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.layoutCustomerReceipt.txtCustomerPhone.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.layoutCustomerReceipt.txtCusAddress.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.layoutCustomerReceipt.txtOrderNoteLable.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.layoutCustomerReceipt.txtSugarLabel.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.layoutCustomerReceipt.txtWebSiteName.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
 
 
             }
