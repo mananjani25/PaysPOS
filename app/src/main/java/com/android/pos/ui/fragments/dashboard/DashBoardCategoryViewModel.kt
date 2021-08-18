@@ -156,7 +156,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 list[index] = model
                             } else {
                                 if (index != -1) {
-                                    list[index] = item
+                                    model.itemQuantity = model.itemQuantity + 1
+                                    list[index] = model
                                 } else {
                                     model.itemQuantity = item.itemQuantity
                                     list[index] = model

@@ -65,6 +65,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
+                android:layout_gravity="center"
                 android:text="@{@string/symbole +``+String.format(@string/format,itemSheetModel.tips)}"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_5mdpi" />
@@ -75,7 +76,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="John Smith"
+                tools:text="John Smith"
+                android:layout_gravity="center"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_5mdpi" />
 
