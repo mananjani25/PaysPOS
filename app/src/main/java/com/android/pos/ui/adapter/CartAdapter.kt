@@ -1,5 +1,7 @@
 package com.android.pos.ui.adapter
 
+import android.graphics.Paint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +14,7 @@ import com.android.pos.utils.callback.MyCallback
 class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
 
     var cartList = ArrayList<TbItem>()
+    private val TAG = "CartAdapter"
 
     private lateinit var mCallback: MyCallback
     fun setCallback(callback: MyCallback) {
@@ -38,7 +41,7 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: CartAdapter.MyViewHolder, position: Int) {
-        holder.bind(cartList[position])
+        holder.bind(cartList[position], position)
     }
 
     override fun getItemCount(): Int {
@@ -49,7 +52,21 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
     inner class MyViewHolder(val binding: ViewCartItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(item: TbItem) {
+        fun bind(item: TbItem, pos: Int) {
+
+            if (item.discountPrice != 0.0) {
+                binding.tvDiscountRate.visibility = View.VISIBLE
+                binding.tvRate.setPaintFlags(binding.tvRate.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG)
+                Log.e(TAG,"PriceOriginalTotal  ${totalPrice(item)}")
+                Log.e(TAG,"PriceDiscounted  ${item.discountPrice}")
+                val dPrice = totalPrice(item) - item.discountPrice
+                MethodUtils.setPriceTextView(binding.tvDiscountRate, dPrice)
+            } else {
+                binding.tvRate.setPaintFlags(0)
+                binding.tvDiscountRate.setText("")
+                binding.tvDiscountRate.visibility = View.GONE
+
+            }
             binding.model = item
             binding.executePendingBindings()
 
@@ -98,5 +115,6 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
 
         }
     }
+
 
 }
