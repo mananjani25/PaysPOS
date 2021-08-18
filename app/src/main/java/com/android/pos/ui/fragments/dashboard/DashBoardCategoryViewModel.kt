@@ -269,10 +269,10 @@ class DashBoardCategoryViewModel @Inject constructor(
 
             }
 
-           totalDiscount  = cartList.get(0)?.items!!.map {
+            totalDiscount = cartList.get(0)?.items!!.map {
                 it.discountPrice
             }.sum()
-            Log.e(TAG,"totalDiscount:  ${totalDiscount}")
+            Log.e(TAG, "totalDiscount:  ${totalDiscount}")
 
 
             totalPrice = (subTotalPrice + totalTax + totalServiceCharge) - totalDiscount

@@ -19,13 +19,11 @@ class CategoryItemAdapter1(
         fun bind(item: TbItem) {
             binding.viewModel = item
             binding.executePendingBindings()
-        }
-
-        init {
             binding.root.setOnClickListener {
                 list[bindingAdapterPosition]?.let { it1 -> listner.onClick(item = it1) }
             }
         }
+
     }
 
     inner class CustomItemHolder(private val binding: ViewCreateItemBinding) :

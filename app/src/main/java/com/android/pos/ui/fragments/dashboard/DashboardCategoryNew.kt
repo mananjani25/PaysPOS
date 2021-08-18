@@ -16,7 +16,6 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.constraintlayout.widget.ConstraintSet
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResultListener
@@ -28,7 +27,6 @@ import com.android.pos.R
 import com.android.pos.data.entities.*
 import com.android.pos.data.model.CategorySearchData
 import com.android.pos.data.model.CategoryTabModel
-import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ADD
 import com.android.pos.data.remote.Constants.CUSTOMER_NAME
 import com.android.pos.data.remote.Constants.DELETE
@@ -257,7 +255,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             positiveButton(getString(R.string.tv_delete)) {
                                 // Do positive stuff here
                                 val item = cartAdapter.getItem(pos)
-                                cartAdapter.removeIitem(pos)
+                                cartAdapter.removeItem(pos)
                                 viewModel.cartLogic(cartList, item, DELETE)
                             }
                             negativeButton(R.string.tv_cancel) {
@@ -846,7 +844,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     override fun onClick(item: TbItem) {
 
         if (item.modifier_set_ids.isEmpty()) {
-            item.itemQuantity = item.itemQuantity + 1
+            item.itemQuantity = 1
             if (cartList.isEmpty()) {
                 viewModel.setServiceCharges(serviceChargesList)
             }
@@ -943,15 +941,18 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 (totalPrice(data) - data.discountPrice)
             )
         } else {
-            txtTitle.text = data.name + "  $" + String.format(
-                "%.2f",
-                totalPrice(data)
-            )
+            if (isItemClick) {
+                txtTitle.text = data.name + "  $" + String.format(
+                    "%.2f",
+                    data.price
+                )
+            } else
+                txtTitle.text = data.name + "  $" + String.format(
+                    "%.2f",
+                    totalPrice(data)
+                )
         }
-        /*txtTitle.text = data.name + "  $" + String.format(
-            "%.2f",
-            data.price
-        )*/
+
 
         imgClose.setOnClickListener {
             dialog.dismiss()
