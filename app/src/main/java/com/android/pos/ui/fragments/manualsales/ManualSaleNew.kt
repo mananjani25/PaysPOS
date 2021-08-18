@@ -24,8 +24,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.entities.*
-import com.android.pos.data.model.CustomerListResponse
-import com.android.pos.data.model.responseModel.GetServiceChargeResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ADD
 import com.android.pos.data.remote.Constants.SALE_CUSTOMER_NAME
@@ -33,13 +31,11 @@ import com.android.pos.databinding.FragmentManualSaleNewBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.ManualSaleCartAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
-import com.android.pos.ui.fragments.settings.tax.TaxListViewModel
 import com.android.pos.utils.AmountTextWatcher
 import com.android.pos.utils.SwipeHelper
 import com.android.pos.utils.extensions.alert
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
-import java.lang.StringBuilder
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -103,7 +99,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
 
     private fun getCartList() {
 
-        viewModel.cartList.observe(requireActivity(), {
+        viewModel.cartList.observe(viewLifecycleOwner, {
             cartList = it
             Log.e(TAG, "cartListBeforeTax  ${Gson().toJson(cartList)}")
             if (cartList?.isNotEmpty()!!) {

@@ -95,6 +95,7 @@ class TransactionViewModel @Inject constructor(
         if (roleId == "-1") {
             roleIdViewMOdel = ""
         }
+        _showProgress.value = Event(true)
 
         viewModelScope.launch {
             val resource = taxServiceChargeRepository.getTransactionList()

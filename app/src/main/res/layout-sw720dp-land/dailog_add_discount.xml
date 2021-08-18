@@ -121,7 +121,7 @@
                         android:layout_weight="0.5"
                         android:checked="true"
                         android:padding="@dimen/_7sdp"
-                        android:text="@string/disc_percentage"
+                        android:text="@string/disc_amount"
                         android:textSize="@dimen/_6mdpi"
                         app:theme="@style/AppTheme" />
 

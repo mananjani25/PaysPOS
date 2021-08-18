@@ -14,6 +14,8 @@ import android.widget.ArrayAdapter
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.pos.R
 import com.android.pos.data.entities.TeamRole
 import com.android.pos.data.remote.Constants
@@ -175,6 +177,12 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
 
     private fun setUpRecyclerView() {
+        binding.rvTeamTimeSheet.addItemDecoration(
+            DividerItemDecoration(
+                context,
+                LinearLayoutManager.VERTICAL
+            )
+        )
         transactionAdapter = TransactionAdapter(viewModel)
         binding.rvTeamTimeSheet.adapter = transactionAdapter
     }

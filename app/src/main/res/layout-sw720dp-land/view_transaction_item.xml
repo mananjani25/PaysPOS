@@ -36,7 +36,7 @@
                 android:gravity="center"
                 android:text="@{itemSheetModel.createdAt}"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_6mdpi" />
+                android:textSize="@dimen/_5mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
@@ -46,7 +46,7 @@
                 android:gravity="center"
                 android:text="@{itemSheetModel.orderDetails.orderTypeName}"
                 android:textColor="@color/btnColor"
-                android:textSize="@dimen/_6mdpi" />
+                android:textSize="@dimen/_5mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
@@ -56,7 +56,7 @@
                 android:gravity="center"
                 android:text="@{@string/symbole +``+String.format(@string/format,itemSheetModel.amount)}"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_6mdpi" />
+                android:textSize="@dimen/_5mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
@@ -66,7 +66,7 @@
                 android:gravity="center"
                 android:text="@{@string/symbole +``+String.format(@string/format,itemSheetModel.tips)}"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_6mdpi" />
+                android:textSize="@dimen/_5mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
@@ -76,7 +76,7 @@
                 android:gravity="center"
                 android:text="John Smith"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_6mdpi" />
+                android:textSize="@dimen/_5mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
@@ -86,7 +86,7 @@
                 android:gravity="center"
                 android:text="@{itemSheetModel.transactionId+`\n`+itemSheetModel.orderDetails.receiptId}"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_6mdpi" />
+                android:textSize="@dimen/_5mdpi" />
 
         </LinearLayout>
 
