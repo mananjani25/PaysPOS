@@ -786,7 +786,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             "%.2f",
             viewModel.totalServiceCharge
         )
-        txtDiscount.text = "$" + String.format(
+        txtDiscount.text = "- $" + String.format(
             "%.2f",
             viewModel.totalDiscount
         )
@@ -1058,13 +1058,12 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             "%.2f",
                             (totalPrice(data) - data.discountPrice)
                         )
-                    }
-                    else{
-                      /*  data.discountPrice = 0.0
-                        data.discountType = ""
-                        data.isManualSales = false
-                        data.discountId = 0
-                        discountPrice = data.discountPrice*/
+                    } else {
+                        /*  data.discountPrice = 0.0
+                          data.discountType = ""
+                          data.isManualSales = false
+                          data.discountId = 0
+                          discountPrice = data.discountPrice*/
 
                     }
 
