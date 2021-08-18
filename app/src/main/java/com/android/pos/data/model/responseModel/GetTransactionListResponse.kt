@@ -1,0 +1,95 @@
+package com.android.pos.data.model.responseModel
+
+
+import com.google.gson.annotations.SerializedName
+
+data class GetTransactionListResponse(
+    @SerializedName("data")
+    val `data`: Data,
+    @SerializedName("message")
+    val message: String,
+    @SerializedName("status")
+    val status: Int,
+    @SerializedName("type")
+    val type: String
+) {
+    data class Data(
+        @SerializedName("payments")
+        val payments: List<Payment>
+    ) {
+        data class Payment(
+            @SerializedName("amount")
+            val amount: Double,
+            @SerializedName("card_name")
+            val cardName: String,
+            @SerializedName("card_number")
+            val cardNumber: String,
+            @SerializedName("card_type")
+            val cardType: Int,
+            @SerializedName("cash_discount")
+            val cashDiscount: Int,
+            @SerializedName("created_at")
+            val createdAt: String,
+            @SerializedName("customer")
+            val customer: Customer,
+            @SerializedName("employee_id")
+            val employeeId: Int,
+            @SerializedName("employee_name")
+            val employeeName: String,
+            @SerializedName("id")
+            val id: Int,
+            @SerializedName("offline_id")
+            val offlineId: String,
+            @SerializedName("order_details")
+            val orderDetails: OrderDetails,
+            @SerializedName("order_id")
+            val orderId: Any,
+            @SerializedName("payable_id")
+            val payableId: Int,
+            @SerializedName("payable_type")
+            val payableType: String,
+            @SerializedName("payment_id")
+            val paymentId: Any,
+            @SerializedName("payment_type")
+            val paymentType: String,
+            @SerializedName("service_charge_amount")
+            val serviceChargeAmount: Double,
+            @SerializedName("tax_amount")
+            val taxAmount: Double,
+            @SerializedName("terminal_id")
+            val terminalId: Int,
+            @SerializedName("tips")
+            val tips: Double,
+            @SerializedName("transaction_id")
+            val transactionId: String
+        ) {
+            data class Customer(
+                @SerializedName("first_name")
+                val firstName: String,
+                @SerializedName("last_name")
+                val lastName: String
+            )
+
+            data class OrderDetails(
+                @SerializedName("delivery_type")
+                val deliveryType: String,
+                @SerializedName("id")
+                val id: Int,
+                @SerializedName("open_order_type")
+                val openOrderType: Any,
+                @SerializedName("open_order_type_name")
+                val openOrderTypeName: Any,
+                @SerializedName("order_type")
+                val orderType: String,
+                @SerializedName("order_type_name")
+                val orderTypeName: String,
+                @SerializedName("payment_status")
+                val paymentStatus: String,
+                @SerializedName("receipt_id")
+                val receiptId: String,
+                @SerializedName("short_receipt_url")
+                val shortReceiptUrl: String
+            )
+        }
+    }
+}

@@ -22,8 +22,8 @@ object Constants {
     const val ADD = "ADD"
     const val ORDER_TYPE_ID = "order_type_id"
     const val ORDER_TYPE_NAME = "order_type_name"
-    const val MEDIUM ="medium"
-    const val SMALL ="small"
+    const val MEDIUM = "medium"
+    const val SMALL = "small"
     const val LARGE = "large"
 
 
@@ -85,6 +85,7 @@ object Constants {
     const val CUSTOMER_RECEIPT_SETTINGS = "customer_receipts"
     const val CUSTOMER_RECEIPTS_UPDATE_SETTINGS = "customer_receipts/{id}"
 
+    const val TRANSACTION_LIST = "payments"
 
 
     const val VERTICAL = "vertical"

@@ -57,13 +57,14 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         setupData()
         setKeyPad()
 
+        binding.swtDiscountType.isChecked =
+            model?.discountType == getString(R.string.disc_percentage)
 
-        Log.e(TAG,"${Gson().toJson(defaultModel)}")
+        Log.e(TAG, "${Gson().toJson(defaultModel)}")
 
         if (defaultModel?.discountId == 0) {
             binding.edtAmount.append("" + defaultModel?.discountPrice)
-        }
-        else{
+        } else {
             discountAdapter.setSelected(defaultModel?.discountId)
         }
 
@@ -79,11 +80,12 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         binding.swtDiscountType.setOnCheckedChangeListener { buttonView, isChecked ->
 
             if (isChecked) {
+                binding.swtDiscountType.setText("Percentage")
                 binding.txtCurrency.setText("%")
                 binding.edtAmount.addTextChangedListener(PercentageTextWatcher(binding.edtAmount))
 
             } else {
-
+                binding.swtDiscountType.setText("Amount")
                 binding.txtCurrency.setText("$")
                 binding.edtAmount.addTextChangedListener(PercentageTextWatcher(binding.edtAmount))
             }
@@ -130,7 +132,6 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         }
 
         binding.llKeypad.tvFive.setOnClickListener {
-
             calculateValue("5", false)
         }
 
@@ -165,7 +166,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
     private fun setDiscountList() {
         viewModel.getDiscountList.observe(requireActivity(), {
-            Log.e(TAG,"DiscountList ${Gson().toJson(it)}")
+            Log.e(TAG, "DiscountList ${Gson().toJson(it)}")
             if (it.data?.isNotEmpty() == true) {
                 it.data.forEach {
                     it.isChecked = false
@@ -191,18 +192,18 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
             selectedListPos = -1
         }
         binding.imgBack.setOnClickListener {
-         /*   val discount = TbDiscount("", "", 0, 0, "", 0.0, "")
-            val result = Bundle().apply {
-                putParcelable("data", discount)
-            }
+            /*   val discount = TbDiscount("", "", 0, 0, "", 0.0, "")
+               val result = Bundle().apply {
+                   putParcelable("data", discount)
+               }
 
 
-            if (isFromDetails) {
-                setFragmentResult("request_key_discount_details", result)
-            } else {
+               if (isFromDetails) {
+                   setFragmentResult("request_key_discount_details", result)
+               } else {
 
-                setFragmentResult("request_key_discount", result)
-            }*/
+                   setFragmentResult("request_key_discount", result)
+               }*/
             findNavController().navigateUp()
 
         }
@@ -211,7 +212,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
             if (binding.edtAmount.text?.isNotEmpty() == true && !(binding.edtAmount.text.toString()
                     .equals("0.00"))
             ) {
-                val replaceCurrency = binding.edtAmount.text.toString().replace("$", "")
+
 
                 discountModel =
                     if (binding.swtDiscountType.isChecked) {
@@ -221,16 +222,25 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                             0,
                             0,
                             "",
-                            replaceCurrency.toDouble(),
+                            binding.edtAmount.text.toString().toDouble(),
                             ""
                         )
                     } else {
-                        TbDiscount("", "", 0, 0, "", replaceCurrency.toDouble(), "")
+                        TbDiscount(
+                            "",
+                            "",
+                            0,
+                            0,
+                            "",
+                            binding.edtAmount.text.toString().toDouble(),
+                            ""
+                        )
                     }
                 val result = Bundle().apply {
                     putParcelable("data", discountModel)
                 }
                 if (isFromDetails) {
+                    Log.e(TAG, "PassingModel:  ${Gson().toJson(discountModel)}")
                     setFragmentResult("request_key_discount_details", result)
                 } else {
 
@@ -259,6 +269,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
 
                 if (isFromDetails) {
+
                     setFragmentResult("request_key_discount_details", result)
                 } else {
 

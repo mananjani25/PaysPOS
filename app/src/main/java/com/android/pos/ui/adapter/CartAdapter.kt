@@ -80,6 +80,13 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
             } else {
                 binding.rvModifiers.visibility = View.GONE
             }
+
+            if (item.note.isEmpty()){
+                binding.txtNote.visibility = View.GONE
+            }
+            else{
+                binding.txtNote.visibility = View.VISIBLE
+            }
         }
 
         init {

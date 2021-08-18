@@ -96,6 +96,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.menuTransactions -> {
                     disableDrawer()
+                    navController?.navigate(R.id.action_global_transactionFragment)
                     return@setNavigationItemSelectedListener true
                 }
                 R.id.menuCashLog -> {

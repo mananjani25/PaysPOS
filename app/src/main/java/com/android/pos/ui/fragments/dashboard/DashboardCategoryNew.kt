@@ -200,8 +200,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 viewHolder: RecyclerView.ViewHolder?,
                 underlayButtons: MutableList<UnderlayButton?>
             ) {
-
-
                 underlayButtons.add(UnderlayButton(
                     "Add Note",
                     0,
@@ -371,6 +369,11 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         }
 
+        binding.footer.linearTransaction.setOnClickListener {
+            findNavController().navigate(R.id.action_dashboardCategoryNew_to_transactionFragment)
+        }
+
+
     }
 
     private fun dialogPOSMenu() {
@@ -436,6 +439,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         linearOrders.setOnClickListener {
 
             findNavController().navigate(R.id.action_dashboardCategoryNew_to_orders)
+            dialog.dismiss()
+        }
+        linearTransaction.setOnClickListener {
+            findNavController().navigate(R.id.action_dashboardCategoryNew_to_transactionFragment)
             dialog.dismiss()
         }
 
@@ -1041,6 +1048,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     } else if (data.price > result.percentage) {
 
                         data.discountPrice = result.percentage
+                        data.discountId = 0
                         data.discountType = result.discountType
                         data.isManualSales = false
                         discountPrice = data.discountPrice
@@ -1051,10 +1059,20 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             (totalPrice(data) - data.discountPrice)
                         )
                     }
+                    else{
+                      /*  data.discountPrice = 0.0
+                        data.discountType = ""
+                        data.isManualSales = false
+                        data.discountId = 0
+                        discountPrice = data.discountPrice*/
+
+                    }
+
                 } else {
                     data.discountPrice = 0.0
                     data.discountType = ""
                     data.isManualSales = false
+                    data.discountId = 0
                     discountPrice = data.discountPrice
                     // viewModel.cartLogic(cartList, data, Constants.UPDATE)
                 }
@@ -1067,7 +1085,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 putParcelable("model", data)
             }
 
-            Log.e(TAG, "datadata  ${Gson().toJson(data)}")
             findNavController().navigate(
                 R.id.action_dashboardCategoryNew_to_addDiscountDialog,
                 bundle

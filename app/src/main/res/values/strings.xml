@@ -418,4 +418,8 @@
     <string name="phone_validate">Please enter Phone Number</string>
     <string name="valid_phone_validate">Please enter valid Phone Number</string>
     <string name="search_name">Search Name</string>
+    <string name="tv_date_time">Date/Time</string>
+    <string name="tv_total_amount">Total Amount</string>
+    <string name="tv_tip_amount">Tip Amount</string>
+    <string name="tv_transaction_receipt_id"><![CDATA[Transaction & Receipt ID]]></string>
 </resources>
