@@ -149,6 +149,10 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
             dialogMenu()
         }
 
+        binding.layoutMenu.txtProducts.setOnClickListener {
+            findNavController().popBackStack()
+        }
+
         binding.btnPay.setOnClickListener {
 
             if (binding.txtChargeAmount.text.toString() != "$0.00") {
