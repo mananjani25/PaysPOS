@@ -1,17 +1,16 @@
 package com.android.pos.ui.adapter
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.model.responseModel.GetTransactionListResponse
-import com.android.pos.databinding.ViewItemTimesheetBinding
 import com.android.pos.databinding.ViewTransactionItemBinding
 import com.android.pos.ui.fragments.transactions.TransactionViewModel
 import com.android.pos.utils.TimeFormatUtils.convertCurrentDate
 import com.android.pos.utils.TimeFormatUtils.convertCurrentTime
-import kotlin.collections.ArrayList
 
 class TransactionAdapter(val viewModel: TransactionViewModel) :
     RecyclerView.Adapter<TransactionAdapter.MyViewHolder>(), Filterable {
@@ -26,15 +25,20 @@ class TransactionAdapter(val viewModel: TransactionViewModel) :
         return MyViewHolder(binding)
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val itemBinding = holder.discountItemBinding
         itemBinding.itemSheetModel = filterList[position]
         itemBinding.viewModel = viewModel
 
+        val model = filterList[position]
+
         itemBinding.tvDate.text =
             convertCurrentDate(filterList[position].createdAt) + "\n" + convertCurrentTime(
                 filterList[position].createdAt
             )
+        itemBinding.txtCustomerName.text =
+            (model.customer.firstName ?: "") + " " + (model.customer.lastName ?: "")
 
         itemBinding.executePendingBindings()
     }

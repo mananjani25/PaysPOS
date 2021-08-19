@@ -21,6 +21,7 @@
         android:orientation="vertical">
 
         <TextView
+            style="@style/CustomFontSemiBold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -31,8 +32,8 @@
             android:paddingEnd="@dimen/_1sdp"
             android:paddingBottom="@dimen/_5sdp"
             android:text="@{model.title}"
-            android:textColor="@{model.isSelected ? @color/txtColor : @color/drawerItemUnselected}"
-            android:textSize="@dimen/_6mdpi" />
+            android:textColor="@{model.isSelected ? @color/drawerBack : @color/drawerBack40}"
+            android:textSize="@dimen/_5mdpi" />
 
         <View
             android:layout_width="match_parent"

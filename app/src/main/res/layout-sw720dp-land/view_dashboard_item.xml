@@ -16,6 +16,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
+        android:background="@drawable/myrect"
         android:layout_height="wrap_content"
         android:elevation="@dimen/_5sdp"
         android:layout_marginEnd="@dimen/_5sdp"
@@ -29,9 +30,9 @@
             android:background="#969AA3"
             android:gravity="center"
             android:maxLength="2"
-            android:paddingVertical="@dimen/_13sdp"
+            android:paddingVertical="@dimen/_12sdp"
             android:paddingStart="@dimen/_15sdp"
-            android:paddingEnd="@dimen/_13sdp"
+            android:paddingEnd="@dimen/_12sdp"
             android:text="@{viewModel.name}"
             android:textColor="#F4F3F8"
             android:textSize="@dimen/_6mdpi"
@@ -72,7 +73,7 @@
                 android:layout_marginStart="@dimen/_3sdp"
                 android:layout_weight="1"
                 android:ellipsize="marquee"
-                android:fontFamily="@font/sf_pro_display_medium"
+                style="@style/CustomFontMediumStyle"
                 android:singleLine="true"
                 android:text="@{viewModel.name}"
                 android:textColor="@color/color13"

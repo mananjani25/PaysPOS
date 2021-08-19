@@ -80,7 +80,7 @@
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvRate"
-                    style="@style/CustomFontSemiBold"
+                    style="@style/CustomFontBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -91,7 +91,7 @@
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvDiscountRate"
-                    style="@style/CustomFontSemiBold"
+                    style="@style/CustomFontBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -99,7 +99,6 @@
                     android:gravity="start"
                     android:textColor="@color/colorRed"
                     android:textSize="@dimen/_5mdpi"
-
                     tools:text="$20.00" />
 
 

@@ -108,6 +108,8 @@ open class PaymentViewModel @Inject constructor(
             MethodUtils.roundOffAmountDouble(totalServiceCharge)
         orderAttributeRequestModel.totalTaxAmount = MethodUtils.roundOffAmountDouble(totalTax)
         orderAttributeRequestModel.totalTips = 0.0
+        if (cartModel.customer != null)
+            orderAttributeRequestModel.customer_id = cartModel.customer?.id
 
 
         orderAttributeRequestModel.paymentAttributes =
@@ -116,8 +118,8 @@ open class PaymentViewModel @Inject constructor(
             orderServiceChargesAttributes(cartModel, subTotalPrice)
         orderAttributeRequestModel.orderItemsAttributes = orderItemsAttributes(cartModel)
 
-        if (cartModel.customer != null)
-            orderAttributeRequestModel.customerAttributes = customerAttributes(cartModel)
+//        if (cartModel.customer != null)
+//            orderAttributeRequestModel.customerAttributes = customerAttributes(cartModel)
 
 
         val orderRequestModel = OrderRequestModel(true, orderAttributeRequestModel)
@@ -130,7 +132,7 @@ open class PaymentViewModel @Inject constructor(
     private fun customerAttributes(cartModel: CartModel): CustomerAttributes {
 
         val customerAttributes = CustomerAttributes().apply {
-           // id = cartModel.customer?.id ?: 0
+            // id = cartModel.customer?.id ?: 0
             birthDate = cartModel.customer?.birth_date.toString()
             firstName = cartModel.customer?.first_name.toString()
             lastName = cartModel.customer?.last_name.toString()

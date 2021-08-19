@@ -423,4 +423,12 @@
     <string name="tv_tip_amount">Tip Amount</string>
     <string name="tv_transaction_receipt_id"><![CDATA[Transaction & Receipt ID]]></string>
     <string name="manual_sale">Manual Sale</string>
+    <string name="services">Services</string>
+    <string name="checkout">Checkout</string>
+    <string name="transactions">Transactions</string>
+    <string name="notification">Notification</string>
+    <string name="clock">clock</string>
+    <string name="custom_item">Custom Item</string>
+    <string name="menu">Menu</string>
+    <string name="name_phone_email_or_company">Name, Phone, Email or Company</string>
 </resources>

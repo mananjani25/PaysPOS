@@ -65,9 +65,9 @@ data class GetTransactionListResponse(
         ) {
             data class Customer(
                 @SerializedName("first_name")
-                val firstName: String,
+                val firstName: String?,
                 @SerializedName("last_name")
-                val lastName: String
+                val lastName: String?
             )
 
             data class OrderDetails(

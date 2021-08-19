@@ -23,10 +23,11 @@
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/imgClose"
+                android:background="?attr/selectableItemBackground"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginStart="@dimen/_5sdp"
+                android:padding="@dimen/_5sdp"
                 android:src="@drawable/ic_cancel_black" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -37,16 +38,15 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:padding="@dimen/_3sdp"
                 android:text="@string/tv_create_team_member"
                 android:textColor="@color/viewTextColor"
-                android:textSize="@dimen/_7mdpi" />
+                android:textSize="@dimen/_6mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/btnSave"
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:background="@drawable/bg_button_border"
                 android:gravity="center"
                 android:onClick="@{() -> viewModel.submit()}"
@@ -56,7 +56,7 @@
                 android:paddingBottom="@dimen/_5ssp"
                 android:text="@string/save"
                 android:textColor="@color/white"
-                android:textSize="@dimen/_7mdpi" />
+                android:textSize="@dimen/_6mdpi" />
         </LinearLayout>
 
         <View
@@ -99,7 +99,7 @@
                             android:layout_marginBottom="@dimen/_3sdp"
                             android:text="@string/first_name"
                             android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_6mdpi" />
+                            android:textSize="@dimen/_5mdpi" />
 
                         <androidx.appcompat.widget.AppCompatEditText
                             style="@style/CustomFontSemiBold"
@@ -114,7 +114,7 @@
                             android:text="@={viewModel.createTaxDetails.firstName}"
                             android:textColor="@color/txtColor"
                             android:textColorHint="@color/hint_color_"
-                            android:textSize="@dimen/_6sdp" />
+                            android:textSize="@dimen/_5mdpi" />
 
                     </LinearLayout>
 
@@ -133,7 +133,7 @@
                             android:layout_marginBottom="@dimen/_3sdp"
                             android:text="@string/last_name"
                             android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_6sdp" />
+                            android:textSize="@dimen/_5mdpi" />
 
                         <androidx.appcompat.widget.AppCompatEditText
                             style="@style/CustomFontSemiBold"
@@ -148,7 +148,7 @@
                             android:text="@={viewModel.createTaxDetails.lastName}"
                             android:textColor="@color/txtColor"
                             android:textColorHint="@color/hint_color_"
-                            android:textSize="@dimen/_6sdp" />
+                            android:textSize="@dimen/_5mdpi" />
 
                     </LinearLayout>
                 </LinearLayout>
@@ -167,7 +167,7 @@
                         android:layout_marginBottom="@dimen/_3sdp"
                         android:text="@string/tv_hint_email"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_6sdp" />
+                        android:textSize="@dimen/_5mdpi" />
 
                     <androidx.appcompat.widget.AppCompatEditText
                         style="@style/CustomFontSemiBold"
@@ -182,7 +182,7 @@
                         android:text="@={viewModel.createTaxDetails.email}"
                         android:textColor="@color/txtColor"
                         android:textColorHint="@color/hint_color_"
-                        android:textSize="@dimen/_6sdp" />
+                        android:textSize="@dimen/_5mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontRegularStyle"
@@ -193,7 +193,7 @@
                         android:padding="@dimen/_8sdp"
                         android:text="@string/tv_info_email"
                         android:textColor="@color/colorCB"
-                        android:textSize="@dimen/_6sdp" />
+                        android:textSize="@dimen/_5mdpi" />
 
                 </LinearLayout>
 
@@ -211,7 +211,7 @@
                         android:layout_marginBottom="@dimen/_3sdp"
                         android:text="@string/phone"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_6sdp" />
+                        android:textSize="@dimen/_5mdpi" />
 
                     <com.santalu.maskedittext.MaskEditText
                         android:id="@+id/edtMobileNumber"
@@ -227,7 +227,7 @@
                         android:text="@={viewModel.createTaxDetails.phoneNumber}"
                         android:textColor="@color/txtColor"
                         android:textColorHint="@color/hint_color_"
-                        android:textSize="@dimen/_6sdp"
+                        android:textSize="@dimen/_5mdpi"
                         app:met_mask="(###) ###-####" />
 
 
@@ -259,7 +259,7 @@
                             android:layout_weight="1"
                             android:text="@string/tv_primary_job_title"
                             android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_6sdp" />
+                            android:textSize="@dimen/_5mdpi" />
 
                         <androidx.appcompat.widget.AppCompatTextView
                             style="@style/CustomFontSemiBold"
@@ -268,7 +268,7 @@
                             android:layout_gravity="center"
                             android:text="@string/tv_add_job_title"
                             android:textColor="@color/cool_grey"
-                            android:textSize="@dimen/_6sdp" />
+                            android:textSize="@dimen/_5mdpi" />
 
                         <androidx.appcompat.widget.AppCompatImageView
                             android:layout_width="wrap_content"
@@ -302,7 +302,7 @@
                             android:layout_weight="1"
                             android:text="@string/tv_hourly_rate"
                             android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_6sdp" />
+                            android:textSize="@dimen/_5mdpi" />
 
                         <androidx.appcompat.widget.AppCompatEditText
                             style="@style/CustomFontSemiBold"
@@ -316,7 +316,7 @@
                             android:padding="@dimen/_5sdp"
                             android:textColor="@color/txtColor"
                             android:textColorHint="@color/cool_grey"
-                            android:textSize="@dimen/_6sdp" />
+                            android:textSize="@dimen/_5mdpi" />
                     </LinearLayout>
                 </LinearLayout>
 
@@ -344,7 +344,7 @@
                             android:layout_weight="1"
                             android:text="@string/tv_permission_set"
                             android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_6sdp" />
+                            android:textSize="@dimen/_5mdpi" />
 
                         <androidx.appcompat.widget.AppCompatTextView
                             style="@style/CustomFontSemiBold"
@@ -353,7 +353,7 @@
                             android:layout_gravity="center"
                             android:text="@string/tv_team_permissions"
                             android:textColor="@color/cool_grey"
-                            android:textSize="@dimen/_6sdp" />
+                            android:textSize="@dimen/_5mdpi" />
 
                         <androidx.appcompat.widget.AppCompatImageView
                             android:layout_width="wrap_content"
@@ -388,7 +388,7 @@
                             android:layout_weight="1"
                             android:text="@string/tv_personal_passcode"
                             android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_6sdp" />
+                            android:textSize="@dimen/_5mdpi" />
 
                         <androidx.appcompat.widget.AppCompatEditText
                             style="@style/CustomFontSemiBold"
@@ -403,7 +403,7 @@
                             android:text="@={viewModel.createTaxDetails.passcode}"
                             android:textColor="@color/txtColor"
                             android:textColorHint="@color/cool_grey"
-                            android:textSize="@dimen/_6sdp" />
+                            android:textSize="@dimen/_5mdpi" />
                     </LinearLayout>
                 </LinearLayout>
 
@@ -431,7 +431,7 @@
                             android:layout_weight="1"
                             android:text="@string/tv_location"
                             android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_6sdp" />
+                            android:textSize="@dimen/_5mdpi" />
 
                         <androidx.appcompat.widget.AppCompatTextView
                             style="@style/CustomFontSemiBold"
@@ -440,7 +440,7 @@
                             android:layout_gravity="center"
                             android:text="Quick Net Soft"
                             android:textColor="@color/cool_grey"
-                            android:textSize="@dimen/_6sdp" />
+                            android:textSize="@dimen/_5mdpi" />
 
                         <androidx.appcompat.widget.AppCompatImageView
                             android:layout_width="wrap_content"

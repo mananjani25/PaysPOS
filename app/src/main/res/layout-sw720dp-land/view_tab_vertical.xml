@@ -15,7 +15,7 @@
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="@dimen/_100sdp"
+        android:layout_width="@dimen/_80sdp"
         android:layout_height="wrap_content">
 
         <View
@@ -47,10 +47,10 @@
             android:lines="1"
             android:maxLength="15"
             android:maxLines="1"
-            android:padding="@dimen/_7sdp"
+            android:padding="@dimen/_5sdp"
             android:text="@{model.title}"
-            android:textColor="@{model.isSelected ? @color/txtColor : @color/drawerItemUnselected}"
-            android:textSize="@dimen/_6mdpi"
+            android:textColor="@{model.isSelected ? @color/drawerBack : @color/drawerBack40}"
+            android:textSize="@dimen/_5mdpi"
             app:layout_constraintBottom_toTopOf="@+id/viewBottom"
             app:layout_constraintEnd_toStartOf="@+id/viewLine"
             app:layout_constraintStart_toEndOf="@+id/viewStart"

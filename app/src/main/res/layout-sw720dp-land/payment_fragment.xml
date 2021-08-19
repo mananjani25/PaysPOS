@@ -47,6 +47,7 @@
                     android:layout_alignParentEnd="true"
                     android:layout_gravity="center"
                     android:gravity="center"
+                    android:background="?attr/selectableItemBackground"
                     android:paddingStart="@dimen/_15sdp"
                     android:paddingTop="@dimen/_5sdp"
                     android:paddingEnd="@dimen/_15sdp"
@@ -106,6 +107,7 @@
                     android:id="@+id/llCash"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="?attr/selectableItemBackground"
                     android:orientation="horizontal">
 
                     <androidx.appcompat.widget.AppCompatTextView
@@ -133,6 +135,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:layout_weight="1"
+                            android:background="?attr/selectableItemBackground"
                             android:gravity="start"
                             android:padding="@dimen/_10sdp"
                             android:textColor="@color/btnColorDark_"
@@ -145,6 +148,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:layout_weight="1"
+                            android:background="?attr/selectableItemBackground"
                             android:gravity="start"
                             android:padding="@dimen/_10sdp"
                             android:textColor="@color/btnColorDark_"
@@ -157,6 +161,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:layout_weight="1"
+                            android:background="?attr/selectableItemBackground"
                             android:gravity="start"
                             android:padding="@dimen/_10sdp"
                             android:textColor="@color/btnColorDark_"
@@ -169,6 +174,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:layout_weight="1"
+                            android:background="?attr/selectableItemBackground"
                             android:gravity="start"
                             android:padding="@dimen/_10sdp"
                             android:textColor="@color/btnColorDark_"
@@ -181,9 +187,10 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:layout_weight="1"
+                            android:background="?attr/selectableItemBackground"
                             android:gravity="start"
                             android:padding="@dimen/_10sdp"
-                            android:text="Custom"
+                            android:text="@string/custom"
                             android:textColor="@color/btnColorDark_"
                             android:textSize="@dimen/_6mdpi" />
 
@@ -283,7 +290,7 @@
                 android:padding="@dimen/_5sdp"
                 android:text="@string/pay_for_this_order"
                 android:textColor="@color/drawerBack"
-                android:textSize="@dimen/_7mdpi" />
+                android:textSize="@dimen/_6mdpi" />
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
@@ -302,9 +309,9 @@
                     android:layout_gravity="center"
                     android:layout_weight="1"
                     android:gravity="start"
-                    android:text="Order Subtotal"
+                    android:text="@string/order_subtotal"
                     android:textColor="@color/drawerBack"
-                    android:textSize="@dimen/_6mdpi" />
+                    android:textSize="@dimen/_5mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtSubTotal"
@@ -314,7 +321,7 @@
                     android:layout_gravity="center"
                     android:gravity="start"
                     android:textColor="@color/drawerBack"
-                    android:textSize="@dimen/_6mdpi"
+                    android:textSize="@dimen/_5mdpi"
                     tools:text="$20.00" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
@@ -338,7 +345,7 @@
                     android:gravity="start"
                     android:text="Tax"
                     android:textColor="@color/drawerBack"
-                    android:textSize="@dimen/_6mdpi" />
+                    android:textSize="@dimen/_5mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtTax"
@@ -348,7 +355,7 @@
                     android:layout_gravity="center"
                     android:gravity="start"
                     android:textColor="@color/drawerBack"
-                    android:textSize="@dimen/_6mdpi"
+                    android:textSize="@dimen/_5mdpi"
                     tools:text="$20.00" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
@@ -372,7 +379,7 @@
                     android:gravity="start"
                     android:text="Service Charge"
                     android:textColor="@color/drawerBack"
-                    android:textSize="@dimen/_6mdpi" />
+                    android:textSize="@dimen/_5mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtServiceCharge"
@@ -382,7 +389,7 @@
                     android:layout_gravity="center"
                     android:gravity="start"
                     android:textColor="@color/drawerBack"
-                    android:textSize="@dimen/_6mdpi"
+                    android:textSize="@dimen/_5mdpi"
                     tools:text="$20.00" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
@@ -407,7 +414,7 @@
                     android:gravity="start"
                     android:text="Discount"
                     android:textColor="@color/drawerBack"
-                    android:textSize="@dimen/_6mdpi" />
+                    android:textSize="@dimen/_5mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtDiscount"
@@ -417,7 +424,7 @@
                     android:layout_gravity="center"
                     android:gravity="start"
                     android:textColor="@color/colorRed"
-                    android:textSize="@dimen/_6mdpi"
+                    android:textSize="@dimen/_5mdpi"
                     tools:text="$20.00" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
@@ -443,7 +450,7 @@
                     android:gravity="start"
                     android:text="Total"
                     android:textColor="@color/drawerBack"
-                    android:textSize="@dimen/_6mdpi" />
+                    android:textSize="@dimen/_5mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtTotal"
@@ -453,7 +460,7 @@
                     android:layout_gravity="center"
                     android:gravity="start"
                     android:textColor="@color/drawerBack"
-                    android:textSize="@dimen/_6mdpi"
+                    android:textSize="@dimen/_5mdpi"
                     tools:text="$20.00" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
@@ -477,7 +484,7 @@
                     android:gravity="start"
                     android:text="Amount Remaining"
                     android:textColor="@color/drawerBack"
-                    android:textSize="@dimen/_6mdpi" />
+                    android:textSize="@dimen/_5mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontBold"
@@ -486,7 +493,7 @@
                     android:layout_gravity="center"
                     android:gravity="start"
                     android:textColor="@color/drawerBack"
-                    android:textSize="@dimen/_6mdpi"
+                    android:textSize="@dimen/_5mdpi"
                     tools:text="$20.00" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
@@ -510,7 +517,7 @@
                     android:gravity="start"
                     android:text="Payment 1"
                     android:textColor="@color/drawerBack"
-                    android:textSize="@dimen/_6mdpi" />
+                    android:textSize="@dimen/_5mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontBold"
@@ -519,7 +526,7 @@
                     android:layout_gravity="center"
                     android:gravity="start"
                     android:textColor="@color/drawerBack"
-                    android:textSize="@dimen/_6mdpi"
+                    android:textSize="@dimen/_5mdpi"
                     tools:text="$20.00" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>

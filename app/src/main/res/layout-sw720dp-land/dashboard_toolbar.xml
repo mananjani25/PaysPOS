@@ -18,31 +18,31 @@
 
             <TextView
                 android:id="@+id/txtKeypad"
+                style="@style/CustomFontSemiBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/sf_pro_display_medium"
                 android:text="@string/keypad"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_6mdpi" />
+                android:textSize="@dimen/_5mdpi" />
 
             <TextView
                 android:id="@+id/txtProducts"
+                style="@style/CustomFontSemiBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_8sdp"
-                android:fontFamily="@font/sf_pro_display_medium"
                 android:text="@string/products"
                 android:textColor="@color/txt_color_blue"
-                android:textSize="@dimen/_6mdpi" />
+                android:textSize="@dimen/_5mdpi" />
 
             <TextView
+                style="@style/CustomFontSemiBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_8sdp"
-                android:fontFamily="@font/sf_pro_display_medium"
-                android:text="Services"
+                android:text="@string/services"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_6mdpi" />
+                android:textSize="@dimen/_5mdpi" />
 
 
         </androidx.appcompat.widget.LinearLayoutCompat>
@@ -55,8 +55,9 @@
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:layout_marginEnd="@dimen/_5sdp"
+            android:contentDescription="@string/menu"
             android:src="@drawable/ic_dot_menu"
-            app:tint="#111214" />
+            app:tint="@color/txtColor" />
 
         <AutoCompleteTextView
             android:id="@+id/autoSearch"
@@ -72,8 +73,8 @@
             android:imeOptions="actionDone"
             android:inputType="text"
             android:textColor="@color/black"
-            android:textColorHint="#C4C4C4"
-            android:textSize="@dimen/_6mdpi" />
+            android:textColorHint="@color/colorC4"
+            android:textSize="@dimen/_5mdpi" />
 
         <ImageView
             android:id="@+id/imgSearch"
@@ -82,8 +83,9 @@
             android:layout_centerVertical="true"
             android:layout_marginEnd="@dimen/_10sdp"
             android:layout_toStartOf="@+id/autoSearch"
+            android:contentDescription="@string/search"
             android:src="@drawable/ic_search"
-            app:tint="@color/black" />
+            app:tint="@color/txtColor" />
 
 
     </RelativeLayout>
