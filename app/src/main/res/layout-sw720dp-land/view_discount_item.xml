@@ -51,7 +51,7 @@
                 android:padding="@dimen/_5sdp"
                 android:text="@{discountModel.name}"
                 android:textColor="@color/color65"
-                android:textSize="@dimen/_6mdpi" />
+                android:textSize="@dimen/_5mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
@@ -63,7 +63,7 @@
                 android:id="@+id/tvRate"
                 android:padding="@dimen/_5sdp"
                 android:textColor="@color/color96"
-                android:textSize="@dimen/_6mdpi" />
+                android:textSize="@dimen/_5mdpi" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:layout_width="wrap_content"

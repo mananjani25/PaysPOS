@@ -36,7 +36,8 @@
                     android:layout_marginStart="@dimen/_7sdp"
                     android:layout_marginTop="@dimen/_5sdp"
                     android:layout_marginBottom="@dimen/_5sdp"
-                    android:src="@drawable/ic_baseline_menu" />
+                    android:src="@drawable/ic_baseline_menu"
+                    android:contentDescription="@string/menu" />
 
 
             </RelativeLayout>
@@ -110,16 +111,16 @@
                 android:background="@drawable/background_square_border_grey"
                 android:onClick="@{() -> includeLayoutViewModel.datePicker(true)}"
                 android:orientation="horizontal"
-                android:paddingLeft="@dimen/_5sdp"
-                android:paddingTop="@dimen/_3sdp"
-                android:paddingRight="@dimen/_10sdp"
-                android:paddingBottom="@dimen/_3sdp">
+                android:paddingStart="@dimen/_5sdp"
+                android:paddingTop="@dimen/_6sdp"
+                android:paddingEnd="@dimen/_10sdp"
+                android:paddingBottom="@dimen/_6sdp">
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginRight="@dimen/_5sdp"
+                    android:layout_marginEnd="@dimen/_5sdp"
                     app:srcCompat="@drawable/calendar"
                     app:tint="@color/color65"
                     tools:ignore="ContentDescription" />
@@ -142,8 +143,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginLeft="@dimen/_8sdp"
-                android:layout_marginRight="@dimen/_5sdp"
+                android:layout_marginStart="@dimen/_8sdp"
+                android:layout_marginEnd="@dimen/_5sdp"
                 android:text="@string/tv_end_date"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_5mdpi" />
@@ -154,16 +155,16 @@
                 android:background="@drawable/background_square_border_grey"
                 android:onClick="@{() -> includeLayoutViewModel.datePicker(false)}"
                 android:orientation="horizontal"
-                android:paddingLeft="@dimen/_5sdp"
-                android:paddingTop="@dimen/_3sdp"
-                android:paddingRight="@dimen/_10sdp"
-                android:paddingBottom="@dimen/_3sdp">
+                android:paddingStart="@dimen/_5sdp"
+                android:paddingTop="@dimen/_6sdp"
+                android:paddingEnd="@dimen/_10sdp"
+                android:paddingBottom="@dimen/_6sdp">
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginRight="@dimen/_5sdp"
+                    android:layout_marginEnd="@dimen/_5sdp"
                     app:srcCompat="@drawable/calendar"
                     app:tint="@color/color65"
                     tools:ignore="ContentDescription" />

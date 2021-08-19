@@ -16,8 +16,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
-        android:orientation="horizontal"
-        android:padding="@dimen/_5sdp">
+        android:layout_marginStart="@dimen/_5sdp"
+        android:layout_marginEnd="@dimen/_5sdp"
+        android:orientation="horizontal">
 
         <TextView
             style="@style/CustomFontSemiBold"
@@ -26,9 +27,10 @@
             android:layout_centerVertical="true"
             android:layout_marginEnd="@dimen/_10sdp"
             android:layout_toStartOf="@+id/imgInfo"
-            android:text="John Smith"
             android:textColor="@color/txt_color_blue"
-            android:textSize="@dimen/_7mdpi" />
+            android:textSize="@dimen/_5mdpi"
+            tools:ignore="RelativeOverlap"
+            tools:text="John Smith" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imgInfo"
@@ -59,44 +61,47 @@
 
         <ImageView
             android:id="@+id/imgClock"
-            android:layout_width="@dimen/_10sdp"
-            android:layout_height="@dimen/_10sdp"
+            android:layout_width="@dimen/_8sdp"
+            android:layout_height="@dimen/_8sdp"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:layout_marginEnd="@dimen/_5sdp"
-            android:src="@drawable/clock"
-            app:tint="@color/txt_color_blue" />
+            android:contentDescription="@string/clock"
+            android:src="@drawable/ic_tab_clock" />
 
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            tools:ignore="RelativeOverlap">
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:gravity="center"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                tools:ignore="UseCompoundDrawables">
 
                 <ImageView
                     android:id="@+id/imgCalculator"
-                    android:layout_width="@dimen/_10sdp"
-                    android:layout_height="@dimen/_10sdp"
-                    android:src="@drawable/calculator"
+                    android:layout_width="@dimen/_8sdp"
+                    android:layout_height="@dimen/_8sdp"
+                    android:contentDescription="@string/checkout"
+                    android:src="@drawable/ic_tab_checkout"
                     app:tint="@color/txt_color_blue" />
 
                 <TextView
+                    android:padding="@dimen/_5sdp"
                     android:id="@+id/txtCheckOut"
+                    style="@style/CustomFontSemiBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/_3sdp"
-                    android:fontFamily="@font/sf_pro_display_medium"
-                    android:text="Checkout"
+                    android:text="@string/checkout"
                     android:textColor="@color/txt_color_blue"
-                    android:textSize="@dimen/_6mdpi" />
+                    android:textSize="@dimen/_5mdpi" />
             </LinearLayout>
 
             <LinearLayout
@@ -106,22 +111,24 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/_15sdp"
                 android:gravity="center"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                tools:ignore="UseCompoundDrawables">
 
                 <ImageView
-                    android:layout_width="@dimen/_10sdp"
-                    android:layout_height="@dimen/_10sdp"
-                    android:src="@drawable/transfer_arrows"
+                    android:layout_width="@dimen/_8sdp"
+                    android:layout_height="@dimen/_8sdp"
+                    android:contentDescription="@string/transactions"
+                    android:src="@drawable/ic_tab_transaction"
                     app:tint="@color/txtColor" />
 
                 <TextView
+                    style="@style/CustomFontSemiBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/_3sdp"
-                    android:fontFamily="@font/sf_pro_display_medium"
-                    android:text="Transactions"
+                    android:text="@string/transactions"
+                    android:padding="@dimen/_5sdp"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_6mdpi" />
+                    android:textSize="@dimen/_5mdpi" />
             </LinearLayout>
 
             <LinearLayout
@@ -130,22 +137,24 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/_15sdp"
                 android:gravity="center"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                tools:ignore="UseCompoundDrawables">
 
                 <ImageView
-                    android:layout_width="@dimen/_10sdp"
-                    android:layout_height="@dimen/_10sdp"
-                    android:src="@drawable/ic_baseline_notifications_24"
+                    android:layout_width="@dimen/_8sdp"
+                    android:layout_height="@dimen/_8sdp"
+                    android:contentDescription="@string/notification"
+                    android:src="@drawable/ic_notification"
                     app:tint="@color/txtColor" />
 
                 <TextView
+                    style="@style/CustomFontSemiBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/_3sdp"
-                    android:fontFamily="@font/sf_pro_display_medium"
-                    android:text="Notification"
+                    android:text="@string/notification"
+                    android:padding="@dimen/_5sdp"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_6mdpi" />
+                    android:textSize="@dimen/_5mdpi" />
             </LinearLayout>
 
             <LinearLayout
@@ -155,24 +164,26 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/_15sdp"
                 android:gravity="center"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                tools:ignore="UseCompoundDrawables">
 
                 <ImageView
                     android:id="@+id/imgMore"
-                    android:layout_width="@dimen/_10sdp"
-                    android:layout_height="@dimen/_10sdp"
-                    android:src="@drawable/menu"
+                    android:layout_width="@dimen/_8sdp"
+                    android:layout_height="@dimen/_8sdp"
+                    android:contentDescription="@string/more"
+                    android:src="@drawable/ic_tab_more"
                     app:tint="@color/txtColor" />
 
                 <TextView
                     android:id="@+id/txtMore"
+                    style="@style/CustomFontSemiBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/_3sdp"
-                    android:fontFamily="@font/sf_pro_display_medium"
-                    android:text="More"
+                    android:text="@string/more"
+                    android:padding="@dimen/_5sdp"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_6mdpi" />
+                    android:textSize="@dimen/_5mdpi" />
             </LinearLayout>
 
 

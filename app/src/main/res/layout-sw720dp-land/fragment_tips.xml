@@ -33,7 +33,7 @@
                 android:padding="@dimen/_5sdp"
                 android:text="@string/tv_add_a_new_tip"
                 android:textColor="@color/btnColor"
-                android:textSize="@dimen/_6sdp"
+                android:textSize="@dimen/_5mdpi"
                 app:textAllCaps="false" />
 
 

@@ -97,7 +97,7 @@
                             android:padding="@dimen/_5sdp"
                             android:text="@string/tv_tip_name"
                             android:textColor="@color/viewTextColor"
-                            android:textSize="@dimen/_6mdpi" />
+                            android:textSize="@dimen/_5mdpi" />
 
                         <androidx.appcompat.widget.AppCompatEditText
                             style="@style/CustomFontSemiBold"
@@ -113,7 +113,7 @@
                             android:text="@={viewModel.createTipDetails.name}"
                             android:textColor="@color/black"
                             android:textColorHint="@color/hintColor"
-                            android:textSize="@dimen/_6mdpi" />
+                            android:textSize="@dimen/_5mdpi" />
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -135,7 +135,7 @@
                             android:padding="@dimen/_5sdp"
                             android:text="@string/percentage"
                             android:textColor="@color/viewTextColor"
-                            android:textSize="@dimen/_6mdpi" />
+                            android:textSize="@dimen/_5mdpi" />
 
                         <androidx.appcompat.widget.AppCompatEditText
                             style="@style/CustomFontSemiBold"
@@ -152,7 +152,7 @@
                             android:text="@={``+viewModel.createTipDetails.rate}"
                             android:textColor="@color/black"
                             android:textColorHint="@color/hintColor"
-                            android:textSize="@dimen/_6mdpi" />
+                            android:textSize="@dimen/_5mdpi" />
 
                         <TextView
                             android:id="@+id/tvSymbolPer"
@@ -163,7 +163,7 @@
                             android:fontFamily="@font/sf_pro_display_semibold"
                             android:text="@string/percentage_symbol"
                             android:textColor="@color/viewTextColor"
-                            android:textSize="@dimen/_6mdpi"
+                            android:textSize="@dimen/_5mdpi"
                             android:visibility="visible" />
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
@@ -184,7 +184,7 @@
                     android:padding="@dimen/_5sdp"
                     android:text="@string/remove_tip"
                     android:textColor="@color/btnColor"
-                    android:textSize="@dimen/_6mdpi"
+                    android:textSize="@dimen/_5mdpi"
                     android:visibility="gone" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>

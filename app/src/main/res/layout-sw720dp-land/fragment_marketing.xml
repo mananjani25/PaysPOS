@@ -42,7 +42,7 @@
                     android:padding="@dimen/_5sdp"
                     android:text="@string/loyalty_points"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_7mdpi" />
+                    android:textSize="@dimen/_5mdpi" />
 
 
                 <androidx.appcompat.widget.AppCompatImageView
@@ -75,7 +75,7 @@
                     android:padding="@dimen/_5sdp"
                     android:text="@string/gift_card"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_7mdpi" />
+                    android:textSize="@dimen/_5mdpi" />
 
 
                 <androidx.appcompat.widget.AppCompatImageView

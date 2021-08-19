@@ -83,6 +83,9 @@ class OrderAttributeRequestModel {
 
     @SerializedName("total_tips")
     var totalTips: Double = 0.0
+
+    @SerializedName("customer_id")
+    var customer_id: Int? = null
 }
 
 
@@ -98,7 +101,7 @@ data class CustomerAttributes(
     @SerializedName("first_name")
     var firstName: String = "",
     @SerializedName("id")
-    var id: Int = 0,
+    var id: Int? = null,
     @SerializedName("last_name")
     var lastName: String = "",
     @SerializedName("location_id")

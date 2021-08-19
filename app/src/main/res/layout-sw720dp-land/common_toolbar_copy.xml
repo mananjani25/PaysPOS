@@ -45,7 +45,7 @@
                     android:layout_marginStart="@dimen/_30sdp"
                     android:text="Team"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_8mdpi" />
+                    android:textSize="@dimen/_6mdpi" />
 
                 <ImageView
                     android:id="@+id/imgOptionMenu"
@@ -80,7 +80,7 @@
                     android:fontFamily="@font/sf_pro_display_medium"
                     android:gravity="center"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_7mdpi"
+                    android:textSize="@dimen/_6mdpi"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/txtHome"
                     app:layout_constraintStart_toStartOf="parent"
@@ -107,7 +107,7 @@
                     android:gravity="center"
                     android:text="Home"
                     android:textColor="@color/txt_color_blue"
-                    android:textSize="@dimen/_7mdpi"
+                    android:textSize="@dimen/_6mdpi"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/imgOptionMenuContainer"
                     app:layout_constraintTop_toTopOf="parent" />

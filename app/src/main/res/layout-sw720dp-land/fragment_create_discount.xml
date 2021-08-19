@@ -126,7 +126,7 @@
                             android:gravity="center"
                             android:padding="@dimen/_2sdp"
                             android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_6mdpi" />
+                            android:textSize="@dimen/_5mdpi" />
 
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
@@ -156,7 +156,7 @@
                                 android:text="@={viewModel.createDiscountDetails.name}"
                                 android:textColor="@color/black"
                                 android:textColorHint="@color/hintColor"
-                                android:textSize="@dimen/_6mdpi" />
+                                android:textSize="@dimen/_5mdpi" />
 
                         </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -183,7 +183,7 @@
                                     android:fontFamily="@font/sf_pro_display_semibold"
                                     android:text="@string/symbole"
                                     android:textColor="@color/viewTextColor"
-                                    android:textSize="@dimen/_6mdpi"
+                                    android:textSize="@dimen/_5mdpi"
                                     android:visibility="gone" />
 
                                 <androidx.appcompat.widget.AppCompatEditText
@@ -200,7 +200,7 @@
                                     android:text="@={``+viewModel.createDiscountDetails.percentage}"
                                     android:textColor="@color/black"
                                     android:textColorHint="@color/hintColor"
-                                    android:textSize="@dimen/_6mdpi" />
+                                    android:textSize="@dimen/_5mdpi" />
 
                                 <TextView
                                     android:id="@+id/tvSymbolPer"
@@ -210,7 +210,7 @@
                                     android:fontFamily="@font/sf_pro_display_semibold"
                                     android:text="@string/percentage_symbol"
                                     android:textColor="@color/viewTextColor"
-                                    android:textSize="@dimen/_6mdpi"
+                                    android:textSize="@dimen/_5mdpi"
                                     android:visibility="gone" />
                             </LinearLayout>
 
@@ -224,7 +224,7 @@
                                 android:onCheckedChanged="@{(button, bool)-> createDiscountFragment.discountType(bool)}"
                                 android:padding="@dimen/_5sdp"
                                 android:text="@string/disc_percentage"
-                                android:textSize="@dimen/_6mdpi"
+                                android:textSize="@dimen/_5mdpi"
                                 app:theme="@style/AppTheme" />
 
                         </androidx.appcompat.widget.LinearLayoutCompat>
@@ -244,7 +244,7 @@
                     android:padding="@dimen/_5sdp"
                     android:text="@string/leave_the_discount_amount_blank_to_enter_at_the_time_of_sale_n_discount_are_applied_to_the_ticket_before_tax_is_calculated"
                     android:textColor="@color/colorCB"
-                    android:textSize="@dimen/_6mdpi"
+                    android:textSize="@dimen/_5mdpi"
                     app:textAllCaps="false" />
 
                 <TextView
@@ -257,7 +257,7 @@
                     android:padding="@dimen/_5sdp"
                     android:text="@string/options"
                     android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_6mdpi" />
+                    android:textSize="@dimen/_5mdpi" />
 
 
                 <View
@@ -281,7 +281,7 @@
                         android:padding="@dimen/_5sdp"
                         android:text="@string/apply_discount_after_taxes"
                         android:textColor="@color/viewTextColor"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textSize="@dimen/_5mdpi" />
 
                     <androidx.appcompat.widget.SwitchCompat
                         android:layout_width="wrap_content"
@@ -311,7 +311,7 @@
                     android:padding="@dimen/_5sdp"
                     android:text="@string/this_should_only_be_used_for_manufacture_discount_and_instant_rebates_learn_more"
                     android:textColor="@color/colorCB"
-                    android:textSize="@dimen/_6mdpi"
+                    android:textSize="@dimen/_5mdpi"
                     app:textAllCaps="false" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>

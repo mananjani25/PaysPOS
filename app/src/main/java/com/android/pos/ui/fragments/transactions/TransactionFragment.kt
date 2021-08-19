@@ -128,7 +128,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener {
             (requireActivity() as MainActivity).enableDrawer()
         }
 
-        binding.includeView.txtTitle.setText("Transactions")
+        binding.includeView.txtTitle.text = getString(R.string.transactions)
 
         binding.includeView.txtHome.setOnClickListener {
             findNavController().navigate(R.id.action_settings_to_dashboardCategory)

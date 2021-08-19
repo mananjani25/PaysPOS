@@ -24,13 +24,13 @@
             android:layout_gravity="start"
             android:layout_weight="1"
             android:gravity="start"
-            android:paddingTop="@dimen/_7sdp"
+            android:paddingTop="@dimen/_5sdp"
             android:paddingEnd="@dimen/_20sdp"
             android:paddingStart="@dimen/_20sdp"
-            android:paddingBottom="@dimen/_7sdp"
+            android:paddingBottom="@dimen/_5sdp"
             android:text="@{model.title}"
             android:textColor="@{model.selected ? @color/white : @color/txtColor}"
-            android:textSize="@dimen/_6mdpi" />
+            android:textSize="@dimen/_5mdpi" />
 
         <View
             android:layout_width="match_parent"

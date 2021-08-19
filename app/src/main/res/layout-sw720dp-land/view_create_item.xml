@@ -7,8 +7,10 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
+        android:background="@drawable/myrect"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/_5sdp"
+        android:elevation="@dimen/_5sdp"
         android:layout_marginBottom="@dimen/_10mdpi">
 
         <LinearLayout
@@ -18,7 +20,7 @@
             android:background="@color/txtColor"
             android:gravity="center"
             android:orientation="vertical"
-            android:paddingVertical="@dimen/_12sdp"
+            android:paddingVertical="@dimen/_11sdp"
             android:paddingStart="@dimen/_10sdp"
             android:paddingEnd="@dimen/_10sdp"
             app:layout_constraintStart_toStartOf="parent"
@@ -33,14 +35,15 @@
         </LinearLayout>
 
         <TextView
+            style="@style/CustomFontMediumStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:background="@color/white"
             android:gravity="center"
             android:paddingTop="@dimen/_3sdp"
             android:paddingBottom="@dimen/_3sdp"
-            android:text="Custom Item"
-            android:textColor="@color/txtColorItem"
+            android:text="@string/custom_item"
+            android:textColor="@color/color13"
             android:textSize="@dimen/_5mdpi"
             app:layout_constraintEnd_toEndOf="@+id/txtTitle"
             app:layout_constraintStart_toStartOf="@+id/txtTitle"

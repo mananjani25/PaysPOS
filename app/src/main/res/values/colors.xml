@@ -7,6 +7,7 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
+    <color name="white90">#E6FFFFFF</color>
     <color name="white_">#FBF6F6</color>
 
     <color name="cool_grey">#8d989e</color>
@@ -38,6 +39,8 @@
     <color name="colorDashBack">#F3F4F6</color>
     <color name="drawerBack">#292E32</color>
     <color name="drawerBack50">#80292E32</color>
+    <color name="drawerBack40">#66292E32</color>
+    <color name="drawerBack30">#4D292E32</color>
 
 
     <color name="txtColorGray">#F8F8F8</color>
