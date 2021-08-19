@@ -112,10 +112,12 @@ class TeamMemberTimeSheetFragment : Fragment(), AdapterView.OnItemSelectedListen
 
         }
 
-
-        viewModel.setCurrentDate(myCalendar)
-
         return binding.root
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel.setCurrentDate(myCalendar)
     }
 
     private fun startDatePickerObserver() {

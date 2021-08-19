@@ -7,7 +7,7 @@ import com.android.pos.data.entities.TeamRole
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.remote.ApiHelper
 import com.android.pos.utils.performGetOperation
-import com.android.pos.utils.performGetOperationNew
+import java.util.HashMap
 import javax.inject.Inject
 
 class TaxServiceChargeRepository @Inject constructor(
@@ -111,8 +111,8 @@ class TaxServiceChargeRepository @Inject constructor(
     suspend fun getCustomerReceiptSettings() =
         apiHelperNew.getCustomerReceiptSettings()
 
-    suspend fun getTransactionList(perPage:Int) =
-        apiHelperNew.getTransactionList(perPage)
+    suspend fun getTransactionList(data: HashMap<String, String>) =
+        apiHelperNew.getTransactionList(data)
 
     suspend fun updateKitchenReceiptSettings(id: Int?, model: UpdateKitchenReceiptRequestModel) =
         apiHelperNew.updateKitchenSettings(id!!, model)

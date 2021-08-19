@@ -42,6 +42,16 @@
                 android:textColor="@color/viewTextColor"
                 android:textSize="@dimen/_6mdpi" />
 
+            <TextView
+                android:id="@+id/txtPrint"
+                style="@style/CustomFontBold"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:padding="@dimen/_5sdp"
+                android:text="@string/tv_print"
+                android:textSize="@dimen/_6mdpi" />
 
             <TextView
                 android:id="@+id/txtHome"
@@ -174,19 +184,19 @@
                 android:id="@+id/edtSearch"
                 style="@style/CustomFontSemiBold"
                 android:layout_width="wrap_content"
-                android:minWidth="@dimen/_90sdp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/_10sdp"
                 android:layout_marginRight="@dimen/_10sdp"
                 android:background="@drawable/background_square_border_grey"
                 android:drawableStart="@drawable/ic_search"
                 android:drawablePadding="@dimen/_5sdp"
-                android:paddingStart="@dimen/_5sdp"
-                android:paddingEnd="@dimen/_5sdp"
+                android:hint="@string/search_name"
                 android:imeOptions="actionDone"
                 android:inputType="text"
-                android:hint="@string/search_name"
+                android:minWidth="@dimen/_90sdp"
                 android:padding="@dimen/_2sdp"
+                android:paddingStart="@dimen/_5sdp"
+                android:paddingEnd="@dimen/_5sdp"
                 android:textColor="@color/black"
                 android:textColorHint="@color/drawerBack50"
                 android:textSize="@dimen/_5mdpi" />

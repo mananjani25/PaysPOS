@@ -396,7 +396,7 @@ interface ApiService {
     suspend fun getCustomerReceiptSettings(): GetCustomerReceiptSettingsResponse
 
     @GET(TRANSACTION_LIST)
-    suspend fun getTransactionList(@Query("per_page") perPage: Int): GetTransactionListResponse
+    suspend fun getTransactionList(@QueryMap options: HashMap<String, String>): GetTransactionListResponse
 
     @PUT(CUSTOMER_RECEIPTS_UPDATE_SETTINGS)
     suspend fun updateCustomerReceiptSettings(

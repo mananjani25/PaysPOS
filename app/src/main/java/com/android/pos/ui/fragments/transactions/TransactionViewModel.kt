@@ -4,11 +4,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.android.pos.data.model.responseModel.GetEmployeeTimeSheetDetailsResponse
 import com.android.pos.data.model.responseModel.GetEmployeesTimeSheetResponse
 import com.android.pos.data.model.responseModel.GetTransactionListResponse
+import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.TaxServiceChargeRepository
+import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,12 +18,16 @@ import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.LinkedHashMap
 
 @HiltViewModel
 class TransactionViewModel @Inject constructor(
-    private val taxServiceChargeRepository: TaxServiceChargeRepository
+    private val taxServiceChargeRepository: TaxServiceChargeRepository,
+    private val prefProvider: PrefProvider,
+    private val posRepository: PosRepository
 ) : ViewModel() {
 
+    val locationId = prefProvider.getValueInt(LOCATION_ID, 0)
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
 
@@ -35,12 +40,17 @@ class TransactionViewModel @Inject constructor(
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
+    val getTerminalListDatabse = posRepository.getTerminalListDatabse()
+
     val startDate = MutableLiveData<String>()
 
     val endDate = MutableLiveData<String>()
 
     var selectPicker1: Boolean = false
-    var roleIdViewMOdel: String = ""
+    var terminalIdViewModel: String = ""
+    var orderTypeIdViewModel: String = ""
+    var roleIdViewModel: String = ""
+    var employeeIdViewModel: String = ""
 
     private val _startDateSelection = MutableLiveData<Event<Unit>>()
     val startDateSelection: LiveData<Event<Unit>> = _startDateSelection
@@ -48,13 +58,12 @@ class TransactionViewModel @Inject constructor(
     private val _endDateSelection = MutableLiveData<Event<Unit>>()
     val endDateSelection: LiveData<Event<Unit>> = _endDateSelection
 
-    private val _employeeIdViewModel = MutableLiveData<Event<GetEmployeesTimeSheetResponse.Data>>()
-    val employeeIdViewModel: LiveData<Event<GetEmployeesTimeSheetResponse.Data>> =
-        _employeeIdViewModel
 
     /* val getEmployeesTimeSheet =
          posRepository.employeesTimeSheet(startDate.value.toString(), endDate.value.toString(),roleId)*/
     val getTeamRoleList = taxServiceChargeRepository.getTeamRoleList()
+    val employeeData = posRepository.employeesList(locationId)
+    val orderTypes = posRepository.orderTypes()
 
     fun setCurrentDate(myCalendar: Calendar) {
         val myFormat = "MM/dd/yyyy" //In which you need put here
@@ -85,20 +94,46 @@ class TransactionViewModel @Inject constructor(
         }
     }
 
-    fun employeeId(employeeId: GetEmployeesTimeSheetResponse.Data) {
-        _employeeIdViewModel.value = Event(employeeId)
-    }
 
-    fun apiCallTimeSheet(roleId: String) {
-        roleIdViewMOdel = roleId
+    fun apiCallTimeSheet(
+        terminalId: String,
+        roleId: String,
+        employeeId: String,
+        orderTypeId: String
+    ) {
+        terminalIdViewModel = terminalId
+        roleIdViewModel = roleId
+        employeeIdViewModel = employeeId
+        orderTypeIdViewModel = orderTypeId
+
+        if (terminalId == "-1") {
+            terminalIdViewModel = ""
+        }
 
         if (roleId == "-1") {
-            roleIdViewMOdel = ""
+            roleIdViewModel = ""
         }
+
+        if (employeeId == "-1") {
+            employeeIdViewModel = ""
+        }
+
+        if (orderTypeId == "-1") {
+            orderTypeIdViewModel = ""
+        }
+
         _showProgress.value = Event(true)
 
         viewModelScope.launch {
-            val resource = taxServiceChargeRepository.getTransactionList(100)
+            val data = LinkedHashMap<String, String>()
+            data["per_page"] = 10.toString()
+            data["start_date"] = startDate.value.toString()
+            data["end_date"] = endDate.value.toString()
+            data["terminal_id"] = terminalIdViewModel
+            data["roleId"] = roleIdViewModel
+            data["employeeId"] = employeeIdViewModel
+            data["order_type_id"] = orderTypeIdViewModel
+            val resource = taxServiceChargeRepository.getTransactionList(data)
 
             when (resource.status) {
                 Status.SUCCESS -> {

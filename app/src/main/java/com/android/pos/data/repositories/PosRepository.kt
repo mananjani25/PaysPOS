@@ -9,6 +9,7 @@ import com.android.pos.data.entities.ModifierSet
 import com.android.pos.data.model.CustomerListResponse
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.NoteResponse
+import com.android.pos.data.model.responseModel.VenueDetailsResponse
 import com.android.pos.data.remote.ApiHelper
 import com.android.pos.utils.performGetOperation
 import com.android.pos.utils.performGetOperationDatabase
@@ -198,15 +199,17 @@ class PosRepository @Inject constructor(
         saveCallResult = { appDatabase.employeeDao().addAllEmployee(it.data.employees) })
 
     fun getEmployeeListDatabse() =
-        performGetOperationDatabase(databaseQuery = { appDatabase.employeeDao().allEmployee  })
+        performGetOperationDatabase(databaseQuery = { appDatabase.employeeDao().allEmployee })
 
 
     /*fun employeesTimeSheet(startDate: String, endDate: String, teamRoleId: String) =
         performGetOperationNew(networkCall = { apiHelperNew.employeesTimeSheet(startDate, endDate, teamRoleId) })*/
 
-    suspend fun employeesTimeSheet(startDate: String, endDate: String, teamRoleId: String) = apiHelperNew.employeesTimeSheet(startDate, endDate, teamRoleId)
+    suspend fun employeesTimeSheet(startDate: String, endDate: String, teamRoleId: String) =
+        apiHelperNew.employeesTimeSheet(startDate, endDate, teamRoleId)
 
-    suspend fun employeesTimeSheetDetails(startDate: String, endDate: String, teamRoleId: String) = apiHelperNew.employeesTimeSheetDetails(startDate, endDate, teamRoleId)
+    suspend fun employeesTimeSheetDetails(startDate: String, endDate: String, teamRoleId: String) =
+        apiHelperNew.employeesTimeSheetDetails(startDate, endDate, teamRoleId)
 
     /*fun employeesTimeSheetDetails(startDate: String, endDate: String, teamId: String) =
         performGetOperationNew(networkCall = { apiHelperNew.employeesTimeSheetDetails(startDate, endDate, teamId) })*/
@@ -218,12 +221,10 @@ class PosRepository @Inject constructor(
         networkCall = { apiHelperNew.customerList() },
         saveCallResult = { appDatabase.customerDao().addAllCustomer(it.data) })
 
-    fun orderTypes() =
-        performGetOperation(databaseQuery = { appDatabase.orderTypeDao().orderTypes },
-            networkCall = { apiHelperNew.orderTypes() },
-            saveCallResult = {
-                appDatabase.orderTypeDao().addAll(it.data)
-            })
+    fun orderTypes() = performGetOperation(
+        databaseQuery = { appDatabase.orderTypeDao().orderTypes },
+        networkCall = { apiHelperNew.orderTypes() },
+        saveCallResult = { appDatabase.orderTypeDao().addAll(it.data) })
 
     suspend fun createEmployee(data: CreateEmployeeRequestModel) = apiHelperNew.createEmployee(data)
 
@@ -346,7 +347,7 @@ class PosRepository @Inject constructor(
     fun disocuntList() =
         performGetOperationDatabase(databaseQuery = { appDatabase.discountDao().allDiscount })
 
-    fun taxList() = performGetOperationDatabase(databaseQuery ={appDatabase.taxDao().allTax})
+    fun taxList() = performGetOperationDatabase(databaseQuery = { appDatabase.taxDao().allTax })
 
     fun modifierSetList(ids: IntArray) =
         performGetOperationDatabase(databaseQuery = {
@@ -374,5 +375,11 @@ class PosRepository @Inject constructor(
 
     suspend fun assignCustomerOrder(orderId: Int, customerId: Int, newPos: Int) =
         apiHelperNew.assignCustomerOrder(orderId, customerId, newPos)
+
+    suspend fun addTerminalsDatabase(data: List<VenueDetailsResponse.Data.Terminal>) =
+        appDatabase.terminalDao().addAllTerminalSuspend(data)
+
+    fun getTerminalListDatabse() =
+        performGetOperationDatabase(databaseQuery = { appDatabase.terminalDao().allTerminal })
 }
 

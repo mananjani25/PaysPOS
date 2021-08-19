@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.pos.R
@@ -53,10 +54,11 @@ class SingleTeamMemberTimeSheetFragment : Fragment() {
         setUpRecyclerView()
         getEmployeesTimeSheetDetailsObserver()
 
-        binding.tvEmployeeName.text = employeeModel.teamName+" Time Sheet"
+        binding.tvEmployeeName.text = employeeModel.teamName + " Time Sheet"
         binding.tvEmployeeId.text = "Employee ID: #" + employeeModel.teamId
         binding.includeView.spRoles.visibility = View.GONE
         binding.includeView.edtSearch.visibility = View.GONE
+        binding.includeView.txtPrint.visibility = View.GONE
 
 
         startDate =
@@ -82,6 +84,10 @@ class SingleTeamMemberTimeSheetFragment : Fragment() {
         viewModel.setCurrentDate(myCalendar)
 
         viewModel.apiCallTimeSheetDetails(employeeModel.teamId.toString())
+
+        binding.includeView.imgClose.setOnClickListener {
+            findNavController().navigateUp()
+        }
 
         return binding.root
     }

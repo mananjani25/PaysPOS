@@ -1,6 +1,8 @@
 package com.android.pos.data.model.responseModel
 
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.android.pos.data.entities.TaxData
 import com.android.pos.data.entities.TbDiscount
 import com.android.pos.data.entities.TbServiceCharge
@@ -127,9 +129,11 @@ data class VenueDetailsResponse(
             )
         }
 
+        @Entity(tableName = "TbTerminals")
         data class Terminal(
             @SerializedName("created_at")
             val createdAt: String,
+            @PrimaryKey
             @SerializedName("id")
             val id: Int,
             @SerializedName("location_id")

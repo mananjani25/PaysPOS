@@ -88,6 +88,9 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="@dimen/_5sdp"
+            android:gravity="start"
             android:orientation="horizontal">
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -104,13 +107,13 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/background_tab_vertical"
+                android:background="@drawable/background_square_border_grey"
                 android:onClick="@{() -> includeLayoutViewModel.datePicker(true)}"
                 android:orientation="horizontal"
                 android:paddingLeft="@dimen/_5sdp"
-                android:paddingTop="@dimen/_6sdp"
+                android:paddingTop="@dimen/_3sdp"
                 android:paddingRight="@dimen/_10sdp"
-                android:paddingBottom="@dimen/_6sdp">
+                android:paddingBottom="@dimen/_3sdp">
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -118,6 +121,7 @@
                     android:layout_gravity="center"
                     android:layout_marginRight="@dimen/_5sdp"
                     app:srcCompat="@drawable/calendar"
+                    app:tint="@color/color65"
                     tools:ignore="ContentDescription" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -126,9 +130,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:gravity="center"
                     android:text="@{includeLayoutViewModel.startDate}"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_5mdpi" />
+                    android:textSize="@dimen/_5mdpi"
+                    tools:text="2021-08-10" />
             </LinearLayout>
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -145,13 +151,13 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/background_tab_vertical"
+                android:background="@drawable/background_square_border_grey"
                 android:onClick="@{() -> includeLayoutViewModel.datePicker(false)}"
                 android:orientation="horizontal"
                 android:paddingLeft="@dimen/_5sdp"
-                android:paddingTop="@dimen/_6sdp"
+                android:paddingTop="@dimen/_3sdp"
                 android:paddingRight="@dimen/_10sdp"
-                android:paddingBottom="@dimen/_6sdp">
+                android:paddingBottom="@dimen/_3sdp">
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -159,6 +165,7 @@
                     android:layout_gravity="center"
                     android:layout_marginRight="@dimen/_5sdp"
                     app:srcCompat="@drawable/calendar"
+                    app:tint="@color/color65"
                     tools:ignore="ContentDescription" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -169,40 +176,106 @@
                     android:layout_gravity="center"
                     android:text="@{includeLayoutViewModel.endDate}"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_5mdpi" />
+                    android:textSize="@dimen/_5mdpi"
+                    tools:text="2021-08-10" />
             </LinearLayout>
 
             <Spinner
-                android:id="@+id/spRoles"
+                android:id="@+id/spTerminals"
                 android:layout_width="@dimen/_80sdp"
-                android:layout_height="@dimen/_23sdp"
+                android:layout_height="@dimen/_14sdp"
                 android:layout_gravity="center"
-                android:layout_marginLeft="@dimen/_5sdp"
+                android:layout_marginStart="@dimen/_5sdp"
                 android:background="@drawable/bg_spinner"
                 android:imeOptions="actionNext"
                 android:inputType="text"
                 android:overlapAnchor="false"
                 android:spinnerMode="dropdown"
-                android:textSize="@dimen/_6mdpi"
-                android:visibility="gone" />
+                android:textSize="@dimen/_5mdpi" />
+        </LinearLayout>
 
-            <androidx.appcompat.widget.AppCompatEditText
-                android:id="@+id/edtSearch"
-                style="@style/CustomFontSemiBold"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/_10sdp"
-                android:layout_marginRight="@dimen/_10sdp"
-                android:background="@drawable/background_tab_vertical"
-                android:drawableStart="@drawable/ic_search"
-                android:drawablePadding="@dimen/_10sdp"
-                android:imeOptions="actionDone"
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_marginBottom="@dimen/_5sdp"
+            android:background="@color/gray_rect" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:orientation="horizontal">
+
+            <Spinner
+                android:id="@+id/spOrders"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/_14sdp"
+                android:layout_gravity="center"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_spinner"
+                android:imeOptions="actionNext"
                 android:inputType="text"
-                android:padding="@dimen/_5sdp"
-                android:textColor="@color/black"
-                android:textColorHint="@color/hintColor"
-                android:textSize="@dimen/_6mdpi"
-                android:visibility="gone" />
+                android:overlapAnchor="false"
+                android:spinnerMode="dropdown"
+                android:textSize="@dimen/_5mdpi" />
+
+            <Spinner
+                android:id="@+id/spTipTypes"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/_14sdp"
+                android:layout_gravity="center"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_spinner"
+                android:imeOptions="actionNext"
+                android:inputType="text"
+                android:overlapAnchor="false"
+                android:spinnerMode="dropdown"
+                android:textSize="@dimen/_5mdpi" />
+
+            <Spinner
+                android:id="@+id/spTransactionTypes"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/_14sdp"
+                android:layout_gravity="center"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_spinner"
+                android:imeOptions="actionNext"
+                android:inputType="text"
+                android:overlapAnchor="false"
+                android:spinnerMode="dropdown"
+                android:textSize="@dimen/_5mdpi" />
+
+            <Spinner
+                android:id="@+id/spRoles"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/_14sdp"
+                android:layout_gravity="center"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_spinner"
+                android:imeOptions="actionNext"
+                android:inputType="text"
+                android:overlapAnchor="false"
+                android:spinnerMode="dropdown"
+                android:textSize="@dimen/_5mdpi" />
+
+            <Spinner
+                android:id="@+id/spEmployees"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/_14sdp"
+                android:layout_gravity="center"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:layout_marginEnd="@dimen/_5sdp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_spinner"
+                android:imeOptions="actionNext"
+                android:inputType="text"
+                android:overlapAnchor="false"
+                android:spinnerMode="dropdown"
+                android:textSize="@dimen/_5mdpi" />
         </LinearLayout>
 
 

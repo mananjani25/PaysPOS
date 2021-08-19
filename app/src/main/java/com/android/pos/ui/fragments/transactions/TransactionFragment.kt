@@ -17,7 +17,10 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.pos.R
+import com.android.pos.data.entities.Employee
+import com.android.pos.data.entities.TbOrderType
 import com.android.pos.data.entities.TeamRole
+import com.android.pos.data.model.responseModel.VenueDetailsResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentTransactionBinding
 import com.android.pos.ui.activities.MainActivity
@@ -39,7 +42,10 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener {
     private val viewModel by viewModels<TransactionViewModel>()
     private lateinit var startDate: DatePickerDialog.OnDateSetListener
     private lateinit var endDate: DatePickerDialog.OnDateSetListener
+    private lateinit var terminalListGlobal: ArrayList<VenueDetailsResponse.Data.Terminal>
+    private lateinit var orderTypeListGlobal: ArrayList<TbOrderType>
     private lateinit var teamRoleListGlobal: ArrayList<TeamRole>
+    private lateinit var teamEmployeeListGlobal: ArrayList<Employee>
     val myCalendar = Calendar.getInstance()
     val myCalendar1 = Calendar.getInstance()
 
@@ -72,27 +78,19 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener {
         getRoleListObserver()
         setupSnackbar()
         observeShowProgress()
+        loadTeams()
+        loadTerminals()
+        getOrderType()
 
         //remove afterwards
-        viewModel.apiCallTimeSheet("")
+        //  viewModel.apiCallTimeSheet("")
         //  navigate()
 
+        binding.includeView.spTerminals.onItemSelectedListener = this
         binding.includeView.spRoles.onItemSelectedListener = this
+        binding.includeView.spEmployees.onItemSelectedListener = this
+        binding.includeView.spOrders.onItemSelectedListener = this
 
-        binding.includeView.edtSearch.addTextChangedListener(object : TextWatcher {
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-
-            }
-
-            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
-            }
-
-            override fun afterTextChanged(s: Editable) {
-
-                transactionAdapter.filter.filter(s.toString().trim())
-
-            }
-        })
 
         startDate = DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
             myCalendar.set(Calendar.YEAR, year)
@@ -100,7 +98,12 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener {
             myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
 
             viewModel.updateLabel(myCalendar)
-            viewModel.apiCallTimeSheet(getRoleId(binding.includeView.spRoles.selectedItemPosition).toString())
+            viewModel.apiCallTimeSheet(
+                getTerminalId(binding.includeView.spTerminals.selectedItemPosition).toString(),
+                getRoleId(binding.includeView.spRoles.selectedItemPosition).toString(),
+                getEmployeeId(binding.includeView.spEmployees.selectedItemPosition).toString(),
+                getOrderId(binding.includeView.spOrders.selectedItemPosition).toString()
+            )
 
         }
 
@@ -110,8 +113,12 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener {
             myCalendar1.set(Calendar.DAY_OF_MONTH, dayOfMonth)
 
             viewModel.updateLabel(myCalendar1)
-            viewModel.apiCallTimeSheet(getRoleId(binding.includeView.spRoles.selectedItemPosition).toString())
-
+            viewModel.apiCallTimeSheet(
+                getTerminalId(binding.includeView.spTerminals.selectedItemPosition).toString(),
+                getRoleId(binding.includeView.spRoles.selectedItemPosition).toString(),
+                getEmployeeId(binding.includeView.spEmployees.selectedItemPosition).toString(),
+                getOrderId(binding.includeView.spOrders.selectedItemPosition).toString()
+            )
         }
 
 
@@ -159,7 +166,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener {
     }
 
 
-    private fun setUpSpinnerAdapter(teamRoleList: ArrayList<String>) {
+    private fun setUpRoleSpinnerAdapter(teamRoleList: ArrayList<String>) {
         val spinnerAdapter = ArrayAdapter(
             requireActivity(),
             R.layout.row_spinner,
@@ -171,8 +178,56 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     }
 
+    private fun setUpEmployeeSpinnerAdapter(employeeList: ArrayList<String>) {
+        val spinnerAdapter = ArrayAdapter(
+            requireActivity(),
+            R.layout.row_spinner,
+            employeeList
+        )
+
+        spinnerAdapter.setDropDownViewResource(R.layout.row_spinner)
+        binding.includeView.spEmployees.adapter = spinnerAdapter
+
+    }
+
+    private fun setUpTerminalSpinnerAdapter(terminalList: ArrayList<String>) {
+        val spinnerAdapter = ArrayAdapter(
+            requireActivity(),
+            R.layout.row_spinner,
+            terminalList
+        )
+
+        spinnerAdapter.setDropDownViewResource(R.layout.row_spinner)
+        binding.includeView.spTerminals.adapter = spinnerAdapter
+
+    }
+
+    private fun setUpOrderTypeSpinnerAdapter(orderTypeList: ArrayList<String>) {
+        val spinnerAdapter = ArrayAdapter(
+            requireActivity(),
+            R.layout.row_spinner,
+            orderTypeList
+        )
+
+        spinnerAdapter.setDropDownViewResource(R.layout.row_spinner)
+        binding.includeView.spOrders.adapter = spinnerAdapter
+
+    }
+
+    private fun getTerminalId(position: Int): Int? {
+        return terminalListGlobal?.get(position)?.id
+    }
+
     private fun getRoleId(position: Int): Int? {
         return teamRoleListGlobal?.get(position)?.id
+    }
+
+    private fun getEmployeeId(position: Int): Int? {
+        return teamEmployeeListGlobal?.get(position)?.id
+    }
+
+    private fun getOrderId(position: Int): Int? {
+        return orderTypeListGlobal?.get(position)?.id
     }
 
 
@@ -212,10 +267,9 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener {
                             teamRoleListGlobal.add(0, TeamRole(-1, "All Roles", null, null))
                             val roleName = teamRoleListGlobal.map { it.name }
 
-                            setUpSpinnerAdapter(roleName as ArrayList<String>)
+                            setUpRoleSpinnerAdapter(roleName as ArrayList<String>)
 
                             Log.d("callapi", "::callapi")
-
 
                         }
 
@@ -232,10 +286,123 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener {
         })
     }
 
+    private fun loadTeams() {
+
+        viewModel.employeeData.observe(viewLifecycleOwner, {
+            it?.let { resource ->
+                when (resource.status) {
+                    Status.SUCCESS -> {
+                        ProgressUtils.dismissProgressDialog()
+                        resource.data?.let { employeeList ->
+                            teamEmployeeListGlobal = employeeList as ArrayList<Employee>
+                            teamEmployeeListGlobal.add(
+                                0,
+                                Employee(
+                                    "",
+                                    "",
+                                    -1,
+                                    false,
+                                    "",
+                                    -1,
+                                    "All Team Members",
+                                    "",
+                                    "",
+                                    "",
+                                    false,
+                                    -1,
+                                    "",
+                                )
+                            )
+                            val roleName = teamEmployeeListGlobal.map { it.name }
+
+                            setUpEmployeeSpinnerAdapter(roleName as ArrayList<String>)
+                        }
+                    }
+                    Status.ERROR -> {
+                        ProgressUtils.dismissProgressDialog()
+                        binding.root.showAlert(resource.message)
+
+                    }
+                    Status.LOADING -> {
+                        ProgressUtils.showProgressDialog(requireActivity())
+                    }
+                }
+            }
+        })
+    }
+
+    private fun loadTerminals() {
+
+        viewModel.getTerminalListDatabse.observe(viewLifecycleOwner, {
+            it?.let { resource ->
+                when (resource.status) {
+                    Status.SUCCESS -> {
+                        ProgressUtils.dismissProgressDialog()
+                        resource.data?.let { terminalList ->
+                            terminalListGlobal =
+                                terminalList as ArrayList<VenueDetailsResponse.Data.Terminal>
+
+                            val roleName = terminalListGlobal.map { it.name }
+
+                            setUpTerminalSpinnerAdapter(roleName as ArrayList<String>)
+
+                        }
+                    }
+                    Status.ERROR -> {
+                        ProgressUtils.dismissProgressDialog()
+                        binding.root.showAlert(resource.message)
+
+                    }
+                    Status.LOADING -> {
+                        ProgressUtils.showProgressDialog(requireActivity())
+                    }
+                }
+            }
+        })
+    }
+
+    private fun getOrderType() {
+
+        viewModel.orderTypes.observe(viewLifecycleOwner, {
+            it?.let { resource ->
+                when (resource.status) {
+                    Status.SUCCESS -> {
+                        ProgressUtils.dismissProgressDialog()
+                        resource.data?.let { terminalList ->
+                            orderTypeListGlobal =
+                                terminalList as ArrayList<TbOrderType>
+                            orderTypeListGlobal.add(
+                                0,
+                                TbOrderType("", -1, false, -1, "All Orders", "", -1, "")
+                            )
+                            val roleName = orderTypeListGlobal.map { it.name }
+
+                            setUpOrderTypeSpinnerAdapter(roleName as ArrayList<String>)
+
+                        }
+                    }
+                    Status.ERROR -> {
+                        ProgressUtils.dismissProgressDialog()
+                        binding.root.showAlert(resource.message)
+
+                    }
+                    Status.LOADING -> {
+                        ProgressUtils.showProgressDialog(requireActivity())
+                    }
+                }
+            }
+        })
+    }
+
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+        viewModel.apiCallTimeSheet(
+            getTerminalId(binding.includeView.spTerminals.selectedItemPosition).toString(),
+            getRoleId(binding.includeView.spRoles.selectedItemPosition).toString(),
+            getEmployeeId(binding.includeView.spEmployees.selectedItemPosition).toString(),
+            getOrderId(binding.includeView.spOrders.selectedItemPosition).toString()
+        )
 
-        viewModel.apiCallTimeSheet(teamRoleListGlobal[position].id.toString())
     }
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -266,6 +433,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener {
         })
 
     }
+
 
     /*private fun navigate() {
 

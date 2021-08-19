@@ -93,6 +93,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 posRepository.addAllNotesDatabase(it.data.notes)
                                 tipDiscountRepository.addDiscount(it.data.discounts)
                                 taxServiceChargeRepository.addServiceCharges(it.data.service_charges)
+                                posRepository.addTerminalsDatabase(it.data.terminals)
 
                             }
                         } else {
