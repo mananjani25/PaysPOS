@@ -45,7 +45,7 @@
                     android:gravity="start"
                     android:text="@{model.name}"
                     android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_6mdpi"
+                    android:textSize="@dimen/_5mdpi"
                     tools:text="Image one" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -56,7 +56,7 @@
                     android:layout_gravity="center"
                     android:gravity="start"
                     android:textColor="@color/colorCB"
-                    android:textSize="@dimen/_6mdpi"
+                    android:textSize="@dimen/_5mdpi"
                     tools:text="Image one" />
 
 

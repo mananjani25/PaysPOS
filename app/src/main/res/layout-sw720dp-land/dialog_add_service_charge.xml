@@ -103,7 +103,7 @@
                         android:padding="@dimen/_5sdp"
                         android:text="@string/enable_service_charge"
                         android:textColor="@color/viewTextColor"
-                        android:textSize="@dimen/_7mdpi" />
+                        android:textSize="@dimen/_6mdpi" />
 
                     <androidx.appcompat.widget.SwitchCompat
                         android:id="@+id/swtEnableCharge"
@@ -145,7 +145,7 @@
                             android:padding="@dimen/_5sdp"
                             android:text="@string/service_charge_name"
                             android:textColor="@color/viewTextColor"
-                            android:textSize="@dimen/_6mdpi" />
+                            android:textSize="@dimen/_5mdpi" />
 
                         <androidx.appcompat.widget.AppCompatEditText
                             style="@style/CustomFontSemiBold"
@@ -161,7 +161,7 @@
                             android:text="@={viewModel.createServiceChargeDetails.name}"
                             android:textColor="@color/black"
                             android:textColorHint="@color/hintColor"
-                            android:textSize="@dimen/_6mdpi" />
+                            android:textSize="@dimen/_5mdpi" />
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -184,7 +184,7 @@
                             android:padding="@dimen/_5sdp"
                             android:text="@string/percentage"
                             android:textColor="@color/viewTextColor"
-                            android:textSize="@dimen/_6mdpi" />
+                            android:textSize="@dimen/_5mdpi" />
 
                         <androidx.appcompat.widget.AppCompatEditText
                             style="@style/CustomFontSemiBold"
@@ -201,7 +201,7 @@
                             android:text="@={``+viewModel.createServiceChargeDetails.percentage}"
                             android:textColor="@color/black"
                             android:textColorHint="@color/hintColor"
-                            android:textSize="@dimen/_6mdpi" />
+                            android:textSize="@dimen/_5mdpi" />
 
                         <TextView
                             android:id="@+id/tvSymbolPer"
@@ -212,7 +212,7 @@
                             android:fontFamily="@font/sf_pro_display_semibold"
                             android:text="@string/percentage_symbol"
                             android:textColor="@color/viewTextColor"
-                            android:textSize="@dimen/_6mdpi"
+                            android:textSize="@dimen/_5mdpi"
                             android:visibility="visible" />
 
                     </androidx.appcompat.widget.LinearLayoutCompat>

@@ -31,7 +31,7 @@
                 android:padding="@dimen/_5sdp"
                 android:text="@string/lock_screen_after_each_transaction"
                 android:textColor="@color/viewTextColor"
-                android:textSize="@dimen/_7mdpi" />
+                android:textSize="@dimen/_5mdpi" />
 
             <androidx.appcompat.widget.SwitchCompat
                 android:layout_width="wrap_content"

@@ -52,7 +52,7 @@
                 android:padding="@dimen/_5sdp"
                 android:text="@{serviceChargeModel.name}"
                 android:textColor="@color/color65"
-                android:textSize="@dimen/_6mdpi" />
+                android:textSize="@dimen/_5mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
@@ -64,7 +64,7 @@
                 android:padding="@dimen/_5sdp"
                 android:text="@{String.format(@string/format,serviceChargeModel.percentage)+``+@string/percentage_symbol}"
                 android:textColor="@color/color96"
-                android:textSize="@dimen/_6mdpi" />
+                android:textSize="@dimen/_5mdpi" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:layout_width="wrap_content"

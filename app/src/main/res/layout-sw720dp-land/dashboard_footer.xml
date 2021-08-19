@@ -16,8 +16,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
-        android:orientation="horizontal"
-        android:padding="@dimen/_5sdp">
+        android:layout_marginStart="@dimen/_5sdp"
+        android:layout_marginEnd="@dimen/_5sdp"
+        android:orientation="horizontal">
 
         <TextView
             style="@style/CustomFontSemiBold"
@@ -93,11 +94,11 @@
                     app:tint="@color/txt_color_blue" />
 
                 <TextView
+                    android:padding="@dimen/_5sdp"
                     android:id="@+id/txtCheckOut"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/_3sdp"
                     android:text="@string/checkout"
                     android:textColor="@color/txt_color_blue"
                     android:textSize="@dimen/_5mdpi" />
@@ -124,8 +125,8 @@
                     style="@style/CustomFontSemiBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/_3sdp"
                     android:text="@string/transactions"
+                    android:padding="@dimen/_5sdp"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_5mdpi" />
             </LinearLayout>
@@ -150,8 +151,8 @@
                     style="@style/CustomFontSemiBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/_3sdp"
                     android:text="@string/notification"
+                    android:padding="@dimen/_5sdp"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_5mdpi" />
             </LinearLayout>
@@ -179,8 +180,8 @@
                     style="@style/CustomFontSemiBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/_3sdp"
                     android:text="@string/more"
+                    android:padding="@dimen/_5sdp"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_5mdpi" />
             </LinearLayout>

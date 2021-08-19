@@ -38,7 +38,7 @@
                 android:gravity="start"
                 android:text="@{model.name}"
                 android:textColor="@color/viewTextColor"
-                android:textSize="@dimen/_6mdpi" />
+                android:textSize="@dimen/_5mdpi" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/imageCheck"

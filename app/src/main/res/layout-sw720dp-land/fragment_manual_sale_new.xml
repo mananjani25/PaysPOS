@@ -161,6 +161,7 @@
 
 
                 <RelativeLayout
+                    android:background="?attr/selectableItemBackground"
                     android:id="@+id/relAddCustomer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -256,7 +257,6 @@
                 android:id="@+id/rvSaleCart"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_above="@+id/linearCharge"
                 android:layout_below="@+id/linearHeader"
                 android:layout_marginStart="@dimen/_5sdp"
                 android:layout_marginTop="@dimen/_5sdp"

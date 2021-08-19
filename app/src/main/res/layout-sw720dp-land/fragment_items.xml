@@ -21,10 +21,10 @@
             android:drawablePadding="@dimen/_10sdp"
             android:imeOptions="actionDone"
             android:inputType="text"
-            android:padding="@dimen/_5sdp"
+            android:padding="@dimen/_4sdp"
             android:textColor="@color/black"
             android:textColorHint="@color/hintColor"
-            android:textSize="@dimen/_6mdpi" />
+            android:textSize="@dimen/_5mdpi" />
 
         <View
             android:layout_width="match_parent"
@@ -54,7 +54,7 @@
                 android:padding="@dimen/_5sdp"
                 android:text="@string/create_item"
                 android:textColor="@color/btnColor"
-                android:textSize="@dimen/_6mdpi"
+                android:textSize="@dimen/_5mdpi"
                 app:textAllCaps="false" />
 
             <ProgressBar

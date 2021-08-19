@@ -44,7 +44,7 @@
                     android:padding="@dimen/_5sdp"
                     android:text="@string/time_tracking"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_7mdpi" />
+                    android:textSize="@dimen/_5mdpi" />
 
 
                 <androidx.appcompat.widget.AppCompatImageView
@@ -79,7 +79,7 @@
                     android:padding="@dimen/_5sdp"
                     android:text="@string/user_access_permission"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_7mdpi" />
+                    android:textSize="@dimen/_5mdpi" />
 
 
                 <androidx.appcompat.widget.AppCompatImageView

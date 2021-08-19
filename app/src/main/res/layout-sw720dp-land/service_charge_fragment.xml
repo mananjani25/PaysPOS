@@ -34,7 +34,7 @@
                 android:padding="@dimen/_5sdp"
                 android:text="@string/add_service_charge"
                 android:textColor="@color/btnColor"
-                android:textSize="@dimen/_6mdpi"
+                android:textSize="@dimen/_5mdpi"
                 app:textAllCaps="false" />
 
 
@@ -47,7 +47,7 @@
                 android:padding="@dimen/_5sdp"
                 android:text="@string/tax_rates_can_be_applied_to_specific_items_and_will_be_automatically_calculated_at_purchase"
                 android:textColor="@color/colorCB"
-                android:textSize="@dimen/_6mdpi"
+                android:textSize="@dimen/_5mdpi"
                 app:textAllCaps="false" />
 
 

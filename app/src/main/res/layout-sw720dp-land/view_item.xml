@@ -51,7 +51,7 @@
                     android:gravity="start"
                     android:padding="@dimen/_5sdp"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_6mdpi"
+                    android:textSize="@dimen/_5mdpi"
                     tools:text="@{model.name}" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -64,7 +64,7 @@
                     android:alpha="0.5"
                     android:text="@{@string/symbole +``+String.format(@string/format,model.price)}"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_6sdp" />
+                    android:textSize="@dimen/_5mdpi" />
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/ivCheck"
