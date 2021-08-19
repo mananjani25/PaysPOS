@@ -36,8 +36,8 @@
                     android:layout_marginStart="@dimen/_7sdp"
                     android:layout_marginTop="@dimen/_5sdp"
                     android:layout_marginBottom="@dimen/_5sdp"
-                    android:src="@drawable/ic_baseline_menu"
-                    android:contentDescription="@string/menu" />
+                    android:contentDescription="@string/menu"
+                    android:src="@drawable/ic_baseline_menu" />
 
 
             </RelativeLayout>
@@ -111,10 +111,10 @@
                 android:background="@drawable/background_square_border_grey"
                 android:onClick="@{() -> includeLayoutViewModel.datePicker(true)}"
                 android:orientation="horizontal"
-                android:paddingStart="@dimen/_5sdp"
-                android:paddingTop="@dimen/_6sdp"
-                android:paddingEnd="@dimen/_10sdp"
-                android:paddingBottom="@dimen/_6sdp">
+                android:paddingLeft="@dimen/_5sdp"
+                android:paddingTop="@dimen/_3sdp"
+                android:paddingRight="@dimen/_10sdp"
+                android:paddingBottom="@dimen/_3sdp">
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -155,10 +155,10 @@
                 android:background="@drawable/background_square_border_grey"
                 android:onClick="@{() -> includeLayoutViewModel.datePicker(false)}"
                 android:orientation="horizontal"
-                android:paddingStart="@dimen/_5sdp"
-                android:paddingTop="@dimen/_6sdp"
-                android:paddingEnd="@dimen/_10sdp"
-                android:paddingBottom="@dimen/_6sdp">
+                android:paddingLeft="@dimen/_5sdp"
+                android:paddingTop="@dimen/_3sdp"
+                android:paddingRight="@dimen/_10sdp"
+                android:paddingBottom="@dimen/_3sdp">
 
                 <ImageView
                     android:layout_width="wrap_content"
