@@ -25,7 +25,8 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:paddingTop="@dimen/_5sdp"
-            android:paddingBottom="@dimen/_5sdp">
+            android:paddingBottom="@dimen/_5sdp"
+            tools:ignore="UselessParent">
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvDate"

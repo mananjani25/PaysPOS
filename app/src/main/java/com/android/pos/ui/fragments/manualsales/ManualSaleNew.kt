@@ -111,7 +111,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
 
                 viewModel.itemCalculation(
                     cartList?.get(0)?.items,
-                    binding.txtChargeAmount,
+                    binding.txtTotalAmount,
                     dashboardViewModel.serviceCharges.value?.data
                 )
             } else {
@@ -162,7 +162,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
                     positiveButton(getString(R.string.tv_delete)) {
                         viewModel.deleteCart()
 
-                        binding.txtChargeAmount.setText("$0.00")
+                        binding.txtTotalAmount.setText("$0.00")
 
                     }
                     negativeButton(R.string.tv_cancel) {
@@ -182,7 +182,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
 
         binding.btnPay.setOnClickListener {
 
-            if (binding.txtChargeAmount.text.toString() != "$0.00") {
+            if (binding.txtTotalAmount.text.toString() != "$0.00") {
                 val bundle = Bundle()
                 bundle.putDouble("totalPrice", viewModel.totalPrice)
                 bundle.putDouble("subTotalPrice", viewModel.subTotalPrice)
@@ -211,7 +211,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
                     positiveButton(getString(R.string.tv_delete)) {
                         viewModel.deleteCart()
 
-                        binding.txtChargeAmount.setText("$0.00")
+                        binding.txtTotalAmount.setText("$0.00")
 
                     }
                     negativeButton(R.string.tv_cancel) {
@@ -242,7 +242,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
                 positiveButton(getString(R.string.tv_delete)) {
                     // Do positive stuff here
                     viewModel.deleteCart()
-                    binding.txtChargeAmount.setText("$0.00")
+                    binding.txtTotalAmount.setText("$0.00")
                     //resetCart()
                     dialogMenu()
 
@@ -745,7 +745,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
             "%.2f",
             viewModel.totalDiscount
         )
-        txtTotalAmount.text = binding.txtChargeAmount.text.toString()
+        txtTotalAmount.text = binding.txtTotalAmount.text.toString()
         txtTotalTax.text = "$" + String.format(
             "%.2f",
             viewModel.totalTax

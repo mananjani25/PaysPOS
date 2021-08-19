@@ -27,7 +27,7 @@
                 android:padding="@dimen/_5sdp"
                 android:text="@string/take_out_order"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi"
+                android:textSize="@dimen/_6mdpi"
                 app:textAllCaps="false" />
 
             <androidx.appcompat.widget.AppCompatImageView
@@ -114,7 +114,7 @@
                 android:padding="@dimen/_5sdp"
                 android:text="@string/add_customer"
                 android:textColor="@color/btnColorDark_"
-                android:textSize="@dimen/_5mdpi"
+                android:textSize="@dimen/_6mdpi"
                 app:textAllCaps="false" />
 
             <androidx.appcompat.widget.AppCompatImageView

@@ -40,6 +40,7 @@
     <color name="drawerBack">#292E32</color>
     <color name="drawerBack50">#80292E32</color>
     <color name="drawerBack40">#66292E32</color>
+    <color name="drawerBack30">#4D292E32</color>
 
 
     <color name="txtColorGray">#F8F8F8</color>

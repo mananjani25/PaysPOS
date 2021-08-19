@@ -431,4 +431,5 @@
     <string name="custom_item">Custom Item</string>
     <string name="menu">Menu</string>
     <string name="name_phone_email_or_company">Name, Phone, Email or Company</string>
+    <string name="add_custom_item_name">Add Custom Item Name</string>
 </resources>
