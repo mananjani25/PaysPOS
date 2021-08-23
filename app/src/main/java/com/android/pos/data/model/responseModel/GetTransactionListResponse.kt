@@ -61,7 +61,9 @@ data class GetTransactionListResponse(
             @SerializedName("tips")
             val tips: Double,
             @SerializedName("transaction_id")
-            val transactionId: String
+            val transactionId: String,
+            @SerializedName("terminal_name")
+            val terminalName: String
         ) {
             data class Customer(
                 @SerializedName("first_name")
