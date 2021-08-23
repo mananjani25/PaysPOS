@@ -93,12 +93,121 @@ class CustomerReceiptSettings : Fragment() {
             model.showQrCode = binding.customerReciptPart2.swtQrCode.isChecked
             model.showCustomNote = binding.customerReciptPart2.swtCustomNote.isChecked
 
+
             viewModel.updateCustomer(model)
 
         }
     }
 
     private fun onChecked() {
+
+        binding.customerReciptPart2.swtQrCode.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                binding.layoutCustomerReceipt.imgQrCode.visibility = View.VISIBLE
+            } else {
+                binding.layoutCustomerReceipt.imgQrCode.visibility = View.GONE
+            }
+        }
+
+        binding.swtEmployee.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                binding.layoutCustomerReceipt.txtEmployee.visibility = View.VISIBLE
+            } else {
+                binding.layoutCustomerReceipt.txtEmployee.visibility = View.GONE
+            }
+        }
+
+        binding.customerReciptPart2.swtRfundAmt.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                binding.layoutCustomerReceipt.linearRefundAmt.visibility = View.VISIBLE
+            } else {
+                binding.layoutCustomerReceipt.linearRefundAmt.visibility = View.GONE
+            }
+
+        }
+
+        binding.customerReciptPart2.swtCustAddress.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                binding.layoutCustomerReceipt.txtCusAddress.visibility = View.VISIBLE
+            } else {
+                binding.layoutCustomerReceipt.txtCusAddress.visibility = View.GONE
+            }
+
+        }
+
+        binding.customerReciptPart2.swtName.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+
+                binding.layoutCustomerReceipt.txtCustomerName.visibility = View.VISIBLE
+            } else {
+                binding.layoutCustomerReceipt.txtCustomerName.visibility = View.GONE
+            }
+
+        }
+
+
+        binding.customerReciptPart2.swtWebAddress.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                binding.layoutCustomerReceipt.txtWebSite.visibility = View.VISIBLE
+
+            } else {
+                binding.layoutCustomerReceipt.txtWebSite.visibility = View.GONE
+            }
+
+        }
+
+        binding.customerReciptPart2.swtAddress.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                binding.layoutCustomerReceipt.txtAddress.visibility = View.VISIBLE
+            } else {
+                binding.layoutCustomerReceipt.txtAddress.visibility = View.GONE
+            }
+
+        }
+
+
+
+        binding.customerReciptPart2.swtTipCash.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                binding.layoutCustomerReceipt.linearTips.visibility = View.VISIBLE
+            } else {
+                binding.layoutCustomerReceipt.linearTips.visibility = View.GONE
+            }
+
+        }
+
+        binding.customerReciptPart2.swtCustomNote.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                binding.layoutCustomerReceipt.txtSugarLabel.visibility = View.VISIBLE
+            } else {
+                binding.layoutCustomerReceipt.txtSugarLabel.visibility = View.GONE
+
+            }
+
+        }
+
+
+        binding.swtOrderNote.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                binding.layoutCustomerReceipt.txtOrderNoteLable.visibility = View.VISIBLE
+
+            } else {
+                binding.layoutCustomerReceipt.txtOrderNoteLable.visibility = View.GONE
+            }
+        }
+
+        binding.swtSplitAmount.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+
+            } else {
+
+            }
+
+
+        }
+
+
+
         binding.rdGroup.setOnCheckedChangeListener { group, checkedId ->
 
             when (checkedId) {
@@ -114,6 +223,20 @@ class CustomerReceiptSettings : Fragment() {
 
             }
         }
+
+        binding.swtAddons.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                binding.layoutCustomerReceipt.linearModifier.visibility = View.VISIBLE
+                binding.layoutCustomerReceipt.linearModifier1.visibility = View.VISIBLE
+                binding.layoutCustomerReceipt.linearModifier2.visibility = View.VISIBLE
+
+            } else {
+                binding.layoutCustomerReceipt.linearModifier.visibility = View.GONE
+                binding.layoutCustomerReceipt.linearModifier1.visibility = View.GONE
+                binding.layoutCustomerReceipt.linearModifier2.visibility = View.GONE
+            }
+
+        }
         binding.customerReciptPart2.swtLogo.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
                 binding.layoutCustomerReceipt.imgIcon.visibility = View.VISIBLE
@@ -123,23 +246,21 @@ class CustomerReceiptSettings : Fragment() {
         }
 
         binding.customerReciptPart2.swtAddress.setOnCheckedChangeListener { buttonView, isChecked ->
-            if (isChecked){
+            if (isChecked) {
 
                 binding.layoutCustomerReceipt.txtAddress.visibility = View.VISIBLE
-            }
-            else{
+            } else {
                 binding.layoutCustomerReceipt.txtAddress.visibility = View.GONE
             }
 
         }
 
-        
+
         binding.customerReciptPart2.swtPhone.setOnCheckedChangeListener { buttonView, isChecked ->
-            if (isChecked){
-                binding.layoutCustomerReceipt.txtNumber.visibility = View.VISIBLE
-            }
-            else{
-                binding.layoutCustomerReceipt.txtNumber.visibility = View.GONE
+            if (isChecked) {
+                binding.layoutCustomerReceipt.txtCustomerPhone.visibility = View.VISIBLE
+            } else {
+                binding.layoutCustomerReceipt.txtCustomerPhone.visibility = View.GONE
             }
         }
         binding.swtOrderId.setOnCheckedChangeListener { buttonView, isChecked ->
@@ -157,65 +278,109 @@ class CustomerReceiptSettings : Fragment() {
 
     private fun observeData() {
         viewModel.customerData.observe(requireActivity(), {
-            val model = it.data
-            when (model.fonts) {
-                Constants.SMALL -> {
-                    binding.rdGroup.check(binding.radioSmall.id)
+            if (it.data != null) {
+                val model = it?.data
+                when (model?.fonts) {
+                    Constants.SMALL -> {
+                        binding.rdGroup.check(binding.radioSmall.id)
+                    }
+                    Constants.LARGE -> {
+                        binding.rdGroup.check(binding.radioLarge.id)
+
+                    }
+                    Constants.MEDIUM -> {
+                        binding.rdGroup.check(binding.radioMedium.id)
+                    }
                 }
-                Constants.LARGE -> {
-                    binding.rdGroup.check(binding.radioLarge.id)
+
+                setTextSize(model?.fonts!!)
+                binding.swtOrderId.isChecked = model.showOrderIdTop
+                binding.swtAddons.isChecked = model.showModifiers
+                binding.swtOrderNote.isChecked = model.showSplitAmount
+                binding.swtAutoRollOvr.isChecked = model.showRolledOver
+                binding.swtOrderType.isChecked = model.showOrderType
+                binding.customerReciptPart2.swtOrderTime.isChecked = model.showOrderTime
+                binding.customerReciptPart2.swtPrintTime.isChecked = model.showPrintTime
+                binding.customerReciptPart2.swtRfundAmt.isChecked = model.showRefundAmount
+                binding.customerReciptPart2.swtLogo.isChecked = model.showVenueLogo
+                binding.customerReciptPart2.swtWebAddress.isChecked = model.showWebsiteAddress
+                binding.customerReciptPart2.swtAddress.isChecked = model.showVenueAddress
+                binding.customerReciptPart2.swtName.isChecked = model.showCustomerName
+                binding.customerReciptPart2.swtPhone.isChecked = model.showCustomerPhone
+                binding.customerReciptPart2.swtCustAddress.isChecked = model.showCustomerAddress
+                binding.customerReciptPart2.swtTipSuggestion.isChecked = model.showTipSuggestion
+                binding.customerReciptPart2.swtTipCash.isChecked = model.showTipLineForCash
+                binding.customerReciptPart2.swtQrCode.isChecked = model.showQrCode
+                binding.customerReciptPart2.swtCustomNote.isChecked = model.showCustomNote
+
+                /*if (model.emp){
+                    binding.layoutCustomerReceipt.txtEmployee.visibility = View.VISIBLE
+                }
+                else{
+                    binding.layoutCustomerReceipt.txtEmployee.visibility = View.GONE
+                }*/
+
+                if (model.showModifiers) {
+                    binding.layoutCustomerReceipt.linearModifier.visibility = View.VISIBLE
+                    binding.layoutCustomerReceipt.linearModifier1.visibility = View.VISIBLE
+                    binding.layoutCustomerReceipt.linearModifier2.visibility = View.VISIBLE
+
+                } else {
+                    binding.layoutCustomerReceipt.linearModifier.visibility = View.GONE
+                    binding.layoutCustomerReceipt.linearModifier1.visibility = View.GONE
+                    binding.layoutCustomerReceipt.linearModifier2.visibility = View.GONE
 
                 }
-                Constants.MEDIUM -> {
-                    binding.rdGroup.check(binding.radioMedium.id)
+
+                if (model.showQrCode) {
+                    binding.layoutCustomerReceipt.imgQrCode.visibility = View.VISIBLE
+
+                } else {
+                    binding.layoutCustomerReceipt.imgQrCode.visibility = View.GONE
                 }
-            }
 
-            setTextSize(model.fonts)
-            binding.swtOrderId.isChecked = model.showOrderIdTop
-            binding.swtAddons.isChecked = model.showModifiers
-            binding.swtOrderNote.isChecked = model.showSplitAmount
-            binding.swtAutoRollOvr.isChecked = model.showRolledOver
-            binding.swtOrderType.isChecked = model.showOrderType
-            binding.customerReciptPart2.swtOrderTime.isChecked = model.showOrderTime
-            binding.customerReciptPart2.swtPrintTime.isChecked = model.showPrintTime
-            binding.customerReciptPart2.swtRfundAmt.isChecked = model.showRefundAmount
-            binding.customerReciptPart2.swtLogo.isChecked = model.showVenueLogo
-            binding.customerReciptPart2.swtWebAddress.isChecked = model.showWebsiteAddress
-            binding.customerReciptPart2.swtAddress.isChecked = model.showVenueAddress
-            binding.customerReciptPart2.swtName.isChecked = model.showCustomerName
-            binding.customerReciptPart2.swtPhone.isChecked = model.showCustomerPhone
-            binding.customerReciptPart2.swtCustAddress.isChecked = model.showCustomerAddress
-            binding.customerReciptPart2.swtTipSuggestion.isChecked = model.showTipSuggestion
-            binding.customerReciptPart2.swtTipCash.isChecked = model.showTipLineForCash
-            binding.customerReciptPart2.swtQrCode.isChecked = model.showQrCode
-            binding.customerReciptPart2.swtCustomNote.isChecked = model.showCustomNote
+                if (model.showOrderIdTop) {
+                    binding.layoutCustomerReceipt.txtOrderId.visibility = View.VISIBLE
+                } else {
+                    binding.layoutCustomerReceipt.txtOrderId.visibility = View.GONE
+                }
 
-            if (model.showOrderIdTop) {
-                binding.layoutCustomerReceipt.txtOrderId.visibility = View.VISIBLE
-            } else {
-                binding.layoutCustomerReceipt.txtOrderId.visibility = View.GONE
-            }
+                if (model.showVenueLogo) {
+                    binding.layoutCustomerReceipt.imgIcon.visibility = View.VISIBLE
+                } else {
+                    binding.layoutCustomerReceipt.imgIcon.visibility = View.GONE
+                }
 
-            if (model.showVenueLogo) {
-                binding.layoutCustomerReceipt.imgIcon.visibility = View.VISIBLE
-            } else {
-                binding.layoutCustomerReceipt.imgIcon.visibility = View.GONE
-            }
+                if (model.showVenueAddress) {
+                    binding.layoutCustomerReceipt.txtAddress.visibility = View.VISIBLE
 
-            if (model.showVenueAddress){
-                binding.layoutCustomerReceipt.txtAddress.visibility = View.VISIBLE
+                } else {
+                    binding.layoutCustomerReceipt.txtAddress.visibility = View.GONE
+                }
+                if (model.showVenuePhone) {
+                    binding.layoutCustomerReceipt.txtCustomerPhone.visibility = View.VISIBLE
 
-            }
-            else{
-                binding.layoutCustomerReceipt.txtAddress.visibility = View.GONE
-            }
-            if (model.showVenuePhone){
-                binding.layoutCustomerReceipt.txtNumber.visibility = View.VISIBLE
+                } else {
+                    binding.layoutCustomerReceipt.txtCustomerPhone.visibility = View.GONE
+                }
+                if (model.showCustomNote) {
+                    binding.layoutCustomerReceipt.txtSugarLabel.visibility = View.VISIBLE
+                } else {
+                    binding.layoutCustomerReceipt.txtSugarLabel.visibility = View.GONE
+                }
+                if (model.showTipLineForCash) {
+                    binding.layoutCustomerReceipt.linearTips.visibility = View.VISIBLE
+                } else {
+                    binding.layoutCustomerReceipt.linearTips.visibility = View.GONE
+                }
 
-            }
-            else{
-                binding.layoutCustomerReceipt.txtNumber.visibility = View.GONE
+                if (model.showRefundAmount) {
+                    binding.layoutCustomerReceipt.linearRefundAmt.visibility = View.VISIBLE
+                } else {
+                    binding.layoutCustomerReceipt.linearRefundAmt.visibility = View.GONE
+                }
+
+
             }
 
         })
