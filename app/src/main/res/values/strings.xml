@@ -458,4 +458,20 @@
     <string name="zip">Zip</string>
     <string name="clear">Clear</string>
     <string name="street">Street</string>
+
+    <string name="printer">Printer</string>
+    <string name="customer_receipt_printer">Customer receipt Printer</string>
+    <string name="printer_name">Printer Name</string>
+    <string name="test_print">Test Print</string>
+    <string name="connection_type">Connection Type</string>
+    <string name="active">Active</string>
+    <string name="action">Action</string>
+
+    <string name="tv_all_tip_types">All Tips Type</string>
+    <string name="tv_adjusted">Adjusted</string>
+    <string name="tv_unadjusted">Unadjusted</string>
+
+    <string name="tv_all_payment_types">All Transaction Types</string>
+    <string name="tv_cash_payment">Cash</string>
+    <string name="tv_external">External</string>
 </resources>

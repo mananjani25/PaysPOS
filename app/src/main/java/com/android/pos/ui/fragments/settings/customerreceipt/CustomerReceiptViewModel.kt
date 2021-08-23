@@ -1,5 +1,6 @@
 package com.android.pos.ui.fragments.settings.customerreceipt
 
+import android.annotation.SuppressLint
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -7,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.model.requestModel.UpdateCustomerReceiptRequestModel
 import com.android.pos.data.model.responseModel.GetCustomerReceiptSettingsResponse
+import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.repositories.TaxServiceChargeRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
@@ -15,6 +17,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@SuppressLint("NullSafeMutableLiveData")
 @HiltViewModel
 class CustomerReceiptViewModel @Inject constructor(
     private val taxServiceChargeRepository: TaxServiceChargeRepository,
@@ -46,7 +49,7 @@ class CustomerReceiptViewModel @Inject constructor(
                     _showProgress.value = Event(false)
                     resource.data.let {
                         customerData.value = it
-                        customerId.value = it?.data?.id!!
+                        customerId.value = it?.data?.id
 
                     }
 
@@ -64,10 +67,15 @@ class CustomerReceiptViewModel @Inject constructor(
 
     fun updateCustomer(model: UpdateCustomerReceiptRequestModel) {
         _showProgress.value = Event(true)
+
         viewModelScope.launch {
             val resource =
-                taxServiceChargeRepository.updateCustomerReceiptSettings(customerId.value!!, model)
-            when (resource.status) {
+                customerId.value?.let {
+                    taxServiceChargeRepository.updateCustomerReceiptSettings(
+                        it, model
+                    )
+                }
+            when (resource?.status) {
                 Status.LOADING -> {
                     _showProgress.value = Event(true)
                 }
@@ -77,7 +85,9 @@ class CustomerReceiptViewModel @Inject constructor(
                     _data.value = Event(resource.data?.message!!)
                 }
                 Status.ERROR -> {
-                    _snackbarText.value = Event(true)
+
+                    _showProgress.value = Event(false)
+                    _data.value = Event(resource.message.toString())
                 }
 
             }

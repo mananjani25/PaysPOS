@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingDefaultResource">
+
+    <data>
+
+        <variable
+            name="model"
+            type="com.android.pos.data.model.PrinterListModel" />
+    </data>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txtPrinterName"
+            style="@style/CustomFontMediumStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@{model.printerName}"
+            android:textColor="@color/txtColor"
+            android:textSize="@dimen/_5mdpi" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/imgPrinter"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:src="@drawable/ic_print_24"
+            android:tint="@color/txtColor" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/imgConnectionType"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:src="@drawable/ic_baseline_wifi_24"
+            android:tint="@color/txtColor" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/swtOrderId"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:checked="@{model.active}"
+            android:gravity="center"
+            app:showText="false"
+            app:srcCompat="@drawable/ic_arrow_forward"
+            app:theme="@style/AppTheme" />
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:gravity="center">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/imgEdit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/_2sdp"
+                android:src="@drawable/ic_baseline_edit_24"
+                android:tint="@color/txt_color_blue" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/imgDelete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_2sdp"
+                android:src="@drawable/ic_baseline_delete_24"
+                android:tint="@color/txt_color_blue" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+</layout>

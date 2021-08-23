@@ -122,6 +122,11 @@ object Constants {
     const val REORDER_CATEGORY = "categories/{id}/reorder"
     const val CATEGORY = "categories"
 
+    const val WIFI = "Wifi"
+    const val BLUETOOTH = "Bluetooth"
+    const val KITCHEN = "Kitchen"
+    const val CUSTOMER = "Customer"
+
 
     const val MODIFIER_UPDATE_DELETE = "modifier_sets/{id}"
     const val MODIFIER = "modifier_sets"
@@ -135,4 +140,6 @@ object Constants {
     const val ACTIVE_ORDER = "active_order"
     const val UPCOMING_ORDER = "upcoming_order"
     const val COMPLETED_ORDER = "completed_order"
+
+
 }
