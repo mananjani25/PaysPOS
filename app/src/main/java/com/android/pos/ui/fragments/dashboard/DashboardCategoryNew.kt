@@ -30,10 +30,14 @@ import com.android.pos.data.model.CategoryTabModel
 import com.android.pos.data.remote.Constants.ADD
 import com.android.pos.data.remote.Constants.CUSTOMER_NAME
 import com.android.pos.data.remote.Constants.DELETE
+import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.HORIZONTAL
 import com.android.pos.data.remote.Constants.IS_CLOCKOUT
+import com.android.pos.data.remote.Constants.OPEN_ORDER
+import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
 import com.android.pos.data.remote.Constants.ORDER_TYPE_NAME
+import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.remote.Constants.UPDATE
 import com.android.pos.data.remote.Constants.VERTICAL
 import com.android.pos.databinding.FragmentDashboardCategoryNewBinding
@@ -158,9 +162,12 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         orderTypeAdapter.setCallback(this)
         binding.rvOrderType.adapter = orderTypeAdapter
 
-        viewModel.orderTypes().observe(requireActivity(), {
-            it.data?.let { it1 -> orderTypeAdapter.addAll(it1) }
-        })
+
+        prefProvider.getValue(ORDER_TYPE, "")?.let {
+            viewModel.orderTypes(it).observe(requireActivity(), {
+                it.data?.let { it1 -> orderTypeAdapter.addAll(it1) }
+            })
+        }
     }
 
     private fun getServiceCharges() {
@@ -319,7 +326,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             }
         }
 
-        viewModel.mAllWords.observe(
+        viewModel.mAllWords(prefProvider.getValue(ORDER_TYPE, "").toString()).observe(
             requireActivity(), {
                 cartList = it
                 if (cartList.isNotEmpty()) {
@@ -358,12 +365,13 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     private fun hideOrderType() {
 
-        if (prefProvider.getValueInt(ORDER_TYPE_ID, -1) != -1) {
-
+        if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
             binding.layoutCart.llCart.visibility = View.VISIBLE
             binding.lltakeout.visibility = View.GONE
-
+            binding.layoutCart.txtOrderType.text =
+                prefProvider.getValue(ORDER_TYPE_NAME, "").toString()
         } else {
+            binding.layoutCart.txtOrderType.text = ""
             binding.lltakeout.visibility = View.VISIBLE
             binding.layoutCart.llCart.visibility = View.GONE
         }
@@ -1199,10 +1207,26 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     override fun onItemClickListener(view: View?, pos: Int) {
         val orderType = orderTypeAdapter.getItem(pos)
-        prefProvider.setValueInt(ORDER_TYPE_ID, orderType.id)
-        prefProvider.setValue(ORDER_TYPE_NAME, orderType.name)
 
-        hideOrderType()
+        when (orderType.orderType) {
+            TAKEOUT -> {
+                prefProvider.setValueInt(ORDER_TYPE_ID, orderType.id)
+                prefProvider.setValue(ORDER_TYPE_NAME, orderType.name)
+                prefProvider.setValue(ORDER_TYPE, orderType.orderType)
+                hideOrderType()
+            }
+            DINE_IN -> {
+
+            }
+            OPEN_ORDER -> {
+
+                findNavController().navigate(
+                    R.id.action_dashboardCategoryNew_to_openOrderCustomerFragment
+                )
+            }
+        }
+
+
     }
 
     override fun onClick(v: View?) {

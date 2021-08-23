@@ -17,8 +17,11 @@ interface OrderTypeDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addAll(tipList: List<TbOrderType>)
 
-    @get:Query("select * from TbOrderType")
+    @get:Query("select * from TbOrderType where TbOrderType.isActive = 1")
     val orderTypes: LiveData<List<TbOrderType>>
+
+    @Query("select * from TbOrderType where TbOrderType.orderType = :orderType and TbOrderType.isActive = 1")
+    fun orderTypes(orderType: String): LiveData<List<TbOrderType>>
 
     @Query("select * from TbOrderType")
     fun allModulesList(): List<TbOrderType>

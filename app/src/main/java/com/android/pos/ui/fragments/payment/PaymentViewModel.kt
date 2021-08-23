@@ -53,9 +53,11 @@ open class PaymentViewModel @Inject constructor(
                     resource.data.let { response ->
                         if (response?.status == 200) {
 
+                            prefProvider.setValue(Constants.ORDER_TYPE, "")
                             posRepository.deleteCart()
                             resource.data?.let { createOrderResponse ->
                                 _data.value = Event(createOrderResponse)
+
                             }
 
                         } else {
