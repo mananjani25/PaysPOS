@@ -18,8 +18,8 @@ interface CartDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addAllItem(elementsBeanList: List<CartModel>)
 
-    @get:Query("select * from CartModel where CartModel.isOpenOrder = 0 AND CartModel.isMaual = 0")
-    val allItem: LiveData<List<CartModel>>
+    @Query("select * from CartModel where CartModel.orderType = :orderType AND CartModel.isMaual = 0")
+    fun allItem(orderType: String): LiveData<List<CartModel>>
 
 
     @Query("select * from CartModel where CartModel.isOpenOrder = 0 ")

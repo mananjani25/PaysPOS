@@ -6,7 +6,6 @@ import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.db.IDataManager
 import com.android.pos.data.entities.*
 import com.android.pos.data.entities.ModifierSet
-import com.android.pos.data.model.CustomerListResponse
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.NoteResponse
 import com.android.pos.data.model.responseModel.VenueDetailsResponse
@@ -221,8 +220,11 @@ class PosRepository @Inject constructor(
         networkCall = { apiHelperNew.customerList() },
         saveCallResult = { appDatabase.customerDao().addAllCustomer(it.data) })
 
-    fun orderTypes() = performGetOperation(
-        databaseQuery = { appDatabase.orderTypeDao().orderTypes },
+    fun orderTypes(orderType: String) = performGetOperation(
+        databaseQuery = {
+            if (orderType == "") appDatabase.orderTypeDao()
+                .orderTypes else appDatabase.orderTypeDao().orderTypes(orderType)
+        },
         networkCall = { apiHelperNew.orderTypes() },
         saveCallResult = { appDatabase.orderTypeDao().addAll(it.data) })
 
@@ -311,8 +313,8 @@ class PosRepository @Inject constructor(
         apiHelperNew.reOrderItemCall(id, oldPos, newPos)
 
 
-    fun getCartList(): LiveData<List<CartModel>> {
-        return appDatabase.cartDao().allItem
+    fun getCartList(orderType: String): LiveData<List<CartModel>> {
+        return appDatabase.cartDao().allItem(orderType)
     }
 
     fun getManualSaleList(): LiveData<List<CartModel>> {

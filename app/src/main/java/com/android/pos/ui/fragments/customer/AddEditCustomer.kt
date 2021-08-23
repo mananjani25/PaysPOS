@@ -71,7 +71,7 @@ class AddEditCustomer : Fragment() {
     private fun setPhoneCountry() {
         val adapter =
             ArrayAdapter(requireContext(), R.layout.simple_spinner_item, country)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
 
         binding.edtCountry.adapter = adapter
         binding.edtCountry.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {

@@ -113,8 +113,8 @@ class AddressListAdapter() : RecyclerView.Adapter<AddressListAdapter.MyViewHolde
                     override fun onPlaceDetailsFetched(placeDetails: PlaceDetails) {
                         decodeLocation(placeDetails.lat, placeDetails.lng, placeDetails.name)
 
-                        val gcd: Geocoder = Geocoder(itemView.context, Locale.getDefault())
-                        var address: List<Address> =
+                        val gcd = Geocoder(itemView.context, Locale.getDefault())
+                        val address: List<Address> =
                             gcd.getFromLocation(placeDetails.lat, placeDetails.lng, 1)
                         Log.e(TAG, "CountryNAme ${address.get(0).countryName}")
 
