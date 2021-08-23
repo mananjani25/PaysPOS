@@ -28,7 +28,7 @@
     <string name="phone">Phone Number</string>
     <string name="address_empty_validation">Please Enter Full Address</string>
     <string name="birth_date_validation">Please Enter Birth Date</string>
-`
+    `
     <string name="buttonOne">1</string>
     <string name="buttonTwo">2</string>
     <string name="buttonThree">3</string>
@@ -440,4 +440,11 @@
     <string name="marketing">Marketing</string>
     <string name="team_member">Team Member</string>
     <string name="reports">Reports</string>
+    <string name="tv_all_tip_types">All Tips Type</string>
+    <string name="tv_adjusted">Adjusted</string>
+    <string name="tv_unadjusted">Unadjusted</string>
+
+    <string name="tv_all_payment_types">All Transaction Types</string>
+    <string name="tv_cash_payment">Cash</string>
+    <string name="tv_external">External</string>
 </resources>
