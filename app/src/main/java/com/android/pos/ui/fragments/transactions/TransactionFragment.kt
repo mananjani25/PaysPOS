@@ -46,6 +46,8 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener {
     private lateinit var orderTypeListGlobal: ArrayList<TbOrderType>
     private lateinit var teamRoleListGlobal: ArrayList<TeamRole>
     private lateinit var teamEmployeeListGlobal: ArrayList<Employee>
+    private var tipTypeList = ArrayList<String>()
+    private var paymentTypeList = ArrayList<String>()
     val myCalendar = Calendar.getInstance()
     val myCalendar1 = Calendar.getInstance()
 
@@ -90,6 +92,10 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener {
         binding.includeView.spRoles.onItemSelectedListener = this
         binding.includeView.spEmployees.onItemSelectedListener = this
         binding.includeView.spOrders.onItemSelectedListener = this
+        binding.includeView.spTipTypes.onItemSelectedListener = this
+        binding.includeView.spTransactionTypes.onItemSelectedListener = this
+        setUpTipTypeSpinnerAdapter()
+        setUpPaymentTypeSpinnerAdapter()
 
 
         startDate = DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
@@ -102,7 +108,9 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 getTerminalId(binding.includeView.spTerminals.selectedItemPosition).toString(),
                 getRoleId(binding.includeView.spRoles.selectedItemPosition).toString(),
                 getEmployeeId(binding.includeView.spEmployees.selectedItemPosition).toString(),
-                getOrderId(binding.includeView.spOrders.selectedItemPosition).toString()
+                getOrderId(binding.includeView.spOrders.selectedItemPosition).toString(),
+                getTipType(binding.includeView.spTipTypes.selectedItemPosition),
+                getPaymentType(binding.includeView.spTransactionTypes.selectedItemPosition)
             )
 
         }
@@ -117,7 +125,10 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 getTerminalId(binding.includeView.spTerminals.selectedItemPosition).toString(),
                 getRoleId(binding.includeView.spRoles.selectedItemPosition).toString(),
                 getEmployeeId(binding.includeView.spEmployees.selectedItemPosition).toString(),
-                getOrderId(binding.includeView.spOrders.selectedItemPosition).toString()
+                getOrderId(binding.includeView.spOrders.selectedItemPosition).toString(),
+                getTipType(binding.includeView.spTipTypes.selectedItemPosition),
+                getPaymentType(binding.includeView.spTransactionTypes.selectedItemPosition)
+
             )
         }
 
@@ -214,20 +225,79 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     }
 
+    private fun setUpTipTypeSpinnerAdapter() {
+
+        tipTypeList.add(getString(R.string.tv_all_tip_types))
+        tipTypeList.add(getString(R.string.tv_adjusted))
+        tipTypeList.add(getString(R.string.tv_unadjusted))
+
+        val spinnerAdapter = ArrayAdapter(
+            requireActivity(),
+            R.layout.row_spinner,
+            tipTypeList
+        )
+
+        spinnerAdapter.setDropDownViewResource(R.layout.row_spinner)
+        binding.includeView.spTipTypes.adapter = spinnerAdapter
+
+    }
+
+    private fun setUpPaymentTypeSpinnerAdapter() {
+
+        paymentTypeList.add(getString(R.string.tv_all_payment_types))
+        paymentTypeList.add(getString(R.string.tv_cash_payment))
+        paymentTypeList.add(getString(R.string.tv_external))
+
+        val spinnerAdapter = ArrayAdapter(
+            requireActivity(),
+            R.layout.row_spinner,
+            paymentTypeList
+        )
+
+        spinnerAdapter.setDropDownViewResource(R.layout.row_spinner)
+        binding.includeView.spTransactionTypes.adapter = spinnerAdapter
+
+    }
+
     private fun getTerminalId(position: Int): Int? {
-        return terminalListGlobal?.get(position)?.id
+        if (this::terminalListGlobal.isInitialized) {
+            return terminalListGlobal?.get(position)?.id
+        } else {
+            return -1
+        }
     }
 
     private fun getRoleId(position: Int): Int? {
-        return teamRoleListGlobal?.get(position)?.id
+
+        if (this::teamRoleListGlobal.isInitialized) {
+            return teamRoleListGlobal?.get(position)?.id
+        } else {
+            return -1
+        }
     }
 
     private fun getEmployeeId(position: Int): Int? {
-        return teamEmployeeListGlobal?.get(position)?.id
+        if (this::teamEmployeeListGlobal.isInitialized) {
+            return teamEmployeeListGlobal?.get(position)?.id
+        } else {
+            return -1
+        }
     }
 
     private fun getOrderId(position: Int): Int? {
-        return orderTypeListGlobal?.get(position)?.id
+        if (this::orderTypeListGlobal.isInitialized) {
+            return orderTypeListGlobal?.get(position)?.id
+        } else {
+            return -1
+        }
+    }
+
+    private fun getTipType(position: Int): String {
+        return tipTypeList[position]
+    }
+
+    private fun getPaymentType(position: Int): String {
+        return paymentTypeList[position]
     }
 
 
@@ -400,7 +470,9 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener {
             getTerminalId(binding.includeView.spTerminals.selectedItemPosition).toString(),
             getRoleId(binding.includeView.spRoles.selectedItemPosition).toString(),
             getEmployeeId(binding.includeView.spEmployees.selectedItemPosition).toString(),
-            getOrderId(binding.includeView.spOrders.selectedItemPosition).toString()
+            getOrderId(binding.includeView.spOrders.selectedItemPosition).toString(),
+            getTipType(binding.includeView.spTipTypes.selectedItemPosition),
+            getPaymentType(binding.includeView.spTransactionTypes.selectedItemPosition)
         )
 
     }

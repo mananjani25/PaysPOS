@@ -99,7 +99,9 @@ class TransactionViewModel @Inject constructor(
         terminalId: String,
         roleId: String,
         employeeId: String,
-        orderTypeId: String
+        orderTypeId: String,
+        tipType: String,
+        paymentType: String
     ) {
         terminalIdViewModel = terminalId
         roleIdViewModel = roleId
@@ -122,17 +124,42 @@ class TransactionViewModel @Inject constructor(
             orderTypeIdViewModel = ""
         }
 
+
         _showProgress.value = Event(true)
 
         viewModelScope.launch {
             val data = LinkedHashMap<String, String>()
-            data["per_page"] = 10.toString()
+            data["per_page"] = 9999.toString()
             data["start_date"] = startDate.value.toString()
             data["end_date"] = endDate.value.toString()
             data["terminal_id"] = terminalIdViewModel
             data["roleId"] = roleIdViewModel
             data["employeeId"] = employeeIdViewModel
             data["order_type_id"] = orderTypeIdViewModel
+
+            when (tipType) {
+                "All Tips Type" -> {
+                    data["tips_adjusted"] = ""
+                }
+                "Adjusted" -> {
+                    data["tips_adjusted"] = true.toString()
+                }
+                "Unadjusted" -> {
+                    data["tips_adjusted"] = false.toString()
+                }
+            }
+            when (paymentType) {
+                "All Transaction Types" -> {
+                    data["payment_type"] = ""
+                }
+                "Cash" -> {
+                    data["payment_type"] = "Cash"
+                }
+                "External" -> {
+                    data["payment_type"] = "External"
+                }
+            }
+
             val resource = taxServiceChargeRepository.getTransactionList(data)
 
             when (resource.status) {
