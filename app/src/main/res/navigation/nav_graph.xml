@@ -658,6 +658,10 @@
         android:name="com.android.pos.ui.fragments.settings.hardware.Printer"
         android:label="Printer"
         tools:layout="@layout/fragment_printer" />
+    <fragment
+        android:id="@+id/transactionDetailsFragment"
+        android:name="com.android.pos.ui.fragments.transactions.TransactionDetailsFragment"
+        android:label="TransactionDetailsFragment" />
 
 
 </navigation>
