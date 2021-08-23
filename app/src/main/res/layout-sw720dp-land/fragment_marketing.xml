@@ -32,7 +32,7 @@
                 android:orientation="horizontal">
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    style="@style/CustomFontMediumStyle"
+                    style="@style/CustomFontSemiBold"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -65,7 +65,7 @@
                 android:orientation="horizontal">
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    style="@style/CustomFontMediumStyle"
+                    style="@style/CustomFontSemiBold"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"

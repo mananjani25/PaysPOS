@@ -16,12 +16,13 @@
 
         <TextView
             android:id="@+id/txtTitle"
+            style="@style/CustomFontRegularStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="@style/CustomFontRegularStyle"
+            android:background="?attr/selectableItemBackground"
             android:paddingStart="@dimen/_10sdp"
-            android:paddingEnd="@dimen/_10sdp"
             android:paddingTop="@dimen/_3sdp"
+            android:paddingEnd="@dimen/_10sdp"
             android:paddingBottom="@dimen/_3sdp"
             android:text="@{model.title}"
             android:textColor="@{model.selected ? @color/txt_color_blue:@color/color65}"

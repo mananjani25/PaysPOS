@@ -434,4 +434,10 @@
     <string name="menu">Menu</string>
     <string name="name_phone_email_or_company">Name, Phone, Email or Company</string>
     <string name="add_custom_item_name">Add Custom Item Name</string>
+    <string name="set_up_item_grid">Set up Item Grid</string>
+    <string name="hardware">Hardware</string>
+    <string name="security">Security</string>
+    <string name="marketing">Marketing</string>
+    <string name="team_member">Team Member</string>
+    <string name="reports">Reports</string>
 </resources>

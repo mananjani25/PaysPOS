@@ -144,7 +144,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     var index = -1
 
                     list.forEachIndexed { pos, tbItem ->
-                        if (tbItem.itemId == item.itemId) {
+                        if (tbItem.itemId == item.itemId && checkModifier(tbItem, item)) {
                             index = pos
                             return@forEachIndexed
                         }
@@ -157,7 +157,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 list[index] = model
                             } else {
                                 if (index != -1) {
-                                    model.itemQuantity = model.itemQuantity + 1
+                                    model.itemQuantity = item.itemQuantity + model.itemQuantity
+                                    model.modifiers = item.modifiers
+
                                     list[index] = model
                                 } else {
                                     model.itemQuantity = item.itemQuantity
@@ -167,11 +169,9 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                         }
                     } else {
-                        item.itemQuantity = 1
                         list.add(item)
                     }
                 } else if (type == DELETE) {
-                    // single item remove from cart
                     list.remove(item)
                 }
 
@@ -193,6 +193,18 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
         }
+    }
+
+    private fun checkModifier(tbItem: TbItem, item: TbItem): Boolean {
+
+        var checkModifier = false
+
+        item.modifiers.forEach { itemM ->
+            tbItem.modifiers.forEach {
+                checkModifier = itemM.id == it.id
+            }
+        }
+        return checkModifier
     }
 
     private fun addCartModel(item: TbItem): CartModel {

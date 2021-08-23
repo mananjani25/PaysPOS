@@ -276,7 +276,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             data.discountType = ""
                             data.isManualSales = false
                             data.discountId = 0
-                             viewModel.cartLogic(cartList, data, UPDATE)
+                            viewModel.cartLogic(cartList, data, UPDATE)
                         }
 
                     }
@@ -913,7 +913,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
             viewModel.cartLogic(cartList, item, ADD)
         } else {
-
             ItemPopup(item, true)
         }
 

@@ -39,10 +39,11 @@
                         android:orientation="vertical">
 
                         <TextView
+                            android:background="?attr/selectableItemBackground"
                             android:id="@+id/txtBusiness"
+                            style="@style/CustomFontSemiBold"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/sf_pro_display_regular"
                             android:padding="@dimen/_7sdp"
                             android:text="@string/business"
                             android:textColor="@color/txtColor"
@@ -71,12 +72,13 @@
 
 
                         <TextView
+                            android:background="?attr/selectableItemBackground"
                             android:id="@+id/txtHardware"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/sf_pro_display_regular"
                             android:padding="@dimen/_7sdp"
-                            android:text="Hardware"
+                            android:text="@string/hardware"
                             android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi"
                             android:textStyle="normal" />
@@ -88,12 +90,13 @@
 
 
                         <TextView
+                            android:background="?attr/selectableItemBackground"
                             android:id="@+id/txtSecurity"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/sf_pro_display_regular"
                             android:padding="@dimen/_7sdp"
-                            android:text="Security"
+                            android:text="@string/security"
                             android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi"
                             android:textStyle="normal" />
@@ -109,7 +112,9 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/sf_pro_display_regular"
                             android:padding="@dimen/_7sdp"
-                            android:text="Marketing"
+                            android:text="@string/marketing"
+                            android:background="?attr/selectableItemBackground"
+
                             android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi"
                             android:textStyle="normal" />
@@ -125,7 +130,8 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/sf_pro_display_regular"
                             android:padding="@dimen/_7sdp"
-                            android:text="Team Member"
+                            android:background="?attr/selectableItemBackground"
+                            android:text="@string/team_member"
                             android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi"
                             android:textStyle="normal" />
@@ -141,7 +147,8 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/sf_pro_display_regular"
                             android:padding="@dimen/_7sdp"
-                            android:text="Reports"
+                            android:background="?attr/selectableItemBackground"
+                            android:text="@string/reports"
                             android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi"
                             android:textStyle="normal" />

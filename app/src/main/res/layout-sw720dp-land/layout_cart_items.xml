@@ -27,7 +27,7 @@
                 android:padding="@dimen/_5sdp"
                 android:text="@string/take_out_order"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_6mdpi"
+                android:textSize="@dimen/_5mdpi"
                 app:textAllCaps="false" />
 
             <androidx.appcompat.widget.AppCompatImageView
@@ -95,6 +95,7 @@
 
 
         <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_marginTop="1dp"
             android:id="@+id/llShowMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -114,7 +115,7 @@
                 android:padding="@dimen/_5sdp"
                 android:text="@string/add_customer"
                 android:textColor="@color/btnColorDark_"
-                android:textSize="@dimen/_6mdpi"
+                android:textSize="@dimen/_5mdpi"
                 app:textAllCaps="false" />
 
             <androidx.appcompat.widget.AppCompatImageView
