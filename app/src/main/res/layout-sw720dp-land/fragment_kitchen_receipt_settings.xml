@@ -296,7 +296,7 @@
                             android:checked="true"
                             android:padding="@dimen/_5sdp"
                             app:srcCompat="@drawable/ic_arrow_forward"
-                            app:theme="@style/AppTheme"/>
+                            app:theme="@style/AppTheme" />
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
                     <View
@@ -355,7 +355,7 @@
                             android:checked="true"
                             android:padding="@dimen/_5sdp"
                             app:srcCompat="@drawable/ic_arrow_forward"
-                            app:theme="@style/AppTheme"/>
+                            app:theme="@style/AppTheme" />
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
                     <View
@@ -532,7 +532,7 @@
                             android:checked="true"
                             android:padding="@dimen/_5sdp"
                             app:srcCompat="@drawable/ic_arrow_forward"
-                            app:theme="@style/AppTheme"/>
+                            app:theme="@style/AppTheme" />
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
                     <View
@@ -624,7 +624,7 @@
                             android:checked="true"
                             android:padding="@dimen/_5sdp"
                             app:srcCompat="@drawable/ic_arrow_forward"
-                            app:theme="@style/AppTheme"/>
+                            app:theme="@style/AppTheme" />
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
                     <View
@@ -658,7 +658,7 @@
                             android:checked="true"
                             android:padding="@dimen/_5sdp"
                             app:srcCompat="@drawable/ic_arrow_forward"
-                            app:theme="@style/AppTheme"/>
+                            app:theme="@style/AppTheme" />
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
 
@@ -718,7 +718,7 @@
                                 android:textColor="@color/viewTextColor"
                                 android:textSize="@dimen/_7mdpi" />
 
-                            <LinearLayout
+                            <RelativeLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="@dimen/_8sdp"
@@ -727,28 +727,64 @@
                                 android:paddingTop="@dimen/_3sdp"
                                 android:paddingRight="@dimen/_3sdp">
 
-                                <androidx.appcompat.widget.AppCompatTextView
-                                    android:id="@+id/txtOrderId"
-                                    style="@style/CustomFontSemiBold"
+                                <LinearLayout
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginLeft="@dimen/_3sdp"
-                                    android:text="Order ID: ORD564454"
-                                    android:textColor="@color/viewTextColor"
-                                    android:textSize="@dimen/_6mdpi" />
+                                    android:layout_alignParentStart="true"
+                                    android:orientation="horizontal">
 
-                                <androidx.appcompat.widget.AppCompatTextView
-                                    android:id="@+id/txtReceiptId"
-                                    style="@style/CustomFontSemiBold"
-                                    android:layout_width="match_parent"
+                                    <androidx.appcompat.widget.AppCompatTextView
+                                        android:id="@+id/txtOrderIdLabel"
+                                        style="@style/CustomFontBold"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginLeft="@dimen/_3sdp"
+                                        android:text="Order ID: "
+                                        android:textColor="@color/viewTextColor"
+                                        android:textSize="@dimen/_6mdpi" />
+
+                                    <androidx.appcompat.widget.AppCompatTextView
+                                        android:id="@+id/txtOrderId"
+                                        style="@style/CustomFontMediumStyle"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginLeft="@dimen/_3sdp"
+                                        android:text="ORD564454"
+                                        android:textColor="@color/viewTextColor"
+                                        android:textSize="@dimen/_6mdpi" />
+
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_gravity="end"
-                                    android:layout_marginLeft="@dimen/_3sdp"
-                                    android:gravity="end"
-                                    android:text="Receipt ID: REC87564454"
-                                    android:textColor="@color/viewTextColor"
-                                    android:textSize="@dimen/_6mdpi" />
-                            </LinearLayout>
+                                    android:layout_alignParentEnd="true"
+                                    android:orientation="horizontal">
+
+                                    <androidx.appcompat.widget.AppCompatTextView
+                                        android:id="@+id/txtReceiptIdLabel"
+                                        style="@style/CustomFontBold"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginLeft="@dimen/_3sdp"
+                                        android:text="Receipt ID: "
+                                        android:textColor="@color/viewTextColor"
+                                        android:textSize="@dimen/_6mdpi" />
+
+                                    <androidx.appcompat.widget.AppCompatTextView
+                                        android:id="@+id/txtReceiptId"
+                                        style="@style/CustomFontMediumStyle"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginLeft="@dimen/_3sdp"
+                                        android:text="REC87564454"
+                                        android:textColor="@color/viewTextColor"
+                                        android:textSize="@dimen/_6mdpi" />
+
+                                </LinearLayout>
+
+
+                            </RelativeLayout>
 
                             <LinearLayout
                                 android:layout_width="match_parent"
@@ -757,15 +793,33 @@
                                 android:paddingLeft="@dimen/_3sdp"
                                 android:paddingRight="@dimen/_3sdp">
 
-                                <androidx.appcompat.widget.AppCompatTextView
-                                    android:id="@+id/txtEmployee"
-                                    style="@style/CustomFontSemiBold"
+                                <LinearLayout
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginLeft="@dimen/_3sdp"
-                                    android:text="Employee: David Miller"
-                                    android:textColor="@color/viewTextColor"
-                                    android:textSize="@dimen/_6mdpi" />
+                                    android:orientation="horizontal">
+
+                                    <androidx.appcompat.widget.AppCompatTextView
+                                        android:id="@+id/txtEmployeeLabel"
+                                        style="@style/CustomFontBold"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginLeft="@dimen/_3sdp"
+                                        android:text="Employee: "
+                                        android:textColor="@color/viewTextColor"
+                                        android:textSize="@dimen/_6mdpi" />
+
+
+                                    <androidx.appcompat.widget.AppCompatTextView
+                                        android:id="@+id/txtEmployee"
+                                        style="@style/CustomFontMediumStyle"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginLeft="@dimen/_3sdp"
+                                        android:text="David Miller"
+                                        android:textColor="@color/viewTextColor"
+                                        android:textSize="@dimen/_6mdpi" />
+
+                                </LinearLayout>
 
                                 <androidx.appcompat.widget.AppCompatTextView
                                     android:id="@+id/txtDateTime"
@@ -792,7 +846,8 @@
                         <androidx.appcompat.widget.LinearLayoutCompat
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal">
+                            android:orientation="horizontal"
+                            android:visibility="gone">
 
                             <androidx.appcompat.widget.AppCompatTextView
                                 android:id="@+id/txtGuestNo"
@@ -814,42 +869,253 @@
                             android:layout_height="1dp"
                             android:background="@color/view" />
 
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/_5sdp"
+                        android:orientation="vertical">
+
                         <androidx.appcompat.widget.AppCompatTextView
-                            android:id="@+id/txtName"
-                            style="@style/CustomFontSemiBold"
+                            android:id="@+id/txtSoup"
+                            style="@style/CustomFontBold"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="@dimen/_3sdp"
+                            android:padding="@dimen/_5sdp"
+                            android:text="Soup"
+                            android:textColor="@color/viewTextColor"
+                            android:textSize="@dimen/_6mdpi" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/view" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/txtChicken"
+                                style="@style/CustomFontBold"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:padding="@dimen/_5sdp"
+                                android:text="1  Chicken Meals"
+                                android:textColor="@color/viewTextColor"
+                                android:textSize="@dimen/_6mdpi" />
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/txtChickenPrice"
+                                style="@style/CustomFontBold"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="end"
+                                android:gravity="end"
+                                android:padding="@dimen/_5sdp"
+                                android:text="$9.99"
+                                android:textColor="@color/viewTextColor"
+                                android:textSize="@dimen/_6mdpi" />
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:background="@color/view" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/txtExtra1"
+                                style="@style/CustomFontRegularStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="@dimen/_20sdp"
+                                android:padding="@dimen/_5sdp"
+                                android:text="Extra Spycies"
+                                android:textColor="@color/viewTextColor"
+                                android:textSize="@dimen/_6mdpi" />
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/txtExtraPrice1"
+                                style="@style/CustomFontBold"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="end"
+                                android:padding="@dimen/_5sdp"
+                                android:text="$1.99"
+                                android:textColor="@color/viewTextColor"
+                                android:textSize="@dimen/_6mdpi" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/txtExtra2"
+                                style="@style/CustomFontRegularStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="@dimen/_20sdp"
+                                android:padding="@dimen/_5sdp"
+                                android:text="Extra Spycies"
+                                android:textColor="@color/viewTextColor"
+                                android:textSize="@dimen/_6mdpi" />
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/txtExtraPrice2"
+                                style="@style/CustomFontBold"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="end"
+                                android:padding="@dimen/_5sdp"
+                                android:text="$1.99"
+                                android:textColor="@color/viewTextColor"
+                                android:textSize="@dimen/_6mdpi" />
+
+                        </LinearLayout>
+
+
+                        <LinearLayout
+                            android:id="@+id/linearNote"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:padding="@dimen/_5sdp">
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/txtNoteLabel"
+                                style="@style/CustomFontSemiBold"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="@dimen/_20sdp"
+
+                                android:text="Note: "
+                                android:textColor="@color/viewTextColor"
+                                android:textSize="@dimen/_6mdpi" />
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/txtNote"
+                                style="@style/CustomFontRegularStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:gravity="end"
+
+                                android:text="Not much spicy"
+                                android:textColor="@color/viewTextColor"
+                                android:textSize="@dimen/_6mdpi" />
+
+                        </LinearLayout>
+
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/txtOrderNoteLable"
+                            style="@style/CustomFontBold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/_10sdp"
+                            android:gravity="center"
+                            android:text="@string/tv_order_note"
+                            android:textColor="@color/viewTextColor"
+                            android:textSize="@dimen/_7mdpi" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/txtSugarLabel"
+                            style="@style/CustomFontRegularStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/_10sdp"
+                            android:layout_marginTop="@dimen/_2sdp"
+                            android:gravity="center"
+                            android:text="Sugar Free,No herbs &amp; Spices"
+                            android:textColor="@color/viewTextColor"
+                            android:textSize="@dimen/_6mdpi" />
+
+
+                    </LinearLayout>
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtCustomerDetails"
+                        style="@style/CustomFontBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/_10sdp"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:gravity="center"
+                        android:text="@string/tv_customer_details"
+                        android:textColor="@color/viewTextColor"
+                        android:textSize="@dimen/_7mdpi" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:background="@color/view" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginVertical="@dimen/_10sdp"
+                        android:layout_marginTop="@dimen/_2sdp"
+                        android:orientation="vertical">
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/txtName"
+                            style="@style/CustomFontBold"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/_10sdp"
+                            android:layout_marginTop="@dimen/_2sdp"
                             android:text="David Miller"
                             android:textColor="@color/viewTextColor"
                             android:textSize="@dimen/_6mdpi" />
 
                         <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/txtPhone"
-                            style="@style/CustomFontMediumStyle"
+                            style="@style/CustomFontBold"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="@dimen/_3sdp"
+                            android:layout_marginStart="@dimen/_10sdp"
+                            android:layout_marginTop="@dimen/_2sdp"
                             android:text="(635)987-3354"
                             android:textColor="@color/viewTextColor"
                             android:textSize="@dimen/_6mdpi" />
 
                         <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/txtAddress"
-                            style="@style/CustomFontMediumStyle"
+                            style="@style/CustomFontBold"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/_10sdp"
                             android:layout_marginLeft="@dimen/_3sdp"
-                            android:layout_marginTop="@dimen/_5sdp"
+                            android:layout_marginTop="@dimen/_2sdp"
                             android:text="7450 DW 51 FH AT,Suite 503"
                             android:textColor="@color/viewTextColor"
                             android:textSize="@dimen/_6mdpi" />
-                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    </LinearLayout>
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_margin="@dimen/_5sdp"
+                        android:visibility="gone"
                         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                         tools:listitem="@layout/view_guest_item" />
 

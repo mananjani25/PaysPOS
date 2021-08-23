@@ -9,6 +9,7 @@ import com.android.pos.databinding.ViewHardwareListBinding
 
 class HardwareListAdapter(val context: Context, val list: ArrayList<HardwareModel>) :
     RecyclerView.Adapter<HardwareListAdapter.MyViewHolder>() {
+    private var hardwareListner: HardwareListner? = null
     inner class MyViewHolder(private val binding: ViewHardwareListBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(model: HardwareModel) {
@@ -18,6 +19,9 @@ class HardwareListAdapter(val context: Context, val list: ArrayList<HardwareMode
 
         init {
 
+            binding.root.setOnClickListener {
+                hardwareListner?.onITemClicked(list[bindingAdapterPosition].title)
+            }
         }
     }
 
@@ -30,6 +34,9 @@ class HardwareListAdapter(val context: Context, val list: ArrayList<HardwareMode
         return MyViewHolder(binding)
     }
 
+    fun setListner(listner:HardwareListner){
+        this.hardwareListner=listner
+    }
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         holder.bind(list[position])
 
@@ -38,5 +45,8 @@ class HardwareListAdapter(val context: Context, val list: ArrayList<HardwareMode
     override fun getItemCount(): Int {
         return list.size
 
+    }
+    interface HardwareListner {
+        fun onITemClicked(itemName: String)
     }
 }

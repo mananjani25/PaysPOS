@@ -117,7 +117,7 @@ class KitchenReceiptSettings : Fragment(), CompoundButton.OnCheckedChangeListene
             if (it.data.showCustomerAddress) {
                 binding.txtAddress.visibility = View.VISIBLE
             } else {
-                binding.txtAddress.visibility = View.VISIBLE
+                binding.txtAddress.visibility = View.GONE
             }
 
         })
@@ -231,6 +231,33 @@ class KitchenReceiptSettings : Fragment(), CompoundButton.OnCheckedChangeListene
                 binding.txtDineIn.textSize = requireContext().resources.getDimension(R.dimen._5mdpi)
                 binding.txtDineIn.textSize = requireContext().resources.getDimension(R.dimen._5mdpi)
 
+                binding.txtOrderIdLabel.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.txtReceiptIdLabel.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.txtEmployeeLabel.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.txtSoup.textSize = requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.txtChicken.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.txtChickenPrice.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.txtExtra1.textSize = requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.txtExtraPrice1.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.txtExtra2.textSize = requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.txtExtraPrice2.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.txtNoteLabel.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.txtNote.textSize = requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.txtOrderNoteLable.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.txtSugarLabel.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.txtCustomerDetails.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+
 
             }
             MEDIUM -> {
@@ -257,6 +284,34 @@ class KitchenReceiptSettings : Fragment(), CompoundButton.OnCheckedChangeListene
                 binding.txtDineIn.textSize = requireContext().resources.getDimension(R.dimen._6mdpi)
                 binding.txtDineIn.textSize = requireContext().resources.getDimension(R.dimen._6mdpi)
 
+                binding.txtOrderIdLabel.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.txtReceiptIdLabel.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.txtEmployeeLabel.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.txtSoup.textSize = requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.txtChicken.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.txtChickenPrice.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.txtExtra1.textSize = requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.txtExtraPrice1.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.txtExtra2.textSize = requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.txtExtraPrice2.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.txtNoteLabel.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.txtNote.textSize = requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.txtOrderNoteLable.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.txtSugarLabel.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.txtCustomerDetails.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+
+
             }
 
 
@@ -278,10 +333,32 @@ class KitchenReceiptSettings : Fragment(), CompoundButton.OnCheckedChangeListene
                 binding.txtPhone.textSize = requireContext().resources.getDimension(R.dimen._7mdpi)
                 binding.txtAddress.textSize =
                     requireContext().resources.getDimension(R.dimen._7mdpi)
-                binding.txtDineIn.textSize = requireContext().resources.getDimension(R.dimen._7mdpi)
-                binding.txtDineIn.textSize = requireContext().resources.getDimension(R.dimen._7mdpi)
-                binding.txtDineIn.textSize = requireContext().resources.getDimension(R.dimen._7mdpi)
-                binding.txtDineIn.textSize = requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.txtOrderIdLabel.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.txtReceiptIdLabel.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.txtEmployeeLabel.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.txtSoup.textSize = requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.txtChicken.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.txtChickenPrice.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.txtExtra1.textSize = requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.txtExtraPrice1.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.txtExtra2.textSize = requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.txtExtraPrice2.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.txtNoteLabel.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.txtNote.textSize = requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.txtOrderNoteLable.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.txtSugarLabel.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.txtCustomerDetails.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
 
             }
         }

@@ -118,6 +118,7 @@
             </LinearLayout>
 
             <LinearLayout
+
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -195,6 +196,7 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/linearModifier"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
@@ -225,6 +227,7 @@
 
 
                 <LinearLayout
+                    android:id="@+id/linearModifier1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
@@ -255,6 +258,7 @@
 
 
                 <LinearLayout
+                    android:id="@+id/linearModifier2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
@@ -324,6 +328,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/linearRefundAmt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/_3sdp"
@@ -571,6 +576,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/linearTips"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/_3sdp"
@@ -775,8 +781,18 @@
                     android:textColor="@color/viewTextColor"
                     android:textSize="@dimen/_6mdpi" />
 
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/imgQrCode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:layout_marginBottom="@dimen/_5sdp"
+                    android:gravity="center"
+                    android:src="@drawable/qr_scan" />
+
                 <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/txtWebSiteName"
+                    android:id="@+id/txtWebSiteName"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

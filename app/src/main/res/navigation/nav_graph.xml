@@ -242,6 +242,11 @@
         <action
             android:id="@+id/action_settings_to_userAccessPermissionListFragment"
             app:destination="@id/userAccessPermissionListFragment" />
+        <action
+            android:id="@+id/action_settings_to_printer"
+            app:destination="@id/printer"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+
 
     </fragment>
     <action
@@ -647,6 +652,12 @@
     <action
         android:id="@+id/action_global_transactionFragment"
         app:destination="@id/transactionFragment" />
+
+    <fragment
+        android:id="@+id/printer"
+        android:name="com.android.pos.ui.fragments.settings.hardware.Printer"
+        android:label="Printer"
+        tools:layout="@layout/fragment_printer" />
 
 
 </navigation>

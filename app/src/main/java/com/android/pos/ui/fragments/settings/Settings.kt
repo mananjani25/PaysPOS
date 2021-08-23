@@ -22,6 +22,7 @@ import com.android.pos.databinding.FragmentSettingsBinding
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.BusinessSettingAdapter
 import com.android.pos.ui.fragments.settings.discount.DiscountList
+import com.android.pos.ui.fragments.settings.hardware.Hardware
 import com.android.pos.ui.fragments.settings.teamrole.TeamMemberSettings
 import com.android.pos.ui.fragments.settings.notes.Notes
 import com.android.pos.ui.fragments.settings.servicecharge.ServiceChargeList
