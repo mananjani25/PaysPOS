@@ -17,24 +17,26 @@
             android:layout_gravity="center">
 
             <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvItemName"
                 style="@style/CustomFontSemiBold"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_weight="2"
                 android:gravity="start"
                 android:text="Three layer ice cream"
-                android:textColor="@color/drawerBack"
+                android:textColor="@color/black"
                 android:textSize="@dimen/_5mdpi" />
 
 
             <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvQuantity"
                 style="@style/CustomFontSemiBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/_5sdp"
-                android:layout_weight="1"
+                android:gravity="center"
                 android:text="x 1"
                 android:textColor="@color/color88"
                 android:textSize="@dimen/_5mdpi" />
@@ -42,11 +44,12 @@
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvRate"
                 style="@style/CustomFontBold"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
+                android:layout_gravity="end"
                 android:layout_marginEnd="@dimen/_5sdp"
-                android:gravity="start"
+                android:layout_weight="1"
+                android:gravity="end"
                 android:text="$3.50"
                 android:textColor="@color/drawerBack"
                 android:textSize="@dimen/_5mdpi"

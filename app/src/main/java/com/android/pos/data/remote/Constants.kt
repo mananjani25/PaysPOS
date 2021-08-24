@@ -26,6 +26,8 @@ object Constants {
     const val MEDIUM = "medium"
     const val SMALL = "small"
     const val LARGE = "large"
+    const val PERCENTAGE = "Percentage"
+    const val AMOUNT = "Amount"
 
     const val TAKEOUT = "TakeOut"
     const val DINE_IN = "DineIn"
@@ -43,7 +45,7 @@ object Constants {
     const val EMPLOYEES = "employees"
     const val CUSTOMERS = "customers"
     const val EMPLOYEES_UPDATE_DELETE = "employees/{id}"
-
+    const val DISCOVERY_INTERVAL = 500
     const val EMPLOYEES_TIMESHEET = "employees/timesheet"
     const val EMPLOYEES_TIMESHEET_DETAILS = "employees/timesheet_details"
 
@@ -133,6 +135,7 @@ object Constants {
     const val REORDER_MODIFIER = "modifier_sets/{id}/reorder"
 
     const val ORDERS = "orders"
+    const val ORDER_DETAILS = "orders/{id}"
     const val ORDER_EMAIL_RECEIPT = "orders/send_order_email_receipt"
     const val ORDER_PHONE_RECEIPT = "orders/sms_order_detail"
     const val ORDER_ASSIGN_CUSTOMER = "orders/{id}/assign_customer_into_order"

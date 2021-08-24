@@ -71,8 +71,6 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener {
         binding.lifecycleOwner = this
 
 
-
-
         startDatePickerObserver()
         endDatePickerObserver()
         setUpRecyclerView()
@@ -83,10 +81,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener {
         loadTeams()
         loadTerminals()
         getOrderType()
-
-        //remove afterwards
-        //  viewModel.apiCallTimeSheet("")
-        //  navigate()
+        navigate()
 
         binding.includeView.spTerminals.onItemSelectedListener = this
         binding.includeView.spRoles.onItemSelectedListener = this
@@ -507,19 +502,18 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener {
     }
 
 
-    /*private fun navigate() {
-
-        viewModel.employeeIdViewModel.observe(viewLifecycleOwner, { event ->
-            event.getContentIfNotHandled()?.let { employeeModel ->
+    private fun navigate() {
+        viewModel.transactionDetails.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
                 val bundle = Bundle().apply {
-                    putParcelable("employeeModel", employeeModel)
+                    putInt("orderId", it.orderDetails.id)
                 }
                 findNavController().navigate(
-                    R.id.action_teamMemberTimeSheetFragment_to_singleTeamMemberTimeSheetFragment,
+                    R.id.action_transactionFragment_to_transactionDetailsFragment,
                     bundle
                 )
             }
         })
 
-    }*/
+    }
 }

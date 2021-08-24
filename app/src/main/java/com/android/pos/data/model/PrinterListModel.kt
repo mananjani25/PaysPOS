@@ -6,6 +6,6 @@ data class PrinterListModel(
     val id: Int? = null,
     var printerName: String? = null,
     var connectionType: String? =null,
-    val isActive: Boolean = false,
+    var isActive: Boolean = false,
     val type: String = CUSTOMER
 )
