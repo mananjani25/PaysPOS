@@ -15,9 +15,11 @@ import com.android.pos.ui.adapter.OptionAdapter
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 import java.text.NumberFormat
 import java.util.*
 
+@AndroidEntryPoint
 class CreateOption : Fragment(), TextWatcher {
 
     private lateinit var binding: DialogCreateOptionBinding
@@ -38,8 +40,8 @@ class CreateOption : Fragment(), TextWatcher {
 
         isEdit = arguments?.getBoolean("isEdit")!!
 
-       // setupAdapter()
-       // setupUI()
+        // setupAdapter()
+        // setupUI()
         setupSnackbar()
         observeShowProgress()
         observeData()

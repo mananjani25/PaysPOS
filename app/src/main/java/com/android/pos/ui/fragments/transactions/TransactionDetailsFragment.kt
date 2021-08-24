@@ -74,10 +74,16 @@ class TransactionDetailsFragment : Fragment() {
                     )
 
                 binding.tvTransactionDate.text =
-                    convertCurrentTime(it.data.createdAt) + "\n" + convertCurrentDate(
-                        it.data.createdAt
+                    convertCurrentTime(it.data.payments.get(0).createdAt) + "\n" + convertCurrentDate(
+                        it.data.payments.get(0).createdAt
                     )
 
+                if (it.data.customer != null) {
+                    binding.tvCustomerName.text =
+                        it.data.customer.firstName + " " + it.data.customer.lastName
+                } else {
+                    binding.tvCustomerName.text = ""
+                }
                 binding.orderDetails = it
                 orderDetailsItemAdapter.addOrderDetailsItems(it.data.orderItems)
             }

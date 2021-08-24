@@ -128,7 +128,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener {
         }
 
 
-        viewModel.setCurrentDate(myCalendar)
+     //   viewModel.setCurrentDate(myCalendar)
 
         binding.includeView.imgDrawer.setOnClickListener {
             (requireActivity() as MainActivity).enableDrawer()
@@ -140,6 +140,11 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener {
             findNavController().navigate(R.id.action_settings_to_dashboardCategory)
         }
         return binding.root
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel.setCurrentDate(myCalendar)
     }
 
     private fun startDatePickerObserver() {

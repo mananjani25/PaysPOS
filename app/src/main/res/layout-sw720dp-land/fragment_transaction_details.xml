@@ -261,7 +261,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/_3sdp"
                         android:gravity="end"
-                        android:text="None"
+                        android:text="@{orderDetails.data.orderType}"
                         android:textColor="@color/viewTextColor"
                         android:textSize="@dimen/_5mdpi" />
                 </LinearLayout>
@@ -310,12 +310,12 @@
                         android:textSize="@dimen/_5mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvCustomerName"
                         style="@style/CustomFontBold"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/_3sdp"
                         android:gravity="end"
-                        android:text="@{orderDetails.data.customer.firstName+` `+orderDetails.data.customer.lastName}"
                         android:textColor="@color/viewTextColor"
                         android:textSize="@dimen/_5mdpi" />
                 </LinearLayout>
@@ -430,7 +430,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="@dimen/_5sdp"
-                    android:text="Order List(3 Items)"
+                    android:text="@{`Order List ( `+orderDetails.data.orderItems.size()+` Items )`}"
                     android:textColor="@color/viewTextColor"
                     android:textSize="@dimen/_6mdpi" />
 

@@ -1,4 +1,5 @@
 package com.android.pos.data.model.responseModel
+
 import com.google.gson.annotations.SerializedName
 
 
@@ -92,7 +93,9 @@ data class GetOrderDetailsResponse(
         @SerializedName("total_tips")
         val totalTips: Double,
         @SerializedName("updated_at")
-        val updatedAt: String
+        val updatedAt: String,
+        @SerializedName("order_type")
+        val orderType: String
     ) {
         data class Customer(
             @SerializedName("birth_date")
