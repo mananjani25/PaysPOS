@@ -70,11 +70,87 @@
                 android:paddingEnd="@dimen/_30sdp"
                 android:visibility="visible">
 
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/_2sdp"
+                    android:background="@drawable/background_square_border_grey">
+
+                    <TextView
+                        android:id="@+id/txtCurrency"
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/_10sdp"
+                        android:text="$"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_6mdpi"
+                        app:layout_constraintBottom_toBottomOf="@+id/edtAmount"
+                        app:layout_constraintEnd_toStartOf="@+id/edtAmount"
+                        app:layout_constraintTop_toTopOf="@+id/edtAmount" />
+
+                    <androidx.appcompat.widget.AppCompatEditText
+                        android:id="@+id/edtAmount"
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/_10sdp"
+                        android:layout_marginEnd="@dimen/_10sdp"
+                        android:background="@null"
+                        android:enabled="false"
+                        android:hint="0.00"
+                        android:textColor="@color/txtColor"
+                        android:textColorHint="@color/hintColor"
+                        android:textSize="@dimen/_6mdpi"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:textAllCaps="true" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/_5sdp"
+                        android:orientation="horizontal"
+                        android:paddingVertical="@dimen/_3sdp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <TextView
+                            android:id="@+id/txtCurrencyPercentage"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="@dimen/_2sdp"
+                            android:background="@drawable/background_discount_selected"
+                            android:paddingVertical="@dimen/_4sdp"
+                            android:paddingStart="@dimen/_7sdp"
+                            android:paddingEnd="@dimen/_7sdp"
+                            android:text="%" />
+
+                        <TextView
+                            android:id="@+id/txtCurrencyDollar"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/_2sdp"
+                            android:background="@drawable/background_discount_selected"
+                            android:paddingVertical="@dimen/_4sdp"
+                            android:paddingStart="@dimen/_7sdp"
+                            android:paddingEnd="@dimen/_7sdp"
+                            android:text="$" />
+
+
+                    </LinearLayout>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
+                    android:visibility="gone"
                     android:weightSum="1">
 
                     <LinearLayout
@@ -87,30 +163,6 @@
                         android:padding="@dimen/_5sdp">
 
 
-                        <TextView
-                            android:id="@+id/txtCurrency"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/_10sdp"
-                            android:text="$"
-                            android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_6mdpi" />
-
-                        <androidx.appcompat.widget.AppCompatEditText
-                            android:id="@+id/edtAmount"
-                            style="@style/CustomFontSemiBold"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/_10sdp"
-                            android:layout_marginEnd="@dimen/_10sdp"
-                            android:background="@null"
-                            android:enabled="false"
-                            android:hint="0.00"
-
-                            android:textColor="@color/txtColor"
-                            android:textColorHint="@color/hintColor"
-                            android:textSize="@dimen/_6mdpi"
-                            app:textAllCaps="true" />
                     </LinearLayout>
 
                     <androidx.appcompat.widget.SwitchCompat
@@ -130,7 +182,10 @@
 
                 <include
                     android:id="@+id/llKeypad"
-                    layout="@layout/layout_discount_keypad" />
+                    layout="@layout/layout_discount_keypad"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_2sdp" />
 
 
                 <androidx.recyclerview.widget.RecyclerView

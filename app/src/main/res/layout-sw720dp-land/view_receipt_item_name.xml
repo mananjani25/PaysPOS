@@ -27,8 +27,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:gravity="end"
-            android:text="$9.99"
             android:padding="@dimen/_5sdp"
+            android:text="$9.99"
             android:textColor="@color/viewTextColor"
             android:textSize="@dimen/_6mdpi" />
 
@@ -40,9 +40,9 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
-        tools:itemCount="3"
         android:layout_height="match_parent"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:itemCount="3"
         tools:listitem="@layout/view_receipt_modifier_name" />
 
 </LinearLayout>

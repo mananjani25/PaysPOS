@@ -13,6 +13,7 @@ import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.TbDiscount
 import com.android.pos.data.entities.TbItem
+import com.android.pos.data.remote.Constants.PERCENTAGE
 import com.android.pos.databinding.DailogAddDiscountBinding
 import com.android.pos.ui.adapter.DialogDiscountListAdapter
 import com.android.pos.ui.fragments.settings.discount.DiscountListViewModel
@@ -32,6 +33,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
     private var selectedListPos: Int = -1
     private var isFromDetails = false
     private lateinit var defaultModel: TbItem
+    private var selectedCurrency:String = PERCENTAGE
 
     companion object {
         fun newInstance() = AddDiscountDialog()

@@ -161,10 +161,10 @@
 
 
                 <RelativeLayout
-                    android:background="?attr/selectableItemBackground"
                     android:id="@+id/relAddCustomer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="?attr/selectableItemBackground"
                     android:padding="@dimen/_5sdp">
 
                     <ImageView

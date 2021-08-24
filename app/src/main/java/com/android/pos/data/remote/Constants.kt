@@ -25,6 +25,8 @@ object Constants {
     const val MEDIUM = "medium"
     const val SMALL = "small"
     const val LARGE = "large"
+    const val PERCENTAGE = "Percentage"
+    const val AMOUNT = "Amount"
 
 
     //Api End Points
