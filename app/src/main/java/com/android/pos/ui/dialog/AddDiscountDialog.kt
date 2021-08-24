@@ -13,6 +13,7 @@ import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.TbDiscount
 import com.android.pos.data.entities.TbItem
+import com.android.pos.data.remote.Constants.AMOUNT
 import com.android.pos.data.remote.Constants.PERCENTAGE
 import com.android.pos.databinding.DailogAddDiscountBinding
 import com.android.pos.ui.adapter.DialogDiscountListAdapter
@@ -33,7 +34,8 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
     private var selectedListPos: Int = -1
     private var isFromDetails = false
     private lateinit var defaultModel: TbItem
-    private var selectedCurrency:String = PERCENTAGE
+    private var selectedCurrency: String = PERCENTAGE
+
 
     companion object {
         fun newInstance() = AddDiscountDialog()
@@ -55,9 +57,12 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
             defaultModel = TbItem()
         }
 
+
+
         setDiscountList()
         setupData()
         setKeyPad()
+        onClick()
 
         binding.swtDiscountType.isChecked =
             model?.discountType == getString(R.string.disc_percentage)
@@ -97,6 +102,28 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
         Log.e(TAG, "GetDataaa  ${Gson().toJson(defaultModel)}")
 
+    }
+
+    private fun onClick() {
+        binding.txtCurrencyPercentage.setOnClickListener {
+            selectedCurrency = PERCENTAGE
+            binding.txtCurrency.setText("%")
+            binding.txtCurrencyDollar.background =
+                requireContext().resources.getDrawable(R.drawable.background_discount_unselected)
+            binding.txtCurrencyPercentage.background =
+                requireContext().resources.getDrawable(R.drawable.background_discount_selected)
+
+
+        }
+        binding.txtCurrencyDollar.setOnClickListener {
+            binding.txtCurrency.setText("$")
+            selectedCurrency = AMOUNT
+            binding.txtCurrencyDollar.background =
+                requireContext().resources.getDrawable(R.drawable.background_discount_selected)
+            binding.txtCurrencyPercentage.background =
+                requireContext().resources.getDrawable(R.drawable.background_discount_unselected)
+
+        }
     }
 
     override fun onCreateView(
@@ -217,7 +244,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
 
                 discountModel =
-                    if (binding.swtDiscountType.isChecked) {
+                    if (selectedCurrency == PERCENTAGE) {
                         TbDiscount(
                             "",
                             getString(R.string.disc_percentage),

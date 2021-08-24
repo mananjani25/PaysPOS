@@ -45,7 +45,7 @@ object Constants {
     const val EMPLOYEES = "employees"
     const val CUSTOMERS = "customers"
     const val EMPLOYEES_UPDATE_DELETE = "employees/{id}"
-
+    const val DISCOVERY_INTERVAL = 500
     const val EMPLOYEES_TIMESHEET = "employees/timesheet"
     const val EMPLOYEES_TIMESHEET_DETAILS = "employees/timesheet_details"
 

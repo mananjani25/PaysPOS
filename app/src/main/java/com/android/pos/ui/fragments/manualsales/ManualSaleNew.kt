@@ -67,7 +67,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
         getServiceCharge()
         getTaxList()
         getDiscountList()
-        getCartList()
+
         return binding.root
     }
 
@@ -93,7 +93,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
         binding.layoutMenu.autoSearch.visibility = View.GONE
         onConfig()
         onClickKeypad()
-
+        getCartList()
         onClick()
         listner()
     }
@@ -334,10 +334,14 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
             var model = TbItem()
             var count = 0
 
-            if (cartList?.isNotEmpty() == true) {
-                count =
-                    cartList?.get(0)?.items?.get(cartList?.get(0)?.items!!.size - 1)?.customItemCount!!
+            cartList?.let {
+
+                if (cartList?.size != 0) {
+                    count =
+                        cartList?.get(0)?.items?.get(cartList?.get(0)?.items!!.size - 1)?.customItemCount!!
+                }
             }
+
             count++
 
             Log.e(TAG, "getcount:  ${count}")

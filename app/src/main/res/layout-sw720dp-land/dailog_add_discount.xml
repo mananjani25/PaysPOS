@@ -123,7 +123,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="@dimen/_2sdp"
-                            android:background="@drawable/background_discount_selected"
+                            android:background="@drawable/background_discount_unselected"
                             android:paddingVertical="@dimen/_4sdp"
                             android:paddingStart="@dimen/_7sdp"
                             android:paddingEnd="@dimen/_7sdp"
