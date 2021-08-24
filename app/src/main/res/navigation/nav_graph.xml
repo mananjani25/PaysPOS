@@ -391,6 +391,9 @@
             android:id="@+id/action_dashboardCategoryNew_to_transactionFragment"
             app:destination="@id/transactionFragment"
             app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_dashboardCategoryNew_to_openOrderCustomerFragment"
+            app:destination="@id/openOrderCustomerFragment" />
 
     </fragment>
     <action
@@ -652,12 +655,24 @@
     <action
         android:id="@+id/action_global_transactionFragment"
         app:destination="@id/transactionFragment" />
+    <fragment
+        android:id="@+id/openOrderCustomerFragment"
+        android:name="com.android.pos.ui.fragments.openorder.OpenOrderCustomerFragment"
+        android:label="OpenOrderCustomerFragment">
+        <action
+            android:id="@+id/action_openOrderCustomerFragment_to_assignCustomerOrderFragment"
+            app:destination="@id/assignCustomerOrderFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/printer"
         android:name="com.android.pos.ui.fragments.settings.hardware.Printer"
         android:label="Printer"
         tools:layout="@layout/fragment_printer" />
+    <fragment
+        android:id="@+id/transactionDetailsFragment"
+        android:name="com.android.pos.ui.fragments.transactions.TransactionDetailsFragment"
+        android:label="TransactionDetailsFragment" />
 
 
 </navigation>

@@ -440,6 +440,24 @@
     <string name="marketing">Marketing</string>
     <string name="team_member">Team Member</string>
     <string name="reports">Reports</string>
+    <string name="customer_details">Customer Details</string>
+    <string name="delivery_address">Delivery Address</string>
+    <string name="billing_address">Billing Address</string>
+    <string name="search_existing_customer_details">Search existing customer details</string>
+    <string name="pick_up">Pick Up</string>
+    <string name="delivery">Delivery</string>
+    <string name="add_customer_details">Add Customer Details</string>
+    <string name="date">Date</string>
+    <string name="time">Time</string>
+    <string name="note">Note</string>
+    <string name="same_as_billing_address">Same as Billing Address</string>
+    <string name="customer_address">Customer Address</string>
+    <string name="apt_suite">Apt / Suite</string>
+    <string name="city">City</string>
+    <string name="state">State</string>
+    <string name="zip">Zip</string>
+    <string name="clear">Clear</string>
+    <string name="street">Street</string>
 
     <string name="printer">Printer</string>
     <string name="customer_receipt_printer">Customer receipt Printer</string>
@@ -456,4 +474,14 @@
     <string name="tv_all_payment_types">All Transaction Types</string>
     <string name="tv_cash_payment">Cash</string>
     <string name="tv_external">External</string>
+    <string name="tv_terminal_id">Terminal Id</string>
+    <string name="tv_order_details">Order Details</string>
+    <string name="tv_order_hash">Order #</string>
+    <string name="tv_status">Status</string>
+    <string name="tv_note">Note</string>
+    <string name="tv_transactions">Transactions</string>
+    <string name="tv_order_subtotal">Order Subtotal</string>
+    <string name="tv_tax">Tax</string>
+    <string name="tv_exchange_refund">Exchange Refund</string>
+    <string name="tv_date">Date</string>
 </resources>

@@ -24,6 +24,7 @@ class CartModel : Parcelable {
     var isMaual: Boolean = false
     var note: String = ""
     var orderType: String = ""
+    var orderTypeName: String = ""
     var orderTypeId: Int = 0
     var customer: TbCustomer? = null
 

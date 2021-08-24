@@ -22,12 +22,16 @@ object Constants {
     const val ADD = "ADD"
     const val ORDER_TYPE_ID = "order_type_id"
     const val ORDER_TYPE_NAME = "order_type_name"
+    const val ORDER_TYPE = "order_type"
     const val MEDIUM = "medium"
     const val SMALL = "small"
     const val LARGE = "large"
     const val PERCENTAGE = "Percentage"
     const val AMOUNT = "Amount"
 
+    const val TAKEOUT = "TakeOut"
+    const val DINE_IN = "DineIn"
+    const val OPEN_ORDER = "OpenOrder"
 
     //Api End Points
     const val USERS_LOG_IN = "users/log_in"

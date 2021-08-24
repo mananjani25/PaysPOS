@@ -12,6 +12,7 @@ import com.android.pos.data.entities.*
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ADD
 import com.android.pos.data.remote.Constants.DELETE
+import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.UPDATE
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.TaxServiceChargeRepository
@@ -51,8 +52,8 @@ class DashBoardCategoryViewModel @Inject constructor(
         return posRepository.venueDataLocal()
     }
 
-    fun orderTypes(): LiveData<Resource<List<TbOrderType>>> {
-        return posRepository.orderTypes()
+    fun orderTypes(orderType: String): LiveData<Resource<List<TbOrderType>>> {
+        return posRepository.orderTypes(orderType)
     }
 
     val venueDataLocal = posRepository.venueDataLocal()
@@ -72,7 +73,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun modifierSet(intArray: IntArray) = posRepository.modifierSetList(intArray)
 
-    var mAllWords = posRepository.getCartList()
+    fun mAllWords(orderType: String) = posRepository.getCartList(orderType)
 
     var serviceChargesList: List<TbServiceCharge> = emptyList()
 
@@ -197,6 +198,8 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     private fun checkModifier(tbItem: TbItem, item: TbItem): Boolean {
 
+        if (item.modifiers.isEmpty()) return true
+
         var checkModifier = false
 
         item.modifiers.forEach { itemM ->
@@ -209,19 +212,19 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     private fun addCartModel(item: TbItem): CartModel {
         val inventoryModelList = ArrayList<TbItem>()
-        val cartModel = CartModel().apply {
+        return CartModel().apply {
             terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
             employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
             locationId = prefProvider.getValueInt(Constants.LOCATION_ID, -1)
             orderTypeId = prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
-            orderType = prefProvider.getValue(Constants.ORDER_TYPE_NAME, "").toString()
+            orderType = prefProvider.getValue(Constants.ORDER_TYPE, "").toString()
+            orderTypeName = prefProvider.getValue(Constants.ORDER_TYPE_NAME, "").toString()
             serviceCharge = serviceChargesList
             customer = assignCustomer
             item.itemQuantity = item.itemQuantity
             inventoryModelList.add(item)
             items = inventoryModelList
         }
-        return cartModel
     }
 
     @SuppressLint("SetTextI18n")
@@ -283,7 +286,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
             }
 
-            totalDiscount = cartList.get(0)?.items!!.map {
+            totalDiscount = cartList[0].items!!.map {
                 it.discountPrice
             }.sum()
             Log.e(TAG, "totalDiscount:  ${totalDiscount}")
