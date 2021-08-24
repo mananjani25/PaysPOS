@@ -55,10 +55,10 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
         return list.size
     }
 
-    @SuppressLint("NotifyDataSetChanged")
+
     fun setList(list: ArrayList<PrinterListModel>) {
         this.list = list
-        notifyDataSetChanged()
+
     }
 
     @SuppressLint("NotifyDataSetChanged")
