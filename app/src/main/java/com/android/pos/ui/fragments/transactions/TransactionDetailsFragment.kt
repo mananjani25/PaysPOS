@@ -72,6 +72,12 @@ class TransactionDetailsFragment : Fragment() {
                     convertCurrentDate(it.data.createdAt) + " " + convertCurrentTime(
                         it.data.createdAt
                     )
+
+                binding.tvTransactionDate.text =
+                    convertCurrentTime(it.data.createdAt) + "\n" + convertCurrentDate(
+                        it.data.createdAt
+                    )
+
                 binding.orderDetails = it
                 orderDetailsItemAdapter.addOrderDetailsItems(it.data.orderItems)
             }

@@ -127,7 +127,6 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/_3sdp"
                         android:gravity="end"
-                        android:text="Apr 21,2021 11:30 AM"
                         android:textColor="@color/viewTextColor"
                         android:textSize="@dimen/_5mdpi" />
                 </LinearLayout>
@@ -357,12 +356,18 @@
                     android:orientation="horizontal"
                     android:padding="@dimen/_3sdp">
 
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_check_circle_green" />
+
                     <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvTransactionDate"
                         style="@style/CustomFontSemiBold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/_3sdp"
-                        android:text="11:30 AM \n 21/4/21"
                         android:textColor="@color/viewTextColor"
                         android:textSize="@dimen/_5mdpi" />
 
@@ -372,7 +377,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/_3sdp"
                         android:gravity="end"
-                        android:text="Credit Card"
+                        android:text="@{orderDetails.data.payments.get(0).paymentType}"
                         android:textColor="@color/viewTextColor"
                         android:textSize="@dimen/_5mdpi" />
                 </LinearLayout>
@@ -382,17 +387,28 @@
                     android:layout_height="0.5dp"
                     android:background="@color/view" />
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    style="@style/CustomFontSemiBold"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/_5sdp"
-                    android:paddingLeft="@dimen/_3sdp"
-                    android:paddingTop="@dimen/_3sdp"
-                    android:paddingRight="@dimen/_3sdp"
-                    android:text="$12.10 \n Payment"
-                    android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_5mdpi" />
+                    android:orientation="horizontal"
+                    android:padding="@dimen/_3sdp">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_dollar_filled" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/_3sdp"
+                        android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.payments.get(0).amount)}"
+                        android:textColor="@color/viewTextColor"
+                        android:textSize="@dimen/_5mdpi" />
+
+                </LinearLayout>
 
 
             </LinearLayout>
