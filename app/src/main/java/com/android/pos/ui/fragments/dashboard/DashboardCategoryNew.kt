@@ -163,11 +163,12 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         binding.rvOrderType.adapter = orderTypeAdapter
 
 
-        prefProvider.getValue(ORDER_TYPE, "")?.let {
-            viewModel.orderTypes(it).observe(requireActivity(), {
-                it.data?.let { it1 -> orderTypeAdapter.addAll(it1) }
-            })
-        }
+
+        viewModel.orderTypes().observe(requireActivity(), {
+            Log.e("ORDER_TYPE_SIZE", it.data?.size.toString())
+            it.data?.let { it1 -> orderTypeAdapter.addAll(it1) }
+        })
+
     }
 
     private fun getServiceCharges() {
@@ -346,6 +347,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     )
                     binding.layoutCart.rvCart.visibility = View.GONE
                     binding.layoutCart.llPayment.visibility = View.GONE
+
+
                 }
             }
         )
@@ -370,6 +373,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             binding.lltakeout.visibility = View.GONE
             binding.layoutCart.txtOrderType.text =
                 prefProvider.getValue(ORDER_TYPE_NAME, "").toString()
+            getCartList()
         } else {
             binding.layoutCart.txtOrderType.text = ""
             binding.lltakeout.visibility = View.VISIBLE
@@ -1260,6 +1264,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         // Do positive stuff here
                         viewModel.deleteCart()
 
+                        if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
+                            prefProvider.setValue(ORDER_TYPE, "")
+                        }
+                        hideOrderType()
                         hideOrderMenu()
                     }
                     negativeButton(R.string.tv_cancel) {

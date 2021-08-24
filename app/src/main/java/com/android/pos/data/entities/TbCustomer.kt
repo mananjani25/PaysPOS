@@ -15,7 +15,7 @@ import kotlinx.parcelize.Parcelize
 data class TbCustomer(
 
     @PrimaryKey
-    @SerializedName("id") val id: Int,
+    @SerializedName("id") val id: Int?,
     @SerializedName("first_name") val first_name: String,
     @SerializedName("last_name") val last_name: String,
     @SerializedName("birth_date") val birth_date: String,

@@ -52,8 +52,8 @@ class DashBoardCategoryViewModel @Inject constructor(
         return posRepository.venueDataLocal()
     }
 
-    fun orderTypes(orderType: String): LiveData<Resource<List<TbOrderType>>> {
-        return posRepository.orderTypes(orderType)
+    fun orderTypes(): LiveData<Resource<List<TbOrderType>>> {
+        return posRepository.orderTypes()
     }
 
     val venueDataLocal = posRepository.venueDataLocal()

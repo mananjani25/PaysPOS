@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingDefaultResource">
 
     <data>
 
@@ -14,13 +15,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/_5sdp"
-        android:background="@drawable/background_button_menu"
-        android:fontFamily="@font/sf_pro_display_bold"
+        android:background="@drawable/bg_item_selector"
+        style="@style/CustomFontBold"
         android:gravity="center"
-        android:paddingVertical="@dimen/_7sdp"
+        tools:text="Item 1"
+        android:paddingVertical="@dimen/_5sdp"
         android:text="@{model.name}"
-        android:textColor="@color/txtColor"
-        android:textSize="@dimen/_6mdpi"
-        tools:ignore="MissingConstraints" />
+        android:textColor="@color/viewTextColor"
+        android:textSize="@dimen/_5mdpi" />
 </layout>
 
