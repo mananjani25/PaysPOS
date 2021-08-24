@@ -34,8 +34,10 @@ class TransactionViewModel @Inject constructor(
     private val _data = MutableLiveData<Event<GetTransactionListResponse?>>()
     val data: LiveData<Event<GetTransactionListResponse?>> = _data
 
-    private val _transactionDetails = MutableLiveData<Event<GetTransactionListResponse?>>()
-    val transactionDetails: LiveData<Event<GetTransactionListResponse?>> = _transactionDetails
+    private val _transactionDetails =
+        MutableLiveData<Event<GetTransactionListResponse.Data.Payment>>()
+    val transactionDetails: LiveData<Event<GetTransactionListResponse.Data.Payment>> =
+        _transactionDetails
 
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
@@ -63,7 +65,7 @@ class TransactionViewModel @Inject constructor(
          posRepository.employeesTimeSheet(startDate.value.toString(), endDate.value.toString(),roleId)*/
     val getTeamRoleList = taxServiceChargeRepository.getTeamRoleList()
     val employeeData = posRepository.employeesList(locationId)
-    val orderTypes = posRepository.orderTypes("")
+    val orderTypes = posRepository.orderTypes()
 
     fun setCurrentDate(myCalendar: Calendar) {
         val myFormat = "MM/dd/yyyy" //In which you need put here
@@ -82,6 +84,9 @@ class TransactionViewModel @Inject constructor(
         }
     }
 
+    fun transactionId(transactionId: GetTransactionListResponse.Data.Payment) {
+        _transactionDetails.value = Event(transactionId)
+    }
 
     fun updateLabel(myCalendar: Calendar) {
         val myFormat = "MM/dd/yyyy" //In which you need put here

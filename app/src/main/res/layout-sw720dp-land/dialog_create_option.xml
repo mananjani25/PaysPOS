@@ -4,6 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingDefaultResource">
 
+    <data>
+
+        <variable
+            name="createOptionViewModel"
+            type="com.android.pos.ui.fragments.createoption.CreateOptionViewModel" />
+    </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
@@ -155,6 +161,15 @@
                         android:textSize="@dimen/_7mdpi" />
 
 
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvModifiers"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/_10sdp"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                        tools:itemCount="2"
+                        tools:listitem="@layout/view_modifiers_remove" />
+
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
@@ -163,9 +178,12 @@
                     <androidx.appcompat.widget.LinearLayoutCompat
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/_25sdp"
+                        android:layout_marginEnd="@dimen/_25sdp"
                         android:orientation="horizontal">
 
                         <androidx.appcompat.widget.AppCompatEditText
+                            android:id="@+id/edtOption"
                             style="@style/CustomFontSemiBold"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"

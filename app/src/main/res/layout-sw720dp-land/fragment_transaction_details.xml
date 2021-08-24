@@ -4,6 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingDefaultResource">
 
+    <data>
+
+        <variable
+            name="orderDetails"
+            type="com.android.pos.data.model.responseModel.GetOrderDetailsResponse" />
+
+        <variable
+            name="viewModel"
+            type="com.android.pos.ui.fragments.transactions.TransactionDetailsViewModel" />
+    </data>
 
     <LinearLayout
         android:id="@+id/linearCompact"
@@ -24,20 +34,28 @@
                 android:layout_gravity="center"
                 android:orientation="horizontal">
 
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/imgBack"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    app:srcCompat="@drawable/ic_cancel_black" />
+
                 <TextView
                     android:id="@+id/txtSubTitle"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:fontFamily="@font/sf_pro_display_medium"
                     android:gravity="center"
+                    android:text="@{`Order`+orderDetails.data.offlineId}"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/txtHome"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:text="David Miller" />
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
                     android:id="@+id/txtHome"
@@ -68,6 +86,7 @@
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:layout_marginRight="@dimen/_5sdp"
                 android:layout_weight="1"
                 android:orientation="vertical">
 
@@ -99,15 +118,15 @@
                         android:layout_marginLeft="@dimen/_3sdp"
                         android:text="@string/tv_date"
                         android:textColor="@color/viewTextColor"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textSize="@dimen/_5mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvDate"
                         style="@style/CustomFontSemiBold"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/_3sdp"
                         android:gravity="end"
-                        android:text="Apr 21,2021 11:30 AM"
                         android:textColor="@color/viewTextColor"
                         android:textSize="@dimen/_5mdpi" />
                 </LinearLayout>
@@ -126,7 +145,7 @@
                         android:layout_marginLeft="@dimen/_3sdp"
                         android:text="@string/tv_order_id"
                         android:textColor="@color/viewTextColor"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textSize="@dimen/_5mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontSemiBold"
@@ -134,7 +153,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/_3sdp"
                         android:gravity="end"
-                        android:text="BKJ698QWERT"
+                        android:text="@{``+orderDetails.data.offlineId}"
                         android:textColor="@color/viewTextColor"
                         android:textSize="@dimen/_5mdpi" />
                 </LinearLayout>
@@ -153,7 +172,7 @@
                         android:layout_marginLeft="@dimen/_3sdp"
                         android:text="@string/tv_order_hash"
                         android:textColor="@color/viewTextColor"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textSize="@dimen/_5mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontSemiBold"
@@ -161,7 +180,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/_3sdp"
                         android:gravity="end"
-                        android:text="A31"
+                        android:text="@{``+orderDetails.data.id}"
                         android:textColor="@color/viewTextColor"
                         android:textSize="@dimen/_5mdpi" />
                 </LinearLayout>
@@ -180,7 +199,7 @@
                         android:layout_marginLeft="@dimen/_3sdp"
                         android:text="@string/tv_status"
                         android:textColor="@color/viewTextColor"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textSize="@dimen/_5mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontSemiBold"
@@ -188,7 +207,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/_3sdp"
                         android:gravity="end"
-                        android:text="PAID"
+                        android:text="@{orderDetails.data.paymentStatus}"
                         android:textColor="@color/colorGreen"
                         android:textSize="@dimen/_5mdpi" />
                 </LinearLayout>
@@ -207,7 +226,7 @@
                         android:layout_marginLeft="@dimen/_3sdp"
                         android:text="@string/tv_note"
                         android:textColor="@color/viewTextColor"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textSize="@dimen/_5mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontSemiBold"
@@ -215,7 +234,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/_3sdp"
                         android:gravity="end"
-                        android:text="None"
+                        android:text="@{orderDetails.data.note}"
                         android:textColor="@color/viewTextColor"
                         android:textSize="@dimen/_5mdpi" />
                 </LinearLayout>
@@ -234,7 +253,7 @@
                         android:layout_marginLeft="@dimen/_3sdp"
                         android:text="@string/tv_order_type"
                         android:textColor="@color/viewTextColor"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textSize="@dimen/_5mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontSemiBold"
@@ -242,7 +261,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/_3sdp"
                         android:gravity="end"
-                        android:text="None"
+                        android:text="@{orderDetails.data.orderType}"
                         android:textColor="@color/viewTextColor"
                         android:textSize="@dimen/_5mdpi" />
                 </LinearLayout>
@@ -261,7 +280,7 @@
                         android:layout_marginLeft="@dimen/_3sdp"
                         android:text="@string/tv_employee"
                         android:textColor="@color/viewTextColor"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textSize="@dimen/_5mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontSemiBold"
@@ -269,7 +288,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/_3sdp"
                         android:gravity="end"
-                        android:text="John Smith"
+                        android:text="@{orderDetails.data.employee.firstName+` `+orderDetails.data.employee.lastName}"
                         android:textColor="@color/viewTextColor"
                         android:textSize="@dimen/_5mdpi" />
                 </LinearLayout>
@@ -288,15 +307,15 @@
                         android:layout_marginLeft="@dimen/_3sdp"
                         android:text="@string/tv_customer"
                         android:textColor="@color/viewTextColor"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textSize="@dimen/_5mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvCustomerName"
                         style="@style/CustomFontBold"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/_3sdp"
                         android:gravity="end"
-                        android:text="David Miller"
                         android:textColor="@color/viewTextColor"
                         android:textSize="@dimen/_5mdpi" />
                 </LinearLayout>
@@ -337,24 +356,30 @@
                     android:orientation="horizontal"
                     android:padding="@dimen/_3sdp">
 
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_check_circle_green" />
+
                     <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontMediumStyle"
+                        android:id="@+id/tvTransactionDate"
+                        style="@style/CustomFontSemiBold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/_3sdp"
-                        android:text="11:30 AM \n 21/4/21"
                         android:textColor="@color/viewTextColor"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textSize="@dimen/_5mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontSemiBold"
+                        style="@style/CustomFontBold"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/_3sdp"
                         android:gravity="end"
-                        android:text="Credit Card"
+                        android:text="@{orderDetails.data.payments.get(0).paymentType}"
                         android:textColor="@color/viewTextColor"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textSize="@dimen/_5mdpi" />
                 </LinearLayout>
 
                 <View
@@ -362,17 +387,28 @@
                     android:layout_height="0.5dp"
                     android:background="@color/view" />
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    style="@style/CustomFontMediumStyle"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/_5sdp"
-                    android:paddingLeft="@dimen/_3sdp"
-                    android:paddingTop="@dimen/_3sdp"
-                    android:paddingRight="@dimen/_3sdp"
-                    android:text="$12.10 \n Payment"
-                    android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_6mdpi" />
+                    android:orientation="horizontal"
+                    android:padding="@dimen/_3sdp">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_dollar_filled" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/_3sdp"
+                        android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.payments.get(0).amount)}"
+                        android:textColor="@color/viewTextColor"
+                        android:textSize="@dimen/_5mdpi" />
+
+                </LinearLayout>
 
 
             </LinearLayout>
@@ -385,6 +421,7 @@
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:layout_marginLeft="@dimen/_5sdp"
                 android:layout_weight="2"
                 android:orientation="vertical">
 
@@ -393,7 +430,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="@dimen/_5sdp"
-                    android:text="Order List(3 Items)"
+                    android:text="@{`Order List ( `+orderDetails.data.orderItems.size()+` Items )`}"
                     android:textColor="@color/viewTextColor"
                     android:textSize="@dimen/_6mdpi" />
 
@@ -404,12 +441,17 @@
 
 
                 <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvCategoriesList"
+                    android:id="@+id/rvOrderItems"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_5sdp"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    tools:listitem="@layout/view_order_item_list" />
+                    android:layout_marginBottom="@dimen/_5sdp"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:background="@color/view" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -425,17 +467,17 @@
                         android:layout_marginLeft="@dimen/_3sdp"
                         android:text="@string/tv_order_subtotal"
                         android:textColor="@color/viewTextColor"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textSize="@dimen/_5mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontSemiBold"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/_3sdp"
+                        android:layout_marginRight="@dimen/_5sdp"
                         android:gravity="end"
-                        android:text="$3.50"
+                        android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.subTotal)}"
                         android:textColor="@color/viewTextColor"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textSize="@dimen/_5mdpi" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -452,17 +494,17 @@
                         android:layout_marginLeft="@dimen/_3sdp"
                         android:text="@string/tv_tax"
                         android:textColor="@color/viewTextColor"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textSize="@dimen/_5mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontSemiBold"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/_3sdp"
+                        android:layout_marginRight="@dimen/_5sdp"
                         android:gravity="end"
-                        android:text="$1.20"
+                        android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.totalTaxAmount)}"
                         android:textColor="@color/viewTextColor"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textSize="@dimen/_5mdpi" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -479,17 +521,17 @@
                         android:layout_marginLeft="@dimen/_3sdp"
                         android:text="@string/tv_total"
                         android:textColor="@color/viewTextColor"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textSize="@dimen/_5mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontBold"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/_3sdp"
+                        android:layout_marginRight="@dimen/_5sdp"
                         android:gravity="end"
-                        android:text="$4.70"
+                        android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.totalAmount)}"
                         android:textColor="@color/viewTextColor"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textSize="@dimen/_5mdpi" />
                 </LinearLayout>
 
 
