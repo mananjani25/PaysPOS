@@ -37,6 +37,7 @@ import com.android.pos.data.remote.Constants.NOTES_ACTIVE
 import com.android.pos.data.remote.Constants.NOTE_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.ORDERS
 import com.android.pos.data.remote.Constants.ORDER_ASSIGN_CUSTOMER
+import com.android.pos.data.remote.Constants.ORDER_DETAILS
 import com.android.pos.data.remote.Constants.ORDER_EMAIL_RECEIPT
 import com.android.pos.data.remote.Constants.ORDER_PHONE_RECEIPT
 import com.android.pos.data.remote.Constants.ORDER_TYPES
@@ -382,6 +383,9 @@ interface ApiService {
 
     @POST(ORDERS)
     suspend fun createOrder(@Body orderRequestModel: OrderRequestModel): CreateOrderResponse
+
+    @GET(ORDER_DETAILS)
+    suspend fun orderDetailsById(@Path("id") orderId: Int): GetOrderDetailsResponse
 
     @GET(KITCHEN_RECEIPT_SETTINGS)
     suspend fun getKitchenReceiptSettings(): GetKitchenReceiptSettingsResponse

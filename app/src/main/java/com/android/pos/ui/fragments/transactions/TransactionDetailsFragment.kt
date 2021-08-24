@@ -1,45 +1,30 @@
 package com.android.pos.ui.fragments.transactions
 
-import android.app.DatePickerDialog
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.pos.R
-import com.android.pos.data.entities.Employee
-import com.android.pos.data.entities.TbOrderType
-import com.android.pos.data.entities.TeamRole
-import com.android.pos.data.model.responseModel.VenueDetailsResponse
-import com.android.pos.data.remote.Constants
-import com.android.pos.databinding.FragmentTransactionBinding
 import com.android.pos.databinding.FragmentTransactionDetailsBinding
-import com.android.pos.ui.activities.MainActivity
-import com.android.pos.ui.adapter.TransactionAdapter
+import com.android.pos.ui.adapter.OrderDetailsItemListAdapter
 import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.TimeFormatUtils.convertCurrentDate
+import com.android.pos.utils.TimeFormatUtils.convertCurrentTime
 import com.android.pos.utils.extensions.liveSnackBar
-import com.android.pos.utils.extensions.showAlert
-import com.android.pos.utils.statusUtils.Status
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.*
-import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
 class TransactionDetailsFragment : Fragment() {
 
     private lateinit var binding: FragmentTransactionDetailsBinding
-
+    private val viewModel by viewModels<TransactionDetailsViewModel>()
+    private lateinit var orderDetailsItemAdapter: OrderDetailsItemListAdapter
+    private var orderId: Int = -1
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -55,10 +40,61 @@ class TransactionDetailsFragment : Fragment() {
                 false
             )
 
-        // binding.viewModel = viewModel
-
-
         binding.lifecycleOwner = this
+        binding.viewModel = viewModel
+        orderId = arguments?.getInt("orderId")!!
+        viewModel.apiCallOrderDetails(orderId)
+        setupSnackbar()
+        observeShowProgress()
+        setUpRecyclerView()
+        navigate()
         return binding.root
+    }
+
+    private fun setUpRecyclerView() {
+        orderDetailsItemAdapter = OrderDetailsItemListAdapter()
+        binding.rvOrderItems.adapter = orderDetailsItemAdapter
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding.imgBack.setOnClickListener {
+            findNavController().navigateUp()
+        }
+    }
+
+    private fun navigate() {
+
+        viewModel.data.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+
+                binding.tvDate.text =
+                    convertCurrentDate(it.data.createdAt) + " " + convertCurrentTime(
+                        it.data.createdAt
+                    )
+                binding.orderDetails = it
+                orderDetailsItemAdapter.addOrderDetailsItems(it.data.orderItems)
+            }
+        })
+
+    }
+
+    private fun observeShowProgress() {
+
+        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    ProgressUtils.showProgressDialog(requireActivity())
+                } else {
+                    ProgressUtils.dismissProgressDialog()
+                }
+            }
+        })
+
+    }
+
+    private fun setupSnackbar() {
+        binding.root.liveSnackBar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
+
     }
 }
