@@ -5,6 +5,7 @@ import `in`.madapps.placesautocomplete.adapter.PlacesAutoCompleteAdapter
 import `in`.madapps.placesautocomplete.listener.OnPlacesDetailsListener
 import `in`.madapps.placesautocomplete.model.Place
 import `in`.madapps.placesautocomplete.model.PlaceDetails
+import android.annotation.SuppressLint
 import android.location.Address
 import android.location.Geocoder
 import android.os.Build
@@ -12,23 +13,37 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.TextView
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.R.color
+import com.android.pos.data.entities.TbCustomer
 import com.android.pos.databinding.FragmentOpenOrderBinding
+import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.MethodUtils
+import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.timepicker.MaterialTimePicker
+import com.google.android.material.timepicker.TimeFormat
 import dagger.hilt.android.AndroidEntryPoint
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 @AndroidEntryPoint
 class OpenOrderCustomerFragment : Fragment(), View.OnClickListener {
+    private lateinit var deliveryType: String
     private var country = arrayOf("United States", "Canada")
     private lateinit var binding: FragmentOpenOrderBinding
     private lateinit var placesApi: PlaceAPI
+    private var currentSelectedDate: Long? = null
+    private var selectedHour: Int? = null
+    private var selectedMinute: Int? = null
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -52,6 +67,13 @@ class OpenOrderCustomerFragment : Fragment(), View.OnClickListener {
         binding.imgBack.setOnClickListener(this)
         binding.llSearch.setOnClickListener(this)
         binding.etSearch.setOnClickListener(this)
+        binding.btnClearDelivery.setOnClickListener(this)
+        binding.btnClearBill.setOnClickListener(this)
+        binding.edtDate.setOnClickListener(this)
+        binding.edtTime.setOnClickListener(this)
+        binding.btnClearCustomer.setOnClickListener(this)
+        binding.btnCancelCustomer.setOnClickListener(this)
+        binding.txtSave.setOnClickListener(this)
         setPhoneCountry()
 
         placesApi =
@@ -125,8 +147,53 @@ class OpenOrderCustomerFragment : Fragment(), View.OnClickListener {
             })
 
         }
+
+        setFragmentResultListener("request_key_customer") { requestKey: String, bundle: Bundle ->
+            val result = bundle.getParcelable<TbCustomer>("data")
+            if (result != null) {
+
+                setupCustomer(result)
+            }
+        }
+
+        binding.rdGroup.setOnCheckedChangeListener { _, checkedId ->
+            when (checkedId) {
+                binding.rdPickUp.id -> {
+                    deliveryType = binding.rdPickUp.text.toString()
+                }
+                binding.rdDelivery.id -> {
+                    deliveryType = binding.rdDelivery.text.toString()
+                }
+            }
+        }
     }
 
+    private fun setupCustomer(customer: TbCustomer) {
+
+        binding.edtFirstName.setText(customer.first_name)
+        binding.edtLastName.setText(customer.last_name)
+        binding.edtPhoneNo.setText(AlertUtils.usNumberFormat(customer.phones[0].phone_number))
+        binding.edtEmail.setText(customer.email)
+
+        if (customer.addresses.size == 1) {
+            binding.edtStreet.setText(customer.addresses[0].street)
+            binding.edtSuite.setText(customer.addresses[0].address2)
+            binding.edtCity.setText(customer.addresses[0].city)
+            binding.edtState.setText(customer.addresses[0].state)
+            binding.edtZip.setText(customer.addresses[0].postcode)
+        }
+        if (customer.addresses.size == 2) {
+            binding.edtStreetBill.setText(customer.addresses[1].street)
+            binding.edtSuiteBill.setText(customer.addresses[1].address2)
+            binding.edtCityBill.setText(customer.addresses[1].city)
+            binding.edtStateBill.setText(customer.addresses[1].state)
+            binding.edtZipBill.setText(customer.addresses[1].postcode)
+        }
+
+
+    }
+
+    @SuppressLint("SetTextI18n")
     override fun onClick(v: View?) {
 
         when (v?.id) {
@@ -136,11 +203,9 @@ class OpenOrderCustomerFragment : Fragment(), View.OnClickListener {
                 binding.scrollViewCustomer.visibility = View.VISIBLE
                 binding.llDeliveryAddress.visibility = View.GONE
                 binding.llBillingAddress.visibility = View.GONE
-
                 binding.viewCustomer.setBackgroundResource(color.txt_color_blue)
                 binding.viewDelivery.setBackgroundResource(0)
                 binding.viewBilling.setBackgroundResource(0)
-
                 binding.txtCustomerDetails.setTextColor(resources.getColor(color.txt_color_blue))
                 binding.txtDeliveryAddress.setTextColor(resources.getColor(color.drawerBack50))
                 binding.txtBillingAddress.setTextColor(resources.getColor(color.drawerBack50))
@@ -151,11 +216,9 @@ class OpenOrderCustomerFragment : Fragment(), View.OnClickListener {
                 binding.llDeliveryAddress.visibility = View.VISIBLE
                 binding.llBillingAddress.visibility = View.GONE
                 binding.llSearch.visibility = View.GONE
-
                 binding.txtCustomerDetails.setTextColor(resources.getColor(color.drawerBack50))
                 binding.txtDeliveryAddress.setTextColor(resources.getColor(color.txt_color_blue))
                 binding.txtBillingAddress.setTextColor(resources.getColor(color.drawerBack50))
-
                 binding.viewCustomer.setBackgroundResource(0)
                 binding.viewDelivery.setBackgroundResource(color.txt_color_blue)
                 binding.viewBilling.setBackgroundResource(0)
@@ -166,11 +229,9 @@ class OpenOrderCustomerFragment : Fragment(), View.OnClickListener {
                 binding.llDeliveryAddress.visibility = View.GONE
                 binding.llSearch.visibility = View.GONE
                 binding.llBillingAddress.visibility = View.VISIBLE
-
                 binding.txtCustomerDetails.setTextColor(resources.getColor(color.drawerBack50))
                 binding.txtDeliveryAddress.setTextColor(resources.getColor(color.drawerBack50))
                 binding.txtBillingAddress.setTextColor(resources.getColor(color.txt_color_blue))
-
                 binding.viewCustomer.setBackgroundResource(0)
                 binding.viewDelivery.setBackgroundResource(0)
                 binding.viewBilling.setBackgroundResource(color.txt_color_blue)
@@ -189,66 +250,117 @@ class OpenOrderCustomerFragment : Fragment(), View.OnClickListener {
                     R.id.action_openOrderCustomerFragment_to_assignCustomerOrderFragment
                 )
             }
+            R.id.btnClearDelivery -> {
+
+                binding.edtStreet.setText("")
+                binding.edtSuite.setText("")
+                binding.edtCity.setText("")
+                binding.edtState.setText("")
+                binding.edtZip.setText("")
+            }
+            R.id.btnClearBill -> {
+
+                binding.edtStreetBill.setText("")
+                binding.edtSuiteBill.setText("")
+                binding.edtCityBill.setText("")
+                binding.edtStateBill.setText("")
+                binding.edtZipBill.setText("")
+            }
+
+            R.id.btnCancelCustomer -> {
+
+            }
+            R.id.btnClearCustomer -> {
+
+                binding.edtFirstName.setText("")
+                binding.edtLastName.setText("")
+                binding.edtPhoneNo.setText("")
+                binding.edtEmail.setText("")
+                binding.edtNote.setText("")
+                binding.edtDate.text = ""
+                binding.edtTime.text = ""
+            }
+
+            R.id.edtDate -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    showDatePicker()
+                }
+            }
+
+            R.id.edtTime -> {
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    showTimePicker()
+                }
+
+            }
+
+            R.id.txtSave -> {
+
+                MethodUtils.getText(binding.edtFirstName)
+
+                val customer = TbCustomer(
+                    null, MethodUtils.getText(binding.edtFirstName),
+                    MethodUtils.getText(binding.edtLastName), "",
+                    MethodUtils.getText(binding.edtEmail), "",
+
+                    )
+
+            }
         }
 
     }
 
     private fun setPhoneCountry() {
         val adapter =
-            ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, country)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            ArrayAdapter(requireContext(), R.layout.row_spinner_county, country)
+        adapter.setDropDownViewResource(R.layout.row_spinner_county)
 
         binding.spDelivery.adapter = adapter
-        binding.spDelivery.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-
-                if (Build.VERSION.SDK_INT < 23) {
-                    (parent?.getChildAt(0) as TextView).setTextAppearance(
-                        view?.context,
-                        R.style.SpinnerTheme
-                    )
-                } else {
-                    if (parent?.getChildAt(0) != null)
-                        (parent.getChildAt(0) as TextView).setTextAppearance(R.style.SpinnerTheme); }
-
-
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-
-            }
-
-        }
-
         binding.spBill.adapter = adapter
-        binding.spBill.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
 
-                if (Build.VERSION.SDK_INT < 23) {
-                    (parent?.getChildAt(0) as TextView).setTextAppearance(
-                        view?.context,
-                        R.style.SpinnerTheme
-                    )
-                } else {
-                    (parent?.getChildAt(0) as TextView).setTextAppearance(R.style.SpinnerTheme); }
+    }
 
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun showDatePicker() {
+        val selectedDateInMillis = currentSelectedDate ?: System.currentTimeMillis()
 
-            }
+        MaterialDatePicker.Builder.datePicker().setSelection(selectedDateInMillis).build().apply {
+            addOnPositiveButtonClickListener { dateInMillis -> onDateSelected(dateInMillis) }
+        }.show(parentFragmentManager, MaterialDatePicker::class.java.canonicalName)
+    }
 
-            override fun onNothingSelected(parent: AdapterView<*>?) {
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun onDateSelected(dateTimeStampInMillis: Long) {
+        currentSelectedDate = dateTimeStampInMillis
+        val dateTime: LocalDateTime = LocalDateTime.ofInstant(
+            Instant.ofEpochMilli(
+                currentSelectedDate!!
+            ), ZoneId.systemDefault()
+        )
+        val dateAsFormattedText: String = dateTime.format(DateTimeFormatter.ofPattern("MM-dd-yyyy"))
+        binding.edtDate.text = dateAsFormattedText
+    }
 
-            }
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun showTimePicker() {
+        val hour = selectedHour ?: LocalDateTime.now().hour
+        val minute = selectedMinute ?: LocalDateTime.now().minute
 
-        }
+        MaterialTimePicker.Builder()
+            .setTimeFormat(TimeFormat.CLOCK_12H)
+            .setHour(hour)
+            .setMinute(minute)
+            .build()
+            .apply {
+                addOnPositiveButtonClickListener { onTimeSelected(this.hour, this.minute) }
+            }.show(parentFragmentManager, MaterialTimePicker::class.java.canonicalName)
+    }
+
+    private fun onTimeSelected(hour: Int, minute: Int) {
+        selectedHour = hour
+        selectedMinute = minute
+
+        binding.edtTime.text = MethodUtils.getTime(selectedHour!!, selectedMinute!!)
     }
 }

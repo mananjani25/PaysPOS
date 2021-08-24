@@ -8,6 +8,9 @@ import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatTextView
 import com.android.pos.MainApplication
 import com.android.pos.R
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class MethodUtils {
@@ -27,7 +30,8 @@ class MethodUtils {
 
         @SuppressLint("SetTextI18n")
         fun setPriceTextView(appCompatTextView: AppCompatTextView, price: Double) {
-            appCompatTextView.text = MainApplication.getInstance()!!.getText(R.string.symbole).toString() + String.format(
+            appCompatTextView.text = MainApplication.getInstance()!!.getText(R.string.symbole)
+                .toString() + String.format(
                 "%.2f", price
             )
 
@@ -58,6 +62,24 @@ class MethodUtils {
                 }
             } catch (e: Exception) {
             }
+        }
+
+        fun getTime(hour: Int, minute: Int): String {
+            val time = "$hour:$minute"
+            val fmt = SimpleDateFormat("HH:mm", Locale.US)
+            var date: Date? = null
+            try {
+                date = fmt.parse(time)
+            } catch (e: ParseException) {
+                e.printStackTrace()
+            }
+            val fmtOut = SimpleDateFormat("hh:mm aa", Locale.US)
+            return fmtOut.format(date)
+        }
+
+        fun getText(edtFirstName: AppCompatEditText): String {
+
+            return edtFirstName.text.toString().trim()
         }
     }
 }
