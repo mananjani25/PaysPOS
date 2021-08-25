@@ -61,6 +61,7 @@ import javax.inject.Inject
 class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, MyCallback,
     ItemCallback, View.OnClickListener {
 
+    private var future_delivery_date: String? = null
     private var assignCustomer: TbCustomer? = null
     private var serviceChargesList: List<TbServiceCharge>? = null
     private var singleItem: TbItem? = null
@@ -362,6 +363,17 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 binding.layoutCart.txtCustomerName.text = result.first_name + " " + result.last_name
                 binding.layoutCart.txtCrtNewCustomer.text = "Remove Customer"
                 assignCustomer = result
+
+
+                val openOrder = bundle.getBoolean("OPEN_ORDER")
+
+                if (openOrder) {
+                    future_delivery_date = bundle.getString("DATE")
+                    future_delivery_date?.let { Log.e("future_delivery_date", it) }
+                    // future_delivery_date = bundle.getString("TIME")
+                }
+
+
             }
         }
     }

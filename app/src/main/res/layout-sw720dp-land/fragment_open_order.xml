@@ -364,6 +364,23 @@
 
                         <include layout="@layout/divider" />
 
+                        <androidx.appcompat.widget.AppCompatEditText
+                            android:id="@+id/edtCompany"
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:background="@null"
+                            android:hint="@string/company"
+                            android:imeOptions="actionDone"
+                            android:inputType="textEmailAddress"
+                            android:padding="@dimen/_5sdp"
+                            android:textColor="@color/black"
+                            android:textColorHint="@color/hint_color_"
+                            android:textSize="@dimen/_5mdpi" />
+
+                        <include layout="@layout/divider" />
+
 
                         <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/edtDate"

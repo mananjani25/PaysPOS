@@ -81,5 +81,10 @@ class MethodUtils {
 
             return edtFirstName.text.toString().trim()
         }
+
+        fun getTextTextView(edtFirstName: AppCompatTextView): String {
+
+            return edtFirstName.text.toString().trim()
+        }
     }
 }

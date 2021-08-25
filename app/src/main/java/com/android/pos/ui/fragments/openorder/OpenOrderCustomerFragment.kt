@@ -16,11 +16,14 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.R.color
+import com.android.pos.data.entities.TbAddress
 import com.android.pos.data.entities.TbCustomer
+import com.android.pos.data.entities.TbPhones
 import com.android.pos.databinding.FragmentOpenOrderBinding
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.MethodUtils
@@ -36,6 +39,7 @@ import java.util.*
 
 @AndroidEntryPoint
 class OpenOrderCustomerFragment : Fragment(), View.OnClickListener {
+    private var customerID: Int? = null
     private lateinit var deliveryType: String
     private var country = arrayOf("United States", "Canada")
     private lateinit var binding: FragmentOpenOrderBinding
@@ -170,10 +174,13 @@ class OpenOrderCustomerFragment : Fragment(), View.OnClickListener {
 
     private fun setupCustomer(customer: TbCustomer) {
 
+        customerID = customer.id
+
         binding.edtFirstName.setText(customer.first_name)
         binding.edtLastName.setText(customer.last_name)
         binding.edtPhoneNo.setText(AlertUtils.usNumberFormat(customer.phones[0].phone_number))
         binding.edtEmail.setText(customer.email)
+        binding.edtCompany.setText(customer.company)
 
         if (customer.addresses.size == 1) {
             binding.edtStreet.setText(customer.addresses[0].street)
@@ -297,14 +304,81 @@ class OpenOrderCustomerFragment : Fragment(), View.OnClickListener {
 
             R.id.txtSave -> {
 
-                MethodUtils.getText(binding.edtFirstName)
+                val phonesList: ArrayList<TbPhones> =
+                    arrayListOf()
+
+                if (binding.edtPhoneNo.text?.isNotEmpty()!!) {
+
+                    val phone = TbPhones(
+                        null, binding.edtPhoneNo.text.toString().trim().replace(
+                            ("[\\D]").toRegex(),
+                            ""
+                        )
+                    )
+                    phonesList.add(phone)
+                }
+
+                val list: ArrayList<TbAddress> = arrayListOf()
+
+                if (binding.edtStreet.text.toString().trim().isNotEmpty()) {
+
+                    val address = TbAddress(
+                        null,
+                        binding.edtStreet.text.toString().trim(),
+                        binding.edtSuite.text.toString().trim(),
+                        binding.edtCity.text.toString().trim(),
+                        binding.edtState.text.toString().trim(),
+                        binding.spDelivery.selectedItem.toString(),
+                        binding.edtZip.text.toString().trim(),
+                        "",
+                        "0.0",
+                        "0.0",
+                        0,
+                        "",
+                        binding.edtStreet.text.toString().trim(),
+                    )
+                    list.add(address)
+                }
+
+                if (binding.edtStreetBill.text.toString().trim().isNotEmpty()) {
+
+                    val address = TbAddress(
+                        null,
+                        binding.edtStreetBill.text.toString().trim(),
+                        binding.edtSuiteBill.text.toString().trim(),
+                        binding.edtCityBill.text.toString().trim(),
+                        binding.edtStateBill.text.toString().trim(),
+                        binding.spBill.selectedItem.toString(),
+                        binding.edtZipBill.text.toString().trim(),
+                        "",
+                        "0.0",
+                        "0.0",
+                        0,
+                        "",
+                        binding.edtStreetBill.text.toString().trim(),
+                    )
+                    list.add(address)
+                }
+
 
                 val customer = TbCustomer(
-                    null, MethodUtils.getText(binding.edtFirstName),
+                    customerID, MethodUtils.getText(binding.edtFirstName),
                     MethodUtils.getText(binding.edtLastName), "",
-                    MethodUtils.getText(binding.edtEmail), "",
+                    MethodUtils.getText(binding.edtEmail), MethodUtils.getText(binding.edtCompany),
+                    phonesList,
+                    list
+                )
 
-                    )
+
+                val result = Bundle().apply {
+                    putParcelable("data", customer)
+                    putString("DATE", binding.edtDate.text.toString())
+                    putString("TIME", binding.edtTime.text.toString())
+                    putBoolean("OPEN_ORDER", true)
+                }
+                setFragmentResult("request_key_customer", result)
+
+                findNavController().navigateUp()
 
             }
         }
@@ -338,7 +412,7 @@ class OpenOrderCustomerFragment : Fragment(), View.OnClickListener {
                 currentSelectedDate!!
             ), ZoneId.systemDefault()
         )
-        val dateAsFormattedText: String = dateTime.format(DateTimeFormatter.ofPattern("MM-dd-yyyy"))
+        val dateAsFormattedText: String = dateTime.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
         binding.edtDate.text = dateAsFormattedText
     }
 
