@@ -38,7 +38,7 @@ class CreateOption : Fragment(), TextWatcher {
         binding.lifecycleOwner = this
         binding.createOptionViewModel = viewModel
 
-        isEdit = arguments?.getBoolean("isEdit")!!
+//        isEdit = arguments?.getBoolean("isEdit")!!
 
         // setupAdapter()
         // setupUI()
