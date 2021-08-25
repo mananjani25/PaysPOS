@@ -63,6 +63,7 @@ import javax.inject.Inject
 class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, MyCallback,
     ItemCallback, View.OnClickListener {
 
+    private var orderType: TbOrderType? = null
     private var future_delivery_date: String? = null
     private var assignCustomer: TbCustomer? = null
     private var serviceChargesList: List<TbServiceCharge>? = null
@@ -158,14 +159,69 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             binding.layoutCart.txtCrtNewCustomer.text = "Remove Customer"
         }
 
+        setFragmentResultListener("request_key_customer") { requestKey: String, bundle: Bundle ->
+            val result = bundle.getParcelable<TbCustomer>("data")
+            if (result != null) {
 
+                Log.e("request_key_customer", result.first_name)
+                prefProvider.setValue(CUSTOMER_NAME, result.first_name + " " + result.last_name)
+                binding.layoutCart.txtCustomerName.text = result.first_name + " " + result.last_name
+                binding.layoutCart.txtCrtNewCustomer.text = "Remove Customer"
+                assignCustomer = result
+
+
+                val openOrder = bundle.getBoolean("OPEN_ORDER")
+
+                if (openOrder) {
+                    future_delivery_date = bundle.getString("DATE")
+                    future_delivery_date?.let { Log.e("future_delivery_date", it) }
+
+                    prefProvider.setValueInt(ORDER_TYPE_ID, orderType!!.id)
+                    prefProvider.setValue(ORDER_TYPE_NAME, orderType!!.name)
+                    prefProvider.setValue(ORDER_TYPE, orderType!!.orderType)
+                    hideOrderType()
+                    // future_delivery_date = bundle.getString("TIME")
+                }
+
+
+            }
+        }
+
+
+        setFragmentResultListener("request_key_customer_open_order") { requestKey: String, bundle: Bundle ->
+            val result = bundle.getParcelable<TbCustomer>("data")
+            if (result != null) {
+
+                Log.e("request_key_customer", result.first_name)
+                prefProvider.setValue(CUSTOMER_NAME, result.first_name + " " + result.last_name)
+                binding.layoutCart.txtCustomerName.text = result.first_name + " " + result.last_name
+                binding.layoutCart.txtCrtNewCustomer.text = "Remove Customer"
+                assignCustomer = result
+
+
+                val openOrder = bundle.getBoolean("OPEN_ORDER")
+
+                if (openOrder) {
+                    future_delivery_date = bundle.getString("DATE")
+                    future_delivery_date?.let { Log.e("future_delivery_date", it) }
+
+                    prefProvider.setValueInt(ORDER_TYPE_ID, orderType!!.id)
+                    prefProvider.setValue(ORDER_TYPE_NAME, orderType!!.name)
+                    prefProvider.setValue(ORDER_TYPE, orderType!!.orderType)
+                    hideOrderType()
+                    // future_delivery_date = bundle.getString("TIME")
+                }
+
+
+            }
+        }
     }
 
     private fun getBackstack() {
         findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<String>(Constants.KEY)
             ?.observe(viewLifecycleOwner) { it ->
 
-                if (it == MANUALSALE){
+                if (it == MANUALSALE) {
                     hideOrderType()
 
 
@@ -369,34 +425,13 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             }
         )
 
-        setFragmentResultListener("request_key_customer") { requestKey: String, bundle: Bundle ->
-            val result = bundle.getParcelable<TbCustomer>("data")
-            if (result != null) {
 
-                Log.e("request_key_customer", result.first_name)
-                prefProvider.setValue(CUSTOMER_NAME, result.first_name + " " + result.last_name)
-                binding.layoutCart.txtCustomerName.text = result.first_name + " " + result.last_name
-                binding.layoutCart.txtCrtNewCustomer.text = "Remove Customer"
-                assignCustomer = result
-
-
-                val openOrder = bundle.getBoolean("OPEN_ORDER")
-
-                if (openOrder) {
-                    future_delivery_date = bundle.getString("DATE")
-                    future_delivery_date?.let { Log.e("future_delivery_date", it) }
-                    // future_delivery_date = bundle.getString("TIME")
-                }
-
-
-            }
-        }
     }
 
     private fun hideOrderType() {
 
         if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
-            Log.e(TAG,"ORDERTYPENOTNULL")
+            Log.e(TAG, "ORDERTYPENOTNULL")
             binding.layoutCart.llCart.visibility = View.VISIBLE
             binding.lltakeout.visibility = View.GONE
             binding.layoutCart.txtOrderType.text =
@@ -945,15 +980,19 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     override fun onClick(item: TbItem) {
 
-        if (item.modifier_set_ids.isEmpty()) {
-            item.itemQuantity = 1
-            if (cartList.isEmpty()) {
-                viewModel.setServiceCharges(serviceChargesList)
-            }
+        if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
+            if (item.modifier_set_ids.isEmpty()) {
+                item.itemQuantity = 1
+                if (cartList.isEmpty()) {
+                    viewModel.setServiceCharges(serviceChargesList)
+                }
 
-            viewModel.cartLogic(cartList, item, ADD)
+                viewModel.cartLogic(cartList, item, ADD)
+            } else {
+                ItemPopup(item, true)
+            }
         } else {
-            ItemPopup(item, true)
+            AlertUtils.showCustomAlert(requireActivity(), "Please choose order type")
         }
 
     }
@@ -965,7 +1004,12 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     @SuppressLint("SetTextI18n")
     override fun onItemClickListener(view: View?, data: TbItem) {
 
-        ItemPopup(data, false)
+        if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
+
+            ItemPopup(data, false)
+        } else {
+            AlertUtils.showCustomAlert(requireActivity(), "Please choose order type")
+        }
     }
 
     private fun ItemPopup(data: TbItem, isItemClick: Boolean) {
@@ -1238,13 +1282,13 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     }
 
     override fun onItemClickListener(view: View?, pos: Int) {
-        val orderType = orderTypeAdapter.getItem(pos)
+        orderType = orderTypeAdapter.getItem(pos)
 
-        when (orderType.orderType) {
+        when (orderType!!.orderType) {
             TAKEOUT -> {
-                prefProvider.setValueInt(ORDER_TYPE_ID, orderType.id)
-                prefProvider.setValue(ORDER_TYPE_NAME, orderType.name)
-                prefProvider.setValue(ORDER_TYPE, orderType.orderType)
+                prefProvider.setValueInt(ORDER_TYPE_ID, orderType!!.id)
+                prefProvider.setValue(ORDER_TYPE_NAME, orderType!!.name)
+                prefProvider.setValue(ORDER_TYPE, orderType!!.orderType)
                 hideOrderType()
             }
             DINE_IN -> {
