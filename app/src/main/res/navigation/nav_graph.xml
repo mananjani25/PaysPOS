@@ -329,7 +329,7 @@
         app:enterAnim="@anim/nav_default_enter_anim" />
     <fragment
         android:id="@+id/createOption"
-        android:name="com.android.pos.ui.fragments.createoption.CreateOption"
+        android:name="com.android.pos.ui.fragments.createoption.CreateOptionSet"
         android:label="CreateOption" />
     <fragment
         android:id="@+id/dashboardCategoryNew"

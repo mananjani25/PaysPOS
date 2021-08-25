@@ -3,12 +3,17 @@ package com.android.pos.ui.fragments.createoption
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
+import com.android.pos.R
+import com.android.pos.data.entities.Option
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.DialogCreateOptionBinding
 import com.android.pos.ui.adapter.OptionAdapter
@@ -20,7 +25,7 @@ import java.text.NumberFormat
 import java.util.*
 
 @AndroidEntryPoint
-class CreateOption : Fragment(), TextWatcher {
+class CreateOptionSet : Fragment(), TextWatcher {
 
     private lateinit var binding: DialogCreateOptionBinding
     private lateinit var adapter: OptionAdapter
@@ -40,8 +45,8 @@ class CreateOption : Fragment(), TextWatcher {
 
 //        isEdit = arguments?.getBoolean("isEdit")!!
 
-        // setupAdapter()
-        // setupUI()
+        setupAdapter()
+        setupUI()
         setupSnackbar()
         observeShowProgress()
         observeData()
@@ -49,10 +54,93 @@ class CreateOption : Fragment(), TextWatcher {
         return binding.root
     }
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         onCLick()
 
+    }
+
+    private fun setupUI() {
+
+        binding.edtOption.addTextChangedListener(this)
+
+
+        if (isEdit) {
+            binding.txtTitle.text = getString(R.string.update_option_set)
+            binding.txtSave.text = getString(R.string.update)
+
+            //       modifierSet = arguments?.getParcelable("optionObject")!!
+
+            //   adapter.addAll(modifierSet!!.modifiers)
+        }
+
+        binding.txtSave.setOnClickListener {
+            viewModel.setModifiers(adapter.getAll())
+            viewModel.setDeleteModifiers(adapter.getDelete())
+            viewModel.submit()
+        }
+    }
+
+    private fun setupAdapter() {
+
+        adapter = OptionAdapter(isEdit)
+        binding.rvModifiers.adapter = adapter
+
+
+        val touchHelper = ItemTouchHelper(object :
+            ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP + ItemTouchHelper.DOWN, 0) {
+
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+
+                val oldPos = viewHolder.bindingAdapterPosition
+                val newPos = target.bindingAdapterPosition
+                Log.e(
+                    "reorder after", "" + ":::" + ":::" +
+                            viewHolder.bindingAdapterPosition.toString() + " :::  " + target.bindingAdapterPosition.toString()
+                )
+                if (dragFrom == -1) {
+                    dragFrom = oldPos
+                }
+                dragTo = newPos
+
+                val a = adapter.getItem(dragFrom).sort
+                val b = adapter.getItem(dragTo).sort
+                Log.e("onItemMove", "$a:: $b")
+
+
+
+                adapter.onItemMove(viewHolder.bindingAdapterPosition, target.bindingAdapterPosition)
+
+                return true
+            }
+
+            override fun isLongPressDragEnabled(): Boolean {
+                return true
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+
+            }
+
+            override fun clearView(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder
+            ) {
+
+                if (dragFrom != -1 && dragTo != -1 && dragFrom != dragTo) {
+                }
+
+                dragFrom = -1
+                dragTo = -1
+            }
+        })
+
+        touchHelper.attachToRecyclerView(binding.rvModifiers)
     }
 
     override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -64,35 +152,17 @@ class CreateOption : Fragment(), TextWatcher {
             // do other things
             binding.edtOption.removeTextChangedListener(this)
 
-            /*if (s != null && s.length == 1) {
-                val model = Modifier().apply {
-                    name = binding.edtModifier.text.toString().trim()
-                    price = 0.00
+            if (s != null && s.length == 1) {
+                val model = Option().apply {
+                    name = binding.edtOption.text.toString().trim()
                 }
                 adapter.add(model)
-            }*/
-            binding.edtOption.text?.clear()
-            binding.edtOption.clearFocus()
-            binding.edtOption.addTextChangedListener(this)
-        }
-
-        if (s.hashCode() == binding.edtOption.text.hashCode()) {
-            binding.edtOption.removeTextChangedListener(this)
-
-            if (s != null && s.length == 1) {
-
-                val parsed = s.toString().toDouble()
-                val formatted = NumberFormat.getCurrencyInstance(Locale.US).format((parsed / 100))
-                /*val model = Modifier().apply {
-                    name = ""
-                    price = formatted.replace("""[$,]""".toRegex(), "").toDouble()
-                }
-                adapter.add(model)*/
             }
             binding.edtOption.text?.clear()
             binding.edtOption.clearFocus()
             binding.edtOption.addTextChangedListener(this)
         }
+
 
         viewModel.setModifiers(adapter.getAll())
 

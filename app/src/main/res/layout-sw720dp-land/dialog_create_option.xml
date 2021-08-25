@@ -34,9 +34,9 @@
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
                 android:layout_width="wrap_content"
+                android:id="@+id/txtTitle"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
+                android:layout_centerInParent="true"
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:text="@string/create_option"
@@ -106,6 +106,7 @@
                         android:imeOptions="actionNext"
                         android:inputType="textCapWords"
                         android:padding="@dimen/_5sdp"
+                        android:text="@={createOptionViewModel.optionDetails.name}"
                         android:textColor="@color/txtColor"
                         android:textColorHint="@color/hintColor"
                         android:textSize="@dimen/_6mdpi" />
@@ -139,6 +140,7 @@
                         android:imeOptions="actionNext"
                         android:inputType="textCapWords"
                         android:padding="@dimen/_5sdp"
+                        android:text="@={createOptionViewModel.optionDetails.displayName}"
                         android:textColor="@color/txtColor"
                         android:textColorHint="@color/hintColor"
                         android:textSize="@dimen/_6mdpi" />

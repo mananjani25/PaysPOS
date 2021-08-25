@@ -28,7 +28,7 @@ class Options : Fragment() {
         setAdapter()
 
         binding.txtCreateOption.setOnClickListener {
-           // findNavController().navigate(R.id.action_inventory_to_createOption)
+            findNavController().navigate(R.id.action_inventory_to_createOption)
         }
     }
 
