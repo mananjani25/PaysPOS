@@ -14,7 +14,7 @@
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingVertical="@dimen/_3sdp">
+        android:layout_marginVertical="@dimen/_2sdp">
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txtPrinterName"
@@ -48,16 +48,16 @@
 
         <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/swtOrderId"
+            style="@style/AppTheme"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
             android:layout_gravity="center"
             android:layout_weight="1"
             android:checked="@{model.active}"
+
             android:gravity="center"
-            app:showText="false"
-            app:srcCompat="@drawable/ic_arrow_forward"
-            app:theme="@style/AppTheme" />
+            android:visibility="visible"
+            app:srcCompat="@drawable/ic_arrow_forward" />
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="0dp"

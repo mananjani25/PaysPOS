@@ -164,7 +164,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<String>(Constants.KEY)
             ?.observe(viewLifecycleOwner) { it ->
 
-                if (it == MANUALSALE){
+                if (it == MANUALSALE) {
                     hideOrderType()
 
 
@@ -384,7 +384,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private fun hideOrderType() {
 
         if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
-            Log.e(TAG,"ORDERTYPENOTNULL")
+            Log.e(TAG, "ORDERTYPENOTNULL")
             binding.layoutCart.llCart.visibility = View.VISIBLE
             binding.lltakeout.visibility = View.GONE
             binding.layoutCart.txtOrderType.text =

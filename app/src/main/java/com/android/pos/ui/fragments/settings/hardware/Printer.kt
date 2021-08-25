@@ -7,17 +7,14 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.RadioGroup
 import android.widget.SimpleAdapter
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.android.pos.MainApplication
 import com.android.pos.data.model.PrinterListModel
 import com.android.pos.data.remote.Constants.DISCOVERY_INTERVAL
 
 import com.android.pos.data.remote.Constants.WIFI
 import com.android.pos.databinding.FragmentPrinterBinding
-import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.PrinterListAdapter
 import com.epson.epos2.Epos2Exception
 import com.epson.epos2.discovery.Discovery
@@ -34,20 +31,24 @@ import java.util.concurrent.TimeUnit
 import com.epson.epsonio.EpsonIoException
 import android.bluetooth.BluetoothDevice
 
-import androidx.core.app.ActivityCompat.startActivityForResult
-
 import android.bluetooth.BluetoothAdapter
 
 import android.content.Intent
 import java.util.*
 import android.bluetooth.BluetoothSocket
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.android.pos.utils.printer.PrinterClass
+import com.android.pos.utils.printer.PrinterClass.language
 import com.epson.eposprint.BatteryStatusChangeEventListener
+import com.epson.eposprint.Builder
 import com.epson.eposprint.Print
 import com.epson.eposprint.StatusChangeEventListener
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 import java.net.URLDecoder
+import kotlin.collections.ArrayList
 
 
 //Original New
@@ -56,11 +57,15 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     StatusChangeEventListener, BatteryStatusChangeEventListener {
     private lateinit var binding: FragmentPrinterBinding
     var mBluetoothAdapter: BluetoothAdapter? = null
+    var deviceList: Array<DeviceInfo>? = null
+    var kitchenPrintList: ArrayList<PrinterListModel> = arrayListOf()
+    var customerPrintList: ArrayList<PrinterListModel> = arrayListOf()
 
 
     //private var mFilterOption: FilterOption? = null
     private lateinit var customerAdapter: PrinterListAdapter
     private lateinit var kitchenAdapter: PrinterListAdapter
+    private lateinit var availableNetworkAdapter: PrinterListAdapter
     var printerList: ArrayList<HashMap<String, String>> = arrayListOf()
     var printerListAdapter: SimpleAdapter? = null
     var scheduler: ScheduledExecutorService? = null
@@ -89,15 +94,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         binding = FragmentPrinterBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
 
-
-
-
         printerList = ArrayList()
-
-        //congigurePrinter()
-
-
-        //getPrinterList()
 
         return binding.root
     }
@@ -109,28 +106,66 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
     }
 
-    override fun onPause() {
-        super.onPause()
-        /*try {
-            Finder.stop()
-//Exception handling
+    private fun startFinder() {
+        scheduler = Executors.newSingleThreadScheduledExecutor()
+        if (scheduler == null) {
+            return
+        }
+
+        try {
+            Finder.start(requireContext(), DevType.TCP, "255.255.255.255")
+
         } catch (e: EpsonIoException) {
-            Log.e(TAG,"PrinterStopError:  ${e.status}")
-        }*/
+            Log.e(TAG, "PrinterFinderError  ${e.status}")
+
+        }
+
+        // start thread
+        future = scheduler!!.scheduleWithFixedDelay(
+            this,
+            0,
+            DISCOVERY_INTERVAL.toLong(),
+            TimeUnit.MILLISECONDS
+        )
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         kitchenAdapter = PrinterListAdapter()
+        kitchenAdapter.setList(kitchenPrintList)
         kitchenAdapter.setListner(this)
         customerAdapter = PrinterListAdapter()
+        customerAdapter.setList(customerPrintList)
         customerAdapter.setListner(this)
-
+        availableNetworkAdapter = PrinterListAdapter()
+        availableNetworkAdapter.setListner(this)
+        binding.rvAvailablePrinter.adapter = availableNetworkAdapter
+        binding.rvAvailablePrinter.addItemDecoration(
+            DividerItemDecoration(
+                requireContext(),
+                LinearLayoutManager.VERTICAL
+            )
+        )
         binding.rvKitchenPrinter.adapter = kitchenAdapter
+        binding.rvKitchenPrinter.addItemDecoration(
+            DividerItemDecoration(
+                requireContext(),
+                LinearLayoutManager.VERTICAL
+            )
+        )
+        binding.rvCustomerPrinter.adapter = customerAdapter
+        binding.rvCustomerPrinter.addItemDecoration(
+            DividerItemDecoration(
+                requireContext(),
+                LinearLayoutManager.VERTICAL
+            )
+        )
+
         mFilterOption = FilterOption()
         mFilterOption!!.setDeviceType(Discovery.TYPE_PRINTER)
+        startFinder()
 
-        scheduler = Executors.newSingleThreadScheduledExecutor()
 
         /* try {
              Discovery.start(requireContext(), mFilterOption, mDiscoveryListener)
@@ -138,10 +173,6 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
              Log.e(TAG, "PrinterException:      ${e.message}")
              e.printStackTrace()
          }*/
-
-        if (scheduler == null) {
-            return
-        }
 
 
         // stop old finder
@@ -156,13 +187,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
              }
          }
  */
-        try {
-            Finder.start(requireContext(), DevType.TCP, "255.255.255.255")
 
-        } catch (e: EpsonIoException) {
-            Log.e(TAG, "PrinterFinderError  ${e.status}")
-
-        }
         try {
             // openBT()
             //findBT()
@@ -170,13 +195,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             ex.printStackTrace()
         }
 
-        // start thread
-        future = scheduler!!.scheduleWithFixedDelay(
-            this,
-            0,
-            DISCOVERY_INTERVAL.toLong(),
-            TimeUnit.MILLISECONDS
-        )
+
         //mFilterOption?.setEpsonFilter(Discovery.FILTER_NAME);
         /*
         try {
@@ -214,6 +233,11 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             findNavController().popBackStack()
         }
 
+        binding.imgSync.setOnClickListener {
+            startFinder()
+
+        }
+
 
     }
 
@@ -232,8 +256,13 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     override fun onStop() {
         super.onStop()
         //stop find
+        stopFinder()
+        PrinterClass.closePrinter()
 
-        //stop find
+
+    }
+
+    fun stopFinder() {
         if (future != null) {
             future!!.cancel(false)
             while (!future!!.isDone) {
@@ -356,12 +385,13 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
 
         //start thread
-        future = scheduler?.scheduleWithFixedDelay(
+        scheduler?.schedule(this, 0, TimeUnit.MILLISECONDS)
+        /*future = scheduler?.scheduleWithFixedDelay(
             this,
             0,
             DISCOVERY_INTERVAL.toLong(),
             TimeUnit.MILLISECONDS
-        )
+        )*/
     }
 
 
@@ -394,30 +424,35 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                             PrinterListModel(
                                 printerName = list!!.get(i).printerName,
                                 connectionType = WIFI,
-                                isActive = true,
+                                isActive = false,
                                 deviceModel = list!!.get(i)
                             )
                         )
 
 
                     }
-                    kitchenAdapter.setList(listData)
-                    kitchenAdapter.notifyDataSetChanged()
+                    availableNetworkAdapter.setList(listData)
 
 
-
-                    Log.e(TAG, "getprinterList:   ${Gson().toJson(printerList)}")
-                    printerListAdapter?.notifyDataSetChanged()
                 }
             }
         }
 
-        var deviceList: Array<DeviceInfo>? = null
+
         try {
             deviceList = Finder.getDeviceInfoList(com.epson.epsonio.FilterOption.PARAM_DEFAULT)
             Log.e(TAG, "deviceList  ${Gson().toJson(deviceList)}")
 
+
             handler.post(UpdateListThread(deviceList))
+
+            if (deviceList == null || deviceList?.size == 0) {
+
+            } else {
+                stopFinder()
+            }
+
+
         } catch (e: Exception) {
             return
         }
@@ -532,23 +567,83 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         onInitPrinter(printerListModel)
     }
 
+    override fun onPrinterActive(printerListModel: PrinterListModel) {
+        Log.e(TAG, "printerListModel:  ${Gson().toJson(printerListModel)}")
+        printerListModel.isActive = true
+        if (printerListModel.printerName == "TM-U220") {
+            kitchenAdapter.addItem(printerListModel)
+        } else {
+            customerAdapter.addItem(printerListModel)
+        }
+
+    }
+
     private fun onInitPrinter(printerListModel: PrinterListModel) {
         //open
+
+        initPrinter(printerListModel)
+
+
+    }
+
+    private fun initPrinter(printerListModel: PrinterListModel) {
+
         var printer: Print? = Print(requireContext())
         if (printer != null) {
             printer.setStatusChangeEventCallback(this)
             printer.setBatteryStatusChangeEventCallback(this)
         }
 
-        val enabled = Print.FALSE
+        val enabled = Print.TRUE
+        Log.e(TAG, "MacAddress:  ${printerListModel.deviceModel.macAddress}")
+        Log.e(TAG, "IPAddress:  ${printerListModel.deviceModel.ipAddress}")
 
         try {
-            printer?.openPrinter(Print.DEVTYPE_TCP, "Invoice!", enabled, 0)
+
+            printer?.openPrinter(
+                Print.DEVTYPE_TCP,
+                printerListModel.deviceModel.macAddress,
+                enabled,
+                1000
+            )
+
         } catch (e: Exception) {
+            Log.e(TAG, "Exception:  " + e.message)
             printer = null
             return
         }
+        PrinterClass.setPrinter(printer)
 
+
+        showPrinterStatus(printerListModel)
+
+
+    }
+
+    private fun showPrinterStatus(printerListModel: PrinterListModel) {
+        var builder: Builder? = null
+        var method = ""
+        try {
+            method = "Builder"
+            builder = Builder(printerListModel.printerName, language, requireActivity())
+
+
+            //send builder data(empty builder data)
+            val status = IntArray(1)
+            val battery = IntArray(1)
+
+            Log.e(TAG, "getPrinterCheck:  ${PrinterClass.getPrinter().toString()}")
+
+            try {
+                PrinterClass.getPrinter()?.sendData(builder,0,status,battery)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Log.e(TAG,"PrinterError: "+e.message)
+            }
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     override fun onStatusChangeEvent(p0: String?, p1: Int) {
@@ -559,4 +654,6 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     override fun onBatteryStatusChangeEvent(p0: String?, p1: Int) {
         Log.e(TAG, "onBatteryLevelChange  ${p0}")
     }
+
+
 }
