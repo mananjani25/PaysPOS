@@ -22,7 +22,7 @@ import com.android.pos.data.typeconvert.*
         TbServiceCharge::class, Employee::class, CartModel::class,
         TbCustomer::class, ModifierSet::class, TeamRole::class, ItemModifierSet::class,
         ModulePermission::class, TbOrderType::class, VenueDetailsResponse.Data.Terminal::class],
-    version = 2
+    version = 1
 )
 @TypeConverters(
     TypeConvertersIds::class,

@@ -110,7 +110,7 @@ class Customer : Fragment() {
                         getString(R.string.delete_customer_message)
                     ) {
                         positiveButton(getString(R.string.tv_delete)) {
-                            viewModel.delete(customerAdapter.getList().get(pos).id)
+                            customerAdapter.getList()[pos].id?.let { viewModel.delete(it) }
 
                         }
                         negativeButton(R.string.tv_cancel) {
