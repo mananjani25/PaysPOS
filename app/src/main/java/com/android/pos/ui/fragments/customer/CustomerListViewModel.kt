@@ -45,7 +45,7 @@ class CustomerListViewModel @Inject constructor(
 
     }
 
-    fun delete(id: Int) {
+    fun delete(id: Int?) {
         viewModelScope.launch {
             resource = posRepository.deleteCustomer(id)
 

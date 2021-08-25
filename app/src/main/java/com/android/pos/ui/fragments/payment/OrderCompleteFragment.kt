@@ -83,7 +83,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener {
             if (result != null) {
                 Log.e("request_key_customer", result.first_name)
 
-                viewModel.assignCustomer(orderID, result.id)
+                viewModel.assignCustomer(orderID, result.id!!)
             }
         }
     }
