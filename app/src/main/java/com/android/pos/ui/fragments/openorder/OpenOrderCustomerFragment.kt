@@ -376,7 +376,7 @@ class OpenOrderCustomerFragment : Fragment(), View.OnClickListener {
                     putString("TIME", binding.edtTime.text.toString())
                     putBoolean("OPEN_ORDER", true)
                 }
-                setFragmentResult("request_key_customer", result)
+                setFragmentResult("request_key_customer_open_order", result)
 
                 findNavController().navigateUp()
 
