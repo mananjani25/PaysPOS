@@ -147,9 +147,31 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
 
     private fun onClick() {
 
+        binding.txtSave.setOnClickListener {
+            if (cartList?.isNotEmpty() == true) {
+                cartList?.forEach { it ->
+                    it.isMaual = false
+                    it.orderType = Constants.TAKEOUT
+
+                }
+                cartList?.get(0)?.items!!.forEach {
+                    it.isManualSales = false
+
+                }
+                viewModel.saveManualSaleData(cartList!!)
+
+
+            }
+
+            val navControll = findNavController()
+            navControll.previousBackStackEntry?.savedStateHandle?.set(
+                Constants.KEY,
+                Constants.MANUALSALE
+            )
+            findNavController().popBackStack()
+        }
+
         binding.imgOrderMenu.setOnClickListener {
-
-
             hideClearCart()
         }
 
@@ -334,15 +356,18 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
             var model = TbItem()
             var count = 0
 
-            cartList?.let {
 
-                if (cartList?.size != 0) {
-                    count =
-                        cartList?.get(0)?.items?.get(cartList?.get(0)?.items!!.size - 1)?.customItemCount!!
-                }
+            if (cartList?.size != 0) {
+
+
+                count =
+                    cartList?.get(0)?.items?.get(cartList?.get(0)?.items!!.size - 1)?.customItemCount!!
+
             }
 
-            count++
+                count++
+
+
 
             Log.e(TAG, "getcount:  ${count}")
             model.customItemCount = count

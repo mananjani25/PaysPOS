@@ -27,12 +27,14 @@ import com.android.pos.R
 import com.android.pos.data.entities.*
 import com.android.pos.data.model.CategorySearchData
 import com.android.pos.data.model.CategoryTabModel
+import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ADD
 import com.android.pos.data.remote.Constants.CUSTOMER_NAME
 import com.android.pos.data.remote.Constants.DELETE
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.HORIZONTAL
 import com.android.pos.data.remote.Constants.IS_CLOCKOUT
+import com.android.pos.data.remote.Constants.MANUALSALE
 import com.android.pos.data.remote.Constants.OPEN_ORDER
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
@@ -128,6 +130,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         getServiceCharges()
         observeShowProgress()
         setupSnackbar()
+        getBackstack()
 
         binding.layoutCart.llShowMenu.setOnClickListener(this)
         binding.layoutCart.txtCrtNewCustomer.setOnClickListener(this)
@@ -156,6 +159,18 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         }
 
 
+    }
+
+    private fun getBackstack() {
+        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<String>(Constants.KEY)
+            ?.observe(viewLifecycleOwner) { it ->
+
+                if (it == MANUALSALE){
+                    hideOrderType()
+
+
+                }
+            }
     }
 
     private fun getOrderTypes() {
@@ -381,10 +396,11 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private fun hideOrderType() {
 
         if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
+            Log.e(TAG,"ORDERTYPENOTNULL")
             binding.layoutCart.llCart.visibility = View.VISIBLE
             binding.lltakeout.visibility = View.GONE
             binding.layoutCart.txtOrderType.text =
-                prefProvider.getValue(ORDER_TYPE_NAME, "").toString()
+                prefProvider.getValue(ORDER_TYPE_NAME, TAKEOUT).toString()
             getCartList()
         } else {
             binding.layoutCart.txtOrderType.text = ""

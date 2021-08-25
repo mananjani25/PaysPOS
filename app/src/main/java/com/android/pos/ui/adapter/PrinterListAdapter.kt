@@ -12,6 +12,7 @@ import com.android.pos.databinding.ViewPrinterItemBinding
 class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>() {
 
     private var list: ArrayList<PrinterListModel> = arrayListOf()
+    private lateinit var listner: PrinterListInterface
 
     inner class MyViewHolder(private val binding: ViewPrinterItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -30,6 +31,10 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
                     )
                 )
 
+            }
+
+            binding.imgPrinter.setOnClickListener {
+                listner.onPrinterSelected(list[bindingAdapterPosition])
             }
 
             binding.model = model
@@ -68,5 +73,12 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
 
     }
 
+    fun setListner(list: PrinterListInterface) {
+        this.listner = list
+    }
 
+    interface PrinterListInterface {
+        fun onPrinterSelected(printerListModel: PrinterListModel)
+
+    }
 }

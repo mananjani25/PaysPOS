@@ -178,7 +178,7 @@ interface ApiService {
     ): CreateDiscountResponse
 
     @DELETE(CUSTOMER_UPDATE)
-    suspend fun deleteCustomer(@Path("id") customerId: Int): BaseResponse
+    suspend fun deleteCustomer(@Path("id") customerId: Int?): BaseResponse
 
     @GET(SERVICE_CHARGE)
     suspend fun getServiceChargeList(): GetServiceChargeResponse

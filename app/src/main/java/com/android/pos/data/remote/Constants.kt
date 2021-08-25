@@ -98,6 +98,7 @@ object Constants {
     const val HORIZONTAL = "horizontal"
 
     const val KEY = "key"
+    const val MANUALSALE = "ManualSale"
     const val CUSTOMERDETAILS = "customer_details"
     const val CREATECATEGORY = "create_category"
     const val CREATEMODIFIER = "create_modifier"
