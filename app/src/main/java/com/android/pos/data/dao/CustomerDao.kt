@@ -21,7 +21,7 @@ interface CustomerDao {
     fun allCustomerList(): List<TbCustomer>
 
     @Query("DELETE FROM TbCustomer where TbCustomer.id = :id")
-    suspend fun deleteCustomerByID(id: Int)
+    suspend fun deleteCustomerByID(id: Int?)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addCustomer(customerModel: TbCustomer): Long

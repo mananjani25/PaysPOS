@@ -6,7 +6,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class TbAddress(
-    @SerializedName("id") val id: Int,
+    @SerializedName("id") val id: Int?,
     @SerializedName("address1") val address1: String,
     @SerializedName("address2") val address2: String,
     @SerializedName("city") val city: String,

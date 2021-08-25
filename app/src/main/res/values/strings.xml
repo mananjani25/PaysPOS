@@ -484,4 +484,5 @@
     <string name="tv_tax">Tax</string>
     <string name="tv_exchange_refund">Exchange Refund</string>
     <string name="tv_date">Date</string>
+    <string name="company">Company</string>
 </resources>

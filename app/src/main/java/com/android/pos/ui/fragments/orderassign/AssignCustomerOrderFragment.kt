@@ -127,6 +127,7 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
 
         val result = Bundle().apply {
             putParcelable("data", customer)
+            putBoolean("OPEN_ORDER", false)
         }
         setFragmentResult("request_key_customer", result)
 
