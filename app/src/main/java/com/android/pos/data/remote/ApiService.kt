@@ -35,6 +35,7 @@ import com.android.pos.data.remote.Constants.MODIFIER_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.NOTES
 import com.android.pos.data.remote.Constants.NOTES_ACTIVE
 import com.android.pos.data.remote.Constants.NOTE_UPDATE_DELETE
+import com.android.pos.data.remote.Constants.OPEN_ORDERS
 import com.android.pos.data.remote.Constants.OPTION_SETS
 import com.android.pos.data.remote.Constants.OPTION_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.ORDERS
@@ -451,4 +452,7 @@ interface ApiService {
         @Query("customer_id") customer_id: Int,
         @Query("customer_address_id") customer_address_id: Int,
     ): BaseResponse
+
+    @GET(OPEN_ORDERS)
+    suspend fun getOpenOrders(): OpenOrderResponse
 }

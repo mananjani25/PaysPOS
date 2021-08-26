@@ -17,8 +17,8 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResultListener
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -73,7 +73,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     private val TAG = "DashboardCategoryNew"
 
-    private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
+    private val viewModel by viewModels<DashBoardCategoryViewModel>()
     private var categoryList1: MutableList<CategoryWithInventory> = arrayListOf()
     private var itemList1: ArrayList<TbItem?> = arrayListOf()
     private var categoryTabsList: ArrayList<String> = arrayListOf()
@@ -419,7 +419,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     )
                     binding.layoutCart.rvCart.visibility = View.GONE
                     binding.layoutCart.llPayment.visibility = View.GONE
-
 
                 }
             }
@@ -1054,7 +1053,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         }
 
         if (data.modifier_set_ids.isNotEmpty()) {
-            adapter = ItemModifierSetAdapter()
+            adapter = ItemModifierSetAdapter(viewModel, data.itemId, viewLifecycleOwner)
             rvModifierSets.adapter = adapter
 
             val intArray = IntArray(data.modifier_set_ids.size) { i ->
@@ -1232,11 +1231,33 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     }
 
     private fun minMaxValidationCheck(adapter: ItemModifierSetAdapter?): Boolean {
-        adapter?.getAll()?.forEach {
-            return (it.min_required == 0) || minLogic(
-                it.min_required,
-                it.modifiers
-            )
+
+        if (adapter != null) {
+            val list = adapter.getAll()
+            if (list.size == 1) {
+                list.forEach {
+                    return (it.min_required == 0) || minLogic(
+                        it.min_required,
+                        it.modifiers
+                    )
+                }
+            } else {
+
+                var min_required = 0
+
+                val mlist = ArrayList<Modifier>()
+
+                list.forEach {
+                    min_required += it.min_required
+                    mlist.addAll(it.modifiers)
+                }
+
+                return (min_required == 0) || minLogic(
+                    min_required,
+                    mlist
+                )
+
+            }
         }
         return true
     }
@@ -1337,6 +1358,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
                             prefProvider.setValue(ORDER_TYPE, "")
                         }
+                        prefProvider.setValue(CUSTOMER_NAME, "")
+                        binding.layoutCart.txtCrtNewCustomer.text = "Add Customer"
+                        binding.layoutCart.txtCustomerName.text = "Add Customer"
+
                         hideOrderType()
                         hideOrderMenu()
                     }

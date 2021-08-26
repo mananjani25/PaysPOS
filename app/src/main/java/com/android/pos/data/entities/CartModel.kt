@@ -27,6 +27,8 @@ class CartModel : Parcelable {
     var orderTypeName: String = ""
     var orderTypeId: Int = 0
     var customer: TbCustomer? = null
+    var futureDeliveryDate: String = ""
+    var futureDeliveryTime: String = ""
 
 
 }

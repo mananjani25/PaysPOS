@@ -8,7 +8,6 @@ import androidx.room.TypeConverters
 import com.android.pos.data.dao.*
 import com.android.pos.data.entities.*
 import com.android.pos.data.model.CharacterModel
-import com.android.pos.data.model.CustomerListResponse
 import com.android.pos.data.model.responseModel.GetTipReponse
 import com.android.pos.data.model.responseModel.NoteResponse
 import com.android.pos.data.model.responseModel.VenueDetailsResponse
@@ -20,9 +19,9 @@ import com.android.pos.data.typeconvert.*
     entities = [CharacterModel::class, TbCategory::class, TbItem::class, TaxData::class,
         GetTipReponse.Data::class, TbDiscount::class, NoteResponse.Data::class,
         TbServiceCharge::class, Employee::class, CartModel::class,
-        TbCustomer::class, ModifierSet::class, TeamRole::class, ItemModifierSet::class,
-        ModulePermission::class, TbOrderType::class, VenueDetailsResponse.Data.Terminal::class, OptionSet::class],
-    version = 2
+        TbCustomer::class, ModifierSet::class, TeamRole::class,
+        ModulePermission::class, TbOrderType::class, VenueDetailsResponse.Data.Terminal::class, ItemModifierSets::class,OptionSet::class],
+    version = 1
 )
 @TypeConverters(
     TypeConvertersIds::class,
@@ -55,9 +54,9 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun moduleDao(): ModuleDao
     abstract fun modifierSetDao(): ModifierSetDao
     abstract fun optionSetDao(): OptionSetDao
-    abstract fun itemModifierSetDao(): ItemModifierSetDao
     abstract fun orderTypeDao(): OrderTypeDao
     abstract fun terminalDao(): TerminalsDao
+    abstract fun itemModifierSetsDao(): ItemModifierSetsDao
 
     companion object {
         @Volatile

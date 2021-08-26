@@ -39,7 +39,8 @@ class PosRepository @Inject constructor(
             val mCategory = mData.categories
             val categoryModelList = ArrayList<TbCategory>()
             val inventoryModelList = ArrayList<TbItem>()
-            val modifierSetList = ArrayList<ItemModifierSet>()
+            val modifierSetList = ArrayList<ModifierSet>()
+            val itemModifierSetList = ArrayList<ItemModifierSets>()
             mCategory.forEach { category ->
                 val model = TbCategory().apply {
                     createdAt = ""
@@ -75,6 +76,18 @@ class PosRepository @Inject constructor(
                         modifier_set_ids = it.modifierIds
                     }
 
+                    it.modifierSets.forEach { modifierSets ->
+
+                        val itemModifierSets = ItemModifierSets().apply {
+                            itemId = it.id
+                            modifierSetId = modifierSets.id!!
+                            minRequired = modifierSets.min_required
+                            maxAllowed = modifierSets.max_allowed
+                        }
+
+                        itemModifierSetList.add(itemModifierSets)
+                    }
+
                     modifierSetList.addAll(it.modifierSets)
 
                     inventoryModelList.add(items)
@@ -83,7 +96,8 @@ class PosRepository @Inject constructor(
 
             appDatabase.categoryDao().addAll(categoryModelList)
             appDatabase.itemDao().addAllItem(inventoryModelList)
-            appDatabase.itemModifierSetDao().addAll(modifierSetList)
+            appDatabase.modifierSetDao().addAll(modifierSetList)
+            appDatabase.itemModifierSetsDao().addAll(itemModifierSetList)
         }
     )
 
@@ -354,7 +368,7 @@ class PosRepository @Inject constructor(
 
     fun modifierSetList(ids: IntArray) =
         performGetOperationDatabase(databaseQuery = {
-            appDatabase.itemModifierSetDao().modifierSetByItem(ids)
+            appDatabase.modifierSetDao().modifierSetByItem(ids)
         })
 
     suspend fun createModifierSet(data: CreateModifierRequest) =
@@ -415,5 +429,16 @@ class PosRepository @Inject constructor(
 
     fun getTerminalListDatabse() =
         performGetOperationDatabase(databaseQuery = { appDatabase.terminalDao().allTerminal })
+
+    fun getMinMax(_itemId: Int, modifierSetId: Int?): LiveData<ItemModifierSets?>? {
+        if (modifierSetId != null) {
+            return appDatabase.itemModifierSetsDao().minMaxByItemModifier(_itemId, modifierSetId)
+        }
+        return null
+    }
+
+
+    fun getOpenOrders() =
+        performGetOperationNew(networkCall = { apiHelperNew.getOpenOrders() })
 }
 

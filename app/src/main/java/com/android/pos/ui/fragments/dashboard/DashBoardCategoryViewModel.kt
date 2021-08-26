@@ -12,7 +12,6 @@ import com.android.pos.data.entities.*
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ADD
 import com.android.pos.data.remote.Constants.DELETE
-import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.UPDATE
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.TaxServiceChargeRepository
@@ -309,6 +308,13 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun addCustomer(customer: TbCustomer?) {
         assignCustomer = customer
+    }
+
+    fun getMinMax(_itemId: Int, modifierSetId: Int?): LiveData<ItemModifierSets?>? {
+
+
+        return posRepository.getMinMax(_itemId, modifierSetId)
+
     }
 
 
