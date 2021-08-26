@@ -54,7 +54,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun moduleDao(): ModuleDao
     abstract fun modifierSetDao(): ModifierSetDao
     abstract fun optionSetDao(): OptionSetDao
-    abstract fun itemModifierSetDao(): ItemModifierSetDao
     abstract fun orderTypeDao(): OrderTypeDao
     abstract fun terminalDao(): TerminalsDao
     abstract fun itemModifierSetsDao(): ItemModifierSetsDao
