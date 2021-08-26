@@ -63,7 +63,10 @@ data class GetTransactionListResponse(
             @SerializedName("transaction_id")
             val transactionId: String,
             @SerializedName("terminal_name")
-            val terminalName: String
+            val terminalName: String,
+            @SerializedName("employee_role_name")
+            val employeeRoleName: String
+
         ) {
             data class Customer(
                 @SerializedName("first_name")

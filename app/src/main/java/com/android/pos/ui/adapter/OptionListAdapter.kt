@@ -1,13 +1,11 @@
 package com.android.pos.ui.adapter
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.entities.OptionSet
-import com.android.pos.data.model.OptionListModel
 import com.android.pos.databinding.ViewOptionListBinding
 import java.util.*
 import kotlin.collections.ArrayList

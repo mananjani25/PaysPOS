@@ -71,7 +71,7 @@ class Options : Fragment(), TextWatcher {
                         binding.progressCircular.visibility = View.GONE
                         it.data?.let { it1 ->
                             adapter.add(it1)
-                            binding.edtSearch.hint = "Search (" + it1.size + ") Modifiers"
+                            binding.edtSearch.hint = "Search (" + it1.size + ") Options"
                         }
                     }
                     Status.ERROR -> {

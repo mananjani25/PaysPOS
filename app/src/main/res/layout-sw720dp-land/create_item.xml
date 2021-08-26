@@ -30,11 +30,11 @@
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/imgBack"
-                    android:background="?attr/selectableItemBackground"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_gravity="center"
+                    android:background="?attr/selectableItemBackground"
                     android:padding="@dimen/_4sdp"
                     app:srcCompat="@drawable/ic_cancel_black"
                     app:tint="@color/viewTextColor" />
@@ -171,11 +171,11 @@
                         android:background="@color/view" />
 
                     <LinearLayout
-                        android:background="?attr/selectableItemBackground"
                         android:id="@+id/chooseCategory"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
+                        android:background="?attr/selectableItemBackground"
                         android:orientation="horizontal"
                         android:padding="@dimen/_5sdp">
 
@@ -226,6 +226,7 @@
                         android:textSize="@dimen/_6mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvAddOptions"
                         style="@style/CustomFontBold"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

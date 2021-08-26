@@ -28,7 +28,7 @@
     <string name="phone">Phone Number</string>
     <string name="address_empty_validation">Please Enter Full Address</string>
     <string name="birth_date_validation">Please Enter Birth Date</string>
-`
+    `
     <string name="buttonOne">1</string>
     <string name="buttonTwo">2</string>
     <string name="buttonThree">3</string>
@@ -487,4 +487,9 @@
     <string name="tv_exchange_refund">Exchange Refund</string>
     <string name="tv_date">Date</string>
     <string name="company">Company</string>
+    <string name="tv_options">Add Options</string>
+    <string name="tv_roles">Roles</string>
+    <string name="tv_team_members">Team Members</string>
+    <string name="tv_select_option_set">Select Option Set</string>
+    <string name="tv_create_variation">Create Variation</string>
 </resources>

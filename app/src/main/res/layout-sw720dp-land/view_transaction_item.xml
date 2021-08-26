@@ -45,7 +45,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_weight="2"
+                android:layout_weight="1"
                 android:gravity="center"
                 android:text="@{itemSheetModel.orderDetails.orderTypeName}"
                 android:textColor="@color/btnColor"
@@ -80,6 +80,30 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:gravity="center"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_5mdpi"
+                tools:text="John Smith" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/CustomFontMediumStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@{itemSheetModel.employeeRoleName}"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_5mdpi"
+                tools:text="John Smith" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/CustomFontMediumStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@{itemSheetModel.employeeName}"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_5mdpi"
                 tools:text="John Smith" />

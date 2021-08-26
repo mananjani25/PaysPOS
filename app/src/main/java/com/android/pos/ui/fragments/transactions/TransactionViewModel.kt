@@ -138,8 +138,8 @@ class TransactionViewModel @Inject constructor(
             data["start_date"] = startDate.value.toString()
             data["end_date"] = endDate.value.toString()
             data["terminal_id"] = terminalIdViewModel
-            data["roleId"] = roleIdViewModel
-            data["employeeId"] = employeeIdViewModel
+            data["employee_role_id"] = roleIdViewModel
+            data["employee_id"] = employeeIdViewModel
             data["order_type_id"] = orderTypeIdViewModel
 
             when (tipType) {

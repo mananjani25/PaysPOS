@@ -47,6 +47,11 @@ class CreateItem : Fragment(), View.OnClickListener {
         observeShowProgress()
         getModifiers()
         navigate()
+
+        binding.tvAddOptions.setOnClickListener {
+            findNavController().navigate(R.id.action_createItem_to_itemOptionsListDialog)
+        }
+
         return binding.root
     }
 
