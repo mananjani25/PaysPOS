@@ -1081,9 +1081,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         if (data.discountPrice != 0.0) {
             txtTitle.text = data.name + "  $" + String.format(
-                "%.2f",
-                (totalPrice(data) - data.discountPrice)
-            )
+                "%.2f", (totalPrice(data) - data.discountPrice))
         } else {
             if (isItemClick) {
                 txtTitle.text = data.name + "  $" + String.format(

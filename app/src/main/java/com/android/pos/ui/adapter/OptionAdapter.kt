@@ -4,8 +4,11 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.entities.Modifier
+import com.android.pos.data.entities.Option
 import com.android.pos.databinding.ViewModifiersRemoveBinding
+import com.android.pos.databinding.ViewOptionRemoveBinding
 import com.android.pos.utils.EditTextWatcher
+import com.android.pos.utils.EditTextWatcherOption
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.PriceTextWatcher
 import java.util.*
@@ -13,21 +16,19 @@ import kotlin.collections.ArrayList
 
 class OptionAdapter(private val isEdit: Boolean) :
     RecyclerView.Adapter<OptionAdapter.MyViewHolder>() {
-    var list = ArrayList<Modifier>()
-    var deletedList = ArrayList<Modifier>()
+    var list = ArrayList<Option>()
+    var deletedList = ArrayList<Option>()
 
-    inner class MyViewHolder(private val binding: ViewModifiersRemoveBinding) :
+    inner class MyViewHolder(private val binding: ViewOptionRemoveBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: Modifier) {
+        fun bind(item: Option) {
             binding.model = item
             binding.executePendingBindings()
 
 
-            binding.edtName.addTextChangedListener(EditTextWatcher(binding.edtName, item))
+            binding.edtName.addTextChangedListener(EditTextWatcherOption(binding.edtName, item))
             binding.edtName.setText(item.name)
 
-            binding.edtPrice.addTextChangedListener(PriceTextWatcher(binding.edtPrice, item))
-            MethodUtils.setPriceEditText(binding.edtPrice, item.price)
         }
 
         init {
@@ -52,7 +53,7 @@ class OptionAdapter(private val isEdit: Boolean) :
         viewType: Int
     ): OptionAdapter.MyViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val binding = ViewModifiersRemoveBinding.inflate(inflater, parent, false)
+        val binding = ViewOptionRemoveBinding.inflate(inflater, parent, false)
         return MyViewHolder(binding)
 
     }
@@ -66,26 +67,26 @@ class OptionAdapter(private val isEdit: Boolean) :
         return list.size
     }
 
-    fun add(modifierSet: Modifier) {
+    fun add(modifierSet: Option) {
         list.add(modifierSet)
         notifyDataSetChanged()
     }
 
-    fun getItem(pos: Int): Modifier {
+    fun getItem(pos: Int): Option {
         return list[pos]
     }
 
 
-    fun getAll(): ArrayList<Modifier> {
+    fun getAll(): ArrayList<Option> {
         return list
     }
 
-    fun getDelete(): ArrayList<Modifier> {
+    fun getDelete(): ArrayList<Option> {
         return deletedList
     }
 
 
-    fun addAll(modifiers: List<Modifier>) {
+    fun addAll(modifiers: List<Option>) {
         list.addAll(modifiers)
         notifyDataSetChanged()
     }

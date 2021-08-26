@@ -128,7 +128,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener {
         }
 
 
-     //   viewModel.setCurrentDate(myCalendar)
+        //   viewModel.setCurrentDate(myCalendar)
 
         binding.includeView.imgDrawer.setOnClickListener {
             (requireActivity() as MainActivity).enableDrawer()
@@ -227,6 +227,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     private fun setUpTipTypeSpinnerAdapter() {
 
+        tipTypeList.clear()
         tipTypeList.add(getString(R.string.tv_all_tip_types))
         tipTypeList.add(getString(R.string.tv_adjusted))
         tipTypeList.add(getString(R.string.tv_unadjusted))
@@ -244,6 +245,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     private fun setUpPaymentTypeSpinnerAdapter() {
 
+        paymentTypeList.clear()
         paymentTypeList.add(getString(R.string.tv_all_payment_types))
         paymentTypeList.add(getString(R.string.tv_cash_payment))
         paymentTypeList.add(getString(R.string.tv_external))

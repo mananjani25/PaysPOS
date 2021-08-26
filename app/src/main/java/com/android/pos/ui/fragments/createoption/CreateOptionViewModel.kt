@@ -6,11 +6,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.R
-import com.android.pos.data.entities.Modifier
-import com.android.pos.data.model.requestModel.CreateModifierRequest
-import com.android.pos.data.model.requestModel.CreateModifierRequestModel
-import com.android.pos.data.model.requestModel.ModifierSet
-import com.android.pos.data.model.responseModel.CreateModifierSetResponse
+import com.android.pos.data.entities.Option
+import com.android.pos.data.model.requestModel.CreateOptionRequestModel
+import com.android.pos.data.model.responseModel.BaseResponse
+import com.android.pos.data.model.responseModel.GetOptionSetResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
@@ -29,13 +28,12 @@ class CreateOptionViewModel @Inject constructor(
 ) :
     ViewModel() {
 
-    private var modifierSetId: Int? = null
+    private var optionSetId: Int? = null
     private var isEdit: Boolean = false
-    private var itemIdsViewModel = ArrayList<Int>()
-    var list = ArrayList<Modifier>()
-    var deleteList = ArrayList<Modifier>()
+    var list = ArrayList<Option>()
+    var deleteList = ArrayList<Option>()
 
-    val modifierDetails = MutableLiveData(CreateModifierRequestModel())
+    val optionDetails = MutableLiveData(CreateOptionRequestModel())
 
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
@@ -43,48 +41,40 @@ class CreateOptionViewModel @Inject constructor(
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
-    private var _data = MutableLiveData<Event<Boolean>>()
-    val data: LiveData<Event<Boolean>> = _data
+    private var _data = MutableLiveData<Event<GetOptionSetResponse>>()
+    val data: LiveData<Event<GetOptionSetResponse>> = _data
 
-    fun setItemIds(itemIds: ArrayList<Int>) {
-        this.itemIdsViewModel = itemIds
-    }
 
     fun submit() {
 
-        val data = modifierDetails.value
+        val data = optionDetails.value
 
-        if (TextUtils.isEmpty(data?.modifierName?.trim())) {
-            _snackbarText.value = Event(R.string.modifier_name_validate)
+        if (TextUtils.isEmpty(data?.name?.trim())) {
+            _snackbarText.value = Event(R.string.option_name_validate)
         } else {
             _showProgress.value = Event(true)
 
 
-            val modifierSets = CreateModifierRequest().apply {
+            val optionSets = CreateOptionRequestModel().apply {
 
-                val modifierSets = ModifierSet().apply {
-                    name = data?.modifierName.toString()
-                    locationId = prefProvider.getValueInt(Constants.LOCATION_ID, -1)
-                    itemIds = itemIdsViewModel
-
-
-                    modifiersAttributes = if (isEdit) {
-                        list.addAll(deleteList)
-                        list
-                    } else {
-                        list
-                    }
+                name = data!!.name
+                displayName = data!!.displayName
+                locationId = prefProvider.getValueInt(Constants.LOCATION_ID, -1)
+                optionsAttributes = if (isEdit) {
+                    list.addAll(deleteList)
+                    list
+                } else {
+                    list
                 }
-                modifierSet = modifierSets
-
             }
 
             viewModelScope.launch {
 
-                val resource: Resource<CreateModifierSetResponse> = if (isEdit) {
-                    posRepository.updateModifierSets(modifierSetId!!, modifierSets)
+                val resource: Resource<GetOptionSetResponse>
+                if (isEdit) {
+                    resource = posRepository.updateOptionSet(optionSetId!!, optionSets)
                 } else {
-                    posRepository.createModifierSet(modifierSets)
+                    resource = posRepository.createOptionSet(optionSets)
                 }
 
                 when (resource.status) {
@@ -95,8 +85,8 @@ class CreateOptionViewModel @Inject constructor(
                             if (modifierSetResponse?.status == 200) {
                                 resource.data?.let {
 
-                                    _data.value = Event(true)
-                                    posRepository.addModifierSets(it.data.modifierSet)
+                                    _data.value = Event(it)
+                                    posRepository.addOptionSetsDatabase(it.data)
                                 }
                             } else {
                                 _snackbarText.value = Event(resource.message)
@@ -120,17 +110,17 @@ class CreateOptionViewModel @Inject constructor(
 
     }
 
-    fun setModifiers(modifierList: ArrayList<Modifier>) {
+    fun setModifiers(modifierList: ArrayList<Option>) {
         this.list = modifierList
     }
 
     fun setData(edit: Boolean, name: String, id: Int?) {
         isEdit = edit
-        modifierDetails.value?.modifierName = name
-        modifierSetId = id
+        optionDetails.value?.name = name
+        optionSetId = id
     }
 
-    fun setDeleteModifiers(delete: ArrayList<Modifier>) {
+    fun setDeleteModifiers(delete: ArrayList<Option>) {
         deleteList = delete
     }
 

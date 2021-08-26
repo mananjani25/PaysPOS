@@ -135,6 +135,11 @@ object Constants {
     const val MODIFIER = "modifier_sets"
     const val REORDER_MODIFIER = "modifier_sets/{id}/reorder"
 
+    const val OPTION_SETS = "option_sets"
+    const val OPTION_UPDATE_DELETE = "option_sets/{id}"
+    const val REORDER_OPTION_SET = "option_sets/{id}/reorder_option_sets"
+
+
     const val ORDERS = "orders"
     const val ORDER_DETAILS = "orders/{id}"
     const val ORDER_EMAIL_RECEIPT = "orders/send_order_email_receipt"
