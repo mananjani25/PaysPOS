@@ -146,4 +146,7 @@ object Constants {
     const val COMPLETED_ORDER = "completed_order"
 
 
+    const val OPEN_ORDERS = "orders/open_orders"
+
+
 }

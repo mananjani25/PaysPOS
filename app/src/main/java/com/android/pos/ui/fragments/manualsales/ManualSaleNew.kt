@@ -100,28 +100,29 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
 
     private fun getCartList() {
 
-        viewModel.cartList.observe(viewLifecycleOwner, {
-            cartList = it
-            Log.e(TAG, "cartListBeforeTax  ${Gson().toJson(cartList)}")
-            if (cartList?.isNotEmpty()!!) {
-                cartList?.get(0)?.items?.forEach {
-                    it.taxes = taxList
+        if (isAdded)
+            viewModel.cartList.observe(requireActivity(), {
+                cartList = it
+                Log.e(TAG, "cartListBeforeTax  ${Gson().toJson(cartList)}")
+                if (cartList?.isNotEmpty()!!) {
+                    cartList?.get(0)?.items?.forEach {
+                        it.taxes = taxList
+                    }
+                    cartAdapter.setList(cartList?.get(0)?.items)
+
+                    viewModel.itemCalculation(
+                        cartList?.get(0)?.items,
+                        binding.txtTotalAmount,
+                        dashboardViewModel.serviceCharges.value?.data
+                    )
+                } else {
+
+                    cartAdapter.clearList()
+
                 }
-                cartAdapter.setList(cartList?.get(0)?.items)
-
-                viewModel.itemCalculation(
-                    cartList?.get(0)?.items,
-                    binding.txtTotalAmount,
-                    dashboardViewModel.serviceCharges.value?.data
-                )
-            } else {
-
-                cartAdapter.clearList()
-
-            }
 
 
-        })
+            })
     }
 
     private fun getServiceCharge() {
@@ -365,7 +366,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
 
             }
 
-                count++
+            count++
 
 
 
