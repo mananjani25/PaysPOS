@@ -1,6 +1,7 @@
 package com.android.pos.ui.fragments.settings.hardware
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
@@ -36,9 +37,12 @@ import android.bluetooth.BluetoothAdapter
 import android.content.Intent
 import java.util.*
 import android.bluetooth.BluetoothSocket
+import android.bluetooth.le.ScanCallback
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.android.pos.data.remote.Constants.BLUETOOTH
 import com.android.pos.utils.printer.PrinterClass
+import com.android.pos.utils.printer.PrinterClass.SEND_TIMEOUT
 import com.android.pos.utils.printer.PrinterClass.language
 import com.epson.eposprint.BatteryStatusChangeEventListener
 import com.epson.eposprint.Builder
@@ -49,6 +53,14 @@ import java.io.InputStream
 import java.io.OutputStream
 import java.net.URLDecoder
 import kotlin.collections.ArrayList
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.IntentFilter
+import android.widget.TextView
+
+import android.text.Html
+
+import android.text.Spanned
 
 
 //Original New
@@ -60,6 +72,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     var deviceList: Array<DeviceInfo>? = null
     var kitchenPrintList: ArrayList<PrinterListModel> = arrayListOf()
     var customerPrintList: ArrayList<PrinterListModel> = arrayListOf()
+    var availablePrinterList: ArrayList<PrinterListModel> = arrayListOf()
 
 
     //private var mFilterOption: FilterOption? = null
@@ -130,6 +143,12 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
     }
 
+    override fun onPause() {
+        super.onPause()
+        PrinterClass.closePrinter()
+        closeBT()
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         kitchenAdapter = PrinterListAdapter()
@@ -140,6 +159,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         customerAdapter.setListner(this)
         availableNetworkAdapter = PrinterListAdapter()
         availableNetworkAdapter.setListner(this)
+        availableNetworkAdapter.setList(availablePrinterList)
         binding.rvAvailablePrinter.adapter = availableNetworkAdapter
         binding.rvAvailablePrinter.addItemDecoration(
             DividerItemDecoration(
@@ -189,8 +209,18 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
  */
 
         try {
-            // openBT()
+            searchBluetooth()
             //findBT()
+            //openBT()
+            /*val adapter: BluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+            adapter.startDiscovery()
+
+            val filter = IntentFilter(BluetoothDevice.ACTION_FOUND)
+            //filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+            requireContext().registerReceiver(mReceiver, filter)
+*/
+            //searchBluetooth()
+            //
         } catch (ex: IOException) {
             ex.printStackTrace()
         }
@@ -234,11 +264,56 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         }
 
         binding.imgSync.setOnClickListener {
+            availableNetworkAdapter.clearList()
             startFinder()
+            searchBluetooth()
+
 
         }
 
 
+    }
+
+    private fun searchBluetooth() {
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+        if (mBluetoothAdapter!!.isEnabled) {
+            val availableDevices: Set<BluetoothDevice> = mBluetoothAdapter!!.bondedDevices
+            for (i in availableDevices) {
+
+                availableNetworkAdapter.addItem(
+                    PrinterListModel(
+                        printerName = i.name,
+                        connectionType = BLUETOOTH,
+                        deviceModel = DeviceInfo(
+                            DevType.BLUETOOTH,
+                            i.address,
+                            i.name,
+                            i.address,
+                            i.address
+                        ),
+                        uuid = UUID.randomUUID()
+
+                    )
+                )
+                if (i.name == "TM-m30_030295") {
+                    mmDevice = i
+
+
+                }
+
+
+
+
+                Log.e(TAG, "BluetoothName   ${i.name}")
+                Log.e(TAG, "BluetoothAddredd  ${i.address}")
+                Log.e(TAG, "BluetoothBondState  ${i.bondState}")
+                Log.e(TAG, "BluetoothType  ${i.type}")
+                Log.e(TAG, "BluetoothUDID  ${Gson().toJson(i.uuids)}")
+                Log.e(TAG, "BluetoothClass ${i.bluetoothClass}")
+
+
+            }
+        }
     }
 
     private fun congigurePrinter() {
@@ -258,6 +333,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         //stop find
         stopFinder()
         PrinterClass.closePrinter()
+        closeBT()
 
 
     }
@@ -418,9 +494,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                         printerList.add(item)
                     }
 
-                    val listData: ArrayList<PrinterListModel> = arrayListOf()
                     for (i in 0 until list!!.size) {
-                        listData.add(
+                        availableNetworkAdapter.addItem(
                             PrinterListModel(
                                 printerName = list!!.get(i).printerName,
                                 connectionType = WIFI,
@@ -431,7 +506,6 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
 
                     }
-                    availableNetworkAdapter.setList(listData)
 
 
                 }
@@ -470,6 +544,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             mmOutputStream = mmSocket?.getOutputStream()
             mmInputStream = mmSocket?.getInputStream()
             beginListenForData()
+            sendBTData()
 
         } catch (e: Exception) {
             e.printStackTrace()
@@ -485,7 +560,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             }
             if (!mBluetoothAdapter!!.isEnabled()) {
                 val enableBluetooth = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-                startActivityForResult(enableBluetooth, 0)
+                this.startActivityForResult(enableBluetooth, 100)
             }
             val pairedDevices: Set<BluetoothDevice> = mBluetoothAdapter!!.getBondedDevices()
             Log.e(TAG, "pairedDevices:   ${Gson().toJson(pairedDevices)}")
@@ -494,7 +569,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
                     // RPP300 is the name of the bluetooth printer device
                     // we got this name from the list of paired devices
-                    if (device.name == "RPP300") {
+                    if (device.name == "TM-m30_030295") {
                         mmDevice = device
 
                         break
@@ -594,39 +669,58 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             printer.setBatteryStatusChangeEventCallback(this)
         }
 
-        val enabled = Print.TRUE
+        val enabled = Print.FALSE
         Log.e(TAG, "MacAddress:  ${printerListModel.deviceModel.macAddress}")
         Log.e(TAG, "IPAddress:  ${printerListModel.deviceModel.ipAddress}")
+        if (printerListModel.connectionType == BLUETOOTH) {
+            findBT()
+            openBT()
+        } else {
+            try {
+                printer?.openPrinter(
+                    if (printerListModel.connectionType == BLUETOOTH) Print.DEVTYPE_BLUETOOTH else Print.DEVTYPE_TCP,
+                    printerListModel.deviceModel.ipAddress,
+                    enabled,
+                    1000
+                )
 
-        try {
+            } catch (e: Exception) {
+                Log.e(TAG, "Exception:  " + e.message)
+                printer = null
+                return
+            }
+            PrinterClass.setPrinter(printer)
 
-            printer?.openPrinter(
-                Print.DEVTYPE_TCP,
-                printerListModel.deviceModel.macAddress,
-                enabled,
-                1000
-            )
 
-        } catch (e: Exception) {
-            Log.e(TAG, "Exception:  " + e.message)
-            printer = null
-            return
+            showPrinterStatus(printerListModel)
         }
-        PrinterClass.setPrinter(printer)
-
-
-        showPrinterStatus(printerListModel)
-
-
     }
+
 
     private fun showPrinterStatus(printerListModel: PrinterListModel) {
         var builder: Builder? = null
         var method = ""
         try {
+            val printData = "This is Test Print"
             method = "Builder"
-            builder = Builder(printerListModel.printerName, language, requireActivity())
+            Log.e(TAG, "PrintedprinterName:  ${printerListModel.printerName}")
 
+            builder = Builder(printerListModel.printerName, language, requireActivity())
+            builder.addTextFont(Builder.FONT_A)
+            builder.addTextAlign(Builder.ALIGN_LEFT)
+            builder.addTextLineSpace(20)
+            builder.addTextLang(Builder.LANG_EN)
+            builder.addTextSize(2, 2)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.COLOR_1
+            )
+            builder.addTextPosition(1)
+
+            builder.addText(printData)
+            builder.addFeedUnit(30)
 
             //send builder data(empty builder data)
             val status = IntArray(1)
@@ -634,11 +728,24 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
             Log.e(TAG, "getPrinterCheck:  ${PrinterClass.getPrinter().toString()}")
 
+
             try {
-                PrinterClass.getPrinter()?.sendData(builder,0,status,battery)
+                PrinterClass.getPrinter()?.sendData(builder, SEND_TIMEOUT, status, battery)
+                //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
             } catch (e: Exception) {
+                PrinterClass.closePrinter()
                 e.printStackTrace()
-                Log.e(TAG,"PrinterError: "+e.message)
+                Log.e(TAG, "PrinterError: " + e.localizedMessage)
+            }
+
+            try {
+                builder.clearCommandBuffer()
+                builder = null
+                PrinterClass.closePrinter()
+            } catch (e: Exception) {
+                builder = null
+                PrinterClass.closePrinter()
+                e.printStackTrace()
             }
 
         } catch (e: Exception) {
@@ -655,5 +762,71 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         Log.e(TAG, "onBatteryLevelChange  ${p0}")
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == 100 && resultCode == Activity.RESULT_OK) {
 
+            val myData: BluetoothDevice =
+                data?.getParcelableArrayExtra(BluetoothDevice.EXTRA_NAME) as BluetoothDevice
+            Log.e(TAG, "AvailableName   ${myData.name}")
+        } else if (requestCode == 211) {
+            val device =
+                data!!.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
+            Log.e(TAG, "DeviceName  ${device!!.name}")
+        }
+
+    }
+
+
+    @Throws(IOException::class)
+    private fun sendBTData() {
+
+        try {
+            val msg =
+                Html.fromHtml("<h1>My First Example</h1> <p>My first Print.</p> <p><b>This is a paragraph.</b></p>")
+
+            val arrayOfByte1 = byteArrayOf(27, 33, 0)
+            val format = byteArrayOf(27, 33, 0)
+
+            // Bold
+            format[2] = (0x8 or arrayOfByte1[2].toInt()).toByte()
+            mmOutputStream!!.write(format)
+            mmOutputStream!!.write(
+                msg.toString().toByteArray(),
+                0,
+                msg.toString().toByteArray().size
+            )
+
+            // tell the user data were sent
+            Log.e(TAG, "Bluetooth Data Send")
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+
+
+        try {
+            var msg: String = "This is My Test Print"
+            msg += "\n"
+
+            mmOutputStream?.write(msg.toByteArray())
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+    }
+
+    // close the connection to bluetooth printer.
+    @Throws(IOException::class)
+    fun closeBT() {
+        try {
+            stopWorker = true
+            mmOutputStream?.close()
+            mmInputStream?.close()
+            mmSocket?.close()
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
 }

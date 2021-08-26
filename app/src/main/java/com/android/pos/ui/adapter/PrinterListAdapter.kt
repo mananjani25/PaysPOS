@@ -95,4 +95,10 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
         fun onPrinterActive(printerListModel: PrinterListModel)
 
     }
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun clearList(){
+        this.list.clear()
+        notifyDataSetChanged()
+    }
 }
