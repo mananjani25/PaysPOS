@@ -8,7 +8,7 @@
 
         <variable
             name="model"
-            type="com.android.pos.data.model.OptionListModel" />
+            type="com.android.pos.data.entities.OptionSet" />
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat
@@ -36,11 +36,12 @@
                 android:layout_weight="1"
                 android:gravity="start"
                 android:padding="@dimen/_6sdp"
-                android:text="@{model.title}"
+                android:text="@{model.name}"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_5mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvOptionListSize"
                 style="@style/CustomFontSemiBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -48,17 +49,16 @@
                 android:layout_marginStart="@dimen/_5sdp"
                 android:gravity="start"
                 android:padding="@dimen/_5sdp"
-                android:text="@{model.option}"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_5mdpi" />
 
             <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/imgReorder"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginStart="@dimen/_5sdp"
-                android:layout_marginEnd="@dimen/_10sdp"
-                app:srcCompat="@drawable/ic_arrow_forward" />
+                android:padding="@dimen/_3sdp"
+                app:srcCompat="@drawable/ic_baseline_menu" />
         </androidx.appcompat.widget.LinearLayoutCompat>
 
         <View

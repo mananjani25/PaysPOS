@@ -14,9 +14,11 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.entities.Option
+import com.android.pos.data.entities.OptionSet
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.DialogCreateOptionBinding
 import com.android.pos.ui.adapter.OptionAdapter
+import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
 import com.google.android.material.snackbar.Snackbar
@@ -26,7 +28,7 @@ import java.util.*
 
 @AndroidEntryPoint
 class CreateOptionSet : Fragment(), TextWatcher {
-
+    private var optionSet: OptionSet? = null
     private lateinit var binding: DialogCreateOptionBinding
     private lateinit var adapter: OptionAdapter
     private val viewModel by viewModels<CreateOptionViewModel>()
@@ -43,7 +45,7 @@ class CreateOptionSet : Fragment(), TextWatcher {
         binding.lifecycleOwner = this
         binding.createOptionViewModel = viewModel
 
-//        isEdit = arguments?.getBoolean("isEdit")!!
+        isEdit = arguments?.getBoolean("isEdit")!!
 
         setupAdapter()
         setupUI()
@@ -70,9 +72,17 @@ class CreateOptionSet : Fragment(), TextWatcher {
             binding.txtTitle.text = getString(R.string.update_option_set)
             binding.txtSave.text = getString(R.string.update)
 
-            //       modifierSet = arguments?.getParcelable("optionObject")!!
 
-            //   adapter.addAll(modifierSet!!.modifiers)
+            optionSet = arguments?.getParcelable("optionObject")!!
+
+            viewModel.setData(isEdit, optionSet!!.name, optionSet!!.id)
+
+
+            optionSet!!.options.sortedBy {
+                it.sort
+            }
+
+            adapter.addAll(optionSet!!.options)
         }
 
         binding.txtSave.setOnClickListener {
@@ -185,14 +195,19 @@ class CreateOptionSet : Fragment(), TextWatcher {
     private fun observeData() {
 
         viewModel.data.observe(viewLifecycleOwner, { event ->
-            event.getContentIfNotHandled()?.let {
-                if (it) {
-                    val navControll = findNavController()
-                    navControll.previousBackStackEntry?.savedStateHandle?.set(
-                        Constants.KEY,
-                        Constants.CREATEOPTION
-                    )
-                    navControll.popBackStack()
+            event.getContentIfNotHandled()?.let { createOptionResponse ->
+
+                activity?.let {
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        it, createOptionResponse.message
+                    ) { _, _ ->
+                        val navControll = findNavController()
+                        navControll.previousBackStackEntry?.savedStateHandle?.set(
+                            Constants.KEY,
+                            Constants.CREATEOPTION
+                        )
+                        navControll.popBackStack()
+                    }
                 }
             }
         })

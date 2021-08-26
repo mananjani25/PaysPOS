@@ -21,8 +21,8 @@ import com.android.pos.data.typeconvert.*
         GetTipReponse.Data::class, TbDiscount::class, NoteResponse.Data::class,
         TbServiceCharge::class, Employee::class, CartModel::class,
         TbCustomer::class, ModifierSet::class, TeamRole::class, ItemModifierSet::class,
-        ModulePermission::class, TbOrderType::class, VenueDetailsResponse.Data.Terminal::class],
-    version = 1
+        ModulePermission::class, TbOrderType::class, VenueDetailsResponse.Data.Terminal::class, OptionSet::class],
+    version = 2
 )
 @TypeConverters(
     TypeConvertersIds::class,
@@ -33,7 +33,8 @@ import com.android.pos.data.typeconvert.*
     TypeConvertersTax::class,
     TypeConvertersModule::class,
     TCServiceCharge::class,
-    TCCustomer::class
+    TCCustomer::class,
+    TCOption::class
 )
 
 
@@ -53,6 +54,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun teamRoleDao(): TeamRoleDao
     abstract fun moduleDao(): ModuleDao
     abstract fun modifierSetDao(): ModifierSetDao
+    abstract fun optionSetDao(): OptionSetDao
     abstract fun itemModifierSetDao(): ItemModifierSetDao
     abstract fun orderTypeDao(): OrderTypeDao
     abstract fun terminalDao(): TerminalsDao

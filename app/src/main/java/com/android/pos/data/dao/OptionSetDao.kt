@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy.REPLACE
 import androidx.room.Query
 import androidx.room.Update
 import com.android.pos.data.entities.ModifierSet
+import com.android.pos.data.entities.OptionSet
 
 
 /**
@@ -16,47 +17,43 @@ import com.android.pos.data.entities.ModifierSet
 interface OptionSetDao {
 
     @Insert(onConflict = REPLACE)
-    suspend fun add(modifierModel: ModifierSet?): Long
+    suspend fun add(modifierModel: OptionSet?): Long
 
     @Insert
-    suspend fun insert(modifierModel: ModifierSet)
+    suspend fun insert(modifierModel: OptionSet)
 
     @Update
-    fun update(modifierModel: ModifierSet)
+    fun update(modifierModel: OptionSet)
 
     @Insert(onConflict = REPLACE)
-    suspend fun addAll(modifierModel: List<ModifierSet>)
+    suspend fun addAll(modifierModel: List<OptionSet>)
 
-    @get:Query("select * from ModifierSet ORDER BY ModifierSet.sort ASC")
-    val all: LiveData<List<ModifierSet>>
+    @get:Query("select * from OptionSet ORDER BY OptionSet.sort ASC")
+    val all: LiveData<List<OptionSet>>
 
+    @Query("select * from OptionSet")
+    fun allOptionsSet(): List<OptionSet?>?
 
-    @Query("select * from ModifierSet where  ModifierSet.itemIds = :id")
-    fun all(id: Int?): LiveData<List<ModifierSet?>>?
-
-    @Query("select * from ModifierSet")
-    fun allModifier(): List<ModifierSet?>?
-
-    @Query("SELECT * FROM ModifierSet WHERE id IN (:itemIds)")
-    fun modifierSetByItem(itemIds: IntArray): LiveData<List<ModifierSet>>
+    @Query("SELECT * FROM OptionSet WHERE id IN (:itemIds)")
+    fun optionSetByItem(itemIds: IntArray): LiveData<List<OptionSet>>
 
 
-    @Query("SELECT * from ModifierSet where ModifierSet.id  = :id LIMIT 1")
-    fun modifierById(id: Int?): ModifierSet?
+    @Query("SELECT * from OptionSet where OptionSet.id  = :id LIMIT 1")
+    fun optionSetById(id: Int?): OptionSet?
 
-    @Query("SELECT * from ModifierSet LIMIT 1")
-    fun modifierOne(): ModifierSet?
+    @Query("SELECT * from OptionSet LIMIT 1")
+    fun optionOne(): OptionSet?
 
-    @Query("SELECT * from ModifierSet where ModifierSet.id  = :restId LIMIT 1")
-    fun modifierByRestId(restId: Int?): ModifierSet?
+    @Query("SELECT * from OptionSet where OptionSet.id  = :restId LIMIT 1")
+    fun optionByRestId(restId: Int?): OptionSet?
 
-    @Query("SELECT * from ModifierSet where ModifierSet.id  = :id and ModifierSet.id = :id1 LIMIT 1")
-    fun modifierById(id: Int?, id1: Int?): ModifierSet?
+    @Query("SELECT * from OptionSet where OptionSet.id  = :id and OptionSet.id = :id1 LIMIT 1")
+    fun optionById(id: Int?, id1: Int?): OptionSet?
 
-    @Query("DELETE FROM ModifierSet where ModifierSet.id  = :id")
+    @Query("DELETE FROM OptionSet where OptionSet.id  = :id")
     suspend fun delete(id: Int?)
 
-    @Query("DELETE FROM ModifierSet")
+    @Query("DELETE FROM OptionSet")
     fun delete()
 
 }

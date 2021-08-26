@@ -400,7 +400,7 @@ interface ApiService {
     @DELETE(OPTION_UPDATE_DELETE)
     suspend fun deleteOptionSet(
         @Path("id") noteId: Int,
-    ): GetOptionSetResponse
+    ): BaseResponse
 
     @PUT(REORDER_OPTION_SET)
     suspend fun reOrderOptionSet(

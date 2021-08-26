@@ -128,6 +128,7 @@ class PosRepository @Inject constructor(
                 appDatabase.modifierSetDao().addAll(it.data)
             })
 
+
     fun getInventory() =
         performGetOperation(
             databaseQuery = { appDatabase.itemDao().allItem!! },
@@ -369,11 +370,33 @@ class PosRepository @Inject constructor(
     suspend fun reOrderModifierCall(id: Int, oldPos: Int, newPos: Int) =
         apiHelperNew.reOrderModifierCall(id, oldPos, newPos)
 
+
+    fun getOptionSet() =
+        performGetOperation(databaseQuery = { appDatabase.optionSetDao().all },
+            networkCall = { apiHelperNew.getOptionSet() },
+            saveCallResult = {
+                appDatabase.optionSetDao().addAll(it.data)
+            })
+
     suspend fun createOptionSet(data: CreateOptionRequestModel) =
         apiHelperNew.createOptionSet(data)
 
+
+    suspend fun addOptionSetsDatabase(data: List<OptionSet>) =
+        appDatabase.optionSetDao().addAll(data)
+
     suspend fun updateOptionSet(mId: Int, data: CreateOptionRequestModel) =
         apiHelperNew.updateOptionSet(mId, data)
+
+    suspend fun deleteOptionSet(id: Int) = apiHelperNew.deleteOptionSet(id)
+    suspend fun deleteOptionSetDatabase(id: Int) = appDatabase.optionSetDao().delete(id)
+
+    suspend fun reOrderOptionSet(id: Int, oldPos: Int, newPos: Int) =
+        apiHelperNew.reOrderOptionSet(id, oldPos, newPos)
+
+    suspend fun updateOptionSort(allCategories: ArrayList<OptionSet>) {
+        appDatabase.optionSetDao().addAll(allCategories)
+    }
 
     suspend fun createOrder(data: OrderRequestModel) = apiHelperNew.createOrder(data)
 

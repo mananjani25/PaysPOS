@@ -41,8 +41,8 @@ class CreateOptionViewModel @Inject constructor(
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
-    private var _data = MutableLiveData<Event<Boolean>>()
-    val data: LiveData<Event<Boolean>> = _data
+    private var _data = MutableLiveData<Event<GetOptionSetResponse>>()
+    val data: LiveData<Event<GetOptionSetResponse>> = _data
 
 
     fun submit() {
@@ -85,8 +85,8 @@ class CreateOptionViewModel @Inject constructor(
                             if (modifierSetResponse?.status == 200) {
                                 resource.data?.let {
 
-                                    _data.value = Event(true)
-                                    //  posRepository.addModifierSets(it.data.modifierSet)
+                                    _data.value = Event(it)
+                                    posRepository.addOptionSetsDatabase(it.data)
                                 }
                             } else {
                                 _snackbarText.value = Event(resource.message)

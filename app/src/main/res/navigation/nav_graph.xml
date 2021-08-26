@@ -330,7 +330,13 @@
     <fragment
         android:id="@+id/createOption"
         android:name="com.android.pos.ui.fragments.createoption.CreateOptionSet"
-        android:label="CreateOption" />
+        android:label="CreateOption">
+
+        <argument
+            android:name="isEdit"
+            android:defaultValue="false"
+            app:argType="boolean" />
+    </fragment>
     <fragment
         android:id="@+id/dashboardCategoryNew"
         android:name="com.android.pos.ui.fragments.dashboard.DashboardCategoryNew"
@@ -651,7 +657,7 @@
     <fragment
         android:id="@+id/transactionFragment"
         android:name="com.android.pos.ui.fragments.transactions.TransactionFragment"
-        android:label="TransactionFragment" >
+        android:label="TransactionFragment">
         <action
             android:id="@+id/action_transactionFragment_to_transactionDetailsFragment"
             app:destination="@id/transactionDetailsFragment" />
