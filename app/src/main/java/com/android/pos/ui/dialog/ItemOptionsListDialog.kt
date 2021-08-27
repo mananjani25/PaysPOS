@@ -1,6 +1,7 @@
 package com.android.pos.ui.dialog
 
 import android.graphics.Point
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -11,16 +12,23 @@ import androidx.fragment.app.viewModels
 import com.android.pos.R
 import com.android.pos.data.entities.OptionSet
 import com.android.pos.databinding.FragmentItemOptionsListBinding
+import com.android.pos.ui.adapter.SelectedOptionSetNameAdapter
 import com.android.pos.ui.fragments.inventory.OptionSetViewModel
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.statusUtils.Status
+import com.google.common.collect.ImmutableList
+import com.google.common.collect.Lists
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
-import android.view.MotionEvent
-import com.android.pos.ui.adapter.SelectedOptionSetNameAdapter
+import java.util.*
+import java.util.function.Consumer
+import kotlin.collections.ArrayList
 
 
 @AndroidEntryPoint
 class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListener {
+
+    private lateinit var elements: ArrayList<Array<String>>
     private lateinit var spinnerAdapter: ArrayAdapter<String>
     private var roleName = ArrayList<String>()
     private lateinit var binding: FragmentItemOptionsListBinding
@@ -81,9 +89,11 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
 
     }
 
+    var products: List<List<Int>> = ArrayList()
+
     private fun optionSetObserver() {
 
-        viewModel.optionSets().observe(viewLifecycleOwner, {
+        viewModel.optionSets().observe(viewLifecycleOwner, { it ->
 
             it?.let { resource ->
                 when (resource.status) {
@@ -91,17 +101,6 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
                         it.data?.let { it1 ->
                             itemOptionList =
                                 it1 as ArrayList<OptionSet>
-
-                            var set = mutableSetOf<String>()
-
-                            itemOptionList.forEach {option->
-
-                                option.options.forEach {
-                                    set.add(it.name)
-                                }
-                            }
-
-                            Log.e("itemOptionList",set.toString())
 
                             val optionSet = OptionSet()
                             optionSet.name = getString(R.string.tv_select_option_set)
@@ -121,7 +120,56 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
 
 
         })
+
     }
+
+    private fun createOptionSets() {
+        elements = arrayListOf()
+
+        for (i in 0 until itemOptionList.size) {
+            val list: MutableList<String> = mutableListOf()
+
+            for (j in itemOptionList[i].options.indices) {
+                list.add(itemOptionList[i].options.get(j).name)
+
+            }
+            elements.add(list.toTypedArray())
+
+        }
+
+        val immutableElements: List<ImmutableList<String>> =
+            makeListImmutable(elements)
+
+        val cartesianProduct: List<List<String>> =
+            Lists.cartesianProduct(immutableElements)
+
+        println(cartesianProduct)
+    }
+
+
+    /**
+     * @param values the list of all profiles provided by the client in matrix.json
+     * @return the list of ImmutableList to compute the Cartesian product of values
+     */
+    private fun makeListImmutable(values: List<Array<String>>): List<ImmutableList<String>> {
+        val converted: MutableList<ImmutableList<String>> = LinkedList()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            values.forEach(Consumer { array: Array<String>? ->
+                converted.add(
+                    ImmutableList.copyOf(array)
+                )
+            })
+        }
+        return converted
+    }
+
+
+    fun cartesianProduct(a: Set<*>, b: Set<*>, vararg sets: Set<*>): Set<List<*>> =
+        (setOf(a, b).plus(sets))
+            .fold(listOf(listOf<Any?>())) { acc, set ->
+                acc.flatMap { list -> set.map { element -> list + element } }
+            }
+            .toSet()
 
     private fun setUpOptionSpinnerAdapter(orderTypeList: ArrayList<String>) {
 
@@ -161,9 +209,9 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
             selectedOptionSetNameAdapter.addOptions(itemOptionList[position])
             Log.d("options", "::" + itemOptionList[position].options)
 
-           /*Log.e("addOptions", setOf( itemOptionList[position].options.map {
-               it.name
-           }).toString())*/
+            /*Log.e("addOptions", setOf( itemOptionList[position].options.map {
+                it.name
+            }).toString())*/
 
 
 
