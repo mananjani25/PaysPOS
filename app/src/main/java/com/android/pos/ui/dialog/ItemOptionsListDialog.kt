@@ -35,8 +35,8 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
     private lateinit var spinnerAdapter: ArrayAdapter<String>
     private var roleName = ArrayList<String>()
     private lateinit var binding: FragmentItemOptionsListBinding
-    private var finalVariationList = ArrayList<List<Option>>()
-    private var variationList = ArrayList<String>()
+    private var variationList = ArrayList<List<Option>>()
+    private var finalvariationList = ArrayList<String>()
     private lateinit var selectedOptionSetNameAdapter: SelectedOptionSetNameAdapter
     private lateinit var itemOptionList: ArrayList<OptionSet>
     private val viewModel by viewModels<OptionSetViewModel>()
@@ -221,53 +221,20 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
         }
 
         if (spinnerTouched) {
+            finalvariationList.clear()
             selectedOptionSetNameAdapter.addOptions(itemOptionList[position])
             Log.d("options", "::" + itemOptionList[position].options)
 
-            /* val a = VariationListModel()
-             a.data = itemOptionList[position].options*/
-            finalVariationList.add(itemOptionList[position].options)
-            Log.e("optionsvariation", "::$finalVariationList")
+            variationList.add(itemOptionList[position].options)
+            Log.e("optionsvariation", "::$variationList")
 
 
-            val product = computeCombinations(finalVariationList)
-            /*val employees = permissionList[position].employees?.map { it.name }
-            itemBinding.teamMemberList.text = TextUtils.join(",", employees!!)*/
-
-            /* val builder = StringBuilder()
-             product?.forEach {
-                 it.map {
-                     builder.append(it.name.trim() + ",")
-                 }
-
-             }
-             val finalVariation = builder.substring(0, builder.length - 1).toString()
-
-             Log.e("optionsvariationoutside", "::$finalVariation")*/
-            val builder = StringBuilder()
+            val product = computeCombinations(variationList)
             product?.forEach {
-                it.forEach {
-                    variationList.add(builder.append(it.name.trim() + ",").toString())
+                it.map {
+                    finalvariationList.add(it.name)
                 }
             }
-            Log.e("optionsvariationoutside", "::$variationList")
-            /* product?.forEach {
-
-                 it.map {
-                     it.name
-                 }
-             }*/
-            /* val of = setOf(finalVariationList)
-             val cartesianProductNew = cartesianProduct(of)
-             println(cartesianProductNew)
-             Log.d("options", "::" + cartesianProductNew)*/
-
-            /*Log.e("addOptions", setOf(itemOptionList[0].options.map {
-                it.name
-            }).toString())*/
-            /*Log.e("addOptions", setOf( itemOptionList[position].options.map {
-                it.name
-            }).toString())*/
 
             if (itemOptionList[position].name == binding.spOptions.selectedItem) {
                 roleName.removeAt(position)
