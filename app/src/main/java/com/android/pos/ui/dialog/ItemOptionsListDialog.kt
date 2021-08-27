@@ -2,6 +2,7 @@ package com.android.pos.ui.dialog
 
 import android.graphics.Point
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -10,13 +11,12 @@ import androidx.fragment.app.viewModels
 import com.android.pos.R
 import com.android.pos.data.entities.OptionSet
 import com.android.pos.databinding.FragmentItemOptionsListBinding
-import com.android.pos.ui.adapter.OptionListAdapter
-import com.android.pos.ui.adapter.SelectedItemOptionsListAdapter
 import com.android.pos.ui.fragments.inventory.OptionSetViewModel
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 import android.view.MotionEvent
+import com.android.pos.ui.adapter.SelectedOptionSetNameAdapter
 
 
 @AndroidEntryPoint
@@ -25,7 +25,7 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
     private var roleName = ArrayList<String>()
     private lateinit var binding: FragmentItemOptionsListBinding
 
-    private lateinit var adapter: SelectedItemOptionsListAdapter
+    private lateinit var selectedOptionSetNameAdapter: SelectedOptionSetNameAdapter
     private lateinit var itemOptionList: ArrayList<OptionSet>
     private val viewModel by viewModels<OptionSetViewModel>()
     private var spinnerTouched = false
@@ -76,8 +76,9 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
 
 
     private fun setAdapter() {
-        adapter = SelectedItemOptionsListAdapter()
-        binding.rvOptonList.adapter = adapter
+        selectedOptionSetNameAdapter = SelectedOptionSetNameAdapter()
+        binding.rvOptonSetList.adapter = selectedOptionSetNameAdapter
+
     }
 
     private fun optionSetObserver() {
@@ -90,6 +91,17 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
                         it.data?.let { it1 ->
                             itemOptionList =
                                 it1 as ArrayList<OptionSet>
+
+                            var set = mutableSetOf<String>()
+
+                            itemOptionList.forEach {option->
+
+                                option.options.forEach {
+                                    set.add(it.name)
+                                }
+                            }
+
+                            Log.e("itemOptionList",set.toString())
 
                             val optionSet = OptionSet()
                             optionSet.name = getString(R.string.tv_select_option_set)
@@ -146,7 +158,15 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
         }
 
         if (spinnerTouched) {
-            adapter.addOptions(itemOptionList[position].options)
+            selectedOptionSetNameAdapter.addOptions(itemOptionList[position])
+            Log.d("options", "::" + itemOptionList[position].options)
+
+           /*Log.e("addOptions", setOf( itemOptionList[position].options.map {
+               it.name
+           }).toString())*/
+
+
+
             if (itemOptionList[position].name == binding.spOptions.selectedItem) {
                 roleName.removeAt(position)
                 itemOptionList.removeAt(position)

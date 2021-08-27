@@ -60,12 +60,6 @@ class TransactionAdapter(val viewModel: TransactionViewModel) :
     inner class MyViewHolder(val discountItemBinding: ViewTransactionItemBinding) :
         RecyclerView.ViewHolder(discountItemBinding.root) {
 
-        /*init {
-            discountItemBinding.imgCheckBox.setOnClickListener {
-                serviceChargeList[layoutPosition].isChecked = !serviceChargeList[layoutPosition].isChecked
-                notifyDataSetChanged()
-            }
-        }*/
     }
 
     override fun getFilter(): Filter {

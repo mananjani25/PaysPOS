@@ -4,14 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingDefaultResource">
 
-    <data>
-
-        <variable
-            name="model"
-            type="com.android.pos.data.entities.Option" />
-    </data>
-
-
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -29,15 +21,23 @@
             android:padding="@dimen/_5sdp">
 
             <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvOptionSetName"
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:gravity="start"
-                android:text="@{model.name}"
                 android:textColor="@color/viewTextColor"
                 android:textSize="@dimen/_5mdpi"
                 tools:text="Image one" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvOptionList"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/spOptions"
+                android:layout_marginTop="@dimen/_5sdp"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
 
         </androidx.appcompat.widget.LinearLayoutCompat>

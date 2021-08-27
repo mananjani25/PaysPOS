@@ -1,29 +1,22 @@
 package com.android.pos.ui.adapter
 
-import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.Filter
-import android.widget.Filterable
 import androidx.recyclerview.widget.RecyclerView
-import com.android.pos.R
 import com.android.pos.data.entities.Option
-import com.android.pos.data.entities.TbCategory
-import com.android.pos.databinding.ViewCategoryBinding
+import com.android.pos.data.entities.OptionSet
 import com.android.pos.databinding.ViewSelectedItemOptionListBinding
-import java.util.*
 import kotlin.collections.ArrayList
 
-class SelectedItemOptionsListAdapter :
+class SelectedItemOptionsListAdapter(val options: List<Option>) :
     RecyclerView.Adapter<SelectedItemOptionsListAdapter.MyViewHolder>() {
-    var optionList = ArrayList<Option>()
 
-    inner class MyViewHolder(private val binding: ViewSelectedItemOptionListBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+    inner class MyViewHolder(val optionSetBinding: ViewSelectedItemOptionListBinding) :
+        RecyclerView.ViewHolder(optionSetBinding.root) {
 
         fun bind(item: Option) {
-            binding.model = item
-            binding.executePendingBindings()
+            optionSetBinding.model = item
+            optionSetBinding.executePendingBindings()
 
         }
     }
@@ -43,19 +36,13 @@ class SelectedItemOptionsListAdapter :
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.bind(optionList[position])
+        holder.bind(options[position])
+
 
     }
 
     override fun getItemCount(): Int {
-        return optionList.size
+        return options.size
     }
 
-    fun addOptions(optionList: List<Option>) {
-        this.optionList.apply {
-          //  clear()
-            addAll(optionList)
-        }
-        notifyDataSetChanged()
-    }
 }
