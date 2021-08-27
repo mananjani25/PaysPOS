@@ -18,7 +18,6 @@ import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.statusUtils.Status
 import com.google.common.collect.ImmutableList
 import com.google.common.collect.Lists
-import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 import java.util.function.Consumer
@@ -28,7 +27,6 @@ import kotlin.collections.ArrayList
 @AndroidEntryPoint
 class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListener {
 
-    private lateinit var elements: ArrayList<Array<String>>
     private lateinit var spinnerAdapter: ArrayAdapter<String>
     private var roleName = ArrayList<String>()
     private lateinit var binding: FragmentItemOptionsListBinding
@@ -56,6 +54,11 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
         })
 
         binding.txtDone.setOnClickListener {
+
+            if (selectedOptionSetNameAdapter.optionSetList.size > 0) {
+
+                createOptionSets(selectedOptionSetNameAdapter.optionSetList)
+            }
 
         }
 
@@ -123,14 +126,14 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
 
     }
 
-    private fun createOptionSets() {
-        elements = arrayListOf()
+    private fun createOptionSets(optionSetList: ArrayList<OptionSet>) {
+        val elements: ArrayList<Array<String>> = arrayListOf()
 
-        for (i in 0 until itemOptionList.size) {
+        for (i in 0 until optionSetList.size) {
             val list: MutableList<String> = mutableListOf()
 
-            for (j in itemOptionList[i].options.indices) {
-                list.add(itemOptionList[i].options.get(j).name)
+            for (j in optionSetList[i].options.indices) {
+                list.add(optionSetList[i].options.get(j).name)
 
             }
             elements.add(list.toTypedArray())
@@ -144,6 +147,10 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
             Lists.cartesianProduct(immutableElements)
 
         println(cartesianProduct)
+
+        cartesianProduct.forEach {
+            Log.e("cartesianProduct", it.joinToString { it })
+        }
     }
 
 
@@ -208,13 +215,6 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
         if (spinnerTouched) {
             selectedOptionSetNameAdapter.addOptions(itemOptionList[position])
             Log.d("options", "::" + itemOptionList[position].options)
-
-            /*Log.e("addOptions", setOf( itemOptionList[position].options.map {
-                it.name
-            }).toString())*/
-
-
-
             if (itemOptionList[position].name == binding.spOptions.selectedItem) {
                 roleName.removeAt(position)
                 itemOptionList.removeAt(position)
