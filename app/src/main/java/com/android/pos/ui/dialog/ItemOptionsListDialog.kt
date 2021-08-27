@@ -1,7 +1,9 @@
 package com.android.pos.ui.dialog
 
 import android.graphics.Point
+import android.os.Build
 import android.os.Bundle
+import android.text.TextUtils
 import android.util.Log
 import android.view.*
 import android.widget.AdapterView
@@ -16,7 +18,23 @@ import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 import android.view.MotionEvent
+import com.android.pos.data.entities.Option
+import com.android.pos.data.model.VariationListModel
 import com.android.pos.ui.adapter.SelectedOptionSetNameAdapter
+
+import java.util.*
+import java.util.Arrays.asList
+import kotlin.collections.ArrayList
+import kotlin.reflect.KFunction
+import java.util.Collections.emptyList
+import java.util.function.Function
+
+import java.util.stream.Collectors.toList
+import java.util.stream.Stream
+import java.util.Arrays.asList
+import java.util.Collections.emptyList
+import java.util.Optional.of
+import java.util.stream.Collectors.toList
 
 
 @AndroidEntryPoint
@@ -24,7 +42,8 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
     private lateinit var spinnerAdapter: ArrayAdapter<String>
     private var roleName = ArrayList<String>()
     private lateinit var binding: FragmentItemOptionsListBinding
-
+    private var finalVariationList = ArrayList<List<Option>>()
+    private var variationList = ArrayList<String>()
     private lateinit var selectedOptionSetNameAdapter: SelectedOptionSetNameAdapter
     private lateinit var itemOptionList: ArrayList<OptionSet>
     private val viewModel by viewModels<OptionSetViewModel>()
@@ -94,14 +113,14 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
 
                             var set = mutableSetOf<String>()
 
-                            itemOptionList.forEach {option->
+                            itemOptionList.forEach { option ->
 
                                 option.options.forEach {
                                     set.add(it.name)
                                 }
                             }
 
-                            Log.e("itemOptionList",set.toString())
+                            Log.e("itemOptionList", set.toString())
 
                             val optionSet = OptionSet()
                             optionSet.name = getString(R.string.tv_select_option_set)
@@ -161,11 +180,47 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
             selectedOptionSetNameAdapter.addOptions(itemOptionList[position])
             Log.d("options", "::" + itemOptionList[position].options)
 
-           /*Log.e("addOptions", setOf( itemOptionList[position].options.map {
-               it.name
-           }).toString())*/
+            /* val a = VariationListModel()
+             a.data = itemOptionList[position].options*/
+            finalVariationList.add(itemOptionList[position].options)
+            Log.e("optionsvariation", "::$finalVariationList")
 
 
+            val product = computeCombinations2(finalVariationList)
+            /*val employees = permissionList[position].employees?.map { it.name }
+            itemBinding.teamMemberList.text = TextUtils.join(",", employees!!)*/
+
+            /* val builder = StringBuilder()
+             product?.forEach {
+                 it.map {
+                     builder.append(it.name.trim() + ",")
+                 }
+
+             }
+             val finalVariation = builder.substring(0, builder.length - 1).toString()
+
+             Log.e("optionsvariationoutside", "::$finalVariation")*/
+            val builder = StringBuilder()
+            product?.forEach {
+                it.forEach {
+                    variationList.add(builder.append(it.name.trim() + ",").toString())
+                }
+            }
+            Log.e("optionsvariationoutside", "::$variationList")
+            /* product?.forEach {
+
+                 it.map {
+                     it.name
+                 }
+             }*/
+            /* val of = setOf(finalVariationList)
+             val cartesianProductNew = cartesianProduct(of)
+             println(cartesianProductNew)
+             Log.d("options", "::" + cartesianProductNew)*/
+
+            /*Log.e("addOptions", setOf(itemOptionList[0].options.map {
+                it.name
+            }).toString())*/
 
             if (itemOptionList[position].name == binding.spOptions.selectedItem) {
                 roleName.removeAt(position)
@@ -178,8 +233,69 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
 
     }
 
+    private fun cartesianProductNew(finalVariationList: ArrayList<List<Option>>): List<Pair<List<Option>, List<Option>>> {
+        val pairs = finalVariationList.withIndex().flatMap { (i1, e1) ->
+            finalVariationList.withIndex().filter { (i2, _) ->
+                i1 != i2
+            }.map { (_, e2) ->
+                Pair(e1, e2)
+            }
+        }
+
+        Log.d("finalVariationList", "::$finalVariationList")
+        return pairs
+
+    }
+
     override fun onNothingSelected(parent: AdapterView<*>?) {
 
     }
+
+    fun <T> computeCombinations2(lists: List<List<T>>): List<List<T>>? {
+        var combinations: List<List<T>> = Arrays.asList(Arrays.asList())
+        for (list in lists) {
+            val extraColumnCombinations: MutableList<List<T>> = ArrayList()
+            for (combination in combinations) {
+                for (element in list) {
+                    val newCombination: MutableList<T> = ArrayList(combination)
+                    newCombination.add(element)
+                    extraColumnCombinations.add(newCombination)
+                }
+            }
+            combinations = extraColumnCombinations
+        }
+        return combinations
+    }
+
+    fun cartesianProduct(a: Set<*>, vararg sets: Set<*>): Set<List<*>> =
+        (setOf(a).plus(sets))
+            .fold(listOf(listOf<Any?>())) { acc, set ->
+                acc.flatMap { list -> set.map { element -> list + element } }
+            }
+            .toSet()
+
+
+    fun <T, U> cartesianProduct(c1: Collection<T>, c2: Collection<U>): List<Pair<T, U>> {
+        return c1.flatMap { lhsElem -> c2.map { rhsElem -> lhsElem to rhsElem } }
+    }
+
+    /*fun <T> cartesianProductLatest(i: Int, vararg a: List<T>): List<List<T>> {
+        if (i == a.size) {
+            val result: MutableList<List<T>> = ArrayList()
+            result.add(ArrayList())
+            return result
+        }
+        val next = cartesianProductLatest(i + 1, *a)
+        val result: MutableList<List<T>> = ArrayList()
+        for (j in a[i].indices) {
+            for (k in next.indices) {
+                val concat: MutableList<T> = ArrayList()
+                concat.add(a[i][j])
+                concat.addAll(next[k])
+                result.add(concat)
+            }
+        }
+        return result
+    }*/
 
 }
