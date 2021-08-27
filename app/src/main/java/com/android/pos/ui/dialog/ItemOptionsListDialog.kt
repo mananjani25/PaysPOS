@@ -3,7 +3,6 @@ package com.android.pos.ui.dialog
 import android.graphics.Point
 import android.os.Build
 import android.os.Bundle
-import android.text.TextUtils
 import android.util.Log
 import android.view.*
 import android.widget.AdapterView
@@ -19,10 +18,7 @@ import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.statusUtils.Status
 import com.google.common.collect.ImmutableList
 import com.google.common.collect.Lists
-import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
-import android.view.MotionEvent
-import com.android.pos.data.entities.Option
 import java.util.*
 import java.util.function.Consumer
 import kotlin.collections.ArrayList
@@ -31,12 +27,10 @@ import kotlin.collections.ArrayList
 @AndroidEntryPoint
 class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListener {
 
-    private lateinit var elements: ArrayList<Array<String>>
     private lateinit var spinnerAdapter: ArrayAdapter<String>
     private var roleName = ArrayList<String>()
     private lateinit var binding: FragmentItemOptionsListBinding
-    private var variationList = ArrayList<List<Option>>()
-    private var finalvariationList = ArrayList<String>()
+
     private lateinit var selectedOptionSetNameAdapter: SelectedOptionSetNameAdapter
     private lateinit var itemOptionList: ArrayList<OptionSet>
     private val viewModel by viewModels<OptionSetViewModel>()
@@ -60,6 +54,11 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
         })
 
         binding.txtDone.setOnClickListener {
+
+            if (selectedOptionSetNameAdapter.optionSetList.size > 0) {
+
+                createOptionSets(selectedOptionSetNameAdapter.optionSetList)
+            }
 
         }
 
@@ -106,17 +105,6 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
                             itemOptionList =
                                 it1 as ArrayList<OptionSet>
 
-                            var set = mutableSetOf<String>()
-
-                            itemOptionList.forEach { option ->
-
-                                option.options.forEach {
-                                    set.add(it.name)
-                                }
-                            }
-
-                            Log.e("itemOptionList", set.toString())
-
                             val optionSet = OptionSet()
                             optionSet.name = getString(R.string.tv_select_option_set)
                             itemOptionList.add(0, optionSet)
@@ -138,14 +126,14 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
 
     }
 
-    private fun createOptionSets() {
-        elements = arrayListOf()
+    private fun createOptionSets(optionSetList: ArrayList<OptionSet>) {
+        val elements: ArrayList<Array<String>> = arrayListOf()
 
-        for (i in 0 until itemOptionList.size) {
+        for (i in 0 until optionSetList.size) {
             val list: MutableList<String> = mutableListOf()
 
-            for (j in itemOptionList[i].options.indices) {
-                list.add(itemOptionList[i].options.get(j).name)
+            for (j in optionSetList[i].options.indices) {
+                list.add(optionSetList[i].options.get(j).name)
 
             }
             elements.add(list.toTypedArray())
@@ -159,6 +147,10 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
             Lists.cartesianProduct(immutableElements)
 
         println(cartesianProduct)
+
+        cartesianProduct.forEach {
+            Log.e("cartesianProduct", it.joinToString { it })
+        }
     }
 
 
@@ -221,21 +213,8 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
         }
 
         if (spinnerTouched) {
-            finalvariationList.clear()
             selectedOptionSetNameAdapter.addOptions(itemOptionList[position])
             Log.d("options", "::" + itemOptionList[position].options)
-
-            variationList.add(itemOptionList[position].options)
-            Log.e("optionsvariation", "::$variationList")
-
-
-            val product = computeCombinations(variationList)
-            product?.forEach {
-                it.map {
-                    finalvariationList.add(it.name)
-                }
-            }
-
             if (itemOptionList[position].name == binding.spOptions.selectedItem) {
                 roleName.removeAt(position)
                 itemOptionList.removeAt(position)
@@ -247,24 +226,8 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
 
     }
 
-
     override fun onNothingSelected(parent: AdapterView<*>?) {
 
     }
 
-    fun <T> computeCombinations(lists: List<List<T>>): List<List<T>>? {
-        var combinations: List<List<T>> = Arrays.asList(Arrays.asList())
-        for (list in lists) {
-            val extraColumnCombinations: MutableList<List<T>> = ArrayList()
-            for (combination in combinations) {
-                for (element in list) {
-                    val newCombination: MutableList<T> = ArrayList(combination)
-                    newCombination.add(element)
-                    extraColumnCombinations.add(newCombination)
-                }
-            }
-            combinations = extraColumnCombinations
-        }
-        return combinations
-    }
 }

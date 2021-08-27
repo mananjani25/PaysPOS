@@ -33,7 +33,7 @@
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:text="@string/tv_options"
-                android:textSize="@dimen/_7mdpi" />
+                android:textSize="@dimen/_6mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtDone"
@@ -44,13 +44,13 @@
                 android:layout_gravity="center"
                 android:background="@color/btnColor"
                 android:gravity="center"
-                android:paddingStart="@dimen/_25sdp"
+                android:paddingStart="@dimen/_10sdp"
                 android:paddingTop="@dimen/_5sdp"
-                android:paddingEnd="@dimen/_25sdp"
+                android:paddingEnd="@dimen/_10sdp"
                 android:paddingBottom="@dimen/_5sdp"
                 android:text="@string/tv_create_variation"
                 android:textColor="@color/white"
-                android:textSize="@dimen/_7mdpi" />
+                android:textSize="@dimen/_6mdpi" />
 
         </RelativeLayout>
 
