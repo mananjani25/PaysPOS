@@ -23,25 +23,9 @@ import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import android.view.MotionEvent
 import com.android.pos.data.entities.Option
-import com.android.pos.data.model.VariationListModel
-import com.android.pos.ui.adapter.SelectedOptionSetNameAdapter
 import java.util.*
 import java.util.function.Consumer
 import kotlin.collections.ArrayList
-
-import java.util.*
-import java.util.Arrays.asList
-import kotlin.collections.ArrayList
-import kotlin.reflect.KFunction
-import java.util.Collections.emptyList
-import java.util.function.Function
-
-import java.util.stream.Collectors.toList
-import java.util.stream.Stream
-import java.util.Arrays.asList
-import java.util.Collections.emptyList
-import java.util.Optional.of
-import java.util.stream.Collectors.toList
 
 
 @AndroidEntryPoint
@@ -246,7 +230,7 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
             Log.e("optionsvariation", "::$finalVariationList")
 
 
-            val product = computeCombinations2(finalVariationList)
+            val product = computeCombinations(finalVariationList)
             /*val employees = permissionList[position].employees?.map { it.name }
             itemBinding.teamMemberList.text = TextUtils.join(",", employees!!)*/
 
@@ -296,25 +280,12 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
 
     }
 
-    private fun cartesianProductNew(finalVariationList: ArrayList<List<Option>>): List<Pair<List<Option>, List<Option>>> {
-        val pairs = finalVariationList.withIndex().flatMap { (i1, e1) ->
-            finalVariationList.withIndex().filter { (i2, _) ->
-                i1 != i2
-            }.map { (_, e2) ->
-                Pair(e1, e2)
-            }
-        }
-
-        Log.d("finalVariationList", "::$finalVariationList")
-        return pairs
-
-    }
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
 
     }
 
-    fun <T> computeCombinations2(lists: List<List<T>>): List<List<T>>? {
+    fun <T> computeCombinations(lists: List<List<T>>): List<List<T>>? {
         var combinations: List<List<T>> = Arrays.asList(Arrays.asList())
         for (list in lists) {
             val extraColumnCombinations: MutableList<List<T>> = ArrayList()
@@ -329,36 +300,4 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
         }
         return combinations
     }
-
-    fun cartesianProduct(a: Set<*>, vararg sets: Set<*>): Set<List<*>> =
-        (setOf(a).plus(sets))
-            .fold(listOf(listOf<Any?>())) { acc, set ->
-                acc.flatMap { list -> set.map { element -> list + element } }
-            }
-            .toSet()
-
-
-    fun <T, U> cartesianProduct(c1: Collection<T>, c2: Collection<U>): List<Pair<T, U>> {
-        return c1.flatMap { lhsElem -> c2.map { rhsElem -> lhsElem to rhsElem } }
-    }
-
-    /*fun <T> cartesianProductLatest(i: Int, vararg a: List<T>): List<List<T>> {
-        if (i == a.size) {
-            val result: MutableList<List<T>> = ArrayList()
-            result.add(ArrayList())
-            return result
-        }
-        val next = cartesianProductLatest(i + 1, *a)
-        val result: MutableList<List<T>> = ArrayList()
-        for (j in a[i].indices) {
-            for (k in next.indices) {
-                val concat: MutableList<T> = ArrayList()
-                concat.add(a[i][j])
-                concat.addAll(next[k])
-                result.add(concat)
-            }
-        }
-        return result
-    }*/
-
 }
