@@ -143,4 +143,6 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
     implementation "com.github.skydoves:powermenu:2.0.6"
+
+    implementation("com.google.guava:guava:30.1.1-android")
 }
