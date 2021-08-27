@@ -132,6 +132,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         observeShowProgress()
         setupSnackbar()
         getBackstack()
+        swipeListener()
 
         binding.layoutCart.llShowMenu.setOnClickListener(this)
         binding.layoutCart.txtCrtNewCustomer.setOnClickListener(this)
@@ -215,65 +216,11 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
             }
         }
-    }
 
-    private fun getBackstack() {
-        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<String>(Constants.KEY)
-            ?.observe(viewLifecycleOwner) { it ->
-
-                if (it == MANUALSALE) {
-                    hideOrderType()
-
-
-                }
-            }
-    }
-
-    private fun getOrderTypes() {
-        orderTypeAdapter = OrderTypeAdapter()
-        orderTypeAdapter.setCallback(this)
-        binding.rvOrderType.adapter = orderTypeAdapter
-
-
-
-        viewModel.orderTypes().observe(requireActivity(), {
-            Log.e("ORDER_TYPE_SIZE", it.data?.size.toString())
-            it.data?.let { it1 -> orderTypeAdapter.addAll(it1) }
-        })
 
     }
 
-    private fun getServiceCharges() {
-
-        viewModel.serviceCharges.observe(requireActivity(), {
-            serviceChargesList = it.data
-
-            getCartList()
-
-        })
-    }
-
-    private fun hideMenu() {
-        if (binding.layoutCart.llCustomerDialog.visibility == View.VISIBLE) {
-            binding.layoutCart.llCustomerDialog.visibility = View.GONE
-        } else {
-            binding.layoutCart.llCustomerDialog.visibility = View.VISIBLE
-        }
-    }
-
-    private fun hideOrderMenu() {
-        if (binding.layoutCart.llOrderMenu.visibility == View.VISIBLE) {
-            binding.layoutCart.llOrderMenu.visibility = View.GONE
-        } else {
-            binding.layoutCart.llOrderMenu.visibility = View.VISIBLE
-        }
-    }
-
-    private fun getCartList() {
-
-        cartAdapter = CartAdapter()
-        cartAdapter.setCallback(this)
-        binding.layoutCart.rvCart.adapter = cartAdapter
+    private fun swipeListener() {
 
         object : SwipeHelper(activity, binding.layoutCart.rvCart) {
             override fun instantiateUnderlayButton(
@@ -398,6 +345,65 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     })
             }
         }
+    }
+
+    private fun getBackstack() {
+        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<String>(Constants.KEY)
+            ?.observe(viewLifecycleOwner) { it ->
+
+                if (it == MANUALSALE) {
+                    hideOrderType()
+
+
+                }
+            }
+    }
+
+    private fun getOrderTypes() {
+        orderTypeAdapter = OrderTypeAdapter()
+        orderTypeAdapter.setCallback(this)
+        binding.rvOrderType.adapter = orderTypeAdapter
+
+
+
+        viewModel.orderTypes().observe(requireActivity(), {
+            Log.e("ORDER_TYPE_SIZE", it.data?.size.toString())
+            it.data?.let { it1 -> orderTypeAdapter.addAll(it1) }
+        })
+
+    }
+
+    private fun getServiceCharges() {
+
+        viewModel.serviceCharges.observe(requireActivity(), {
+            serviceChargesList = it.data
+
+            getCartList()
+
+        })
+    }
+
+    private fun hideMenu() {
+        if (binding.layoutCart.llCustomerDialog.visibility == View.VISIBLE) {
+            binding.layoutCart.llCustomerDialog.visibility = View.GONE
+        } else {
+            binding.layoutCart.llCustomerDialog.visibility = View.VISIBLE
+        }
+    }
+
+    private fun hideOrderMenu() {
+        if (binding.layoutCart.llOrderMenu.visibility == View.VISIBLE) {
+            binding.layoutCart.llOrderMenu.visibility = View.GONE
+        } else {
+            binding.layoutCart.llOrderMenu.visibility = View.VISIBLE
+        }
+    }
+
+    private fun getCartList() {
+
+        cartAdapter = CartAdapter()
+        cartAdapter.setCallback(this)
+        binding.layoutCart.rvCart.adapter = cartAdapter
 
         viewModel.mAllWords(prefProvider.getValue(ORDER_TYPE, "").toString()).observe(
             requireActivity(), {
