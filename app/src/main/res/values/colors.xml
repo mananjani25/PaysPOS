@@ -91,4 +91,7 @@
     <color name="colorM1">#F7F7F7</color>
     <color name="colorMB">#E6E8E9</color>
     <color name="colorGreen">#11C754</color>
+    <color name="delete">#FF3C30</color>
+    <color name="addNote">#FA9905</color>
+    <color name="addDiscount">#2997cc</color>
 </resources>

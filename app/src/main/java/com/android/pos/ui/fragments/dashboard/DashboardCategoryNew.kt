@@ -21,6 +21,7 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
@@ -44,10 +45,10 @@ import com.android.pos.data.remote.Constants.UPDATE
 import com.android.pos.data.remote.Constants.VERTICAL
 import com.android.pos.databinding.FragmentDashboardCategoryNewBinding
 import com.android.pos.di.PrefProvider
+import com.android.pos.ui.activities.SwipeHelper
 import com.android.pos.ui.adapter.*
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
-import com.android.pos.utils.SwipeHelper
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.callback.MyCallback
 import com.android.pos.utils.extensions.alert
@@ -63,6 +64,7 @@ import javax.inject.Inject
 class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, MyCallback,
     ItemCallback, View.OnClickListener {
 
+    private var popupWindow: PopupWindow? = null
     private var orderType: TbOrderType? = null
     private var future_delivery_date: String? = null
     private var assignCustomer: TbCustomer? = null
@@ -222,130 +224,25 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     private fun swipeListener() {
 
-        object : SwipeHelper(activity, binding.layoutCart.rvCart) {
-            override fun instantiateUnderlayButton(
-                viewHolder: RecyclerView.ViewHolder?,
-                underlayButtons: MutableList<UnderlayButton?>
-            ) {
-                underlayButtons.add(UnderlayButton(
-                    "Add Note",
-                    0,
-                    Color.parseColor("#FA9905")
-                ) { pos ->
 
-
-                    setFragmentResultListener("request_key_note") { requestKey: String, bundle: Bundle ->
-                        val note = bundle.getString("note")
-
-                        singleItem!!.note = note.toString()
-                        singleItem?.let { viewModel.cartLogic(cartList, it, UPDATE) }
-                    }
-
-                    singleItem = cartAdapter.getItem(pos)
-                    val bundle = Bundle().apply {
-                        putString("note", singleItem!!.note)
-                    }
-
-                    findNavController().navigate(
-                        R.id.action_dashboardCategoryNew_to_addNoteDialog,
-                        bundle
-                    )
-                })
-
-
-                underlayButtons.add(UnderlayButton(
-                    "Add Discount",
-                    0,
-                    Color.parseColor("#2997cc")
-                ) { pos ->
-                    val data = cartAdapter.getItem(pos)
-
-                    setFragmentResultListener("request_key_discount_details") { requestKey: String, bundle: Bundle ->
-                        val result = bundle.getParcelable<TbDiscount>("data")
-
-                        if (result != null) {
-                            Log.e(TAG, "GetDiscountResult:  ${Gson().toJson(result)}")
-                            if (result.discountType == requireContext().getString(R.string.disc_percentage)) {
-
-                                data.discountPrice = calculateDiscountPercentage(
-                                    totalPrice(data),
-                                    result.percentage
-                                )
-
-                                data.discountId = result.id
-                                data.discountType = result.discountType
-                                data.isManualSales = false
-                                Log.e(TAG, "insideDiscountmodel:  ${Gson().toJson(data)}")
-                                viewModel.cartLogic(cartList, data, UPDATE)
-
-
-                            } else if (data.price > result.percentage) {
-
-                                data.discountPrice = result.percentage
-                                data.discountId = 0
-                                data.discountType = result.discountType
-                                data.isManualSales = false
-                                // discountPrice = data.discountPrice
-
-                                viewModel.cartLogic(cartList, data, UPDATE)
-
-                            } else {
-                                /*  data.discountPrice = 0.0
-                                  data.discountType = ""
-                                  data.isManualSales = false
-                                  data.discountId = 0
-                                  discountPrice = data.discountPrice*/
-
-                            }
-
-                        } else {
-                            data.discountPrice = 0.0
-                            data.discountType = ""
-                            data.isManualSales = false
-                            data.discountId = 0
-                            viewModel.cartLogic(cartList, data, UPDATE)
-                        }
-
-                    }
-
-                    val bundle = Bundle().apply {
-                        putBoolean("isFromDetails", true)
-                        putParcelable("model", cartAdapter.getItem(pos))
-                    }
-
-                    findNavController().navigate(
-                        R.id.action_dashboardCategoryNew_to_addDiscountDialog,
-                        bundle
-                    )
-
-                })
-
-
-                underlayButtons.add(
-                    UnderlayButton(
-                        "Delete",
-                        0,
-                        Color.parseColor("#FF3C30")
-                    ) { pos ->
-
-                        alert(
-                            getString(R.string.app_name),
-                            getString(R.string.delete_item_message)
-                        ) {
-                            positiveButton(getString(R.string.tv_delete)) {
-                                // Do positive stuff here
-                                val item = cartAdapter.getItem(pos)
-                                cartAdapter.removeItem(pos)
-                                viewModel.cartLogic(cartList, item, DELETE)
-                            }
-                            negativeButton(R.string.tv_cancel) {
-                                // Do negative stuff here
-                            }
-                        }
-                    })
+        val itemTouchHelper = ItemTouchHelper(object : SwipeHelper(binding.layoutCart.rvCart) {
+            override fun instantiateUnderlayButton(position: Int): List<UnderlayButton> {
+                var buttons = listOf<UnderlayButton>()
+                val deleteButton = deleteButton(position)
+                val markAsUnreadButton = markAsUnreadButton(position)
+                val archiveButton = archiveButton(position)
+                when (position) {
+                    0 -> buttons = listOf(deleteButton, markAsUnreadButton, archiveButton)
+                    else -> Unit
+                }
+                return buttons
             }
-        }
+        })
+
+        itemTouchHelper.attachToRecyclerView(binding.layoutCart.rvCart)
+
     }
+
 
     private fun getBackstack() {
         findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<String>(Constants.KEY)
@@ -931,19 +828,25 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             viewModel.totalTax
         )
 
-        val popupWindow = PopupWindow(
-            popupView,
-            ViewGroup.LayoutParams.WRAP_CONTENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        )
-        popupWindow.setBackgroundDrawable(BitmapDrawable())
-        popupWindow.isOutsideTouchable = true
+        if (popupWindow == null) {
+            popupWindow = PopupWindow(
+                popupView,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+            popupWindow!!.setBackgroundDrawable(BitmapDrawable())
+            popupWindow!!.isOutsideTouchable = true
 
 
-        popupWindow.setOnDismissListener(PopupWindow.OnDismissListener {
-            //TODO do sth here on dismiss
-        })
-        popupWindow.showAtLocation(view, Gravity.TOP, 600, 650);
+            popupWindow!!.setOnDismissListener(PopupWindow.OnDismissListener {
+                //TODO do sth here on dismiss
+            })
+            popupWindow!!.showAtLocation(view, Gravity.TOP, 600, 650);
+        } else {
+            popupWindow!!.dismiss()
+            popupWindow = null
+        }
+
     }
 
     private fun resetTabbySearch(model: CategorySearchData) {
@@ -1087,7 +990,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         if (data.discountPrice != 0.0) {
             txtTitle.text = data.name + "  $" + String.format(
-                "%.2f", (totalPrice(data) - data.discountPrice))
+                "%.2f", (totalPrice(data) - data.discountPrice)
+            )
         } else {
             if (isItemClick) {
                 txtTitle.text = data.name + "  $" + String.format(
@@ -1379,6 +1283,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             }
 
             R.id.llInfo -> {
+
                 showPopupWindow(v)
             }
 
@@ -1437,5 +1342,132 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         }
     }
 
+
+    private fun deleteButton(position: Int): SwipeHelper.UnderlayButton {
+        return SwipeHelper.UnderlayButton(
+            requireContext(),
+            "Delete",
+            14.0f,
+            R.color.delete,
+            object : SwipeHelper.UnderlayButtonClickListener {
+                override fun onClick() {
+                    alert(
+                        getString(R.string.app_name),
+                        getString(R.string.delete_item_message)
+                    ) {
+                        positiveButton(getString(R.string.tv_delete)) {
+                            // Do positive stuff here
+                            val item = cartAdapter.getItem(position)
+                            cartAdapter.removeItem(position)
+                            viewModel.cartLogic(cartList, item, DELETE)
+                        }
+                        negativeButton(R.string.tv_cancel) {
+                            // Do negative stuff here
+                        }
+                    }
+                }
+            })
+    }
+
+    private fun markAsUnreadButton(position: Int): SwipeHelper.UnderlayButton {
+        return SwipeHelper.UnderlayButton(
+            requireContext(),
+            "addNote",
+            14.0f,
+            R.color.addNote,
+            object : SwipeHelper.UnderlayButtonClickListener {
+                override fun onClick() {
+
+                    setFragmentResultListener("request_key_note") { requestKey: String, bundle: Bundle ->
+                        val note = bundle.getString("note")
+
+                        singleItem!!.note = note.toString()
+                        singleItem?.let { viewModel.cartLogic(cartList, it, UPDATE) }
+                    }
+
+                    singleItem = cartAdapter.getItem(position)
+                    val bundle = Bundle().apply {
+                        putString("note", singleItem!!.note)
+                    }
+
+                    findNavController().navigate(
+                        R.id.action_dashboardCategoryNew_to_addNoteDialog,
+                        bundle
+                    )
+                }
+            })
+    }
+
+    private fun archiveButton(pos: Int): SwipeHelper.UnderlayButton {
+        return SwipeHelper.UnderlayButton(
+            requireContext(),
+            "Add Discount",
+            14.0f,
+            R.color.addDiscount,
+            object : SwipeHelper.UnderlayButtonClickListener {
+                override fun onClick() {
+
+                    val data = cartAdapter.getItem(pos)
+
+                    setFragmentResultListener("request_key_discount_details") { requestKey: String, bundle: Bundle ->
+                        val result = bundle.getParcelable<TbDiscount>("data")
+
+                        if (result != null) {
+                            Log.e(TAG, "GetDiscountResult:  ${Gson().toJson(result)}")
+                            if (result.discountType == requireContext().getString(R.string.disc_percentage)) {
+
+                                data.discountPrice = calculateDiscountPercentage(
+                                    totalPrice(data),
+                                    result.percentage
+                                )
+
+                                data.discountId = result.id
+                                data.discountType = result.discountType
+                                data.isManualSales = false
+                                Log.e(TAG, "insideDiscountmodel:  ${Gson().toJson(data)}")
+                                viewModel.cartLogic(cartList, data, UPDATE)
+
+
+                            } else if (data.price > result.percentage) {
+
+                                data.discountPrice = result.percentage
+                                data.discountId = 0
+                                data.discountType = result.discountType
+                                data.isManualSales = false
+                                // discountPrice = data.discountPrice
+
+                                viewModel.cartLogic(cartList, data, UPDATE)
+
+                            } else {
+                                /*  data.discountPrice = 0.0
+                                  data.discountType = ""
+                                  data.isManualSales = false
+                                  data.discountId = 0
+                                  discountPrice = data.discountPrice*/
+
+                            }
+
+                        } else {
+                            data.discountPrice = 0.0
+                            data.discountType = ""
+                            data.isManualSales = false
+                            data.discountId = 0
+                            viewModel.cartLogic(cartList, data, UPDATE)
+                        }
+
+                    }
+
+                    val bundle = Bundle().apply {
+                        putBoolean("isFromDetails", true)
+                        putParcelable("model", cartAdapter.getItem(pos))
+                    }
+
+                    findNavController().navigate(
+                        R.id.action_dashboardCategoryNew_to_addDiscountDialog,
+                        bundle
+                    )
+                }
+            })
+    }
 
 }
