@@ -7,45 +7,92 @@
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/_10sdp"
         android:orientation="vertical">
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.2dp"
-            android:background="@color/view" />
-
-        <androidx.appcompat.widget.LinearLayoutCompat
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="@dimen/_5sdp">
+            android:orientation="horizontal">
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tvOptionSetName"
-                style="@style/CustomFontMediumStyle"
-                android:layout_width="match_parent"
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:gravity="start"
-                android:textColor="@color/viewTextColor"
-                android:textSize="@dimen/_5mdpi"
-                tools:text="Image one" />
+                android:layout_weight="1"
+                android:background="@drawable/background_sales_charge"
+                android:orientation="vertical">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvOptionList"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_below="@+id/spOptions"
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvOptionSetName"
+                        style="@style/CustomFontMediumStyle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:background="@drawable/background_sales_charge"
+                        android:gravity="start"
+                        android:padding="@dimen/_5sdp"
+                        android:textColor="@color/viewTextColor"
+                        android:textSize="@dimen/_5mdpi"
+                        tools:text="Image one" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_option"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/_5sdp">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontMediumStyle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:gravity="start"
+                        android:text="@string/tv_display_name"
+                        android:textColor="@color/viewTextColor"
+                        android:textSize="@dimen/_5mdpi"
+                        tools:text="Image one" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvDisplayName"
+                        style="@style/CustomFontMediumStyle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:gravity="start"
+                        android:textColor="@color/viewTextColor"
+                        android:textSize="@dimen/_5mdpi"
+                        tools:text="Image one" />
+                </LinearLayout>
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/ivDelete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_5sdp"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+                android:layout_marginLeft="@dimen/_5sdp"
+                android:layout_marginBottom="@dimen/_5sdp"
+                app:srcCompat="@drawable/ic_delete" />
+        </LinearLayout>
 
 
-        </androidx.appcompat.widget.LinearLayoutCompat>
-
-        <View
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvOptionList"
             android:layout_width="match_parent"
-            android:layout_height="0.2dp"
-            android:background="@color/view" />
-
+            android:layout_height="match_parent"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
     </androidx.appcompat.widget.LinearLayoutCompat>
 </layout>

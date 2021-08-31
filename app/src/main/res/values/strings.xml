@@ -492,4 +492,7 @@
     <string name="tv_team_members">Team Members</string>
     <string name="tv_select_option_set">Select Option Set</string>
     <string name="tv_create_variation">Create Variation</string>
+    <string name="tv_variations">Variations</string>
+    <string name="tv_sku">SKU</string>
+    <string name="tv_display_name">Display Name</string>
 </resources>

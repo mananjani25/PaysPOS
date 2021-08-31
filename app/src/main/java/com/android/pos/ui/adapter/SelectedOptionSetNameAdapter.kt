@@ -39,7 +39,8 @@ class SelectedOptionSetNameAdapter :
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val itemBinding = holder.optiosetNameBinding
 
-        itemBinding.tvOptionSetName.text = optionSetList[position].name
+        itemBinding.tvOptionSetName.text = optionSetList[position].name + " Options"
+        itemBinding.tvDisplayName.text = optionSetList[position].name
         selectOptionListAdapter = SelectedItemOptionsListAdapter(optionSetList[position].options)
         itemBinding.rvOptionList.adapter = selectOptionListAdapter
 

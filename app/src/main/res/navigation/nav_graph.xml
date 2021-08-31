@@ -689,7 +689,12 @@
     <dialog
         android:id="@+id/itemOptionsListDialog"
         android:name="com.android.pos.ui.dialog.ItemOptionsListDialog"
-        android:label="ItemOptionsListDialog" />
+        android:label="ItemOptionsListDialog">
+        <argument
+            android:name="isEdit"
+            android:defaultValue="false"
+            app:argType="boolean" />
+    </dialog>
 
 
 </navigation>
