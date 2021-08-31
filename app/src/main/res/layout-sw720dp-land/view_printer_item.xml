@@ -46,7 +46,7 @@
             android:src="@drawable/ic_baseline_wifi_24"
             android:tint="@color/txtColor" />
 
-        <Switch
+        <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/swtOrderId"
             style="@style/AppTheme"
             android:layout_width="0dp"
@@ -54,13 +54,14 @@
             android:layout_gravity="center"
             android:layout_weight="1"
             android:checked="@{model.active}"
-            android:gravity="center"
+            android:paddingEnd="@dimen/_35sdp"
             android:showText="false"
             android:visibility="visible"
             app:srcCompat="@drawable/ic_arrow_forward"
             tools:ignore="UseSwitchCompatOrMaterialXml" />
 
         <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/linearOption"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"

@@ -495,4 +495,5 @@
     <string name="tv_variations">Variations</string>
     <string name="tv_sku">SKU</string>
     <string name="tv_display_name">Display Name</string>
+    <string name="edit_printer">Edit Printer</string>
 </resources>

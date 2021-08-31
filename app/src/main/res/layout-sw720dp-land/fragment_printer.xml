@@ -44,8 +44,8 @@
             <ImageView
                 android:id="@+id/imgSync"
                 android:layout_width="wrap_content"
-                android:layout_marginEnd="@dimen/_10sdp"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/_10sdp"
                 android:src="@drawable/ic_baseline_sync_24"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/txtSave"
@@ -300,7 +300,7 @@
                     android:background="@drawable/background_printer_labels"
                     android:orientation="horizontal"
                     android:paddingVertical="@dimen/_5sdp"
-                    android:weightSum="5">
+                    >
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtPrinterName3"
@@ -360,7 +360,8 @@
                         android:gravity="center"
                         android:text="@string/action"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_5mdpi" />
+                        android:textSize="@dimen/_5mdpi"
+                        android:visibility="gone" />
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 

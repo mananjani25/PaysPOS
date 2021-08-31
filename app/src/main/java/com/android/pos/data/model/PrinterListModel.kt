@@ -7,9 +7,9 @@ import java.util.*
 data class PrinterListModel(
     val id: Int? = null,
     var printerName: String? = null,
-    var connectionType: String? =null,
+    var connectionType: String? = null,
     var isActive: Boolean = false,
-    val type: String = CUSTOMER,
+    var type: String = CUSTOMER,
     var deviceModel: DeviceInfo,
-    var uuid: UUID?=null
+    var uuid: UUID? = null
 )

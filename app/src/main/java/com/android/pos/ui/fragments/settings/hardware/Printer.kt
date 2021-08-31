@@ -65,6 +65,9 @@ import android.text.Html
 
 import android.text.Spanned
 import com.android.pos.R
+import com.android.pos.data.remote.Constants.AVAILABLE
+import com.android.pos.data.remote.Constants.CUSTOMER
+import com.android.pos.data.remote.Constants.KITCHEN
 import com.android.pos.utils.getBitmapFromVectorDrawable
 
 
@@ -301,6 +304,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                             i.address,
                             i.address
                         ),
+                        type = AVAILABLE,
                         uuid = UUID.randomUUID()
 
                     )
@@ -310,16 +314,6 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
 
                 }
-
-
-
-
-                Log.e(TAG, "BluetoothName   ${i.name}")
-                Log.e(TAG, "BluetoothAddredd  ${i.address}")
-                Log.e(TAG, "BluetoothBondState  ${i.bondState}")
-                Log.e(TAG, "BluetoothType  ${i.type}")
-                Log.e(TAG, "BluetoothUDID  ${Gson().toJson(i.uuids)}")
-                Log.e(TAG, "BluetoothClass ${i.bluetoothClass}")
 
 
             }
@@ -510,6 +504,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                                 printerName = list!!.get(i).printerName,
                                 connectionType = WIFI,
                                 isActive = false,
+                                type = AVAILABLE,
                                 deviceModel = list!!.get(i)
                             )
                         )
@@ -649,25 +644,31 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
     override fun onPrinterSelected(printerListModel: PrinterListModel) {
         Log.e(TAG, "printerListModel:  ${Gson().toJson(printerListModel)}")
+
         onInitPrinter(printerListModel)
     }
 
     override fun onPrinterActive(printerListModel: PrinterListModel) {
         Log.e(TAG, "printerListModel:  ${Gson().toJson(printerListModel)}")
         printerListModel.isActive = true
+
         if (printerListModel.printerName == "TM-U220") {
+            printerListModel.type = KITCHEN
             kitchenAdapter.addItem(printerListModel)
         } else {
+            printerListModel.type = CUSTOMER
             customerAdapter.addItem(printerListModel)
         }
 
     }
 
+    override fun onEditSelected(printerListModel: PrinterListModel) {
+        findNavController().navigate(R.id.action_printer_to_editPrinter)
+    }
+
     private fun onInitPrinter(printerListModel: PrinterListModel) {
         //open
-
         initPrinter(printerListModel)
-
 
     }
 
@@ -725,14 +726,17 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             builder = Builder(printerListModel.printerName, language, requireActivity())
 
             builder.addFeedLine(2)
-            val bitmap = getBitmapFromVectorDrawable(requireContext(),R.drawable.ic_group)
-            Log.e(TAG,"BitmapWidth:  ${bitmap.width}")
+            val bitmap = getBitmapFromVectorDrawable(requireContext(), R.drawable.ic_group)
+            Log.e(TAG, "BitmapWidth:  ${bitmap.width}")
 
 
             builder.addTextAlign(Builder.ALIGN_CENTER)
-            builder.addImage(bitmap,0,0,Math.min(
-                IMAGE_WIDTH_MAX ,bitmap.width )  ,bitmap.height , Builder.COLOR_1, Builder.MODE_MONO,
-                Builder.HALFTONE_DITHER,1.0)
+            builder.addImage(
+                bitmap, 0, 0, Math.min(
+                    IMAGE_WIDTH_MAX, bitmap.width
+                ), bitmap.height, Builder.COLOR_1, Builder.MODE_MONO,
+                Builder.HALFTONE_DITHER, 1.0
+            )
 
             builder.addFeedLine(2)
 

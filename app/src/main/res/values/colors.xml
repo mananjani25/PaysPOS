@@ -94,4 +94,5 @@
     <color name="delete">#FF3C30</color>
     <color name="addNote">#FA9905</color>
     <color name="addDiscount">#2997cc</color>
+    <color name="colorM5">#FDFDFD</color>
 </resources>
