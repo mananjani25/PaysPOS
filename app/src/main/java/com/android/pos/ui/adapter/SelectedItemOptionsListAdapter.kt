@@ -8,7 +8,7 @@ import com.android.pos.data.entities.OptionSet
 import com.android.pos.databinding.ViewSelectedItemOptionListBinding
 import kotlin.collections.ArrayList
 
-class SelectedItemOptionsListAdapter(val options: List<Option>) :
+class SelectedItemOptionsListAdapter(val options: ArrayList<Option>) :
     RecyclerView.Adapter<SelectedItemOptionsListAdapter.MyViewHolder>() {
 
     inner class MyViewHolder(val optionSetBinding: ViewSelectedItemOptionListBinding) :
@@ -37,6 +37,13 @@ class SelectedItemOptionsListAdapter(val options: List<Option>) :
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         holder.bind(options[position])
+        val itemBinding = holder.optionSetBinding
+        itemBinding.imgDeleteOptions.setOnClickListener {
+//            mCallback.onItemClickListener(position, optionSetList[position])
+            options.removeAt(position)
+            notifyItemRemoved(position)
+            notifyItemRangeChanged(position, options.size)
+        }
 
 
     }

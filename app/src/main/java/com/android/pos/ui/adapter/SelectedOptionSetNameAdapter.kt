@@ -3,6 +3,7 @@ package com.android.pos.ui.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.android.pos.data.entities.Option
 import com.android.pos.data.entities.OptionSet
 import com.android.pos.databinding.ViewOptionSetNameBinding
 import com.android.pos.ui.fragments.inventory.OptionSetViewModel
@@ -52,7 +53,8 @@ class SelectedOptionSetNameAdapter(val viewModel: OptionSetViewModel) :
 
         //  itemBinding.tvOptionSetName.text = optionSetList[position].name + " Options"
         //  itemBinding.tvDisplayName.text = optionSetList[position].name
-        selectOptionListAdapter = SelectedItemOptionsListAdapter(optionSetList[position].options)
+        selectOptionListAdapter =
+            SelectedItemOptionsListAdapter(optionSetList[position].options as ArrayList<Option>)
         itemBinding.rvOptionList.adapter = selectOptionListAdapter
 
         itemBinding.ivDelete.setOnClickListener {

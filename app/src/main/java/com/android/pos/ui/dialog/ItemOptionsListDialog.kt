@@ -227,7 +227,7 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
         }
 
         if (spinnerTouched) {
-            // finalvariationList.clear()
+
             selectedOptionSetNameAdapter.addOptions(itemOptionList[position])
             Log.d("options", "::" + itemOptionList[position].options)
 
