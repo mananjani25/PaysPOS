@@ -129,6 +129,7 @@ object Constants {
     const val BLUETOOTH = "Bluetooth"
     const val KITCHEN = "Kitchen"
     const val CUSTOMER = "Customer"
+    const val AVAILABLE = "Available"
 
 
     const val MODIFIER_UPDATE_DELETE = "modifier_sets/{id}"
