@@ -19,6 +19,7 @@ import com.android.pos.databinding.FragmentItemOptionsListBinding
 import com.android.pos.ui.adapter.SelectedOptionSetNameAdapter
 import com.android.pos.ui.fragments.inventory.OptionSetViewModel
 import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.callback.DeleteOptionCallback
 import com.android.pos.utils.extensions.setNavigationResult
 import com.android.pos.utils.statusUtils.Status
 import com.google.common.collect.ImmutableList
@@ -30,15 +31,14 @@ import kotlin.collections.ArrayList
 
 
 @AndroidEntryPoint
-class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListener {
+class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListener,
+    DeleteOptionCallback {
 
     private lateinit var finalvariationList: List<List<Option>>
     private lateinit var spinnerAdapter: ArrayAdapter<String>
-    private var roleName = ArrayList<String>()
+    private var optionName = ArrayList<String>()
     private lateinit var binding: FragmentItemOptionsListBinding
     private var variationList = ArrayList<List<Option>>()
-
-    //   private var finalvariationList = ArrayList<String>()
     private lateinit var selectedOptionSetNameAdapter: SelectedOptionSetNameAdapter
     private lateinit var itemOptionList: ArrayList<OptionSet>
     private val viewModel by viewModels<OptionSetViewModel>()
@@ -65,10 +65,8 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
 
             if (selectedOptionSetNameAdapter.optionSetList.size > 0) {
 
-               // createOptionSets(selectedOptionSetNameAdapter.optionSetList)
-
-                //selectedOptionSetNameAdapter.optionSetList
-                // finalvariationList
+                // createOptionSets(selectedOptionSetNameAdapter.optionSetList)
+                finalvariationList = computeCombinations(variationList)
 
                 setNavigationResult(DIALOG_KEY, selectedOptionSetNameAdapter.optionSetList)
                 setNavigationResult(DIALOG_KEY_OPTIONS, finalvariationList)
@@ -86,6 +84,7 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
         optionSetObserver()
         observeShowProgress()
 
+
     }
 
     override fun onResume() {
@@ -102,12 +101,12 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
 
 
     private fun setAdapter() {
-        selectedOptionSetNameAdapter = SelectedOptionSetNameAdapter()
+        selectedOptionSetNameAdapter = SelectedOptionSetNameAdapter(viewModel)
+        selectedOptionSetNameAdapter.setCallback(this)
         binding.rvOptonSetList.adapter = selectedOptionSetNameAdapter
 
     }
 
-    var products: List<List<Int>> = ArrayList()
 
     private fun optionSetObserver() {
 
@@ -123,9 +122,9 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
                             val optionSet = OptionSet()
                             optionSet.name = getString(R.string.tv_select_option_set)
                             itemOptionList.add(0, optionSet)
-                            roleName = itemOptionList.map { it.name } as ArrayList<String>
+                            optionName = itemOptionList.map { it.name } as ArrayList<String>
 
-                            setUpOptionSpinnerAdapter(roleName)
+                            setUpOptionSpinnerAdapter(optionName)
 
                         }
                     }
@@ -235,18 +234,8 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
             variationList.add(itemOptionList[position].options)
             Log.e("optionsvariation", "::$variationList")
 
-            finalvariationList = computeCombinations(variationList)
-            /*product?.forEach {
-                it.map {
-                    finalvariationList.add(it.name)
-                }
-            }*/
-
-            //  Log.e("optionsvariationoutdide", "::$finalvariationList")
-
-
             if (itemOptionList[position].name == binding.spOptions.selectedItem) {
-                roleName.removeAt(position)
+                optionName.removeAt(position)
                 itemOptionList.removeAt(position)
                 binding.spOptions.setSelection(0, false)
                 spinnerAdapter.notifyDataSetChanged()
@@ -274,6 +263,13 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
             combinations = extraColumnCombinations
         }
         return combinations
+    }
+
+    override fun onItemClickListener(position: Int?, optionSet: OptionSet) {
+        itemOptionList.add(optionSet)
+        variationList.removeAt(position!!)
+        optionName = itemOptionList.map { it.name } as ArrayList<String>
+        setUpOptionSpinnerAdapter(optionName)
     }
 
 }

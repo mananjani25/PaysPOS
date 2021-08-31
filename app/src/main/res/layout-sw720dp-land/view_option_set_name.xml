@@ -4,6 +4,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingDefaultResource">
 
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.android.pos.ui.fragments.inventory.OptionSetViewModel" />
+
+        <variable
+            name="optionSetListModel"
+            type="com.android.pos.data.entities.OptionSet" />
+
+        <variable
+            name="position"
+            type="Integer" />
+    </data>
+
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -38,6 +53,7 @@
                         android:background="@drawable/background_sales_charge"
                         android:gravity="start"
                         android:padding="@dimen/_5sdp"
+                        android:text="@{optionSetListModel.name+` Options`}"
                         android:textColor="@color/viewTextColor"
                         android:textSize="@dimen/_5mdpi"
                         tools:text="Image one" />
@@ -70,7 +86,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_weight="1"
-                        android:gravity="start"
+                        android:text="@{optionSetListModel.name}"
                         android:textColor="@color/viewTextColor"
                         android:textSize="@dimen/_5mdpi"
                         tools:text="Image one" />
@@ -82,8 +98,8 @@
                 android:id="@+id/ivDelete"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_5sdp"
                 android:layout_marginLeft="@dimen/_5sdp"
+                android:layout_marginTop="@dimen/_5sdp"
                 android:layout_marginBottom="@dimen/_5sdp"
                 app:srcCompat="@drawable/ic_delete" />
         </LinearLayout>
