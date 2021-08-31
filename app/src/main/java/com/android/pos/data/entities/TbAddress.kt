@@ -16,7 +16,7 @@ data class TbAddress(
     @SerializedName("address_type") val address_type: String = "",
     @SerializedName("latitude") val latitude: String,
     @SerializedName("longitude") val longitude: String,
-    @SerializedName("type_of_address") val type_of_address: Int,
+    @SerializedName("type_of_address") val type_of_address: String,
     @SerializedName("full_address") val full_address: String,
     @SerializedName("street") val street: String
 ) : Parcelable
