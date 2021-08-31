@@ -13,7 +13,7 @@ data class TbDiscount(
     @SerializedName("created_at")
     val createdAt: String,
     @SerializedName("discount_type")
-    val discountType: String,
+    var discountType: String,
     @PrimaryKey
     @SerializedName("id")
     val id: Int,

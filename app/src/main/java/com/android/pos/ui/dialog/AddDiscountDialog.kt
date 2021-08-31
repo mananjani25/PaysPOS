@@ -2,8 +2,6 @@ package com.android.pos.ui.dialog
 
 import android.graphics.Point
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
 import android.view.*
 import androidx.fragment.app.DialogFragment
@@ -18,7 +16,6 @@ import com.android.pos.data.remote.Constants.PERCENTAGE
 import com.android.pos.databinding.DailogAddDiscountBinding
 import com.android.pos.ui.adapter.DialogDiscountListAdapter
 import com.android.pos.ui.fragments.settings.discount.DiscountListViewModel
-import com.android.pos.utils.AmountTextWatcher
 import com.android.pos.utils.PercentageTextWatcher
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
@@ -51,11 +48,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
         isFromDetails = requireArguments().getBoolean("isFromDetails", false)
         val model: TbItem? = requireArguments().getParcelable("model")
-        if (model != null) {
-            defaultModel = model
-        } else {
-            defaultModel = TbItem()
-        }
+        defaultModel = model ?: TbItem()
 
 
 
@@ -77,23 +70,27 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
 
         if (binding.swtDiscountType.isChecked) {
-            binding.txtCurrency.setText("%")
+            binding.txtCurrency.visibility = View.GONE
+            binding.txtPer.visibility = View.VISIBLE
             binding.edtAmount.addTextChangedListener(PercentageTextWatcher(binding.edtAmount))
         } else {
-            binding.txtCurrency.setText("$")
+            binding.swtDiscountType.text = "Amount"
+            binding.txtCurrency.visibility = View.VISIBLE
             binding.edtAmount.addTextChangedListener(PercentageTextWatcher(binding.edtAmount))
         }
 
         binding.swtDiscountType.setOnCheckedChangeListener { buttonView, isChecked ->
 
             if (isChecked) {
-                binding.swtDiscountType.setText("Percentage")
-                binding.txtCurrency.setText("%")
+                binding.swtDiscountType.text = "Percentage"
+                binding.txtCurrency.visibility = View.GONE
+                binding.txtPer.visibility = View.VISIBLE
                 binding.edtAmount.addTextChangedListener(PercentageTextWatcher(binding.edtAmount))
 
             } else {
-                binding.swtDiscountType.setText("Amount")
-                binding.txtCurrency.setText("$")
+                binding.swtDiscountType.text = "Amount"
+                binding.txtCurrency.visibility = View.VISIBLE
+                binding.txtPer.visibility = View.GONE
                 binding.edtAmount.addTextChangedListener(PercentageTextWatcher(binding.edtAmount))
             }
 
@@ -106,24 +103,43 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
     private fun onClick() {
         binding.txtCurrencyPercentage.setOnClickListener {
-            selectedCurrency = PERCENTAGE
-            binding.txtCurrency.setText("%")
-            binding.txtCurrencyDollar.background =
-                requireContext().resources.getDrawable(R.drawable.background_discount_unselected)
-            binding.txtCurrencyPercentage.background =
-                requireContext().resources.getDrawable(R.drawable.background_discount_selected)
-
-
+            percentageView()
+            if (selectedListPos != -1) {
+                discountAdapter.clearSelectedItem()
+                selectedListPos = -1
+            }
         }
         binding.txtCurrencyDollar.setOnClickListener {
-            binding.txtCurrency.setText("$")
-            selectedCurrency = AMOUNT
-            binding.txtCurrencyDollar.background =
-                requireContext().resources.getDrawable(R.drawable.background_discount_selected)
-            binding.txtCurrencyPercentage.background =
-                requireContext().resources.getDrawable(R.drawable.background_discount_unselected)
-
+            amountView()
+            if (selectedListPos != -1) {
+                discountAdapter.clearSelectedItem()
+                selectedListPos = -1
+            }
         }
+    }
+
+    private fun amountView() {
+        binding.txtCurrency.visibility = View.VISIBLE
+        binding.txtPer.visibility = View.GONE
+        selectedCurrency = AMOUNT
+        binding.txtCurrencyDollar.background =
+            requireContext().resources.getDrawable(R.drawable.background_discount_selected)
+        binding.txtCurrencyPercentage.background =
+            requireContext().resources.getDrawable(R.drawable.background_discount_unselected)
+
+
+    }
+
+    private fun percentageView() {
+        selectedCurrency = PERCENTAGE
+        binding.txtCurrency.visibility = View.GONE
+        binding.txtPer.visibility = View.VISIBLE
+        binding.txtCurrencyDollar.background =
+            requireContext().resources.getDrawable(R.drawable.background_discount_unselected)
+        binding.txtCurrencyPercentage.background =
+            requireContext().resources.getDrawable(R.drawable.background_discount_selected)
+
+
     }
 
     override fun onCreateView(
@@ -221,18 +237,6 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
             selectedListPos = -1
         }
         binding.imgBack.setOnClickListener {
-            /*   val discount = TbDiscount("", "", 0, 0, "", 0.0, "")
-               val result = Bundle().apply {
-                   putParcelable("data", discount)
-               }
-
-
-               if (isFromDetails) {
-                   setFragmentResult("request_key_discount_details", result)
-               } else {
-
-                   setFragmentResult("request_key_discount", result)
-               }*/
             findNavController().navigateUp()
 
         }
@@ -327,7 +331,23 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
     override fun selectedItem(model: TbDiscount, pos: Int) {
         Log.e(TAG, "SelectedItem:  ${Gson().toJson(model)}")
         discountModel.apply { model }
-        binding.edtAmount.setText("0.00")
+
+        val discount: Double = if (model.discountType == "Percentage") {
+            val price = defaultModel.price * defaultModel.itemQuantity
+            (price * model.percentage) / 100
+
+        } else {
+            model.percentage
+        }
+
+        if (model.discountType == "Percentage") {
+            percentageView()
+        } else {
+            amountView()
+        }
+
+
+        binding.edtAmount.setText(discount.toString())
         selectedListPos = pos
     }
 

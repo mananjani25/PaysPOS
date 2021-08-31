@@ -27,6 +27,10 @@ class PercentageTextWatcher(private val editText: AppCompatEditText) : TextWatch
             editText.setText(formatted.replace("""[$,%]""".toRegex(), ""))
             editText.setSelection(formatted.replace("""[$,%]""".toRegex(), "").length)
 
+            if (editText.text.toString().toDouble() > 100) {
+                editText.setText("100.00")
+            }
+
             editText.addTextChangedListener(this)
         }
     }
