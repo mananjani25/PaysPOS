@@ -261,12 +261,14 @@
                         android:padding="@dimen/_5sdp"
                         android:text="@string/price_and_inventory"
                         android:textColor="@color/viewTextColor"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textSize="@dimen/_6mdpi"
+                        android:visibility="gone" />
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="@color/view" />
+                        android:background="@color/view"
+                        android:visibility="gone" />
 
                     <androidx.appcompat.widget.LinearLayoutCompat
                         android:layout_width="match_parent"
@@ -274,7 +276,8 @@
                         android:layout_gravity="center"
                         android:gravity="center"
                         android:orientation="horizontal"
-                        android:padding="@dimen/_5sdp">
+                        android:padding="@dimen/_5sdp"
+                        android:visibility="gone">
 
                         <androidx.appcompat.widget.AppCompatTextView
                             style="@style/CustomFontSemiBold"
@@ -309,7 +312,8 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="@color/view" />
+                        android:background="@color/view"
+                        android:visibility="gone" />
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -323,13 +327,15 @@
                     android:text="@string/choose_between_selling_whole_or_decimal_quantities_for_the_item_learn_more"
                     android:textColor="@color/colorCB"
                     android:textSize="@dimen/_5mdpi"
+                    android:visibility="gone"
                     app:textAllCaps="false" />
 
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/edt_border_light_gray"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:visibility="gone">
 
                     <androidx.appcompat.widget.LinearLayoutCompat
                         android:layout_width="match_parent"
@@ -435,6 +441,65 @@
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
+                <LinearLayout
+                    android:id="@+id/llVariationTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/background_timesheet"
+                    android:orientation="horizontal"
+                    android:paddingTop="@dimen/_4sdp"
+                    android:paddingBottom="@dimen/_4sdp"
+                    android:visibility="gone">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="@string/tv_variations"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_5mdpi" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="@string/sku"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_5mdpi" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="@string/price"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_5mdpi" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="@string/stock"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_5mdpi" />
+
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvVariationList"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontBold"
                     android:layout_width="match_parent"
@@ -460,6 +525,7 @@
                     android:text="@string/leave_the_price_blank_to_enter_at_the_time_of_sale"
                     android:textColor="@color/colorCB"
                     android:textSize="@dimen/_5mdpi"
+                    android:visibility="gone"
                     app:textAllCaps="false" />
 
                 <androidx.appcompat.widget.AppCompatTextView
