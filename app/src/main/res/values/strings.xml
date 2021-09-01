@@ -476,7 +476,7 @@
     <string name="tv_all_payment_types">All Transaction Types</string>
     <string name="tv_cash_payment">Cash</string>
     <string name="tv_external">External</string>
-    <string name="tv_terminal_id">Terminal Id</string>
+    <string name="tv_terminal_id">Terminal</string>
     <string name="tv_order_details">Order Details</string>
     <string name="tv_order_hash">Order #</string>
     <string name="tv_status">Status</string>
@@ -495,4 +495,5 @@
     <string name="tv_variations">Variations</string>
     <string name="tv_sku">SKU</string>
     <string name="tv_display_name">Display Name</string>
+    <string name="edit_printer">Edit Printer</string>
 </resources>

@@ -681,11 +681,21 @@
         android:id="@+id/printer"
         android:name="com.android.pos.ui.fragments.settings.hardware.Printer"
         android:label="Printer"
-        tools:layout="@layout/fragment_printer" />
+        tools:layout="@layout/fragment_printer" >
+        <action
+            android:id="@+id/action_printer_to_editPrinter"
+            app:destination="@id/editPrinter"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+    </fragment>
     <fragment
         android:id="@+id/transactionDetailsFragment"
         android:name="com.android.pos.ui.fragments.transactions.TransactionDetailsFragment"
         android:label="TransactionDetailsFragment" />
+    <fragment
+        android:id="@+id/editPrinter"
+        android:name="com.android.pos.ui.fragments.settings.hardware.EditPrinter"
+        android:label="EditPrinter"
+        tools:layout="@layout/fragment_edit_printer" />
     <dialog
         android:id="@+id/itemOptionsListDialog"
         android:name="com.android.pos.ui.dialog.ItemOptionsListDialog"

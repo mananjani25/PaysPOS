@@ -65,7 +65,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
         binding.footer.imgInfo.visibility = View.GONE
         binding.footer.imgDelete.visibility = View.GONE
         getServiceCharge()
-        getTaxList()
+
         getDiscountList()
 
         return binding.root
@@ -82,7 +82,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
         dashboardViewModel.taxList.observe(requireActivity(), {
             Log.e(TAG, "getTaxList:  ${Gson().toJson(it.data)}")
             taxList = it.data
-            getCartList()
+            //getCartList()
         })
     }
 
@@ -94,6 +94,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
         onConfig()
         onClickKeypad()
         getCartList()
+        getTaxList()
         onClick()
         listner()
     }

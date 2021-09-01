@@ -2,10 +2,12 @@ package com.android.pos.ui.adapter
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.model.PrinterListModel
+import com.android.pos.data.remote.Constants.AVAILABLE
 import com.android.pos.data.remote.Constants.WIFI
 import com.android.pos.databinding.ViewPrinterItemBinding
 
@@ -20,7 +22,7 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
             if (list[bindingAdapterPosition].connectionType == WIFI) {
                 binding.imgConnectionType.setImageDrawable(
                     binding.root.context.resources.getDrawable(
-                        R.drawable.ic_baseline_wifi_24
+                        R.drawable.ic_lan
                     )
                 )
 
@@ -34,11 +36,40 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
             }
 
             binding.imgPrinter.setOnClickListener {
-                listner.onPrinterSelected(list[bindingAdapterPosition])
+                if (list[bindingAdapterPosition].isActive) {
+                    listner.onPrinterSelected(list[bindingAdapterPosition])
+                }
+            }
+
+            binding.swtOrderId.setOnCheckedChangeListener { buttonView, isChecked ->
+                if (isChecked && !(list.get(bindingAdapterPosition).isActive)) {
+                    listner.onPrinterActive(list.get(bindingAdapterPosition))
+                    list.removeAt(bindingAdapterPosition)
+                    notifyDataSetChanged()
+                }
+
+            }
+
+            binding.imgEdit.setOnClickListener {
+                if (list[bindingAdapterPosition].isActive){
+                    listner.onEditSelected(list[bindingAdapterPosition])
+                }
+
+            }
+
+            if (list[bindingAdapterPosition].type == AVAILABLE) {
+                binding.linearOption.visibility = View.GONE
+            } else {
+                binding.linearOption.visibility = View.VISIBLE
             }
 
             binding.model = model
             binding.executePendingBindings()
+        }
+
+        init {
+
+
         }
 
     }
@@ -61,8 +92,10 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
     }
 
 
+    @SuppressLint("NotifyDataSetChanged")
     fun setList(list: ArrayList<PrinterListModel>) {
         this.list = list
+        notifyDataSetChanged()
 
     }
 
@@ -79,6 +112,14 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
 
     interface PrinterListInterface {
         fun onPrinterSelected(printerListModel: PrinterListModel)
+        fun onPrinterActive(printerListModel: PrinterListModel)
+        fun onEditSelected(printerListModel: PrinterListModel)
 
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun clearList() {
+        this.list.clear()
+        notifyDataSetChanged()
     }
 }

@@ -341,7 +341,7 @@ class OpenOrderCustomerFragment : Fragment(), View.OnClickListener {
                         "",
                         "0.0",
                         "0.0",
-                        0,
+                        "Shipping",
                         "",
                         binding.edtStreet.text.toString().trim(),
                     )
@@ -361,7 +361,7 @@ class OpenOrderCustomerFragment : Fragment(), View.OnClickListener {
                         "",
                         "0.0",
                         "0.0",
-                        0,
+                        "Billing",
                         "",
                         binding.edtStreetBill.text.toString().trim(),
                     )
