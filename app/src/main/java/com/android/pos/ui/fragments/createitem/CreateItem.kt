@@ -36,6 +36,7 @@ class CreateItem : Fragment(), View.OnClickListener {
     private lateinit var binding: CreateItemBinding
     private val viewModel by viewModels<CreateItemViewModel>()
     private lateinit var variationListAdapter: VariationListAdapter
+    private var optionSetList: ArrayList<OptionSet>? = null
 
     private lateinit var adapter: ModifierSetsListAdapter
     override fun onCreateView(
@@ -62,7 +63,7 @@ class CreateItem : Fragment(), View.OnClickListener {
                 bundle.putBoolean("isEdit", true)
                 //  bundle.putIntegerArrayList("optionIds", itemIds)
             } else {
-                //   bundle.putIntegerArrayList("optionIds", itemIds)
+                bundle.putParcelableArrayList("optionSets", optionSetList)
             }
             findNavController().navigate(R.id.action_createItem_to_itemOptionsListDialog, bundle)
         }
@@ -70,8 +71,10 @@ class CreateItem : Fragment(), View.OnClickListener {
 
         val resultDialogOptionIds = getNavigationResultLiveData<ArrayList<OptionSet>>(DIALOG_KEY)
         resultDialogOptionIds?.observe(viewLifecycleOwner) {
-            /*itemIds.clear()
-            if (it.size > 0) {
+            // it.clear()
+            optionSetList = it
+
+            /*if (it.size > 0) {
                 binding.itemsCount.text = "" + it.size + " Items"
             } else {
                 binding.itemsCount.text = "No Items"
@@ -79,8 +82,8 @@ class CreateItem : Fragment(), View.OnClickListener {
 
             it.forEach {
                 itemIds.add(it.itemId)
-            }
-            viewModel.setItemIds(itemIds)*/
+            }*/
+            // viewModel.setItemIds(itemIds)
         }
 
 

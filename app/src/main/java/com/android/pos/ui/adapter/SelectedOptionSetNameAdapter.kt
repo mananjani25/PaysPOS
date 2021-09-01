@@ -53,9 +53,12 @@ class SelectedOptionSetNameAdapter(val viewModel: OptionSetViewModel) :
 
         //  itemBinding.tvOptionSetName.text = optionSetList[position].name + " Options"
         //  itemBinding.tvDisplayName.text = optionSetList[position].name
-        selectOptionListAdapter =
-            SelectedItemOptionsListAdapter(optionSetList[position].options as ArrayList<Option>)
-        itemBinding.rvOptionList.adapter = selectOptionListAdapter
+
+        if (optionSetList[position].name != "Select Option Set") {
+            selectOptionListAdapter =
+                SelectedItemOptionsListAdapter(optionSetList[position].options as ArrayList<Option>)
+            itemBinding.rvOptionList.adapter = selectOptionListAdapter
+        }
 
         itemBinding.ivDelete.setOnClickListener {
             mCallback.onItemClickListener(position, optionSetList[position])
@@ -76,6 +79,15 @@ class SelectedOptionSetNameAdapter(val viewModel: OptionSetViewModel) :
             add(optionSetList)
         }
         notifyItemInserted(this.optionSetList.size)
+    }
+
+    fun addallOptions(optionSetList: ArrayList<OptionSet>) {
+
+        this.optionSetList.apply {
+            clear()
+            addAll(optionSetList)
+        }
+        notifyDataSetChanged()
     }
 
 }

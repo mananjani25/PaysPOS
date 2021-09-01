@@ -25,6 +25,7 @@ class OptionSetViewModel @Inject constructor(
         return posRepository.getOptionSet()
     }
 
+
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
 

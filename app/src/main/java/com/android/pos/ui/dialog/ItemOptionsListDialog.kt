@@ -1,5 +1,6 @@
 package com.android.pos.ui.dialog
 
+import android.content.Intent
 import android.graphics.Point
 import android.os.Build
 import android.os.Bundle
@@ -34,15 +35,19 @@ import kotlin.collections.ArrayList
 class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListener,
     DeleteOptionCallback {
 
+    private var optionItemIds: ArrayList<OptionSet>? = null
     private lateinit var finalvariationList: List<List<Option>>
     private lateinit var spinnerAdapter: ArrayAdapter<String>
     private var optionName = ArrayList<String>()
     private lateinit var binding: FragmentItemOptionsListBinding
     private var variationList = ArrayList<List<Option>>()
     private lateinit var selectedOptionSetNameAdapter: SelectedOptionSetNameAdapter
-    private lateinit var itemOptionList: ArrayList<OptionSet>
+    private var itemOptionList = ArrayList<OptionSet>()
     private val viewModel by viewModels<OptionSetViewModel>()
     private var spinnerTouched = false
+    private var optionSetIds = ArrayList<Int>()
+    var isEdit: Boolean = false
+    var isLiveData: Boolean = false
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -74,6 +79,10 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
             }
 
         }
+
+        isEdit = arguments?.getBoolean("isEdit")!!
+        optionItemIds =
+            arguments?.getParcelableArrayList("optionSets")
 
         return binding.root
     }
@@ -116,15 +125,53 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
                 when (resource.status) {
                     Status.SUCCESS -> {
                         it.data?.let { it1 ->
-                            itemOptionList =
-                                it1 as ArrayList<OptionSet>
 
-                            val optionSet = OptionSet()
-                            optionSet.name = getString(R.string.tv_select_option_set)
-                            itemOptionList.add(0, optionSet)
-                            optionName = itemOptionList.map { it.name } as ArrayList<String>
+                            if (!isLiveData) {
 
-                            setUpOptionSpinnerAdapter(optionName)
+                                if (optionItemIds != null) {
+
+
+                                    selectedOptionSetNameAdapter.addallOptions(optionItemIds!!)
+
+                                    optionItemIds?.forEach {
+                                        variationList.add(it.options)
+                                    }
+
+
+                                    val myCollection = it1 as ArrayList<OptionSet>
+                                    val iterator = myCollection.iterator()
+                                    while (iterator.hasNext()) {
+                                        val item = iterator.next()
+                                        optionItemIds?.forEach { selectedEmployee ->
+                                            if (item.name == selectedEmployee.name) {
+                                                iterator.remove()
+                                            }
+                                        }
+                                    }
+
+                                    //   optionItemIds?.addAll(it1)
+                                    itemOptionList.addAll(it1)
+
+
+                                    val optionSet = OptionSet()
+                                    optionSet.name = getString(R.string.tv_select_option_set)
+                                    itemOptionList.add(0, optionSet)
+                                    optionName = itemOptionList.map { it.name } as ArrayList<String>
+
+                                    setUpOptionSpinnerAdapter(optionName)
+                                } else {
+                                    itemOptionList =
+                                        it1 as ArrayList<OptionSet>
+                                    val optionSet = OptionSet()
+                                    optionSet.name = getString(R.string.tv_select_option_set)
+                                    itemOptionList.add(0, optionSet)
+                                    optionName = itemOptionList.map { it.name } as ArrayList<String>
+
+                                    setUpOptionSpinnerAdapter(optionName)
+                                }
+                            }
+
+                            isLiveData = true
 
                         }
                     }
@@ -222,24 +269,52 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-        if (binding.spOptions.selectedItem == getString(R.string.tv_select_option_set)) {
+        /*if (binding.spOptions.selectedItem == getString(R.string.tv_select_option_set)) {
             return
-        }
+        }*/
 
         if (spinnerTouched) {
 
-            selectedOptionSetNameAdapter.addOptions(itemOptionList[position])
-            Log.d("options", "::" + itemOptionList[position].options)
+            if (binding.spOptions.selectedItem == getString(R.string.tv_select_option_set)) {
+                return
+            } else {
+                selectedOptionSetNameAdapter.addOptions(itemOptionList[position])
+                Log.d("options", "::" + itemOptionList[position].options)
 
-            variationList.add(itemOptionList[position].options)
-            Log.e("optionsvariation", "::$variationList")
+                variationList.add(itemOptionList[position].options)
+                Log.e("optionsvariation", "::$variationList")
 
-            if (itemOptionList[position].name == binding.spOptions.selectedItem) {
-                optionName.removeAt(position)
-                itemOptionList.removeAt(position)
-                binding.spOptions.setSelection(0, false)
-                spinnerAdapter.notifyDataSetChanged()
+                if (itemOptionList[position].name == binding.spOptions.selectedItem) {
+                    optionName.removeAt(position)
+                    itemOptionList.removeAt(position)
+                    binding.spOptions.setSelection(0, false)
+                    spinnerAdapter.notifyDataSetChanged()
+                }
             }
+
+
+        } else {
+            /* if (binding.spOptions.selectedItem == getString(R.string.tv_select_option_set)) {
+                 return
+             } else {*/
+
+            /* if (binding.spOptions.selectedItem == getString(R.string.tv_select_option_set)) {
+                 itemOptionList.removeAt(position)
+             }
+
+             selectedOptionSetNameAdapter.addallOptions(itemOptionList)
+             Log.d("options", "::" + itemOptionList[position].options)
+
+             variationList.add(itemOptionList[position].options)
+             Log.e("optionsvariation", "::$variationList")
+
+             if (itemOptionList[position].name == binding.spOptions.selectedItem) {
+                 optionName.removeAt(position)
+                 itemOptionList.removeAt(position)
+                 binding.spOptions.setSelection(0, false)
+                 spinnerAdapter.notifyDataSetChanged()
+             }*/
+            //}
         }
         spinnerTouched = false
 
