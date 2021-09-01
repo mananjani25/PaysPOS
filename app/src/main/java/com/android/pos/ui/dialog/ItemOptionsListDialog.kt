@@ -76,6 +76,8 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
                 setNavigationResult(DIALOG_KEY, selectedOptionSetNameAdapter.optionSetList)
                 setNavigationResult(DIALOG_KEY_OPTIONS, finalvariationList)
                 findNavController().popBackStack()
+            } else {
+
             }
 
         }
@@ -130,13 +132,11 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
 
                                 if (optionItemIds != null) {
 
-
                                     selectedOptionSetNameAdapter.addallOptions(optionItemIds!!)
 
                                     optionItemIds?.forEach {
                                         variationList.add(it.options)
                                     }
-
 
                                     val myCollection = it1 as ArrayList<OptionSet>
                                     val iterator = myCollection.iterator()
@@ -149,7 +149,6 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
                                         }
                                     }
 
-                                    //   optionItemIds?.addAll(it1)
                                     itemOptionList.addAll(it1)
 
 
@@ -293,28 +292,6 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
             }
 
 
-        } else {
-            /* if (binding.spOptions.selectedItem == getString(R.string.tv_select_option_set)) {
-                 return
-             } else {*/
-
-            /* if (binding.spOptions.selectedItem == getString(R.string.tv_select_option_set)) {
-                 itemOptionList.removeAt(position)
-             }
-
-             selectedOptionSetNameAdapter.addallOptions(itemOptionList)
-             Log.d("options", "::" + itemOptionList[position].options)
-
-             variationList.add(itemOptionList[position].options)
-             Log.e("optionsvariation", "::$variationList")
-
-             if (itemOptionList[position].name == binding.spOptions.selectedItem) {
-                 optionName.removeAt(position)
-                 itemOptionList.removeAt(position)
-                 binding.spOptions.setSelection(0, false)
-                 spinnerAdapter.notifyDataSetChanged()
-             }*/
-            //}
         }
         spinnerTouched = false
 
