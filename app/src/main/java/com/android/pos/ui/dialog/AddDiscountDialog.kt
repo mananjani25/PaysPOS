@@ -1,7 +1,10 @@
 package com.android.pos.ui.dialog
 
+import android.annotation.SuppressLint
 import android.graphics.Point
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.*
 import androidx.fragment.app.DialogFragment
@@ -16,12 +19,15 @@ import com.android.pos.data.remote.Constants.PERCENTAGE
 import com.android.pos.databinding.DailogAddDiscountBinding
 import com.android.pos.ui.adapter.DialogDiscountListAdapter
 import com.android.pos.ui.fragments.settings.discount.DiscountListViewModel
-import com.android.pos.utils.PercentageTextWatcher
+import com.android.pos.utils.MethodUtils
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
+import java.text.NumberFormat
+import java.util.*
 
 @AndroidEntryPoint
-class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountInterface {
+class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountInterface,
+    TextWatcher {
 
     private lateinit var binding: DailogAddDiscountBinding
     private val viewModel by activityViewModels<DiscountListViewModel>()
@@ -31,7 +37,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
     private var selectedListPos: Int = -1
     private var isFromDetails = false
     private lateinit var defaultModel: TbItem
-    private var selectedCurrency: String = PERCENTAGE
+    private var selectedCurrency: String = AMOUNT
 
 
     companion object {
@@ -46,63 +52,33 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         binding.rvDiscountList.adapter = discountAdapter
 
 
+
+
         isFromDetails = requireArguments().getBoolean("isFromDetails", false)
         val model: TbItem? = requireArguments().getParcelable("model")
         defaultModel = model ?: TbItem()
 
 
+        binding.edtAmount.addTextChangedListener(this)
 
         setDiscountList()
         setupData()
         setKeyPad()
         onClick()
 
-        binding.swtDiscountType.isChecked =
-            model?.discountType == getString(R.string.disc_percentage)
 
-        Log.e(TAG, "${Gson().toJson(defaultModel)}")
-
-        if (defaultModel?.discountId == 0) {
-            binding.edtAmount.append("" + defaultModel?.discountPrice)
+        if (defaultModel.discountId == 0) {
+            binding.edtAmount.append("" + defaultModel.discountPrice)
         } else {
-            discountAdapter.setSelected(defaultModel?.discountId)
+            discountAdapter.setSelected(defaultModel.discountId)
         }
 
-
-        if (binding.swtDiscountType.isChecked) {
-            binding.txtCurrency.visibility = View.GONE
-            binding.txtPer.visibility = View.VISIBLE
-            binding.edtAmount.addTextChangedListener(PercentageTextWatcher(binding.edtAmount))
-        } else {
-            binding.swtDiscountType.text = "Amount"
-            binding.txtCurrency.visibility = View.VISIBLE
-            binding.edtAmount.addTextChangedListener(PercentageTextWatcher(binding.edtAmount))
-        }
-
-        binding.swtDiscountType.setOnCheckedChangeListener { buttonView, isChecked ->
-
-            if (isChecked) {
-                binding.swtDiscountType.text = "Percentage"
-                binding.txtCurrency.visibility = View.GONE
-                binding.txtPer.visibility = View.VISIBLE
-                binding.edtAmount.addTextChangedListener(PercentageTextWatcher(binding.edtAmount))
-
-            } else {
-                binding.swtDiscountType.text = "Amount"
-                binding.txtCurrency.visibility = View.VISIBLE
-                binding.txtPer.visibility = View.GONE
-                binding.edtAmount.addTextChangedListener(PercentageTextWatcher(binding.edtAmount))
-            }
-
-        }
-
-
-        Log.e(TAG, "GetDataaa  ${Gson().toJson(defaultModel)}")
 
     }
 
     private fun onClick() {
         binding.txtCurrencyPercentage.setOnClickListener {
+
             percentageView()
             if (selectedListPos != -1) {
                 discountAdapter.clearSelectedItem()
@@ -110,6 +86,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
             }
         }
         binding.txtCurrencyDollar.setOnClickListener {
+
             amountView()
             if (selectedListPos != -1) {
                 discountAdapter.clearSelectedItem()
@@ -118,6 +95,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         }
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     private fun amountView() {
         binding.txtCurrency.visibility = View.VISIBLE
         binding.txtPer.visibility = View.GONE
@@ -130,6 +108,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     private fun percentageView() {
         selectedCurrency = PERCENTAGE
         binding.txtCurrency.visibility = View.GONE
@@ -148,10 +127,6 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
     ): View? {
         binding = DailogAddDiscountBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
-
-
-
-
         return binding.root
     }
 
@@ -332,13 +307,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         Log.e(TAG, "SelectedItem:  ${Gson().toJson(model)}")
         discountModel.apply { model }
 
-        val discount: Double = if (model.discountType == "Percentage") {
-            val price = defaultModel.price * defaultModel.itemQuantity
-            (price * model.percentage) / 100
-
-        } else {
-            model.percentage
-        }
+        val discount: Double = model.percentage
 
         if (model.discountType == "Percentage") {
             percentageView()
@@ -347,7 +316,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         }
 
 
-        binding.edtAmount.setText(discount.toString())
+        binding.edtAmount.setText(MethodUtils.roundOffAmountString(discount))
         selectedListPos = pos
     }
 
@@ -359,11 +328,59 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
         } else {
             binding.edtAmount.append(number)
+
+
         }
     }
 
     private fun removeLastCharacter(str: String): String {
         return str.substring(0, str.length - 1)
+    }
+
+    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+    }
+
+    var current = ""
+    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+        if (s.toString() != current) {
+            binding.edtAmount.removeTextChangedListener(this)
+
+
+            val cleanString: String = s!!.replace("""[$,.%]""".toRegex(), "")
+
+
+            val parsed = cleanString.toDouble()
+
+            val formatted = NumberFormat.getCurrencyInstance(Locale.US).format((parsed / 100))
+
+
+            current = formatted
+
+            binding.edtAmount.setText(formatted.replace("""[$,%]""".toRegex(), ""))
+            binding.edtAmount.setSelection(formatted.replace("""[$,%]""".toRegex(), "").length)
+
+
+            if (selectedCurrency == AMOUNT) {
+
+                if (binding.edtAmount.text.toString().toDouble() > defaultModel.price) {
+                    binding.edtAmount.setText(MethodUtils.roundOffAmountString(defaultModel.price))
+                }
+            }
+
+            if (selectedCurrency == PERCENTAGE) {
+                if (binding.edtAmount.text.toString().toDouble() > 100) {
+                    binding.edtAmount.setText("100.00")
+                }
+            }
+
+            binding.edtAmount.addTextChangedListener(this)
+        }
+    }
+
+    override fun afterTextChanged(s: Editable?) {
+
     }
 
 }

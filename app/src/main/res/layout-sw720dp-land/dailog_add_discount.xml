@@ -164,38 +164,6 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:visibility="gone"
-                    android:weightSum="1">
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/_10sdp"
-                        android:layout_weight="0.5"
-                        android:background="@drawable/background_square_border_grey"
-                        android:orientation="horizontal"
-                        android:padding="@dimen/_5sdp">
-
-
-                    </LinearLayout>
-
-                    <androidx.appcompat.widget.SwitchCompat
-                        android:id="@+id/swtDiscountType"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_weight="0.5"
-                        android:checked="true"
-                        android:padding="@dimen/_7sdp"
-                        android:text="@string/disc_amount"
-                        android:textSize="@dimen/_6mdpi"
-                        app:theme="@style/AppTheme" />
-
-                </LinearLayout>
 
 
                 <include
