@@ -41,7 +41,7 @@ data class OpenOrderResponse(
             @SerializedName("edited_order_timestamp")
             val editedOrderTimestamp: Any,
             @SerializedName("employee")
-            val employee: Any,
+            val employee: Employee,
             @SerializedName("employee_id")
             val employeeId: Int,
             @SerializedName("future_delivery_date")
@@ -258,6 +258,39 @@ data class OpenOrderResponse(
                 val locationId: Int,
                 @SerializedName("note")
                 val note: Any,
+                @SerializedName("updated_at")
+                val updatedAt: String
+            )
+
+            data class Employee(
+                @SerializedName("created_at")
+                val createdAt: String,
+                @SerializedName("email")
+                val email: String,
+                @SerializedName("first_name")
+                val firstName: String,
+                @SerializedName("hourly_wages")
+                val hourlyWages: Double,
+                @SerializedName("id")
+                val id: Int,
+                @SerializedName("is_active")
+                val isActive: Boolean,
+                @SerializedName("is_clocked_in")
+                val isClockedIn: Boolean,
+                @SerializedName("last_name")
+                val lastName: String,
+                @SerializedName("location_id")
+                val locationId: Int,
+                @SerializedName("loggedin_terminal_id")
+                val loggedinTerminalId: Int,
+                @SerializedName("name")
+                val name: String,
+                @SerializedName("passcode")
+                val passcode: String,
+                @SerializedName("phone_number")
+                val phoneNumber: String,
+                @SerializedName("team_role_id")
+                val teamRoleId: Int,
                 @SerializedName("updated_at")
                 val updatedAt: String
             )

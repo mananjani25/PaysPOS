@@ -496,4 +496,13 @@
     <string name="tv_sku">SKU</string>
     <string name="tv_display_name">Display Name</string>
     <string name="edit_printer">Edit Printer</string>
+    <string name="tv_delivery_date">Delivery Date</string>
+    <string name="tv_contact_number">Contact Number</string>
+    <string name="tv_email_id">Email Id</string>
+    <string name="tv_cancel_order">Cancel Order</string>
+    <string name="tv_edit_order">Edit Order</string>
+    <string name="tv_print_receipt">Print Receipt</string>
+    <string name="tv_pay_now">Pay Now</string>
+    <string name="tv_customer_name">Customer Name</string>
+    <string name="tv_delivery_status">Delivery Status</string>
 </resources>
