@@ -90,12 +90,7 @@ class CreateItem : Fragment(), View.OnClickListener {
         val resultDialogVariations =
             getNavigationResultLiveData<List<List<Option>>>(DIALOG_KEY_OPTIONS)
         resultDialogVariations?.observe(viewLifecycleOwner) { variationList ->
-            //  var variationsName = ArrayList<String>()
-            /*variationList?.forEach {
-                it.map {
-                    variationsName.add(it.name)
-                }
-            }*/
+
             binding.llVariationTitle.visibility = View.VISIBLE
             variationListAdapter.addVariations(variationList as ArrayList<List<Option>>)
         }
@@ -126,6 +121,7 @@ class CreateItem : Fragment(), View.OnClickListener {
             binding.txtSave.text = getString(R.string.update)
             itemObject = arguments?.getParcelable("itemObject")!!
             viewModel.setData(itemObject)
+            viewModel.setCategoryId(selectedId)
         }
 
         binding.chooseCategory.setOnClickListener(this)
@@ -134,6 +130,7 @@ class CreateItem : Fragment(), View.OnClickListener {
         setFragmentResultListener("request_key") { requestKey: String, bundle: Bundle ->
             val result = bundle.getParcelable<TbCategory>("data")
             selectedId = bundle.getInt("selectedId")
+            viewModel.setCategoryId(selectedId)
             if (result != null) {
                 if (result.name == "None") {
                     binding.txtCategoryName.text = ""

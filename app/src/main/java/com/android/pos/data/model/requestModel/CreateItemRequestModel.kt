@@ -12,12 +12,12 @@ data class CreateItemRequestModel(
     var cost: Double = 0.0,
     @SerializedName("desc")
     var desc: String = "",
-    /*@SerializedName("id")
-    var id: Int = -1,
+    @SerializedName("id")
+    var id: Int? = null,
     @SerializedName("kitchen_name")
-    var kitchenName: Int = -1,*/
+    var kitchenName: Int? = null,
     @SerializedName("location_id")
-    var locationId: Int = -1,
+    var locationId: Int? = null,
     @SerializedName("modifier_set_ids")
     var modifierSetIds: List<Int>? = null,
     @SerializedName("name")
@@ -45,9 +45,9 @@ data class CreateItemRequestModel(
         @SerializedName("name")
         var name: String = "",
         @SerializedName("option_ids")
-        var optionIds: String = "",
+        var optionIds: List<Int>? = null,
         @SerializedName("option_set_id")
-        var optionSetId: String = "",
+        var optionSetId: List<Int>? = null,
         @SerializedName("price")
         var price: Double = 0.0,
         @SerializedName("sku")

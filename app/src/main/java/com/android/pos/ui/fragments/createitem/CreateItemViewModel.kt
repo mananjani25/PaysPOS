@@ -28,6 +28,7 @@ class CreateItemViewModel @Inject constructor(
     ViewModel() {
 
     private var itemId: Int? = null
+    private var categoryId: Int? = null
     private var isEdit: Boolean = false
     var itemDetails = MutableLiveData(CreateItemRequestModel())
     private lateinit var itemData: CreateItemRequestModel
@@ -57,7 +58,7 @@ class CreateItemViewModel @Inject constructor(
         val value = itemDetails.value
         if (TextUtils.isEmpty(value?.name?.trim())) {
             _snackbarText.value = Event(R.string.item_name_validate)
-        } else if (TextUtils.isEmpty(
+        } /*else if (TextUtils.isEmpty(
                 value?.price?.toString()?.trim()
             )
             && value?.price == 0.0
@@ -65,7 +66,7 @@ class CreateItemViewModel @Inject constructor(
             _snackbarText.value = Event(R.string.item_price_validate)
         } else if (TextUtils.isEmpty(value?.sku?.trim())) {
             _snackbarText.value = Event(R.string.item_sku_validate)
-        } else {
+        }*/ else {
             _showProgress.value = Event(true)
 
 
@@ -73,21 +74,21 @@ class CreateItemViewModel @Inject constructor(
                 itemData = CreateItemRequestModel().apply {
                     //id = itemId!!
                     name = value!!.name
-                    price = value.price
-                    sku = value.sku
-                    desc = value.desc
-                    categoryId = 2
+                    //   price = value.price
+                    //   sku = value.sku
+                    //   desc = value.desc
+                    categoryId = categoryId
                     locationId = prefProvider.getValueInt(LOCATION_ID, -1)
                 }
 
             } else {
                 itemData = CreateItemRequestModel().apply {
                     name = value!!.name
-                    price = value.price
-                    sku = value.sku
-                    desc = value.desc
-                    quantity = 10
-                    categoryId = 2
+                    //   price = value.price
+                    //   sku = value.sku
+                    //   desc = value.desc
+                    //  quantity = 10
+                    categoryId = categoryId
                     locationId = prefProvider.getValueInt(LOCATION_ID, -1)
 
                 }
@@ -128,6 +129,10 @@ class CreateItemViewModel @Inject constructor(
 
         }
 
+    }
+
+    fun setCategoryId(categoryId: Int) {
+        this.categoryId = categoryId
     }
 
 
