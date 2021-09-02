@@ -508,4 +508,5 @@
     <string name="payment_status">Payment Status</string>
     <string name="tv_edit_variation">Edit Variation</string>
     <string name="tv_remove_variation">Remove Variation</string>
+    <string name="cross">X&#160;&#160;&#160;</string>
 </resources>
