@@ -59,9 +59,6 @@ class CreateItemViewModel @Inject constructor(
         itemDetails.value?.desc = itemObject.shortDescription
     }
 
-    fun editVariation(variationList: ArrayList<VariationsAttribute>) {
-        _variationListLiveData.value = Event(variationList)
-    }
 
     fun submit() {
         val value = itemDetails.value
