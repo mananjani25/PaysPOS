@@ -505,4 +505,5 @@
     <string name="tv_pay_now">Pay Now</string>
     <string name="tv_customer_name">Customer Name</string>
     <string name="tv_delivery_status">Delivery Status</string>
+    <string name="payment_status">Payment Status</string>
 </resources>

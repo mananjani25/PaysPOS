@@ -4,6 +4,7 @@ package com.android.pos.data.model.responseModel
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import com.android.pos.data.entities.ModifierSet
+import com.android.pos.data.entities.OptionSet
 import com.android.pos.data.entities.TaxData
 import com.bumptech.glide.Glide
 import com.google.gson.annotations.SerializedName
@@ -23,7 +24,9 @@ data class VenueDataResponse(
         @SerializedName("categories")
         val categories: List<Category>,
         @SerializedName("modifier_sets")
-        val modifierSets: List<ModifierSet> = emptyList()
+        val modifierSets: List<ModifierSet> = emptyList(),
+        @SerializedName("option_sets")
+        val optionSets: List<OptionSet> = emptyList()
 
     ) {
         data class Category(

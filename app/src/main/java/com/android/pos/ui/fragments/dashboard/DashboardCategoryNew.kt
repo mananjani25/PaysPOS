@@ -47,6 +47,7 @@ import com.android.pos.databinding.FragmentDashboardCategoryNewBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.activities.SwipeHelper
 import com.android.pos.ui.adapter.*
+import com.android.pos.ui.fragments.payment.PaymentViewModel
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.ItemCallback
@@ -64,9 +65,10 @@ import javax.inject.Inject
 class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, MyCallback,
     ItemCallback, View.OnClickListener {
 
+    private var future_delivery_time: String = ""
     private var popupWindow: PopupWindow? = null
     private var orderType: TbOrderType? = null
-    private var future_delivery_date: String? = null
+    private var future_delivery_date: String = ""
     private var assignCustomer: TbCustomer? = null
     private var serviceChargesList: List<TbServiceCharge>? = null
     private var singleItem: TbItem? = null
@@ -84,6 +86,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private lateinit var searchList: ArrayList<CategorySearchData>
     private lateinit var cartAdapter: CartAdapter
     private lateinit var orderTypeAdapter: OrderTypeAdapter
+    private val viewModelPayment by viewModels<PaymentViewModel>()
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -135,12 +138,13 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         setupSnackbar()
         getBackstack()
         swipeListener()
-
+        observeSaveOrder()
         binding.layoutCart.llShowMenu.setOnClickListener(this)
         binding.layoutCart.txtCrtNewCustomer.setOnClickListener(this)
         binding.layoutCart.txtClearItems.setOnClickListener(this)
         binding.layoutCart.llInfo.setOnClickListener(this)
         binding.layoutCart.btnPay.setOnClickListener(this)
+        binding.layoutCart.btnSave.setOnClickListener(this)
         binding.layoutCart.llCartMenu.setOnClickListener(this)
         binding.layoutCart.imgOrderMenu.setOnClickListener(this)
 
@@ -176,8 +180,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 val openOrder = bundle.getBoolean("OPEN_ORDER")
 
                 if (openOrder) {
-                    future_delivery_date = bundle.getString("DATE")
-                    future_delivery_date?.let { Log.e("future_delivery_date", it) }
+                    future_delivery_date = bundle.getString("DATE").toString()
 
                     prefProvider.setValueInt(ORDER_TYPE_ID, orderType!!.id)
                     prefProvider.setValue(ORDER_TYPE_NAME, orderType!!.name)
@@ -205,8 +208,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 val openOrder = bundle.getBoolean("OPEN_ORDER")
 
                 if (openOrder) {
-                    future_delivery_date = bundle.getString("DATE")
-                    future_delivery_date?.let { Log.e("future_delivery_date", it) }
+                    future_delivery_date = bundle.getString("DATE").toString()
+                    future_delivery_time = bundle.getString("TIME").toString()
+
 
                     prefProvider.setValueInt(ORDER_TYPE_ID, orderType!!.id)
                     prefProvider.setValue(ORDER_TYPE_NAME, orderType!!.name)
@@ -333,7 +337,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private fun hideOrderType() {
 
         if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
-            Log.e(TAG, "ORDERTYPENOTNULL")
+
             binding.layoutCart.llCart.visibility = View.VISIBLE
             binding.lltakeout.visibility = View.GONE
             binding.layoutCart.txtOrderType.text =
@@ -344,6 +348,11 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             binding.lltakeout.visibility = View.VISIBLE
             binding.layoutCart.llCart.visibility = View.GONE
         }
+
+        if (prefProvider.getValue(ORDER_TYPE, "").toString() == OPEN_ORDER) {
+//            binding.layoutCart.btnSave
+        }
+
     }
 
     private fun searchCategory() {
@@ -1203,6 +1212,27 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             }
         })
 
+        viewModelPayment.showProgress.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    ProgressUtils.showProgressDialog(requireActivity())
+                } else {
+                    ProgressUtils.dismissProgressDialog()
+                }
+            }
+        })
+    }
+
+    private fun observeSaveOrder() {
+
+        viewModelPayment.data.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let { it ->
+
+                hideOrderType()
+
+            }
+        })
+
     }
 
     private fun setupSnackbar() {
@@ -1287,22 +1317,46 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 showPopupWindow(v)
             }
 
+            R.id.btnSave -> {
+
+                cartList[0].customer = assignCustomer
+                val request = viewModelPayment.createOrderRequest(
+                    cartList[0],
+                    viewModel.subTotalPrice,
+                    viewModel.subTotalPrice,
+                    viewModel.totalServiceCharge,
+                    viewModel.totalTax,
+                    OPEN_ORDER,
+                    future_delivery_date,
+                    future_delivery_time,
+                    false
+                )
+                viewModelPayment.submit(request)
+
+            }
+
             R.id.btnPay -> {
 
+
                 if (cartList.isNotEmpty()) {
+
                     val bundle = Bundle()
                     bundle.putDouble("totalPrice", viewModel.totalPrice)
                     bundle.putDouble("subTotalPrice", viewModel.subTotalPrice)
                     bundle.putDouble("totalTax", viewModel.totalTax)
                     bundle.putDouble("totalDiscount", viewModel.totalDiscount)
                     bundle.putDouble("totalServiceCharge", viewModel.totalServiceCharge)
+                    bundle.putString("future_delivery_date", future_delivery_date)
+                    bundle.putString("future_delivery_time", future_delivery_time)
                     cartList[0].customer = assignCustomer
                     bundle.putParcelable("cartList", cartList[0])
+
 
                     findNavController().navigate(
                         R.id.action_dashboardCategoryNew_to_paymentFragment,
                         bundle
                     )
+
                 }
             }
             R.id.llCartMenu -> {

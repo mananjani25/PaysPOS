@@ -17,6 +17,7 @@ import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.TaxServiceChargeRepository
 import com.android.pos.data.repositories.TipDiscountRepository
 import com.android.pos.di.PrefProvider
+import com.android.pos.ui.fragments.payment.PaymentViewModel
 import com.android.pos.utils.Event
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.statusUtils.Resource
@@ -316,6 +317,5 @@ class DashBoardCategoryViewModel @Inject constructor(
         return posRepository.getMinMax(_itemId, modifierSetId)
 
     }
-
 
 }

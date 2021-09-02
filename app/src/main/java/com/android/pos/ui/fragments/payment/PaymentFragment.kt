@@ -13,6 +13,7 @@ import androidx.navigation.fragment.findNavController
 import com.android.pos.MainApplication
 import com.android.pos.R
 import com.android.pos.data.entities.CartModel
+import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.PaymentFragmentBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.MethodUtils
@@ -25,6 +26,8 @@ import kotlin.math.floor
 @AndroidEntryPoint
 open class PaymentFragment : Fragment(), View.OnClickListener {
 
+    private var future_delivery_date: String = ""
+    private var future_delivery_time: String = ""
     private var fourthValue: Double = 0.0
     private var thirdValue: Double = 0.0
     private var secondValue: Int = 0
@@ -98,6 +101,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         totalTax = requireArguments().getDouble("totalTax")
         totalServiceCharge = requireArguments().getDouble("totalServiceCharge")
         totalDiscount = requireArguments().getDouble("totalDiscount")
+        future_delivery_time = requireArguments().getString("future_delivery_time").toString()
+        future_delivery_date = requireArguments().getString("future_delivery_date").toString()
 
         getCashPaymentOptionList(totalPrice)
 
@@ -280,7 +285,11 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 subTotalPrice,
                 totalPrice,
                 totalServiceCharge,
-                totalTax
+                totalTax,
+                prefProvider.getValue(Constants.ORDER_TYPE, "").toString(),
+                future_delivery_date,
+                future_delivery_date,
+                true
             )
         }
         if (myRequest != null) {
