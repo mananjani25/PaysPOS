@@ -506,4 +506,6 @@
     <string name="tv_customer_name">Customer Name</string>
     <string name="tv_delivery_status">Delivery Status</string>
     <string name="payment_status">Payment Status</string>
+    <string name="tv_edit_variation">Edit Variation</string>
+    <string name="tv_remove_variation">Remove Variation</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.android.pos.data.model.requestModel
 
+import com.android.pos.data.entities.VariationsAttribute
 import com.google.gson.annotations.SerializedName
 
 
@@ -36,24 +37,5 @@ data class CreateItemRequestModel(
     var taxIds: List<Int>? = null,
     @SerializedName("variations_attributes")
     var variationsAttributes: List<VariationsAttribute>? = null
-) {
-    data class VariationsAttribute(
-        @SerializedName("is_active")
-        var isActive: Boolean = false,
-        @SerializedName("is_custom")
-        var isCustom: Boolean = false,
-        @SerializedName("name")
-        var name: String = "",
-        @SerializedName("option_ids")
-        var optionIds: List<Int>? = null,
-        @SerializedName("option_set_id")
-        var optionSetId: List<Int>? = null,
-        @SerializedName("price")
-        var price: Double = 0.0,
-        @SerializedName("sku")
-        var sku: String = "",
-        @SerializedName("stock_qty")
-        var stockQty: String = ""
-    )
-}
+)
 

@@ -87,7 +87,7 @@ class TeamMemberSheetViewModel @Inject constructor(
         }
     }
 
-    fun employeeId(employeeId: GetEmployeesTimeSheetResponse.Data) {
+    fun singleMemberTimeSheet(employeeId: GetEmployeesTimeSheetResponse.Data) {
         _employeeIdViewModel.value = Event(employeeId)
     }
 

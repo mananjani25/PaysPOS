@@ -7,21 +7,22 @@
 
     <data>
 
+        <import type="java.util.ArrayList" />
+
+        <variable
+            name="variationModel"
+            type="ArrayList&lt;com.android.pos.data.entities.VariationsAttribute&gt;" />
 
         <variable
             name="viewModel"
-            type="com.android.pos.ui.fragments.settings.notes.NoteListViewModel" />
+            type="com.android.pos.ui.fragments.createitem.CreateItemViewModel" />
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:onClick="@{() -> viewModel.editVariation(variationModel)}"
         android:orientation="vertical">
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/view" />
 
         <LinearLayout
             android:layout_width="match_parent"
