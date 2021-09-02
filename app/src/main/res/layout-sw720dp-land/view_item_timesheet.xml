@@ -19,7 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/selectableItemBackground"
-        android:onClick="@{() -> viewModel.employeeId(itemSheetModel)}"
+        android:onClick="@{() -> viewModel.singleMemberTimeSheet(itemSheetModel)}"
         android:orientation="vertical">
 
         <LinearLayout

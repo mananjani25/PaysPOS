@@ -1,6 +1,5 @@
 package com.android.pos.ui.dialog
 
-import android.content.Intent
 import android.graphics.Point
 import android.os.Build
 import android.os.Bundle
@@ -37,6 +36,7 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
 
     private var optionItemIds: ArrayList<OptionSet>? = null
     private lateinit var finalvariationList: List<List<Option>>
+
     private lateinit var spinnerAdapter: ArrayAdapter<String>
     private var optionName = ArrayList<String>()
     private lateinit var binding: FragmentItemOptionsListBinding
@@ -72,7 +72,6 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
 
                 // createOptionSets(selectedOptionSetNameAdapter.optionSetList)
                 finalvariationList = computeCombinations(variationList)
-
                 setNavigationResult(DIALOG_KEY, selectedOptionSetNameAdapter.optionSetList)
                 setNavigationResult(DIALOG_KEY_OPTIONS, finalvariationList)
                 findNavController().popBackStack()

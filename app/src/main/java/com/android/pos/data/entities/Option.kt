@@ -7,7 +7,6 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 class Option : Parcelable {
 
-
     @SerializedName("id")
     val id: Int? = null
 

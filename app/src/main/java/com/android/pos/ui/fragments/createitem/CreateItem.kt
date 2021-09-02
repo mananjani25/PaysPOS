@@ -10,13 +10,11 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
-import com.android.pos.data.entities.Option
-import com.android.pos.data.entities.OptionSet
-import com.android.pos.data.entities.TbCategory
-import com.android.pos.data.entities.TbItem
+import com.android.pos.data.entities.*
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DIALOG_KEY
 import com.android.pos.data.remote.Constants.DIALOG_KEY_OPTIONS
+import com.android.pos.data.remote.Constants.DIALOG_KEY_VARIATION_DETAILS
 import com.android.pos.databinding.CreateItemBinding
 import com.android.pos.ui.adapter.ModifierSetsListAdapter
 import com.android.pos.ui.adapter.VariationListAdapter
@@ -37,6 +35,7 @@ class CreateItem : Fragment(), View.OnClickListener {
     private val viewModel by viewModels<CreateItemViewModel>()
     private lateinit var variationListAdapter: VariationListAdapter
     private var optionSetList: ArrayList<OptionSet>? = null
+    // private lateinit var passedVariationList: ArrayList<List<VariationsAttribute>>
 
     private lateinit var adapter: ModifierSetsListAdapter
     override fun onCreateView(
@@ -55,6 +54,7 @@ class CreateItem : Fragment(), View.OnClickListener {
         observeShowProgress()
         getModifiers()
         navigate()
+        navigateToEditVariation()
 
         binding.tvAddOptions.setOnClickListener {
 
@@ -71,19 +71,7 @@ class CreateItem : Fragment(), View.OnClickListener {
 
         val resultDialogOptionIds = getNavigationResultLiveData<ArrayList<OptionSet>>(DIALOG_KEY)
         resultDialogOptionIds?.observe(viewLifecycleOwner) {
-            // it.clear()
             optionSetList = it
-
-            /*if (it.size > 0) {
-                binding.itemsCount.text = "" + it.size + " Items"
-            } else {
-                binding.itemsCount.text = "No Items"
-            }
-
-            it.forEach {
-                itemIds.add(it.itemId)
-            }*/
-            // viewModel.setItemIds(itemIds)
         }
 
 
@@ -92,7 +80,27 @@ class CreateItem : Fragment(), View.OnClickListener {
         resultDialogVariations?.observe(viewLifecycleOwner) { variationList ->
 
             binding.llVariationTitle.visibility = View.VISIBLE
-            variationListAdapter.addVariations(variationList as ArrayList<List<Option>>)
+
+
+            val passedVariationList = ArrayList<ArrayList<VariationsAttribute>>()
+
+            variationList.forEach {
+                val variationList1 = ArrayList<VariationsAttribute>()
+                it.forEach {
+                    val variation = VariationsAttribute()
+                    variation.name = it.name
+                    variationList1.add(variation)
+                }
+                passedVariationList.add(variationList1)
+            }
+            variationListAdapter.addAllVariations(passedVariationList)
+        }
+
+
+        val resultVariationDetails =
+            getNavigationResultLiveData<ArrayList<VariationsAttribute>>(DIALOG_KEY_VARIATION_DETAILS)
+        resultVariationDetails?.observe(viewLifecycleOwner) {
+            variationListAdapter.addVariation(it)
         }
 
         return binding.root
@@ -204,5 +212,21 @@ class CreateItem : Fragment(), View.OnClickListener {
 
             }
         })
+    }
+
+    private fun navigateToEditVariation() {
+
+        viewModel.variationListLiveData.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+                val bundle = Bundle().apply {
+                    putParcelableArrayList("variationAttributeList", it)
+                }
+                findNavController().navigate(
+                    R.id.action_createItem_to_editVariationDialog,
+                    bundle
+                )
+            }
+        })
+
     }
 }

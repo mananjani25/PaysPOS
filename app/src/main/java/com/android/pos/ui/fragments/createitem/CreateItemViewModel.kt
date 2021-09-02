@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.R
 import com.android.pos.data.entities.TbItem
+import com.android.pos.data.entities.VariationsAttribute
 import com.android.pos.data.model.requestModel.CreateItemRequestModel
 import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.model.responseModel.CreateItemResponse
@@ -42,6 +43,10 @@ class CreateItemViewModel @Inject constructor(
     private val _data = MutableLiveData<Event<BaseResponse?>>()
     val data: LiveData<Event<BaseResponse?>> = _data
 
+    private val _variationListLiveData = MutableLiveData<Event<ArrayList<VariationsAttribute>>>()
+    val variationListLiveData: LiveData<Event<ArrayList<VariationsAttribute>>> =
+        _variationListLiveData
+
     val modifierSet = posRepository.modifierSetsList()
 
 
@@ -52,6 +57,10 @@ class CreateItemViewModel @Inject constructor(
         itemDetails.value?.price = itemObject.price
         itemDetails.value?.sku = ""
         itemDetails.value?.desc = itemObject.shortDescription
+    }
+
+    fun editVariation(variationList: ArrayList<VariationsAttribute>) {
+        _variationListLiveData.value = Event(variationList)
     }
 
     fun submit() {
