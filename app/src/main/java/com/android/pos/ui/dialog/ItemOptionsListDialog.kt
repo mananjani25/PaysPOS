@@ -45,7 +45,6 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
     private var itemOptionList = ArrayList<OptionSet>()
     private val viewModel by viewModels<OptionSetViewModel>()
     private var spinnerTouched = false
-    private var optionSetIds = ArrayList<Int>()
     var isEdit: Boolean = false
     var isLiveData: Boolean = false
     override fun onCreateView(

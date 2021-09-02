@@ -16,6 +16,7 @@ import com.android.pos.data.remote.Constants.ADD_TAX
 import com.android.pos.data.remote.Constants.DIALOG_KEY
 import com.android.pos.data.remote.Constants.DIALOG_KEY_TAX
 import com.android.pos.data.remote.Constants.DIALOG_KEY_VARIATION_DETAILS
+import com.android.pos.data.remote.Constants.DIALOG_KEY_VARIATION_DETAILS_POSITION
 import com.android.pos.data.remote.Constants.INCLUDE_TAX
 import com.android.pos.databinding.DialogEditItemTitleBinding
 import com.android.pos.databinding.DialogEditVariationBinding
@@ -47,6 +48,8 @@ class EditVariationDialog : DialogFragment(), View.OnClickListener {
             arguments?.getParcelableArrayList("variationAttributeList")
 
 
+
+
         variationAttributeList?.forEach {
             builder.append(it.name.trim() + ",")
         }
@@ -72,13 +75,13 @@ class EditVariationDialog : DialogFragment(), View.OnClickListener {
                 dismiss()
             }
             R.id.txtDone -> {
-
+                //variationAttributeList?.clear()
                 variationAttributeList?.forEach {
                     it.name = binding.tvVariationsName.text.toString()
                     it.price = binding.tvVariationsPrice.text.toString().toDouble()
                     it.sku = binding.tvVariationsSku.text.toString()
                     it.stockQty = binding.tvVariationsStock.text.toString()
-                    //variationAttributeList?.add(it)
+                    variationAttributeList?.add(it)
                 }
 
                 setNavigationResult(DIALOG_KEY_VARIATION_DETAILS, variationAttributeList)

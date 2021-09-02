@@ -7,11 +7,17 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.entities.VariationsAttribute
 import com.android.pos.databinding.ViewVariationItemBinding
 import com.android.pos.ui.fragments.createitem.CreateItemViewModel
+import com.android.pos.utils.callback.UpdateVariationCallback
 
 class VariationListAdapter(val viewModel: CreateItemViewModel) :
     RecyclerView.Adapter<VariationListAdapter.MyViewHolder>() {
 
     var variationList = ArrayList<ArrayList<VariationsAttribute>>()
+
+    private lateinit var mCallback: UpdateVariationCallback
+    fun setCallback(callback: UpdateVariationCallback) {
+        mCallback = callback
+    }
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -25,12 +31,16 @@ class VariationListAdapter(val viewModel: CreateItemViewModel) :
 
     override fun onBindViewHolder(holder: VariationListAdapter.MyViewHolder, position: Int) {
         val itemBinding = holder.noteItemBinding
-        itemBinding.variationModel = variationList[position]
 
         val variationName = variationList[position].map { it.name }
         itemBinding.tvVariationsName.text = TextUtils.join(",", variationName)
+        itemBinding.tvPrice.text = variationList[position][0].price.toString()
+        itemBinding.tvSku.text = variationList[position][0].sku
+        itemBinding.tvStock.text = variationList[position][0].stockQty
 
-
+        itemBinding.root.setOnClickListener {
+            mCallback.onItemClickListener(variationList[position])
+        }
 
         itemBinding.viewModel = viewModel
 
@@ -55,7 +65,7 @@ class VariationListAdapter(val viewModel: CreateItemViewModel) :
 
     fun addVariation(variation: ArrayList<VariationsAttribute>) {
         this.variationList.apply {
-            clear()
+            // clear()
             add(variation)
         }
         notifyDataSetChanged()
