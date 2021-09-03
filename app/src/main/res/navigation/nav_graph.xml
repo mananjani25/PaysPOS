@@ -406,6 +406,9 @@
         <action
             android:id="@+id/action_dashboardCategoryNew_to_openOrderCustomerFragment"
             app:destination="@id/openOrderCustomerFragment" />
+        <action
+            android:id="@+id/action_dashboardCategoryNew_to_cashLogFragment"
+            app:destination="@id/cashLogFragment" />
 
     </fragment>
     <action
@@ -714,5 +717,9 @@
         android:label="EditVariationDialog">
 
     </dialog>
+    <fragment
+        android:id="@+id/cashLogFragment"
+        android:name="com.android.pos.ui.fragments.cashlog.CashLogFragment"
+        android:label="CashLogFragment" />
 
 </navigation>

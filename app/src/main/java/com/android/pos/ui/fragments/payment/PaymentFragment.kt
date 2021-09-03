@@ -327,6 +327,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     bundle
                 )
 
+                it.data.order
 
             }
         })

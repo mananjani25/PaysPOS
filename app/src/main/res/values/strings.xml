@@ -509,4 +509,7 @@
     <string name="tv_edit_variation">Edit Variation</string>
     <string name="tv_remove_variation">Remove Variation</string>
     <string name="cross">X&#160;&#160;&#160;</string>
+    <string name="event_type">Event Type</string>
+    <string name="reason">Reason</string>
+    <string name="employee_name">Employee Name</string>
 </resources>

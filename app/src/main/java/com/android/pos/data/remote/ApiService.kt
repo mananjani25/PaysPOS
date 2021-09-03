@@ -4,6 +4,7 @@ package com.android.pos.data.remote
 import com.android.pos.data.model.CustomerListResponse
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.*
+import com.android.pos.data.remote.Constants.CASH_EVENTS
 import com.android.pos.data.remote.Constants.CATEGORY
 import com.android.pos.data.remote.Constants.CATEGORY_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.CLOCK_OUT
@@ -455,4 +456,16 @@ interface ApiService {
 
     @GET(OPEN_ORDERS)
     suspend fun getOpenOrders(): OpenOrderResponse
+
+
+    @POST(CASH_EVENTS)
+    suspend fun cashInOut(@Body cashLogRequest: CashLogRequest): BaseResponse
+
+    @GET(CASH_EVENTS)
+    suspend fun getCashInOut(
+        @Query("start_date") startDate: String,
+        @Query("end_date") endDate: String
+        /*@Query("team_role_id") teamRoleId: String,*/
+
+    ): CashLogResponse
 }

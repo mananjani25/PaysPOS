@@ -56,8 +56,9 @@ class PaymentViewModel @Inject constructor(
                             prefProvider.setValue(Constants.ORDER_TYPE, "")
                             posRepository.deleteCart()
                             resource.data?.let { createOrderResponse ->
-                                _data.value = Event(createOrderResponse)
 
+                                cashLogApi(createOrderResponse, "in")
+//                                _data.value = Event(createOrderResponse)
                             }
 
                         } else {
@@ -75,6 +76,55 @@ class PaymentViewModel @Inject constructor(
                 Status.LOADING -> {
                     _showProgress.value = Event(true)
                 }
+            }
+        }
+    }
+
+    private suspend fun cashLogApi(createOrderResponse: CreateOrderResponse, event: String) {
+
+        val order = createOrderResponse.data.order
+
+        val cashLogRequest = CashLogRequest(
+            order.totalAmount,
+            order.employeeId,
+            event,
+            order.id,
+            order.payments[0].id,
+            "",
+            order.terminalId,
+            null,
+            null
+        )
+
+        val resource = posRepository.cashInOut(cashLogRequest)
+
+        when (resource.status) {
+            Status.SUCCESS -> {
+                _showProgress.value = Event(false)
+                resource.data.let { response ->
+                    if (response?.status == 200) {
+
+                        prefProvider.setValue(Constants.ORDER_TYPE, "")
+                        posRepository.deleteCart()
+                        resource.data?.let {
+
+                            _data.value = Event(createOrderResponse)
+                        }
+
+                    } else {
+                        _snackbarText.value = Event(resource.message)
+                    }
+                }
+
+            }
+
+            Status.ERROR -> {
+                _snackbarText.value = Event(resource.message)
+                _showProgress.value = Event(false)
+            }
+
+            Status.LOADING -> {
+                _showProgress.value = Event(true)
             }
         }
     }
