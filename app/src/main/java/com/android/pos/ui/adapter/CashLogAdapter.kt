@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.model.responseModel.CashLogResponse
 import com.android.pos.databinding.ViewCashLogBinding
+import com.android.pos.utils.TimeFormatUtils
 
 class CashLogAdapter :
     RecyclerView.Adapter<CashLogAdapter.MyViewHolder>() {
@@ -20,6 +21,10 @@ class CashLogAdapter :
             binding.viewModel = item
             binding.executePendingBindings()
 
+            binding.txtDateTime.text =
+                TimeFormatUtils.convertCurrentDate(item.createdAt) + " " + TimeFormatUtils.convertCurrentTime(
+                    item.createdAt
+                )
         }
 
     }
