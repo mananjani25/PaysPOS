@@ -98,6 +98,7 @@ class PosRepository @Inject constructor(
             appDatabase.itemDao().addAllItem(inventoryModelList)
             appDatabase.modifierSetDao().addAll(modifierSetList)
             appDatabase.itemModifierSetsDao().addAll(itemModifierSetList)
+            appDatabase.optionSetDao().addAll(mData.optionSets)
         }
     )
 

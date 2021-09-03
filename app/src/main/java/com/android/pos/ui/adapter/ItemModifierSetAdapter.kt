@@ -44,20 +44,24 @@ class ItemModifierSetAdapter(
                                 R.string.max
                             ) + " " + minMax.maxAllowed
                     }
+
+
                 } else {
                     binding.txtMinMax.visibility = View.GONE
+                }
+
+                if (item.modifiers.isNotEmpty()) {
+                    binding.rvModifiers.layoutManager = GridLayoutManager(binding.root.context, 3);
+                    adapter = ItemModifierAdapter(item.max_allowed, item.min_required)
+                    binding.rvModifiers.adapter = adapter
+                    adapter!!.addAll(item.modifiers)
                 }
             })
 
 
 
 
-            if (item.modifiers.isNotEmpty()) {
-                binding.rvModifiers.layoutManager = GridLayoutManager(binding.root.context, 3);
-                adapter = ItemModifierAdapter(item.max_allowed, item.min_required)
-                binding.rvModifiers.adapter = adapter
-                adapter!!.addAll(item.modifiers)
-            }
+
             binding.executePendingBindings()
         }
     }

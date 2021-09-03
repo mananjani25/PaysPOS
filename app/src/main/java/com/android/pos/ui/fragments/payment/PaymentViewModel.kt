@@ -23,7 +23,7 @@ import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
-open class PaymentViewModel @Inject constructor(
+class PaymentViewModel @Inject constructor(
     private val posRepository: PosRepository,
     private val appDatabase: AppDatabase,
     private val prefProvider: PrefProvider
@@ -85,12 +85,18 @@ open class PaymentViewModel @Inject constructor(
         subTotalPrice: Double,
         totalPrice: Double,
         totalServiceCharge: Double,
-        totalTax: Double
+        totalTax: Double,
+        ORDER_TYPE: String,
+        future_delivery_date: String,
+        future_delivery_time: String,
+        isPaid: Boolean
     ): OrderRequestModel {
 
         val orderAttributeRequestModel = OrderAttributeRequestModel()
 
         orderAttributeRequestModel.date = TimeFormatUtils.getCurrentDate()
+        if (future_delivery_date.isNotEmpty())
+            orderAttributeRequestModel.futureDeliveryDate = future_delivery_date
         orderAttributeRequestModel.deliveryType = "Pickup"
         orderAttributeRequestModel.employeeId = cartModel.employeeID
         orderAttributeRequestModel.locationId = cartModel.locationId
@@ -99,7 +105,7 @@ open class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.offlineId = randomOfflineId()
         orderAttributeRequestModel.openOrderType = cartModel.orderType
         orderAttributeRequestModel.orderTypeId = cartModel.orderTypeId
-        orderAttributeRequestModel.paymentStatus = 1
+        orderAttributeRequestModel.paymentStatus = if (isPaid) 1 else 0
         orderAttributeRequestModel.serviceChargeEnabled = true
         orderAttributeRequestModel.taxEnabled = true
         orderAttributeRequestModel.subTotal = MethodUtils.roundOffAmountDouble(subTotalPrice)
@@ -124,7 +130,7 @@ open class PaymentViewModel @Inject constructor(
 //            orderAttributeRequestModel.customerAttributes = customerAttributes(cartModel)
 
 
-        val orderRequestModel = OrderRequestModel(true, orderAttributeRequestModel)
+        val orderRequestModel = OrderRequestModel(isPaid, orderAttributeRequestModel)
 
         Log.e("orderRequestModel", ":  ${Gson().toJson(orderRequestModel)}")
 

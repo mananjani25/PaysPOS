@@ -81,7 +81,7 @@ data class OpenOrderResponse(
             @SerializedName("service_charge_enabled")
             val serviceChargeEnabled: Boolean,
             @SerializedName("sub_total")
-            val subTotal: Int,
+            val subTotal: Double,
             @SerializedName("tax_enabled")
             val taxEnabled: Boolean,
             @SerializedName("terminal_id")
@@ -89,11 +89,11 @@ data class OpenOrderResponse(
             @SerializedName("total_amount")
             val totalAmount: Double,
             @SerializedName("total_cash_discount_fee")
-            val totalCashDiscountFee: Int,
+            val totalCashDiscountFee: Double,
             @SerializedName("total_discount")
-            val totalDiscount: Int,
+            val totalDiscount: Double,
             @SerializedName("total_service_charges")
-            val totalServiceCharges: Int,
+            val totalServiceCharges: Double,
             @SerializedName("total_tax_amount")
             val totalTaxAmount: Double,
             @SerializedName("total_tips")
@@ -133,13 +133,13 @@ data class OpenOrderResponse(
                 @SerializedName("order_item_modifiers")
                 val orderItemModifiers: List<OrderItemModifier>,
                 @SerializedName("price")
-                val price: Int,
+                val price: Double,
                 @SerializedName("quantity")
                 val quantity: Int,
                 @SerializedName("timestamp")
                 val timestamp: String,
                 @SerializedName("total_price")
-                val totalPrice: Int
+                val totalPrice: Double
             ) {
                 data class OrderItemModifier(
                     @SerializedName("category_id")
@@ -163,7 +163,7 @@ data class OpenOrderResponse(
                     @SerializedName("order_item_id")
                     val orderItemId: Int,
                     @SerializedName("price")
-                    val price: Int,
+                    val price: Double,
                     @SerializedName("quantity")
                     val quantity: Int,
                     @SerializedName("timestamp")
@@ -175,7 +175,7 @@ data class OpenOrderResponse(
 
             data class OrderServiceCharge(
                 @SerializedName("amount")
-                val amount: Int,
+                val amount: Double,
                 @SerializedName("created_at")
                 val createdAt: String,
                 @SerializedName("id")
@@ -185,7 +185,7 @@ data class OpenOrderResponse(
                 @SerializedName("order_id")
                 val orderId: Int,
                 @SerializedName("rate")
-                val rate: Int,
+                val rate: Double,
                 @SerializedName("service_charge_id")
                 val serviceChargeId: Int,
                 @SerializedName("updated_at")
@@ -220,19 +220,19 @@ data class OpenOrderResponse(
                 @SerializedName("payment_type")
                 val paymentType: String,
                 @SerializedName("service_charge_amount")
-                val serviceChargeAmount: Int,
+                val serviceChargeAmount: Double,
                 @SerializedName("sub_total")
-                val subTotal: Int,
+                val subTotal: Double,
                 @SerializedName("tax_amount")
                 val taxAmount: Double,
                 @SerializedName("terminal_id")
                 val terminalId: Int,
                 @SerializedName("tips")
-                val tips: Int,
+                val tips: Double,
                 @SerializedName("tips_adjusted")
                 val tipsAdjusted: Boolean,
                 @SerializedName("total_discount")
-                val totalDiscount: Int,
+                val totalDiscount: Double,
                 @SerializedName("transaction_id")
                 val transactionId: String,
                 @SerializedName("updated_at")

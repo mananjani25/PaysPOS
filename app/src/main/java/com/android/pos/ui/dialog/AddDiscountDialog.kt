@@ -68,7 +68,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
 
         if (defaultModel.discountId == 0) {
-            binding.edtAmount.append("" + defaultModel.discountPrice)
+            binding.edtAmount.append(MethodUtils.roundOffAmountString(defaultModel.discountPrice))
         } else {
             discountAdapter.setSelected(defaultModel.discountId)
         }
@@ -217,7 +217,22 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         }
 
         binding.txtSave.setOnClickListener {
-            if (binding.edtAmount.text?.isNotEmpty() == true && !(binding.edtAmount.text.toString()
+
+            if (selectedListPos != -1) {
+                val result = Bundle().apply {
+                    putParcelable("data", discountAdapter.getItem(selectedListPos))
+                }
+
+
+                if (isFromDetails) {
+                    setFragmentResult("request_key_discount_details", result)
+                } else {
+
+                    setFragmentResult("request_key_discount", result)
+                }
+                findNavController().navigateUp()
+
+            } else if (binding.edtAmount.text?.isNotEmpty() == true && !(binding.edtAmount.text.toString()
                     .equals("0.00"))
             ) {
 
@@ -255,20 +270,6 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                     setFragmentResult("request_key_discount", result)
                 }
                 findNavController().navigateUp()
-            } else if (selectedListPos != -1) {
-                val result = Bundle().apply {
-                    putParcelable("data", discountAdapter.getItem(selectedListPos))
-                }
-
-
-                if (isFromDetails) {
-                    setFragmentResult("request_key_discount_details", result)
-                } else {
-
-                    setFragmentResult("request_key_discount", result)
-                }
-                findNavController().navigateUp()
-
             } else {
                 val discount = TbDiscount("", "", 0, 0, "", 0.0, "")
                 val result = Bundle().apply {

@@ -501,7 +501,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                     for (i in 0 until list!!.size) {
                         availableNetworkAdapter.addItem(
                             PrinterListModel(
-                                printerName = list!!.get(i).printerName,
+                                printerName = list!![i].printerName,
                                 connectionType = WIFI,
                                 isActive = false,
                                 type = AVAILABLE,

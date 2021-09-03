@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.model.responseModel.OpenOrderResponse
@@ -18,19 +20,36 @@ class OpenOrderAdapter :
 
     inner class MyViewHolder(private val binding: ViewOpenOrderItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
+
+        private var adapter: OpenOrderItemsAdapter? = null
+
         @SuppressLint("SetTextI18n")
         fun bind(item: OpenOrderResponse.Data.Order) {
             binding.viewModel = item
             binding.executePendingBindings()
 
-            val model = orderList[bindingAdapterPosition]
+            binding.llShowLayout.visibility = View.GONE
 
             binding.tvDate.text =
-                TimeFormatUtils.convertCurrentDate(orderList[bindingAdapterPosition].createdAt) + "\n" + TimeFormatUtils.convertCurrentTime(
-                    orderList[bindingAdapterPosition].createdAt
+                TimeFormatUtils.convertCurrentDate(item.createdAt) + "\n" + TimeFormatUtils.convertCurrentTime(
+                    item.createdAt
                 )
             binding.txtCustomerName.text =
-                (model.customer?.firstName ?: "") + " " + (model.customer?.lastName ?: "")
+                (item.customer?.firstName ?: "") + " " + (item.customer?.lastName ?: "")
+
+            if (item.orderItems.isNotEmpty()) {
+
+                binding.rvOpenOrder.addItemDecoration(
+                    DividerItemDecoration(
+                        binding.root.context,
+                        LinearLayoutManager.VERTICAL
+                    )
+                )
+
+                adapter = OpenOrderItemsAdapter()
+                binding.rvOpenOrder.adapter = adapter
+                adapter!!.addAll(item.orderItems)
+            }
 
         }
 
@@ -61,6 +80,22 @@ class OpenOrderAdapter :
                     binding.tvDeliveryStatus.setTextColor(binding.root.resources.getColor(R.color.white))
                     binding.tvTeamMember.setTextColor(binding.root.resources.getColor(R.color.white))
                     binding.llShowLayout.visibility = View.VISIBLE
+
+                    val model = orderList[bindingAdapterPosition]
+
+                    binding.txtDeliveryDate.text =
+                        TimeFormatUtils.convertCurrentDate(model.createdAt) + "\n" + TimeFormatUtils.convertCurrentTime(
+                            model.createdAt
+                        )
+
+
+                    binding.txtStatus.text = model.paymentStatus
+                    binding.txtCustomerNameDetails.text =
+                        (model.customer?.firstName ?: "") + " " + (model.customer?.lastName ?: "")
+
+                    binding.txtEmail.text = model.customer?.email ?: ""
+                    binding.txtPhoneNo.text = ""
+                    binding.txtAddress.text = ""
                 }
             }
         }
