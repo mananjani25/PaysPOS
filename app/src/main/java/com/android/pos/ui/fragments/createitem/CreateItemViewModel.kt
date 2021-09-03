@@ -10,7 +10,6 @@ import com.android.pos.data.entities.TbItem
 import com.android.pos.data.entities.VariationsAttribute
 import com.android.pos.data.model.requestModel.CreateItemRequestModel
 import com.android.pos.data.model.responseModel.BaseResponse
-import com.android.pos.data.model.responseModel.CreateItemResponse
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
@@ -29,10 +28,12 @@ class CreateItemViewModel @Inject constructor(
     ViewModel() {
 
     private var itemId: Int? = null
-    private var categoryId: Int? = null
+    private var categoryIdViewModel: Int? = null
     private var isEdit: Boolean = false
     var itemDetails = MutableLiveData(CreateItemRequestModel())
     private lateinit var itemData: CreateItemRequestModel
+    private lateinit var modifierSetIdsViewModel: ArrayList<Int>
+    private lateinit var variationAttributeModel: ArrayList<VariationsAttribute>
 
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
@@ -76,7 +77,7 @@ class CreateItemViewModel @Inject constructor(
             _showProgress.value = Event(true)
 
 
-            if (isEdit) {
+            /*if (isEdit) {
                 itemData = CreateItemRequestModel().apply {
                     //id = itemId!!
                     name = value!!.name
@@ -95,9 +96,25 @@ class CreateItemViewModel @Inject constructor(
                     //   desc = value.desc
                     //  quantity = 10
                     categoryId = categoryId
+                    modifierSetIds = modifierSetIdsViewModel
                     locationId = prefProvider.getValueInt(LOCATION_ID, -1)
 
                 }
+            }*/
+
+            itemData = CreateItemRequestModel().apply {
+                if (isEdit) id = itemId
+                name = value!!.name
+                desc = value.desc
+                //   price = value.price
+                //   sku = value.sku
+                //   desc = value.desc
+                //  quantity = 10
+                categoryId = categoryIdViewModel!!
+                modifierSetIds = modifierSetIdsViewModel
+                variationsAttributes = variationAttributeModel
+                locationId = prefProvider.getValueInt(LOCATION_ID, -1)
+
             }
 
             viewModelScope.launch {
@@ -138,7 +155,15 @@ class CreateItemViewModel @Inject constructor(
     }
 
     fun setCategoryId(categoryId: Int) {
-        this.categoryId = categoryId
+        this.categoryIdViewModel = categoryId
+    }
+
+    fun selectedModifierList(modifierSetIds: ArrayList<Int>) {
+        this.modifierSetIdsViewModel = modifierSetIds
+    }
+
+    fun variationAttribute(variationAttribute: ArrayList<VariationsAttribute>) {
+        this.variationAttributeModel = variationAttribute
     }
 
 

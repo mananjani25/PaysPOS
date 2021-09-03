@@ -8,7 +8,7 @@ data class CreateItemRequestModel(
     @SerializedName("active")
     var active: Boolean = false,
     @SerializedName("category_id")
-    var categoryId: Int = -1,
+    var categoryId: Int? = null,
     @SerializedName("cost")
     var cost: Double = 0.0,
     @SerializedName("desc")
@@ -30,7 +30,7 @@ data class CreateItemRequestModel(
     @SerializedName("product_code")
     var productCode: String = "",
     @SerializedName("quantity")
-    var quantity: Int = -1,
+    var quantity: Int? = null,
     @SerializedName("sku")
     var sku: String = "",
     @SerializedName("tax_ids")

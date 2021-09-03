@@ -1,6 +1,7 @@
 package com.android.pos.ui.fragments.createitem
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,7 +16,6 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DIALOG_KEY
 import com.android.pos.data.remote.Constants.DIALOG_KEY_OPTIONS
 import com.android.pos.data.remote.Constants.DIALOG_KEY_VARIATION_DETAILS
-import com.android.pos.data.remote.Constants.DIALOG_KEY_VARIATION_DETAILS_POSITION
 import com.android.pos.databinding.CreateItemBinding
 import com.android.pos.ui.adapter.ModifierSetsListAdapter
 import com.android.pos.ui.adapter.VariationListAdapter
@@ -30,6 +30,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
 
+    private lateinit var variationListApi: ArrayList<VariationsAttribute>
     private var selectedId: Int = -2
     private var isEdit: Boolean = false
     private lateinit var itemObject: TbItem
@@ -37,7 +38,9 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
     private val viewModel by viewModels<CreateItemViewModel>()
     private lateinit var variationListAdapter: VariationListAdapter
     private var optionSetList: ArrayList<OptionSet>? = null
-    private var positionSet: Int = -1
+    private var modifierSetIds = ArrayList<Int>()
+    private var position1: Int = -1
+
     // private lateinit var passedVariationList: ArrayList<List<VariationsAttribute>>
 
     private lateinit var adapter: ModifierSetsListAdapter
@@ -84,29 +87,62 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
 
             binding.llVariationTitle.visibility = View.VISIBLE
 
+            val builder = StringBuilder()
+            val variationList1 = ArrayList<VariationsAttribute>()
 
-            val passedVariationList = ArrayList<ArrayList<VariationsAttribute>>()
+
 
             variationList.forEach {
-                val variationList1 = ArrayList<VariationsAttribute>()
+                val variation = VariationsAttribute()
+                val optionIds = ArrayList<Int>()
                 it.forEach {
-                    val variation = VariationsAttribute()
-                    variation.name = it.name
-                    variationList1.add(variation)
+                    val optionSetIds = ArrayList<Int>()
+                    builder.append(it.name.trim() + ",").toString()
+                    variation.name = builder.substring(0, builder.length - 1).toString()
+
+                    optionSetList?.forEach {
+                        optionSetIds.add(it.id!!)
+                    }
+                    variation.optionSetIds = optionSetIds
+
+                    optionIds.add(it.id!!)
+                    variation.optionIds = optionIds
+
                 }
-                passedVariationList.add(variationList1)
+                builder.setLength(0)
+                builder.trimToSize()
+                variationList1.add(variation)
+
             }
-            variationListAdapter.addAllVariations(passedVariationList)
+
+            Log.d("variationList1", "::" + variationList1)
+
+            variationListAdapter.addAllVariations(variationList1)
         }
 
 
         val resultVariationDetails =
-            getNavigationResultLiveData<ArrayList<VariationsAttribute>>(DIALOG_KEY_VARIATION_DETAILS)
+            getNavigationResultLiveData<VariationsAttribute>(DIALOG_KEY_VARIATION_DETAILS)
         resultVariationDetails?.observe(viewLifecycleOwner) {
-            variationListAdapter.addVariation(it)
+            variationListAdapter.updateVariation(position1, it)
 
         }
 
+
+        binding.txtSave.setOnClickListener {
+
+            adapter.selectedItemList().forEach {
+                modifierSetIds.add(it.id!!)
+            }
+            viewModel.selectedModifierList(modifierSetIds)
+
+            variationListApi = ArrayList<VariationsAttribute>()
+
+            viewModel.variationAttribute(variationListAdapter.selectedVariation())
+
+
+            viewModel.submit()
+        }
         return binding.root
     }
 
@@ -229,9 +265,10 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
 
     }
 
-    override fun onItemClickListener( variation: ArrayList<VariationsAttribute>) {
+    override fun onItemClickListener(position: Int, variation: VariationsAttribute) {
+        position1 = position
         val bundle = Bundle().apply {
-            putParcelableArrayList("variationAttributeList", variation)
+            putParcelable("variationAttributeList", variation)
         }
         findNavController().navigate(
             R.id.action_createItem_to_editVariationDialog,
