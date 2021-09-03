@@ -296,6 +296,7 @@
             android:id="@+id/rvOpenOrder"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            tools:listitem="@layout/view_cash_log"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
 

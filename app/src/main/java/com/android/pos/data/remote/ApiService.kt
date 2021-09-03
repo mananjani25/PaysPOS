@@ -464,8 +464,8 @@ interface ApiService {
     @GET(CASH_EVENTS)
     suspend fun getCashInOut(
         @Query("start_date") startDate: String,
-        @Query("end_date") endDate: String
-        /*@Query("team_role_id") teamRoleId: String,*/
+        @Query("end_date") endDate: String,
+        @Query("terminal_id") terminalId: String,
 
-    ): CashLogResponse
+        ): CashLogResponse
 }

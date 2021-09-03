@@ -262,6 +262,6 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun cashInOut(data: CashLogRequest) =
         getResult { apiService.cashInOut(data) }
 
-    suspend fun getCashInOut(startDate: String, endDate: String/*, teamRoleId: String*/) =
-        getResult { apiService.getCashInOut(startDate, endDate/*, teamRoleId*/) }
+    suspend fun getCashInOut(startDate: String, endDate: String, terminalId: String) =
+        getResult { apiService.getCashInOut(startDate, endDate, terminalId) }
 }

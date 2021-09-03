@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.data.model.responseModel.CashLogResponse
-import com.android.pos.data.model.responseModel.GetEmployeesTimeSheetResponse
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Status
@@ -19,6 +18,8 @@ import javax.inject.Inject
 class CashLogViewModel @Inject constructor(
     private val posRepository: PosRepository
 ) : ViewModel() {
+
+    val getTerminalListDatabse = posRepository.getTerminalListDatabse()
 
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
@@ -69,15 +70,17 @@ class CashLogViewModel @Inject constructor(
     }
 
 
-    fun apiCallTimeSheet() {
+    fun apiCallTimeSheet(terminalId: String) {
+
+        val tId = if (terminalId == "-1") "" else terminalId
 
         _showProgress.value = Event(true)
         viewModelScope.launch {
             val resource = posRepository.getCashLog(
                 startDate.value.toString(),
                 endDate.value.toString(),
-
-                )
+                tId
+            )
 
             when (resource.status) {
                 Status.SUCCESS -> {

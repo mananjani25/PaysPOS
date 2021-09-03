@@ -293,6 +293,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             )
         }
         if (myRequest != null) {
+            viewModel.totalPayAmount(paymentAmount)
             viewModel.submit(myRequest)
         }
     }
