@@ -29,7 +29,8 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class EditVariationDialog : DialogFragment(), View.OnClickListener {
     private lateinit var binding: DialogEditVariationBinding
-    private var variationAttributeList: ArrayList<VariationsAttribute>? = null
+    private var variationAttributeList: VariationsAttribute? = null
+    private var variationAttributeCopy = ArrayList<VariationsAttribute>()
     val builder = StringBuilder()
 
     override fun onCreateView(
@@ -45,19 +46,13 @@ class EditVariationDialog : DialogFragment(), View.OnClickListener {
         binding.txtDone.setOnClickListener(this)
 
         variationAttributeList =
-            arguments?.getParcelableArrayList("variationAttributeList")
+            arguments?.getParcelable("variationAttributeList")
 
 
-
-
-        variationAttributeList?.forEach {
-            builder.append(it.name.trim() + ",")
-        }
-
-
-        if (builder.isNotEmpty()) {
-            binding.tvVariationsName.setText(builder.substring(0, builder.length - 1).toString())
-        }
+        binding.tvVariationsName.setText(variationAttributeList?.name)
+        binding.tvVariationsPrice.setText(variationAttributeList?.price.toString())
+        binding.tvVariationsSku.setText(variationAttributeList?.sku)
+        binding.tvVariationsStock.setText(variationAttributeList?.stockQty)
 
 
         return binding.root
@@ -75,14 +70,12 @@ class EditVariationDialog : DialogFragment(), View.OnClickListener {
                 dismiss()
             }
             R.id.txtDone -> {
-                //variationAttributeList?.clear()
-                variationAttributeList?.forEach {
-                    it.name = binding.tvVariationsName.text.toString()
-                    it.price = binding.tvVariationsPrice.text.toString().toDouble()
-                    it.sku = binding.tvVariationsSku.text.toString()
-                    it.stockQty = binding.tvVariationsStock.text.toString()
-                    variationAttributeList?.add(it)
-                }
+
+                variationAttributeList?.name = binding.tvVariationsName.text.toString()
+                variationAttributeList?.price = binding.tvVariationsPrice.text.toString().toDouble()
+                variationAttributeList?.sku = binding.tvVariationsSku.text.toString()
+                variationAttributeList?.stockQty = binding.tvVariationsStock.text.toString()
+
 
                 setNavigationResult(DIALOG_KEY_VARIATION_DETAILS, variationAttributeList)
                 findNavController().popBackStack()

@@ -12,7 +12,7 @@ import com.android.pos.utils.callback.UpdateVariationCallback
 class VariationListAdapter(val viewModel: CreateItemViewModel) :
     RecyclerView.Adapter<VariationListAdapter.MyViewHolder>() {
 
-    var variationList = ArrayList<ArrayList<VariationsAttribute>>()
+    var variationList = ArrayList<VariationsAttribute>()
 
     private lateinit var mCallback: UpdateVariationCallback
     fun setCallback(callback: UpdateVariationCallback) {
@@ -32,14 +32,14 @@ class VariationListAdapter(val viewModel: CreateItemViewModel) :
     override fun onBindViewHolder(holder: VariationListAdapter.MyViewHolder, position: Int) {
         val itemBinding = holder.noteItemBinding
 
-        val variationName = variationList[position].map { it.name }
-        itemBinding.tvVariationsName.text = TextUtils.join(",", variationName)
-        itemBinding.tvPrice.text = variationList[position][0].price.toString()
-        itemBinding.tvSku.text = variationList[position][0].sku
-        itemBinding.tvStock.text = variationList[position][0].stockQty
+        val variationName = variationList[position].name
+        itemBinding.tvVariationsName.text = variationName
+        itemBinding.tvPrice.text = variationList[position].price.toString()
+        itemBinding.tvSku.text = variationList[position].sku
+        itemBinding.tvStock.text = variationList[position].stockQty
 
         itemBinding.root.setOnClickListener {
-            mCallback.onItemClickListener(variationList[position])
+            mCallback.onItemClickListener(position, variationList[position])
         }
 
         itemBinding.viewModel = viewModel
@@ -55,7 +55,7 @@ class VariationListAdapter(val viewModel: CreateItemViewModel) :
     inner class MyViewHolder(val noteItemBinding: ViewVariationItemBinding) :
         RecyclerView.ViewHolder(noteItemBinding.root)
 
-    fun addAllVariations(variationList: ArrayList<ArrayList<VariationsAttribute>>) {
+    fun addAllVariations(variationList: ArrayList<VariationsAttribute>) {
         this.variationList.apply {
             clear()
             addAll(variationList)
@@ -63,12 +63,14 @@ class VariationListAdapter(val viewModel: CreateItemViewModel) :
         notifyDataSetChanged()
     }
 
-    fun addVariation(variation: ArrayList<VariationsAttribute>) {
-        this.variationList.apply {
-            // clear()
-            add(variation)
-        }
+    fun updateVariation(position: Int, variation: VariationsAttribute) {
+
+        variationList.set(position, variation)
+
         notifyDataSetChanged()
+
     }
+
+    fun selectedVariation() = variationList
 
 }

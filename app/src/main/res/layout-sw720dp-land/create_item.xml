@@ -61,7 +61,6 @@
                     android:layout_gravity="center"
                     android:background="@color/btnColor"
                     android:gravity="center"
-                    android:onClick="@{() -> createItemVewModel.submit()}"
                     android:paddingStart="@dimen/_15sdp"
                     android:paddingTop="@dimen/_5sdp"
                     android:paddingEnd="@dimen/_15sdp"
