@@ -19,7 +19,7 @@ import com.android.pos.databinding.FragmentItemOptionsListBinding
 import com.android.pos.ui.adapter.SelectedOptionSetNameAdapter
 import com.android.pos.ui.fragments.inventory.OptionSetViewModel
 import com.android.pos.utils.ProgressUtils
-import com.android.pos.utils.callback.DeleteOptionCallback
+import com.android.pos.utils.callback.DeleteOptionSetCallback
 import com.android.pos.utils.extensions.setNavigationResult
 import com.android.pos.utils.statusUtils.Status
 import com.google.common.collect.ImmutableList
@@ -32,7 +32,7 @@ import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
 class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListener,
-    DeleteOptionCallback {
+    DeleteOptionSetCallback {
 
     private var optionItemIds: ArrayList<OptionSet>? = null
     private lateinit var finalvariationList: List<List<Option>>
@@ -43,6 +43,7 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
     private var variationList = ArrayList<List<Option>>()
     private lateinit var selectedOptionSetNameAdapter: SelectedOptionSetNameAdapter
     private var itemOptionList = ArrayList<OptionSet>()
+    private var itemOptionListCopy = ArrayList<OptionSet>()
     private val viewModel by viewModels<OptionSetViewModel>()
     private var spinnerTouched = false
     var isEdit: Boolean = false
@@ -130,7 +131,7 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
 
                                 if (optionItemIds != null) {
 
-                                    selectedOptionSetNameAdapter.addallOptions(optionItemIds!!)
+                                    selectedOptionSetNameAdapter.addAllOptions(optionItemIds!!)
 
                                     optionItemIds?.forEach {
                                         variationList.add(it.options)
@@ -149,7 +150,6 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
 
                                     itemOptionList.addAll(it1)
 
-
                                     val optionSet = OptionSet()
                                     optionSet.name = getString(R.string.tv_select_option_set)
                                     itemOptionList.add(0, optionSet)
@@ -166,6 +166,33 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
 
                                     setUpOptionSpinnerAdapter(optionName)
                                 }
+                                // itemOptionListCopy.addAll(itemOptionList)
+
+                                itemOptionList.forEach { optionSetCopy ->
+                                    val optionSet = OptionSet()
+                                    optionSet.displayName = optionSetCopy.displayName
+                                    optionSet.id = optionSetCopy.id
+                                    optionSet.locationId = optionSetCopy.locationId
+                                    optionSet.name = optionSetCopy.name
+                                    optionSet.optionType = optionSetCopy.optionType
+                                    optionSet.sort = optionSetCopy.sort
+
+                                    val optionsList = ArrayList<Option>()
+                                    optionSetCopy.options.forEach {
+                                        val options = Option()
+                                        options.id = it.id
+                                        options.optionSetId = it.optionSetId
+                                        options.name = it.name
+                                        options.sort = it.sort
+                                        options._destroy = it._destroy
+                                        optionsList.add(options)
+                                    }
+                                    optionSet.options = optionsList
+
+                                    itemOptionListCopy.add(optionSet)
+                                }
+
+                                Log.d("itemOptionListCopy", "::" + itemOptionListCopy)
                             }
 
                             isLiveData = true
@@ -315,11 +342,22 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
         return combinations
     }
 
-    override fun onItemClickListener(position: Int?, optionSet: OptionSet) {
-        itemOptionList.add(optionSet)
-        variationList.removeAt(position!!)
+    override fun onItemClickListener(position: Int?, optionSet: OptionSet?) {
+
+        if (optionSet != null) {
+            itemOptionList.add(optionSet)
+            variationList.removeAt(position!!)
+        } else {
+
+            // itemOptionList.clear()
+            // variationList.removeAt(position!!)
+            if (position != null) {
+                itemOptionList.add(position, itemOptionListCopy[position])
+            }
+        }
         optionName = itemOptionList.map { it.name } as ArrayList<String>
         setUpOptionSpinnerAdapter(optionName)
+
     }
 
 }

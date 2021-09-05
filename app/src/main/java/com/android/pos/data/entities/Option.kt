@@ -8,7 +8,7 @@ import kotlinx.parcelize.Parcelize
 class Option : Parcelable {
 
     @SerializedName("id")
-    val id: Int? = null
+    var id: Int? = null
 
     @SerializedName("option_set_id")
     var optionSetId: Int? = null
@@ -17,7 +17,7 @@ class Option : Parcelable {
     var name: String = ""
 
     @SerializedName("sort")
-    val sort: Int = 0
+    var sort: Int = 0
 
     @SerializedName("_destroy")
     var _destroy: Boolean = false

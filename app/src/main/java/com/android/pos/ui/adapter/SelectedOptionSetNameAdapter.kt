@@ -1,5 +1,6 @@
 package com.android.pos.ui.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -8,17 +9,19 @@ import com.android.pos.data.entities.OptionSet
 import com.android.pos.databinding.ViewOptionSetNameBinding
 import com.android.pos.ui.fragments.inventory.OptionSetViewModel
 import com.android.pos.utils.callback.DeleteOptionCallback
+import com.android.pos.utils.callback.DeleteOptionSetCallback
 import kotlin.collections.ArrayList
 
 class SelectedOptionSetNameAdapter(val viewModel: OptionSetViewModel) :
-    RecyclerView.Adapter<SelectedOptionSetNameAdapter.MyViewHolder>() {
+    RecyclerView.Adapter<SelectedOptionSetNameAdapter.MyViewHolder>(), DeleteOptionCallback {
 
     private lateinit var selectOptionListAdapter: SelectedItemOptionsListAdapter
     var optionSetList = ArrayList<OptionSet>()
+    var positionParent: Int = -1
 
-    private lateinit var mCallback: DeleteOptionCallback
-    fun setCallback(callback: DeleteOptionCallback) {
-        mCallback = callback
+    private lateinit var mSetCallback: DeleteOptionSetCallback
+    fun setCallback(setCallback: DeleteOptionSetCallback) {
+        mSetCallback = setCallback
     }
 
     inner class MyViewHolder(val optiosetNameBinding: ViewOptionSetNameBinding) :
@@ -48,7 +51,7 @@ class SelectedOptionSetNameAdapter(val viewModel: OptionSetViewModel) :
         val itemBinding = holder.optiosetNameBinding
         itemBinding.optionSetListModel = optionSetList[position]
         itemBinding.position = position
-
+        positionParent = position
         itemBinding.viewModel = viewModel
 
         //  itemBinding.tvOptionSetName.text = optionSetList[position].name + " Options"
@@ -57,11 +60,13 @@ class SelectedOptionSetNameAdapter(val viewModel: OptionSetViewModel) :
         if (optionSetList[position].name != "Select Option Set") {
             selectOptionListAdapter =
                 SelectedItemOptionsListAdapter(optionSetList[position].options as ArrayList<Option>)
+
+            selectOptionListAdapter.setCallback(this)
             itemBinding.rvOptionList.adapter = selectOptionListAdapter
         }
 
         itemBinding.ivDelete.setOnClickListener {
-            mCallback.onItemClickListener(position, optionSetList[position])
+            mSetCallback.onItemClickListener(position, optionSetList[position])
             optionSetList.removeAt(position)
             notifyItemRemoved(position)
             notifyItemRangeChanged(position, optionSetList.size)
@@ -81,13 +86,59 @@ class SelectedOptionSetNameAdapter(val viewModel: OptionSetViewModel) :
         notifyItemInserted(this.optionSetList.size)
     }
 
-    fun addallOptions(optionSetList: ArrayList<OptionSet>) {
+    fun addAllOptions(optionSetList: ArrayList<OptionSet>) {
 
         this.optionSetList.apply {
             clear()
             addAll(optionSetList)
         }
         notifyDataSetChanged()
+    }
+
+    override fun onItemClickListener(position: Int) {
+
+        /*val myCollection = optionSetList
+        val iterator = myCollection.iterator()
+        while (iterator.hasNext()) {
+            val item = iterator.next()
+
+            if (item.options.isEmpty()) {
+                mSetCallback.onItemClickListener(positionParent, null)
+                iterator.remove()
+                Log.d("positionParent", "::" + positionParent)
+                // optionSetList.removeAt(positionParent)
+                notifyItemRemoved(positionParent)
+                notifyItemRangeChanged(positionParent, optionSetList.size)
+            }
+
+
+        }*/
+
+        /*optionSetList.forEach {
+              if (it.options.isEmpty()) {
+                  mSetCallback.onItemClickListener(positionParent, null)
+                  Log.d("positionParent", "::" + positionParent)
+                  optionSetList.removeAt(positionParent)
+                  notifyItemRemoved(positionParent)
+                  notifyItemRangeChanged(positionParent, optionSetList.size)
+              }
+          }*/
+
+
+        for (i in optionSetList.indices) {
+            if (optionSetList[i].options.isEmpty()) {
+                mSetCallback.onItemClickListener(i, null)
+                Log.d("positionParent", "::" + i)
+                optionSetList.removeAt(i)
+                notifyItemRemoved(i)
+                notifyItemRangeChanged(i, optionSetList.size)
+                break
+            }
+        }
+
+
+        notifyDataSetChanged()
+
     }
 
 }

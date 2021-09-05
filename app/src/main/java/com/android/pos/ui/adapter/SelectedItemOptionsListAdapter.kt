@@ -4,12 +4,17 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.entities.Option
-import com.android.pos.data.entities.OptionSet
 import com.android.pos.databinding.ViewSelectedItemOptionListBinding
+import com.android.pos.utils.callback.DeleteOptionCallback
 import kotlin.collections.ArrayList
 
 class SelectedItemOptionsListAdapter(val options: ArrayList<Option>) :
     RecyclerView.Adapter<SelectedItemOptionsListAdapter.MyViewHolder>() {
+
+    private lateinit var mSetCallback: DeleteOptionCallback
+    fun setCallback(setCallback: DeleteOptionCallback) {
+        mSetCallback = setCallback
+    }
 
     inner class MyViewHolder(val optionSetBinding: ViewSelectedItemOptionListBinding) :
         RecyclerView.ViewHolder(optionSetBinding.root) {
@@ -39,10 +44,13 @@ class SelectedItemOptionsListAdapter(val options: ArrayList<Option>) :
         holder.bind(options[position])
         val itemBinding = holder.optionSetBinding
         itemBinding.imgDeleteOptions.setOnClickListener {
-//            mCallback.onItemClickListener(position, optionSetList[position])
+
             options.removeAt(position)
             notifyItemRemoved(position)
             notifyItemRangeChanged(position, options.size)
+            if (options.size == 0) {
+                mSetCallback.onItemClickListener(position)
+            }
         }
 
 
