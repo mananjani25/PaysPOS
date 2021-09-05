@@ -262,35 +262,35 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener {
     }
 
     private fun getTerminalId(position: Int): Int? {
-        if (this::terminalListGlobal.isInitialized) {
-            return terminalListGlobal?.get(position)?.id
+        return if (this::terminalListGlobal.isInitialized) {
+            terminalListGlobal?.get(position)?.id
         } else {
-            return -1
+            -1
         }
     }
 
     private fun getRoleId(position: Int): Int? {
 
-        if (this::teamRoleListGlobal.isInitialized) {
-            return teamRoleListGlobal?.get(position)?.id
+        return if (this::teamRoleListGlobal.isInitialized) {
+            teamRoleListGlobal?.get(position)?.id
         } else {
-            return -1
+            -1
         }
     }
 
     private fun getEmployeeId(position: Int): Int? {
-        if (this::teamEmployeeListGlobal.isInitialized) {
-            return teamEmployeeListGlobal?.get(position)?.id
+        return if (this::teamEmployeeListGlobal.isInitialized) {
+            teamEmployeeListGlobal?.get(position)?.id
         } else {
-            return -1
+            -1
         }
     }
 
     private fun getOrderId(position: Int): Int? {
-        if (this::orderTypeListGlobal.isInitialized) {
-            return orderTypeListGlobal?.get(position)?.id
+        return if (this::orderTypeListGlobal.isInitialized) {
+            orderTypeListGlobal?.get(position)?.id
         } else {
-            return -1
+            -1
         }
     }
 

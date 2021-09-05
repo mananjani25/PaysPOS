@@ -486,6 +486,12 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             findNavController().navigate(R.id.action_dashboardCategoryNew_to_transactionFragment)
             dialog.dismiss()
         }
+        linearCash.setOnClickListener {
+            findNavController().navigate(R.id.action_dashboardCategoryNew_to_cashLogFragment)
+            dialog.dismiss()
+        }
+
+
 
         imgCalculator.setColorFilter(resources.getColor(R.color.txtColor))
         txtCheckOut.setTextColor(resources.getColor(R.color.txtColor))

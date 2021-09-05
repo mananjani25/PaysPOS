@@ -156,6 +156,7 @@ object Constants {
 
 
     const val OPEN_ORDERS = "orders/open_orders"
+    const val CASH_EVENTS = "cash_events"
 
 
 }

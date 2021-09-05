@@ -29,6 +29,7 @@ class PaymentViewModel @Inject constructor(
     private val prefProvider: PrefProvider
 ) : ViewModel() {
 
+    private var totalPayAmounts: Double = 0.0
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
 
@@ -56,8 +57,9 @@ class PaymentViewModel @Inject constructor(
                             prefProvider.setValue(Constants.ORDER_TYPE, "")
                             posRepository.deleteCart()
                             resource.data?.let { createOrderResponse ->
-                                _data.value = Event(createOrderResponse)
 
+                                cashLogApi(createOrderResponse, "in")
+//                                _data.value = Event(createOrderResponse)
                             }
 
                         } else {
@@ -75,6 +77,108 @@ class PaymentViewModel @Inject constructor(
                 Status.LOADING -> {
                     _showProgress.value = Event(true)
                 }
+            }
+        }
+    }
+
+    private suspend fun cashLogApi(createOrderResponse: CreateOrderResponse, event: String) {
+
+        val order = createOrderResponse.data.order
+
+        val cashLogRequest = CashLogRequest(
+            totalPayAmounts,
+            order.employeeId,
+            event,
+            order.id,
+            order.payments[0].id,
+            "",
+            order.terminalId,
+            null,
+            null
+        )
+
+        val resource = posRepository.cashInOut(cashLogRequest)
+
+        when (resource.status) {
+            Status.SUCCESS -> {
+                _showProgress.value = Event(false)
+                resource.data.let { response ->
+                    if (response?.status == 200) {
+
+                        resource.data?.let {
+
+                            if (createOrderResponse.data.order.totalAmount == totalPayAmounts) {
+                                _data.value = Event(createOrderResponse)
+                            } else {
+                                cashOutApi(createOrderResponse, "out")
+                            }
+
+
+                        }
+
+                    } else {
+                        _snackbarText.value = Event(resource.message)
+                    }
+                }
+
+            }
+
+            Status.ERROR -> {
+                _snackbarText.value = Event(resource.message)
+                _showProgress.value = Event(false)
+            }
+
+            Status.LOADING -> {
+                _showProgress.value = Event(true)
+            }
+        }
+    }
+
+
+    private suspend fun cashOutApi(createOrderResponse: CreateOrderResponse, event: String) {
+
+        val order = createOrderResponse.data.order
+
+        val cashLogRequest = CashLogRequest(
+            MethodUtils.roundOffAmountDouble(totalPayAmounts - createOrderResponse.data.order.totalAmount),
+            order.employeeId,
+            event,
+            order.id,
+            order.payments[0].id,
+            "",
+            order.terminalId,
+            null,
+            null
+        )
+
+        val resource = posRepository.cashInOut(cashLogRequest)
+
+        when (resource.status) {
+            Status.SUCCESS -> {
+                _showProgress.value = Event(false)
+                resource.data.let { response ->
+                    if (response?.status == 200) {
+
+                        resource.data?.let {
+
+                            _data.value = Event(createOrderResponse)
+
+                        }
+
+                    } else {
+                        _snackbarText.value = Event(resource.message)
+                    }
+                }
+
+            }
+
+            Status.ERROR -> {
+                _snackbarText.value = Event(resource.message)
+                _showProgress.value = Event(false)
+            }
+
+            Status.LOADING -> {
+                _showProgress.value = Event(true)
             }
         }
     }
@@ -411,5 +515,10 @@ class PaymentViewModel @Inject constructor(
             salt.append(SALTCHARS[index])
         }
         return salt.toString()
+    }
+
+    fun totalPayAmount(paymentAmount: Double) {
+
+        totalPayAmounts = paymentAmount
     }
 }

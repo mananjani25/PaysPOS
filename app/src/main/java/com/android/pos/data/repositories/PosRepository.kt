@@ -442,5 +442,11 @@ class PosRepository @Inject constructor(
 
     fun getOpenOrders() =
         performGetOperationNew(networkCall = { apiHelperNew.getOpenOrders() })
+
+    suspend fun cashInOut(data: CashLogRequest) = apiHelperNew.cashInOut(data)
+
+
+    suspend fun getCashLog(startDate: String, endDate: String, terminalId: String) =
+        apiHelperNew.getCashInOut(startDate, endDate, terminalId)
 }
 
