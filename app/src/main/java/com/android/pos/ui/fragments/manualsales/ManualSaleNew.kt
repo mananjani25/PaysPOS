@@ -156,10 +156,6 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
                     it.orderType = Constants.TAKEOUT
 
                 }
-                cartList?.get(0)?.items!!.forEach {
-                    it.isManualSales = false
-
-                }
                 viewModel.saveManualSaleData(cartList!!)
 
 

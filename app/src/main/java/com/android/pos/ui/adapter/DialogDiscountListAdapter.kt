@@ -9,7 +9,7 @@ import com.android.pos.data.entities.TbDiscount
 import com.android.pos.databinding.ViewDialogDiscountListBinding
 
 class DialogDiscountListAdapter : RecyclerView.Adapter<DialogDiscountListAdapter.MyViewHolder>() {
-    private var selectedPosition = -1
+    var selectedPosition = -1
     private lateinit var listner: DiscountInterface
 
     inner class MyViewHolder(private val binding: ViewDialogDiscountListBinding) :

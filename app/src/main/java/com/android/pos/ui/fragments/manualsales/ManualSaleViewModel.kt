@@ -197,6 +197,11 @@ class ManualSaleViewModel @Inject constructor(
         val inventoryModelList = ArrayList<TbItem>()
         val cartModel = CartModel().apply {
             terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
+            employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
+            locationId = prefProvider.getValueInt(Constants.LOCATION_ID, -1)
+            orderTypeId = prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
+            orderType = prefProvider.getValue(Constants.ORDER_TYPE, "").toString()
+            orderTypeName = prefProvider.getValue(Constants.ORDER_TYPE_NAME, "").toString()
             item.itemQuantity = 1
             inventoryModelList.add(item)
             items = inventoryModelList

@@ -91,7 +91,7 @@ class PaymentViewModel @Inject constructor(
             event,
             order.id,
             order.payments[0].id,
-            "",
+            "Payment received for order",
             order.terminalId,
             null,
             null
@@ -107,7 +107,10 @@ class PaymentViewModel @Inject constructor(
 
                         resource.data?.let {
 
-                            if (createOrderResponse.data.order.totalAmount == totalPayAmounts) {
+                            Log.e("INOUT : Total Amount", order.totalAmount.toString())
+                            Log.e("INOUT : Total PayAmount", totalPayAmounts.toString())
+
+                            if (order.totalAmount == totalPayAmounts) {
                                 _data.value = Event(createOrderResponse)
                             } else {
                                 cashOutApi(createOrderResponse, "out")
@@ -145,7 +148,7 @@ class PaymentViewModel @Inject constructor(
             event,
             order.id,
             order.payments[0].id,
-            "",
+            "Change returned after order's payment",
             order.terminalId,
             null,
             null
@@ -193,7 +196,8 @@ class PaymentViewModel @Inject constructor(
         ORDER_TYPE: String,
         future_delivery_date: String,
         future_delivery_time: String,
-        isPaid: Boolean
+        isPaid: Boolean,
+        totalDiscount: Double
     ): OrderRequestModel {
 
         val orderAttributeRequestModel = OrderAttributeRequestModel()
@@ -215,7 +219,7 @@ class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.subTotal = MethodUtils.roundOffAmountDouble(subTotalPrice)
         orderAttributeRequestModel.totalAmount = MethodUtils.roundOffAmountDouble(totalPrice)
         // orderAttributeRequestModel.totalCashDiscount = 0.0
-        orderAttributeRequestModel.totalDiscount = 0.0
+        orderAttributeRequestModel.totalDiscount = totalDiscount
         orderAttributeRequestModel.totalServiceCharges =
             MethodUtils.roundOffAmountDouble(totalServiceCharge)
         orderAttributeRequestModel.totalTaxAmount = MethodUtils.roundOffAmountDouble(totalTax)
@@ -334,7 +338,7 @@ class PaymentViewModel @Inject constructor(
         cartModel.items?.forEach { item ->
 
             val orderItemsAttribute = OrderItemsAttribute()
-            orderItemsAttribute.categoryId = item.categoryId
+            orderItemsAttribute.categoryId = if (item.isManualSales) 25 else item.categoryId
             orderItemsAttribute.discountAmount = 0.0
             orderItemsAttribute.discountTotalAmount = 0.0
             orderItemsAttribute.discountType = ""
@@ -344,7 +348,8 @@ class PaymentViewModel @Inject constructor(
             orderItemsAttribute.isPaid = false
             orderItemsAttribute.isPrinted = true
             orderItemsAttribute.isTaxRemoved = false
-            orderItemsAttribute.itemId = item.itemId
+            orderItemsAttribute.itemId = if (item.isManualSales) 30 else item.itemId
+            orderItemsAttribute.is_manual_sales = item.isManualSales
             orderItemsAttribute.itemName = item.name
             orderItemsAttribute.note = item.note
             orderItemsAttribute.price = item.price
@@ -519,6 +524,6 @@ class PaymentViewModel @Inject constructor(
 
     fun totalPayAmount(paymentAmount: Double) {
 
-        totalPayAmounts = paymentAmount
+        totalPayAmounts = MethodUtils.roundOffAmountDouble(paymentAmount)
     }
 }

@@ -17,11 +17,11 @@ data class CashLogResponse(
         @SerializedName("cashes")
         val cashes: List<Cashe>,
         @SerializedName("total_cash_in")
-        val totalCashIn: Int,
+        val totalCashIn: Double,
         @SerializedName("total_cash_out")
-        val totalCashOut: Int,
+        val totalCashOut: Double,
         @SerializedName("total_left_amount_in_drawer")
-        val totalLeftAmountInDrawer: Int
+        val totalLeftAmountInDrawer: Double
     ) {
         data class Cashe(
             @SerializedName("amount")

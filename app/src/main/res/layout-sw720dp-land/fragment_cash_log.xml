@@ -6,9 +6,15 @@
 
     <data>
 
+
         <variable
             name="viewModel"
             type="com.android.pos.ui.fragments.cashlog.CashLogViewModel" />
+
+        <variable
+            name="cashLogModel"
+            type="com.android.pos.data.model.responseModel.CashLogResponse.Data" />
+
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat
@@ -51,9 +57,9 @@
                 android:layout_marginLeft="@dimen/_10sdp"
                 android:layout_marginRight="@dimen/_10sdp"
                 android:layout_weight="1"
-                android:text="Cash Log"
                 android:gravity="center"
                 android:padding="@dimen/_3sdp"
+                android:text="Cash Log"
                 android:textColor="@color/viewTextColor"
                 android:textSize="@dimen/_6mdpi" />
 
@@ -160,9 +166,9 @@
                 android:background="@drawable/background_square_border_grey"
                 android:onClick="@{() -> viewModel.datePicker(false)}"
                 android:orientation="horizontal"
-                android:paddingLeft="@dimen/_5sdp"
+                android:paddingStart="@dimen/_5sdp"
                 android:paddingTop="@dimen/_3sdp"
-                android:paddingRight="@dimen/_10sdp"
+                android:paddingEnd="@dimen/_10sdp"
                 android:paddingBottom="@dimen/_3sdp">
 
                 <ImageView
@@ -181,7 +187,6 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:text="@{viewModel.endDate}"
-
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_5mdpi"
                     tools:text="2021-08-10" />
@@ -199,6 +204,97 @@
                 android:overlapAnchor="false"
                 android:spinnerMode="dropdown"
                 android:textSize="@dimen/_5mdpi" />
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:orientation="horizontal"
+                android:background="@drawable/background_square_border_grey"
+                android:padding="@dimen/_4sdp">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+
+                    android:text="Cash Drawer AMT:"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_5mdpi" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtCashDrawerAmount"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="@dimen/_1sdp"
+                    android:text="@{@string/symbole +``+String.format(@string/format,cashLogModel.totalLeftAmountInDrawer)}"
+                    android:textColor="@color/btnColor"
+                    android:textSize="@dimen/_5mdpi" />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:orientation="horizontal"
+                android:background="@drawable/background_square_border_grey"
+                android:padding="@dimen/_4sdp">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Cash Out AMT:"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_5mdpi" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txt"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="@dimen/_1sdp"
+                    android:text="@{``+'-'+ @string/symbole +``+String.format(@string/format,cashLogModel.totalCashOut)}"
+                    android:textColor="@color/colorE90"
+                    android:textSize="@dimen/_5mdpi" />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:background="@drawable/background_square_border_grey"
+                android:padding="@dimen/_4sdp">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Cash In AMT: "
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_5mdpi" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="@dimen/_1sdp"
+                    android:text="@{@string/symbole +``+String.format(@string/format,cashLogModel.totalCashIn)}"
+                    android:textColor="@color/color0A"
+                    android:textSize="@dimen/_5mdpi" />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
         </LinearLayout>
 
         <View
@@ -242,17 +338,6 @@
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_5sdp"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="@string/event_type"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                style="@style/CustomFontMediumStyle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
                 android:layout_weight="2"
                 android:gravity="center"
                 android:text="@string/tv_order_type"
@@ -263,11 +348,24 @@
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/event_type"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_5mdpi" />
+
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/CustomFontMediumStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="@string/employee_name"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textSize="@dimen/_5mdpi"
+                android:visibility="gone" />
 
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -296,8 +394,8 @@
             android:id="@+id/rvOpenOrder"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:listitem="@layout/view_cash_log"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/view_cash_log" />
 
 
     </androidx.appcompat.widget.LinearLayoutCompat>
