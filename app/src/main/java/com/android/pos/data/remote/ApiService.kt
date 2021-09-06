@@ -300,7 +300,7 @@ interface ApiService {
     suspend fun hideItem(@FieldMap options: HashMap<String, String>): BaseResponse
 
     @POST(ITEMS)
-    suspend fun createItem(@Body createItemRequestModel: CreateItemRequestModel): BaseResponse
+    suspend fun createItem(@Body createItemRequestModel: CreateItemRequestModel): ItemsResponse
 
     @PUT(NOTE_UPDATE_DELETE)
     suspend fun updateItem(

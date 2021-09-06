@@ -16,6 +16,7 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DIALOG_KEY
 import com.android.pos.data.remote.Constants.DIALOG_KEY_OPTIONS
 import com.android.pos.data.remote.Constants.DIALOG_KEY_VARIATION_DETAILS
+import com.android.pos.data.remote.Constants.DIALOG_KEY_VARIATION_DETAILS_REMOVE
 import com.android.pos.databinding.CreateItemBinding
 import com.android.pos.ui.adapter.ModifierSetsListAdapter
 import com.android.pos.ui.adapter.VariationListAdapter
@@ -129,6 +130,14 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
         }
 
 
+        val resultVariationDetailsRemove =
+            getNavigationResultLiveData<VariationsAttribute>(DIALOG_KEY_VARIATION_DETAILS_REMOVE)
+        resultVariationDetailsRemove?.observe(viewLifecycleOwner) {
+            variationListAdapter.deleteVariation(position1, it)
+
+        }
+
+
         binding.txtSave.setOnClickListener {
 
             adapter.selectedItemList().forEach {
@@ -136,7 +145,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
             }
             viewModel.selectedModifierList(modifierSetIds)
 
-            variationListApi = ArrayList<VariationsAttribute>()
+            // variationListApi = ArrayList()
 
             viewModel.variationAttribute(variationListAdapter.selectedVariation())
 
@@ -150,7 +159,13 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
 
         viewModel.modifierSet.observe(requireActivity(), {
 
-            it.data?.let { it1 -> adapter.add(it1) }
+            it.data?.let { it1 ->
+                adapter.add(it1)
+                if (isEdit) {
+                    adapter.selectedItemFromEdit(itemObject.modifier_set_ids as ArrayList<Int>)
+                }
+
+            }
         })
     }
 

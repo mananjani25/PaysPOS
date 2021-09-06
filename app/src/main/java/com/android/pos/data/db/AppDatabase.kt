@@ -20,7 +20,7 @@ import com.android.pos.data.typeconvert.*
         GetTipReponse.Data::class, TbDiscount::class, NoteResponse.Data::class,
         TbServiceCharge::class, Employee::class, CartModel::class,
         TbCustomer::class, ModifierSet::class, TeamRole::class,
-        ModulePermission::class, TbOrderType::class, VenueDetailsResponse.Data.Terminal::class, ItemModifierSets::class,OptionSet::class],
+        ModulePermission::class, TbOrderType::class, VenueDetailsResponse.Data.Terminal::class, ItemModifierSets::class, OptionSet::class],
     version = 1
 )
 @TypeConverters(
@@ -33,7 +33,8 @@ import com.android.pos.data.typeconvert.*
     TypeConvertersModule::class,
     TCServiceCharge::class,
     TCCustomer::class,
-    TCOption::class
+    TCOption::class,
+    TCVariations::class
 )
 
 

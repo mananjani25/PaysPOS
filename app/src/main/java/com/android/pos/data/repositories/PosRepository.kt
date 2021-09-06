@@ -179,6 +179,9 @@ class PosRepository @Inject constructor(
             }
         )
 
+    suspend fun createItemDatabase(item: TbItem) =
+        appDatabase.itemDao().add(item)
+
 
     fun getNoteList() = performGetOperation(
         databaseQuery = { appDatabase.notesDao().alllNotes },

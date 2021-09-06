@@ -41,7 +41,7 @@ inline fun Fragment.alert(
     message: CharSequence? = null,
     func: AlertDialogHelper.() -> Unit
 ): AlertDialog {
-    return AlertDialogHelper(context, title, message).apply {
+    return AlertDialogHelper(context, "", message).apply {
         func()
     }.create()
 }

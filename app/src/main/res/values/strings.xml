@@ -55,6 +55,7 @@
     <string name="valid_email_validate">Please enter valid Email Address</string>
     <string name="password_validate">Please enter Password</string>
     <string name="item_name_validate">Please enter Item Name</string>
+    <string name="category_select_validate">Please select Category Name</string>
     <string name="item_price_validate">Please enter Valid Price</string>
     <string name="item_sku_validate">Please enter SKU</string>
 
