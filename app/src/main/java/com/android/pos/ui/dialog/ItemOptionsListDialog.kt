@@ -345,16 +345,29 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
     override fun onItemClickListener(position: Int?, optionSet: OptionSet?) {
 
         if (optionSet != null) {
-            itemOptionList.add(optionSet)
-            variationList.removeAt(position!!)
-        } else {
 
-            // itemOptionList.clear()
-            // variationList.removeAt(position!!)
-            if (position != null) {
-                itemOptionList.add(position, itemOptionListCopy[position])
+            if (optionSet.options.isEmpty()) {
+                variationList.removeAt(position!!)
+                for (i in itemOptionListCopy.indices) {
+                    if (optionSet.name == itemOptionListCopy[i].name) {
+                        itemOptionList.add(itemOptionListCopy[i])
+                      //  itemOptionList.remove(optionSet)
+                        break
+                    }
+                }
+            } else {
+                itemOptionList.add(optionSet)
+                variationList.removeAt(position!!)
             }
-        }
+
+        } /*else {
+
+            //   itemOptionList.clear()
+            variationList.removeAt(position!!)
+            itemOptionList.add(position + 1, itemOptionListCopy[position + 1])
+
+
+        }*/
         optionName = itemOptionList.map { it.name } as ArrayList<String>
         setUpOptionSpinnerAdapter(optionName)
 

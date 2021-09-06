@@ -127,7 +127,7 @@ class SelectedOptionSetNameAdapter(val viewModel: OptionSetViewModel) :
 
         for (i in optionSetList.indices) {
             if (optionSetList[i].options.isEmpty()) {
-                mSetCallback.onItemClickListener(i, null)
+                mSetCallback.onItemClickListener(i, optionSetList[i])
                 Log.d("positionParent", "::" + i)
                 optionSetList.removeAt(i)
                 notifyItemRemoved(i)
