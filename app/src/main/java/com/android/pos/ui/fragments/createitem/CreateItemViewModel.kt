@@ -9,7 +9,6 @@ import com.android.pos.R
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.entities.VariationsAttribute
 import com.android.pos.data.model.requestModel.CreateItemRequestModel
-import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.model.responseModel.ItemsResponse
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.repositories.PosRepository
@@ -124,11 +123,11 @@ class CreateItemViewModel @Inject constructor(
             }
 
             viewModelScope.launch {
-                val resource: Resource<ItemsResponse> =/* if (isEdit) {
+                val resource: Resource<ItemsResponse> = if (isEdit) {
                     posRepository.updateItem(itemId!!, itemData)
-                } else {*/
+                } else {
                     posRepository.createItem(itemData)
-                //   }
+                }
                 when (resource.status) {
                     Status.SUCCESS -> {
                         _showProgress.value = Event(false)

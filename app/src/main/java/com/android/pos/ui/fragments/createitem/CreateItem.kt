@@ -55,8 +55,8 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
         binding.createItemVewModel = viewModel
 
         isEdit = arguments?.getBoolean("isEdit")!!
-        setupData()
         setAdapter()
+        setupData()
         setupSnackbar()
         observeShowProgress()
         getModifiers()
@@ -68,7 +68,10 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
             val bundle = Bundle()
             if (isEdit) {
                 bundle.putBoolean("isEdit", true)
-                //  bundle.putIntegerArrayList("optionIds", itemIds)
+                bundle.putIntegerArrayList(
+                    "optionSets",
+                    itemObject.option_set_ids as ArrayList<Int>
+                )
             } else {
                 bundle.putParcelableArrayList("optionSets", optionSetList)
             }
@@ -186,6 +189,11 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
             itemObject = arguments?.getParcelable("itemObject")!!
             viewModel.setData(itemObject)
             viewModel.setCategoryId(selectedId)
+            binding.llVariationTitle.visibility = View.VISIBLE
+            variationListAdapter.addAllVariations(itemObject.variationsAttributes as ArrayList<VariationsAttribute>)
+
+            binding.txtCategoryName.text = itemObject.categoryName
+            selectedId = itemObject.categoryId
         }
 
         binding.chooseCategory.setOnClickListener(this)

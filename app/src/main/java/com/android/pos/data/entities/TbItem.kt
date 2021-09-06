@@ -44,6 +44,7 @@ class TbItem : Parcelable {
     var isManualSales: Boolean = false
     var isChecked: Boolean = false
     var modifier_set_ids: List<Int> = emptyList()
+    var option_set_ids: List<Int> = emptyList()
     var isTax: Boolean = false
     var modifiers: List<Modifier> = emptyList()
 
@@ -52,5 +53,5 @@ class TbItem : Parcelable {
     var isDiscountDefault = false
     var discountId: Int = 0
     var discountType: String = ""
-    //var variationsAttributes: List<VariationsAttribute>? = null
+    var variationsAttributes: List<VariationsAttribute>? = null
 }

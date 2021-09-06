@@ -34,7 +34,8 @@ import kotlin.collections.ArrayList
 class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListener,
     DeleteOptionSetCallback {
 
-    private var optionItemIds: ArrayList<OptionSet>? = null
+    private var optionSetList: ArrayList<OptionSet>? = null
+    private var optionItemIds: ArrayList<Int>? = null
     private lateinit var finalvariationList: List<List<Option>>
 
     private lateinit var spinnerAdapter: ArrayAdapter<String>
@@ -82,8 +83,15 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
         }
 
         isEdit = arguments?.getBoolean("isEdit")!!
-        optionItemIds =
-            arguments?.getParcelableArrayList("optionSets")
+
+        if (isEdit) {
+            optionItemIds =
+                arguments?.getIntegerArrayList("optionSets")
+        } else {
+            optionSetList =
+                arguments?.getParcelableArrayList("optionSets")
+        }
+
 
         return binding.root
     }
@@ -129,11 +137,22 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
 
                             if (!isLiveData) {
 
-                                if (optionItemIds != null) {
+                                if (isEdit) {
+                                    optionSetList = ArrayList()
+                                    it1.forEach { optionSet ->
+                                        optionItemIds?.forEach {
+                                            if (optionSet.id == it) {
+                                                optionSetList?.add(optionSet)
+                                            }
+                                        }
+                                    }
+                                }
 
-                                    selectedOptionSetNameAdapter.addAllOptions(optionItemIds!!)
+                                if (optionSetList != null) {
 
-                                    optionItemIds?.forEach {
+                                    selectedOptionSetNameAdapter.addAllOptions(optionSetList!!)
+
+                                    optionSetList?.forEach {
                                         variationList.add(it.options)
                                     }
 
@@ -141,7 +160,7 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
                                     val iterator = myCollection.iterator()
                                     while (iterator.hasNext()) {
                                         val item = iterator.next()
-                                        optionItemIds?.forEach { selectedEmployee ->
+                                        optionSetList?.forEach { selectedEmployee ->
                                             if (item.name == selectedEmployee.name) {
                                                 iterator.remove()
                                             }
@@ -351,7 +370,7 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
                 for (i in itemOptionListCopy.indices) {
                     if (optionSet.name == itemOptionListCopy[i].name) {
                         itemOptionList.add(itemOptionListCopy[i])
-                      //  itemOptionList.remove(optionSet)
+                        //  itemOptionList.remove(optionSet)
                         break
                     }
                 }

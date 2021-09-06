@@ -170,8 +170,10 @@ class PosRepository @Inject constructor(
                         thumbImageUrl = it.thumpImgUrl
                         categoryId = it.categoryId
                         taxes = it.taxes
-
+                        modifier_set_ids = it.modifierIds
                         categoryName = it.categoryName ?: ""
+                        variationsAttributes = it.variations
+                        option_set_ids = it.optionSetIds
                     }
                     inventoryModelList.add(items)
                 }

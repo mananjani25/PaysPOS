@@ -6,6 +6,7 @@ import androidx.databinding.BindingAdapter
 import com.android.pos.data.entities.ModifierSet
 import com.android.pos.data.entities.OptionSet
 import com.android.pos.data.entities.TaxData
+import com.android.pos.data.entities.VariationsAttribute
 import com.bumptech.glide.Glide
 import com.google.gson.annotations.SerializedName
 
@@ -80,8 +81,12 @@ data class VenueDataResponse(
                 var taxes: List<TaxData>? = null,
                 @SerializedName("modifier_set_ids")
                 val modifierIds: List<Int>,
+                @SerializedName("option_sets")
+                val optionSetIds: List<Int>,
                 @SerializedName("modifier_sets")
-                val modifierSets: List<ModifierSet> = emptyList()
+                val modifierSets: List<ModifierSet> = emptyList(),
+                @SerializedName("variations")
+                val variations: List<VariationsAttribute> = emptyList()
 
 
             )

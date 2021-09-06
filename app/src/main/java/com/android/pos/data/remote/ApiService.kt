@@ -306,7 +306,7 @@ interface ApiService {
     suspend fun updateItem(
         @Path("id") id: Int,
         @Body updateItem: CreateItemRequestModel
-    ): BaseResponse
+    ): ItemsResponse
 
     @PUT(CUSTOMER_UPDATE)
     suspend fun updateCustomer(
