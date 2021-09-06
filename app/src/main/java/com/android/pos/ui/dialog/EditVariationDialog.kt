@@ -1,5 +1,6 @@
 package com.android.pos.ui.dialog
 
+import android.app.Activity
 import android.graphics.Point
 import android.os.Bundle
 import android.util.Log
@@ -17,11 +18,13 @@ import com.android.pos.data.remote.Constants.DIALOG_KEY
 import com.android.pos.data.remote.Constants.DIALOG_KEY_TAX
 import com.android.pos.data.remote.Constants.DIALOG_KEY_VARIATION_DETAILS
 import com.android.pos.data.remote.Constants.DIALOG_KEY_VARIATION_DETAILS_POSITION
+import com.android.pos.data.remote.Constants.DIALOG_KEY_VARIATION_DETAILS_REMOVE
 import com.android.pos.data.remote.Constants.INCLUDE_TAX
 import com.android.pos.databinding.DialogEditItemTitleBinding
 import com.android.pos.databinding.DialogEditVariationBinding
 import com.android.pos.databinding.DialogItemPricingBinding
 import com.android.pos.ui.adapter.ChooseColorsAdapter
+import com.android.pos.utils.AmountTextWatcher
 import com.android.pos.utils.extensions.setNavigationResult
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -29,9 +32,11 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class EditVariationDialog : DialogFragment(), View.OnClickListener {
     private lateinit var binding: DialogEditVariationBinding
-    private var variationAttributeList: VariationsAttribute? = null
+    private var variationAttribute: VariationsAttribute? = null
     private var variationAttributeCopy = ArrayList<VariationsAttribute>()
     val builder = StringBuilder()
+
+    var activity: EditVariationDialog = this
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,14 +50,33 @@ class EditVariationDialog : DialogFragment(), View.OnClickListener {
         binding.imgBack.setOnClickListener(this)
         binding.txtDone.setOnClickListener(this)
 
-        variationAttributeList =
+        variationAttribute =
             arguments?.getParcelable("variationAttributeList")
 
 
-        binding.tvVariationsName.setText(variationAttributeList?.name)
-        binding.tvVariationsPrice.setText(variationAttributeList?.price.toString())
-        binding.tvVariationsSku.setText(variationAttributeList?.sku)
-        binding.tvVariationsStock.setText(variationAttributeList?.stockQty)
+        binding.tvVariationsName.setText(variationAttribute?.name)
+
+        binding.tvVariationsPrice.addTextChangedListener(
+            AmountTextWatcher(
+                binding.tvVariationsPrice,
+                false
+            )
+        )
+
+
+        binding.tvVariationsPrice.setText(
+            activity.getString(R.string.symbole) + " " + String.format(
+                activity.getString(R.string.format),
+                variationAttribute?.price
+            )
+        )
+        binding.tvVariationsSku.setText(variationAttribute?.sku)
+        binding.tvVariationsStock.setText(variationAttribute?.stockQty)
+
+        binding.tvRemoveVariation.setOnClickListener {
+            setNavigationResult(DIALOG_KEY_VARIATION_DETAILS_REMOVE, variationAttribute)
+            findNavController().popBackStack()
+        }
 
 
         return binding.root
@@ -71,13 +95,15 @@ class EditVariationDialog : DialogFragment(), View.OnClickListener {
             }
             R.id.txtDone -> {
 
-                variationAttributeList?.name = binding.tvVariationsName.text.toString()
-                variationAttributeList?.price = binding.tvVariationsPrice.text.toString().toDouble()
-                variationAttributeList?.sku = binding.tvVariationsSku.text.toString()
-                variationAttributeList?.stockQty = binding.tvVariationsStock.text.toString()
+                variationAttribute?.name = binding.tvVariationsName.text.toString()
+
+                variationAttribute?.price =
+                    binding.tvVariationsPrice.text.toString().replace("$", "").toDouble()
+                variationAttribute?.sku = binding.tvVariationsSku.text.toString()
+                variationAttribute?.stockQty = binding.tvVariationsStock.text.toString()
 
 
-                setNavigationResult(DIALOG_KEY_VARIATION_DETAILS, variationAttributeList)
+                setNavigationResult(DIALOG_KEY_VARIATION_DETAILS, variationAttribute)
                 findNavController().popBackStack()
             }
 

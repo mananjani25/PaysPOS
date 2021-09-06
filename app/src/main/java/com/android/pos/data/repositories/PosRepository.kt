@@ -170,13 +170,17 @@ class PosRepository @Inject constructor(
                         thumbImageUrl = it.thumpImgUrl
                         categoryId = it.categoryId
                         taxes = it.taxes
-//                        categoryName =
+                        modifier_set_ids = it.modifierIds
+
                     }
                     inventoryModelList.add(items)
                 }
                 appDatabase.itemDao().addAllItem(inventoryModelList)
             }
         )
+
+    suspend fun createItemDatabase(item: TbItem) =
+        appDatabase.itemDao().add(item)
 
 
     fun getNoteList() = performGetOperation(

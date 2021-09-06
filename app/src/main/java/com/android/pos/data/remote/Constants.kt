@@ -118,6 +118,7 @@ object Constants {
     const val DIALOG_KEY = "dialog_key"
     const val DIALOG_KEY_OPTIONS = "dialog_key_options"
     const val DIALOG_KEY_VARIATION_DETAILS = "dialog_key_variation_details"
+    const val DIALOG_KEY_VARIATION_DETAILS_REMOVE = "dialog_key_variation_details_remove"
     const val DIALOG_KEY_VARIATION_DETAILS_POSITION = "dialog_key_variation_details_position"
     const val DIALOG_KEY_TAX = "dialog_key_tax"
     const val ADD_TAX = "Add Tax To Item Price"

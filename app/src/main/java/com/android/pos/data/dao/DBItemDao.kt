@@ -14,7 +14,7 @@ import com.google.android.material.tabs.TabItem
 @Dao
 interface DBItemDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun add(inventory: TbItem?): Long?
+    suspend fun add(inventory: TbItem?): Long?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addAllItem(elementsBeanList: List<TbItem>)

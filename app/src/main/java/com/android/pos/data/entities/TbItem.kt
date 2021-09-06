@@ -32,7 +32,7 @@ class TbItem : Parcelable {
     var thumbImageUrl: String? = null
     var createdAt: String = ""
     var updatedAt: String = ""
-    var customItemID:Int = 0
+    var customItemID: Int = 0
     var categoryId: Int = 0
     var categoryName: String = ""
 
@@ -50,7 +50,7 @@ class TbItem : Parcelable {
     var customItemCount: Int = 0
     var discountPrice: Double = 0.0
     var isDiscountDefault = false
-    var discountId:Int = 0
-    var discountType:String = ""
-
+    var discountId: Int = 0
+    var discountType: String = ""
+    //var variationsAttributes: List<VariationsAttribute>? = null
 }

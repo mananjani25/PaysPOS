@@ -71,11 +71,11 @@ class ModifierSetsListAdapter(val isCreateItem: Boolean) :
         return selectedItemList
     }
 
-    fun selectedItemFromEdit(itemIds: ArrayList<ModifierSet>) {
+    fun selectedItemFromEdit(itemIds: ArrayList<Int>) {
         selectedItemList.clear()
         filterList.forEach { modifierSet ->
             itemIds.forEach {
-                if (modifierSet.id == it.id) {
+                if (modifierSet.id == it) {
                     modifierSet.isChecked = true
                     selectedItemList.add(modifierSet)
                 }

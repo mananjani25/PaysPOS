@@ -10,6 +10,7 @@ import com.android.pos.data.entities.TbItem
 import com.android.pos.data.entities.VariationsAttribute
 import com.android.pos.data.model.requestModel.CreateItemRequestModel
 import com.android.pos.data.model.responseModel.BaseResponse
+import com.android.pos.data.model.responseModel.ItemsResponse
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
@@ -41,8 +42,8 @@ class CreateItemViewModel @Inject constructor(
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
-    private val _data = MutableLiveData<Event<BaseResponse?>>()
-    val data: LiveData<Event<BaseResponse?>> = _data
+    private val _data = MutableLiveData<Event<ItemsResponse?>>()
+    val data: LiveData<Event<ItemsResponse?>> = _data
 
     private val _variationListLiveData = MutableLiveData<Event<ArrayList<VariationsAttribute>>>()
     val variationListLiveData: LiveData<Event<ArrayList<VariationsAttribute>>> =
@@ -65,7 +66,11 @@ class CreateItemViewModel @Inject constructor(
         val value = itemDetails.value
         if (TextUtils.isEmpty(value?.name?.trim())) {
             _snackbarText.value = Event(R.string.item_name_validate)
-        } /*else if (TextUtils.isEmpty(
+        } else if (categoryIdViewModel == null) {
+            _snackbarText.value = Event(R.string.category_select_validate)
+        }
+
+        /*else if (TextUtils.isEmpty(
                 value?.price?.toString()?.trim()
             )
             && value?.price == 0.0
@@ -106,6 +111,7 @@ class CreateItemViewModel @Inject constructor(
                 if (isEdit) id = itemId
                 name = value!!.name
                 desc = value.desc
+                active = true
                 //   price = value.price
                 //   sku = value.sku
                 //   desc = value.desc
@@ -118,11 +124,11 @@ class CreateItemViewModel @Inject constructor(
             }
 
             viewModelScope.launch {
-                val resource: Resource<BaseResponse> = if (isEdit) {
+                val resource: Resource<ItemsResponse> =/* if (isEdit) {
                     posRepository.updateItem(itemId!!, itemData)
-                } else {
+                } else {*/
                     posRepository.createItem(itemData)
-                }
+                //   }
                 when (resource.status) {
                     Status.SUCCESS -> {
                         _showProgress.value = Event(false)
@@ -130,6 +136,7 @@ class CreateItemViewModel @Inject constructor(
                         resource.data.let {
                             if (it?.status == 200) {
                                 resource.data?.let { createItemResponse ->
+
                                     _data.value = Event(createItemResponse)
                                 }
                             } else {

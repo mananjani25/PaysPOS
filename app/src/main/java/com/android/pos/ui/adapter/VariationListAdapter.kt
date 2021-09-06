@@ -4,6 +4,7 @@ import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.android.pos.R
 import com.android.pos.data.entities.VariationsAttribute
 import com.android.pos.databinding.ViewVariationItemBinding
 import com.android.pos.ui.fragments.createitem.CreateItemViewModel
@@ -31,10 +32,16 @@ class VariationListAdapter(val viewModel: CreateItemViewModel) :
 
     override fun onBindViewHolder(holder: VariationListAdapter.MyViewHolder, position: Int) {
         val itemBinding = holder.noteItemBinding
+        val context = itemBinding.root.context
 
         val variationName = variationList[position].name
         itemBinding.tvVariationsName.text = variationName
-        itemBinding.tvPrice.text = variationList[position].price.toString()
+
+        itemBinding.tvPrice.text =
+            context.getString(R.string.symbole) + " " + String.format(
+                context.getString(R.string.format),
+                variationList[position].price
+            )
         itemBinding.tvSku.text = variationList[position].sku
         itemBinding.tvStock.text = variationList[position].stockQty
 
@@ -70,6 +77,15 @@ class VariationListAdapter(val viewModel: CreateItemViewModel) :
         notifyDataSetChanged()
 
     }
+
+    fun deleteVariation(position: Int, variation: VariationsAttribute) {
+
+        variationList.removeAt(position)
+        notifyItemRemoved(position)
+        notifyItemRangeChanged(position, variationList.size)
+
+    }
+
 
     fun selectedVariation() = variationList
 
