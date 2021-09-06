@@ -369,6 +369,24 @@
                     android:textColor="@color/btnColorDark_"
                     android:textSize="@dimen/_5mdpi" />
 
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtRemoveDiscount"
+                    style="@style/CustomFontBold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="@dimen/_10sdp"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:layout_marginEnd="@dimen/_10sdp"
+                    android:layout_weight="1"
+                    android:background="@drawable/background_drawer_button"
+                    android:gravity="center"
+                    android:visibility="gone"
+                    android:padding="@dimen/_5sdp"
+                    android:text="@string/remove_discount"
+                    android:textColor="@color/btnColorDark_"
+                    android:textSize="@dimen/_5mdpi" />
+
             </androidx.appcompat.widget.LinearLayoutCompat>
 
 

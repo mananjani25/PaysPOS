@@ -17,7 +17,6 @@ import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.TaxServiceChargeRepository
 import com.android.pos.data.repositories.TipDiscountRepository
 import com.android.pos.di.PrefProvider
-import com.android.pos.ui.fragments.payment.PaymentViewModel
 import com.android.pos.utils.Event
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.statusUtils.Resource
@@ -73,7 +72,11 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun modifierSet(intArray: IntArray) = posRepository.modifierSetList(intArray)
 
-    fun mAllWords(orderType: String) = posRepository.getCartList(orderType)
+//    fun mAllWords(orderType: String) = posRepository.getCartList(orderType)
+
+    fun mAllWords(orderType: String): LiveData<List<CartModel>> {
+        return posRepository.getCartList(orderType)
+    }
 
     var serviceChargesList: List<TbServiceCharge> = emptyList()
 
@@ -244,14 +247,19 @@ class DashBoardCategoryViewModel @Inject constructor(
         if (cartList != null && cartList.isNotEmpty()) {
             cartList[0].items?.forEach { item ->
                 totalCount += item.itemQuantity
-                subTotalPrice += item.price * item.itemQuantity
+                subTotalPrice += (item.price - item.discountPrice) * item.itemQuantity
 
                 item.taxes?.forEach { tax ->
                     if (tax.isActive) {
                         if (tax.taxType == "Percentage") {
-                            val itemTaxPrice = (tax.rate * (item.price * item.itemQuantity)) / 100
+                            val itemTaxPrice =
+                                (tax.rate * ((item.price - item.discountPrice) * item.itemQuantity)) / 100
                             Log.e("itemTaxPrice", "" + itemTaxPrice)
                             totalTax += String.format("%.2f", itemTaxPrice)
+                                .toDouble()
+                        } else {
+
+                            totalTax += String.format("%.2f", tax.rate)
                                 .toDouble()
                         }
                     }
@@ -267,6 +275,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 val itemTaxPrice = (tax.rate * (it.price * it.itemQuantity)) / 100
                                 Log.e("itemTaxPrice", "" + itemTaxPrice)
                                 totalTax += String.format("%.2f", itemTaxPrice)
+                                    .toDouble()
+                            } else {
+
+                                totalTax += String.format("%.2f", tax.rate)
                                     .toDouble()
                             }
                         }

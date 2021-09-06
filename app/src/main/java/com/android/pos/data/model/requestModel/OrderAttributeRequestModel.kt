@@ -232,6 +232,10 @@ class OrderItemsAttribute {
     @SerializedName("total_price")
     var totalPrice: Double = 0.0
 
+    @SerializedName("is_manual_sales")
+    var is_manual_sales: Boolean = false
+
+
     @SerializedName("order_item_modifiers_attributes")
     var orderItemModifiersAttributes: List<OrderItemModifierAttribute> = emptyList()
 }

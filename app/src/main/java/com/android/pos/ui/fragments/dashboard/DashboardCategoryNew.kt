@@ -302,6 +302,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     private fun getCartList() {
 
+        Log.e("getCartList", "Call-->")
+
         cartAdapter = CartAdapter()
         cartAdapter.setCallback(this)
         binding.layoutCart.rvCart.adapter = cartAdapter
@@ -1325,6 +1327,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
             R.id.btnSave -> {
 
+//                if (prefProvider.getValue(ORDER_TYPE, "").toString() != TAKEOUT) {
+
                 cartList[0].customer = assignCustomer
                 val request = viewModelPayment.createOrderRequest(
                     cartList[0],
@@ -1335,9 +1339,11 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     OPEN_ORDER,
                     future_delivery_date,
                     future_delivery_time,
-                    false
+                    false,
+                    viewModel.totalDiscount
                 )
                 viewModelPayment.submit(request)
+//                }
 
             }
 
@@ -1474,37 +1480,33 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                         if (result != null) {
                             Log.e(TAG, "GetDiscountResult:  ${Gson().toJson(result)}")
-                            if (result.discountType == requireContext().getString(R.string.disc_percentage)) {
+                            when {
+                                result.discountType == requireContext().getString(R.string.disc_percentage) -> {
 
-                                data.discountPrice = calculateDiscountPercentage(
-                                    totalPrice(data),
-                                    result.percentage
-                                )
+                                    data.discountPrice = calculateDiscountPercentage(
+                                        totalPrice(data),
+                                        result.percentage
+                                    )
 
-                                data.discountId = result.id
-                                data.discountType = result.discountType
-                                data.isManualSales = false
-                                Log.e(TAG, "insideDiscountmodel:  ${Gson().toJson(data)}")
-                                viewModel.cartLogic(cartList, data, UPDATE)
+                                    data.discountId = result.id
+                                    data.discountType = result.discountType
+                                    data.isManualSales = false
+                                    Log.e(TAG, "insideDiscountmodel:  ${Gson().toJson(data)}")
+                                    viewModel.cartLogic(cartList, data, UPDATE)
 
 
-                            } else if (data.price > result.percentage) {
+                                }
+                                data.price > result.percentage -> {
 
-                                data.discountPrice = result.percentage
-                                data.discountId = 0
-                                data.discountType = result.discountType
-                                data.isManualSales = false
-                                // discountPrice = data.discountPrice
+                                    data.discountPrice = result.percentage
+                                    data.discountId = 0
+                                    data.discountType = result.discountType
+                                    data.isManualSales = false
+                                    // discountPrice = data.discountPrice
 
-                                viewModel.cartLogic(cartList, data, UPDATE)
+                                    viewModel.cartLogic(cartList, data, UPDATE)
 
-                            } else {
-                                /*  data.discountPrice = 0.0
-                                  data.discountType = ""
-                                  data.isManualSales = false
-                                  data.discountId = 0
-                                  discountPrice = data.discountPrice*/
-
+                                }
                             }
 
                         } else {

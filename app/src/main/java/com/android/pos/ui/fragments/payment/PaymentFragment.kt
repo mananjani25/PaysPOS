@@ -289,7 +289,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 prefProvider.getValue(Constants.ORDER_TYPE, "").toString(),
                 future_delivery_date,
                 future_delivery_date,
-                true
+                true, totalDiscount
             )
         }
         if (myRequest != null) {

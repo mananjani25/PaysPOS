@@ -13,6 +13,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.pos.R
+import com.android.pos.data.model.responseModel.CashLogResponse
 import com.android.pos.data.model.responseModel.VenueDetailsResponse
 import com.android.pos.databinding.FragmentCashLogBinding
 import com.android.pos.ui.activities.MainActivity
@@ -26,6 +27,7 @@ import java.util.*
 @AndroidEntryPoint
 class CashLogFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
+    private lateinit var cashLogResponse: CashLogResponse.Data
     private lateinit var binding: FragmentCashLogBinding
     private val viewModel by viewModels<CashLogViewModel>()
     private lateinit var adapter: CashLogAdapter
@@ -163,7 +165,9 @@ class CashLogFragment : Fragment(), AdapterView.OnItemSelectedListener {
         viewModel.data.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
 
-                adapter.add(it.data.cashes)
+                cashLogResponse = it.data
+                binding.cashLogModel = cashLogResponse
+                adapter.add(cashLogResponse.cashes)
             }
         })
 

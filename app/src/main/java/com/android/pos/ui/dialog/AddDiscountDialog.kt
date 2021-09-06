@@ -34,7 +34,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
     private val TAG = "AddDiscountDialog"
     private lateinit var discountAdapter: DialogDiscountListAdapter
     private var discountModel: TbDiscount? = null
-    private var selectedListPos: Int = -1
+    var selectedListPos: Int = -1
     private var isFromDetails = false
     private lateinit var defaultModel: TbItem
     private var selectedCurrency: String = AMOUNT
@@ -68,9 +68,24 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
 
         if (defaultModel.discountId == 0) {
+            binding.txtRemoveDiscount.visibility = View.GONE
             binding.edtAmount.append(MethodUtils.roundOffAmountString(defaultModel.discountPrice))
         } else {
+
+            binding.txtRemoveDiscount.visibility = View.VISIBLE
+
             discountAdapter.setSelected(defaultModel.discountId)
+
+            if (discountAdapter.selectedPosition != -1)
+                selectedListPos = discountAdapter.selectedPosition
+            if (defaultModel.discountType == getString(R.string.disc_percentage)) {
+                val applyDiscount = (defaultModel.discountPrice * defaultModel.price) * 100
+                binding.edtAmount.setText(MethodUtils.roundOffAmountString(applyDiscount))
+                percentageView()
+            } else {
+                binding.edtAmount.setText(MethodUtils.roundOffAmountString(defaultModel.discountPrice))
+                amountView()
+            }
         }
 
 
@@ -92,6 +107,11 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                 discountAdapter.clearSelectedItem()
                 selectedListPos = -1
             }
+        }
+
+        binding.txtRemoveDiscount.setOnClickListener {
+
+            removeDiscount()
         }
     }
 
@@ -232,8 +252,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                 }
                 findNavController().navigateUp()
 
-            } else if (binding.edtAmount.text?.isNotEmpty() == true && !(binding.edtAmount.text.toString()
-                    .equals("0.00"))
+            } else if (binding.edtAmount.text?.isNotEmpty() == true && binding.edtAmount.text.toString() != "0.00"
             ) {
 
 
@@ -271,25 +290,29 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                 }
                 findNavController().navigateUp()
             } else {
-                val discount = TbDiscount("", "", 0, 0, "", 0.0, "")
-                val result = Bundle().apply {
-                    putParcelable("data", discount)
-                }
-
-
-                if (isFromDetails) {
-
-                    setFragmentResult("request_key_discount_details", result)
-                } else {
-
-                    setFragmentResult("request_key_discount", result)
-                }
-                findNavController().navigateUp()
+                removeDiscount()
 
             }
 
 
         }
+    }
+
+    private fun removeDiscount() {
+        val discount = TbDiscount("", "", 0, 0, "", 0.0, "")
+        val result = Bundle().apply {
+            putParcelable("data", discount)
+        }
+
+
+        if (isFromDetails) {
+
+            setFragmentResult("request_key_discount_details", result)
+        } else {
+
+            setFragmentResult("request_key_discount", result)
+        }
+        findNavController().navigateUp()
     }
 
     override fun onResume() {
