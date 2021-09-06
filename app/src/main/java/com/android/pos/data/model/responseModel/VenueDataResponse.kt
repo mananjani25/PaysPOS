@@ -55,6 +55,8 @@ data class VenueDataResponse(
                 val sort: Int,
                 @SerializedName("category_id")
                 val categoryId: Int,
+                @SerializedName("category_name")
+                val categoryName: String?,
                 @SerializedName("kitchen_name")
                 val kitchenName: String,
                 @SerializedName("name")
