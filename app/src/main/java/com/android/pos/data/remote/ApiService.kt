@@ -12,6 +12,7 @@ import com.android.pos.data.remote.Constants.CUSTOMERS
 import com.android.pos.data.remote.Constants.CUSTOMER_RECEIPTS_UPDATE_SETTINGS
 import com.android.pos.data.remote.Constants.CUSTOMER_RECEIPT_SETTINGS
 import com.android.pos.data.remote.Constants.CUSTOMER_UPDATE
+import com.android.pos.data.remote.Constants.DELETE_UPDATE_PRINTER
 import com.android.pos.data.remote.Constants.DISCOUNTS
 import com.android.pos.data.remote.Constants.DISCOUNTS_ACTIVE
 import com.android.pos.data.remote.Constants.DISCOUNTS_UPDATE_DELETE
@@ -22,6 +23,7 @@ import com.android.pos.data.remote.Constants.EMPLOYEES_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.EMPLOYEE_CLOCK_IN
 import com.android.pos.data.remote.Constants.EMPLOYEE_LOG_IN
 import com.android.pos.data.remote.Constants.FORGOT_PASSWORD
+import com.android.pos.data.remote.Constants.GET_PRINTERS
 import com.android.pos.data.remote.Constants.GET_TEAM_MODULE
 import com.android.pos.data.remote.Constants.HIDE_CATEGORY
 import com.android.pos.data.remote.Constants.HIDE_ITEM
@@ -99,6 +101,18 @@ interface ApiService {
 
     @GET(SYNC_VENUE_DATA)
     suspend fun syncVenueData(): VenueDataResponse
+
+    @GET(GET_PRINTERS)
+    suspend fun getPrinterList(): PrinterResponse
+
+    @POST(GET_PRINTERS)
+    suspend fun createPrinter(@Body createPrinter: CreatePrinterRequestModel): PrinterResponse
+
+    @DELETE(DELETE_UPDATE_PRINTER)
+    suspend fun deletePrinter(
+        @Path("id") Id: Int,
+    ): DeletePrinterResponseModel
+
 
     @GET(SYNC_VENUE_DETAILS)
     suspend fun syncVenueDetails(): VenueDetailsResponse

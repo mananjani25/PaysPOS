@@ -90,6 +90,7 @@
     <string name="delete_item_message">Are you sure want to Delete Item?</string>
     <string name="delete_items_message">Are you sure want to Clear Item?</string>
     <string name="delete_employee_role_message">Are you sure want to Delete Team Member Role?</string>
+    <string name="delete_printer_message">Are you sure want to Delete Printer?</string>
 
     <string name="delete_category_message">Are you sure you want to delete category?</string>
     <string name="hide_category_message">Are you sure you want to hide category?</string>

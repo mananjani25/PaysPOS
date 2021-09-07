@@ -299,8 +299,7 @@
                     android:layout_marginEnd="@dimen/_50sdp"
                     android:background="@drawable/background_printer_labels"
                     android:orientation="horizontal"
-                    android:paddingVertical="@dimen/_5sdp"
-                    >
+                    android:paddingVertical="@dimen/_5sdp">
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtPrinterName3"

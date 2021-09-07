@@ -52,6 +52,8 @@ object Constants {
     const val SYNC_VENUE_DATA = "locations/sync_data"
     const val SYNC_VENUE_DETAILS = "locations/setting_data"
     const val ORDER_TYPES = "order_types"
+    const val GET_PRINTERS = "printers"
+    const val DELETE_UPDATE_PRINTER = "printers/{id}"
 
     const val TAXES = "taxes"
     const val TAX_UPDATE_DELETE = "taxes/{id}"

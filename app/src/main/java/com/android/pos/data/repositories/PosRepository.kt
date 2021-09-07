@@ -21,10 +21,15 @@ class PosRepository @Inject constructor(
     private val apiHelperNew: ApiHelper
 ) : IDataManager {
 
-
     fun syncVenueData() =
         performGetOperationNew(networkCall = { apiHelperNew.syncVenueData() })
 
+    fun getPrinters() = performGetOperationNew(networkCall = { apiHelperNew.getPrinterData() })
+
+    suspend fun createPrinter(data: CreatePrinterRequestModel) =
+        apiHelperNew.createPrinter(data)
+
+    suspend fun deletePrinter(id:Int) = apiHelperNew.deletePrinter(id)
     /*fun syncVenueDetails() =
         performGetOperationNew(networkCall = { apiHelperNew.syncVenueDetails() })*/
 

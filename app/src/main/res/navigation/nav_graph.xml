@@ -691,7 +691,7 @@
 
     <fragment
         android:id="@+id/printer"
-        android:name="com.android.pos.ui.fragments.settings.hardware.Printer"
+        android:name="com.android.pos.ui.fragments.settings.hardware.printer.Printer"
         android:label="Printer"
         tools:layout="@layout/fragment_printer">
         <action
