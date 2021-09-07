@@ -71,9 +71,9 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
             val bundle = Bundle()
             if (isEdit) {
                 bundle.putBoolean("isEdit", true)
-                bundle.putIntegerArrayList(
+                bundle.putParcelableArrayList(
                     "optionSets",
-                    itemObject.option_set_ids as ArrayList<Int>
+                    itemObject.optionSets as ArrayList<OptionSet>
                 )
             } else {
                 bundle.putParcelableArrayList("optionSets", optionSetList)

@@ -179,6 +179,7 @@ class PosRepository @Inject constructor(
                         categoryName = it.categoryName ?: ""
                         variationsAttributes = it.variations
                         option_set_ids = it.optionSetIds
+                        optionSets = it.optionSets
                     }
                     inventoryModelList.add(items)
                 }

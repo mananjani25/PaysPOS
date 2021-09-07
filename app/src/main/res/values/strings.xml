@@ -515,4 +515,6 @@
     <string name="reason">Reason</string>
     <string name="employee_name">Employee Name</string>
     <string name="add_note_cart">Note : </string>
+    <string name="tv_variation_name">Variation Name</string>
+    <string name="tv_unit">Unit</string>
 </resources>

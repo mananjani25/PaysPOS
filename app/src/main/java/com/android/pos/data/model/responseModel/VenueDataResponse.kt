@@ -86,7 +86,9 @@ data class VenueDataResponse(
                 @SerializedName("modifier_sets")
                 val modifierSets: List<ModifierSet> = emptyList(),
                 @SerializedName("variations")
-                val variations: List<VariationsAttribute> = emptyList()
+                val variations: List<VariationsAttribute> = emptyList(),
+                @SerializedName("selected_option_sets")
+                val optionSets: List<OptionSet> = emptyList()
 
 
             )
