@@ -33,6 +33,10 @@ class CreateItemViewModel @Inject constructor(
     var itemDetails = MutableLiveData(CreateItemRequestModel())
     private lateinit var itemData: CreateItemRequestModel
     private lateinit var modifierSetIdsViewModel: ArrayList<Int>
+    private var itemPriceViewModel: Double = 0.0
+    private var descViewModel: String = ""
+    private var skuViewModel: String = ""
+    private var stockViewModel: Int = 0
     private lateinit var variationAttributeModel: ArrayList<VariationsAttribute>
 
     private val _snackbarText = MutableLiveData<Event<Any?>>()
@@ -67,9 +71,7 @@ class CreateItemViewModel @Inject constructor(
             _snackbarText.value = Event(R.string.item_name_validate)
         } else if (categoryIdViewModel == null) {
             _snackbarText.value = Event(R.string.category_select_validate)
-        }
-
-        /*else if (TextUtils.isEmpty(
+        } /*else if (TextUtils.isEmpty(
                 value?.price?.toString()?.trim()
             )
             && value?.price == 0.0
@@ -108,13 +110,12 @@ class CreateItemViewModel @Inject constructor(
 
             itemData = CreateItemRequestModel().apply {
                 if (isEdit) id = itemId
-                name = value!!.name
-                desc = value.desc
                 active = true
-                //   price = value.price
-                //   sku = value.sku
-                //   desc = value.desc
-                //  quantity = 10
+                name = value!!.name
+                price = itemPriceViewModel
+                sku = skuViewModel
+                quantity = stockViewModel
+                desc = descViewModel
                 categoryId = categoryIdViewModel!!
                 modifierSetIds = modifierSetIdsViewModel
                 variationsAttributes = variationAttributeModel
@@ -170,6 +171,13 @@ class CreateItemViewModel @Inject constructor(
 
     fun variationAttribute(variationAttribute: ArrayList<VariationsAttribute>) {
         this.variationAttributeModel = variationAttribute
+    }
+
+    fun itemDetails(itemPrice: Double, desc: String, sku: String, stock: Int) {
+        this.itemPriceViewModel = itemPrice
+        this.descViewModel = desc
+        this.skuViewModel = sku
+        this.stockViewModel = stock
     }
 
 

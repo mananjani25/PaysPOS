@@ -1,6 +1,7 @@
 package com.android.pos.ui.adapter
 
 import android.text.TextUtils
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -78,11 +79,17 @@ class VariationListAdapter(val viewModel: CreateItemViewModel) :
 
     }
 
-    fun deleteVariation(position: Int, variation: VariationsAttribute) {
+    fun deleteVariation(position: Int, variation: VariationsAttribute): Int {
 
         variationList.removeAt(position)
         notifyItemRemoved(position)
         notifyItemRangeChanged(position, variationList.size)
+
+        if (variationList.size == 0) {
+            return 0
+        }
+
+        return variationList.size
 
     }
 
