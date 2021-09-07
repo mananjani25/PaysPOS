@@ -188,6 +188,11 @@ class TeamMemberTimeSheetFragment : Fragment(), AdapterView.OnItemSelectedListen
                     timeSheet.data
                 )
 
+                binding.tvEmployeeTotalHours.text =
+                    "All Employees Total Hours:- " + timeSheet.employeTotalHours
+                binding.tvEmployeeTotalWages.text =
+                    "All Employees Total Wages:- " + timeSheet.employeeTotalWage
+
             }
         })
 

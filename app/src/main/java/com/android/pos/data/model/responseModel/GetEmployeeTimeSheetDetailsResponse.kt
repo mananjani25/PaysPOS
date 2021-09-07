@@ -11,7 +11,11 @@ data class GetEmployeeTimeSheetDetailsResponse(
     @SerializedName("status")
     val status: Int,
     @SerializedName("type")
-    val type: String
+    val type: String,
+    @SerializedName("employee_total_hours")
+    val employeTotalHours: String,
+    @SerializedName("employee_total_wages")
+    val employeeTotalWage: String,
 ) {
     data class Data(
         @SerializedName("actual_in_time")

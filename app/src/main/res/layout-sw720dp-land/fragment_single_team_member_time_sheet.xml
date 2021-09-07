@@ -28,11 +28,11 @@
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
-            android:layout_marginTop="@dimen/_5sdp"
-            android:padding="@dimen/_3sdp"
-            android:background="@drawable/bg_report"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_marginTop="@dimen/_5sdp"
+            android:background="@drawable/bg_report"
+            android:orientation="vertical"
+            android:padding="@dimen/_3sdp">
 
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -170,9 +170,41 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvSingleTimeSheet"
             android:layout_width="match_parent"
-            tools:listitem="@layout/view_single_member_item_timesheet"
-            android:layout_height="match_parent"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/view_single_member_item_timesheet" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvEmployeeTotalHours"
+            style="@style/CustomFontSemiBold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:layout_marginBottom="@dimen/_1sdp"
+            android:gravity="center"
+            android:textColor="@color/btnColorDark"
+            android:textSize="@dimen/_5mdpi"
+            android:textStyle="bold" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvEmployeeTotalWages"
+            style="@style/CustomFontSemiBold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:layout_marginBottom="@dimen/_5sdp"
+            android:gravity="center"
+            android:textColor="@color/btnColorDark"
+            android:textSize="@dimen/_5mdpi"
+            android:textStyle="bold" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_marginBottom="@dimen/_5sdp"
+            android:background="@color/gray_rect" />
 
     </LinearLayout>
 </layout>

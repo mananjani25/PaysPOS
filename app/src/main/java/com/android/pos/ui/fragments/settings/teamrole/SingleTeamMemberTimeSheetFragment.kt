@@ -140,7 +140,10 @@ class SingleTeamMemberTimeSheetFragment : Fragment() {
                 teamMemberTimeSheetAdapter.teamTimesheetDetailsList(
                     timeSheet.data
                 )
-
+                binding.tvEmployeeTotalHours.text =
+                    "Employees Total Hours:- " + timeSheet.employeTotalHours
+                binding.tvEmployeeTotalWages.text =
+                    "Employees Total Wages:- " + timeSheet.employeeTotalWage
             }
         })
 

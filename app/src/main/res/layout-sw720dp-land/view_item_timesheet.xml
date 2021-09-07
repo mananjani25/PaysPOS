@@ -56,7 +56,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="@{@string/symbole +``+String.format(@string/format,itemSheetModel.totalWage)}"
+                android:text="@{itemSheetModel.totalWage}"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_5mdpi" />
 

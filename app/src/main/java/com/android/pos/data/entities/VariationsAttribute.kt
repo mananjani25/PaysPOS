@@ -21,6 +21,8 @@ data class VariationsAttribute(
     @SerializedName("sku")
     var sku: String = "",
     @SerializedName("stock_qty")
-    var stockQty: String = ""
+    var stockQty: String = "",
+    @SerializedName("_destroy")
+    var _destroy: Boolean = false
 ) : Parcelable
 
