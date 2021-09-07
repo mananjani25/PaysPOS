@@ -329,6 +329,9 @@ class OrderItemModifierAttribute {
     @SerializedName("price")
     var price: Double = 0.0
 
+    @SerializedName("total_price")
+    var totalPrice: Double = 0.0
+
     @SerializedName("quantity")
     var quantity: Int = 0
 
@@ -366,7 +369,7 @@ class PaymentAttributes {
     var cardNumber: String = ""
 
     @SerializedName("card_type")
-    var cardType: Int = 0
+    var cardType: String = ""
 
     @SerializedName("cash_discount")
     var cashDiscount: Double = 0.0

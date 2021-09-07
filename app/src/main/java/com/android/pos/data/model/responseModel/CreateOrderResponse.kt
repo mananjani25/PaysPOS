@@ -163,7 +163,7 @@ data class CreateOrderResponse(
                 @SerializedName("card_number")
                 val cardNumber: String,
                 @SerializedName("card_type")
-                val cardType: Int,
+                val cardType: String,
                 @SerializedName("cash_discount")
                 val cashDiscount: Double,
                 @SerializedName("created_at")

@@ -5,14 +5,24 @@ import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.android.pos.data.model.responseModel.NoteResponse
 import com.android.pos.databinding.DailogAddNoteBinding
+import com.android.pos.ui.adapter.NotesListAdapter
+import com.android.pos.ui.fragments.settings.notes.NoteListViewModel
+import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.callback.ItemCallback
+import com.android.pos.utils.extensions.showAlert
+import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class AddNoteDialog : DialogFragment() {
+class AddNoteDialog : DialogFragment(), ItemCallback {
 
     private lateinit var binding: DailogAddNoteBinding
+    private lateinit var noteListadapter: NotesListAdapter
+    private val viewModel by viewModels<NoteListViewModel>()
 
     companion object {
         fun newInstance() = AddNoteDialog()
@@ -26,8 +36,17 @@ class AddNoteDialog : DialogFragment() {
         binding.lifecycleOwner = this
 
         setupData()
+        setupAdapter()
+        noteList()
 
         return binding.root
+    }
+
+    private fun setupAdapter() {
+
+        noteListadapter = NotesListAdapter(viewModel, true)
+        noteListadapter.setCallback(this)
+        binding.rvNotes.adapter = noteListadapter
     }
 
     private fun setupData() {
@@ -40,15 +59,50 @@ class AddNoteDialog : DialogFragment() {
 
         binding.txtSave.setOnClickListener {
 
-            val result = Bundle().apply {
-                putString("note", binding.edtNote.text.toString().trim())
-            }
-            setFragmentResult("request_key_note", result)
-            findNavController().navigateUp()
+            addNote()
         }
 
         binding.imgBack.setOnClickListener {
             dismiss()
+        }
+    }
+
+
+    private fun addNote() {
+        val result = Bundle().apply {
+            putString("note", binding.edtNote.text.toString().trim())
+        }
+        setFragmentResult("request_key_note", result)
+        findNavController().navigateUp()
+    }
+
+
+    private fun noteList() {
+        viewModel.getTaxList.observe(viewLifecycleOwner, {
+
+
+            it?.let { resource ->
+                when (resource.status) {
+                    Status.SUCCESS -> {
+                        ProgressUtils.dismissProgressDialog()
+                        resource.data?.let { taxList -> setTaxData(taxList) }
+                    }
+                    Status.ERROR -> {
+                        ProgressUtils.dismissProgressDialog()
+                        binding.root.showAlert(resource.message)
+                    }
+                    Status.LOADING -> {
+                        ProgressUtils.showProgressDialog(requireActivity())
+                    }
+                }
+            }
+        })
+    }
+
+    private fun setTaxData(taxList: List<NoteResponse.Data>) {
+        noteListadapter.apply {
+            addNotes(taxList)
+            notifyDataSetChanged()
         }
     }
 
@@ -62,5 +116,12 @@ class AddNoteDialog : DialogFragment() {
         val width: Int = size.x
         window.setLayout((width * 0.50).toInt(), WindowManager.LayoutParams.MATCH_PARENT)
         window.setGravity(Gravity.CENTER)
+    }
+
+    override fun onItemClickListener(view: View?, pos: Int) {
+
+        val note = noteListadapter.getItem(pos)
+        binding.edtNote.setText(note.name)
+        addNote()
     }
 }

@@ -23,29 +23,43 @@
             android:background="@color/white"
             android:orientation="horizontal"
             android:paddingTop="@dimen/_5sdp"
-            android:paddingBottom="@dimen/_5sdp"
-            tools:ignore="UselessParent">
+            android:paddingBottom="@dimen/_5sdp">
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tvOrderID"
-                style="@style/CustomFontMediumStyle"
+            <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_5sdp"
-                android:layout_weight="1"
-                android:gravity="center"
                 android:layout_gravity="center"
-                android:text="@{viewModel.offlineId}"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi"
-                tools:text="offlineId" />
+                android:orientation="horizontal"
+                android:layout_weight="1"
+                android:gravity="center">
+
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvOrderID"
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:gravity="center"
+                    android:text="@{viewModel.offlineId}"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_5mdpi"
+                    tools:text="offlineId" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:id="@+id/imgIndicator"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/ic_arrow_down" />
+            </androidx.appcompat.widget.LinearLayoutCompat>
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvDate"
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="0dp"
-                android:layout_gravity="center"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_marginStart="@dimen/_5sdp"
                 android:layout_weight="1"
                 android:gravity="center"
@@ -59,10 +73,10 @@
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_marginStart="@dimen/_5sdp"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:layout_gravity="center"
                 android:text="@{viewModel.paymentStatus}"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_5mdpi"
@@ -126,8 +140,8 @@
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_gravity="center"
+                android:layout_weight="1"
                 android:gravity="center"
                 android:text="@{viewModel.employee.name}"
                 android:textColor="@color/txtColor"
@@ -142,16 +156,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:visibility="visible">
+            android:visibility="gone">
 
             <androidx.appcompat.widget.LinearLayoutCompat
-                android:paddingStart="@dimen/_10sdp"
-                android:paddingEnd="@dimen/_10sdp"
-                android:paddingTop="@dimen/_5sdp"
-                android:paddingBottom="@dimen/_5sdp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:paddingStart="@dimen/_10sdp"
+                android:paddingTop="@dimen/_5sdp"
+                android:paddingEnd="@dimen/_10sdp"
+                android:paddingBottom="@dimen/_5sdp">
 
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="0dp"
@@ -211,9 +225,9 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:layout_marginTop="@dimen/_2sdp"
+                            android:textAllCaps="true"
                             android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi"
-                            android:textAllCaps="true"
                             tools:text="Unpaid" />
 
 
@@ -229,10 +243,10 @@
 
 
                     <LinearLayout
-                        android:padding="@dimen/_5sdp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
+                        android:padding="@dimen/_5sdp"
                         tools:ignore="UselessParent">
 
                         <androidx.appcompat.widget.AppCompatTextView
@@ -250,9 +264,9 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/_2sdp"
+                            android:textAllCaps="true"
                             android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi"
-                            android:textAllCaps="true"
                             tools:text="John Smith" />
 
 
@@ -266,11 +280,11 @@
 
 
                         <LinearLayout
-                            android:padding="@dimen/_5sdp"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:orientation="vertical"
+                            android:padding="@dimen/_5sdp"
                             tools:ignore="UselessParent">
 
                             <androidx.appcompat.widget.AppCompatTextView
@@ -278,8 +292,8 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/tv_contact_number"
-                                android:textColor="@color/txtColor"
                                 android:textAllCaps="true"
+                                android:textColor="@color/txtColor"
                                 android:textSize="@dimen/_5mdpi" />
 
                             <androidx.appcompat.widget.AppCompatTextView
@@ -295,11 +309,11 @@
                         </LinearLayout>
 
                         <LinearLayout
-                            android:padding="@dimen/_5sdp"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1.2"
                             android:orientation="vertical"
+                            android:padding="@dimen/_5sdp"
                             tools:ignore="UselessParent">
 
                             <androidx.appcompat.widget.AppCompatTextView
@@ -307,8 +321,8 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/tv_email_id"
-                                android:textColor="@color/txtColor"
                                 android:textAllCaps="true"
+                                android:textColor="@color/txtColor"
                                 android:textSize="@dimen/_5mdpi" />
 
                             <androidx.appcompat.widget.AppCompatTextView
@@ -325,11 +339,11 @@
                         </LinearLayout>
 
                         <LinearLayout
-                            android:padding="@dimen/_5sdp"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1.8"
                             android:orientation="vertical"
+                            android:padding="@dimen/_5sdp"
                             tools:ignore="UselessParent">
 
                             <androidx.appcompat.widget.AppCompatTextView
@@ -368,10 +382,10 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvOpenOrder"
                 android:layout_width="match_parent"
-                tools:itemCount="2"
                 android:layout_height="match_parent"
-                tools:listitem="@layout/view_open_order_items"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:itemCount="2"
+                tools:listitem="@layout/view_open_order_items" />
 
             <LinearLayout
                 android:layout_width="match_parent"

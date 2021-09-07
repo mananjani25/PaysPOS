@@ -54,7 +54,7 @@ class ActiveOrderFragment : Fragment() {
 
     private fun getOpenOrders() {
 
-        viewModel.openOrders.observe(viewLifecycleOwner, {
+        viewModel.openOrders.observe(viewLifecycleOwner, { it ->
 
             it?.let { resource ->
                 when (resource.status) {

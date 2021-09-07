@@ -49,6 +49,7 @@ import com.android.pos.ui.activities.SwipeHelper
 import com.android.pos.ui.adapter.*
 import com.android.pos.ui.fragments.payment.PaymentViewModel
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.callback.MyCallback
@@ -308,30 +309,31 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         cartAdapter.setCallback(this)
         binding.layoutCart.rvCart.adapter = cartAdapter
 
-        viewModel.mAllWords(prefProvider.getValue(ORDER_TYPE, "").toString()).observe(
-            requireActivity(), {
-                cartList = it
-                if (cartList.isNotEmpty()) {
+        if (isAdded)
+            viewModel.mAllWords(prefProvider.getValue(ORDER_TYPE, "").toString()).observe(
+                requireActivity(), {
+                    cartList = it
+                    if (cartList.isNotEmpty()) {
 
-                    binding.layoutCart.rvCart.visibility = View.VISIBLE
-                    binding.layoutCart.llPayment.visibility = View.VISIBLE
-                    cartAdapter.addCart(cartList[0].items)
+                        binding.layoutCart.rvCart.visibility = View.VISIBLE
+                        binding.layoutCart.llPayment.visibility = View.VISIBLE
+                        cartAdapter.addCart(cartList[0].items)
 
-                    viewModel.itemCalculation(
-                        cartList,
-                        binding.layoutCart.txtTotalAmount
-                    )
-                } else {
-                    viewModel.itemCalculation(
-                        cartList,
-                        binding.layoutCart.txtTotalAmount
-                    )
-                    binding.layoutCart.rvCart.visibility = View.GONE
-                    binding.layoutCart.llPayment.visibility = View.GONE
+                        viewModel.itemCalculation(
+                            cartList,
+                            binding.layoutCart.txtTotalAmount
+                        )
+                    } else {
+                        viewModel.itemCalculation(
+                            cartList,
+                            binding.layoutCart.txtTotalAmount
+                        )
+                        binding.layoutCart.rvCart.visibility = View.GONE
+                        binding.layoutCart.llPayment.visibility = View.GONE
 
+                    }
                 }
-            }
-        )
+            )
 
 
     }
@@ -1378,8 +1380,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     }
 
     fun calculateDiscountPercentage(originalPrice: Double, percentage: Double): Double {
-        val disPrice = Math.round((originalPrice * percentage) / 100).toDouble()
-        Log.e(TAG, "disPrice  ${disPrice}")
+
+        val disPrice = MethodUtils.roundOffAmountDouble((originalPrice * percentage) / 100)
+
+        Log.e(TAG, "disPrice  $disPrice")
         return if (disPrice < originalPrice) {
             disPrice
         } else {

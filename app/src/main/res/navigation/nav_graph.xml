@@ -382,6 +382,8 @@
             app:destination="@id/customer"
             app:enterAnim="@anim/nav_default_enter_anim" />
         <action
+            app:popUpToInclusive="true"
+            app:popUpTo="@id/dashboardCategoryNew"
             android:id="@+id/action_dashboardCategoryNew_to_paymentFragment"
             app:destination="@id/paymentFragment" />
         <action
@@ -543,6 +545,8 @@
             android:id="@+id/action_paymentFragment_to_customAmountFragment"
             app:destination="@id/customAmountFragment" />
         <action
+            app:popUpTo="@id/paymentFragment"
+            app:popUpToInclusive="true"
             android:id="@+id/action_paymentFragment_to_orderCompleteFragment"
             app:destination="@id/orderCompleteFragment" />
     </fragment>
@@ -652,7 +656,8 @@
         <action
             android:id="@+id/action_orderCompleteFragment_to_dashboardCategoryNew"
             app:destination="@id/dashboardCategoryNew"
-            app:launchSingleTop="true" />
+            app:popUpTo="@id/orderCompleteFragment"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_orderCompleteFragment_to_assignCustomerOrderFragment"
             app:destination="@id/assignCustomerOrderFragment" />

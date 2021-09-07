@@ -99,7 +99,8 @@ data class OpenOrderResponse(
             @SerializedName("total_tips")
             val totalTips: Double,
             @SerializedName("updated_at")
-            val updatedAt: String
+            val updatedAt: String,
+            var isCheck: Boolean = false
         ) {
             data class OrderItem(
                 @SerializedName("category_id")
@@ -200,7 +201,7 @@ data class OpenOrderResponse(
                 @SerializedName("card_number")
                 val cardNumber: String,
                 @SerializedName("card_type")
-                val cardType: Int,
+                val cardType: String,
                 @SerializedName("cash_discount")
                 val cashDiscount: Int,
                 @SerializedName("created_at")

@@ -51,52 +51,57 @@ class OpenOrderAdapter :
                 adapter!!.addAll(item.orderItems)
             }
 
+
+
+            if (!item.isCheck) {
+
+                binding.llMainLayout.setBackgroundColor(binding.root.resources.getColor(R.color.white))
+                binding.tvDate.setTextColor(binding.root.resources.getColor(R.color.black))
+                binding.tvOrderType.setTextColor(binding.root.resources.getColor(R.color.black))
+                binding.tvTotalAmount.setTextColor(binding.root.resources.getColor(R.color.black))
+                binding.tvTotalTips.setTextColor(binding.root.resources.getColor(R.color.black))
+                binding.txtCustomerName.setTextColor(binding.root.resources.getColor(R.color.black))
+                binding.tvOrderID.setTextColor(binding.root.resources.getColor(R.color.black))
+                binding.tvDeliveryStatus.setTextColor(binding.root.resources.getColor(R.color.black))
+                binding.tvTeamMember.setTextColor(binding.root.resources.getColor(R.color.black))
+                binding.llShowLayout.visibility = View.GONE
+                binding.imgIndicator.setImageDrawable(binding.root.resources.getDrawable(R.drawable.ic_arrow_down))
+
+                binding.txtDeliveryDate.text =
+                    TimeFormatUtils.convertCurrentDate(item.createdAt) + "\n" + TimeFormatUtils.convertCurrentTime(
+                        item.createdAt
+                    )
+
+                binding.txtStatus.text = item.paymentStatus
+                binding.txtCustomerNameDetails.text =
+                    (item.customer?.firstName ?: "") + " " + (item.customer?.lastName ?: "")
+
+                binding.txtEmail.text = item.customer?.email ?: ""
+                binding.txtPhoneNo.text = ""
+                binding.txtAddress.text = ""
+
+            } else {
+
+                binding.llMainLayout.setBackgroundColor(binding.root.resources.getColor(R.color.black))
+                binding.tvDate.setTextColor(binding.root.resources.getColor(R.color.white))
+                binding.tvOrderType.setTextColor(binding.root.resources.getColor(R.color.white))
+                binding.tvTotalAmount.setTextColor(binding.root.resources.getColor(R.color.white))
+                binding.tvTotalTips.setTextColor(binding.root.resources.getColor(R.color.white))
+                binding.txtCustomerName.setTextColor(binding.root.resources.getColor(R.color.white))
+                binding.tvOrderID.setTextColor(binding.root.resources.getColor(R.color.white))
+                binding.tvDeliveryStatus.setTextColor(binding.root.resources.getColor(R.color.white))
+                binding.tvTeamMember.setTextColor(binding.root.resources.getColor(R.color.white))
+                binding.llShowLayout.visibility = View.VISIBLE
+                binding.imgIndicator.setImageDrawable(binding.root.resources.getDrawable(R.drawable.ic_arrow_up))
+            }
         }
 
         init {
             binding.root.setOnClickListener {
+                val model = orderList[bindingAdapterPosition]
+                model.isCheck = !model.isCheck
+                notifyItemChanged(bindingAdapterPosition)
 
-                if (isShown) {
-                    isShown = false
-                    binding.llMainLayout.setBackgroundColor(binding.root.resources.getColor(R.color.white))
-                    binding.tvDate.setTextColor(binding.root.resources.getColor(R.color.black))
-                    binding.tvOrderType.setTextColor(binding.root.resources.getColor(R.color.black))
-                    binding.tvTotalAmount.setTextColor(binding.root.resources.getColor(R.color.black))
-                    binding.tvTotalTips.setTextColor(binding.root.resources.getColor(R.color.black))
-                    binding.txtCustomerName.setTextColor(binding.root.resources.getColor(R.color.black))
-                    binding.tvOrderID.setTextColor(binding.root.resources.getColor(R.color.black))
-                    binding.tvDeliveryStatus.setTextColor(binding.root.resources.getColor(R.color.black))
-                    binding.tvTeamMember.setTextColor(binding.root.resources.getColor(R.color.black))
-                    binding.llShowLayout.visibility = View.GONE
-                } else {
-                    isShown = true
-                    binding.llMainLayout.setBackgroundColor(binding.root.resources.getColor(R.color.black))
-                    binding.tvDate.setTextColor(binding.root.resources.getColor(R.color.white))
-                    binding.tvOrderType.setTextColor(binding.root.resources.getColor(R.color.white))
-                    binding.tvTotalAmount.setTextColor(binding.root.resources.getColor(R.color.white))
-                    binding.tvTotalTips.setTextColor(binding.root.resources.getColor(R.color.white))
-                    binding.txtCustomerName.setTextColor(binding.root.resources.getColor(R.color.white))
-                    binding.tvOrderID.setTextColor(binding.root.resources.getColor(R.color.white))
-                    binding.tvDeliveryStatus.setTextColor(binding.root.resources.getColor(R.color.white))
-                    binding.tvTeamMember.setTextColor(binding.root.resources.getColor(R.color.white))
-                    binding.llShowLayout.visibility = View.VISIBLE
-
-                    val model = orderList[bindingAdapterPosition]
-
-                    binding.txtDeliveryDate.text =
-                        TimeFormatUtils.convertCurrentDate(model.createdAt) + "\n" + TimeFormatUtils.convertCurrentTime(
-                            model.createdAt
-                        )
-
-
-                    binding.txtStatus.text = model.paymentStatus
-                    binding.txtCustomerNameDetails.text =
-                        (model.customer?.firstName ?: "") + " " + (model.customer?.lastName ?: "")
-
-                    binding.txtEmail.text = model.customer?.email ?: ""
-                    binding.txtPhoneNo.text = ""
-                    binding.txtAddress.text = ""
-                }
             }
         }
     }

@@ -44,7 +44,7 @@
                             style="@style/CustomFontSemiBold"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center"
+                            android:layout_gravity="start"
                             android:gravity="start"
                             android:text="@{model.name}"
                             android:textColor="@color/drawerBack"
@@ -58,9 +58,12 @@
                             android:layout_height="wrap_content"
                             android:ellipsize="end"
                             android:lines="1"
+                            android:layout_gravity="start"
+                            android:gravity="start"
                             android:maxLines="1"
                             android:singleLine="true"
-                            android:text="@{model.note}"
+                            android:text="@{@string/add_note_cart +``+model.note}"
+
                             android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi" />
 

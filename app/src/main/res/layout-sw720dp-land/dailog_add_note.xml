@@ -96,6 +96,18 @@
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_marginStart="@dimen/_50sdp"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:layout_marginEnd="@dimen/_50sdp"
+            android:layout_marginBottom="@dimen/_10sdp"
+            android:id="@+id/rvNotes"
+            tools:itemCount="5"
+            tools:listitem="@layout/view_note_item"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 
