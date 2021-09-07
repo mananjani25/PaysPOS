@@ -32,6 +32,7 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.ManualSaleCartAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.utils.AmountTextWatcher
+import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.SwipeHelper
 import com.android.pos.utils.extensions.alert
 import com.google.gson.Gson
@@ -649,7 +650,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
 
         txtSave.setOnClickListener {
             dialog.dismiss()
-            var itemCost = (model.price / model.itemQuantity).toDouble()
+            val itemCost = (model.price / model.itemQuantity)
 
             Log.e(TAG, "discountOriginal ${model.discountPrice}")
             if (model.discountPrice != 0.0) {
@@ -871,8 +872,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
     }
 
     fun calculateDiscountPercentage(originalPrice: Double, percentage: Double): Double {
-        val disPrice = Math.round((originalPrice * percentage) / 100).toDouble()
-        Log.e(TAG, "disPrice  ${disPrice}")
+        val disPrice = MethodUtils.roundOffAmountDouble((originalPrice * percentage) / 100)
+        Log.e(TAG, "disPrice  $disPrice")
         return if (disPrice < originalPrice) {
             disPrice
         } else {

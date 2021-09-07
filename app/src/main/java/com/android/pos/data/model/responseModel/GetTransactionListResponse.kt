@@ -25,7 +25,7 @@ data class GetTransactionListResponse(
             @SerializedName("card_number")
             val cardNumber: String,
             @SerializedName("card_type")
-            val cardType: Int,
+            val cardType: String,
             @SerializedName("cash_discount")
             val cashDiscount: Int,
             @SerializedName("created_at")

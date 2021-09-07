@@ -513,4 +513,5 @@
     <string name="event_type">Event Type</string>
     <string name="reason">Reason</string>
     <string name="employee_name">Employee Name</string>
+    <string name="add_note_cart">Note : </string>
 </resources>

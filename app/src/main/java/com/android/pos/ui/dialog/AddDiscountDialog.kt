@@ -70,6 +70,18 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         if (defaultModel.discountId == 0) {
             binding.txtRemoveDiscount.visibility = View.GONE
             binding.edtAmount.append(MethodUtils.roundOffAmountString(defaultModel.discountPrice))
+
+            if (defaultModel.discountPrice != 0.0) {
+                if (defaultModel.discountType == getString(R.string.disc_percentage)) {
+                    val applyDiscount = (defaultModel.discountPrice * defaultModel.price) * 100
+                    binding.edtAmount.setText(MethodUtils.roundOffAmountString(applyDiscount))
+                    percentageView()
+                } else {
+                    binding.edtAmount.setText(MethodUtils.roundOffAmountString(defaultModel.discountPrice))
+                    amountView()
+                }
+                binding.txtRemoveDiscount.visibility = View.VISIBLE
+            }
         } else {
 
             binding.txtRemoveDiscount.visibility = View.VISIBLE

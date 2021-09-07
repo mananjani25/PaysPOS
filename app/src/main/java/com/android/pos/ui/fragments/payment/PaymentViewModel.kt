@@ -229,7 +229,14 @@ class PaymentViewModel @Inject constructor(
 
 
         orderAttributeRequestModel.paymentAttributes =
-            paymentAttributes(cartModel, totalPrice, subTotalPrice, totalServiceCharge, totalTax)
+            paymentAttributes(
+                cartModel,
+                totalPrice,
+                subTotalPrice,
+                totalServiceCharge,
+                totalTax,
+                totalDiscount
+            )
         orderAttributeRequestModel.orderServiceChargesAttributes =
             orderServiceChargesAttributes(cartModel, subTotalPrice)
         orderAttributeRequestModel.orderItemsAttributes = orderItemsAttributes(cartModel)
@@ -380,6 +387,7 @@ class PaymentViewModel @Inject constructor(
                 name = it.name
                 price = it.price
                 order_item_id = item.itemId
+                totalPrice = MethodUtils.roundOffAmountDouble(it.price * it.itemQuantity)
                 modifier_set_id = it.modifierSetId!!
                 quantity = it.itemQuantity
                 order_item_taxes_attributes = orderModifierTaxesAttributes(item, it, terminalId)
@@ -474,7 +482,8 @@ class PaymentViewModel @Inject constructor(
         totalPrice: Double,
         subTotalPrice: Double,
         totalServiceCharge: Double,
-        totalTax: Double
+        totalTax: Double,
+        totalDis: Double
     ): PaymentAttributes {
         return PaymentAttributes().apply {
             amount = MethodUtils.roundOffAmountDouble(totalPrice)
@@ -493,7 +502,7 @@ class PaymentViewModel @Inject constructor(
             terminalId = cartModel.terminalId
             tips = 0.0
             tipsAdjusted = false
-            totalDiscount = 0.0
+            totalDiscount = MethodUtils.roundOffAmountDouble(totalDis)
             //           transactionId = ""
         }
     }

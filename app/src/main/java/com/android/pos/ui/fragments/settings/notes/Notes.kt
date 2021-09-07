@@ -60,7 +60,7 @@ class Notes : Fragment() {
 
 
     private fun setUpRecyclerView() {
-        noteListadapter = NotesListAdapter(viewModel)
+        noteListadapter = NotesListAdapter(viewModel, false)
         binding.rvNoteLise.adapter = noteListadapter
 
         object : SwipeHelper(activity, binding.rvNoteLise) {
