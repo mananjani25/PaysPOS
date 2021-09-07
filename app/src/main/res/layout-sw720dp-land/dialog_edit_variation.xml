@@ -186,7 +186,7 @@
                         android:layout_gravity="end"
                         android:background="@null"
                         android:gravity="end"
-                        android:hint="qwe123"
+                        android:hint="Sku"
                         android:imeOptions="actionNext"
                         android:inputType="text"
                         android:padding="@dimen/_5sdp"

@@ -1,6 +1,7 @@
 package com.android.pos.ui.fragments.createitem
 
 import android.os.Bundle
+import android.text.TextUtils
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -21,6 +22,7 @@ import com.android.pos.databinding.CreateItemBinding
 import com.android.pos.ui.adapter.ModifierSetsListAdapter
 import com.android.pos.ui.adapter.VariationListAdapter
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.AmountTextWatcher
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.UpdateVariationCallback
 import com.android.pos.utils.extensions.getNavigationResultLiveData
@@ -31,6 +33,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
 
+    private var variationList1: ArrayList<VariationsAttribute>? = null
     private lateinit var variationListApi: ArrayList<VariationsAttribute>
     private var selectedId: Int = -2
     private var isEdit: Boolean = false
@@ -90,9 +93,10 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
         resultDialogVariations?.observe(viewLifecycleOwner) { variationList ->
 
             binding.llVariationTitle.visibility = View.VISIBLE
+            binding.llMainItemDetails.visibility = View.GONE
 
             val builder = StringBuilder()
-            val variationList1 = ArrayList<VariationsAttribute>()
+            variationList1 = ArrayList()
 
 
 
@@ -115,13 +119,13 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
                 }
                 builder.setLength(0)
                 builder.trimToSize()
-                variationList1.add(variation)
+                variationList1?.add(variation)
 
             }
 
             Log.d("variationList1", "::" + variationList1)
 
-            variationListAdapter.addAllVariations(variationList1)
+            variationListAdapter.addAllVariations(variationList1!!)
         }
 
 
@@ -136,10 +140,18 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
         val resultVariationDetailsRemove =
             getNavigationResultLiveData<VariationsAttribute>(DIALOG_KEY_VARIATION_DETAILS_REMOVE)
         resultVariationDetailsRemove?.observe(viewLifecycleOwner) {
-            variationListAdapter.deleteVariation(position1, it)
+            val deleteVariation = variationListAdapter.deleteVariation(position1, it)
+
+            if (deleteVariation == 0) {
+                binding.llVariationTitle.visibility = View.GONE
+                binding.llMainItemDetails.visibility = View.VISIBLE
+            }
 
         }
 
+
+
+        Log.d("variationListdelete", "::" + variationList1?.size)
 
         binding.txtSave.setOnClickListener {
 
@@ -152,9 +164,40 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
 
             viewModel.variationAttribute(variationListAdapter.selectedVariation())
 
+            if (variationListAdapter.selectedVariation().size > 0 && variationListAdapter.selectedVariation() != null) {
+                viewModel.itemDetails(
+                    0.00,
+                    binding.etDesc.text.toString(),
+                    "",
+                    0
+                )
+            } else {
+                val itemPrice: Double
+                val stock: Int
+                if (TextUtils.isEmpty(binding.etItemPrice.text.toString())) {
+                    itemPrice = 0.00
+                } else {
+                    itemPrice = binding.etItemPrice.text.toString().replace("$", "").toDouble()
+                }
+
+                if (TextUtils.isEmpty(binding.etStock.text.toString())) {
+                    stock = 0
+                } else {
+                    stock = binding.etStock.text.toString().toInt()
+                }
+                viewModel.itemDetails(
+                    itemPrice,
+                    binding.etDesc.text.toString(),
+                    binding.etSku.text.toString(),
+                    stock
+                )
+            }
+
+
 
             viewModel.submit()
         }
+
         return binding.root
     }
 
@@ -189,12 +232,39 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
             itemObject = arguments?.getParcelable("itemObject")!!
             viewModel.setData(itemObject)
             viewModel.setCategoryId(selectedId)
-            binding.llVariationTitle.visibility = View.VISIBLE
-            variationListAdapter.addAllVariations(itemObject.variationsAttributes as ArrayList<VariationsAttribute>)
+
+            if (itemObject.variationsAttributes != null && itemObject.variationsAttributes?.size!! > 0) {
+                binding.llVariationTitle.visibility = View.VISIBLE
+                binding.llMainItemDetails.visibility = View.GONE
+                variationListAdapter.addAllVariations(itemObject.variationsAttributes as ArrayList<VariationsAttribute>)
+            } else {
+                binding.llVariationTitle.visibility = View.GONE
+                binding.llMainItemDetails.visibility = View.VISIBLE
+            }
 
             binding.txtCategoryName.text = itemObject.categoryName
             selectedId = itemObject.categoryId
+
+            binding.etItemPrice.setText(
+                activity?.getString(R.string.symbole) + " " + String.format(
+                    activity?.getString(R.string.format)!!,
+                    itemObject?.price
+                )
+            )
+
+            binding.etDesc.setText(itemObject.shortDescription)
+            binding.etSku.setText(itemObject.sku)
+            binding.etStock.setText("" + itemObject.quantity)
+
         }
+
+        binding.etItemPrice.addTextChangedListener(
+            AmountTextWatcher(
+                binding.etItemPrice,
+                false
+            )
+        )
+
 
         binding.chooseCategory.setOnClickListener(this)
         binding.imgEdit.setOnClickListener(this)

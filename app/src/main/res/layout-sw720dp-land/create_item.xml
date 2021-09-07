@@ -330,11 +330,12 @@
                     app:textAllCaps="false" />
 
                 <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/llMainItemDetails"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/edt_border_light_gray"
                     android:orientation="vertical"
-                    android:visibility="gone">
+                    android:visibility="visible">
 
                     <androidx.appcompat.widget.LinearLayoutCompat
                         android:layout_width="match_parent"
@@ -353,6 +354,7 @@
                             android:textSize="@dimen/_5mdpi" />
 
                         <androidx.appcompat.widget.AppCompatEditText
+                            android:id="@+id/etItemPrice"
                             style="@style/CustomFontSemiBold"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -361,7 +363,6 @@
                             android:imeOptions="actionNext"
                             android:inputType="numberDecimal"
                             android:padding="@dimen/_5sdp"
-                            android:text="@={``+createItemVewModel.itemDetails.price}"
                             android:textColor="@color/black"
                             android:textColorHint="@color/hintColor"
                             android:textSize="@dimen/_5mdpi" />
@@ -390,6 +391,7 @@
                             android:textSize="@dimen/_5mdpi" />
 
                         <androidx.appcompat.widget.AppCompatEditText
+                            android:id="@+id/etSku"
                             style="@style/CustomFontSemiBold"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -398,7 +400,6 @@
                             android:imeOptions="actionNext"
                             android:inputType="text"
                             android:padding="@dimen/_5sdp"
-                            android:text="@={createItemVewModel.itemDetails.sku}"
                             android:textColor="@color/black"
                             android:textColorHint="@color/hintColor"
                             android:textSize="@dimen/_5mdpi" />
@@ -426,14 +427,18 @@
                             android:textColor="@color/viewTextColor"
                             android:textSize="@dimen/_5mdpi" />
 
-                        <androidx.appcompat.widget.AppCompatTextView
-                            style="@style/CustomFontBold"
+                        <androidx.appcompat.widget.AppCompatEditText
+                            android:id="@+id/etStock"
+                            style="@style/CustomFontSemiBold"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:background="@null"
+                            android:hint="0"
                             android:imeOptions="actionNext"
+                            android:inputType="text"
                             android:padding="@dimen/_5sdp"
-                            android:text="@string/receive_stock"
-                            android:textColor="@color/btnColor"
+                            android:textColor="@color/black"
+                            android:textColorHint="@color/hintColor"
                             android:textSize="@dimen/_5mdpi" />
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
@@ -560,6 +565,7 @@
                 <androidx.appcompat.widget.AppCompatEditText
                     style="@style/CustomFontMediumStyle"
                     android:layout_width="match_parent"
+                    android:id="@+id/etDesc"
                     android:layout_height="wrap_content"
                     android:layout_gravity="top"
                     android:background="@drawable/edt_border_light_gray"
@@ -568,7 +574,6 @@
                     android:inputType="textMultiLine"
                     android:minLines="3"
                     android:padding="@dimen/_5sdp"
-                    android:text="@={createItemVewModel.itemDetails.desc}"
                     android:textColor="@color/black"
                     android:textColorHint="@color/hintColor"
                     android:textSize="@dimen/_5mdpi" />
