@@ -28,7 +28,7 @@
     <string name="phone">Phone Number</string>
     <string name="address_empty_validation">Please Enter Full Address</string>
     <string name="birth_date_validation">Please Enter Birth Date</string>
-`
+    `
     <string name="buttonOne">1</string>
     <string name="buttonTwo">2</string>
     <string name="buttonThree">3</string>
@@ -88,6 +88,7 @@
     <string name="delete_item_message">Are you sure want to Delete Item?</string>
     <string name="delete_items_message">Are you sure want to Clear Item?</string>
     <string name="delete_employee_role_message">Are you sure want to Delete Team Member Role?</string>
+    <string name="delete_printer_message">Are you sure want to Delete Printer?</string>
 
     <string name="delete_category_message">Are you sure you want to delete category?</string>
     <string name="hide_category_message">Are you sure you want to hide category?</string>

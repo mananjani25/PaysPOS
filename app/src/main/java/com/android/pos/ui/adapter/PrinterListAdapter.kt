@@ -35,10 +35,18 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
 
             }
 
+            if (model != null) {
+                binding.swtOrderId.isChecked = model.isActive
+            }
+
             binding.imgPrinter.setOnClickListener {
                 if (list[bindingAdapterPosition].isActive) {
                     listner.onPrinterSelected(list[bindingAdapterPosition])
                 }
+            }
+
+            binding.imgDelete.setOnClickListener {
+                listner.onDeletePrinter(list[bindingAdapterPosition])
             }
 
             binding.swtOrderId.setOnCheckedChangeListener { buttonView, isChecked ->
@@ -51,7 +59,7 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
             }
 
             binding.imgEdit.setOnClickListener {
-                if (list[bindingAdapterPosition].isActive){
+                if (list[bindingAdapterPosition].isActive) {
                     listner.onEditSelected(list[bindingAdapterPosition])
                 }
 
@@ -114,12 +122,15 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
         fun onPrinterSelected(printerListModel: PrinterListModel)
         fun onPrinterActive(printerListModel: PrinterListModel)
         fun onEditSelected(printerListModel: PrinterListModel)
+        fun onDeletePrinter(printerListModel: PrinterListModel)
 
     }
 
     @SuppressLint("NotifyDataSetChanged")
     fun clearList() {
+        val size = list.size
         this.list.clear()
+        notifyItemRangeRemoved(0, size)
         notifyDataSetChanged()
     }
 }

@@ -10,6 +10,6 @@ data class PrinterListModel(
     var connectionType: String? = null,
     var isActive: Boolean = false,
     var type: String = CUSTOMER,
-    var deviceModel: DeviceInfo,
+    var deviceModel: DeviceInfo?=null,
     var uuid: UUID? = null
 )

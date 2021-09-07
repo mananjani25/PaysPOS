@@ -366,7 +366,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
 
             }
 
-                count++
+            count++
 
 
 
