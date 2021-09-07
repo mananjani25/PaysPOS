@@ -34,7 +34,8 @@ import com.android.pos.data.typeconvert.*
     TCServiceCharge::class,
     TCCustomer::class,
     TCOption::class,
-    TCVariations::class
+    TCVariations::class,
+    TCOptionSets::class
 )
 
 

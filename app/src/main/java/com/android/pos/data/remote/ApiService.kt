@@ -302,7 +302,7 @@ interface ApiService {
     @POST(ITEMS)
     suspend fun createItem(@Body createItemRequestModel: CreateItemRequestModel): ItemsResponse
 
-    @PUT(NOTE_UPDATE_DELETE)
+    @PUT(ITEM_UPDATE_DELETE)
     suspend fun updateItem(
         @Path("id") id: Int,
         @Body updateItem: CreateItemRequestModel

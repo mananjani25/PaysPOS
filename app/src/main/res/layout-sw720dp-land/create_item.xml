@@ -396,7 +396,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:background="@null"
-                            android:hint="$0.0"
+                            android:hint="Sku"
                             android:imeOptions="actionNext"
                             android:inputType="text"
                             android:padding="@dimen/_5sdp"
@@ -563,9 +563,9 @@
                     android:textSize="@dimen/_5mdpi" />
 
                 <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/etDesc"
                     style="@style/CustomFontMediumStyle"
                     android:layout_width="match_parent"
-                    android:id="@+id/etDesc"
                     android:layout_height="wrap_content"
                     android:layout_gravity="top"
                     android:background="@drawable/edt_border_light_gray"

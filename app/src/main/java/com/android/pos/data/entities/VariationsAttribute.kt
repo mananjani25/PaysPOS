@@ -7,7 +7,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class VariationsAttribute(
     @SerializedName("is_active")
-    var isActive: Boolean = false,
+    var isActive: Boolean = true,
     @SerializedName("is_custom")
     var isCustom: Boolean = false,
     @SerializedName("name")

@@ -35,7 +35,8 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
     DeleteOptionSetCallback {
 
     private var optionSetList: ArrayList<OptionSet>? = null
-    private var optionItemIds: ArrayList<Int>? = null
+
+    // private var optionItemIds: ArrayList<Int>? = null
     private lateinit var finalvariationList: List<List<Option>>
 
     private lateinit var spinnerAdapter: ArrayAdapter<String>
@@ -85,8 +86,8 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
         isEdit = arguments?.getBoolean("isEdit")!!
 
         if (isEdit) {
-            optionItemIds =
-                arguments?.getIntegerArrayList("optionSets")
+            optionSetList =
+                arguments?.getParcelableArrayList("optionSets")
         } else {
             optionSetList =
                 arguments?.getParcelableArrayList("optionSets")
@@ -136,17 +137,6 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
                         it.data?.let { it1 ->
 
                             if (!isLiveData) {
-
-                                if (isEdit) {
-                                    optionSetList = ArrayList()
-                                    it1.forEach { optionSet ->
-                                        optionItemIds?.forEach {
-                                            if (optionSet.id == it) {
-                                                optionSetList?.add(optionSet)
-                                            }
-                                        }
-                                    }
-                                }
 
                                 if (optionSetList != null) {
 
