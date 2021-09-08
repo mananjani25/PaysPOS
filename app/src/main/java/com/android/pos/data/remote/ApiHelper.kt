@@ -33,6 +33,8 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
 
     suspend fun deletePrinter(id:Int) = getResult { apiService.deletePrinter(id) }
 
+    suspend fun updatePrinterStatus(id:Int,terminal_id:Int,status:Boolean) = getResult { apiService.updatePrinterStatus(id,terminal_id,status) }
+
     suspend fun syncVenueDetails() =
         getResult { apiService.syncVenueDetails() }
 

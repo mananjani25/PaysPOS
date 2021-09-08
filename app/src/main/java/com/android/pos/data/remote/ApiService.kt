@@ -65,6 +65,7 @@ import com.android.pos.data.remote.Constants.TIPS
 import com.android.pos.data.remote.Constants.TIPS_ACTIVE
 import com.android.pos.data.remote.Constants.TIPS_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.TRANSACTION_LIST
+import com.android.pos.data.remote.Constants.UPDATE_PRINTER_STATUS
 import com.android.pos.data.remote.Constants.USERS_LOG_IN
 import retrofit2.http.*
 
@@ -113,6 +114,10 @@ interface ApiService {
         @Path("id") Id: Int,
     ): DeletePrinterResponseModel
 
+    @PUT(UPDATE_PRINTER_STATUS)
+    suspend fun updatePrinterStatus(@Path("id") Id: Int,
+    @Query("terminal_id")terminal_id:Int,
+    @Query("status")status:Boolean) : DeletePrinterResponseModel
 
     @GET(SYNC_VENUE_DETAILS)
     suspend fun syncVenueDetails(): VenueDetailsResponse
