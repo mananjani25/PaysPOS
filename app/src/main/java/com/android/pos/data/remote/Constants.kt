@@ -54,6 +54,7 @@ object Constants {
     const val ORDER_TYPES = "order_types"
     const val GET_PRINTERS = "printers"
     const val DELETE_UPDATE_PRINTER = "printers/{id}"
+    const val UPDATE_PRINTER_STATUS = "printers/{id}/update_printer_status"
 
     const val TAXES = "taxes"
     const val TAX_UPDATE_DELETE = "taxes/{id}"

@@ -50,11 +50,15 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
             }
 
             binding.swtOrderId.setOnCheckedChangeListener { buttonView, isChecked ->
-                if (isChecked && !(list.get(bindingAdapterPosition).isActive)) {
+                if (list[bindingAdapterPosition].type != AVAILABLE) {
+                    listner.onUpdatePrinterStatus(list[bindingAdapterPosition], isChecked)
+
+                } else if (isChecked && !(list.get(bindingAdapterPosition).isActive)) {
                     listner.onPrinterActive(list.get(bindingAdapterPosition))
                     list.removeAt(bindingAdapterPosition)
                     notifyDataSetChanged()
                 }
+
 
             }
 
@@ -123,6 +127,7 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
         fun onPrinterActive(printerListModel: PrinterListModel)
         fun onEditSelected(printerListModel: PrinterListModel)
         fun onDeletePrinter(printerListModel: PrinterListModel)
+        fun onUpdatePrinterStatus(printerListModel: PrinterListModel, isChecked: Boolean)
 
     }
 

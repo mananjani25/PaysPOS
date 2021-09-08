@@ -346,7 +346,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                                             customerData[i].name,
                                             customerData[i].ipAddress,
                                             customerData[i].macAddress
-                                        )
+                                        ),
+                                        printerModel = customerData[i].orderTypes
 
 
                                     )
@@ -373,7 +374,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                                             customerData[i].name,
                                             customerData[i].ipAddress,
                                             customerData[i].macAddress
-                                        )
+                                        ),
+                                        printerModel = customerData[i].orderTypes
 
 
                                     )
@@ -414,7 +416,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                                             kitchenData[i].name,
                                             kitchenData[i].ipAddress,
                                             kitchenData[i].macAddress
-                                        )
+                                        ),
+                                        printerModel = kitchenData[i].orderTypes
 
 
                                     )
@@ -442,7 +445,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                                             kitchenData[i].name,
                                             kitchenData[i].ipAddress,
                                             kitchenData[i].macAddress
-                                        )
+                                        ),
+                                        printerModel = kitchenData[i].orderTypes
 
 
                                     )
@@ -736,11 +740,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
             handler.post(UpdateListThread(deviceList))
 
-            if (deviceList == null || deviceList?.size == 0) {
 
-            } else {
-                stopFinder()
-            }
+            stopFinder()
 
 
         } catch (e: Exception) {
@@ -856,7 +857,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     override fun onPrinterSelected(printerListModel: PrinterListModel) {
         Log.e(TAG, "printerListModel:  ${Gson().toJson(printerListModel)}")
 
-        // onInitPrinter(printerListModel)
+        onInitPrinter(printerListModel)
     }
 
     override fun onPrinterActive(printerListModel: PrinterListModel) {
@@ -891,7 +892,11 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
 
     override fun onEditSelected(printerListModel: PrinterListModel) {
-        findNavController().navigate(R.id.action_printer_to_editPrinter)
+        Log.e(TAG, "printerListModel:  ${Gson().toJson(printerListModel)}")
+        val bundle = Bundle()
+        bundle.putParcelable("printerSetting", printerListModel)
+
+        findNavController().navigate(R.id.action_printer_to_editPrinter, bundle)
     }
 
     override fun onDeletePrinter(printerListModel: PrinterListModel) {
@@ -899,6 +904,14 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         deletePrinter(printerListModel.id!!)
 
 
+    }
+
+    override fun onUpdatePrinterStatus(printerListModel: PrinterListModel, isChecked: Boolean) {
+        viewModel.updatePrinterStatus(
+            printerListModel.id!!,
+            prefProvider.getValueInt(TERMINAL_ID, 1),
+            isChecked
+        )
     }
 
     private fun onInitPrinter(printerListModel: PrinterListModel) {
@@ -950,8 +963,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         var builder: Builder? = null
         var method = ""
         try {
-            val printData = "This is Test Print"
-            method = "Builder"
+
 
             Log.e(TAG, "PrintedprinterName:  ${printerListModel.printerName}")
 
@@ -1321,7 +1333,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             var msg: String = "This is My Test Print"
             msg += "\n"
 
-            mmOutputStream?.write(msg.toByteArray())
+            //  mmOutputStream?.write(msg.toByteArray())
 
         } catch (e: Exception) {
             e.printStackTrace()
