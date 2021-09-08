@@ -40,10 +40,36 @@ class PrinterViewModel @Inject constructor(
 
     fun printerList() = posRepository.getPrinters()
 
+    fun updatePrinterStatus(id: Int, terminal_id: Int, status: Boolean) {
+        _showProgress.value = Event(true)
+        viewModelScope.launch {
+            val resource: com.android.pos.utils.statusUtils.Resource<DeletePrinterResponseModel> =
+                posRepository.updatePrinterStatus(id, terminal_id, status)
+
+            when (resource.status) {
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
+
+                }
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+                }
+            }
+
+        }
+
+
+    }
+
     fun deletePrinter(id: Int) {
         _showProgress.value = Event(true)
         viewModelScope.launch {
-            val resource: com.android.pos.utils.statusUtils.Resource<DeletePrinterResponseModel> = posRepository.deletePrinter(id)
+            val resource: com.android.pos.utils.statusUtils.Resource<DeletePrinterResponseModel> =
+                posRepository.deletePrinter(id)
 
             when (resource.status) {
                 Status.SUCCESS -> {
