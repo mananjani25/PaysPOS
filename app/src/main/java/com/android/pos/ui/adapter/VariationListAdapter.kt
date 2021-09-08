@@ -96,4 +96,18 @@ class VariationListAdapter(val viewModel: CreateItemViewModel) :
 
     fun selectedVariation() = variationList
 
+    /*fun selectedVariation() {
+        var int = 0
+        variationList.forEach {
+            if(it.isChange){
+                int ++
+            }
+        }
+        if (int == 0){
+            // no changes
+        }else {
+
+        }
+    }*/
+
 }

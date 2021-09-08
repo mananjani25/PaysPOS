@@ -112,6 +112,9 @@
             android:name="isEdit"
             android:defaultValue="false"
             app:argType="boolean" />
+        <action
+            android:id="@+id/action_createItem_to_customVariationDialog"
+            app:destination="@id/customVariationDialog" />
     </fragment>
     <fragment
         android:id="@+id/createCategory"
@@ -730,5 +733,9 @@
     <action
         android:id="@+id/action_global_cashLogFragment"
         app:destination="@id/cashLogFragment" />
+    <dialog
+        android:id="@+id/customVariationDialog"
+        android:name="com.android.pos.ui.dialog.CustomVariationDialog"
+        android:label="CustomVariationDialog" />
 
 </navigation>

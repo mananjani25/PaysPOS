@@ -59,6 +59,8 @@
     <string name="item_price_validate">Please enter Valid Price</string>
     <string name="item_sku_validate">Please enter SKU</string>
 
+    <string name="variation_name_validate">Please enter Variation Name</string>
+
     <string name="category_name_validate">Please enter Category Name</string>
     <string name="modifier_name_validate">Please enter Modifier Name</string>
     <string name="option_name_validate">Please enter Option Name</string>
@@ -517,4 +519,7 @@
     <string name="add_note_cart">Note : </string>
     <string name="tv_variation_name">Variation Name</string>
     <string name="tv_unit">Unit</string>
+
+    <string name="tv_unit_variable">Variable</string>
+    <string name="tv_unit_fixed">Fixed</string>
 </resources>
