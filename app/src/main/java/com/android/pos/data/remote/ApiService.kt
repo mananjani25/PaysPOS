@@ -109,6 +109,10 @@ interface ApiService {
         @Path("id") Id: Int,
     ): DeletePrinterResponseModel
 
+    @PUT(DELETE_UPDATE_PRINTER)
+    suspend fun updatePrinter( @Path("id") Id: Int,@Body model:CreatePrinterRequestModel):DeletePrinterResponseModel
+
+
     @PUT(UPDATE_PRINTER_STATUS)
     suspend fun updatePrinterStatus(@Path("id") Id: Int,
     @Query("terminal_id")terminal_id:Int,

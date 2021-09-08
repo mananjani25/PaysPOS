@@ -855,13 +855,13 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     }
 
     override fun onPrinterSelected(printerListModel: PrinterListModel) {
-        Log.e(TAG, "printerListModel:  ${Gson().toJson(printerListModel)}")
+
 
         onInitPrinter(printerListModel)
     }
 
     override fun onPrinterActive(printerListModel: PrinterListModel) {
-        Log.e(TAG, "printerListModel:  ${Gson().toJson(printerListModel)}")
+
         val createPrinter = CreatePrinterRequestModel(
             name = printerListModel.printerName,
             macAddress = printerListModel.deviceModel?.macAddress,
@@ -892,7 +892,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
 
     override fun onEditSelected(printerListModel: PrinterListModel) {
-        Log.e(TAG, "printerListModel:  ${Gson().toJson(printerListModel)}")
+
         val bundle = Bundle()
         bundle.putParcelable("printerSetting", printerListModel)
 
@@ -900,7 +900,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     }
 
     override fun onDeletePrinter(printerListModel: PrinterListModel) {
-        Log.e(TAG, "DeletePrinterID:  ${printerListModel.id}")
+
         deletePrinter(printerListModel.id!!)
 
 
@@ -929,8 +929,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         }
 
         val enabled = Print.FALSE
-        Log.e(TAG, "MacAddress:  ${printerListModel.deviceModel?.macAddress}")
-        Log.e(TAG, "IPAddress:  ${printerListModel.deviceModel?.ipAddress}")
+
         if (printerListModel.connectionType == BLUETOOTH) {
             findBT()
             openBT()
@@ -963,13 +962,6 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         var builder: Builder? = null
         var method = ""
         try {
-
-
-            Log.e(TAG, "PrintedprinterName:  ${printerListModel.printerName}")
-
-
-
-
             builder = Builder(printerListModel.printerName, language, requireActivity())
 
             builder.addFeedLine(2)
@@ -1322,12 +1314,10 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             )
 
             // tell the user data were sent
-            Log.e(TAG, "Bluetooth Data Send")
+
         } catch (e: Exception) {
             e.printStackTrace()
         }
-
-
 
         try {
             var msg: String = "This is My Test Print"

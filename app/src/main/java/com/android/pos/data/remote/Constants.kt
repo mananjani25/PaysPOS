@@ -1,5 +1,11 @@
 package com.android.pos.data.remote
 
+import android.util.Log
+import com.android.pos.data.model.PrinterListModel
+import com.android.pos.data.model.requestModel.CreatePrinterRequestModel
+import com.android.pos.data.model.responseModel.PrinterResponse
+import com.google.gson.Gson
+
 object Constants {
 
     //Database Name
@@ -55,6 +61,7 @@ object Constants {
     const val GET_PRINTERS = "printers"
     const val DELETE_UPDATE_PRINTER = "printers/{id}"
     const val UPDATE_PRINTER_STATUS = "printers/{id}/update_printer_status"
+
 
     const val TAXES = "taxes"
     const val TAX_UPDATE_DELETE = "taxes/{id}"
@@ -148,6 +155,45 @@ object Constants {
     const val ACTIVE_ORDER = "active_order"
     const val UPCOMING_ORDER = "upcoming_order"
     const val COMPLETED_ORDER = "completed_order"
+
+    fun createRequestModelForUpdatePrinter(
+        model: ArrayList<PrinterResponse.Data.OrderTypes>,
+        printerModel: PrinterListModel?
+    ): CreatePrinterRequestModel {
+        var list: ArrayList<CreatePrinterRequestModel.PrinterSettingsAttributes> = arrayListOf()
+
+        model.forEach { it ->
+            for (i in 0 until it.printerSettings.size) {
+                list.add(
+                    CreatePrinterRequestModel.PrinterSettingsAttributes(
+                        it.printerSettings.get(i).id,
+                        it.printerSettings.get(i).orderTypeId,
+                        it.printerSettings.get(i).printType,
+                        it.printerSettings.get(i).manualPrinting,
+                        it.printerSettings.get(i).autoPrinting
+                    )
+                )
+
+            }
+        }
+
+        Log.e("ListConvert", "listlist:  ${Gson().toJson(list)}")
+
+        val model = CreatePrinterRequestModel(
+            id = printerModel?.id,
+            name = printerModel?.printerName,
+            macAddress = printerModel?.deviceModel?.macAddress,
+            modalName = printerModel?.deviceModel?.printerName,
+            status = printerModel!!.isActive,
+            ip_address = printerModel.deviceModel?.ipAddress,
+            receiptPrintType = printerModel.type,
+            printer_type = printerModel.connectionType,
+            printerSettingsAttributes = list
+        )
+
+        return model
+
+    }
 
 
 }

@@ -31,6 +31,8 @@ class PosRepository @Inject constructor(
 
     suspend fun deletePrinter(id: Int) = apiHelperNew.deletePrinter(id)
 
+    suspend fun updatePrinter(id:Int,model:CreatePrinterRequestModel) = apiHelperNew.updatePrinter(id,model)
+
     suspend fun updatePrinterStatus(id: Int, terminal_id: Int, status: Boolean) =
         apiHelperNew.updatePrinterStatus(id, terminal_id, status)
     /*fun syncVenueDetails() =
