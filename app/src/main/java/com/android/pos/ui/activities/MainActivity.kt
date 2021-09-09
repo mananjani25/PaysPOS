@@ -158,7 +158,7 @@ class MainActivity : AppCompatActivity() {
 //         passCodeView.setTypeFace(typeface)
     }
 
-    private fun alertLogout() {
+    fun alertLogout() {
         alert("Logout", "Are You Sure want to Logout?") {
             this.positiveButton("Logout") {
                 logoutAPI()

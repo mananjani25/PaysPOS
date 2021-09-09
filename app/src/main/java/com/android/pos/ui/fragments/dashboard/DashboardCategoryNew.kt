@@ -45,6 +45,7 @@ import com.android.pos.data.remote.Constants.UPDATE
 import com.android.pos.data.remote.Constants.VERTICAL
 import com.android.pos.databinding.FragmentDashboardCategoryNewBinding
 import com.android.pos.di.PrefProvider
+import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.activities.SwipeHelper
 import com.android.pos.ui.adapter.*
 import com.android.pos.ui.fragments.payment.PaymentViewModel
@@ -232,15 +233,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         val itemTouchHelper = ItemTouchHelper(object : SwipeHelper(binding.layoutCart.rvCart) {
             override fun instantiateUnderlayButton(position: Int): List<UnderlayButton> {
-                var buttons = listOf<UnderlayButton>()
                 val deleteButton = deleteButton(position)
                 val markAsUnreadButton = markAsUnreadButton(position)
                 val archiveButton = archiveButton(position)
-                when (position) {
-                    0 -> buttons = listOf(deleteButton, markAsUnreadButton, archiveButton)
-                    else -> Unit
-                }
-                return buttons
+                return listOf(deleteButton, markAsUnreadButton, archiveButton)
             }
         })
 
@@ -465,6 +461,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         val linearInventory: LinearLayout = dialog.findViewById(R.id.linearInventory)
         val linearSetting: LinearLayout = dialog.findViewById(R.id.linearSetting)
         val linearSupport: LinearLayout = dialog.findViewById(R.id.linearSupport)
+        val txtSignOut: TextView = dialog.findViewById(R.id.txtSignOut)
 
         linearHome.setOnClickListener {
             closeDialog(dialog)
@@ -505,6 +502,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         }
 
 
+        txtSignOut.setOnClickListener {
+
+            (activity as MainActivity).alertLogout()
+        }
 
         imgCalculator.setColorFilter(resources.getColor(R.color.txtColor))
         txtCheckOut.setTextColor(resources.getColor(R.color.txtColor))
