@@ -8,9 +8,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.android.pos.data.model.responseModel.OpenOrderResponse
 import com.android.pos.databinding.FragmentActiveOrdersBinding
 import com.android.pos.ui.adapter.OpenOrderAdapter
 import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.TimeFormatUtils
 import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
@@ -61,7 +63,11 @@ class ActiveOrderFragment : Fragment() {
                     Status.SUCCESS -> {
                         ProgressUtils.dismissProgressDialog()
                         resource.data?.let {
-                            adapter.add(it.data.orders)
+
+                            val data = it.data.orders.filter {
+                                it.paymentStatus == "Unpaid"
+                            }
+                            adapter.add(data)
                         }
                     }
                     Status.ERROR -> {

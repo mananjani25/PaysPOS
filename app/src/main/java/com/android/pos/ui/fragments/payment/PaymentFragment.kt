@@ -132,6 +132,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         binding.txtSecondAmount.setOnClickListener(this)
         binding.txtThirdAmount.setOnClickListener(this)
         binding.txtFourthAmount.setOnClickListener(this)
+        binding.txtAddTips.setOnClickListener(this)
 
 
     }
@@ -272,6 +273,12 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 findNavController().navigate(
                     R.id.action_paymentFragment_to_splitAmountFragment,
                     bundle
+                )
+            }
+
+            R.id.txtAddTips -> {
+                findNavController().navigate(
+                    R.id.action_paymentFragment_to_addTipsDialog
                 )
             }
         }

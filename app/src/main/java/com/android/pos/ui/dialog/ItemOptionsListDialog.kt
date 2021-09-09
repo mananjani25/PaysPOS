@@ -93,6 +93,9 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
                 arguments?.getParcelableArrayList("optionSets")
         }
 
+        binding.imgBack.setOnClickListener {
+            dismiss()
+        }
 
         return binding.root
     }

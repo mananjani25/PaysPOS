@@ -27,7 +27,8 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/imgBack"
@@ -35,7 +36,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_gravity="center"
-                    android:layout_marginStart="@dimen/_5sdp"
+                    android:padding="@dimen/_5sdp"
                     app:srcCompat="@drawable/ic_cancel_black" />
 
 
@@ -46,13 +47,32 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_gravity="center"
-                    android:gravity="center"
+                    android:layout_marginEnd="221dp"
                     android:background="?attr/selectableItemBackground"
+                    android:gravity="center"
                     android:paddingStart="@dimen/_15sdp"
                     android:paddingTop="@dimen/_5sdp"
                     android:paddingEnd="@dimen/_15sdp"
                     android:paddingBottom="@dimen/_5sdp"
                     android:text="@string/split_amount"
+                    android:textColor="@color/btnColor"
+                    android:textSize="@dimen/_6mdpi" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtAddTips"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_gravity="center"
+                    android:layout_marginEnd="31dp"
+                    android:background="?attr/selectableItemBackground"
+                    android:gravity="center"
+                    android:paddingStart="@dimen/_15sdp"
+                    android:paddingTop="@dimen/_5sdp"
+                    android:paddingEnd="@dimen/_15sdp"
+                    android:paddingBottom="@dimen/_5sdp"
+                    android:text="@string/add_tips"
                     android:textColor="@color/btnColor"
                     android:textSize="@dimen/_6mdpi" />
 

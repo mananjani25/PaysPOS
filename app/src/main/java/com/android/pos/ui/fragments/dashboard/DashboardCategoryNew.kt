@@ -317,12 +317,21 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                         binding.layoutCart.rvCart.visibility = View.VISIBLE
                         binding.layoutCart.llPayment.visibility = View.VISIBLE
+                        Log.e("cartList", cartList.size.toString())
+
+                        if (cartList.size > 1) {
+
+                        }
                         cartAdapter.addCart(cartList[0].items)
 
                         viewModel.itemCalculation(
                             cartList,
                             binding.layoutCart.txtTotalAmount
                         )
+
+                        if (prefProvider.getValue(ORDER_TYPE, "").toString() == TAKEOUT) {
+                            binding.layoutCart.rlSave.visibility = View.GONE
+                        }
                     } else {
                         viewModel.itemCalculation(
                             cartList,
@@ -1237,7 +1246,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         viewModelPayment.data.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let { it ->
-
+                binding.layoutCart.txtCrtNewCustomer.text = "Add Customer"
+                binding.layoutCart.txtCustomerName.text = "Add Customer"
+                prefProvider.setValue(CUSTOMER_NAME, "")
                 hideOrderType()
 
             }
@@ -1442,7 +1453,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private fun markAsUnreadButton(position: Int): SwipeHelper.UnderlayButton {
         return SwipeHelper.UnderlayButton(
             requireContext(),
-            "addNote",
+            "AddNote",
             14.0f,
             R.color.addNote,
             object : SwipeHelper.UnderlayButtonClickListener {

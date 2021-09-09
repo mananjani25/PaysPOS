@@ -55,6 +55,7 @@ class PaymentViewModel @Inject constructor(
                         if (response?.status == 200) {
 
                             prefProvider.setValue(Constants.ORDER_TYPE, "")
+                            prefProvider.setValue(Constants.CUSTOMER_NAME, "")
                             posRepository.deleteCart()
                             resource.data?.let { createOrderResponse ->
 
@@ -441,8 +442,11 @@ class PaymentViewModel @Inject constructor(
             orderItemTaxesAttribute.name = tax.name.toString()
             orderItemTaxesAttribute.rate = tax.rate
             orderItemTaxesAttribute.taxId = tax.id
+
+            val itemTaxPrice =
+                (tax.rate * ((items.price - items.discountPrice) * items.itemQuantity)) / 100
             orderItemTaxesAttribute.taxTotalAmount =
-                MethodUtils.roundOffAmountDouble((items.price * items.itemQuantity) / 100)
+                MethodUtils.roundOffAmountDouble(itemTaxPrice)
             orderItemTaxesAttribute.taxType = tax.taxType.toString()
             orderItemTaxesAttributeList.add(orderItemTaxesAttribute)
         }

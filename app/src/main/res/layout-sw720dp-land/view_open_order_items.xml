@@ -25,7 +25,7 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtItemName"
-                style="@style/CustomFontMediumStyle"
+                style="@style/CustomFontSemiBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -37,7 +37,7 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtQty"
-                style="@style/CustomFontMediumStyle"
+                style="@style/CustomFontSemiBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_5sdp"
@@ -50,7 +50,7 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtPrice"
-                style="@style/CustomFontMediumStyle"
+                style="@style/CustomFontSemiBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_5sdp"
@@ -63,7 +63,7 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtCustomerName"
-                style="@style/CustomFontMediumStyle"
+                style="@style/CustomFontSemiBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -76,7 +76,7 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtTerminalName"
-                style="@style/CustomFontMediumStyle"
+                style="@style/CustomFontSemiBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -84,9 +84,11 @@
                 android:gravity="center"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_5mdpi"
-                android:text="Terminal Name" />
+                tools:text="Terminal Name" />
 
         </LinearLayout>
+
+        <include layout="@layout/divider" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvOpenOrder"
