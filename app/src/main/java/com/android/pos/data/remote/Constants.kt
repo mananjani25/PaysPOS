@@ -166,6 +166,9 @@ object Constants {
     const val UPCOMING_ORDER = "upcoming_order"
     const val COMPLETED_ORDER = "completed_order"
 
+
+    const val UPDATE_TIP = "orders/{id}/update_tip"
+
     fun createRequestModelForUpdatePrinter(
         model: ArrayList<PrinterResponse.Data.OrderTypes>,
         printerModel: PrinterListModel?

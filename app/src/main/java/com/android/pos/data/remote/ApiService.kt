@@ -66,6 +66,7 @@ import com.android.pos.data.remote.Constants.TIPS_ACTIVE
 import com.android.pos.data.remote.Constants.TIPS_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.TRANSACTION_LIST
 import com.android.pos.data.remote.Constants.UPDATE_PRINTER_STATUS
+import com.android.pos.data.remote.Constants.UPDATE_TIP
 import com.android.pos.data.remote.Constants.USERS_LOG_IN
 import retrofit2.http.*
 
@@ -491,4 +492,11 @@ interface ApiService {
         @Query("terminal_id") terminalId: String,
 
         ): CashLogResponse
+
+    @PUT(UPDATE_TIP)
+    suspend fun orderUpdateTip(
+        @Path("id") id: Int,
+        @Query("tips") old_position: Double
+    ): BaseResponse
+
 }

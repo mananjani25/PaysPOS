@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.android.pos.data.model.responseModel.GetEmployeesTimeSheetResponse
+import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.model.responseModel.GetTransactionListResponse
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.repositories.PosRepository
@@ -33,6 +33,9 @@ class TransactionViewModel @Inject constructor(
 
     private val _data = MutableLiveData<Event<GetTransactionListResponse?>>()
     val data: LiveData<Event<GetTransactionListResponse?>> = _data
+
+    private val _data1 = MutableLiveData<Event<BaseResponse?>>()
+    val data1: LiveData<Event<BaseResponse?>> = _data1
 
     private val _transactionDetails =
         MutableLiveData<Event<GetTransactionListResponse.Data.Payment>>()
@@ -208,6 +211,41 @@ class TransactionViewModel @Inject constructor(
             e.printStackTrace()
         }
         return b
+    }
+
+    fun orderUpdateTip(orderID: Int, tipAmount: Double) {
+
+        viewModelScope.launch {
+
+            val resource = posRepository.orderUpdateTip(orderID, tipAmount)
+
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+                    resource.data.let { baseResponse ->
+                        if (baseResponse?.status == 200) {
+
+                            resource.data?.let { response ->
+
+                                _data1.value = Event(response)
+
+                            }
+                        } else {
+                            _snackbarText.value = Event(resource.message)
+                        }
+                    }
+                }
+
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
+                }
+
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
+            }
+        }
     }
 }
 

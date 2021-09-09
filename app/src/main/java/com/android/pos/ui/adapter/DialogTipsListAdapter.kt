@@ -5,16 +5,18 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
-import com.android.pos.data.entities.TbDiscount
+import com.android.pos.data.model.responseModel.GetTipReponse
+import com.android.pos.data.model.responseModel.NoteResponse
 import com.android.pos.databinding.ViewDialogDiscountListBinding
+import com.android.pos.databinding.ViewDialogTipsListBinding
 
 class DialogTipsListAdapter : RecyclerView.Adapter<DialogTipsListAdapter.MyViewHolder>() {
     var selectedPosition = -1
     private lateinit var listner: DiscountInterface
 
-    inner class MyViewHolder(private val binding: ViewDialogDiscountListBinding) :
+    inner class MyViewHolder(private val binding: ViewDialogTipsListBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(model: TbDiscount, position: Int) {
+        fun bind(model: GetTipReponse.Data, position: Int) {
             if (selectedPosition == position) {
                 binding.linearParent.background =
                     binding.root.context.getDrawable(R.drawable.background_txt_color)
@@ -27,19 +29,6 @@ class DialogTipsListAdapter : RecyclerView.Adapter<DialogTipsListAdapter.MyViewH
                     binding.root.context.getDrawable(R.drawable.background_drawer_button)
                 binding.txtValue.setTextColor(binding.root.context.resources.getColor(R.color.txtColor))
                 binding.txtName.setTextColor(binding.root.context.resources.getColor(R.color.txtColor))
-            }
-
-            val context = binding.root.context
-            if (model.discountType == context.getString(R.string.disc_percentage)) {
-                binding.txtValue.text = "" + String.format(
-                    context.getString(R.string.format),
-                    model.percentage
-                ) + " " + context.getString(R.string.percentage_symbol)
-            } else {
-                binding.txtValue.text = context.getString(R.string.symbole) + " " + String.format(
-                    context.getString(R.string.format),
-                    model.percentage
-                )
             }
             binding.model = model
             binding.executePendingBindings()
@@ -55,13 +44,13 @@ class DialogTipsListAdapter : RecyclerView.Adapter<DialogTipsListAdapter.MyViewH
         }
     }
 
-    var discountList = ArrayList<TbDiscount>()
+    var discountList = ArrayList<GetTipReponse.Data>()
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
     ): DialogTipsListAdapter.MyViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val binding = ViewDialogDiscountListBinding.inflate(inflater, parent, false)
+        val binding = ViewDialogTipsListBinding.inflate(inflater, parent, false)
         return MyViewHolder(binding)
 
     }
@@ -74,20 +63,22 @@ class DialogTipsListAdapter : RecyclerView.Adapter<DialogTipsListAdapter.MyViewH
         return discountList.size
     }
 
-    fun setList(list: List<TbDiscount>) {
+    fun setList(list: List<GetTipReponse.Data>?) {
         this.discountList.apply {
             clear()
-            addAll(list)
+            if (list != null) {
+                addAll(list)
+            }
         }
         notifyDataSetChanged()
     }
 
-    fun getItem(position: Int): TbDiscount {
+    fun getItem(position: Int): GetTipReponse.Data {
         return discountList[position]
     }
 
     interface DiscountInterface {
-        fun selectedItem(model: TbDiscount, pos: Int)
+        fun selectedItem(model: GetTipReponse.Data, pos: Int)
     }
 
     fun setListner(Mlistner: DiscountInterface) {
@@ -95,7 +86,7 @@ class DialogTipsListAdapter : RecyclerView.Adapter<DialogTipsListAdapter.MyViewH
 
     }
 
-    /*fun getSelectedItem():TbDiscount{
+    /*fun getSelectedItem():GetTipReponse.Data{
        return  if (selectedPosition == -1){
 
         }

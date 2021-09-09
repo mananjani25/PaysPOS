@@ -1,6 +1,5 @@
 package com.android.pos.ui.dialog
 
-import android.annotation.SuppressLint
 import android.graphics.Point
 import android.os.Bundle
 import android.text.Editable
@@ -12,15 +11,10 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
-import com.android.pos.data.entities.TbDiscount
-import com.android.pos.data.entities.TbItem
-import com.android.pos.data.model.responseModel.NoteResponse
-import com.android.pos.data.remote.Constants.AMOUNT
-import com.android.pos.data.remote.Constants.PERCENTAGE
-import com.android.pos.databinding.DailogAddDiscountBinding
-import com.android.pos.ui.adapter.DialogDiscountListAdapter
+import com.android.pos.data.model.responseModel.GetTipReponse
+import com.android.pos.databinding.DailogAddTipsBinding
 import com.android.pos.ui.adapter.DialogTipsListAdapter
-import com.android.pos.ui.fragments.settings.discount.DiscountListViewModel
+import com.android.pos.ui.fragments.settings.tip.TipListViewModel
 import com.android.pos.utils.MethodUtils
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
@@ -31,15 +25,15 @@ import java.util.*
 class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface,
     TextWatcher {
 
-    private lateinit var binding: DailogAddDiscountBinding
-    private val viewModel by activityViewModels<DiscountListViewModel>()
+    private var totalTip: Double = 0.0
+    private var totalPrice: Double = 0.0
+    private lateinit var binding: DailogAddTipsBinding
+    private val viewModel by activityViewModels<TipListViewModel>()
     private val TAG = "AddDiscountDialog"
     private lateinit var tipsListAdapter: DialogTipsListAdapter
-    private var discountModel: TbDiscount? = null
+    private var tipModel: GetTipReponse.Data? = null
     var selectedListPos: Int = -1
     private var isFromDetails = false
-    private lateinit var defaultModel: NoteResponse.Data
-    private var selectedCurrency: String = AMOUNT
 
 
     companion object {
@@ -50,11 +44,14 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface,
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        totalPrice = requireArguments().getDouble("totalPrice")
+        totalTip = requireArguments().getDouble("totalTip")
         binding.txtTitle.text = getString(R.string.add_tips)
 
         tipsListAdapter = DialogTipsListAdapter()
         binding.rvDiscountList.adapter = tipsListAdapter
 
+        binding.edtAmount.setText(MethodUtils.roundOffAmountString(totalTip))
 
         binding.edtAmount.addTextChangedListener(this)
 
@@ -62,65 +59,21 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface,
         setupData()
         setKeyPad()
         onClick()
-
-
     }
 
     private fun onClick() {
-        binding.txtCurrencyPercentage.setOnClickListener {
-
-            percentageView()
-            if (selectedListPos != -1) {
-                tipsListAdapter.clearSelectedItem()
-                selectedListPos = -1
-            }
-        }
-        binding.txtCurrencyDollar.setOnClickListener {
-
-            amountView()
-            if (selectedListPos != -1) {
-                tipsListAdapter.clearSelectedItem()
-                selectedListPos = -1
-            }
-        }
-
         binding.txtRemoveDiscount.setOnClickListener {
 
-            removeDiscount()
+            // removeDiscount()
         }
     }
 
-    @SuppressLint("UseCompatLoadingForDrawables")
-    private fun amountView() {
-        binding.txtCurrency.visibility = View.VISIBLE
-        binding.txtPer.visibility = View.GONE
-        selectedCurrency = AMOUNT
-        binding.txtCurrencyDollar.background =
-            requireContext().resources.getDrawable(R.drawable.background_discount_selected)
-        binding.txtCurrencyPercentage.background =
-            requireContext().resources.getDrawable(R.drawable.background_discount_unselected)
-
-
-    }
-
-    @SuppressLint("UseCompatLoadingForDrawables")
-    private fun percentageView() {
-        selectedCurrency = PERCENTAGE
-        binding.txtCurrency.visibility = View.GONE
-        binding.txtPer.visibility = View.VISIBLE
-        binding.txtCurrencyDollar.background =
-            requireContext().resources.getDrawable(R.drawable.background_discount_unselected)
-        binding.txtCurrencyPercentage.background =
-            requireContext().resources.getDrawable(R.drawable.background_discount_selected)
-
-
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = DailogAddDiscountBinding.inflate(inflater, container, false)
+        binding = DailogAddTipsBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
         return binding.root
     }
@@ -180,7 +133,7 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface,
     }
 
     private fun setDiscountList() {
-        viewModel.getDiscountList.observe(requireActivity(), {
+        viewModel.getTipList.observe(requireActivity(), {
             Log.e(TAG, "DiscountList ${Gson().toJson(it)}")
             if (it.data?.isNotEmpty() == true) {
                 it.data.forEach {
@@ -213,82 +166,22 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface,
 
         binding.txtSave.setOnClickListener {
 
-            if (selectedListPos != -1) {
-                val result = Bundle().apply {
-                    putParcelable("data", tipsListAdapter.getItem(selectedListPos))
-                }
+            var amount = 0.0
 
+            val stAmount = binding.edtAmount.text.toString().trim()
 
-                if (isFromDetails) {
-                    setFragmentResult("request_key_discount_details", result)
-                } else {
-
-                    setFragmentResult("request_key_discount", result)
-                }
-                findNavController().navigateUp()
-
-            } else if (binding.edtAmount.text?.isNotEmpty() == true && binding.edtAmount.text.toString() != "0.00"
-            ) {
-
-
-                discountModel =
-                    if (selectedCurrency == PERCENTAGE) {
-                        TbDiscount(
-                            "",
-                            getString(R.string.disc_percentage),
-                            0,
-                            0,
-                            "",
-                            binding.edtAmount.text.toString().toDouble(),
-                            ""
-                        )
-                    } else {
-                        TbDiscount(
-                            "",
-                            "",
-                            0,
-                            0,
-                            "",
-                            binding.edtAmount.text.toString().toDouble(),
-                            ""
-                        )
-                    }
-                val result = Bundle().apply {
-                    putParcelable("data", discountModel)
-                }
-                if (isFromDetails) {
-                    Log.e(TAG, "PassingModel:  ${Gson().toJson(discountModel)}")
-                    setFragmentResult("request_key_discount_details", result)
-                } else {
-
-                    setFragmentResult("request_key_discount", result)
-                }
-                findNavController().navigateUp()
-            } else {
-                removeDiscount()
-
+            if (stAmount.isNotEmpty() && stAmount != "0.00") {
+                amount = binding.edtAmount.text.toString().trim().toDouble()
             }
 
-
+            val result = Bundle().apply {
+                putDouble("tipAmount", amount)
+            }
+            setFragmentResult("request_key_tips", result)
+            findNavController().navigateUp()
         }
     }
 
-    private fun removeDiscount() {
-        val discount = TbDiscount("", "", 0, 0, "", 0.0, "")
-        val result = Bundle().apply {
-            putParcelable("data", discount)
-        }
-
-
-        if (isFromDetails) {
-
-            setFragmentResult("request_key_discount_details", result)
-        } else {
-
-            setFragmentResult("request_key_discount", result)
-        }
-        findNavController().navigateUp()
-    }
 
     override fun onResume() {
         super.onResume()
@@ -302,20 +195,13 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface,
         window.setGravity(Gravity.CENTER)
     }
 
-    override fun selectedItem(model: TbDiscount, pos: Int) {
+    override fun selectedItem(model: GetTipReponse.Data, pos: Int) {
         Log.e(TAG, "SelectedItem:  ${Gson().toJson(model)}")
-        discountModel.apply { model }
+        tipModel.apply { model }
 
-        val discount: Double = model.percentage
+        val tipCalculation = (totalPrice * model.rate) / 100
 
-        if (model.discountType == "Percentage") {
-            percentageView()
-        } else {
-            amountView()
-        }
-
-
-        binding.edtAmount.setText(MethodUtils.roundOffAmountString(discount))
+        binding.edtAmount.setText(MethodUtils.roundOffAmountString(tipCalculation))
         selectedListPos = pos
     }
 

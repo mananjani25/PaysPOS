@@ -2,16 +2,15 @@ package com.android.pos.ui.fragments.transactions
 
 import android.app.DatePickerDialog
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -20,12 +19,14 @@ import com.android.pos.R
 import com.android.pos.data.entities.Employee
 import com.android.pos.data.entities.TbOrderType
 import com.android.pos.data.entities.TeamRole
+import com.android.pos.data.model.responseModel.GetTransactionListResponse
 import com.android.pos.data.model.responseModel.VenueDetailsResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentTransactionBinding
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.TransactionAdapter
 import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.statusUtils.Status
@@ -35,8 +36,10 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
-class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener {
+class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, ItemCallback {
 
+    private var singleTransaction: GetTransactionListResponse.Data.Payment? = null
+    private var tipAmount: Double = 0.0
     private lateinit var binding: FragmentTransactionBinding
     private lateinit var transactionAdapter: TransactionAdapter
     private val viewModel by viewModels<TransactionViewModel>()
@@ -82,6 +85,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener {
         loadTerminals()
         getOrderType()
         navigate()
+        orderUpdateTips()
 
         binding.includeView.spTerminals.onItemSelectedListener = this
         binding.includeView.spRoles.onItemSelectedListener = this
@@ -139,6 +143,15 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener {
         binding.includeView.txtHome.setOnClickListener {
             findNavController().navigate(R.id.action_settings_to_dashboardCategory)
         }
+
+
+        setFragmentResultListener("request_key_tips") { requestKey: String, bundle: Bundle ->
+            tipAmount = bundle.getDouble("tipAmount")
+
+            singleTransaction?.let { viewModel.orderUpdateTip(it.orderId, tipAmount) }
+
+        }
+
         return binding.root
     }
 
@@ -311,6 +324,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener {
             )
         )
         transactionAdapter = TransactionAdapter(viewModel)
+        transactionAdapter.setCallback(this)
         binding.rvTeamTimeSheet.adapter = transactionAdapter
     }
 
@@ -522,5 +536,37 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener {
             }
         })
 
+    }
+
+    private fun orderUpdateTips() {
+        viewModel.data1.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+
+                binding.root.showAlert(it.message)
+
+                viewModel.apiCallTimeSheet(
+                    getTerminalId(binding.includeView.spTerminals.selectedItemPosition).toString(),
+                    getRoleId(binding.includeView.spRoles.selectedItemPosition).toString(),
+                    getEmployeeId(binding.includeView.spEmployees.selectedItemPosition).toString(),
+                    getOrderId(binding.includeView.spOrders.selectedItemPosition).toString(),
+                    getTipType(binding.includeView.spTipTypes.selectedItemPosition),
+                    getPaymentType(binding.includeView.spTransactionTypes.selectedItemPosition)
+
+                )
+            }
+        })
+
+    }
+
+    override fun onItemClickListener(view: View?, pos: Int) {
+
+        singleTransaction = transactionAdapter.getItem(pos)
+
+        val bundle = Bundle()
+        singleTransaction?.amount?.let { bundle.putDouble("totalPrice", it) }
+        findNavController().navigate(
+            R.id.action_transactionFragment_to_addTipsDialog,
+            bundle
+        )
     }
 }

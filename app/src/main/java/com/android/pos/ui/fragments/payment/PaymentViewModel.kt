@@ -198,7 +198,8 @@ class PaymentViewModel @Inject constructor(
         future_delivery_date: String,
         future_delivery_time: String,
         isPaid: Boolean,
-        totalDiscount: Double
+        totalDiscount: Double,
+        tipAmount: Double
     ): OrderRequestModel {
 
         val orderAttributeRequestModel = OrderAttributeRequestModel()
@@ -224,7 +225,7 @@ class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.totalServiceCharges =
             MethodUtils.roundOffAmountDouble(totalServiceCharge)
         orderAttributeRequestModel.totalTaxAmount = MethodUtils.roundOffAmountDouble(totalTax)
-        orderAttributeRequestModel.totalTips = 0.0
+        orderAttributeRequestModel.totalTips = MethodUtils.roundOffAmountDouble(tipAmount)
         if (cartModel.customer != null)
             orderAttributeRequestModel.customer_id = cartModel.customer?.id
 
@@ -236,7 +237,7 @@ class PaymentViewModel @Inject constructor(
                 subTotalPrice,
                 totalServiceCharge,
                 totalTax,
-                totalDiscount
+                totalDiscount, tipAmount
             )
         orderAttributeRequestModel.orderServiceChargesAttributes =
             orderServiceChargesAttributes(cartModel, subTotalPrice)
@@ -487,7 +488,8 @@ class PaymentViewModel @Inject constructor(
         subTotalPrice: Double,
         totalServiceCharge: Double,
         totalTax: Double,
-        totalDis: Double
+        totalDis: Double,
+        tipAmount: Double
     ): PaymentAttributes {
         return PaymentAttributes().apply {
             amount = MethodUtils.roundOffAmountDouble(totalPrice)
@@ -504,7 +506,7 @@ class PaymentViewModel @Inject constructor(
             subTotal = MethodUtils.roundOffAmountDouble(subTotalPrice)
             taxAmount = MethodUtils.roundOffAmountDouble(totalTax)
             terminalId = cartModel.terminalId
-            tips = 0.0
+            tips = MethodUtils.roundOffAmountDouble(tipAmount)
             tipsAdjusted = false
             totalDiscount = MethodUtils.roundOffAmountDouble(totalDis)
             //           transactionId = ""

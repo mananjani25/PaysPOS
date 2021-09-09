@@ -688,6 +688,9 @@
         <action
             android:id="@+id/action_transactionFragment_to_transactionDetailsFragment"
             app:destination="@id/transactionDetailsFragment" />
+        <action
+            android:id="@+id/action_transactionFragment_to_addTipsDialog"
+            app:destination="@id/addTipsDialog" />
     </fragment>
     <action
         android:id="@+id/action_global_transactionFragment"
@@ -746,7 +749,7 @@
         android:id="@+id/customVariationDialog"
         android:name="com.android.pos.ui.dialog.CustomVariationDialog"
         android:label="CustomVariationDialog" />
-    <fragment
+    <dialog
         android:id="@+id/addTipsDialog"
         android:name="com.android.pos.ui.dialog.AddTipsDialog"
         android:label="AddTipsDialog" />

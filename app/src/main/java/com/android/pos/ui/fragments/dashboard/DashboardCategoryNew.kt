@@ -1353,7 +1353,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     future_delivery_date,
                     future_delivery_time,
                     false,
-                    viewModel.totalDiscount
+                    viewModel.totalDiscount,
+                    0.00
                 )
                 viewModelPayment.submit(request)
 //                }
