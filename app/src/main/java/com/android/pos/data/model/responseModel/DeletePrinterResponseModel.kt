@@ -1,5 +1,6 @@
 package com.android.pos.data.model.responseModel
 
+import com.android.pos.data.model.requestModel.CreatePrinterRequestModel
 import com.google.gson.annotations.SerializedName
 
 data class DeletePrinterResponseModel(
@@ -38,7 +39,7 @@ data class DeletePrinterResponseModel(
         @SerializedName("order_type_id") var orderTypeId: Int,
         @SerializedName("order_type_name") var orderTypeName: String,
         @SerializedName("order_type") var orderType: String,
-        @SerializedName("printer_settings") var printerSettings: List<String>
+        @SerializedName("printer_settings") var printerSettings: List<CreatePrinterRequestModel.PrinterSettingsAttributes>
 
     )
 

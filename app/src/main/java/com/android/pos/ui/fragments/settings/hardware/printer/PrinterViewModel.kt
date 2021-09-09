@@ -12,8 +12,11 @@ import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
+import com.android.pos.utils.performGetOperation
+import com.android.pos.utils.performGetOperationDatabase
 import com.android.pos.utils.statusUtils.Status
 import com.bumptech.glide.load.engine.Resource
+import com.bumptech.glide.util.Util
 import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -36,6 +39,11 @@ class PrinterViewModel @Inject constructor(
 
     private var _delete = MutableLiveData<Event<String>>()
     val deletePrinter: LiveData<Event<String>> = _delete
+
+    private var _update = MutableLiveData<Event<String>>()
+    val updatePrinter: LiveData<Event<String>> = _update
+
+    val orderTypes = posRepository.getORderTypesListDatabase()
 
 
     fun printerList() = posRepository.getPrinters()
@@ -65,6 +73,34 @@ class PrinterViewModel @Inject constructor(
 
     }
 
+    fun updatePrinter(id: Int, model: CreatePrinterRequestModel) {
+        _showProgress.value = Event(true)
+        viewModelScope.launch {
+
+            val resource: com.android.pos.utils.statusUtils.Resource<DeletePrinterResponseModel> =
+                posRepository.updatePrinter(id, model)
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+                    _update.value = Event(resource.data?.message!!)
+
+
+                }
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
+
+                }
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+
+                }
+
+            }
+        }
+
+    }
+
     fun deletePrinter(id: Int) {
         _showProgress.value = Event(true)
         viewModelScope.launch {
@@ -90,13 +126,13 @@ class PrinterViewModel @Inject constructor(
                 }
 
             }
-
-
         }
     }
 
     fun createPrinter(data: CreatePrinterRequestModel) {
+
         _showProgress.value = Event(true)
+
 
         viewModelScope.launch {
             val resource: com.android.pos.utils.statusUtils.Resource<PrinterResponse> =
@@ -122,8 +158,6 @@ class PrinterViewModel @Inject constructor(
                 }
 
             }
-
-
         }
 
     }

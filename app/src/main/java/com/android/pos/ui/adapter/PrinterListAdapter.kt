@@ -63,7 +63,7 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
             }
 
             binding.imgEdit.setOnClickListener {
-                if (list[bindingAdapterPosition].isActive) {
+                if (list[bindingAdapterPosition].type != AVAILABLE) {
                     listner.onEditSelected(list[bindingAdapterPosition])
                 }
 
