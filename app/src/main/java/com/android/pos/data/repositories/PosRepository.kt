@@ -210,6 +210,8 @@ class PosRepository @Inject constructor(
     fun getEmployeeListDatabse() =
         performGetOperationDatabase(databaseQuery = { appDatabase.employeeDao().allEmployee })
 
+    fun getORderTypesListDatabase() =  performGetOperationDatabase(databaseQuery = {appDatabase.orderTypeDao().orderTypes})
+
 
     /*fun employeesTimeSheet(startDate: String, endDate: String, teamRoleId: String) =
         performGetOperationNew(networkCall = { apiHelperNew.employeesTimeSheet(startDate, endDate, teamRoleId) })*/

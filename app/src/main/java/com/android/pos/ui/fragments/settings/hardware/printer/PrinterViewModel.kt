@@ -12,6 +12,8 @@ import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
+import com.android.pos.utils.performGetOperation
+import com.android.pos.utils.performGetOperationDatabase
 import com.android.pos.utils.statusUtils.Status
 import com.bumptech.glide.load.engine.Resource
 import com.bumptech.glide.util.Util
@@ -40,6 +42,8 @@ class PrinterViewModel @Inject constructor(
 
     private var _update = MutableLiveData<Event<String>>()
     val updatePrinter: LiveData<Event<String>> = _update
+
+    val orderTypes = posRepository.getORderTypesListDatabase()
 
 
     fun printerList() = posRepository.getPrinters()
@@ -126,7 +130,9 @@ class PrinterViewModel @Inject constructor(
     }
 
     fun createPrinter(data: CreatePrinterRequestModel) {
+
         _showProgress.value = Event(true)
+
 
         viewModelScope.launch {
             val resource: com.android.pos.utils.statusUtils.Resource<PrinterResponse> =
