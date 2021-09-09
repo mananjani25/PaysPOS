@@ -40,11 +40,11 @@
                     app:tint="@color/viewTextColor" />
 
                 <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtTitle"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:layout_centerVertical="true"
+                    android:layout_centerInParent="true"
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:padding="@dimen/_4sdp"

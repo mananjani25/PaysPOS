@@ -51,34 +51,34 @@
 
     <!--Validation messages-->
 
-    <string name="email_validate">Please enter Email Address</string>
-    <string name="valid_email_validate">Please enter valid Email Address</string>
-    <string name="password_validate">Please enter Password</string>
-    <string name="item_name_validate">Please enter Item Name</string>
-    <string name="category_select_validate">Please select Category Name</string>
-    <string name="item_price_validate">Please enter Valid Price</string>
-    <string name="item_sku_validate">Please enter SKU</string>
+    <string name="email_validate">Please Enter Email Address</string>
+    <string name="valid_email_validate">Please Enter Valid Email Address</string>
+    <string name="password_validate">Please Enter Password</string>
+    <string name="item_name_validate">Please Enter Item Name</string>
+    <string name="category_select_validate">Please Select Category Name</string>
+    <string name="item_price_validate">Please Enter Valid Price</string>
+    <string name="item_sku_validate">Please Enter SKU</string>
 
-    <string name="variation_name_validate">Please enter Variation Name</string>
+    <string name="variation_name_validate">Please Enter Variation Name</string>
 
-    <string name="category_name_validate">Please enter Category Name</string>
-    <string name="modifier_name_validate">Please enter Modifier Name</string>
-    <string name="option_name_validate">Please enter Option Name</string>
+    <string name="category_name_validate">Please Enter Category Name</string>
+    <string name="modifier_name_validate">Please Enter Modifier Name</string>
+    <string name="option_name_validate">Please Enter Option Name</string>
 
-    <string name="tax_name_validate">Please enter Tax Name</string>
-    <string name="tax_rate_validate">Please enter valid Tax Rate</string>
-    <string name="item_pricing_validate">Please enter ItemPricing</string>
+    <string name="tax_name_validate">Please Enter Tax Name</string>
+    <string name="tax_rate_validate">Please Enter valid Tax Rate</string>
+    <string name="item_pricing_validate">Please Enter ItemPricing</string>
 
-    <string name="tip_name_validate">Please enter Tip Name</string>
-    <string name="tip_rate_validate">Please enter valid Tip Rate</string>
+    <string name="tip_name_validate">Please Enter Tip Name</string>
+    <string name="tip_rate_validate">Please Enter valid Tip Rate</string>
 
-    <string name="discount_name_validate">Please enter Discount Name</string>
-    <string name="discount_rate_validate">Please enter valid Discount Rate</string>
+    <string name="discount_name_validate">Please Enter Discount Name</string>
+    <string name="discount_rate_validate">Please Enter valid Discount Rate</string>
 
-    <string name="sercharge_name_validate">Please enter Service Charge Name</string>
-    <string name="sercharge_rate_validate">Please enter valid Service Charge Rate</string>
+    <string name="sercharge_name_validate">Please Enter Service Charge Name</string>
+    <string name="sercharge_rate_validate">Please Enter valid Service Charge Rate</string>
 
-    <string name="role_name_validate">Please enter Role Name</string>
+    <string name="role_name_validate">Please Enter Role Name</string>
 
 
     <string name="delete_tax_message">Are you sure want to Delete Tax?</string>
@@ -100,6 +100,7 @@
     <string name="unhide_category_message">Are you sure you want to unhide category?</string>
     <string name="unhide_item_message">Are you sure you want to unhide item?</string>
     <string name="delete_modifier_message">Are you sure you want to delete modifier set?</string>
+    <string name="delete_option_message">Are you sure you want to delete option set?</string>
 
 
     <string name="tv_personal_info">Personal Info</string>
@@ -144,6 +145,8 @@
     <string name="create_item">Create Item</string>
     <string name="search_categories">Search Categories</string>
     <string name="create_category">Create Category</string>
+    <string name="update_category">Edit Category</string>
+    <string name="update_item">Edit Item</string>
     <string name="search_modifiers">Search Modifiers</string>
     <string name="create_modifier_set">Create Modifier Set</string>
     <string name="tv_home">Home</string>
@@ -421,8 +424,8 @@
     <string name="print">Print</string>
     <string name="email_receipt">Email Receipt</string>
     <string name="phone_number">Phone Number</string>
-    <string name="phone_validate">Please enter Phone Number</string>
-    <string name="valid_phone_validate">Please enter valid Phone Number</string>
+    <string name="phone_validate">Please Enter Phone Number</string>
+    <string name="valid_phone_validate">Please Enter valid Phone Number</string>
     <string name="search_name">Search Name</string>
     <string name="tv_date_time">Date/Time</string>
     <string name="tv_total_amount">Total Amount</string>

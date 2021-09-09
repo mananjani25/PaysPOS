@@ -121,6 +121,7 @@ class CustomVariationDialog : DialogFragment(), View.OnClickListener,
                         binding.tvVariationsPrice.text.toString().replace("$", "").toDouble()
                     variationAttribute.sku = binding.tvVariationsSku.text.toString()
                     variationAttribute.stockQty = binding.tvVariationsStock.text.toString()
+                    variationAttribute.isCustom = true
 
 
                     setNavigationResult(DIALOG_KEY_ADD_VARIATION_DETAILS, variationAttribute)

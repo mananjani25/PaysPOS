@@ -193,18 +193,6 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
             if (customVariation != null) {
                 customVariationList.add(0, customVariation)
             }
-            /*val isPresentAgain = customVariationList.any { it.name == "Regular" }
-
-            if (!isPresentAgain) {
-                val customVariation = VariationsAttribute().apply {
-                    isActive = true
-                    isCustom = true
-                    price = 0.00
-                    name = "Regular"
-                }
-
-                customVariationList.add(0, customVariation)
-            }*/
             variationListAdapter.addAllVariations(customVariationList)
 
         }
@@ -289,6 +277,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
 
         if (isEdit) {
             binding.txtSave.text = getString(R.string.update)
+            binding.txtTitle.text = getString(R.string.update_item)
             itemObject = arguments?.getParcelable("itemObject")!!
             viewModel.setData(itemObject)
             viewModel.setCategoryId(selectedId)
@@ -331,7 +320,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
 
         setFragmentResultListener("request_key") { requestKey: String, bundle: Bundle ->
             val result = bundle.getParcelable<TbCategory>("data")
-            selectedId = bundle.getInt("selectedId")
+            selectedId = result!!.id
             viewModel.setCategoryId(selectedId)
             if (result != null) {
                 if (result.name == "None") {
