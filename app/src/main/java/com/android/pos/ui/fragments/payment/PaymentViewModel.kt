@@ -29,6 +29,7 @@ class PaymentViewModel @Inject constructor(
     private val prefProvider: PrefProvider
 ) : ViewModel() {
 
+    private var onlySave: Boolean = false
     private var totalPayAmounts: Double = 0.0
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
@@ -59,8 +60,14 @@ class PaymentViewModel @Inject constructor(
                             posRepository.deleteCart()
                             resource.data?.let { createOrderResponse ->
 
-                                cashLogApi(createOrderResponse, "in")
-//                                _data.value = Event(createOrderResponse)
+                                if (onlySave) {
+                                    _data.value = Event(createOrderResponse)
+                                } else {
+                                    cashLogApi(createOrderResponse, "in")
+                                }
+
+
+//
                             }
 
                         } else {
@@ -540,5 +547,9 @@ class PaymentViewModel @Inject constructor(
     fun totalPayAmount(paymentAmount: Double) {
 
         totalPayAmounts = MethodUtils.roundOffAmountDouble(paymentAmount)
+    }
+
+    fun saveOrder(isSave: Boolean) {
+        onlySave = isSave
     }
 }

@@ -1356,6 +1356,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     viewModel.totalDiscount,
                     0.00
                 )
+                viewModelPayment.saveOrder(true)
                 viewModelPayment.submit(request)
 //                }
 
