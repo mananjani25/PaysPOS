@@ -143,7 +143,7 @@ class Categories : Fragment() {
                 underlayButtons.add(UnderlayButton(
                     "Hide",
                     0,
-                    Color.parseColor("#2997cc")
+                    Color.parseColor("#0AB833")
                 ) { pos ->
                     // hideCategoryCall(pos)
 

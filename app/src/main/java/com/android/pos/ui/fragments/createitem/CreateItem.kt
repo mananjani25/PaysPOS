@@ -15,6 +15,7 @@ import com.android.pos.R
 import com.android.pos.data.entities.*
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DIALOG_KEY
+import com.android.pos.data.remote.Constants.DIALOG_KEY_ADD_VARIATION_DETAILS
 import com.android.pos.data.remote.Constants.DIALOG_KEY_OPTIONS
 import com.android.pos.data.remote.Constants.DIALOG_KEY_VARIATION_DETAILS
 import com.android.pos.data.remote.Constants.DIALOG_KEY_VARIATION_DETAILS_REMOVE
@@ -44,6 +45,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
     private var optionSetList: ArrayList<OptionSet>? = null
     private var modifierSetIds = ArrayList<Int>()
     private var position1: Int = -1
+    val customVariationList = ArrayList<VariationsAttribute>()
 
     // private lateinit var passedVariationList: ArrayList<List<VariationsAttribute>>
 
@@ -79,6 +81,10 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
                 bundle.putParcelableArrayList("optionSets", optionSetList)
             }
             findNavController().navigate(R.id.action_createItem_to_itemOptionsListDialog, bundle)
+        }
+
+        binding.tvAddVariation.setOnClickListener {
+            findNavController().navigate(R.id.action_createItem_to_customVariationDialog)
         }
 
 
@@ -146,6 +152,48 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
                 binding.llVariationTitle.visibility = View.GONE
                 binding.llMainItemDetails.visibility = View.VISIBLE
             }
+
+        }
+
+
+        val resultVariationAddDetails =
+            getNavigationResultLiveData<VariationsAttribute>(DIALOG_KEY_ADD_VARIATION_DETAILS)
+        resultVariationAddDetails?.observe(viewLifecycleOwner) {
+
+            customVariationList.add(it)
+
+            binding.llVariationTitle.visibility = View.VISIBLE
+            binding.llMainItemDetails.visibility = View.GONE
+
+            val isPresent = customVariationList.any { it.name == "Regular" }
+            var customVariation: VariationsAttribute? = null
+
+            if (!isPresent) {
+                if (!TextUtils.isEmpty(binding.etItemPrice.text.toString())) {
+
+                    customVariation = VariationsAttribute().apply {
+                        isActive = true
+                        isCustom = true
+                        price = binding.etItemPrice.text.toString().replace("$", "").toDouble()
+                        name = "Regular"
+                        sku = binding.etSku.text.toString()
+                        stockQty = binding.etStock.text.toString()
+                    }
+                } else {
+                    customVariation = VariationsAttribute().apply {
+                        isActive = true
+                        isCustom = true
+                        price = 0.00
+                        name = "Regular"
+                    }
+                }
+
+
+            }
+            if (customVariation != null) {
+                customVariationList.add(0, customVariation)
+            }
+            variationListAdapter.addAllVariations(customVariationList)
 
         }
 
@@ -229,6 +277,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
 
         if (isEdit) {
             binding.txtSave.text = getString(R.string.update)
+            binding.txtTitle.text = getString(R.string.update_item)
             itemObject = arguments?.getParcelable("itemObject")!!
             viewModel.setData(itemObject)
             viewModel.setCategoryId(selectedId)
@@ -271,7 +320,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
 
         setFragmentResultListener("request_key") { requestKey: String, bundle: Bundle ->
             val result = bundle.getParcelable<TbCategory>("data")
-            selectedId = bundle.getInt("selectedId")
+            selectedId = result!!.id
             viewModel.setCategoryId(selectedId)
             if (result != null) {
                 if (result.name == "None") {

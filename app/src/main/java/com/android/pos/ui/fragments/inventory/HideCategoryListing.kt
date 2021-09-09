@@ -69,7 +69,10 @@ class HideCategoryListing : Fragment() {
                     Status.SUCCESS -> {
                         binding.rvCategoriesList.visibility = View.VISIBLE
                         binding.progressCircular.visibility = View.GONE
-                        it.data?.let { it1 -> adapter.add(it1) }
+                        it.data?.let { it1 ->
+                            adapter.add(it1)
+                            binding.etSearch.hint = "Search (" + it1.size + ") Categories"
+                        }
                     }
                     Status.ERROR -> {
                         binding.rvCategoriesList.visibility = View.GONE

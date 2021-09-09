@@ -45,6 +45,7 @@ class CreateCategory : Fragment() {
         if (isEdit) {
             categoryData = arguments?.getParcelable("categoryObject")!!
             binding.txtSave.text = getString(R.string.update)
+            binding.txtTitle.text = getString(R.string.update_category)
             viewModel.categoryData(categoryData)
             viewModel.isEditData(isEdit, categoryData.id)
         }

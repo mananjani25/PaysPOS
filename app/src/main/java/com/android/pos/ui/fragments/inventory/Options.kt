@@ -121,7 +121,7 @@ class Options : Fragment(), TextWatcher {
 
                     alert(
                         getString(R.string.app_name),
-                        getString(R.string.delete_modifier_message)
+                        getString(R.string.delete_option_message)
                     ) {
                         positiveButton(getString(R.string.tv_delete)) {
                             adapter.getItem(pos).id?.let { viewModel.deleteOptionSet(it) }

@@ -233,7 +233,10 @@ class HideItemListing : Fragment() {
                     Status.SUCCESS -> {
                         binding.rvAllItemList.visibility = View.VISIBLE
                         binding.progressCircular.visibility = View.GONE
-                        it.data?.let { it1 -> adapter.add(it1 as List<TbItem>) }
+                        it.data?.let { it1 ->
+                            adapter.add(it1)
+                            binding.edtSearch.hint = "Search (" + it1.size + ") Items"
+                        }
                     }
                     Status.ERROR -> {
                         binding.rvAllItemList.visibility = View.GONE

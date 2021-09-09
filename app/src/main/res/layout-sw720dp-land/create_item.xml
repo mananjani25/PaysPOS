@@ -40,11 +40,11 @@
                     app:tint="@color/viewTextColor" />
 
                 <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtTitle"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:layout_centerVertical="true"
+                    android:layout_centerInParent="true"
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:padding="@dimen/_4sdp"
@@ -505,6 +505,7 @@
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
                 <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvAddVariation"
                     style="@style/CustomFontBold"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

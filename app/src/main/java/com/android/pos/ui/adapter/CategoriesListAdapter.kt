@@ -26,7 +26,7 @@ class CategoriesListAdapter(private val isChoose: Boolean) :
             binding.executePendingBindings()
 
             if (isChoose) {
-                if (mpos == layoutPosition) {
+                if (mpos == bindingAdapterPosition) {
                     binding.imageCheck.setImageResource(R.drawable.ic_outline_radio_button_checked)
                 } else {
                     binding.imageCheck.setImageResource(R.drawable.ic_uncheck_circle)
@@ -172,7 +172,18 @@ class CategoriesListAdapter(private val isChoose: Boolean) :
     }
 
     fun setPos(selectedId: Int) {
-        mpos = selectedId
+
+        /*for (i in filterList.indices) {
+            if (filterList[i].id == selectedId) {
+                mpos = i
+                break
+            }
+        }*/
+
+        mpos = filterList.indexOfFirst {
+            it.id == selectedId
+        }
+
 
     }
 

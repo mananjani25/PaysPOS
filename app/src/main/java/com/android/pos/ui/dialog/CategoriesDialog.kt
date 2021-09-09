@@ -68,6 +68,7 @@ class CategoriesDialog : DialogFragment(), View.OnClickListener {
                         binding.progressCircular.visibility = View.GONE
 
                         it.data?.let { it1 -> adapter.add(it1) }
+                        adapter.setPos(selectedId)
                     }
                     Status.ERROR -> {
                         binding.rvCategoriesList.visibility = View.GONE
@@ -88,7 +89,6 @@ class CategoriesDialog : DialogFragment(), View.OnClickListener {
     private fun setAdapter() {
 
         adapter = CategoriesListAdapter(true)
-        adapter.setPos(selectedId)
         binding.rvCategoriesList.adapter = adapter
         binding.imgBack.setOnClickListener(this)
         binding.txtDone.setOnClickListener(this)

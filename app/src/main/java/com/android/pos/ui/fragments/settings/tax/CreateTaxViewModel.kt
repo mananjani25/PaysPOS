@@ -108,7 +108,9 @@ class CreateTaxViewModel @Inject constructor(
                 taxType = taxTypeViewModel
                 locationId = prefProvider.getValueInt(LOCATION_ID, -1)
 
-            } /*else {
+            }
+
+            /*else {
                 taxData = CreateTaxRequestModel().apply {
                     name = value!!.name
                     rate = value.rate

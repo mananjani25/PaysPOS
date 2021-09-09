@@ -3,8 +3,11 @@ package com.android.pos.ui.dialog
 import android.app.Activity
 import android.graphics.Point
 import android.os.Bundle
+import android.text.TextUtils
 import android.util.Log
 import android.view.*
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import androidx.navigation.fragment.findNavController
@@ -15,26 +18,31 @@ import com.android.pos.data.model.OptionListModel
 import com.android.pos.data.model.VariationListModel
 import com.android.pos.data.remote.Constants.ADD_TAX
 import com.android.pos.data.remote.Constants.DIALOG_KEY
+import com.android.pos.data.remote.Constants.DIALOG_KEY_ADD_VARIATION_DETAILS
 import com.android.pos.data.remote.Constants.DIALOG_KEY_TAX
 import com.android.pos.data.remote.Constants.DIALOG_KEY_VARIATION_DETAILS
 import com.android.pos.data.remote.Constants.DIALOG_KEY_VARIATION_DETAILS_POSITION
 import com.android.pos.data.remote.Constants.DIALOG_KEY_VARIATION_DETAILS_REMOVE
 import com.android.pos.data.remote.Constants.INCLUDE_TAX
+import com.android.pos.databinding.DialogCustomVariationBinding
 import com.android.pos.databinding.DialogEditItemTitleBinding
 import com.android.pos.databinding.DialogEditVariationBinding
 import com.android.pos.databinding.DialogItemPricingBinding
 import com.android.pos.ui.adapter.ChooseColorsAdapter
+import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.AmountTextWatcher
+import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.setNavigationResult
 import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
-class CustomVariationDialog : DialogFragment(), View.OnClickListener {
-    private lateinit var binding: DialogEditVariationBinding
-    private var variationAttribute: VariationsAttribute? = null
-    private var variationAttributeCopy = ArrayList<VariationsAttribute>()
+class CustomVariationDialog : DialogFragment(), View.OnClickListener,
+    AdapterView.OnItemSelectedListener {
+    private lateinit var binding: DialogCustomVariationBinding
+    private var variationAttribute = VariationsAttribute()
     val builder = StringBuilder()
+    private var unitTypeList = ArrayList<String>()
 
     var activity: CustomVariationDialog = this
 
@@ -44,17 +52,13 @@ class CustomVariationDialog : DialogFragment(), View.OnClickListener {
         savedInstanceState: Bundle?
     ): View? {
         binding =
-            DataBindingUtil.inflate(inflater, R.layout.dialog_edit_variation, container, false)
+            DataBindingUtil.inflate(inflater, R.layout.dialog_custom_variation, container, false)
         binding.lifecycleOwner = this
 
         binding.imgBack.setOnClickListener(this)
         binding.txtDone.setOnClickListener(this)
+        binding.spUnit.onItemSelectedListener = this
 
-        variationAttribute =
-            arguments?.getParcelable("variationAttributeList")
-
-
-        binding.tvVariationsName.setText(variationAttribute?.name)
 
         binding.tvVariationsPrice.addTextChangedListener(
             AmountTextWatcher(
@@ -62,24 +66,31 @@ class CustomVariationDialog : DialogFragment(), View.OnClickListener {
                 false
             )
         )
-
-
         binding.tvVariationsPrice.setText(
             activity.getString(R.string.symbole) + " " + String.format(
                 activity.getString(R.string.format),
                 variationAttribute?.price
             )
         )
-        binding.tvVariationsSku.setText(variationAttribute?.sku)
-        binding.tvVariationsStock.setText(variationAttribute?.stockQty)
 
-        binding.tvRemoveVariation.setOnClickListener {
-            setNavigationResult(DIALOG_KEY_VARIATION_DETAILS_REMOVE, variationAttribute)
-            findNavController().popBackStack()
-        }
-
+        setUpUnitTypeSpinnerAdapter()
 
         return binding.root
+    }
+
+    private fun setUpUnitTypeSpinnerAdapter() {
+        unitTypeList.clear()
+        unitTypeList.add(getString(R.string.tv_unit_fixed))
+        unitTypeList.add(getString(R.string.tv_unit_variable))
+
+        val spinnerAdapter = ArrayAdapter(
+            requireActivity(),
+            R.layout.row_spinner_variation,
+            unitTypeList
+        )
+
+        spinnerAdapter.setDropDownViewResource(R.layout.row_spinner)
+        binding.spUnit.adapter = spinnerAdapter
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -95,16 +106,27 @@ class CustomVariationDialog : DialogFragment(), View.OnClickListener {
             }
             R.id.txtDone -> {
 
-                variationAttribute?.name = binding.tvVariationsName.text.toString()
+                if (TextUtils.isEmpty(binding.etVariationsName.text.toString())) {
+                    activity.let {
+                        AlertUtils.showCustomAlertWithListenerWithOK(
+                            requireContext(), getString(R.string.variation_name_validate)
+                        ) { _, _ ->
 
-                variationAttribute?.price =
-                    binding.tvVariationsPrice.text.toString().replace("$", "").toDouble()
-                variationAttribute?.sku = binding.tvVariationsSku.text.toString()
-                variationAttribute?.stockQty = binding.tvVariationsStock.text.toString()
+                        }
+                    }
+
+                } else {
+                    variationAttribute.name = binding.etVariationsName.text.toString()
+                    variationAttribute.price =
+                        binding.tvVariationsPrice.text.toString().replace("$", "").toDouble()
+                    variationAttribute.sku = binding.tvVariationsSku.text.toString()
+                    variationAttribute.stockQty = binding.tvVariationsStock.text.toString()
+                    variationAttribute.isCustom = true
 
 
-                setNavigationResult(DIALOG_KEY_VARIATION_DETAILS, variationAttribute)
-                findNavController().popBackStack()
+                    setNavigationResult(DIALOG_KEY_ADD_VARIATION_DETAILS, variationAttribute)
+                    findNavController().popBackStack()
+                }
             }
 
         }
@@ -120,6 +142,20 @@ class CustomVariationDialog : DialogFragment(), View.OnClickListener {
         val width: Int = size.x
         window.setLayout((width * 0.50).toInt(), WindowManager.LayoutParams.MATCH_PARENT)
         window.setGravity(Gravity.CENTER)
+    }
+
+    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+        if (binding.spUnit.selectedItem == getString(R.string.tv_unit_fixed)) {
+            binding.llPrice.visibility = View.VISIBLE
+
+        } else if (binding.spUnit.selectedItem == getString(R.string.tv_unit_variable)) {
+            binding.llPrice.visibility = View.GONE
+
+        }
+    }
+
+    override fun onNothingSelected(parent: AdapterView<*>?) {
+
     }
 
 
