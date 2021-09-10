@@ -29,6 +29,7 @@ import com.android.pos.utils.callback.UpdateVariationCallback
 import com.android.pos.utils.extensions.getNavigationResultLiveData
 import com.android.pos.utils.extensions.liveSnackBar
 import com.google.android.material.snackbar.Snackbar
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -46,6 +47,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
     private var modifierSetIds = ArrayList<Int>()
     private var position1: Int = -1
     val customVariationList = ArrayList<VariationsAttribute>()
+    private val TAG = "CreateItem"
 
     // private lateinit var passedVariationList: ArrayList<List<VariationsAttribute>>
 
@@ -113,6 +115,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
                     val optionSetIds = ArrayList<Int>()
                     builder.append(it.name.trim() + ",").toString()
                     variation.name = builder.substring(0, builder.length - 1).toString()
+                    variation._destroy = false
 
                     optionSetList?.forEach {
                         optionSetIds.add(it.id!!)
@@ -210,7 +213,67 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
 
             // variationListApi = ArrayList()
 
-            viewModel.variationAttribute(variationListAdapter.selectedVariation())
+
+            if (isEdit) {
+                /*variationListApi.forEach { variationOriginal ->
+                    variationListAdapter.selectedVariation().forEach { variationDeleted ->
+                        if (variationOriginal.name == variationDeleted.name) {
+                            variationOriginal._destroy = false
+                        } else {
+                            variationOriginal._destroy = true
+                        }
+                    }
+                }*/
+                var mList: ArrayList<VariationsAttribute> = arrayListOf()
+
+                for (i in 0 until variationListApi.size) {
+                    val temp = variationListAdapter.selectedVariation().any {
+                        it.id == variationListApi.get(i).id
+                    }
+
+                    if (temp) {
+                        val obj = variationListApi.get(i)
+                        obj._destroy = false
+                        mList.add(obj)
+
+
+                    } else {
+                        val obj = variationListApi.get(i)
+                        obj._destroy = true
+                        mList.add(obj)
+
+                    }
+
+                }
+
+
+                Log.e(
+                    TAG,
+                    "FinalvariationListApi:  ${Gson().toJson(mList)}"
+                )
+
+                /* for (variationNew in variationListAdapter.selectedVariation()) {
+                     for (variationOld in variationListApi) {
+                         val contains = variationOld.name.contains(variationNew.name)
+                         if (contains) {
+                             variationOld._destroy = true
+                         } else {
+                             variationOld._destroy = false
+                         }
+                     }
+                 }*/
+
+                Log.e(TAG, "variationListApi:  ${Gson().toJson(variationListApi)}")
+                Log.e(
+                    TAG,
+                    "selectedVariation : ${Gson().toJson(variationListAdapter.selectedVariation())}"
+                )
+                viewModel.variationAttribute(mList)
+            } else {
+                viewModel.variationAttribute(variationListAdapter.selectedVariation())
+            }
+
+            // viewModel.variationAttribute(variationListAdapter.selectedVariation())
 
             if (variationListAdapter.selectedVariation().size > 0 && variationListAdapter.selectedVariation() != null) {
                 viewModel.itemDetails(
@@ -276,15 +339,18 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
 
 
         if (isEdit) {
+
             binding.txtSave.text = getString(R.string.update)
             binding.txtTitle.text = getString(R.string.update_item)
             itemObject = arguments?.getParcelable("itemObject")!!
             viewModel.setData(itemObject)
+            selectedId = itemObject.categoryId
             viewModel.setCategoryId(selectedId)
 
             if (itemObject.variationsAttributes != null && itemObject.variationsAttributes?.size!! > 0) {
                 binding.llVariationTitle.visibility = View.VISIBLE
                 binding.llMainItemDetails.visibility = View.GONE
+                variationListApi = itemObject.variationsAttributes as ArrayList<VariationsAttribute>
                 variationListAdapter.addAllVariations(itemObject.variationsAttributes as ArrayList<VariationsAttribute>)
             } else {
                 binding.llVariationTitle.visibility = View.GONE
@@ -292,7 +358,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
             }
 
             binding.txtCategoryName.text = itemObject.categoryName
-            selectedId = itemObject.categoryId
+
 
             binding.etItemPrice.setText(
                 activity?.getString(R.string.symbole) + " " + String.format(

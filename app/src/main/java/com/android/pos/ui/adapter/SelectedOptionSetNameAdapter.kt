@@ -97,34 +97,6 @@ class SelectedOptionSetNameAdapter(val viewModel: OptionSetViewModel) :
 
     override fun onItemClickListener(position: Int) {
 
-        /*val myCollection = optionSetList
-        val iterator = myCollection.iterator()
-        while (iterator.hasNext()) {
-            val item = iterator.next()
-
-            if (item.options.isEmpty()) {
-                mSetCallback.onItemClickListener(positionParent, null)
-                iterator.remove()
-                Log.d("positionParent", "::" + positionParent)
-                // optionSetList.removeAt(positionParent)
-                notifyItemRemoved(positionParent)
-                notifyItemRangeChanged(positionParent, optionSetList.size)
-            }
-
-
-        }*/
-
-        /*optionSetList.forEach {
-              if (it.options.isEmpty()) {
-                  mSetCallback.onItemClickListener(positionParent, null)
-                  Log.d("positionParent", "::" + positionParent)
-                  optionSetList.removeAt(positionParent)
-                  notifyItemRemoved(positionParent)
-                  notifyItemRangeChanged(positionParent, optionSetList.size)
-              }
-          }*/
-
-
         for (i in optionSetList.indices) {
             if (optionSetList[i].options.isEmpty()) {
                 mSetCallback.onItemClickListener(i, optionSetList[i])
