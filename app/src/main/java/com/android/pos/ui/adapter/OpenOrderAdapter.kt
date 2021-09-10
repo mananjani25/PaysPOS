@@ -53,7 +53,7 @@ class OpenOrderAdapter :
 
 
 
-            if (!item.isCheck) {
+            if (!isShown) {
 
                 binding.llMainLayout.setBackgroundColor(binding.root.resources.getColor(R.color.white))
                 binding.tvDate.setTextColor(binding.root.resources.getColor(R.color.black))
@@ -67,18 +67,18 @@ class OpenOrderAdapter :
                 binding.llShowLayout.visibility = View.GONE
                 binding.imgIndicator.setImageDrawable(binding.root.resources.getDrawable(R.drawable.ic_arrow_down))
 
-                binding.txtDeliveryDate.text =
-                    TimeFormatUtils.convertCurrentDate(item.createdAt) + "\n" + TimeFormatUtils.convertCurrentTime(
-                        item.createdAt
-                    )
-
-                binding.txtStatus.text = item.paymentStatus
-                binding.txtCustomerNameDetails.text =
-                    (item.customer?.firstName ?: "") + " " + (item.customer?.lastName ?: "")
-
-                binding.txtEmail.text = item.customer?.email ?: ""
-                binding.txtPhoneNo.text = ""
-                binding.txtAddress.text = ""
+//                binding.txtDeliveryDate.text =
+//                    TimeFormatUtils.convertCurrentDate(item.createdAt) + "\n" + TimeFormatUtils.convertCurrentTime(
+//                        item.createdAt
+//                    )
+//
+//                binding.txtStatus.text = item.paymentStatus
+//                binding.txtCustomerNameDetails.text =
+//                    (item.customer?.firstName ?: "") + " " + (item.customer?.lastName ?: "")
+//
+//                binding.txtEmail.text = item.customer?.email ?: ""
+//                binding.txtPhoneNo.text = ""
+//                binding.txtAddress.text = ""
 
             } else {
 
@@ -98,9 +98,9 @@ class OpenOrderAdapter :
 
         init {
             binding.root.setOnClickListener {
-                val model = orderList[bindingAdapterPosition]
-                model.isCheck = !model.isCheck
-                notifyItemChanged(bindingAdapterPosition)
+
+                isShown = !isShown
+                notifyDataSetChanged()
 
             }
         }

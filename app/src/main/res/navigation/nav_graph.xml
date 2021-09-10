@@ -538,6 +538,7 @@
             app:destination="@id/assignTeamMemberListDialog" />
     </fragment>
     <fragment
+
         android:id="@+id/paymentFragment"
         android:name="com.android.pos.ui.fragments.payment.PaymentFragment"
         android:label="PaymentFragment">
@@ -552,6 +553,9 @@
             app:popUpToInclusive="true"
             android:id="@+id/action_paymentFragment_to_orderCompleteFragment"
             app:destination="@id/orderCompleteFragment" />
+        <action
+            android:id="@+id/action_paymentFragment_to_addTipsDialog"
+            app:destination="@id/addTipsDialog" />
     </fragment>
     <dialog
         android:id="@+id/splitAmountFragment"
@@ -668,7 +672,12 @@
     <fragment
         android:id="@+id/orders"
         android:name="com.android.pos.ui.fragments.orders.Orders"
-        android:label="Orders" />
+        android:label="Orders">
+        <action
+            android:id="@+id/action_orders_to_dashboardCategoryNew"
+            app:destination="@id/dashboardCategoryNew"
+            app:launchSingleTop="true" />
+    </fragment>
     <action
         android:id="@+id/action_global_orders"
         app:destination="@id/orders" />
@@ -679,6 +688,9 @@
         <action
             android:id="@+id/action_transactionFragment_to_transactionDetailsFragment"
             app:destination="@id/transactionDetailsFragment" />
+        <action
+            android:id="@+id/action_transactionFragment_to_addTipsDialog"
+            app:destination="@id/addTipsDialog" />
     </fragment>
     <action
         android:id="@+id/action_global_transactionFragment"
@@ -737,5 +749,9 @@
         android:id="@+id/customVariationDialog"
         android:name="com.android.pos.ui.dialog.CustomVariationDialog"
         android:label="CustomVariationDialog" />
+    <dialog
+        android:id="@+id/addTipsDialog"
+        android:name="com.android.pos.ui.dialog.AddTipsDialog"
+        android:label="AddTipsDialog" />
 
 </navigation>

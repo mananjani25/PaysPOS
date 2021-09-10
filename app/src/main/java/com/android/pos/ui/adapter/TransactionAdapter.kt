@@ -11,12 +11,20 @@ import com.android.pos.databinding.ViewTransactionItemBinding
 import com.android.pos.ui.fragments.transactions.TransactionViewModel
 import com.android.pos.utils.TimeFormatUtils.convertCurrentDate
 import com.android.pos.utils.TimeFormatUtils.convertCurrentTime
+import com.android.pos.utils.callback.ItemCallback
 
 class TransactionAdapter(val viewModel: TransactionViewModel) :
     RecyclerView.Adapter<TransactionAdapter.MyViewHolder>(), Filterable {
 
     var employeeTimeSheet = ArrayList<GetTransactionListResponse.Data.Payment>()
     private var filterList = ArrayList<GetTransactionListResponse.Data.Payment>()
+
+
+    private var mCallback: ItemCallback? = null
+    fun setCallback(callback: ItemCallback) {
+        mCallback = callback
+    }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -41,6 +49,11 @@ class TransactionAdapter(val viewModel: TransactionViewModel) :
             (model.customer.firstName ?: "") + " " + (model.customer.lastName ?: "")
 
         itemBinding.executePendingBindings()
+
+        itemBinding.txtTip.setOnClickListener {
+
+            mCallback?.onItemClickListener(it, position)
+        }
     }
 
     override fun getItemCount() = filterList.size
@@ -94,6 +107,11 @@ class TransactionAdapter(val viewModel: TransactionViewModel) :
 
             }
         }
+    }
+
+    fun getItem(pos: Int): GetTransactionListResponse.Data.Payment {
+
+        return filterList[pos]
     }
 
 

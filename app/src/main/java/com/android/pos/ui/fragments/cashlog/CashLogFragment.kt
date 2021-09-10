@@ -98,7 +98,7 @@ class CashLogFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
         viewModel.setCurrentDate(myCalendar)
 
-        viewModel.apiCallTimeSheet(getTerminalId(binding.spTerminals.selectedItemPosition).toString())
+       // viewModel.apiCallTimeSheet(getTerminalId(binding.spTerminals.selectedItemPosition).toString())
 
 
     }

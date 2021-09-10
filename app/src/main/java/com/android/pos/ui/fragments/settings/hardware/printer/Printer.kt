@@ -57,6 +57,7 @@ import android.text.Html
 import androidx.fragment.app.viewModels
 
 import com.android.pos.R
+import com.android.pos.data.entities.TbOrderType
 import com.android.pos.data.model.requestModel.CreatePrinterRequestModel
 import com.android.pos.data.remote.Constants.AVAILABLE
 import com.android.pos.data.remote.Constants.CUSTOMER
@@ -85,7 +86,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     var kitchenPrintList: ArrayList<PrinterListModel> = arrayListOf()
     var customerPrintList: ArrayList<PrinterListModel> = arrayListOf()
     var availablePrinterList: ArrayList<PrinterListModel> = arrayListOf()
-
+    var orderTypeList: ArrayList<TbOrderType> = arrayListOf()
 
     //private var mFilterOption: FilterOption? = null
     private lateinit var customerAdapter: PrinterListAdapter
@@ -129,7 +130,33 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
         printerList = ArrayList()
 
+        getOrderTypes()
+
         return binding.root
+    }
+
+    private fun getOrderTypes() {
+        viewModel.orderTypes.observe(viewLifecycleOwner, {
+            when (it.status) {
+                Status.LOADING -> {
+                    ProgressUtils.showProgressDialog(requireActivity())
+                }
+                Status.ERROR -> {
+                    ProgressUtils.dismissProgressDialog()
+                }
+                Status.SUCCESS -> {
+                    ProgressUtils.dismissProgressDialog()
+                    Log.e(TAG, "OrderTypesList:  ${Gson().toJson(it.data)}")
+
+                    if (it.data != null) {
+                        orderTypeList.addAll(it.data.toCollection(ArrayList()))
+
+                    }
+
+
+                }
+            }
+        })
     }
 
     private fun getPrinterList() {
@@ -855,18 +882,34 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     }
 
     override fun onPrinterSelected(printerListModel: PrinterListModel) {
-        Log.e(TAG, "printerListModel:  ${Gson().toJson(printerListModel)}")
-
         onInitPrinter(printerListModel)
     }
 
     override fun onPrinterActive(printerListModel: PrinterListModel) {
-        Log.e(TAG, "printerListModel:  ${Gson().toJson(printerListModel)}")
+
+        var list: ArrayList<CreatePrinterRequestModel.PrinterSettingsAttributes> = arrayListOf()
+        for (i in 0 until orderTypeList.size) {
+            list.add(
+                CreatePrinterRequestModel.PrinterSettingsAttributes(
+                    printType = CUSTOMER,
+                    orderTypeId = orderTypeList.get(i).id
+                )
+            )
+            list.add(
+                CreatePrinterRequestModel.PrinterSettingsAttributes(
+                    printType = KITCHEN,
+                    orderTypeId = orderTypeList.get(i).id
+                )
+            )
+        }
+
+
         val createPrinter = CreatePrinterRequestModel(
             name = printerListModel.printerName,
             macAddress = printerListModel.deviceModel?.macAddress,
             modalName = printerListModel.deviceModel?.printerName,
             terminalIds = listOf(prefProvider.getValueInt(TERMINAL_ID, 1)),
+            status = false,
             locationId = prefProvider.getValueInt(LOCATION_ID, 1),
             receiptPrintType = if (printerListModel.printerName == "TM-U220") {
                 KITCHEN
@@ -874,8 +917,10 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                 CUSTOMER
             },
             printer_type = printerListModel.connectionType,
-            ip_address = printerListModel.deviceModel?.ipAddress
+            ip_address = printerListModel.deviceModel?.ipAddress,
+            printerSettingsAttributes = list
         )
+        Log.e(TAG, "createPrinterRequestParam:  ${Gson().toJson(createPrinter)}")
         viewModel.createPrinter(createPrinter)
         syncPrinterList()
 
@@ -892,7 +937,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
 
     override fun onEditSelected(printerListModel: PrinterListModel) {
-        Log.e(TAG, "printerListModel:  ${Gson().toJson(printerListModel)}")
+
         val bundle = Bundle()
         bundle.putParcelable("printerSetting", printerListModel)
 
@@ -900,7 +945,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     }
 
     override fun onDeletePrinter(printerListModel: PrinterListModel) {
-        Log.e(TAG, "DeletePrinterID:  ${printerListModel.id}")
+
         deletePrinter(printerListModel.id!!)
 
 
@@ -929,8 +974,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         }
 
         val enabled = Print.FALSE
-        Log.e(TAG, "MacAddress:  ${printerListModel.deviceModel?.macAddress}")
-        Log.e(TAG, "IPAddress:  ${printerListModel.deviceModel?.ipAddress}")
+
         if (printerListModel.connectionType == BLUETOOTH) {
             findBT()
             openBT()
@@ -963,13 +1007,6 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         var builder: Builder? = null
         var method = ""
         try {
-
-
-            Log.e(TAG, "PrintedprinterName:  ${printerListModel.printerName}")
-
-
-
-
             builder = Builder(printerListModel.printerName, language, requireActivity())
 
             builder.addFeedLine(2)
@@ -1322,12 +1359,10 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             )
 
             // tell the user data were sent
-            Log.e(TAG, "Bluetooth Data Send")
+
         } catch (e: Exception) {
             e.printStackTrace()
         }
-
-
 
         try {
             var msg: String = "This is My Test Print"

@@ -43,7 +43,7 @@ data class GetTransactionListResponse(
             @SerializedName("order_details")
             val orderDetails: OrderDetails,
             @SerializedName("order_id")
-            val orderId: Any,
+            val orderId: Int,
             @SerializedName("payable_id")
             val payableId: Int,
             @SerializedName("payable_type")

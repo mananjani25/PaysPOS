@@ -45,6 +45,7 @@ import com.android.pos.data.remote.Constants.UPDATE
 import com.android.pos.data.remote.Constants.VERTICAL
 import com.android.pos.databinding.FragmentDashboardCategoryNewBinding
 import com.android.pos.di.PrefProvider
+import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.activities.SwipeHelper
 import com.android.pos.ui.adapter.*
 import com.android.pos.ui.fragments.payment.PaymentViewModel
@@ -232,15 +233,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         val itemTouchHelper = ItemTouchHelper(object : SwipeHelper(binding.layoutCart.rvCart) {
             override fun instantiateUnderlayButton(position: Int): List<UnderlayButton> {
-                var buttons = listOf<UnderlayButton>()
                 val deleteButton = deleteButton(position)
                 val markAsUnreadButton = markAsUnreadButton(position)
                 val archiveButton = archiveButton(position)
-                when (position) {
-                    0 -> buttons = listOf(deleteButton, markAsUnreadButton, archiveButton)
-                    else -> Unit
-                }
-                return buttons
+                return listOf(deleteButton, markAsUnreadButton, archiveButton)
             }
         })
 
@@ -317,12 +313,21 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                         binding.layoutCart.rvCart.visibility = View.VISIBLE
                         binding.layoutCart.llPayment.visibility = View.VISIBLE
+                        Log.e("cartList", cartList.size.toString())
+
+                        if (cartList.size > 1) {
+
+                        }
                         cartAdapter.addCart(cartList[0].items)
 
                         viewModel.itemCalculation(
                             cartList,
                             binding.layoutCart.txtTotalAmount
                         )
+
+                        if (prefProvider.getValue(ORDER_TYPE, "").toString() == TAKEOUT) {
+                            binding.layoutCart.rlSave.visibility = View.GONE
+                        }
                     } else {
                         viewModel.itemCalculation(
                             cartList,
@@ -456,6 +461,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         val linearInventory: LinearLayout = dialog.findViewById(R.id.linearInventory)
         val linearSetting: LinearLayout = dialog.findViewById(R.id.linearSetting)
         val linearSupport: LinearLayout = dialog.findViewById(R.id.linearSupport)
+        val txtSignOut: TextView = dialog.findViewById(R.id.txtSignOut)
 
         linearHome.setOnClickListener {
             closeDialog(dialog)
@@ -496,6 +502,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         }
 
 
+        txtSignOut.setOnClickListener {
+
+            (activity as MainActivity).alertLogout()
+        }
 
         imgCalculator.setColorFilter(resources.getColor(R.color.txtColor))
         txtCheckOut.setTextColor(resources.getColor(R.color.txtColor))
@@ -1237,7 +1247,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         viewModelPayment.data.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let { it ->
-
+                binding.layoutCart.txtCrtNewCustomer.text = "Add Customer"
+                binding.layoutCart.txtCustomerName.text = "Add Customer"
+                prefProvider.setValue(CUSTOMER_NAME, "")
                 hideOrderType()
 
             }
@@ -1342,8 +1354,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     future_delivery_date,
                     future_delivery_time,
                     false,
-                    viewModel.totalDiscount
+                    viewModel.totalDiscount,
+                    0.00
                 )
+                viewModelPayment.saveOrder(true)
                 viewModelPayment.submit(request)
 //                }
 
@@ -1442,7 +1456,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private fun markAsUnreadButton(position: Int): SwipeHelper.UnderlayButton {
         return SwipeHelper.UnderlayButton(
             requireContext(),
-            "addNote",
+            "AddNote",
             14.0f,
             R.color.addNote,
             object : SwipeHelper.UnderlayButtonClickListener {

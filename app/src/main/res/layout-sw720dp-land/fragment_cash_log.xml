@@ -39,9 +39,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
                     android:layout_centerVertical="true"
-                    android:layout_marginStart="@dimen/_7sdp"
-                    android:layout_marginTop="@dimen/_5sdp"
-                    android:layout_marginBottom="@dimen/_5sdp"
+                    android:padding="@dimen/_5sdp"
                     android:contentDescription="@string/menu"
                     android:src="@drawable/ic_baseline_menu" />
 
@@ -260,7 +258,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginStart="@dimen/_1sdp"
-                    android:text="@{``+'-'+ @string/symbole +``+String.format(@string/format,cashLogModel.totalCashOut)}"
+                    android:text="@{@string/symbole +``+String.format(@string/format,cashLogModel.totalCashOut)}"
                     android:textColor="@color/colorE90"
                     android:textSize="@dimen/_5mdpi" />
 

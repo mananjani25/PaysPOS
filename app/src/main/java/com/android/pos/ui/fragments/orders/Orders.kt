@@ -70,7 +70,7 @@ class Orders : Fragment() {
             (requireActivity() as MainActivity).enableDrawer()
         }
         binding.commonToolbar.txtHome.setOnClickListener {
-            findNavController().navigate(R.id.action_inventory_to_dashboardCategory)
+            findNavController().navigate(R.id.action_orders_to_dashboardCategoryNew)
         }
 
         binding.commonToolbar.txtTitle.text = ""

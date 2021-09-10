@@ -74,6 +74,7 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:padding="@dimen/_5sdp"
                     android:layout_marginBottom="@dimen/_2sdp"
                     android:background="@drawable/background_square_border_grey">
 
@@ -125,45 +126,8 @@
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintVertical_bias="0.487" />
 
-                    <LinearLayout
-                        android:id="@+id/linearLayout"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="@dimen/_5sdp"
-                        android:orientation="horizontal"
-                        android:paddingVertical="@dimen/_3sdp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
-
-                        <TextView
-                            android:id="@+id/txtCurrencyPercentage"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginEnd="@dimen/_2sdp"
-                            android:background="@drawable/background_discount_unselected"
-                            android:paddingVertical="@dimen/_4sdp"
-                            android:paddingStart="@dimen/_7sdp"
-                            android:paddingEnd="@dimen/_7sdp"
-                            android:text="%" />
-
-                        <TextView
-                            android:id="@+id/txtCurrencyDollar"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/_2sdp"
-                            android:background="@drawable/background_discount_selected"
-                            android:paddingVertical="@dimen/_4sdp"
-                            android:paddingStart="@dimen/_7sdp"
-                            android:paddingEnd="@dimen/_7sdp"
-                            android:text="$" />
-
-
-                    </LinearLayout>
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
-
-
 
 
                 <include

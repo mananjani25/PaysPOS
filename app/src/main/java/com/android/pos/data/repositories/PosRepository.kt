@@ -31,6 +31,8 @@ class PosRepository @Inject constructor(
 
     suspend fun deletePrinter(id: Int) = apiHelperNew.deletePrinter(id)
 
+    suspend fun updatePrinter(id:Int,model:CreatePrinterRequestModel) = apiHelperNew.updatePrinter(id,model)
+
     suspend fun updatePrinterStatus(id: Int, terminal_id: Int, status: Boolean) =
         apiHelperNew.updatePrinterStatus(id, terminal_id, status)
     /*fun syncVenueDetails() =
@@ -230,6 +232,8 @@ class PosRepository @Inject constructor(
 
     fun getEmployeeListDatabse() =
         performGetOperationDatabase(databaseQuery = { appDatabase.employeeDao().allEmployee })
+
+    fun getORderTypesListDatabase() =  performGetOperationDatabase(databaseQuery = {appDatabase.orderTypeDao().orderTypes})
 
 
     /*fun employeesTimeSheet(startDate: String, endDate: String, teamRoleId: String) =
@@ -463,5 +467,8 @@ class PosRepository @Inject constructor(
 
     suspend fun getCashLog(startDate: String, endDate: String, terminalId: String) =
         apiHelperNew.getCashInOut(startDate, endDate, terminalId)
+
+    suspend fun orderUpdateTip(orderId: Int, customerId: Double) =
+        apiHelperNew.orderUpdateTip(orderId, customerId)
 }
 

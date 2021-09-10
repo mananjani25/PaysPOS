@@ -525,4 +525,5 @@
 
     <string name="tv_unit_variable">Variable</string>
     <string name="tv_unit_fixed">Fixed</string>
+    <string name="add_tips">Add Tip</string>
 </resources>

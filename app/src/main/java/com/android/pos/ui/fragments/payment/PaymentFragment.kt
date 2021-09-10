@@ -26,6 +26,7 @@ import kotlin.math.floor
 @AndroidEntryPoint
 open class PaymentFragment : Fragment(), View.OnClickListener {
 
+    private var tipAmount: Double = 0.0
     private var future_delivery_date: String = ""
     private var future_delivery_time: String = ""
     private var fourthValue: Double = 0.0
@@ -91,6 +92,20 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
         }
 
+        setFragmentResultListener("request_key_tips") { requestKey: String, bundle: Bundle ->
+            tipAmount = bundle.getDouble("tipAmount")
+
+
+            binding.txtTotalAmount.text =
+                MethodUtils.roundOffAmount(totalPrice + tipAmount) + " (" + MethodUtils.roundOffAmount(
+                    tipAmount
+                ) + " Tip Added)"
+
+            getCashPaymentOptionList(totalPrice + tipAmount)
+            MethodUtils.setPriceTextView(binding.txtTipAmt, tipAmount)
+            MethodUtils.setPriceTextView(binding.txtTotal, totalPrice + tipAmount)
+        }
+
 
     }
 
@@ -110,6 +125,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         MethodUtils.setPriceTextView(binding.txtSubTotal, subTotalPrice)
         MethodUtils.setPriceTextView(binding.txtTax, totalTax)
         MethodUtils.setPriceTextView(binding.txtTotal, totalPrice)
+        MethodUtils.setPriceTextView(binding.txtTipAmt, tipAmount)
         //MethodUtils.setPriceTextView(binding.txtDiscount, totalDiscount)
         MethodUtils.setPriceTextView(binding.txtServiceCharge, totalServiceCharge)
         if (totalDiscount == 0.0) {
@@ -132,6 +148,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         binding.txtSecondAmount.setOnClickListener(this)
         binding.txtThirdAmount.setOnClickListener(this)
         binding.txtFourthAmount.setOnClickListener(this)
+        binding.txtAddTips.setOnClickListener(this)
 
 
     }
@@ -238,7 +255,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
             R.id.txtOriginalAmount -> {
 
-                paymentAmount = totalPrice
+                paymentAmount = totalPrice + tipAmount
                 makePayment()
             }
             R.id.txtSecondAmount -> {
@@ -274,6 +291,16 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     bundle
                 )
             }
+
+            R.id.txtAddTips -> {
+                val bundle = Bundle()
+                bundle.putDouble("totalPrice", totalPrice)
+                bundle.putDouble("totalTip", tipAmount)
+                findNavController().navigate(
+                    R.id.action_paymentFragment_to_addTipsDialog,
+                    bundle
+                )
+            }
         }
 
     }
@@ -283,13 +310,14 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             viewModel.createOrderRequest(
                 it,
                 subTotalPrice,
-                totalPrice,
+                totalPrice + tipAmount,
                 totalServiceCharge,
                 totalTax,
                 prefProvider.getValue(Constants.ORDER_TYPE, "").toString(),
                 future_delivery_date,
                 future_delivery_date,
-                true, totalDiscount
+                true, totalDiscount,
+                tipAmount
             )
         }
         if (myRequest != null) {
@@ -320,7 +348,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             event.getContentIfNotHandled()?.let {
 
                 val bundle = Bundle()
-                bundle.putDouble("totalPrice", totalPrice)
+                bundle.putDouble("totalPrice", totalPrice + tipAmount)
                 bundle.putDouble("paymentAmount", paymentAmount)
                 bundle.putInt("orderID", it.data.order.id)
                 findNavController().navigate(

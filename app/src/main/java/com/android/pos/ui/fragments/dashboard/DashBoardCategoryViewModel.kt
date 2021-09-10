@@ -304,7 +304,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             Log.e(TAG, "totalDiscount:  ${totalDiscount}")
 
 
-            totalPrice = (subTotalPrice + totalTax + totalServiceCharge) - totalDiscount
+            totalPrice = (subTotalPrice + totalTax + totalServiceCharge) /*- totalDiscount*/
         }
 
         MethodUtils.setPriceTextView(txtTotalAmount, totalPrice)

@@ -29,6 +29,7 @@ class PaymentViewModel @Inject constructor(
     private val prefProvider: PrefProvider
 ) : ViewModel() {
 
+    private var onlySave: Boolean = false
     private var totalPayAmounts: Double = 0.0
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
@@ -55,11 +56,18 @@ class PaymentViewModel @Inject constructor(
                         if (response?.status == 200) {
 
                             prefProvider.setValue(Constants.ORDER_TYPE, "")
+                            prefProvider.setValue(Constants.CUSTOMER_NAME, "")
                             posRepository.deleteCart()
                             resource.data?.let { createOrderResponse ->
 
-                                cashLogApi(createOrderResponse, "in")
-//                                _data.value = Event(createOrderResponse)
+                                if (onlySave) {
+                                    _data.value = Event(createOrderResponse)
+                                } else {
+                                    cashLogApi(createOrderResponse, "in")
+                                }
+
+
+//
                             }
 
                         } else {
@@ -197,7 +205,8 @@ class PaymentViewModel @Inject constructor(
         future_delivery_date: String,
         future_delivery_time: String,
         isPaid: Boolean,
-        totalDiscount: Double
+        totalDiscount: Double,
+        tipAmount: Double
     ): OrderRequestModel {
 
         val orderAttributeRequestModel = OrderAttributeRequestModel()
@@ -223,7 +232,7 @@ class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.totalServiceCharges =
             MethodUtils.roundOffAmountDouble(totalServiceCharge)
         orderAttributeRequestModel.totalTaxAmount = MethodUtils.roundOffAmountDouble(totalTax)
-        orderAttributeRequestModel.totalTips = 0.0
+        orderAttributeRequestModel.totalTips = MethodUtils.roundOffAmountDouble(tipAmount)
         if (cartModel.customer != null)
             orderAttributeRequestModel.customer_id = cartModel.customer?.id
 
@@ -235,7 +244,7 @@ class PaymentViewModel @Inject constructor(
                 subTotalPrice,
                 totalServiceCharge,
                 totalTax,
-                totalDiscount
+                totalDiscount, tipAmount
             )
         orderAttributeRequestModel.orderServiceChargesAttributes =
             orderServiceChargesAttributes(cartModel, subTotalPrice)
@@ -441,8 +450,11 @@ class PaymentViewModel @Inject constructor(
             orderItemTaxesAttribute.name = tax.name.toString()
             orderItemTaxesAttribute.rate = tax.rate
             orderItemTaxesAttribute.taxId = tax.id
+
+            val itemTaxPrice =
+                (tax.rate * ((items.price - items.discountPrice) * items.itemQuantity)) / 100
             orderItemTaxesAttribute.taxTotalAmount =
-                MethodUtils.roundOffAmountDouble((items.price * items.itemQuantity) / 100)
+                MethodUtils.roundOffAmountDouble(itemTaxPrice)
             orderItemTaxesAttribute.taxType = tax.taxType.toString()
             orderItemTaxesAttributeList.add(orderItemTaxesAttribute)
         }
@@ -483,7 +495,8 @@ class PaymentViewModel @Inject constructor(
         subTotalPrice: Double,
         totalServiceCharge: Double,
         totalTax: Double,
-        totalDis: Double
+        totalDis: Double,
+        tipAmount: Double
     ): PaymentAttributes {
         return PaymentAttributes().apply {
             amount = MethodUtils.roundOffAmountDouble(totalPrice)
@@ -500,7 +513,7 @@ class PaymentViewModel @Inject constructor(
             subTotal = MethodUtils.roundOffAmountDouble(subTotalPrice)
             taxAmount = MethodUtils.roundOffAmountDouble(totalTax)
             terminalId = cartModel.terminalId
-            tips = 0.0
+            tips = MethodUtils.roundOffAmountDouble(tipAmount)
             tipsAdjusted = false
             totalDiscount = MethodUtils.roundOffAmountDouble(totalDis)
             //           transactionId = ""
@@ -534,5 +547,9 @@ class PaymentViewModel @Inject constructor(
     fun totalPayAmount(paymentAmount: Double) {
 
         totalPayAmounts = MethodUtils.roundOffAmountDouble(paymentAmount)
+    }
+
+    fun saveOrder(isSave: Boolean) {
+        onlySave = isSave
     }
 }

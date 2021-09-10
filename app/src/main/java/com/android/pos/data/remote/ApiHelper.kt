@@ -27,13 +27,17 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun getPrinterData() =
         getResult { apiService.getPrinterList() }
 
-    suspend fun createPrinter(data:CreatePrinterRequestModel) = getResult {
+    suspend fun createPrinter(data: CreatePrinterRequestModel) = getResult {
         apiService.createPrinter(data)
     }
 
-    suspend fun deletePrinter(id:Int) = getResult { apiService.deletePrinter(id) }
+    suspend fun deletePrinter(id: Int) = getResult { apiService.deletePrinter(id) }
 
-    suspend fun updatePrinterStatus(id:Int,terminal_id:Int,status:Boolean) = getResult { apiService.updatePrinterStatus(id,terminal_id,status) }
+    suspend fun updatePrinter(id: Int, model: CreatePrinterRequestModel) =
+        getResult { apiService.updatePrinter(id, model) }
+
+    suspend fun updatePrinterStatus(id: Int, terminal_id: Int, status: Boolean) =
+        getResult { apiService.updatePrinterStatus(id, terminal_id, status) }
 
     suspend fun syncVenueDetails() =
         getResult { apiService.syncVenueDetails() }
@@ -275,4 +279,7 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
 
     suspend fun getCashInOut(startDate: String, endDate: String, terminalId: String) =
         getResult { apiService.getCashInOut(startDate, endDate, terminalId) }
+
+    suspend fun orderUpdateTip(orderId: Int, customerId: Double) =
+        getResult { apiService.orderUpdateTip(orderId, customerId) }
 }
