@@ -526,4 +526,7 @@
     <string name="tv_unit_variable">Variable</string>
     <string name="tv_unit_fixed">Fixed</string>
     <string name="add_tips">Add Tip</string>
+    <string name="cancel_order_message">Are you sure want to cancel this Order?</string>
+    <string name="yes">YES</string>
+    <string name="no">NO</string>
 </resources>

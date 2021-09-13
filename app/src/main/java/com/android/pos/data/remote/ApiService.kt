@@ -499,4 +499,10 @@ interface ApiService {
         @Query("tips") old_position: Double
     ): BaseResponse
 
+    @PUT(TAX_ACTIVE)
+    suspend fun cancelOrder(
+        @Path("id") orderId: Int,
+        @Query("is_active") is_active: Boolean
+    ): CreateTaxResponse
+
 }

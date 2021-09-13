@@ -188,11 +188,18 @@ class DashBoardCategoryViewModel @Inject constructor(
                     deleteCart()
                 }
             } else {
-                val cartModel = cartList?.get(0)
-                cartModel?.items = list
-                if (cartModel != null) {
-                    addCart(cartModel)
+
+                if (type == DELETE) {
+                    deleteCart()
+                } else {
+                    val cartModel = cartList?.get(0)
+                    cartModel?.items = listOf(item)
+                    if (cartModel != null) {
+                        addCart(cartModel)
+                    }
                 }
+
+
             }
 
 
@@ -301,7 +308,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             totalDiscount = cartList[0].items!!.map {
                 it.discountPrice
             }.sum()
-            Log.e(TAG, "totalDiscount:  ${totalDiscount}")
+            Log.e(TAG, "totalDiscount:  $totalDiscount")
 
 
             totalPrice = (subTotalPrice + totalTax + totalServiceCharge) /*- totalDiscount*/

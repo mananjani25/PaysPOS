@@ -6,19 +6,21 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.android.pos.data.model.responseModel.OpenOrderResponse
+import com.android.pos.R
 import com.android.pos.databinding.FragmentActiveOrdersBinding
 import com.android.pos.ui.adapter.OpenOrderAdapter
 import com.android.pos.utils.ProgressUtils
-import com.android.pos.utils.TimeFormatUtils
+import com.android.pos.utils.callback.ItemCallback
+import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ActiveOrderFragment : Fragment() {
+class ActiveOrderFragment : Fragment(), ItemCallback {
 
     private lateinit var binding: FragmentActiveOrdersBinding
     private val viewModel by viewModels<ActiveOrderViewModel>()
@@ -81,6 +83,25 @@ class ActiveOrderFragment : Fragment() {
                 }
             }
         })
+
+    }
+
+    override fun onItemClickListener(view: View?, pos: Int) {
+
+        alert(
+            getString(R.string.app_name),
+            getString(R.string.cancel_order_message)
+        ) {
+            positiveButton(getString(R.string.yes)) {
+                val order = adapter.getItem(pos)
+
+                //  viewModel.cancelOrder(order.id)
+            }
+            negativeButton(R.string.no) {
+                // Do negative stuff here
+            }
+        }
+
 
     }
 

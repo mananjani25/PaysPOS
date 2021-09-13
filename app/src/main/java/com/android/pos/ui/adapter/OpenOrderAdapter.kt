@@ -11,12 +11,18 @@ import com.android.pos.R
 import com.android.pos.data.model.responseModel.OpenOrderResponse
 import com.android.pos.databinding.ViewOpenOrderItemBinding
 import com.android.pos.utils.TimeFormatUtils
+import com.android.pos.utils.callback.ItemCallback
 
 class OpenOrderAdapter :
     RecyclerView.Adapter<OpenOrderAdapter.MyViewHolder>() {
 
     var orderList = ArrayList<OpenOrderResponse.Data.Order>()
-    var isShown = false
+
+    private var mCallback: ItemCallback? = null
+    fun setCallback(callback: ItemCallback) {
+        mCallback = callback
+    }
+
 
     inner class MyViewHolder(private val binding: ViewOpenOrderItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -53,7 +59,7 @@ class OpenOrderAdapter :
 
 
 
-            if (!isShown) {
+            if (!item.isCheck) {
 
                 binding.llMainLayout.setBackgroundColor(binding.root.resources.getColor(R.color.white))
                 binding.tvDate.setTextColor(binding.root.resources.getColor(R.color.black))
@@ -66,19 +72,6 @@ class OpenOrderAdapter :
                 binding.tvTeamMember.setTextColor(binding.root.resources.getColor(R.color.black))
                 binding.llShowLayout.visibility = View.GONE
                 binding.imgIndicator.setImageDrawable(binding.root.resources.getDrawable(R.drawable.ic_arrow_down))
-
-//                binding.txtDeliveryDate.text =
-//                    TimeFormatUtils.convertCurrentDate(item.createdAt) + "\n" + TimeFormatUtils.convertCurrentTime(
-//                        item.createdAt
-//                    )
-//
-//                binding.txtStatus.text = item.paymentStatus
-//                binding.txtCustomerNameDetails.text =
-//                    (item.customer?.firstName ?: "") + " " + (item.customer?.lastName ?: "")
-//
-//                binding.txtEmail.text = item.customer?.email ?: ""
-//                binding.txtPhoneNo.text = ""
-//                binding.txtAddress.text = ""
 
             } else {
 
@@ -99,9 +92,23 @@ class OpenOrderAdapter :
         init {
             binding.root.setOnClickListener {
 
-                isShown = !isShown
+                val item = orderList[bindingAdapterPosition]
+
+                if (item.isCheck) {
+                    item.isCheck = false
+                } else {
+                    orderList.forEach {
+                        it.isCheck = false
+                    }
+                    item.isCheck = true
+
+                }
                 notifyDataSetChanged()
 
+            }
+
+            binding.txtCancelOrder.setOnClickListener {
+                mCallback?.onItemClickListener(it, bindingAdapterPosition)
             }
         }
     }
@@ -126,6 +133,11 @@ class OpenOrderAdapter :
     fun add(orders: List<OpenOrderResponse.Data.Order>) {
         orderList = orders as ArrayList<OpenOrderResponse.Data.Order>
         notifyDataSetChanged()
+    }
+
+    fun getItem(pos: Int): OpenOrderResponse.Data.Order {
+
+        return orderList[pos]
     }
 
 }
