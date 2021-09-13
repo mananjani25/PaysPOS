@@ -53,6 +53,7 @@ import java.net.URLDecoder
 import kotlin.collections.ArrayList
 
 import android.text.Html
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.viewModels
 
 import com.android.pos.R
@@ -131,6 +132,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
         getOrderTypes()
 
+
         return binding.root
     }
 
@@ -192,6 +194,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     override fun onPause() {
         super.onPause()
         PrinterClass.closePrinter()
+        stopFinder()
+
         closeBT()
     }
 
@@ -208,7 +212,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         customerAdapter.setListner(this)
         availableNetworkAdapter = PrinterListAdapter()
         availableNetworkAdapter.setListner(this)
-        availableNetworkAdapter.setList(availablePrinterList)
+        availableNetworkAdapter.setList(arrayListOf())
         binding.rvAvailablePrinter.adapter = availableNetworkAdapter
         binding.rvAvailablePrinter.addItemDecoration(
             DividerItemDecoration(
@@ -233,7 +237,6 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
         mFilterOption = FilterOption()
         mFilterOption!!.setDeviceType(Discovery.TYPE_PRINTER)
-        startFinder()
 
 
         /* try {
@@ -315,8 +318,15 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
         binding.imgSync.setOnClickListener {
             availableNetworkAdapter.clearList()
-            startFinder()
+
             searchBluetooth()
+            try {
+                stopFinder()
+                startFinder()
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
 
 
         }
@@ -335,13 +345,14 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     }
 
     private fun syncPrinterList() {
+        allPrinterlist.clear()
         viewModel.printerList().observe(viewLifecycleOwner, {
             when (it.status) {
 
                 Status.SUCCESS -> {
                     Log.e(TAG, "SyncPrinterList")
                     ProgressUtils.dismissProgressDialog()
-                    allPrinterlist.clear()
+
                     val data = it.data
 
 
@@ -508,14 +519,18 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                     if (data?.isEmpty() == true) {
                         customerAdapter.clearList()
                     }
+                    availableNetworkAdapter.clearList()
                     searchBluetooth()
+                    startFinder()
 
 
                 }
                 Status.ERROR -> {
                     Log.e(TAG, "PrinterError ")
                     ProgressUtils.dismissProgressDialog()
+                    availableNetworkAdapter.clearList()
                     searchBluetooth()
+                    startFinder()
                 }
                 Status.LOADING -> {
                     ProgressUtils.showProgressDialog(requireActivity())
@@ -530,7 +545,6 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                 Status.SUCCESS -> {
                     Log.e(TAG, "SyncPrinterList")
                     ProgressUtils.dismissProgressDialog()
-                    allPrinterlist.clear()
                     val data = it.data
 
 
@@ -624,14 +638,18 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                     if (data?.isEmpty() == true) {
                         kitchenAdapter.clearList()
                     }
+                    availableNetworkAdapter.clearList()
                     searchBluetooth()
+                    startFinder()
 
 
                 }
                 Status.ERROR -> {
                     Log.e(TAG, "PrinterError ")
                     ProgressUtils.dismissProgressDialog()
+                    availableNetworkAdapter.clearList()
                     searchBluetooth()
+                    startFinder()
                 }
                 Status.LOADING -> {
                     ProgressUtils.showProgressDialog(requireActivity())
@@ -639,13 +657,15 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             }
 
         })
+
+
     }
 
     private fun searchBluetooth() {
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
         if (mBluetoothAdapter!!.isEnabled) {
-            availableNetworkAdapter.clearList()
+
             val availableDevices: Set<BluetoothDevice> = mBluetoothAdapter!!.bondedDevices
 
             for (i in availableDevices) {
@@ -704,7 +724,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     override fun onStop() {
         super.onStop()
         //stop find
-        stopFinder()
+        //  stopFinder()
         PrinterClass.closePrinter()
         closeBT()
 
@@ -834,13 +854,13 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
 
         //start thread
-        scheduler?.schedule(this, 0, TimeUnit.MILLISECONDS)
-        /*future = scheduler?.scheduleWithFixedDelay(
+        // scheduler?.schedule(this, 0, TimeUnit.MILLISECONDS)
+        future = scheduler?.scheduleWithFixedDelay(
             this,
             0,
             DISCOVERY_INTERVAL.toLong(),
             TimeUnit.MILLISECONDS
-        )*/
+        )
     }
 
 
@@ -848,6 +868,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     override fun run() {
         class UpdateListThread(var list: Array<DeviceInfo>?) :
             Thread() {
+
+
             override fun run() {
                 if (list == null) {
                     if (printerList.size > 0) {
@@ -867,19 +889,18 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                         printerList.add(item)
                     }
 
-                    for (i in 0 until list!!.size) {
-                        availableNetworkAdapter.addItem(
-                            PrinterListModel(
-                                printerName = list!![i].printerName,
-                                connectionType = WIFI,
-                                isActive = false,
-                                type = AVAILABLE,
-                                deviceModel = list!!.get(i)
-                            )
-                        )
+                    /* for (i in 0 until list!!.size) {
+                         availableNetworkAdapter.addItem(
+                             PrinterListModel(
+                                 printerName = list!![i].printerName,
+                                 connectionType = WIFI,
+                                 isActive = false,
+                                 type = AVAILABLE,
+                                 deviceModel = list!!.get(i),
 
-
-                    }
+                             )
+                         )
+                     }*/
 
 
                 }
@@ -887,15 +908,80 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         }
 
 
+
         try {
             deviceList = Finder.getDeviceInfoList(com.epson.epsonio.FilterOption.PARAM_DEFAULT)
             Log.e(TAG, "deviceList  ${Gson().toJson(deviceList)}")
 
+            if (deviceList != null) {
+                for (i in 0 until deviceList!!.size) {
+
+                    var isAdded: Boolean = false
+                    for (j in 0 until allPrinterlist.size) {
+                        Log.e(TAG, "DeviceAddress : ${deviceList!!.get(i).macAddress}")
+                        Log.e(
+                            TAG,
+                            "DeviceModelAddress:  ${allPrinterlist.get(j).deviceModel?.macAddress}"
+                        )
+                        if (allPrinterlist.get(j).deviceModel?.macAddress == deviceList!!.get(i).macAddress) {
+                            isAdded = true
+                            break
+                        } else {
+                            isAdded = false
+
+
+                        }
+
+
+
+                    }
+                    if (!isAdded) {
+                        availableNetworkAdapter.addItem(
+                            PrinterListModel(
+                                printerName = deviceList!!.get(i).printerName,
+                                connectionType = WIFI,
+                                deviceModel = DeviceInfo(
+                                    DevType.TCP,
+                                    deviceList!!.get(i).printerName,
+                                    deviceList!!.get(i).deviceName,
+                                    deviceList!!.get(i).ipAddress,
+                                    deviceList!!.get(i).macAddress
+                                ),
+                                type = AVAILABLE,
+
+
+                                )
+                        )
+                    }
+
+                    Log.e(TAG, "DeviceisAdded:  ${isAdded}")
+
+
+                }
+
+            }
+
 
             handler.post(UpdateListThread(deviceList))
+           future?.cancel(false)
+            //stopFinder()
 
 
-            stopFinder()
+            /* if (deviceList?.isNotEmpty() == true) {
+                 stopFinder()
+             }*/
+
+            /* if (deviceList?.isEmpty() == true) {
+                 handler.post(UpdateListThread(deviceList))
+             }*/
+
+            /*if (deviceList != null) {
+                stopFinder()
+            } else {
+                handler.post(UpdateListThread(deviceList))
+                //startFinder()
+            }*/
+            // stopFinder()
 
 
         } catch (e: Exception) {
@@ -903,6 +989,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         }
 
     }
+
 
     @Throws(IOException::class)
     fun openBT() {

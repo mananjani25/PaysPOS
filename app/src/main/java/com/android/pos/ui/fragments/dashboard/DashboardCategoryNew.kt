@@ -972,15 +972,16 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         val btnAddDiscount: AppCompatTextView = dialog.findViewById(R.id.btnAddDiscount)
         val edtNote: AppCompatEditText = dialog.findViewById(R.id.edtNote)
         val rvModifierSets: RecyclerView = dialog.findViewById(R.id.rvModifierSets)
-        val txtCustomItemName: AppCompatTextView = dialog.findViewById(R.id.txtCustomItemName)
+        val rvVariationList: RecyclerView = dialog.findViewById(R.id.rvVariationList)
+        val txtItemName: AppCompatTextView = dialog.findViewById(R.id.txtItemName)
         val edtItemName: AppCompatEditText = dialog.findViewById(R.id.edtItemName)
 
         edtItemName.visibility = View.GONE
-        txtCustomItemName.visibility = View.GONE
         var discountPrice = data.discountPrice / data.itemQuantity
 
 
         var adapter: ItemModifierSetAdapter? = null
+        var variationAdapter: VariationDashboardListAdapter? = null
 
         var qty = data.itemQuantity
         if (isItemClick) {
@@ -1009,6 +1010,19 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 } else rvModifierSets.visibility = View.GONE
 
             })
+        }
+
+        if (data.variationsAttributes.isNotEmpty()) {
+            rvVariationList.visibility = View.VISIBLE
+            rvVariationList.layoutManager = GridLayoutManager(activity, 3);
+            variationAdapter = VariationDashboardListAdapter()
+            rvVariationList.adapter = variationAdapter
+            txtItemName.text = data.name + ":-  Choose One"
+
+            variationAdapter.addVariations(data.variationsAttributes)
+        } else {
+            rvVariationList.visibility = View.GONE
+            txtItemName.visibility = View.GONE
         }
 
         edtNote.setText(data.note)

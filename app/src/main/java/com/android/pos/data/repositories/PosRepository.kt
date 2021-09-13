@@ -133,6 +133,8 @@ class PosRepository @Inject constructor(
                         categoryName = category.name
                         taxes = it.taxes
                         modifier_set_ids = it.modifierIds
+                        variationsAttributes = it.variations
+
                     }
 
                     it.modifierSets.forEach { modifierSets ->
