@@ -148,10 +148,17 @@ class DashBoardCategoryViewModel @Inject constructor(
                     var index = -1
 
                     list.forEachIndexed { pos, tbItem ->
-                        if (tbItem.itemId == item.itemId && checkModifier(tbItem, item)) {
-                            index = pos
-                            return@forEachIndexed
+                        if (tbItem.itemId == item.itemId && checkVariation(tbItem, item)&& checkModifier(tbItem, item)) {
+                         //   if (checkModifier(tbItem, item)) {
+                                index = pos
+                                return@forEachIndexed
+                          //  }
                         }
+
+                         /*if (tbItem.itemId == item.itemId && checkModifier(tbItem, item)) {
+                             index = pos
+                             return@forEachIndexed
+                         }*/
                     }
                     if (index != -1) {
                         val model = cartList[0].items?.get(index)
@@ -211,6 +218,20 @@ class DashBoardCategoryViewModel @Inject constructor(
             }
         }
         return checkModifier
+    }
+
+    private fun checkVariation(tbItem: TbItem, item: TbItem): Boolean {
+
+        if (item.variationsAttributes.isEmpty()) return true
+
+        var variation = false
+
+        item.variationsAttributes.forEach { itemM ->
+            tbItem.variationsAttributes.forEach {
+                variation = itemM.id == it.id
+            }
+        }
+        return variation
     }
 
     private fun addCartModel(item: TbItem): CartModel {

@@ -918,7 +918,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     override fun onClick(item: TbItem) {
 
         if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
-            if (item.modifier_set_ids.isEmpty()) {
+            //change logic here regarding variations
+
+            if (item.modifier_set_ids.isEmpty() && item.variationsAttributes.isEmpty()) {
                 item.itemQuantity = 1
                 if (cartList.isEmpty()) {
                     viewModel.setServiceCharges(serviceChargesList)
@@ -1031,28 +1033,31 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         txtQty.setText(qty.toString())
 
-        if (data.discountPrice != 0.0) {
-            txtTitle.text = data.name + "  $" + String.format(
-                "%.2f", (totalPrice(data) - data.discountPrice)
-            )
-        } else {
-            if (isItemClick) {
-                txtTitle.text = data.name + "  $" + String.format(
-                    "%.2f",
-                    data.price
-                )
-            } else
-                txtTitle.text = data.name + "  $" + String.format(
-                    "%.2f",
-                    totalPrice(data)
-                )
+        showPriceTitle(variationsAttribute = null, variationAdapter, data, txtTitle, isItemClick)
+
+        variationAdapter?.showVariationPriceClick = {
+            showPriceTitle(it, variationAdapter = null, data, txtTitle, isItemClick)
         }
+
 
 
         imgClose.setOnClickListener {
             dialog.dismiss()
         }
         txtSave.setOnClickListener {
+
+            /*showPriceTitle(
+                variationsAttribute = null,
+                variationAdapter,
+                data,
+                txtTitle,
+                isItemClick
+            )*/
+            val variationList = ArrayList<VariationsAttribute>()
+            if (data.variationsAttributes.isNotEmpty()) {
+                val variation = variationAdapter?.getItem()!!
+                variationList.add(variation)
+            }
 
 
             if (minMaxValidationCheck(adapter)) {
@@ -1182,6 +1187,47 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         dialog.setCanceledOnTouchOutside(false)
         dialog.show()
     }
+
+
+    private fun showPriceTitle(
+        variationsAttribute: VariationsAttribute?,
+        variationAdapter: VariationDashboardListAdapter?,
+        data: TbItem,
+        txtTitle: AppCompatTextView,
+        isItemClick: Boolean
+    ) {
+        var variation: VariationsAttribute? = null
+        if (variationAdapter != null) {
+            variation = variationAdapter.getItem()
+        } else if (variationsAttribute != null) {
+            variation = variationsAttribute
+        }
+
+
+
+        if (variation != null) {
+            data.price = variation.price
+        } else {
+            data.price = data.price
+        }
+        if (data.discountPrice != 0.0) {
+            txtTitle.text = data.name + "  $" + String.format(
+                "%.2f", (totalPrice(data) - data.discountPrice)
+            )
+        } else {
+            if (isItemClick) {
+                txtTitle.text = data.name + "  $" + String.format(
+                    "%.2f",
+                    data.price
+                )
+            } else
+                txtTitle.text = data.name + "  $" + String.format(
+                    "%.2f",
+                    totalPrice(data)
+                )
+        }
+    }
+
 
     private fun minMaxValidationCheck(adapter: ItemModifierSetAdapter?): Boolean {
 

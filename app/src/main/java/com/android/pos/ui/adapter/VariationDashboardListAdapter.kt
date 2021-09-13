@@ -15,7 +15,8 @@ import com.android.pos.ui.fragments.settings.tax.TaxListViewModel
 class VariationDashboardListAdapter :
     RecyclerView.Adapter<VariationDashboardListAdapter.MyViewHolder>() {
 
-    private var mpos: Int = -1
+    var showVariationPriceClick: ((VariationsAttribute) -> Unit)? = null
+    private var mpos: Int = 0
     var variationList = ArrayList<VariationsAttribute>()
 
     override fun onCreateViewHolder(
@@ -33,23 +34,6 @@ class VariationDashboardListAdapter :
         position: Int
     ) {
         holder.bind(variationList[position])
-        /*val itemBinding = holder.taxItemBinding
-        itemBinding.variationModel = variationList[position]
-        itemBinding.executePendingBindings()
-
-        itemBinding.llItemName.setOnClickListener {
-
-            if (mpos == holder.bindingAdapterPosition) {
-                itemBinding.llItemName.setBackgroundResource(R.drawable.bg_squre_modifier)
-                itemBinding.edtName.setTextColor(R.color.white)
-
-            } else {
-                mpos = holder.bindingAdapterPosition
-                itemBinding.llItemName.setBackgroundResource(R.drawable.bg_squre_modifier_choose)
-            }
-            // variationList[mpos].isChecked = !variationList[mpos].isChecked
-            notifyDataSetChanged()
-        }*/
     }
 
     override fun getItemCount() = variationList.size
@@ -91,6 +75,7 @@ class VariationDashboardListAdapter :
 
             binding.llItemName.setOnClickListener {
                 mpos = layoutPosition
+                showVariationPriceClick?.invoke(variationList[bindingAdapterPosition])
                 notifyDataSetChanged()
 
             }
