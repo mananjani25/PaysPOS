@@ -118,6 +118,7 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
 
         if (status == "UPDATE") {
 
+
         } else {
 
             alert(
