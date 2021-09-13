@@ -19,7 +19,7 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
     inner class MyViewHolder(private val binding: ViewPrinterItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(model: PrinterListModel?) {
-            if (list[bindingAdapterPosition].connectionType == WIFI) {
+            if (list[layoutPosition].connectionType == WIFI) {
                 binding.imgConnectionType.setImageDrawable(
                     binding.root.context.resources.getDrawable(
                         R.drawable.ic_lan
@@ -40,22 +40,22 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
             }
 
             binding.imgPrinter.setOnClickListener {
-                if (list[bindingAdapterPosition].isActive) {
-                    listner.onPrinterSelected(list[bindingAdapterPosition])
+                if (list[layoutPosition].isActive) {
+                    listner.onPrinterSelected(list[layoutPosition])
                 }
             }
 
             binding.imgDelete.setOnClickListener {
-                listner.onDeletePrinter(list[bindingAdapterPosition])
+                listner.onDeletePrinter(list[layoutPosition])
             }
 
             binding.swtOrderId.setOnCheckedChangeListener { buttonView, isChecked ->
-                if (list[bindingAdapterPosition].type != AVAILABLE) {
-                    listner.onUpdatePrinterStatus(list[bindingAdapterPosition], isChecked)
+                if (list[layoutPosition].type != AVAILABLE) {
+                    listner.onUpdatePrinterStatus(list[layoutPosition], isChecked)
 
-                } else if (isChecked && !(list.get(bindingAdapterPosition).isActive)) {
-                    listner.onPrinterActive(list.get(bindingAdapterPosition))
-                    list.removeAt(bindingAdapterPosition)
+                } else if (isChecked && !(list.get(layoutPosition).isActive)) {
+                    listner.onPrinterActive(list.get(layoutPosition))
+                    list.removeAt(layoutPosition)
                     notifyDataSetChanged()
                 }
 
@@ -63,13 +63,13 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
             }
 
             binding.imgEdit.setOnClickListener {
-                if (list[bindingAdapterPosition].type != AVAILABLE) {
-                    listner.onEditSelected(list[bindingAdapterPosition])
+                if (list[layoutPosition].type != AVAILABLE) {
+                    listner.onEditSelected(list[layoutPosition])
                 }
 
             }
 
-            if (list[bindingAdapterPosition].type == AVAILABLE) {
+            if (list[layoutPosition].type == AVAILABLE) {
                 binding.linearOption.visibility = View.GONE
             } else {
                 binding.linearOption.visibility = View.VISIBLE
