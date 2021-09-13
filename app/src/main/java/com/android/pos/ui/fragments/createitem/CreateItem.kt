@@ -48,6 +48,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
     private var position1: Int = -1
     val customVariationList = ArrayList<VariationsAttribute>()
     private val TAG = "CreateItem"
+    private var isNewVariation: Boolean = false
 
     // private lateinit var passedVariationList: ArrayList<List<VariationsAttribute>>
 
@@ -228,7 +229,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
 
                 for (i in 0 until variationListApi.size) {
                     val temp = variationListAdapter.selectedVariation().any {
-                        it.id == variationListApi.get(i).id
+                        it.name == variationListApi.get(i).name
                     }
 
                     if (temp) {
@@ -246,29 +247,27 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
 
                 }
 
+                for (newVariation in mList) {
+                    if (!newVariation._destroy) {
+                        isNewVariation = true
+                        viewModel.variationAttribute(mList)
+                        break
+                    }
+                }
 
-                Log.e(
+
+                if (!isNewVariation) {
+                    mList.addAll(variationListAdapter.selectedVariation())
+                    viewModel.variationAttribute(mList)
+                }
+
+
+                /*Log.e(
                     TAG,
                     "FinalvariationListApi:  ${Gson().toJson(mList)}"
-                )
+                )*/
 
-                /* for (variationNew in variationListAdapter.selectedVariation()) {
-                     for (variationOld in variationListApi) {
-                         val contains = variationOld.name.contains(variationNew.name)
-                         if (contains) {
-                             variationOld._destroy = true
-                         } else {
-                             variationOld._destroy = false
-                         }
-                     }
-                 }*/
-
-                Log.e(TAG, "variationListApi:  ${Gson().toJson(variationListApi)}")
-                Log.e(
-                    TAG,
-                    "selectedVariation : ${Gson().toJson(variationListAdapter.selectedVariation())}"
-                )
-                viewModel.variationAttribute(mList)
+                // viewModel.variationAttribute(mList)
             } else {
                 viewModel.variationAttribute(variationListAdapter.selectedVariation())
             }
