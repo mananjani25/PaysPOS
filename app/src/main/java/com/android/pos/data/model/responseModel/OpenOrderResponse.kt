@@ -75,7 +75,7 @@ data class OpenOrderResponse(
             @SerializedName("order_type_id")
             val orderTypeId: Int,
             @SerializedName("payment_status")
-            val paymentStatus: String,
+            var paymentStatus: String,
             @SerializedName("payments")
             val payments: List<Payment>,
             @SerializedName("service_charge_enabled")

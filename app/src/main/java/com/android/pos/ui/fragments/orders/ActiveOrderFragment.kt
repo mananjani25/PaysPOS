@@ -6,22 +6,23 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.pos.R
 import com.android.pos.databinding.FragmentActiveOrdersBinding
 import com.android.pos.ui.adapter.OpenOrderAdapter
+import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
-import com.android.pos.utils.callback.ItemCallback
+import com.android.pos.utils.callback.OrderCallBack
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ActiveOrderFragment : Fragment(), ItemCallback {
+class ActiveOrderFragment : Fragment(), OrderCallBack {
 
+    private var itemPos: Int = 0
     private lateinit var binding: FragmentActiveOrdersBinding
     private val viewModel by viewModels<ActiveOrderViewModel>()
     private lateinit var adapter: OpenOrderAdapter
@@ -41,6 +42,35 @@ class ActiveOrderFragment : Fragment(), ItemCallback {
 
         setupAdapter()
         getOpenOrders()
+        observeShowProgress()
+    }
+
+    private fun observeShowProgress() {
+
+        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    ProgressUtils.showProgressDialog(requireActivity())
+                } else {
+                    ProgressUtils.dismissProgressDialog()
+                }
+            }
+        })
+
+        viewModel.data.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let { baseResponse ->
+
+
+                adapter.update(itemPos)
+
+                activity?.let {
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        it, baseResponse.message
+                    ) { _, _ ->
+                    }
+                }
+            }
+        })
     }
 
     private fun setupAdapter() {
@@ -53,6 +83,7 @@ class ActiveOrderFragment : Fragment(), ItemCallback {
         )
 
         adapter = OpenOrderAdapter()
+        adapter.setCallback(this)
         binding.rvOpenOrder.adapter = adapter
     }
 
@@ -66,10 +97,7 @@ class ActiveOrderFragment : Fragment(), ItemCallback {
                         ProgressUtils.dismissProgressDialog()
                         resource.data?.let {
 
-                            val data = it.data.orders.filter {
-                                it.paymentStatus == "Unpaid"
-                            }
-                            adapter.add(data)
+                            adapter.add(it.data.orders)
                         }
                     }
                     Status.ERROR -> {
@@ -86,22 +114,28 @@ class ActiveOrderFragment : Fragment(), ItemCallback {
 
     }
 
-    override fun onItemClickListener(view: View?, pos: Int) {
+    override fun onItemClickListener(view: View?, pos: Int, status: String) {
 
-        alert(
-            getString(R.string.app_name),
-            getString(R.string.cancel_order_message)
-        ) {
-            positiveButton(getString(R.string.yes)) {
-                val order = adapter.getItem(pos)
+        if (status == "UPDATE") {
 
-                //  viewModel.cancelOrder(order.id)
-            }
-            negativeButton(R.string.no) {
-                // Do negative stuff here
+        } else {
+
+            alert(
+                getString(R.string.app_name),
+                getString(R.string.cancel_order_message)
+            ) {
+                positiveButton(getString(R.string.yes)) {
+
+                    itemPos = pos
+                    val order = adapter.getItem(pos)
+
+                    viewModel.cancelOrder(order.id)
+                }
+                negativeButton(R.string.no) {
+                    // Do negative stuff here
+                }
             }
         }
-
 
     }
 

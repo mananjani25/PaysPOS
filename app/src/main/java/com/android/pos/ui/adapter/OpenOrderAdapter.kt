@@ -12,14 +12,15 @@ import com.android.pos.data.model.responseModel.OpenOrderResponse
 import com.android.pos.databinding.ViewOpenOrderItemBinding
 import com.android.pos.utils.TimeFormatUtils
 import com.android.pos.utils.callback.ItemCallback
+import com.android.pos.utils.callback.OrderCallBack
 
 class OpenOrderAdapter :
     RecyclerView.Adapter<OpenOrderAdapter.MyViewHolder>() {
 
     var orderList = ArrayList<OpenOrderResponse.Data.Order>()
 
-    private var mCallback: ItemCallback? = null
-    fun setCallback(callback: ItemCallback) {
+    private var mCallback: OrderCallBack? = null
+    fun setCallback(callback: OrderCallBack) {
         mCallback = callback
     }
 
@@ -58,6 +59,19 @@ class OpenOrderAdapter :
             }
 
 
+            if (item.paymentStatus == "Cancelled") {
+
+                binding.txtCancelOrder.visibility = View.GONE
+                binding.txtEditOrder.visibility = View.GONE
+                binding.txtPrintReceipt.visibility = View.VISIBLE
+                binding.txtPayNow.visibility = View.GONE
+
+            } else {
+                binding.txtCancelOrder.visibility = View.VISIBLE
+                binding.txtEditOrder.visibility = View.VISIBLE
+                binding.txtPrintReceipt.visibility = View.VISIBLE
+                binding.txtPayNow.visibility = View.VISIBLE
+            }
 
             if (!item.isCheck) {
 
@@ -108,7 +122,11 @@ class OpenOrderAdapter :
             }
 
             binding.txtCancelOrder.setOnClickListener {
-                mCallback?.onItemClickListener(it, bindingAdapterPosition)
+                mCallback?.onItemClickListener(it, bindingAdapterPosition, "")
+            }
+
+            binding.txtEditOrder.setOnClickListener {
+                mCallback?.onItemClickListener(it, bindingAdapterPosition, "UPDATE")
             }
         }
     }
@@ -138,6 +156,11 @@ class OpenOrderAdapter :
     fun getItem(pos: Int): OpenOrderResponse.Data.Order {
 
         return orderList[pos]
+    }
+
+    fun update(position: Int) {
+        orderList[position].paymentStatus = "Cancelled"
+        notifyDataSetChanged()
     }
 
 }

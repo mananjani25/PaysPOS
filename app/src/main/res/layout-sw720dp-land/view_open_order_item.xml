@@ -156,228 +156,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:visibility="gone">
+            android:visibility="visible">
 
-           <!-- <androidx.appcompat.widget.LinearLayoutCompat
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingStart="@dimen/_10sdp"
-                android:paddingTop="@dimen/_5sdp"
-                android:paddingEnd="@dimen/_10sdp"
-                android:paddingBottom="@dimen/_5sdp">
-
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.3"
-                    android:orientation="vertical">
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="@dimen/_5sdp"
-                        tools:ignore="UselessParent">
-
-                        <androidx.appcompat.widget.AppCompatTextView
-                            style="@style/CustomFontSemiBold"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/tv_delivery_date"
-                            android:textAllCaps="true"
-                            android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_5mdpi" />
-
-                        <androidx.appcompat.widget.AppCompatTextView
-                            android:id="@+id/txtDeliveryDate"
-                            style="@style/CustomFontMediumStyle"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/_2sdp"
-                            android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_5mdpi"
-                            tools:text="JUL-21-2021 11:30 AM" />
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="@dimen/_5sdp"
-                        tools:ignore="UselessParent">
-
-                        <androidx.appcompat.widget.AppCompatTextView
-                            style="@style/CustomFontSemiBold"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:text="@string/tv_status"
-                            android:textAllCaps="true"
-                            android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_5mdpi" />
-
-                        <androidx.appcompat.widget.AppCompatTextView
-                            android:id="@+id/txtStatus"
-                            style="@style/CustomFontMediumStyle"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_marginTop="@dimen/_2sdp"
-                            android:textAllCaps="true"
-                            android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_5mdpi"
-                            tools:text="Unpaid" />
-
-
-                    </LinearLayout>
-
-                </androidx.appcompat.widget.LinearLayoutCompat>
-
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="@dimen/_5sdp"
-                        tools:ignore="UselessParent">
-
-                        <androidx.appcompat.widget.AppCompatTextView
-                            style="@style/CustomFontSemiBold"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/tv_customer_name"
-                            android:textAllCaps="true"
-                            android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_5mdpi" />
-
-                        <androidx.appcompat.widget.AppCompatTextView
-                            android:id="@+id/txtCustomerNameDetails"
-                            style="@style/CustomFontMediumStyle"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/_2sdp"
-                            android:textAllCaps="true"
-                            android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_5mdpi"
-                            tools:text="John Smith" />
-
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        tools:ignore="UselessParent">
-
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical"
-                            android:padding="@dimen/_5sdp"
-                            tools:ignore="UselessParent">
-
-                            <androidx.appcompat.widget.AppCompatTextView
-                                style="@style/CustomFontSemiBold"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/tv_contact_number"
-                                android:textAllCaps="true"
-                                android:textColor="@color/txtColor"
-                                android:textSize="@dimen/_5mdpi" />
-
-                            <androidx.appcompat.widget.AppCompatTextView
-                                android:id="@+id/txtPhoneNo"
-                                style="@style/CustomFontMediumStyle"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="@dimen/_2sdp"
-                                android:textColor="@color/txtColor"
-                                android:textSize="@dimen/_5mdpi"
-                                tools:text="John Smith" />
-
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1.2"
-                            android:orientation="vertical"
-                            android:padding="@dimen/_5sdp"
-                            tools:ignore="UselessParent">
-
-                            <androidx.appcompat.widget.AppCompatTextView
-                                style="@style/CustomFontSemiBold"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/tv_email_id"
-                                android:textAllCaps="true"
-                                android:textColor="@color/txtColor"
-                                android:textSize="@dimen/_5mdpi" />
-
-                            <androidx.appcompat.widget.AppCompatTextView
-                                android:id="@+id/txtEmail"
-                                style="@style/CustomFontMediumStyle"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="@dimen/_2sdp"
-                                android:textColor="@color/txtColor"
-                                android:textSize="@dimen/_5mdpi"
-                                tools:text="John Smith" />
-
-
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1.8"
-                            android:orientation="vertical"
-                            android:padding="@dimen/_5sdp"
-                            tools:ignore="UselessParent">
-
-                            <androidx.appcompat.widget.AppCompatTextView
-                                style="@style/CustomFontSemiBold"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/tv_address"
-                                android:textAllCaps="true"
-                                android:textColor="@color/txtColor"
-                                android:textSize="@dimen/_5mdpi" />
-
-                            <androidx.appcompat.widget.AppCompatTextView
-                                android:id="@+id/txtAddress"
-                                style="@style/CustomFontMediumStyle"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="@dimen/_2sdp"
-                                android:textColor="@color/txtColor"
-                                android:textSize="@dimen/_5mdpi"
-                                tools:text="John Smith" />
-
-
-                        </LinearLayout>
-
-                    </LinearLayout>
-
-                </androidx.appcompat.widget.LinearLayoutCompat>
-
-            </androidx.appcompat.widget.LinearLayoutCompat>
--->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="0.5dp"
-                android:background="@color/dividerMenu" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvOpenOrder"
@@ -388,6 +168,7 @@
                 tools:listitem="@layout/view_open_order_items" />
 
             <LinearLayout
+                android:padding="@dimen/_5sdp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
@@ -412,6 +193,7 @@
                     app:textAllCaps="false" />
 
                 <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtEditOrder"
                     style="@style/CustomFontBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -430,6 +212,7 @@
                     app:textAllCaps="false" />
 
                 <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtPrintReceipt"
                     style="@style/CustomFontBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -446,6 +229,7 @@
                     app:textAllCaps="false" />
 
                 <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtPayNow"
                     style="@style/CustomFontBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
