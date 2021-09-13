@@ -1,18 +1,22 @@
 package com.android.pos.data.repositories
 
 
+import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.db.IDataManager
 import com.android.pos.data.entities.*
 import com.android.pos.data.entities.ModifierSet
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.NoteResponse
+import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.model.responseModel.VenueDetailsResponse
 import com.android.pos.data.remote.ApiHelper
 import com.android.pos.utils.performGetOperation
 import com.android.pos.utils.performGetOperationDatabase
 import com.android.pos.utils.performGetOperationNew
+import com.google.gson.Gson
 import javax.inject.Inject
 
 
@@ -24,14 +28,59 @@ class PosRepository @Inject constructor(
     fun syncVenueData() =
         performGetOperationNew(networkCall = { apiHelperNew.syncVenueData() })
 
-    fun getPrinters() = performGetOperationNew(networkCall = { apiHelperNew.getPrinterData() })
+    suspend fun deleteKitchenPrinter(id: Int) =
+        appDatabase.printerDao().deleteKitchenPrinterById(id)
+
+    suspend fun deleteCustomerPrinter(id: Int) =
+        appDatabase.printerDao().deleteCustomerPrinterById(id)
+
+    suspend fun updateKitchenPrinterStatus(status: Boolean, id: Int) =
+        appDatabase.printerDao().updateKitchenStatus(status, id)
+
+    suspend fun updateCustomerPrinterStatus(status: Boolean, id: Int) =
+        appDatabase.printerDao().updateCustomerStatus(status, id)
+
+    fun getPrinters() = performGetOperation(
+        databaseQuery = {
+            appDatabase.printerDao().customerPrintList
+
+        },
+        networkCall = { apiHelperNew.getPrinterData() },
+        saveCallResult = {
+            appDatabase.printerDao().addCustomerPrinterList(it.data.customerReceiptPrinters)
+            it.data.kitchenReceiptPrinters?.let { it1 ->
+                appDatabase.printerDao().addKitchenPrinterList(
+                    it1
+                )
+            }
+        }
+
+    )
+
+    fun getKitchenPrinters() =
+        performGetOperationDatabase { appDatabase.printerDao().kitchenPrintList }
+
+
+    fun getPrinterDataMerge(): MutableLiveData<PrinterResponse.Data> {
+        var data = PrinterResponse.Data()
+        //var list:LiveData<PrinterResponse.Data> = data
+        data.customerReceiptPrinters = appDatabase.printerDao().customerPrintList.value
+        data.kitchenReceiptPrinters = appDatabase.printerDao().kitchenPrintList.value
+        Log.e("PrinterDAta", "PrinterGetDAta  ${Gson().toJson(data)}")
+
+        val liveData = MutableLiveData<PrinterResponse.Data>()
+        liveData.postValue(data)
+
+        return liveData
+    }
 
     suspend fun createPrinter(data: CreatePrinterRequestModel) =
         apiHelperNew.createPrinter(data)
 
     suspend fun deletePrinter(id: Int) = apiHelperNew.deletePrinter(id)
 
-    suspend fun updatePrinter(id:Int,model:CreatePrinterRequestModel) = apiHelperNew.updatePrinter(id,model)
+    suspend fun updatePrinter(id: Int, model: CreatePrinterRequestModel) =
+        apiHelperNew.updatePrinter(id, model)
 
     suspend fun updatePrinterStatus(id: Int, terminal_id: Int, status: Boolean) =
         apiHelperNew.updatePrinterStatus(id, terminal_id, status)
@@ -233,7 +282,8 @@ class PosRepository @Inject constructor(
     fun getEmployeeListDatabse() =
         performGetOperationDatabase(databaseQuery = { appDatabase.employeeDao().allEmployee })
 
-    fun getORderTypesListDatabase() =  performGetOperationDatabase(databaseQuery = {appDatabase.orderTypeDao().orderTypes})
+    fun getORderTypesListDatabase() =
+        performGetOperationDatabase(databaseQuery = { appDatabase.orderTypeDao().orderTypes })
 
 
     /*fun employeesTimeSheet(startDate: String, endDate: String, teamRoleId: String) =
