@@ -25,7 +25,7 @@ interface CartDao {
     @Query("select * from CartModel where CartModel.isOpenOrder = 0 ")
     suspend fun cartList(): List<CartModel>
 
-    @Query("DELETE FROM CartModel where CartModel.isOpenOrder = 0 AND CartModel.isMaual = 0")
+    @Query("DELETE FROM CartModel")
     suspend fun delete()
 
     @get:Query("select * from CartModel where CartModel.isMaual = 1")
