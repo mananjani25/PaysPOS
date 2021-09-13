@@ -31,7 +31,7 @@ class CustomerListViewModel @Inject constructor(
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
 
-     fun clearDataBase() =
+    fun clearDataBase() =
         viewModelScope.launch {
             posRepository.clearCustomerTb()
         }

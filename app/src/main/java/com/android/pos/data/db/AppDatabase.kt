@@ -10,6 +10,7 @@ import com.android.pos.data.entities.*
 import com.android.pos.data.model.CharacterModel
 import com.android.pos.data.model.responseModel.GetTipReponse
 import com.android.pos.data.model.responseModel.NoteResponse
+import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.model.responseModel.VenueDetailsResponse
 import com.android.pos.data.remote.Constants.DATABASE_NAME
 import com.android.pos.data.typeconvert.*
@@ -20,7 +21,9 @@ import com.android.pos.data.typeconvert.*
         GetTipReponse.Data::class, TbDiscount::class, NoteResponse.Data::class,
         TbServiceCharge::class, Employee::class, CartModel::class,
         TbCustomer::class, ModifierSet::class, TeamRole::class,
-        ModulePermission::class, TbOrderType::class, VenueDetailsResponse.Data.Terminal::class, ItemModifierSets::class, OptionSet::class],
+        ModulePermission::class, TbOrderType::class, VenueDetailsResponse.Data.Terminal::class,
+        ItemModifierSets::class, OptionSet::class, PrinterResponse.Data.CustomerReceiptPrinters::class,
+        PrinterResponse.Data.KitchenReceiptPrinters::class],
     version = 1
 )
 @TypeConverters(
@@ -35,7 +38,12 @@ import com.android.pos.data.typeconvert.*
     TCCustomer::class,
     TCOption::class,
     TCVariations::class,
-    TCOptionSets::class
+    TCOptionSets::class,
+    TCCustomerReceiptPrinters::class,
+    TCPrinter::class,
+    TCOrderTypes::class,
+    TCKitchenReceiptPrinters::class,
+    TCPrinterCategories::class
 )
 
 
@@ -59,6 +67,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun orderTypeDao(): OrderTypeDao
     abstract fun terminalDao(): TerminalsDao
     abstract fun itemModifierSetsDao(): ItemModifierSetsDao
+    abstract fun printerDao(): PrinterDao
 
     companion object {
         @Volatile
