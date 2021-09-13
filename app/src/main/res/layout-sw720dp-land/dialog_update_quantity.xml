@@ -17,11 +17,11 @@
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/imgBack"
-                android:background="?attr/selectableItemBackground"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_gravity="center"
+                android:background="?attr/selectableItemBackground"
                 android:padding="@dimen/_4sdp"
                 app:srcCompat="@drawable/ic_cancel_black"
                 app:tint="@color/viewTextColor" />
@@ -77,14 +77,13 @@
 
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/txtCustomItemName"
+                    android:id="@+id/txtItemName"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginTop="@dimen/_5sdp"
                     android:paddingBottom="@dimen/_5sdp"
-                    android:text="CUSTOM  ITEM  NAME"
                     android:textColor="@color/viewTextColor"
                     android:textSize="@dimen/_5mdpi"
                     app:textAllCaps="true" />
@@ -106,6 +105,13 @@
                     android:textColor="@color/black"
                     android:textColorHint="@color/hintColor"
                     android:textSize="@dimen/_5ssp" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvVariationList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/_10sdp"
+                    android:visibility="gone" />
 
 
                 <androidx.recyclerview.widget.RecyclerView

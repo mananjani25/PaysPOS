@@ -53,6 +53,6 @@ class TbItem : Parcelable {
     var isDiscountDefault = false
     var discountId: Int = 0
     var discountType: String = ""
-    var variationsAttributes: List<VariationsAttribute>? = null
+    var variationsAttributes: List<VariationsAttribute> = emptyList()
     var optionSets: List<OptionSet>? = null
 }
