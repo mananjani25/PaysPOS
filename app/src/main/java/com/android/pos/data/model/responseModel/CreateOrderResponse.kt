@@ -1,20 +1,28 @@
 package com.android.pos.data.model.responseModel
 
 
+import android.os.Parcel
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 
+
 data class CreateOrderResponse(
+
     @SerializedName("data")
     val `data`: Data
 ) : BaseResponse() {
+
+
     data class Data(
         @SerializedName("order")
         val order: Order
-    ) {
+    ) : Parcelable {
+
         data class Order(
             @SerializedName("created_at")
             val createdAt: String,
             @SerializedName("creation_time_on_terminal")
+
             val creationTimeOnTerminal: Any,
             @SerializedName("customer")
             val customer: Any,
@@ -35,7 +43,7 @@ data class CreateOrderResponse(
             @SerializedName("edited_order_timestamp")
             val editedOrderTimestamp: Any,
             @SerializedName("employee")
-            val employee: Any,
+            val employee: Employee,
             @SerializedName("employee_id")
             val employeeId: Int,
             @SerializedName("future_delivery_date")
@@ -136,6 +144,26 @@ data class CreateOrderResponse(
                 val totalPrice: Double
             )
 
+            data class Employee (
+
+                @SerializedName("id") var id : Int,
+                @SerializedName("name") var name : String,
+                @SerializedName("email") var email : String,
+                @SerializedName("phone_number") var phoneNumber : String,
+                @SerializedName("location_id") var locationId : Int,
+                @SerializedName("passcode") var passcode : String,
+                @SerializedName("is_active") var isActive : Boolean,
+                @SerializedName("created_at") var createdAt : String,
+                @SerializedName("updated_at") var updatedAt : String,
+                @SerializedName("loggedin_terminal_id") var loggedinTerminalId : Int,
+                @SerializedName("is_clocked_in") var isClockedIn : Boolean,
+                @SerializedName("first_name") var firstName : String,
+                @SerializedName("last_name") var lastName : String,
+                @SerializedName("team_role_id") var teamRoleId : Int,
+                @SerializedName("hourly_wages") var hourlyWages : Int
+
+            )
+
             data class OrderServiceCharge(
                 @SerializedName("amount")
                 val amount: Double,
@@ -201,6 +229,25 @@ data class CreateOrderResponse(
                 @SerializedName("updated_at")
                 val updatedAt: String
             )
+        }
+
+
+        override fun describeContents(): Int {
+            return 0
+        }
+
+        override fun writeToParcel(dest: Parcel?, flags: Int) {
+
+        }
+
+        companion object CREATOR : Parcelable.Creator<Data> {
+            override fun createFromParcel(parcel: Parcel): Data {
+                return Data(TODO("Order"))
+            }
+
+            override fun newArray(size: Int): Array<Data?> {
+                return arrayOfNulls(size)
+            }
         }
     }
 }

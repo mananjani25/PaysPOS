@@ -60,6 +60,8 @@ class PosRepository @Inject constructor(
     fun getKitchenPrinters() =
         performGetOperationDatabase { appDatabase.printerDao().kitchenPrintList }
 
+    fun getCustomerPrinters() =
+        performGetOperationDatabase { appDatabase.printerDao().customerPrintList }
 
     fun getPrinterDataMerge(): MutableLiveData<PrinterResponse.Data> {
         var data = PrinterResponse.Data()

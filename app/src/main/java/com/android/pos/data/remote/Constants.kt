@@ -5,6 +5,9 @@ import com.android.pos.data.model.PrinterListModel
 import com.android.pos.data.model.requestModel.CreatePrinterRequestModel
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.google.gson.Gson
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 object Constants {
 
@@ -169,6 +172,11 @@ object Constants {
 
     const val UPDATE_TIP = "orders/{id}/update_tip"
 
+    const val BUSINESS_NAME = "business_name"
+    const val BUSINESS_ADDRESS = "business_address"
+    const val BUSINESS_PHONE_NO = "business_phone_no"
+    const val BUSINESS_WEBSITE = "business_website"
+
     fun createRequestModelForUpdatePrinter(
         model: ArrayList<PrinterResponse.Data.OrderTypes>,
         printerModel: PrinterListModel?
@@ -211,6 +219,20 @@ object Constants {
 
     const val OPEN_ORDERS = "orders/open_orders"
     const val CASH_EVENTS = "cash_events"
+
+    const val UTC_SERVER_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+
+
+    fun getReceiptFormatDateFromUTCServer(mdate: String): String {
+
+        val df = SimpleDateFormat(UTC_SERVER_FORMAT, Locale.ENGLISH)
+        df.setTimeZone(TimeZone.getTimeZone("UTC"))
+        val date: Date = df.parse(mdate)
+        df.setTimeZone(TimeZone.getDefault())
+        val dateFormatter = SimpleDateFormat("dd-MMM-yyyy HH:mm:aa")
+        return dateFormatter.format(date)
+
+    }
 
 
 }
