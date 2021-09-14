@@ -96,10 +96,16 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             tipAmount = bundle.getDouble("tipAmount")
 
 
-            binding.txtTotalAmount.text =
-                MethodUtils.roundOffAmount(totalPrice + tipAmount) + " (" + MethodUtils.roundOffAmount(
-                    tipAmount
-                ) + " Tip Added)"
+            if (tipAmount == 0.00) {
+                binding.txtTotalAmount.text =
+                    MethodUtils.roundOffAmount(totalPrice)
+            } else {
+                binding.txtTotalAmount.text =
+                    MethodUtils.roundOffAmount(totalPrice + tipAmount) + " (" + MethodUtils.roundOffAmount(
+                        tipAmount
+                    ) + " Tip Added)"
+            }
+
 
             getCashPaymentOptionList(totalPrice + tipAmount)
             MethodUtils.setPriceTextView(binding.txtTipAmt, tipAmount)

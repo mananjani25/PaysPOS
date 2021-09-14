@@ -9,6 +9,11 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.pos.R
+import com.android.pos.data.entities.CartModel
+import com.android.pos.data.entities.TbCustomer
+import com.android.pos.data.entities.TbItem
+import com.android.pos.data.entities.TbServiceCharge
+import com.android.pos.data.model.responseModel.OpenOrderResponse
 import com.android.pos.databinding.FragmentActiveOrdersBinding
 import com.android.pos.ui.adapter.OpenOrderAdapter
 import com.android.pos.utils.AlertUtils
@@ -116,7 +121,23 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
 
     override fun onItemClickListener(view: View?, pos: Int, status: String) {
 
+        val order = adapter.getItem(pos)
         if (status == "UPDATE") {
+
+            val inventoryModelList = ArrayList<TbItem>()
+            CartModel().apply {
+                terminalId = order.terminalId
+                employeeID = order.employeeId
+                locationId = order.locationId
+                orderTypeId = order.orderTypeId
+                orderType = order.orderType
+                orderTypeName = order.orderType
+                futureDeliveryDate = order.date
+                isOpenOrder = true
+                serviceCharge = serviceChargesList(order)
+                customer = assignCustomer(order)
+                items = inventoryList(order)
+            }
 
 
         } else {
@@ -128,8 +149,6 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
                 positiveButton(getString(R.string.yes)) {
 
                     itemPos = pos
-                    val order = adapter.getItem(pos)
-
                     viewModel.cancelOrder(order.id)
                 }
                 negativeButton(R.string.no) {
@@ -140,5 +159,73 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
 
     }
 
+    private fun inventoryList(order: OpenOrderResponse.Data.Order): List<TbItem>? {
 
+        val inventoryModelList = ArrayList<TbItem>()
+
+        order.orderItems.forEach {
+
+            val items = TbItem().apply {
+                itemId = it.id
+                name = it.itemName
+                cost = it.price
+                price = it.price
+                priceType = ""
+                quantity = it.quantity
+                kitchenName = ""
+                productCode = ""
+                sku = ""
+                isHide = false
+                sort = 0
+                imageUrl = ""
+                thumbImageUrl = ""
+                categoryId = it.categoryId
+                categoryName = ""
+//                taxes = it.taxes
+//                modifier_set_ids = it.modifierIds
+//                variationsAttributes = it.variations
+
+            }
+
+            inventoryModelList.add(items)
+
+        }
+
+        return inventoryModelList
+    }
+
+    private fun assignCustomer(order: OpenOrderResponse.Data.Order): TbCustomer {
+
+        return TbCustomer(
+            order.customer?.id,
+            order.customer?.firstName.toString(),
+            order.customer?.lastName.toString(),
+            order.customer?.birthDate.toString(),
+            order.customer?.email.toString(),
+            order.customer?.company.toString(),
+        )
+    }
+
+
+    private fun serviceChargesList(order: OpenOrderResponse.Data.Order): List<TbServiceCharge> {
+
+        val serviceChargeList = ArrayList<TbServiceCharge>()
+
+        order.orderServiceCharges.forEach {
+            val serviceCharge = TbServiceCharge(
+                it.createdAt,
+                it.serviceChargeId,
+                true,
+                order.locationId,
+                it.name,
+                it.rate,
+                it.updatedAt,
+                isActive = false, isChecked = true,
+                order_service_charge_id = it.id
+            )
+            serviceChargeList.add(serviceCharge)
+        }
+
+        return serviceChargeList
+    }
 }

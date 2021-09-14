@@ -258,7 +258,7 @@ data class OpenOrderResponse(
                 @SerializedName("location_id")
                 val locationId: Int,
                 @SerializedName("note")
-                val note: Any,
+                val note: String,
                 @SerializedName("updated_at")
                 val updatedAt: String
             )
