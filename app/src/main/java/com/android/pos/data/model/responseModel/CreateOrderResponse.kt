@@ -25,7 +25,7 @@ data class CreateOrderResponse(
 
             val creationTimeOnTerminal: Any,
             @SerializedName("customer")
-            val customer: Any,
+            val customer: Customer,
             @SerializedName("customer_id")
             val customerId: Any,
             @SerializedName("date")
@@ -103,6 +103,20 @@ data class CreateOrderResponse(
             @SerializedName("updated_at")
             val updatedAt: String
         ) {
+            data class Customer(
+
+                @SerializedName("id") var id: Int,
+                @SerializedName("first_name") var firstName: String,
+                @SerializedName("last_name") var lastName: String,
+                @SerializedName("company") var company: String,
+                @SerializedName("location_id") var locationId: Int,
+                @SerializedName("created_at") var createdAt: String,
+                @SerializedName("updated_at") var updatedAt: String,
+                @SerializedName("birth_date") var birthDate: String,
+                @SerializedName("email") var email: String
+
+            )
+
             data class OrderItem(
                 @SerializedName("category_id")
                 val categoryId: Int,
@@ -133,7 +147,7 @@ data class CreateOrderResponse(
                 @SerializedName("order_id")
                 val orderId: Int,
                 @SerializedName("order_item_modifiers")
-                val orderItemModifiers: List<Any>,
+                val orderItemModifiers: List<OrderItemModifiers>,
                 @SerializedName("price")
                 val price: Double,
                 @SerializedName("quantity")
@@ -142,25 +156,41 @@ data class CreateOrderResponse(
                 val timestamp: String,
                 @SerializedName("total_price")
                 val totalPrice: Double
-            )
+            ) {
+                data class OrderItemModifiers(
 
-            data class Employee (
+                    @SerializedName("id") var id: Int,
+                    @SerializedName("order_item_id") var orderItemId: Int,
+                    @SerializedName("name") var name: String,
+                    @SerializedName("price") var price: Int,
+                    @SerializedName("quantity") var quantity: Int,
+                    @SerializedName("order_id") var orderId: Int,
+                    @SerializedName("modifier_set_id") var modifierSetId: Int,
+                    @SerializedName("is_modifier") var isModifier: Boolean,
+                    @SerializedName("created_at") var createdAt: String,
+                    @SerializedName("updated_at") var updatedAt: String,
+                    @SerializedName("total_price") var totalPrice: Int
 
-                @SerializedName("id") var id : Int,
-                @SerializedName("name") var name : String,
-                @SerializedName("email") var email : String,
-                @SerializedName("phone_number") var phoneNumber : String,
-                @SerializedName("location_id") var locationId : Int,
-                @SerializedName("passcode") var passcode : String,
-                @SerializedName("is_active") var isActive : Boolean,
-                @SerializedName("created_at") var createdAt : String,
-                @SerializedName("updated_at") var updatedAt : String,
-                @SerializedName("loggedin_terminal_id") var loggedinTerminalId : Int,
-                @SerializedName("is_clocked_in") var isClockedIn : Boolean,
-                @SerializedName("first_name") var firstName : String,
-                @SerializedName("last_name") var lastName : String,
-                @SerializedName("team_role_id") var teamRoleId : Int,
-                @SerializedName("hourly_wages") var hourlyWages : Int
+                )
+            }
+
+            data class Employee(
+
+                @SerializedName("id") var id: Int,
+                @SerializedName("name") var name: String,
+                @SerializedName("email") var email: String,
+                @SerializedName("phone_number") var phoneNumber: String,
+                @SerializedName("location_id") var locationId: Int,
+                @SerializedName("passcode") var passcode: String,
+                @SerializedName("is_active") var isActive: Boolean,
+                @SerializedName("created_at") var createdAt: String,
+                @SerializedName("updated_at") var updatedAt: String,
+                @SerializedName("loggedin_terminal_id") var loggedinTerminalId: Int,
+                @SerializedName("is_clocked_in") var isClockedIn: Boolean,
+                @SerializedName("first_name") var firstName: String,
+                @SerializedName("last_name") var lastName: String,
+                @SerializedName("team_role_id") var teamRoleId: Int,
+                @SerializedName("hourly_wages") var hourlyWages: Int
 
             )
 

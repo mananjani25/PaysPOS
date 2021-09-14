@@ -1181,6 +1181,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     }
 
     private fun initPrinter(printerListModel: PrinterListModel) {
+        PrinterClass.setPrinter(null)
 
         var printer: Print? = Print(requireContext())
         if (printer != null) {
@@ -1189,6 +1190,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         }
 
         val enabled = Print.FALSE
+        Log.e(TAG, "PrinterconnectionType:  ${printerListModel.connectionType}")
 
         if (printerListModel.connectionType == BLUETOOTH) {
             findBT()
@@ -1221,6 +1223,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     private fun showPrinterStatus(printerListModel: PrinterListModel) {
         var builder: Builder? = null
         var method = ""
+
         try {
             builder = Builder(printerListModel.printerName, language, requireActivity())
 
@@ -1349,8 +1352,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                 Builder.FALSE,
                 Builder.COLOR_1
             )
-            builder.addTextPosition(3)
-            builder.addText(padLine(" Extra Spicy", "$1.99", 44))
+            builder.addTextPosition(4)
+            builder.addText(padLine("   Extra Spicy", "$1.99", 46))
 
 
             builder.addFeedLine(1)
@@ -1369,10 +1372,10 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
             builder.addFeedLine(2)
 
-            builder.addTextFont(Builder.FONT_C)
+            builder.addTextFont(Builder.FONT_D)
             // builder.addTextAlign(Builder.ALIGN_LEFT)
             builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(1, 2)
+            builder.addTextSize(1, 1)
             builder.addTextStyle(
                 Builder.FALSE,
                 Builder.FALSE,
@@ -1386,7 +1389,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             builder.addTextFont(Builder.FONT_C)
             // builder.addTextAlign(Builder.ALIGN_LEFT)
             builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(1, 2)
+            builder.addTextSize(1, 1)
             builder.addTextStyle(
                 Builder.FALSE,
                 Builder.FALSE,
@@ -1397,10 +1400,10 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             builder.addText(padLine("Refund Amount", "$9.99", 46))
 
             builder.addFeedLine(2)
-            builder.addTextFont(Builder.FONT_C)
+            builder.addTextFont(Builder.FONT_B)
             // builder.addTextAlign(Builder.ALIGN_LEFT)
             builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(1, 2)
+            builder.addTextSize(1, 1)
             builder.addTextStyle(
                 Builder.FALSE,
                 Builder.FALSE,
@@ -1413,10 +1416,10 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
             builder.addFeedLine(2)
 
-            builder.addTextFont(Builder.FONT_C)
+            builder.addTextFont(Builder.FONT_A)
             // builder.addTextAlign(Builder.ALIGN_LEFT)
             builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(1, 2)
+            builder.addTextSize(1, 1)
             builder.addTextStyle(
                 Builder.FALSE,
                 Builder.FALSE,
@@ -1428,10 +1431,10 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
             builder.addFeedLine(2)
 
-            builder.addTextFont(Builder.FONT_C)
+            builder.addTextFont(Builder.FONT_E)
             // builder.addTextAlign(Builder.ALIGN_LEFT)
             builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(1, 2)
+            builder.addTextSize(1, 1)
             builder.addTextStyle(
                 Builder.FALSE,
                 Builder.FALSE,

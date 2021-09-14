@@ -14,6 +14,8 @@ object Constants {
     //Database Name
     const val DATABASE_NAME = "androidPos-db"
 
+    const val QRCODE_STATIC_URL = "https://tgb.possoft.io/receipt/TGTT5M019451"
+
     //SharedPref Keys
     const val AUTH_TOKEN = "authToken"
     const val TERMINAL_ID = "terminalId"
