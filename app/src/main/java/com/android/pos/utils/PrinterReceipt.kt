@@ -8,8 +8,11 @@ import android.graphics.drawable.Drawable
 import androidx.annotation.Nullable
 import com.google.android.gms.common.util.Strings
 import android.os.Build
+import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
+import com.android.pos.data.model.responseModel.CreateOrderResponse
+import com.epson.eposprint.Builder
 
 
 fun padLine(
@@ -58,4 +61,83 @@ fun getBitmapFromVectorDrawable(context: Context?, drawableId: Int): Bitmap {
         drawable?.draw(canvas)
     }
     return bitmap!!
+}
+
+fun addBuilderText(
+    builder: com.epson.eposprint.Builder,
+    text: String
+): com.epson.eposprint.Builder {
+    builder.addText(text)
+    return builder
+}
+
+fun addHorizontalLine(builder: Builder): Builder {
+
+
+    var str: String = ""
+    for (i in 0 until 48) {
+        str += "-"
+    }
+    Log.e("strLine", "strLine  $str")
+    builder.addText(str)
+
+    return builder
+}
+
+fun addOrderItems(builder: Builder, list: List<CreateOrderResponse.Data.Order.OrderItem>): Builder {
+    for (i in 0 until list.size) {
+        val obj = list.get(i)
+        builder.addTextLineSpace(30)
+        builder.addFeedUnit(30)
+        builder.addTextFont(Builder.FONT_E)
+        // builder.addTextAlign(Builder.ALIGN_LEFT)
+        builder.addTextLang(Builder.LANG_EN)
+        builder.addTextSize(1, 1)
+        builder.addTextStyle(
+            Builder.FALSE,
+            Builder.FALSE,
+            Builder.FALSE,
+            Builder.COLOR_1
+        )
+
+        builder.addText(
+            padLine(
+                obj.quantity.toString() + "x " + obj.itemName,
+                "$" + MethodUtils.roundOffAmountString(obj.price),
+                48
+            )
+        )
+
+        if (obj.orderItemModifiers.isNotEmpty()) {
+            for (j in 0 until obj.orderItemModifiers.size) {
+                val modifierObj = obj.orderItemModifiers.get(j)
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addTextFont(Builder.FONT_E)
+                //builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(1, 1)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+                builder.addTextPosition(4)
+                builder.addText(
+                    padLine(
+                        "   " + modifierObj.name,
+                        "$" + MethodUtils.roundOffAmountString(modifierObj.price.toDouble()),
+                        47
+                    )
+                )
+
+
+            }
+
+        }
+    }
+
+
+    return builder
 }

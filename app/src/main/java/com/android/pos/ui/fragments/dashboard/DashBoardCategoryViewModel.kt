@@ -11,6 +11,10 @@ import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.entities.*
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ADD
+import com.android.pos.data.remote.Constants.BUSINESS_ADDRESS
+import com.android.pos.data.remote.Constants.BUSINESS_NAME
+import com.android.pos.data.remote.Constants.BUSINESS_PHONE_NO
+import com.android.pos.data.remote.Constants.BUSINESS_WEBSITE
 import com.android.pos.data.remote.Constants.DELETE
 import com.android.pos.data.remote.Constants.UPDATE
 import com.android.pos.data.repositories.PosRepository
@@ -62,7 +66,6 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     val taxList = posRepository.taxList()
 
-
     val discountList = posRepository.disocuntList()
 
     private val _showProgress = MutableLiveData<Event<Boolean>>()
@@ -71,6 +74,8 @@ class DashBoardCategoryViewModel @Inject constructor(
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
 
     fun modifierSet(intArray: IntArray) = posRepository.modifierSetList(intArray)
+
+    fun getItemsbyId(itemId: Int) = posRepository.getItemsbyId(itemId)
 
 //    fun mAllWords(orderType: String) = posRepository.getCartList(orderType)
 
@@ -92,6 +97,14 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                             resource.data?.let {
                                 Log.e(TAG, "FullData  ${Gson().toJson(it)}")
+
+                                prefProvider.setValue(BUSINESS_NAME, it.data.businessName)
+                                prefProvider.setValue(BUSINESS_PHONE_NO, it.data.phoneNumber)
+                                prefProvider.setValue(
+                                    BUSINESS_WEBSITE,
+                                    it.data.businessWebsite.toString()
+                                )
+
                                 taxServiceChargeRepository.addAllTaxDatabase(it.data.taxes)
 
                                 posRepository.addAllNotesDatabase(it.data.notes)
@@ -148,10 +161,21 @@ class DashBoardCategoryViewModel @Inject constructor(
                     var index = -1
 
                     list.forEachIndexed { pos, tbItem ->
-                        if (tbItem.itemId == item.itemId && checkModifier(tbItem, item)) {
+                        if (tbItem.itemId == item.itemId && checkVariation(
+                                tbItem,
+                                item
+                            ) && checkModifier(tbItem, item)
+                        ) {
+                            //   if (checkModifier(tbItem, item)) {
                             index = pos
                             return@forEachIndexed
+                            //  }
                         }
+
+                        /*if (tbItem.itemId == item.itemId && checkModifier(tbItem, item)) {
+                            index = pos
+                            return@forEachIndexed
+                        }*/
                     }
                     if (index != -1) {
                         val model = cartList[0].items?.get(index)
@@ -162,6 +186,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                             } else {
                                 if (index != -1) {
                                     model.itemQuantity = item.itemQuantity + model.itemQuantity
+                                    item.modifiers.forEach {
+                                        it.itemQuantity = model.itemQuantity
+                                    }
                                     model.modifiers = item.modifiers
 
                                     list[index] = model
@@ -218,6 +245,20 @@ class DashBoardCategoryViewModel @Inject constructor(
             }
         }
         return checkModifier
+    }
+
+    private fun checkVariation(tbItem: TbItem, item: TbItem): Boolean {
+
+        if (item.variationsAttributes.isEmpty()) return true
+
+        var variation = false
+
+        item.variationsAttributes.forEach { itemM ->
+            tbItem.variationsAttributes.forEach {
+                variation = itemM.id == it.id
+            }
+        }
+        return variation
     }
 
     private fun addCartModel(item: TbItem): CartModel {

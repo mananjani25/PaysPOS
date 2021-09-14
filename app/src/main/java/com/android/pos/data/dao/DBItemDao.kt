@@ -32,7 +32,7 @@ interface DBItemDao {
     fun getItemList(id: Int?): LiveData<List<TbItem?>>?
 
     @Query("SELECT * from TbItem where TbItem.itemId  = :id LIMIT 1")
-    fun itemById(id: Int?): TbItem?
+    fun itemById(id: Int?): LiveData<TbItem>?
 
     @Query("SELECT * from TbItem LIMIT 1")
     fun itemOne(): TbItem?
