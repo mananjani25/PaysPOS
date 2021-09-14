@@ -66,7 +66,6 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     val taxList = posRepository.taxList()
 
-
     val discountList = posRepository.disocuntList()
 
     private val _showProgress = MutableLiveData<Event<Boolean>>()
@@ -75,6 +74,8 @@ class DashBoardCategoryViewModel @Inject constructor(
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
 
     fun modifierSet(intArray: IntArray) = posRepository.modifierSetList(intArray)
+
+    fun getItemsbyId(itemId: Int) = posRepository.getItemsbyId(itemId)
 
 //    fun mAllWords(orderType: String) = posRepository.getCartList(orderType)
 
@@ -160,17 +161,21 @@ class DashBoardCategoryViewModel @Inject constructor(
                     var index = -1
 
                     list.forEachIndexed { pos, tbItem ->
-                        if (tbItem.itemId == item.itemId && checkVariation(tbItem, item)&& checkModifier(tbItem, item)) {
-                         //   if (checkModifier(tbItem, item)) {
-                                index = pos
-                                return@forEachIndexed
-                          //  }
+                        if (tbItem.itemId == item.itemId && checkVariation(
+                                tbItem,
+                                item
+                            ) && checkModifier(tbItem, item)
+                        ) {
+                            //   if (checkModifier(tbItem, item)) {
+                            index = pos
+                            return@forEachIndexed
+                            //  }
                         }
 
-                         /*if (tbItem.itemId == item.itemId && checkModifier(tbItem, item)) {
-                             index = pos
-                             return@forEachIndexed
-                         }*/
+                        /*if (tbItem.itemId == item.itemId && checkModifier(tbItem, item)) {
+                            index = pos
+                            return@forEachIndexed
+                        }*/
                     }
                     if (index != -1) {
                         val model = cartList[0].items?.get(index)
@@ -181,6 +186,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                             } else {
                                 if (index != -1) {
                                     model.itemQuantity = item.itemQuantity + model.itemQuantity
+                                    item.modifiers.forEach {
+                                        it.itemQuantity = model.itemQuantity
+                                    }
                                     model.modifiers = item.modifiers
 
                                     list[index] = model

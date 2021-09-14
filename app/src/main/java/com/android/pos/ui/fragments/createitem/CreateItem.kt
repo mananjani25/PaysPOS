@@ -36,7 +36,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
 
     private var variationList1: ArrayList<VariationsAttribute>? = null
-    private lateinit var variationListApi: ArrayList<VariationsAttribute>
+    private var variationListApi = ArrayList<VariationsAttribute>()
     private var selectedId: Int = -2
     private var isEdit: Boolean = false
     private lateinit var itemObject: TbItem
