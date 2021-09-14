@@ -22,7 +22,7 @@ class ItemModifierAdapter(private val maxAllowed: Int, private val minRequired: 
 
         init {
 
-            binding.root.setOnClickListener {
+            binding.llMain.setOnClickListener {
 
                 list[bindingAdapterPosition].isChecked = !list[bindingAdapterPosition].isChecked
 
