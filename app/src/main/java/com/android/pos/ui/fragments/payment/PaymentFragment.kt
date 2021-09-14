@@ -351,6 +351,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 bundle.putDouble("totalPrice", totalPrice + tipAmount)
                 bundle.putDouble("paymentAmount", paymentAmount)
                 bundle.putInt("orderID", it.data.order.id)
+                bundle.putParcelable("receiptData",it.data)
                 findNavController().navigate(
                     R.id.action_paymentFragment_to_orderCompleteFragment,
                     bundle

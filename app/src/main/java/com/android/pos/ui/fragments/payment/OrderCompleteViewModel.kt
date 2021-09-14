@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.android.pos.R
 import com.android.pos.data.model.requestModel.CreateNoteRequest
 import com.android.pos.data.model.responseModel.BaseResponse
+import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
@@ -102,6 +103,10 @@ class OrderCompleteViewModel @Inject constructor(
 
         }
 
+    }
+
+    fun getCustomerPrinterList(): LiveData<Resource<List<PrinterResponse.Data.CustomerReceiptPrinters>>> {
+        return posRepository.getCustomerPrinters()
     }
 
     fun assignCustomer(orderID: Int, custId: Int) {

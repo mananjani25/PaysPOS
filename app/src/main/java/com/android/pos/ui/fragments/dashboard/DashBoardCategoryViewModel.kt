@@ -11,6 +11,10 @@ import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.entities.*
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ADD
+import com.android.pos.data.remote.Constants.BUSINESS_ADDRESS
+import com.android.pos.data.remote.Constants.BUSINESS_NAME
+import com.android.pos.data.remote.Constants.BUSINESS_PHONE_NO
+import com.android.pos.data.remote.Constants.BUSINESS_WEBSITE
 import com.android.pos.data.remote.Constants.DELETE
 import com.android.pos.data.remote.Constants.UPDATE
 import com.android.pos.data.repositories.PosRepository
@@ -92,6 +96,14 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                             resource.data?.let {
                                 Log.e(TAG, "FullData  ${Gson().toJson(it)}")
+
+                                prefProvider.setValue(BUSINESS_NAME, it.data.businessName)
+                                prefProvider.setValue(BUSINESS_PHONE_NO, it.data.phoneNumber)
+                                prefProvider.setValue(
+                                    BUSINESS_WEBSITE,
+                                    it.data.businessWebsite.toString()
+                                )
+
                                 taxServiceChargeRepository.addAllTaxDatabase(it.data.taxes)
 
                                 posRepository.addAllNotesDatabase(it.data.notes)

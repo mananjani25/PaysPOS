@@ -59,3 +59,11 @@ fun getBitmapFromVectorDrawable(context: Context?, drawableId: Int): Bitmap {
     }
     return bitmap!!
 }
+
+    fun addBuilderText(
+    builder: com.epson.eposprint.Builder,
+    text: String
+): com.epson.eposprint.Builder {
+    builder.addText(text)
+    return builder
+}

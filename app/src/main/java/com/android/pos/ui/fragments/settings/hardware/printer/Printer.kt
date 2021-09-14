@@ -933,7 +933,6 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                         }
 
 
-
                     }
                     if (!isAdded) {
                         availableNetworkAdapter.addItem(
@@ -963,7 +962,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
 
             handler.post(UpdateListThread(deviceList))
-           future?.cancel(false)
+            future?.cancel(false)
             //stopFinder()
 
 
