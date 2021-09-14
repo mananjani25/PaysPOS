@@ -499,4 +499,10 @@ interface ApiService {
         @Query("tips") old_position: Double
     ): BaseResponse
 
+
+    @PUT(ORDER_DETAILS)
+    suspend fun cancelOrder(
+        @Path("id") id: Int,
+        @Body updateItem: OrderCancelRequest
+    ): BaseResponse
 }

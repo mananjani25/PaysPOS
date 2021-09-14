@@ -160,10 +160,17 @@ class DashBoardCategoryViewModel @Inject constructor(
                     var index = -1
 
                     list.forEachIndexed { pos, tbItem ->
-                        if (tbItem.itemId == item.itemId && checkModifier(tbItem, item)) {
-                            index = pos
-                            return@forEachIndexed
+                        if (tbItem.itemId == item.itemId && checkVariation(tbItem, item)&& checkModifier(tbItem, item)) {
+                         //   if (checkModifier(tbItem, item)) {
+                                index = pos
+                                return@forEachIndexed
+                          //  }
                         }
+
+                         /*if (tbItem.itemId == item.itemId && checkModifier(tbItem, item)) {
+                             index = pos
+                             return@forEachIndexed
+                         }*/
                     }
                     if (index != -1) {
                         val model = cartList[0].items?.get(index)
@@ -200,11 +207,18 @@ class DashBoardCategoryViewModel @Inject constructor(
                     deleteCart()
                 }
             } else {
-                val cartModel = cartList?.get(0)
-                cartModel?.items = list
-                if (cartModel != null) {
-                    addCart(cartModel)
+
+                if (type == DELETE) {
+                    deleteCart()
+                } else {
+                    val cartModel = cartList?.get(0)
+                    cartModel?.items = listOf(item)
+                    if (cartModel != null) {
+                        addCart(cartModel)
+                    }
                 }
+
+
             }
 
 
@@ -223,6 +237,20 @@ class DashBoardCategoryViewModel @Inject constructor(
             }
         }
         return checkModifier
+    }
+
+    private fun checkVariation(tbItem: TbItem, item: TbItem): Boolean {
+
+        if (item.variationsAttributes.isEmpty()) return true
+
+        var variation = false
+
+        item.variationsAttributes.forEach { itemM ->
+            tbItem.variationsAttributes.forEach {
+                variation = itemM.id == it.id
+            }
+        }
+        return variation
     }
 
     private fun addCartModel(item: TbItem): CartModel {
@@ -313,7 +341,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             totalDiscount = cartList[0].items!!.map {
                 it.discountPrice
             }.sum()
-            Log.e(TAG, "totalDiscount:  ${totalDiscount}")
+            Log.e(TAG, "totalDiscount:  $totalDiscount")
 
 
             totalPrice = (subTotalPrice + totalTax + totalServiceCharge) /*- totalDiscount*/
