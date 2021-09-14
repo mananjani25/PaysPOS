@@ -194,6 +194,9 @@ class PosRepository @Inject constructor(
     fun getItemsList() =
         performGetOperationDatabase(databaseQuery = { appDatabase.itemDao().allItem!! })
 
+    fun getItemsbyId(itemId:Int) =
+        performGetOperationDatabase(databaseQuery = { appDatabase.itemDao().itemById(itemId)!! })
+
     fun modifierSetsList() =
         performGetOperationDatabase(databaseQuery = { appDatabase.modifierSetDao().all })
 

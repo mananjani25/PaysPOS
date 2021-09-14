@@ -1013,18 +1013,40 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
             })
         }
-
         if (data.variationsAttributes.isNotEmpty()) {
-            rvVariationList.visibility = View.VISIBLE
             rvVariationList.layoutManager = GridLayoutManager(activity, 3);
             variationAdapter = VariationDashboardListAdapter()
             rvVariationList.adapter = variationAdapter
-            txtItemName.text = data.name + ":-  Choose One"
+            viewModel.getItemsbyId(data.itemId).observe(viewLifecycleOwner, {
 
-            variationAdapter.addVariations(data.variationsAttributes)
+                it?.let { resource ->
+                    when (resource.status) {
+                        Status.SUCCESS -> {
+                            it.data?.let {
+                                rvVariationList.visibility = View.VISIBLE
+                                txtItemName.text = it.name + ":-  Choose One"
+                                variationAdapter.addVariations(it.variationsAttributes)
+                                showPriceTitle(variationsAttribute = null, variationAdapter, data, txtTitle, isItemClick)
+
+                            }
+
+                        }
+                        Status.ERROR -> {
+                            rvVariationList.visibility = View.GONE
+                        }
+                        Status.LOADING -> {
+                            rvVariationList.visibility = View.GONE
+                        }
+                    }
+                }
+
+
+            })
+
         } else {
             rvVariationList.visibility = View.GONE
             txtItemName.visibility = View.GONE
+            showPriceTitle(variationsAttribute = null, variationAdapter, data, txtTitle, isItemClick)
         }
 
         edtNote.setText(data.note)
@@ -1032,8 +1054,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
 
         txtQty.setText(qty.toString())
-
-        showPriceTitle(variationsAttribute = null, variationAdapter, data, txtTitle, isItemClick)
 
         variationAdapter?.showVariationPriceClick = {
             showPriceTitle(it, variationAdapter = null, data, txtTitle, isItemClick)
@@ -1057,6 +1077,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             if (data.variationsAttributes.isNotEmpty()) {
                 val variation = variationAdapter?.getItem()!!
                 variationList.add(variation)
+                data.variationsAttributes = variationList
             }
 
 
