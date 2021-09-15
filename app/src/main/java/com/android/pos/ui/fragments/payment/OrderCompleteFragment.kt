@@ -919,7 +919,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         type: String
     ) {
         Log.e(TAG, "getPrinter:  ${PrinterClass.getPrinter()}")
-        PrinterClass.closePrinter()
+        PrinterClass.setPrinter(null)
         if (PrinterClass.getPrinter() == null) {
             var printer: Print? = Print(requireContext())
             if (printer != null) {
@@ -979,67 +979,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             )
             builder.addTextAlign(Builder.ALIGN_CENTER)
 
-            addBuilderText(builder, prefProvider.getValue(BUSINESS_NAME, "").toString())
-            builder.addFeedLine(1)
-            builder.addTextFont(Builder.FONT_E)
-            builder.addTextAlign(Builder.ALIGN_CENTER)
-            builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(1, 1)
-            builder.addTextStyle(
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.COLOR_1
-            )
-
-            addBuilderText(
-                builder,
-                prefProvider.getValue(BUSINESS_ADDRESS, "7450 DW 51 FH,AT,Suite 503").toString()
-            )
-            builder.addFeedLine(1)
-
-            builder.addTextFont(Builder.FONT_E)
-            builder.addTextAlign(Builder.ALIGN_CENTER)
-            builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(1, 1)
-            builder.addTextStyle(
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.COLOR_1
-            )
-            addBuilderText(builder, prefProvider.getValue(BUSINESS_PHONE_NO, "").toString())
+            addBuilderText(builder, receiptModel?.order?.orderType.toString())
 
 
-            receiptModel?.order?.venue_website?.let {
-                builder.addFeedLine(1)
-
-                builder.addTextFont(Builder.FONT_E)
-                builder.addTextAlign(Builder.ALIGN_CENTER)
-                builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(1, 1)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.COLOR_1
-                )
-                addBuilderText(builder, it)
-            }
-            builder.addFeedLine(1)
-
-            builder.addTextFont(Builder.FONT_E)
-
-            builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(2, 2)
-            builder.addTextStyle(
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.COLOR_1
-            )
-            builder.addTextAlign(Builder.ALIGN_CENTER)
-            builder.addText(receiptModel?.order?.orderType + "\n")
 
 
             builder.addFeedLine(1)
@@ -1058,7 +1000,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 padLine(
                     "OrderID:" + receiptModel?.order?.id,
                     "ReceiptID:" + receiptModel?.order?.offlineId,
-                    48
+                    33
                 )
             )
 
