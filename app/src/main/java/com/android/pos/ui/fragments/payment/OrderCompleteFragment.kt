@@ -107,7 +107,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         setFragmentResultListener("request_key_customer") { requestKey: String, bundle: Bundle ->
             val result = bundle.getParcelable<TbCustomer>("data")
             if (result != null) {
-                Log.e("request_key_customer", result.first_name)
+              //  Log.e("request_key_customer", result.first_name)
 
                 result.id?.let { viewModel.assignCustomer(orderID, it) }
             }

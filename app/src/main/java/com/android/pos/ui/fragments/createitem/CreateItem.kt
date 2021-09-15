@@ -46,7 +46,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
     private var optionSetList: ArrayList<OptionSet>? = null
     private var modifierSetIds = ArrayList<Int>()
     private var position1: Int = -1
-    val customVariationList = ArrayList<VariationsAttribute>()
+    var customVariationList = ArrayList<VariationsAttribute>()
     private val TAG = "CreateItem"
     private var isNewVariation: Boolean = false
 
@@ -106,6 +106,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
 
             val builder = StringBuilder()
             variationList1 = ArrayList()
+            customVariationList = ArrayList()
 
 
 
@@ -151,6 +152,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
             getNavigationResultLiveData<VariationsAttribute>(DIALOG_KEY_VARIATION_DETAILS_REMOVE)
         resultVariationDetailsRemove?.observe(viewLifecycleOwner) {
             val deleteVariation = variationListAdapter.deleteVariation(position1, it)
+            customVariationList.remove(it)
 
             if (deleteVariation == 0) {
                 binding.llVariationTitle.visibility = View.GONE
@@ -163,7 +165,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
         val resultVariationAddDetails =
             getNavigationResultLiveData<VariationsAttribute>(DIALOG_KEY_ADD_VARIATION_DETAILS)
         resultVariationAddDetails?.observe(viewLifecycleOwner) {
-
+            variationList1 = ArrayList()
             customVariationList.add(it)
 
             binding.llVariationTitle.visibility = View.VISIBLE
