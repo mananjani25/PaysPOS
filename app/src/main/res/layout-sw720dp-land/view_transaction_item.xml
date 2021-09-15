@@ -58,7 +58,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:layout_gravity="center"
-                android:text="@{@string/symbole +``+String.format(@string/format,itemSheetModel.amount)+`\n`+itemSheetModel.paymentType}"
+                android:text="@{@string/symbole +``+String.format(@string/format,(itemSheetModel.amount + itemSheetModel.tips))+`\n`+itemSheetModel.paymentType}"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_5mdpi" />
 

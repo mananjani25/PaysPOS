@@ -101,7 +101,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        prefProvider.setValueboolean(IS_CLOCKOUT, false)
+       // prefProvider.setValueboolean(IS_CLOCKOUT, false)
         binding = FragmentDashboardCategoryNewBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
 
@@ -172,7 +172,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             val result = bundle.getParcelable<TbCustomer>("data")
             if (result != null) {
 
-                Log.e("request_key_customer", result.first_name)
+              //  Log.e("request_key_customer", result.first_name)
                 prefProvider.setValue(CUSTOMER_NAME, result.first_name + " " + result.last_name)
                 binding.layoutCart.txtCustomerName.text = result.first_name + " " + result.last_name
                 binding.layoutCart.txtCrtNewCustomer.text = "Remove Customer"
@@ -200,7 +200,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             val result = bundle.getParcelable<TbCustomer>("data")
             if (result != null) {
 
-                Log.e("request_key_customer", result.first_name)
+              //  Log.e("request_key_customer", result.first_name)
                 prefProvider.setValue(CUSTOMER_NAME, result.first_name + " " + result.last_name)
                 binding.layoutCart.txtCustomerName.text = result.first_name + " " + result.last_name
                 binding.layoutCart.txtCrtNewCustomer.text = "Remove Customer"
@@ -1429,7 +1429,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 val request = viewModelPayment.createOrderRequest(
                     cartList[0],
                     viewModel.subTotalPrice,
-                    viewModel.subTotalPrice,
+                    viewModel.totalPrice,
                     viewModel.totalServiceCharge,
                     viewModel.totalTax,
                     OPEN_ORDER,

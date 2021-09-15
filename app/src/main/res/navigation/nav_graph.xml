@@ -385,10 +385,10 @@
             app:destination="@id/customer"
             app:enterAnim="@anim/nav_default_enter_anim" />
         <action
-            app:popUpToInclusive="true"
-            app:popUpTo="@id/dashboardCategoryNew"
             android:id="@+id/action_dashboardCategoryNew_to_paymentFragment"
-            app:destination="@id/paymentFragment" />
+            app:destination="@id/paymentFragment"
+            app:popUpTo="@id/dashboardCategoryNew"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_dashboardCategoryNew_to_addNoteDialog"
             app:destination="@id/addNoteDialog" />
@@ -549,10 +549,10 @@
             android:id="@+id/action_paymentFragment_to_customAmountFragment"
             app:destination="@id/customAmountFragment" />
         <action
-            app:popUpTo="@id/paymentFragment"
-            app:popUpToInclusive="true"
             android:id="@+id/action_paymentFragment_to_orderCompleteFragment"
-            app:destination="@id/orderCompleteFragment" />
+            app:destination="@id/orderCompleteFragment"
+            app:popUpTo="@id/paymentFragment"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_paymentFragment_to_addTipsDialog"
             app:destination="@id/addTipsDialog" />
@@ -717,7 +717,11 @@
     <fragment
         android:id="@+id/transactionDetailsFragment"
         android:name="com.android.pos.ui.fragments.transactions.TransactionDetailsFragment"
-        android:label="TransactionDetailsFragment" />
+        android:label="TransactionDetailsFragment">
+        <action
+            android:id="@+id/action_transactionDetailsFragment_to_issueRefundFragment"
+            app:destination="@id/issueRefundFragment" />
+    </fragment>
     <fragment
         android:id="@+id/editPrinter"
         android:name="com.android.pos.ui.fragments.settings.hardware.EditPrinter"
@@ -753,5 +757,9 @@
         android:id="@+id/addTipsDialog"
         android:name="com.android.pos.ui.dialog.AddTipsDialog"
         android:label="AddTipsDialog" />
+    <dialog
+        android:id="@+id/issueRefundFragment"
+        android:name="com.android.pos.ui.dialog.IssueRefundFragment"
+        android:label="IssueRefundFragment" />
 
 </navigation>

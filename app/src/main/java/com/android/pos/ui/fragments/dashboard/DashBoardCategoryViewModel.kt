@@ -131,7 +131,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
     }
 
-    private fun addCart(cartModel: CartModel) {
+    fun addCart(cartModel: CartModel) {
 
         viewModelScope.launch {
             posRepository.addItemCart(cartModel)
@@ -261,7 +261,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         return variation
     }
 
-    private fun addCartModel(item: TbItem): CartModel {
+    fun addCartModel(item: TbItem): CartModel {
         val inventoryModelList = ArrayList<TbItem>()
         return CartModel().apply {
             terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)

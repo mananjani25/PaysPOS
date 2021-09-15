@@ -5,17 +5,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.pos.R
-import com.android.pos.data.entities.CartModel
-import com.android.pos.data.entities.TbCustomer
-import com.android.pos.data.entities.TbItem
-import com.android.pos.data.entities.TbServiceCharge
+import com.android.pos.data.entities.*
 import com.android.pos.data.model.responseModel.OpenOrderResponse
 import com.android.pos.databinding.FragmentActiveOrdersBinding
 import com.android.pos.ui.adapter.OpenOrderAdapter
+import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.OrderCallBack
@@ -30,6 +30,7 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
     private var itemPos: Int = 0
     private lateinit var binding: FragmentActiveOrdersBinding
     private val viewModel by viewModels<ActiveOrderViewModel>()
+    private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
     private lateinit var adapter: OpenOrderAdapter
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -123,22 +124,24 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
 
         val order = adapter.getItem(pos)
         if (status == "UPDATE") {
-
-            val inventoryModelList = ArrayList<TbItem>()
-            CartModel().apply {
-                terminalId = order.terminalId
-                employeeID = order.employeeId
-                locationId = order.locationId
-                orderTypeId = order.orderTypeId
-                orderType = order.orderType
-                orderTypeName = order.orderType
-                futureDeliveryDate = order.date
-                isOpenOrder = true
-                serviceCharge = serviceChargesList(order)
-                customer = assignCustomer(order)
-                items = inventoryList(order)
-            }
-
+            dashboardViewModel.addCart(
+                CartModel().apply {
+                    terminalId = order.terminalId
+                    employeeID = order.employeeId
+                    locationId = order.locationId
+                    orderTypeId = order.orderTypeId
+                    orderType = order.orderType
+                    orderTypeName = order.orderType
+                    futureDeliveryDate = order.date
+                    isOpenOrder = true
+                    serviceCharge = serviceChargesList(order)
+                    customer = assignCustomer(order)
+                    items = inventoryList(order)
+                }
+            )
+            findNavController().navigate(
+                R.id.action_orders_to_dashboardCategoryNew
+            )
 
         } else {
 
@@ -181,7 +184,7 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
                 thumbImageUrl = ""
                 categoryId = it.categoryId
                 categoryName = ""
-//                taxes = it.taxes
+                taxes = taxes(it.orderItemTax, order.locationId)
 //                modifier_set_ids = it.modifierIds
 //                variationsAttributes = it.variations
 
@@ -194,7 +197,60 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
         return inventoryModelList
     }
 
+    private fun taxes(
+        taxs: List<OpenOrderResponse.Data.Order.OrderItem.OrderItemTax>,
+        locationId: Int
+    ): List<TaxData>? {
+        val taxList = ArrayList<TaxData>()
+
+        taxs.forEach {
+            val tax = TaxData(
+                it.createdAt,
+                it.taxId,
+                locationId,
+                it.name,
+                it.rate,
+                "",
+                it.updatedAt,
+                true,
+                it.isDefault,
+                false,
+                "",
+                listOf()
+            )
+            taxList.add(tax)
+        }
+
+        return taxList
+    }
+
     private fun assignCustomer(order: OpenOrderResponse.Data.Order): TbCustomer {
+
+        val phoneList = ArrayList<TbPhones>()
+        order.customer?.phones?.forEach {
+            val phone = TbPhones(it.id, it.phoneNumber)
+            phoneList.add(phone)
+        }
+
+        val addressList = ArrayList<TbAddress>()
+        order.customer?.addresses?.forEach {
+            val address = TbAddress(
+                it.id,
+                it.address1,
+                it.address2,
+                it.city,
+                it.state,
+                it.country,
+                it.postcode,
+                "",
+                it.latitude,
+                it.longitude,
+                "",
+                it.fullAddress,
+                it.street
+            )
+            addressList.add(address)
+        }
 
         return TbCustomer(
             order.customer?.id,
@@ -203,6 +259,8 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
             order.customer?.birthDate.toString(),
             order.customer?.email.toString(),
             order.customer?.company.toString(),
+            phoneList,
+            addressList
         )
     }
 
@@ -220,7 +278,8 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
                 it.name,
                 it.rate,
                 it.updatedAt,
-                isActive = false, isChecked = true,
+                isActive = false,
+                isChecked = true,
                 order_service_charge_id = it.id
             )
             serviceChargeList.add(serviceCharge)

@@ -9,6 +9,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
+import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.databinding.FragmentTransactionDetailsBinding
 import com.android.pos.ui.adapter.OrderDetailsItemListAdapter
 import com.android.pos.utils.ProgressUtils
@@ -24,6 +25,7 @@ class TransactionDetailsFragment : Fragment() {
     private lateinit var binding: FragmentTransactionDetailsBinding
     private val viewModel by viewModels<TransactionDetailsViewModel>()
     private lateinit var orderDetailsItemAdapter: OrderDetailsItemListAdapter
+    private lateinit var orderDetailsResponse: GetOrderDetailsResponse
     private var orderId: Int = -1
 
     override fun onCreateView(
@@ -61,13 +63,23 @@ class TransactionDetailsFragment : Fragment() {
         binding.imgBack.setOnClickListener {
             findNavController().navigateUp()
         }
+
+        binding.tvIssueRefund.setOnClickListener {
+                val bundle = Bundle().apply {
+                  putParcelable("orderDetailsResponse", orderDetailsResponse)
+            }
+            findNavController().navigate(
+                R.id.action_transactionDetailsFragment_to_issueRefundFragment,
+                bundle
+            )
+        }
     }
 
     private fun navigate() {
 
         viewModel.data.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
-
+                orderDetailsResponse = it
                 binding.tvDate.text =
                     convertCurrentDate(it.data.createdAt) + " " + convertCurrentTime(
                         it.data.createdAt

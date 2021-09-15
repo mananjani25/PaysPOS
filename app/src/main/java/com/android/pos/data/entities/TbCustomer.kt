@@ -15,8 +15,8 @@ data class TbCustomer(
 
     @PrimaryKey
     @SerializedName("id") val id: Int?,
-    @SerializedName("first_name") val first_name: String,
-    @SerializedName("last_name") val last_name: String,
+    @SerializedName("first_name") val first_name: String?,
+    @SerializedName("last_name") val last_name: String?,
     @SerializedName("birth_date") val birth_date: String?,
     @SerializedName("email") val email: String,
     @SerializedName("company") val company: String? = null,

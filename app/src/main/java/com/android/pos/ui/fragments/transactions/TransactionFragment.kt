@@ -563,6 +563,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
         singleTransaction = transactionAdapter.getItem(pos)
 
         val bundle = Bundle()
+        bundle.putDouble("totalTip", singleTransaction!!.tips)
         singleTransaction?.amount?.let { bundle.putDouble("totalPrice", it) }
         findNavController().navigate(
             R.id.action_transactionFragment_to_addTipsDialog,

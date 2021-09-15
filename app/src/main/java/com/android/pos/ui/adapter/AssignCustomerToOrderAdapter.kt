@@ -123,8 +123,8 @@ class AssignCustomerToOrderAdapter :
                             company = it.company
                         }
 
-                        it.first_name.lowercase(Locale.getDefault()).contains(charSequence) or
-                                it.last_name.lowercase(Locale.getDefault())
+                        it.first_name?.lowercase(Locale.getDefault())!!.contains(charSequence) or
+                                it.last_name?.lowercase(Locale.getDefault())!!
                                     .contains(charSequence) or
                                 it.email.lowercase(Locale.getDefault()).contains(charSequence) or
                                 phone.contains(charSequence) or

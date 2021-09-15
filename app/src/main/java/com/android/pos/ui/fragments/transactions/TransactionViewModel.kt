@@ -227,6 +227,7 @@ class TransactionViewModel @Inject constructor(
 
                             resource.data?.let { response ->
 
+                                response.status
                                 _data1.value = Event(response)
 
                             }

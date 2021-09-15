@@ -1,8 +1,11 @@
 package com.android.pos.data.model.responseModel
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.parcelize.Parcelize
 
 
+@Parcelize
 data class GetOrderDetailsResponse(
     @SerializedName("data")
     val `data`: Data,
@@ -12,12 +15,13 @@ data class GetOrderDetailsResponse(
     val status: Int,
     @SerializedName("type")
     val type: String
-) {
+) : Parcelable {
+    @Parcelize
     data class Data(
         @SerializedName("created_at")
         val createdAt: String,
         @SerializedName("creation_time_on_terminal")
-        val creationTimeOnTerminal: Any,
+        val creationTimeOnTerminal: String?,
         @SerializedName("customer")
         val customer: Customer,
         @SerializedName("customer_id")
@@ -25,31 +29,33 @@ data class GetOrderDetailsResponse(
         @SerializedName("date")
         val date: String,
         @SerializedName("delivery_employee_id")
-        val deliveryEmployeeId: Any,
+        val deliveryEmployeeId: String?,
         @SerializedName("delivery_type")
         val deliveryType: String,
+        @SerializedName("digital_receipt_url")
+        val digitalReceiptUrl: String,
         @SerializedName("discount_type_id")
-        val discountTypeId: Any,
+        val discountTypeId: String?,
         @SerializedName("dynamic_discount_id")
-        val dynamicDiscountId: Any,
+        val dynamicDiscountId: String?,
         @SerializedName("edit_order_count")
-        val editOrderCount: Any,
+        val editOrderCount: String?,
         @SerializedName("edited_order_timestamp")
-        val editedOrderTimestamp: Any,
+        val editedOrderTimestamp: String?,
         @SerializedName("employee")
         val employee: Employee,
         @SerializedName("employee_id")
         val employeeId: Int,
         @SerializedName("future_delivery_date")
-        val futureDeliveryDate: Any,
+        val futureDeliveryDate: String?,
         @SerializedName("future_delivery_time")
         val futureDeliveryTime: String,
         @SerializedName("id")
         val id: Int,
         @SerializedName("index_of_date")
-        val indexOfDate: Any,
+        val indexOfDate: String?,
         @SerializedName("integer")
-        val integer: Any,
+        val integer: String?,
         @SerializedName("is_edited")
         val isEdited: Boolean,
         @SerializedName("location_id")
@@ -59,13 +65,15 @@ data class GetOrderDetailsResponse(
         @SerializedName("offline_id")
         val offlineId: String,
         @SerializedName("open_order_type")
-        val openOrderType: Any,
+        val openOrderType: String?,
         @SerializedName("open_order_type_id")
-        val openOrderTypeId: Any,
+        val openOrderTypeId: String?,
         @SerializedName("order_items")
         val orderItems: List<OrderItem>,
         @SerializedName("order_service_charges")
         val orderServiceCharges: List<OrderServiceCharge>,
+        @SerializedName("order_type")
+        val orderType: String,
         @SerializedName("order_type_id")
         val orderTypeId: Int,
         @SerializedName("payment_status")
@@ -94,16 +102,17 @@ data class GetOrderDetailsResponse(
         val totalTips: Double,
         @SerializedName("updated_at")
         val updatedAt: String,
-        @SerializedName("order_type")
-        val orderType: String
-    ) {
+        @SerializedName("venue_website")
+        val venueWebsite: String
+    ) : Parcelable {
+        @Parcelize
         data class Customer(
+            @SerializedName("addresses")
+            val addresses: List<Addresse>,
             @SerializedName("birth_date")
             val birthDate: String,
             @SerializedName("company")
             val company: String,
-            @SerializedName("created_at")
-            val createdAt: String,
             @SerializedName("email")
             val email: String,
             @SerializedName("first_name")
@@ -112,14 +121,47 @@ data class GetOrderDetailsResponse(
             val id: Int,
             @SerializedName("last_name")
             val lastName: String,
-            @SerializedName("location_id")
-            val locationId: Int,
-            @SerializedName("note")
-            val note: Any,
-            @SerializedName("updated_at")
-            val updatedAt: String
-        )
+            @SerializedName("phones")
+            val phones: List<Phone>
+        ) : Parcelable {
+            @Parcelize
+            data class Addresse(
+                @SerializedName("address1")
+                val address1: String,
+                @SerializedName("address2")
+                val address2: String,
+                @SerializedName("city")
+                val city: String,
+                @SerializedName("country")
+                val country: String,
+                @SerializedName("full_address")
+                val fullAddress: String,
+                @SerializedName("id")
+                val id: Int,
+                @SerializedName("latitude")
+                val latitude: String,
+                @SerializedName("longitude")
+                val longitude: String,
+                @SerializedName("postcode")
+                val postcode: String,
+                @SerializedName("state")
+                val state: String,
+                @SerializedName("street")
+                val street: String,
+                @SerializedName("type_of_address")
+                val typeOFAddress: String
+            ) : Parcelable
 
+            @Parcelize
+            data class Phone(
+                @SerializedName("id")
+                val id: Int,
+                @SerializedName("phone_number")
+                val phoneNumber: String
+            ) : Parcelable
+        }
+
+        @Parcelize
         data class Employee(
             @SerializedName("created_at")
             val createdAt: String,
@@ -151,33 +193,26 @@ data class GetOrderDetailsResponse(
             val teamRoleId: Int,
             @SerializedName("updated_at")
             val updatedAt: String
-        )
+        ) : Parcelable
 
+        @Parcelize
         data class OrderItem(
             @SerializedName("category_id")
             val categoryId: Int,
             @SerializedName("completed_in_kitchen")
             val completedInKitchen: Boolean,
-            @SerializedName("created_at")
-            val createdAt: String,
             @SerializedName("discount_amount")
             val discountAmount: Double,
             @SerializedName("discount_id")
-            val discountId: Any,
+            val discountId: String?,
             @SerializedName("discount_type")
             val discountType: String,
-            @SerializedName("edit_count")
-            val editCount: Any,
-            @SerializedName("edit_timestamp")
-            val editTimestamp: Any,
             @SerializedName("employee_id")
             val employeeId: Int,
             @SerializedName("float")
             val float: Double,
             @SerializedName("id")
             val id: Int,
-            @SerializedName("is_edited")
-            val isEdited: Boolean,
             @SerializedName("is_paid")
             val isPaid: Boolean,
             @SerializedName("is_printed")
@@ -190,6 +225,10 @@ data class GetOrderDetailsResponse(
             val note: String,
             @SerializedName("order_id")
             val orderId: Int,
+            @SerializedName("order_item_modifiers")
+            val orderItemModifiers: List<OrderItemModifier>,
+            @SerializedName("order_item_taxes")
+            val orderItemTaxes: List<OrderItemTaxe>,
             @SerializedName("price")
             val price: Double,
             @SerializedName("quantity")
@@ -197,11 +236,98 @@ data class GetOrderDetailsResponse(
             @SerializedName("timestamp")
             val timestamp: String,
             @SerializedName("total_price")
-            val totalPrice: Double,
-            @SerializedName("updated_at")
-            val updatedAt: String
-        )
+            val totalPrice: Double
+        ) : Parcelable {
+            @Parcelize
+            data class OrderItemModifier(
+                @SerializedName("category_id")
+                val categoryId: String?,
+                @SerializedName("id")
+                val id: Int,
+                @SerializedName("is_modifier")
+                val isModifier: Boolean,
+                @SerializedName("item_id")
+                val itemId: String?,
+                @SerializedName("modifier_id")
+                val modifierId: String?,
+                @SerializedName("name")
+                val name: String,
+                @SerializedName("order_id")
+                val orderId: Int,
+                @SerializedName("order_item_id")
+                val orderItemId: Int,
+                @SerializedName("order_item_taxes")
+                val orderItemTaxes: List<OrderItemTaxe>,
+                @SerializedName("price")
+                val price: Double,
+                @SerializedName("quantity")
+                val quantity: Int,
+                @SerializedName("timestamp")
+                val timestamp: String?
+            ) : Parcelable {
+                @Parcelize
+                data class OrderItemTaxe(
+                    @SerializedName("amount")
+                    val amount: Double,
+                    @SerializedName("created_at")
+                    val createdAt: String,
+                    @SerializedName("id")
+                    val id: Int,
+                    @SerializedName("is_default")
+                    val isDefault: Boolean,
+                    @SerializedName("is_tax_removed")
+                    val isTaxRemoved: Boolean,
+                    @SerializedName("name")
+                    val name: String,
+                    @SerializedName("order_id")
+                    val orderId: Int,
+                    @SerializedName("order_item_id")
+                    val orderItemId: Int,
+                    @SerializedName("order_item_modifier_id")
+                    val orderItemModifierId: Int,
+                    @SerializedName("rate")
+                    val rate: Double?,
+                    @SerializedName("tax_id")
+                    val taxId: Int,
+                    @SerializedName("tax_total_amount")
+                    val taxTotalAmount: Double,
+                    @SerializedName("updated_at")
+                    val updatedAt: String
+                ) : Parcelable
+            }
 
+            @Parcelize
+            data class OrderItemTaxe(
+                @SerializedName("amount")
+                val amount: Double?,
+                @SerializedName("created_at")
+                val createdAt: String,
+                @SerializedName("id")
+                val id: Int,
+                @SerializedName("is_default")
+                val isDefault: Boolean,
+                @SerializedName("is_tax_removed")
+                val isTaxRemoved: Boolean,
+                @SerializedName("name")
+                val name: String,
+                @SerializedName("order_id")
+                val orderId: Int,
+                @SerializedName("order_item_id")
+                val orderItemId: Int,
+                @SerializedName("order_item_modifier_id")
+                val orderItemModifierId: Int?,
+                @SerializedName("rate")
+                val rate: Double,
+                @SerializedName("tax_id")
+                val taxId: Int,
+                @SerializedName("tax_total_amount")
+                val taxTotalAmount: Double,
+                @SerializedName("updated_at")
+                val updatedAt: String
+            ) : Parcelable
+        }
+
+        @Parcelize
         data class OrderServiceCharge(
             @SerializedName("amount")
             val amount: Double,
@@ -219,8 +345,9 @@ data class GetOrderDetailsResponse(
             val serviceChargeId: Int,
             @SerializedName("updated_at")
             val updatedAt: String
-        )
+        ) : Parcelable
 
+        @Parcelize
         data class Payment(
             @SerializedName("amount")
             val amount: Double,
@@ -229,11 +356,13 @@ data class GetOrderDetailsResponse(
             @SerializedName("card_number")
             val cardNumber: String,
             @SerializedName("card_type")
-            val cardType: String,
+            val cardType: String?,
             @SerializedName("cash_discount")
             val cashDiscount: Double,
             @SerializedName("created_at")
             val createdAt: String,
+            @SerializedName("dynamic_payment_id")
+            val dynamicPaymentId: Int?,
             @SerializedName("employee_id")
             val employeeId: Int,
             @SerializedName("id")
@@ -241,7 +370,7 @@ data class GetOrderDetailsResponse(
             @SerializedName("offline_id")
             val offlineId: String,
             @SerializedName("order_id")
-            val orderId: Any,
+            val orderId: Int,
             @SerializedName("payable_id")
             val payableId: Int,
             @SerializedName("payable_type")
@@ -266,6 +395,6 @@ data class GetOrderDetailsResponse(
             val transactionId: String,
             @SerializedName("updated_at")
             val updatedAt: String
-        )
+        ) : Parcelable
     }
 }
