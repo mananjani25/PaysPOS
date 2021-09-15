@@ -12,6 +12,7 @@ import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import com.android.pos.data.model.responseModel.CreateOrderResponse
+import com.android.pos.data.model.responseModel.GetTipReponse
 import com.epson.eposprint.Builder
 
 
@@ -84,6 +85,38 @@ fun addHorizontalLine(builder: Builder): Builder {
     return builder
 }
 
+fun addTipsList(builder: Builder, list: List<GetTipReponse.Data>, totalAmt: Double): Builder {
+    for (i in 0 until list.size) {
+        val obj = list.get(i)
+        builder.addTextLineSpace(30)
+        builder.addFeedUnit(30)
+        builder.addTextFont(Builder.FONT_E)
+        // builder.addTextAlign(Builder.ALIGN_LEFT)
+        builder.addTextLang(Builder.LANG_EN)
+        builder.addTextSize(1, 1)
+        builder.addTextStyle(
+            Builder.FALSE,
+            Builder.FALSE,
+            Builder.FALSE,
+            Builder.COLOR_1
+        )
+
+        val tipName = obj.name + "(" + MethodUtils.roundOffAmountString(obj.rate) +"%)"
+        val price = "(Tip $"+calculateTipAmt(obj.rate, totalAmt)+" Total $"+MethodUtils.roundOffAmountString((totalAmt - calculateTipAmt(obj.rate, totalAmt)))+")"
+        builder.addText(
+            padLine(
+                tipName,
+                price,
+                48
+            )
+        )
+
+    }
+
+
+    return builder
+}
+
 fun addOrderItems(builder: Builder, list: List<CreateOrderResponse.Data.Order.OrderItem>): Builder {
     for (i in 0 until list.size) {
         val obj = list.get(i)
@@ -140,4 +173,9 @@ fun addOrderItems(builder: Builder, list: List<CreateOrderResponse.Data.Order.Or
 
 
     return builder
+}
+
+fun calculateTipAmt(percentage: Double, price: Double): Double {
+
+    return MethodUtils.roundOffAmountDouble((price * percentage) / 100)
 }
