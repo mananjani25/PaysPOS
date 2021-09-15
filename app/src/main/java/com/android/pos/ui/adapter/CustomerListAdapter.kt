@@ -44,9 +44,9 @@ class CustomerListAdapter(
                     ).last_name != null
                 ) {
                     binding.tvInitialName.setText(
-                        filterList.get(pos).first_name.first() + "" + filterList.get(
+                        filterList.get(pos).first_name!!.first() + "" + filterList.get(
                             pos
-                        ).last_name.first()
+                        ).last_name!!.first()
                     )
 
                 } else {
@@ -181,8 +181,8 @@ class CustomerListAdapter(
                             company = it.company
                         }
 
-                        it.first_name.lowercase(Locale.getDefault()).contains(charSequence) or
-                                it.last_name.lowercase(Locale.getDefault())
+                        it.first_name?.lowercase(Locale.getDefault())!!.contains(charSequence) or
+                                it.last_name!!.lowercase(Locale.getDefault())
                                     .contains(charSequence) or
                                 it.email.lowercase(Locale.getDefault()).contains(charSequence) or
                                 phone.contains(charSequence) or

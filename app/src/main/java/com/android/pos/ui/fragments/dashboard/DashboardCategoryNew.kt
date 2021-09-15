@@ -172,7 +172,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             val result = bundle.getParcelable<TbCustomer>("data")
             if (result != null) {
 
-                Log.e("request_key_customer", result.first_name)
+              //  Log.e("request_key_customer", result.first_name)
                 prefProvider.setValue(CUSTOMER_NAME, result.first_name + " " + result.last_name)
                 binding.layoutCart.txtCustomerName.text = result.first_name + " " + result.last_name
                 binding.layoutCart.txtCrtNewCustomer.text = "Remove Customer"
@@ -200,7 +200,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             val result = bundle.getParcelable<TbCustomer>("data")
             if (result != null) {
 
-                Log.e("request_key_customer", result.first_name)
+              //  Log.e("request_key_customer", result.first_name)
                 prefProvider.setValue(CUSTOMER_NAME, result.first_name + " " + result.last_name)
                 binding.layoutCart.txtCustomerName.text = result.first_name + " " + result.last_name
                 binding.layoutCart.txtCrtNewCustomer.text = "Remove Customer"

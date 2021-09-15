@@ -529,4 +529,7 @@
     <string name="cancel_order_message">Are you sure want to cancel this Order?</string>
     <string name="yes">YES</string>
     <string name="no">NO</string>
+    <string name="tv_issue_refund">Issue Refund</string>
+    <string name="tv_amount">Amount</string>
+    <string name="tv_amount_to_refund">Amount To Refund</string>
 </resources>

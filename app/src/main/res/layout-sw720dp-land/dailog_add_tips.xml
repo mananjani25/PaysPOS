@@ -19,11 +19,11 @@
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/imgBack"
-                    android:background="?attr/selectableItemBackground"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_gravity="center"
+                    android:background="?attr/selectableItemBackground"
                     android:padding="@dimen/_4sdp"
                     app:srcCompat="@drawable/ic_cancel_black" />
 
@@ -74,9 +74,9 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="@dimen/_5sdp"
                     android:layout_marginBottom="@dimen/_2sdp"
-                    android:background="@drawable/background_square_border_grey">
+                    android:background="@drawable/background_square_border_grey"
+                    android:padding="@dimen/_5sdp">
 
                     <TextView
                         android:id="@+id/txtCurrency"
@@ -345,11 +345,11 @@
                     android:layout_weight="1"
                     android:background="@drawable/background_drawer_button"
                     android:gravity="center"
-                    android:visibility="gone"
                     android:padding="@dimen/_5sdp"
                     android:text="@string/remove_discount"
                     android:textColor="@color/btnColorDark_"
-                    android:textSize="@dimen/_5mdpi" />
+                    android:textSize="@dimen/_5mdpi"
+                    android:visibility="gone" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
