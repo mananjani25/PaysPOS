@@ -4,6 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingDefaultResource">
 
+    <data>
+
+        <variable
+            name="orderDetails"
+            type="com.android.pos.data.model.responseModel.GetOrderDetailsResponse" />
+
+        <variable
+            name="viewModel"
+            type="com.android.pos.ui.fragments.transactions.TransactionDetailsViewModel" />
+    </data>
+
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -144,7 +155,6 @@
                 android:visibility="gone">
 
                 <TextView
-                    android:id="@+id/txtFirstName"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -177,7 +187,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginTop="@dimen/_5sdp"
-                    android:text="@string/tv_amount_to_refund"
+                    android:text="@{`Total Refundable Amount is`+@string/symbole +``+String.format(@string/format,orderDetails.data.totalAmount)}"
                     android:textColor="@color/color65"
                     android:textSize="@dimen/_5mdpi" />
             </androidx.appcompat.widget.LinearLayoutCompat>
