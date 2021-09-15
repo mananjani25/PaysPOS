@@ -61,12 +61,10 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
         binding.spOptions.onItemSelectedListener = this
         setAdapter()
 
-        binding.spOptions.setOnTouchListener(object : View.OnTouchListener {
-            override fun onTouch(v: View?, event: MotionEvent?): Boolean {
-                spinnerTouched = true
-                return false
-            }
-        })
+        binding.spOptions.setOnTouchListener { v, event ->
+            spinnerTouched = true
+            false
+        }
 
         binding.txtDone.setOnClickListener {
 

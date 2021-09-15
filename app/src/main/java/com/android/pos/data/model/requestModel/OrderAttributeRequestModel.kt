@@ -311,6 +311,9 @@ class OrderModifierTaxesAttribute {
 
     @SerializedName("name")
     var name: String = ""
+
+    @SerializedName("tax_total_amount")
+    var taxTotalAmount: Double = 0.0
 }
 
 class OrderItemModifierAttribute {

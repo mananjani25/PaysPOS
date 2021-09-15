@@ -133,6 +133,8 @@ data class OpenOrderResponse(
                 val orderId: Int,
                 @SerializedName("order_item_modifiers")
                 val orderItemModifiers: List<OrderItemModifier>,
+                @SerializedName("order_item_taxes")
+                val orderItemTax: List<OrderItemTax>,
                 @SerializedName("price")
                 val price: Double,
                 @SerializedName("quantity")
@@ -169,6 +171,35 @@ data class OpenOrderResponse(
                     val quantity: Int,
                     @SerializedName("timestamp")
                     val timestamp: Any,
+                    @SerializedName("updated_at")
+                    val updatedAt: String
+                )
+
+                data class OrderItemTax(
+                    @SerializedName("amount")
+                    val amount: Any,
+                    @SerializedName("created_at")
+                    val createdAt: String,
+                    @SerializedName("id")
+                    val id: Int,
+                    @SerializedName("is_default")
+                    val isDefault: Boolean,
+                    @SerializedName("is_tax_removed")
+                    val isTaxRemoved: Boolean,
+                    @SerializedName("name")
+                    val name: String,
+                    @SerializedName("order_id")
+                    val orderId: Int,
+                    @SerializedName("order_item_id")
+                    val orderItemId: Int,
+                    @SerializedName("order_item_modifier_id")
+                    val orderItemModifierId: Any,
+                    @SerializedName("rate")
+                    val rate: Double,
+                    @SerializedName("tax_id")
+                    val taxId: Int,
+                    @SerializedName("tax_total_amount")
+                    val taxTotalAmount: Double,
                     @SerializedName("updated_at")
                     val updatedAt: String
                 )
@@ -260,8 +291,46 @@ data class OpenOrderResponse(
                 @SerializedName("note")
                 val note: String,
                 @SerializedName("updated_at")
-                val updatedAt: String
-            )
+                val updatedAt: String,
+                @SerializedName("addresses")
+                val addresses: List<Address>,
+                @SerializedName("phones")
+                val phones: List<Phone>
+            ) {
+                data class Address(
+                    @SerializedName("address1")
+                    val address1: String,
+                    @SerializedName("address2")
+                    val address2: String,
+                    @SerializedName("city")
+                    val city: String,
+                    @SerializedName("country")
+                    val country: String,
+                    @SerializedName("full_address")
+                    val fullAddress: String,
+                    @SerializedName("id")
+                    val id: Int,
+                    @SerializedName("latitude")
+                    val latitude: String,
+                    @SerializedName("longitude")
+                    val longitude: String,
+                    @SerializedName("postcode")
+                    val postcode: String,
+                    @SerializedName("state")
+                    val state: String,
+                    @SerializedName("street")
+                    val street: String,
+                    @SerializedName("type_of_address")
+                    val typeOfAddress: Any
+                )
+
+                data class Phone(
+                    @SerializedName("id")
+                    val id: Int,
+                    @SerializedName("phone_number")
+                    val phoneNumber: String
+                )
+            }
 
             data class Employee(
                 @SerializedName("created_at")

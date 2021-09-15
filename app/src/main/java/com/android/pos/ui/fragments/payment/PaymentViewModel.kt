@@ -430,6 +430,21 @@ class PaymentViewModel @Inject constructor(
             orderModifierTaxesAttribute.timestamp = System.currentTimeMillis().toString()
             orderModifierTaxesAttribute.name = tax.name.toString()
             orderModifierTaxesAttribute.amount = tax.rate
+
+            if (tax.taxType == "Percentage") {
+                val itemTaxPrice =
+                    (tax.rate * (modifier.price * modifier.itemQuantity)) / 100
+                orderModifierTaxesAttribute.taxTotalAmount =
+                    MethodUtils.roundOffAmountDouble(itemTaxPrice)
+            } else {
+
+                val ss = modifier.price * modifier.itemQuantity
+
+                orderModifierTaxesAttribute.taxTotalAmount =
+                    MethodUtils.roundOffAmountDouble((tax.rate + ss))
+            }
+
+
             orderItemTaxesAttributeList.add(orderModifierTaxesAttribute)
         }
 
@@ -451,10 +466,22 @@ class PaymentViewModel @Inject constructor(
             orderItemTaxesAttribute.rate = tax.rate
             orderItemTaxesAttribute.taxId = tax.id
 
-            val itemTaxPrice =
-                (tax.rate * ((items.price - items.discountPrice) * items.itemQuantity)) / 100
-            orderItemTaxesAttribute.taxTotalAmount =
-                MethodUtils.roundOffAmountDouble(itemTaxPrice)
+            if (tax.taxType == "Percentage") {
+                val itemTaxPrice =
+                    (tax.rate * ((items.price - items.discountPrice) * items.itemQuantity)) / 100
+                orderItemTaxesAttribute.taxTotalAmount =
+                    MethodUtils.roundOffAmountDouble(itemTaxPrice)
+            } else {
+
+                val ss = (items.price - items.discountPrice) * items.itemQuantity
+
+                orderItemTaxesAttribute.taxTotalAmount =
+                    MethodUtils.roundOffAmountDouble((tax.rate + ss))
+            }
+
+
+
+
             orderItemTaxesAttribute.taxType = tax.taxType.toString()
             orderItemTaxesAttributeList.add(orderItemTaxesAttribute)
         }
