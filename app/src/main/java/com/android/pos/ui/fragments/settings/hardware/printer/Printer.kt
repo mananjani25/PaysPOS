@@ -182,12 +182,13 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         }
 
         // start thread
-        future = scheduler!!.scheduleWithFixedDelay(
-            this,
-            0,
-            DISCOVERY_INTERVAL.toLong(),
-            TimeUnit.MILLISECONDS
-        )
+        future = scheduler!!.schedule(this, 0, TimeUnit.MILLISECONDS)
+        /* future = scheduler!!.scheduleWithFixedDelay(
+             this,
+             0,
+             DISCOVERY_INTERVAL.toLong(),
+             TimeUnit.MILLISECONDS
+         )*/
 
     }
 
