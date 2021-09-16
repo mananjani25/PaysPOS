@@ -66,6 +66,7 @@ import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.addHorizontalKitchenLine
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.getBitmapFromVectorDrawable
 
@@ -1214,9 +1215,313 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             }
             PrinterClass.setPrinter(printer)
 
-
-            showPrinterStatus(printerListModel)
+            generateKitchenReceipt(printerListModel)
+            //showPrinterStatus(printerListModel)
         }
+    }
+
+    private fun generateKitchenReceipt(printerListModel: PrinterListModel) {
+        var builder: Builder? = null
+        var method = ""
+
+        try {
+            builder = Builder(printerListModel.printerName, language, requireActivity())
+
+
+            builder.addTextFont(Builder.FONT_E)
+            builder.addTextAlign(Builder.ALIGN_CENTER)
+            //builder.addTextLineSpace(20)
+            builder.addTextLang(Builder.LANG_EN)
+            builder.addTextSize(2, 2)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.COLOR_1
+            )
+            //builder.addTextPosition(1)
+
+
+            builder.addText("DINE IN")
+
+
+            builder.addFeedLine(2)
+            builder.addTextFont(Builder.FONT_B)
+            //builder.addTextLineSpace(20)
+            builder.addTextLang(Builder.LANG_EN)
+            builder.addTextSize(1, 1)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.COLOR_1
+            )
+            //builder.addTextPosition(1)
+
+
+            builder.addText(padLine("OrderID:23564", "ReceiptID:REC54646", 40))
+
+            builder.addTextLineSpace(30)
+            builder.addFeedUnit(30)
+
+            builder.addTextFont(Builder.FONT_B)
+            //builder.addTextLineSpace(20)
+            builder.addTextLang(Builder.LANG_EN)
+            builder.addTextSize(1, 1)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.COLOR_1
+            )
+            //builder.addTextPosition(1)
+
+
+            builder.addText(padLine("Employee: David Miller", "29-Apr-2021 07:15 PM", 40))
+
+            builder.addFeedLine(1)
+
+            builder.addTextFont(Builder.FONT_B)
+            //builder.addTextLineSpace(20)
+            builder.addTextLang(Builder.LANG_EN)
+            builder.addTextSize(1, 1)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.COLOR_1
+            )
+            addHorizontalKitchenLine(builder)
+
+
+
+            builder.addTextLineSpace(30)
+            builder.addFeedUnit(30)
+
+            builder.addTextFont(Builder.FONT_E)
+            //builder.addTextLineSpace(20)
+            builder.addTextLang(Builder.LANG_EN)
+            builder.addTextSize(2, 2)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.TRUE,
+                Builder.COLOR_1
+            )
+            //builder.addTextPosition(1)
+
+
+            builder.addText(padLine("1 Chicken Meals", "$9.99", 33))
+
+            builder.addTextLineSpace(30)
+            builder.addFeedUnit(30)
+
+
+            builder.addTextFont(Builder.FONT_E)
+            //builder.addTextLineSpace(20)
+            builder.addTextLang(Builder.LANG_EN)
+            builder.addTextSize(2, 2)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.COLOR_1
+            )
+            //builder.addTextPosition(1)
+
+
+            builder.addText(padLine("    Extra Spicy", "$1.99", 33))
+
+
+            builder.addTextLineSpace(30)
+            builder.addFeedUnit(30)
+
+
+            builder.addTextFont(Builder.FONT_E)
+            //builder.addTextLineSpace(20)
+            builder.addTextLang(Builder.LANG_EN)
+            builder.addTextSize(2, 2)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.COLOR_1
+            )
+            //builder.addTextPosition(1)
+
+
+            builder.addText(padLine("    Extra Spicy", "$1.99", 33))
+            builder.addTextLineSpace(30)
+            builder.addFeedUnit(30)
+
+
+            builder.addTextFont(Builder.FONT_E)
+            //builder.addTextLineSpace(20)
+            builder.addTextLang(Builder.LANG_EN)
+            builder.addTextSize(1, 1)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.COLOR_1
+            )
+            //builder.addTextPosition(1)
+
+
+            builder.addText(padLine("    Note:Not much spicy", "", 33))
+
+
+
+            builder.addTextLineSpace(30)
+            builder.addFeedUnit(30)
+            builder.addFeedLine(1)
+            builder.addTextFont(Builder.FONT_E)
+            builder.addTextAlign(Builder.ALIGN_LEFT)
+            //builder.addTextLineSpace(20)
+            builder.addTextLang(Builder.LANG_EN)
+            builder.addTextSize(1, 1)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.TRUE,
+                Builder.COLOR_1
+            )
+            builder.addText("Order Note")
+            builder.addTextLineSpace(30)
+            builder.addFeedUnit(30)
+
+            builder.addTextFont(Builder.FONT_E)
+            //builder.addTextLineSpace(20)
+            builder.addTextAlign(Builder.ALIGN_LEFT)
+            builder.addTextLang(Builder.LANG_EN)
+            builder.addTextSize(1, 1)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.COLOR_1
+            )
+            builder.addText("Sugar Free,No herbs & Spices")
+
+
+            builder.addTextLineSpace(30)
+            builder.addFeedUnit(30)
+            builder.addFeedLine(1)
+            builder.addTextFont(Builder.FONT_E)
+            //builder.addTextLineSpace(20)
+            builder.addTextLang(Builder.LANG_EN)
+            builder.addTextSize(1, 1)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.TRUE,
+                Builder.COLOR_1
+            )
+            builder.addText("Customer Details" + "\n")
+
+
+            builder.addTextFont(Builder.FONT_B)
+            //builder.addTextLineSpace(20)
+            builder.addTextLang(Builder.LANG_EN)
+            builder.addTextSize(1, 1)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.COLOR_1
+            )
+            addHorizontalKitchenLine(builder)
+
+
+            builder.addTextLineSpace(30)
+            builder.addFeedUnit(30)
+            builder.addTextFont(Builder.FONT_E)
+            builder.addTextAlign(Builder.ALIGN_LEFT)
+            //builder.addTextLineSpace(20)
+            builder.addTextLang(Builder.LANG_EN)
+            builder.addTextSize(1, 1)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.TRUE,
+                Builder.COLOR_1
+            )
+            builder.addText("David Miller")
+
+            builder.addTextLineSpace(30)
+            builder.addFeedUnit(30)
+            builder.addTextFont(Builder.FONT_E)
+            builder.addTextAlign(Builder.ALIGN_LEFT)
+            //builder.addTextLineSpace(20)
+            builder.addTextLang(Builder.LANG_EN)
+            builder.addTextSize(1, 1)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.TRUE,
+                Builder.COLOR_1
+            )
+            builder.addText("(635)987-3354")
+
+            builder.addTextLineSpace(30)
+            builder.addFeedUnit(30)
+            builder.addTextFont(Builder.FONT_E)
+            builder.addTextAlign(Builder.ALIGN_LEFT)
+            //builder.addTextLineSpace(20)
+            builder.addTextLang(Builder.LANG_EN)
+            builder.addTextSize(1, 1)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.TRUE,
+                Builder.COLOR_1
+            )
+            builder.addText("7450 DW 51 FH AT,Suite 503")
+
+
+            //PrinterReceipt.padLine()
+            builder.addFeedLine(2)
+
+
+            builder.addCut(Builder.CUT_FEED)
+
+
+            //builder.addFeedUnit(30)
+
+            Log.e("builder", builder.toString())
+
+            //send builder data(empty builder data)
+            val status = IntArray(1)
+            val battery = IntArray(1)
+
+            Log.e(TAG, "getPrinterCheck:  ${PrinterClass.getPrinter().toString()}")
+
+
+
+            try {
+                PrinterClass.getPrinter()?.sendData(builder, SEND_TIMEOUT, status, battery)
+                //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
+                PrinterClass.closePrinter()
+            } catch (e: Exception) {
+                PrinterClass.closePrinter()
+                e.printStackTrace()
+                Log.e(TAG, "PrinterError: " + e.localizedMessage)
+            }
+
+            try {
+                builder.clearCommandBuffer()
+                builder = null
+                PrinterClass.closePrinter()
+            } catch (e: Exception) {
+                builder = null
+                PrinterClass.closePrinter()
+                e.printStackTrace()
+            }
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
     }
 
 

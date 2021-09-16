@@ -85,6 +85,19 @@ fun addHorizontalLine(builder: Builder): Builder {
     return builder
 }
 
+fun addHorizontalKitchenLine(builder: Builder): Builder {
+
+
+    var str: String = ""
+    for (i in 0 until 40) {
+        str += "-"
+    }
+    Log.e("strLine", "strLine  $str")
+    builder.addText(str)
+
+    return builder
+}
+
 fun addTipsList(builder: Builder, list: List<GetTipReponse.Data>, totalAmt: Double): Builder {
     for (i in 0 until list.size) {
         val obj = list.get(i)
