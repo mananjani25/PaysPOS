@@ -236,7 +236,8 @@ data class GetOrderDetailsResponse(
             @SerializedName("timestamp")
             val timestamp: String,
             @SerializedName("total_price")
-            val totalPrice: Double
+            val totalPrice: Double,
+            var isChecked: Boolean = false
         ) : Parcelable {
             @Parcelize
             data class OrderItemModifier(

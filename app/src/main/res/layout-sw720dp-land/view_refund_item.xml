@@ -9,12 +9,12 @@
         <import type="android.view.View" />
 
         <variable
-            name="tipModel"
-            type="com.android.pos.data.model.responseModel.GetTipReponse.Data" />
+            name="refundItemListModel"
+            type="com.android.pos.data.model.responseModel.GetOrderDetailsResponse.Data.OrderItem" />
 
         <variable
             name="viewModel"
-            type="com.android.pos.ui.fragments.settings.tip.TipListViewModel" />
+            type="com.android.pos.ui.fragments.transactions.TransactionDetailsViewModel" />
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat
@@ -32,21 +32,36 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-
-            <androidx.appcompat.widget.AppCompatTextView
-                style="@style/CustomFontSemiBold"
-                android:layout_width="0dp"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginStart="@dimen/_5sdp"
                 android:layout_weight="1"
-                android:gravity="start"
-                android:padding="@dimen/_5sdp"
-                android:text="@{tipModel.name}"
-                android:textColor="@color/color65"
-                android:textSize="@dimen/_5mdpi" />
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="@dimen/_3sdp">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvItemName"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="start"
+                    android:textColor="@color/viewTextColor"
+                    android:textSize="@dimen/_5mdpi" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvModifierName"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/color65"
+                    android:textSize="@dimen/_5mdpi" />
+            </LinearLayout>
 
             <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvItemPrice"
                 style="@style/CustomFontSemiBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -54,18 +69,16 @@
                 android:layout_marginStart="@dimen/_5sdp"
                 android:gravity="start"
                 android:padding="@dimen/_5sdp"
-                android:text="@{String.format(@string/format,tipModel.rate)+``+@string/percentage_symbol}"
                 android:textColor="@color/color96"
                 android:textSize="@dimen/_5mdpi" />
 
             <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/imgCheckBox"
+                android:id="@+id/ivCheck"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:onClick="@{() -> viewModel.isTipActive(tipModel)}"
                 android:padding="@dimen/_5sdp"
-                android:src="@{tipModel.isActive ? @drawable/ic_check_box: @drawable/ic_check_box_unchecked}" />
+                android:src="@{refundItemListModel.isChecked ? @drawable/ic_check_circle: @drawable/ic_uncheck_circle}" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
