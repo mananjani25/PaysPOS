@@ -7,7 +7,7 @@ import java.lang.Exception
 object PrinterClass {
 
     const val language = Builder.LANG_EN
-    const val SEND_TIMEOUT = 10 * 1000
+    const val SEND_TIMEOUT =  1000
     const val IMAGE_WIDTH_MAX = 512 * 2
 
     const val PRINTER_INTERVAL = 1

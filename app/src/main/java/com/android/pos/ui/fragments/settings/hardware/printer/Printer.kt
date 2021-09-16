@@ -36,6 +36,7 @@ import android.bluetooth.BluetoothAdapter
 import android.content.Intent
 import java.util.*
 import android.bluetooth.BluetoothSocket
+import android.os.Build
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.pos.data.remote.Constants.BLUETOOTH
@@ -685,6 +686,19 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                 }
 
                 if (!isAdded) {
+                    Log.e(TAG, "BluetoothPrinterName:  ${i.name}")
+                    Log.e(TAG, "BluetoothPrintertype:  ${i.type}")
+                    Log.e(TAG, "BluetoothPrinterbondState:  ${i.bondState}")
+                    Log.e(TAG, "BluetoothPrinterdeviceClass:  ${i.bluetoothClass.deviceClass}")
+                    Log.e(
+                        TAG,
+                        "BluetoothPrintermajorDeviceClass:  ${i.bluetoothClass.majorDeviceClass}"
+                    )
+                    Log.e(TAG, "BluetoothPrinteraddress:  ${i.address}")
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        Log.e(TAG, "BluetoothPrinteralias:  ${i.alias}")
+                    }
+
                     availableNetworkAdapter.addItem(
                         PrinterListModel(
                             printerName = i.name,
@@ -1028,7 +1042,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
                     // RPP300 is the name of the bluetooth printer device
                     // we got this name from the list of paired devices
-                    if (device.name == "TM-m30_030295") {
+                    if (device.name == "TM-m30_03029") {
                         mmDevice = device
 
                         break
@@ -1101,6 +1115,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     }
 
     override fun onPrinterActive(printerListModel: PrinterListModel) {
+        Log.e(TAG, "printerListModel: ${Gson().toJson(printerListModel)}")
 
         var list: ArrayList<CreatePrinterRequestModel.PrinterSettingsAttributes> = arrayListOf()
         for (i in 0 until orderTypeList.size) {
@@ -1126,7 +1141,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             terminalIds = listOf(prefProvider.getValueInt(TERMINAL_ID, 1)),
             status = false,
             locationId = prefProvider.getValueInt(LOCATION_ID, 1),
-            receiptPrintType = if (printerListModel.printerName == "TM-U220") {
+            receiptPrintType = if (printerListModel.printerName == "TM-U220" ) {
                 KITCHEN
             } else {
                 CUSTOMER
@@ -1194,7 +1209,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         val enabled = Print.FALSE
         Log.e(TAG, "PrinterconnectionType:  ${printerListModel.connectionType}")
 
-        if (printerListModel.connectionType == BLUETOOTH) {
+        if (printerListModel.connectionType == "") {
             findBT()
             openBT()
         } else {
@@ -1214,6 +1229,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                 return
             }
             PrinterClass.setPrinter(printer)
+            Log.e(TAG, "printerListModel:  ${Gson().toJson(printerListModel)}")
 
             generateKitchenReceipt(printerListModel)
             //showPrinterStatus(printerListModel)
@@ -1225,7 +1241,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         var method = ""
 
         try {
-            builder = Builder(printerListModel.printerName, language, requireActivity())
+            Log.e(TAG, "printerName: ${printerListModel.printerName}")
+            builder = Builder("TM-m30", language, requireActivity())
 
 
             builder.addTextFont(Builder.FONT_E)
@@ -1277,7 +1294,25 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             //builder.addTextPosition(1)
 
 
-            builder.addText(padLine("Employee: David Miller", "29-Apr-2021 07:15 PM", 40))
+            builder.addText(padLine("Employee: David Miller", "", 40))
+
+            builder.addTextLineSpace(30)
+            builder.addFeedUnit(30)
+
+            builder.addTextFont(Builder.FONT_B)
+            //builder.addTextLineSpace(20)
+            builder.addTextLang(Builder.LANG_EN)
+            builder.addTextSize(1, 1)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.COLOR_1
+            )
+
+            builder.addText(padLine("29-Apr-2021 07:15 PM", "", 40))
+
+
 
             builder.addFeedLine(1)
 
@@ -1298,10 +1333,11 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             builder.addTextLineSpace(30)
             builder.addFeedUnit(30)
 
-            builder.addTextFont(Builder.FONT_E)
+            builder.addTextFont(Builder.FONT_C)
             //builder.addTextLineSpace(20)
+            builder.addTextAlign(Builder.ALIGN_LEFT)
             builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(2, 2)
+            builder.addTextSize(1, 2)
             builder.addTextStyle(
                 Builder.FALSE,
                 Builder.FALSE,
@@ -1311,64 +1347,67 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             //builder.addTextPosition(1)
 
 
-            builder.addText(padLine("1 Chicken Meals", "$9.99", 33))
+            builder.addText("1 Chicken Meals")
 
             builder.addTextLineSpace(30)
             builder.addFeedUnit(30)
 
 
-            builder.addTextFont(Builder.FONT_E)
+            builder.addTextFont(Builder.FONT_C)
             //builder.addTextLineSpace(20)
+            builder.addTextAlign(Builder.ALIGN_LEFT)
             builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(2, 2)
+            builder.addTextSize(1, 2)
             builder.addTextStyle(
                 Builder.FALSE,
                 Builder.FALSE,
-                Builder.FALSE,
+                Builder.TRUE,
                 Builder.COLOR_1
             )
             //builder.addTextPosition(1)
 
 
-            builder.addText(padLine("    Extra Spicy", "$1.99", 33))
+            builder.addText("  Extra Spicy")
 
 
             builder.addTextLineSpace(30)
             builder.addFeedUnit(30)
 
 
-            builder.addTextFont(Builder.FONT_E)
+            builder.addTextFont(Builder.FONT_C)
             //builder.addTextLineSpace(20)
+            builder.addTextAlign(Builder.ALIGN_LEFT)
             builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(2, 2)
+            builder.addTextSize(1, 2)
             builder.addTextStyle(
                 Builder.FALSE,
                 Builder.FALSE,
-                Builder.FALSE,
+                Builder.TRUE,
                 Builder.COLOR_1
             )
             //builder.addTextPosition(1)
 
 
-            builder.addText(padLine("    Extra Spicy", "$1.99", 33))
+            builder.addText("  Extra Spicy")
             builder.addTextLineSpace(30)
             builder.addFeedUnit(30)
 
 
-            builder.addTextFont(Builder.FONT_E)
+            builder.addTextFont(Builder.FONT_C)
             //builder.addTextLineSpace(20)
+            builder.addTextAlign(Builder.ALIGN_LEFT)
             builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(1, 1)
+            builder.addTextSize(1, 2)
             builder.addTextStyle(
                 Builder.FALSE,
                 Builder.FALSE,
-                Builder.FALSE,
+                Builder.TRUE,
                 Builder.COLOR_1
             )
             //builder.addTextPosition(1)
 
 
-            builder.addText(padLine("    Note:Not much spicy", "", 33))
+            builder.addText("  Note:Not much spicy")
 
 
 
@@ -1501,7 +1540,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             try {
                 PrinterClass.getPrinter()?.sendData(builder, SEND_TIMEOUT, status, battery)
                 //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
-                PrinterClass.closePrinter()
+                //   PrinterClass.closePrinter()
             } catch (e: Exception) {
                 PrinterClass.closePrinter()
                 e.printStackTrace()

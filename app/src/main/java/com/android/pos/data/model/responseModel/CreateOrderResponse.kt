@@ -103,9 +103,9 @@ data class CreateOrderResponse(
             @SerializedName("updated_at")
             val updatedAt: String,
             @SerializedName("digital_receipt_url")
-            val digital_receipt_url :String,
+            val digital_receipt_url: String,
             @SerializedName("venue_website")
-            val venue_website:String
+            val venue_website: String
         ) {
             data class Customer(
 
