@@ -114,8 +114,16 @@ fun addTipsList(builder: Builder, list: List<GetTipReponse.Data>, totalAmt: Doub
             Builder.COLOR_1
         )
 
-        val tipName = obj.name + "(" + MethodUtils.roundOffAmountString(obj.rate) +"%)"
-        val price = "(Tip $"+calculateTipAmt(obj.rate, totalAmt)+" Total $"+MethodUtils.roundOffAmountString((totalAmt - calculateTipAmt(obj.rate, totalAmt)))+")"
+        val tipName = obj.name + "(" + MethodUtils.roundOffAmountString(obj.rate) + "%)"
+        val price = "(Tip $" + calculateTipAmt(
+            obj.rate,
+            totalAmt
+        ) + " Total $" + MethodUtils.roundOffAmountString(
+            (totalAmt - calculateTipAmt(
+                obj.rate,
+                totalAmt
+            ))
+        ) + ")"
         builder.addText(
             padLine(
                 tipName,
@@ -123,6 +131,78 @@ fun addTipsList(builder: Builder, list: List<GetTipReponse.Data>, totalAmt: Doub
                 48
             )
         )
+
+    }
+
+
+    return builder
+}
+
+
+fun addOrdersForKitchen(
+    builder: Builder,
+    list: List<CreateOrderResponse.Data.Order.OrderItem>
+): Builder {
+    for (i in 0 until list.size) {
+        val obj = list.get(i)
+        builder.addTextLineSpace(30)
+        builder.addFeedUnit(30)
+        builder.addTextFont(Builder.FONT_C)
+        builder.addTextLang(Builder.LANG_EN)
+        builder.addTextAlign(Builder.ALIGN_LEFT)
+        builder.addTextSize(1, 2)
+        builder.addTextStyle(
+            Builder.FALSE,
+            Builder.FALSE,
+            Builder.TRUE,
+            Builder.COLOR_1
+        )
+
+        builder.addText(obj.quantity.toString() + " " + obj.itemName)
+
+        if (obj.orderItemModifiers.isNotEmpty()) {
+            for (j in 0 until obj.orderItemModifiers.size) {
+                val modifierObj = obj.orderItemModifiers.get(j)
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addTextFont(Builder.FONT_C)
+                //builder.addTextLineSpace(20)
+                builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(1, 2)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+                //builder.addTextPosition(1)
+
+
+
+                builder.addText("  " + modifierObj.name)
+
+
+            }
+        }
+        if (obj.note.isNotEmpty()) {
+            builder.addTextLineSpace(30)
+            builder.addFeedUnit(30)
+            builder.addTextFont(Builder.FONT_C)
+            //builder.addTextLineSpace(20)
+            builder.addTextAlign(Builder.ALIGN_LEFT)
+            builder.addTextLang(Builder.LANG_EN)
+            builder.addTextSize(1, 2)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.TRUE,
+                Builder.COLOR_1
+            )
+            builder.addText("  Note:" + obj.note)
+
+        }
+
 
     }
 
