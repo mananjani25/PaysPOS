@@ -44,6 +44,7 @@ import com.android.pos.data.remote.Constants.BLUETOOTH
 import com.android.pos.data.remote.Constants.CUSTOMER
 import com.android.pos.data.remote.Constants.KITCHEN
 import com.android.pos.data.remote.Constants.WIFI
+import com.android.pos.utils.printer.PrinterClass.BLUETOOTH_TIMEOUT
 import com.google.zxing.qrcode.encoder.QRCode
 
 
@@ -240,7 +241,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         customerList.forEach {
                             Log.e(TAG, "PrinterName:  ${it.name}")
                             Log.e(TAG, "PrinterModelName:  ${it.modalName}")
-                            Log.e(TAG, "PrinterType: TM-m30 ${it.printer_type}")
+                            Log.e(TAG, "PrinterType:  ${it.printer_type}")
                             if (it.name == "TM-m30_030295") {
                                 initPrinter(it, CUSTOMER)
 
@@ -305,11 +306,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             if (printer != null) {
                 PrinterClass.setPrinter(printer)
-                if (type == CUSTOMER) {
-                    generatePrint(customerReceiptPrinters, type)
-                } else if (type == KITCHEN) {
-                    //  generatePrint(customerReceiptPrinters, type)
-                }
+
+                generatePrint(customerReceiptPrinters, type)
+
             }
 
         } else {
@@ -911,7 +910,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             try {
                 PrinterClass.getPrinter()?.sendData(
                     builder,
-                    PrinterClass.SEND_TIMEOUT, status, battery
+                    BLUETOOTH_TIMEOUT, status, battery
                 )
 
                 PrinterClass.closePrinter()
