@@ -47,6 +47,7 @@ import com.android.pos.data.remote.Constants.ORDER_DETAILS
 import com.android.pos.data.remote.Constants.ORDER_EMAIL_RECEIPT
 import com.android.pos.data.remote.Constants.ORDER_PHONE_RECEIPT
 import com.android.pos.data.remote.Constants.ORDER_TYPES
+import com.android.pos.data.remote.Constants.REFUND_PAYMENT
 import com.android.pos.data.remote.Constants.REORDER_CATEGORY
 import com.android.pos.data.remote.Constants.REORDER_ITEM
 import com.android.pos.data.remote.Constants.REORDER_MODIFIER
@@ -116,13 +117,18 @@ interface ApiService {
     ): DeletePrinterResponseModel
 
     @PUT(DELETE_UPDATE_PRINTER)
-    suspend fun updatePrinter( @Path("id") Id: Int,@Body model:CreatePrinterRequestModel):DeletePrinterResponseModel
+    suspend fun updatePrinter(
+        @Path("id") Id: Int,
+        @Body model: CreatePrinterRequestModel
+    ): DeletePrinterResponseModel
 
 
     @PUT(UPDATE_PRINTER_STATUS)
-    suspend fun updatePrinterStatus(@Path("id") Id: Int,
-    @Query("terminal_id")terminal_id:Int,
-    @Query("status")status:Boolean) : DeletePrinterResponseModel
+    suspend fun updatePrinterStatus(
+        @Path("id") Id: Int,
+        @Query("terminal_id") terminal_id: Int,
+        @Query("status") status: Boolean
+    ): DeletePrinterResponseModel
 
     @GET(SYNC_VENUE_DETAILS)
     suspend fun syncVenueDetails(): VenueDetailsResponse
@@ -455,6 +461,9 @@ interface ApiService {
 
     @GET(TRANSACTION_LIST)
     suspend fun getTransactionList(@QueryMap options: HashMap<String, String>): GetTransactionListResponse
+
+    @POST(REFUND_PAYMENT)
+    suspend fun refundPayment(@Body refundRequestModel: RefundRequestModel): BaseResponse
 
     @PUT(CUSTOMER_RECEIPTS_UPDATE_SETTINGS)
     suspend fun updateCustomerReceiptSettings(

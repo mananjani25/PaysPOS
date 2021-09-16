@@ -4,26 +4,21 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.android.pos.data.model.responseModel.GetEmployeesTimeSheetResponse
+import com.android.pos.data.model.requestModel.RefundRequestModel
+import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
-import com.android.pos.data.model.responseModel.GetTransactionListResponse
-import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.TaxServiceChargeRepository
-import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import java.text.ParseException
-import java.text.SimpleDateFormat
-import java.util.*
 import javax.inject.Inject
-import kotlin.collections.LinkedHashMap
 
 @HiltViewModel
 class TransactionDetailsViewModel @Inject constructor(
-    private val posRepository: PosRepository
+    private val posRepository: PosRepository,
+    private val taxServiceChargeRepository: TaxServiceChargeRepository
 ) : ViewModel() {
 
     private val _snackbarText = MutableLiveData<Event<Any?>>()
@@ -31,6 +26,9 @@ class TransactionDetailsViewModel @Inject constructor(
 
     private val _data = MutableLiveData<Event<GetOrderDetailsResponse?>>()
     val data: LiveData<Event<GetOrderDetailsResponse?>> = _data
+
+    private val _dataRefundDone = MutableLiveData<Event<BaseResponse?>>()
+    val dataRefundDone: LiveData<Event<BaseResponse?>> = _dataRefundDone
 
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
@@ -53,7 +51,54 @@ class TransactionDetailsViewModel @Inject constructor(
 
                             resource.data?.let { createTaxResponse ->
                                 _data.value = Event(createTaxResponse)
+                            }
+                        } else {
+                            _snackbarText.value = Event(resource.message)
+                        }
+                    }
+                }
 
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
+                }
+
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
+            }
+        }
+    }
+
+
+    fun refundPaymentApiCall(
+        refundAmount: Double,
+        orderDetailsResponse: GetOrderDetailsResponse,
+        refundReason: String
+    ) {
+        val refundData = RefundRequestModel().apply {
+            paymentRefund = RefundRequestModel.PaymentRefund().apply {
+                amount = refundAmount
+                orderId=orderDetailsResponse.data.id
+                paymentId=orderDetailsResponse.data.payments.get(0).id
+                employeeId = orderDetailsResponse.data.employeeId
+                terminalId = orderDetailsResponse.data.terminalId
+                reasonForRefund = refundReason
+
+            }
+        }
+
+        viewModelScope.launch {
+
+            val resource = taxServiceChargeRepository.refundPayment(refundData)
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+                    resource.data.let { logInResponse ->
+                        if (logInResponse?.status == 200) {
+
+                            resource.data?.let { createTaxResponse ->
+                                _dataRefundDone.value = Event(createTaxResponse)
                             }
                         } else {
                             _snackbarText.value = Event(resource.message)

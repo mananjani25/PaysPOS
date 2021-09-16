@@ -58,7 +58,7 @@
                 android:paddingTop="@dimen/_5sdp"
                 android:paddingEnd="@dimen/_10sdp"
                 android:paddingBottom="@dimen/_5sdp"
-                android:text="@string/tv_done"
+                android:text="@string/tv_next"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_7mdpi" />
 
@@ -92,7 +92,7 @@
 
                     <RadioButton
                         android:id="@+id/rbItems"
-                        style="@style/CustomFontSemiBold"
+                        style="@style/CustomFontRegularStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -100,27 +100,21 @@
                         android:button="@android:color/transparent"
                         android:checked="true"
                         android:gravity="center"
-                        android:paddingLeft="@dimen/_16sdp"
-                        android:paddingTop="@dimen/_3sdp"
-                        android:paddingRight="@dimen/_16sdp"
-                        android:paddingBottom="@dimen/_3sdp"
+                        android:padding="@dimen/_6sdp"
                         android:text="@string/tv_items"
                         android:textColor="@color/radio_flat_text_selector"
                         android:textSize="@dimen/_6mdpi" />
 
                     <RadioButton
                         android:id="@+id/rbAmount"
-                        style="@style/CustomFontSemiBold"
+                        style="@style/CustomFontRegularStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:background="@drawable/radio_flat_selector"
                         android:button="@android:color/transparent"
                         android:gravity="center"
-                        android:paddingLeft="@dimen/_16sdp"
-                        android:paddingTop="@dimen/_3sdp"
-                        android:paddingRight="@dimen/_16sdp"
-                        android:paddingBottom="@dimen/_3sdp"
+                        android:padding="@dimen/_6sdp"
                         android:text="@string/tv_amount"
                         android:textColor="@color/radio_flat_text_selector"
                         android:textSize="@dimen/_6mdpi" />
@@ -163,22 +157,40 @@
                     android:textColor="@color/black"
                     android:textSize="@dimen/_5mdpi" />
 
-
-                <androidx.appcompat.widget.AppCompatEditText
-                    android:id="@+id/edtAmount"
-                    style="@style/CustomFontSemiBold"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:background="@drawable/background_square_border_grey"
-                    android:hint="$0.00"
-                    android:imeOptions="actionDone"
-                    android:inputType="numberDecimal"
-                    android:minWidth="@dimen/_250sdp"
-                    android:padding="@dimen/_4sdp"
-                    android:textColor="@color/txtColor"
-                    android:textColorHint="@color/hintColor"
-                    android:textSize="@dimen/_6mdpi" />
+                    android:background="@drawable/background_square_border_grey">
+
+                    <TextView
+                        android:id="@+id/txtCurrency"
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="@dimen/_5sdp"
+                        android:text="$"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_6mdpi" />
+
+                    <androidx.appcompat.widget.AppCompatEditText
+                        android:id="@+id/edtAmount"
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/_1sdp"
+                        android:background="@null"
+                        android:hint="0.00"
+                        android:imeOptions="actionDone"
+                        android:inputType="numberDecimal"
+                        android:paddingTop="@dimen/_4sdp"
+                        android:paddingRight="@dimen/_4sdp"
+                        android:paddingBottom="@dimen/_4sdp"
+                        android:textColor="@color/txtColor"
+                        android:textColorHint="@color/txtColor"
+                        android:textSize="@dimen/_6mdpi" />
+                </LinearLayout>
+
 
                 <TextView
                     android:id="@+id/tvTotalRefundAmount"
@@ -187,7 +199,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginTop="@dimen/_5sdp"
-                    android:text="@{`Total Refundable Amount is`+@string/symbole +``+String.format(@string/format,orderDetails.data.totalAmount)}"
+                    android:text="@{`Total Refundable Amount is `+@string/symbole +``+String.format(@string/format,orderDetails.data.totalAmount)}"
                     android:textColor="@color/color65"
                     android:textSize="@dimen/_5mdpi" />
             </androidx.appcompat.widget.LinearLayoutCompat>

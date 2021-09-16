@@ -259,6 +259,9 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun getTransactionList(data: HashMap<String, String>) =
         getResult { apiService.getTransactionList(data) }
 
+    suspend fun refundPayment(data: RefundRequestModel) =
+        getResult { apiService.refundPayment(data) }
+
     suspend fun orderTypes() =
         getResult { apiService.orderTypes() }
 
