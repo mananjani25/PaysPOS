@@ -759,7 +759,15 @@
         android:label="AddTipsDialog" />
     <dialog
         android:id="@+id/issueRefundFragment"
-        android:name="com.android.pos.ui.dialog.IssueRefundFragment"
-        android:label="IssueRefundFragment" />
+        android:name="com.android.pos.ui.dialog.IssueRefundDialog"
+        android:label="IssueRefundFragment">
+        <action
+            android:id="@+id/action_issueRefundFragment_to_reasonForRefundDialog"
+            app:destination="@id/reasonForRefundDialog" />
+    </dialog>
+    <dialog
+        android:id="@+id/reasonForRefundDialog"
+        android:name="com.android.pos.ui.dialog.ReasonForRefundDialog"
+        android:label="ReasonForRefundDialog" />
 
 </navigation>

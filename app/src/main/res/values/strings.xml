@@ -532,4 +532,9 @@
     <string name="tv_issue_refund">Issue Refund</string>
     <string name="tv_amount">Amount</string>
     <string name="tv_amount_to_refund">Amount To Refund</string>
+    <string name="tv_refund_to">Refund To</string>
+    <string name="tv_other">Other</string>
+    <string name="tv_reason_for_refund">Reason For Refund</string>
+    <string name="tv_next">Next</string>
+    <string name="tv_refund">Refund</string>
 </resources>

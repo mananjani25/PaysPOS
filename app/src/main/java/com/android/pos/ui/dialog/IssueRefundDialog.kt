@@ -3,33 +3,35 @@ package com.android.pos.ui.dialog
 import android.graphics.Point
 import android.os.Bundle
 import android.text.Editable
+import android.text.TextUtils
 import android.text.TextWatcher
 import android.view.*
-import android.widget.EditText
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.android.pos.R
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
-import com.android.pos.databinding.DailogCustomAmountBinding
 import com.android.pos.databinding.DialogIssueRefundBinding
 import com.android.pos.ui.fragments.transactions.TransactionDetailsViewModel
-import com.android.pos.utils.AmountTextWatcher
 import com.android.pos.utils.MethodUtils
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.NumberFormat
 import java.util.*
+import androidx.navigation.fragment.findNavController
+import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.extensions.alert
 
 
 @AndroidEntryPoint
-class IssueRefundFragment : DialogFragment(), TextWatcher {
+class IssueRefundDialog : DialogFragment(), TextWatcher {
 
+    private var refundAmount: Double = 0.0
     private lateinit var binding: DialogIssueRefundBinding
     private lateinit var orderDetailsResponse: GetOrderDetailsResponse
     private val viewModel by viewModels<TransactionDetailsViewModel>()
 
     companion object {
-        fun newInstance() = IssueRefundFragment()
+        fun newInstance() = IssueRefundDialog()
     }
 
     override fun onCreateView(
@@ -40,9 +42,6 @@ class IssueRefundFragment : DialogFragment(), TextWatcher {
 
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
-
-
-       // binding.edtAmount.addTextChangedListener(AmountTextWatcher(binding.edtAmount, false))
 
         binding.rgRefundType.setOnCheckedChangeListener { group, checkedId ->
 
@@ -58,6 +57,23 @@ class IssueRefundFragment : DialogFragment(), TextWatcher {
         orderDetailsResponse = arguments?.getParcelable("orderDetailsResponse")!!
         binding.orderDetails = orderDetailsResponse
         binding.edtAmount.addTextChangedListener(this)
+
+
+        binding.txtDone.setOnClickListener {
+            if (TextUtils.isEmpty(binding.edtAmount.text.toString())) {
+                AlertUtils.showCustomAlert(requireActivity(), "Please Enter Amount To Refund")
+            } else {
+                refundAmount = binding.edtAmount.text.toString().toDouble()
+                val bundle = Bundle().apply {
+                    putParcelable("orderDetailsResponse", orderDetailsResponse)
+                    putDouble("refundAmount", refundAmount)
+                }
+                findNavController().navigate(
+                    R.id.action_issueRefundFragment_to_reasonForRefundDialog,
+                    bundle
+                )
+            }
+        }
 
         return binding.root
     }

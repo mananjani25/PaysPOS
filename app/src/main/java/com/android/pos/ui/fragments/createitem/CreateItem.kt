@@ -78,7 +78,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
                 bundle.putBoolean("isEdit", true)
                 bundle.putParcelableArrayList(
                     "optionSets",
-                    itemObject.optionSets as ArrayList<OptionSet>
+                    itemObject.optionSets?.toCollection(arrayListOf())
                 )
             } else {
                 bundle.putParcelableArrayList("optionSets", optionSetList)
