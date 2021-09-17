@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
+import android.util.Log
 import android.view.*
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
@@ -18,8 +19,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.text.NumberFormat
 import java.util.*
 import androidx.navigation.fragment.findNavController
+import com.android.pos.ui.adapter.RefundItemListAdapter
 import com.android.pos.utils.AlertUtils
-import com.android.pos.utils.extensions.alert
 
 
 @AndroidEntryPoint
@@ -29,6 +30,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
     private lateinit var binding: DialogIssueRefundBinding
     private lateinit var orderDetailsResponse: GetOrderDetailsResponse
     private val viewModel by viewModels<TransactionDetailsViewModel>()
+    private lateinit var refundItemListAdapter: RefundItemListAdapter
 
     companion object {
         fun newInstance() = IssueRefundDialog()
@@ -43,6 +45,13 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
+        orderDetailsResponse = arguments?.getParcelable("orderDetailsResponse")!!
+        binding.orderDetails = orderDetailsResponse
+        binding.edtAmount.addTextChangedListener(this)
+
+        setUpRecyclerView()
+
+
         binding.rgRefundType.setOnCheckedChangeListener { group, checkedId ->
 
             if (checkedId == R.id.rbItems) {
@@ -54,12 +63,10 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
             }
         }
 
-        orderDetailsResponse = arguments?.getParcelable("orderDetailsResponse")!!
-        binding.orderDetails = orderDetailsResponse
-        binding.edtAmount.addTextChangedListener(this)
-
-
         binding.txtDone.setOnClickListener {
+
+            Log.d("selectedItem", "::" + refundItemListAdapter.selectedItemList().size)
+
             if (TextUtils.isEmpty(binding.edtAmount.text.toString())) {
                 AlertUtils.showCustomAlert(requireActivity(), "Please Enter Amount To Refund")
             } else {
@@ -76,6 +83,13 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
         }
 
         return binding.root
+    }
+
+    private fun setUpRecyclerView() {
+        refundItemListAdapter = RefundItemListAdapter(viewModel)
+        binding.rvItemListRefund.adapter = refundItemListAdapter
+
+        refundItemListAdapter.addItems(orderDetailsResponse.data.orderItems)
     }
 
     override fun onResume() {
@@ -129,6 +143,4 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
     override fun afterTextChanged(s: Editable?) {
 
     }
-
-
 }
