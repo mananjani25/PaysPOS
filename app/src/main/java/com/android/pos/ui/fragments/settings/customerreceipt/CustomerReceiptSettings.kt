@@ -17,7 +17,9 @@ import com.android.pos.data.remote.Constants.MEDIUM
 import com.android.pos.data.remote.Constants.SMALL
 import com.android.pos.databinding.FragmentCustomerReceiptSettingsBinding
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.Event
 import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.statusUtils.Status
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -51,12 +53,48 @@ class CustomerReceiptSettings : Fragment() {
         }
 
 
-        observeData()
+        getCustomerSettings()
         observeShowProgress()
         updateDate()
+
+
+        return binding.root
+    }
+
+    private fun getCustomerSettings() {
+        viewModel.getCustomerSettings().observe(viewLifecycleOwner, { resource ->
+
+            when (resource.status) {
+                Status.ERROR -> {
+                    viewModel._snackbarText.value = Event(resource.message)
+                    viewModel._showProgress.value = Event(false)
+                }
+                Status.SUCCESS -> {
+                    viewModel._showProgress.value = Event(false)
+                    resource.data.let {
+                        if (it != null) {
+                            viewModel.customerData.value = it
+                            viewModel.customerId.value = it?.id
+                        }
+
+                    }
+
+
+                }
+                Status.LOADING -> {
+                    viewModel._showProgress.value = Event(true)
+
+                }
+            }
+        })
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        observeData()
         onClick()
         onChecked()
-        return binding.root
+
     }
 
     private fun onClick() {
@@ -278,9 +316,9 @@ class CustomerReceiptSettings : Fragment() {
 
     private fun observeData() {
         viewModel.customerData.observe(requireActivity(), {
-            if (it.data != null) {
-                val model = it?.data
-                when (model?.fonts) {
+            if (it != null) {
+                val model = it
+                when (model.fonts) {
                     Constants.SMALL -> {
                         binding.rdGroup.check(binding.radioSmall.id)
                     }
@@ -293,7 +331,7 @@ class CustomerReceiptSettings : Fragment() {
                     }
                 }
 
-                setTextSize(model?.fonts!!)
+                setTextSize(model.fonts)
                 binding.swtOrderId.isChecked = model.showOrderIdTop
                 binding.swtAddons.isChecked = model.showModifiers
                 binding.swtOrderNote.isChecked = model.showSplitAmount

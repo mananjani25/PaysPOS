@@ -32,10 +32,10 @@ class KitchenReceiptViewModel @Inject constructor(
     private val appDatabase: AppDatabase
 ) : ViewModel() {
     private val TAG = "KitchenReceiptViewModel"
-    private val _snackbarText = MutableLiveData<Event<Any?>>()
-    private val _showProgress = MutableLiveData<Event<Boolean>>()
+    internal val _snackbarText = MutableLiveData<Event<Any?>>()
+    internal val _showProgress = MutableLiveData<Event<Boolean>>()
 
-    val kitchenData = MutableLiveData<GetKitchenReceiptSettingsResponse>()
+    val kitchenData = MutableLiveData<GetKitchenReceiptSettingsResponse.Data>()
     val kitchenUpdateData = MutableLiveData<UpdateKitchenReceiptRequestModel>()
     val kitchenId = MutableLiveData<Int>()
     private val _data = MutableLiveData<Event<String>>()
@@ -56,7 +56,7 @@ class KitchenReceiptViewModel @Inject constructor(
                 Status.SUCCESS -> {
                     _showProgress.value = Event(false)
                     _data.value = Event(resource.data?.message!!)
-
+                    appDatabase.kitchenSettingsDao().add(resource.data.data)
 
                 }
                 Status.ERROR -> {
@@ -69,8 +69,12 @@ class KitchenReceiptViewModel @Inject constructor(
         }
     }
 
+    fun getKitchenSettings() = taxServiceChargeRepository.getKitchenReceiptSettings()
+
     init {
-        _showProgress.value = Event(true)
+
+
+        /*_showProgress.value = Event(true)
         viewModelScope.launch {
 
             val resources = taxServiceChargeRepository.getKitchenReceiptSettings()
@@ -80,7 +84,10 @@ class KitchenReceiptViewModel @Inject constructor(
                     resources.data.let {
                         kitchenData.value = resources.data!!
                         kitchenId.value = resources.data.data.id
+                        if (it != null) {
+                            appDatabase.kitchenSettingsDao().add(it.data)
 
+                        }
                     }
 
                 }
@@ -94,7 +101,7 @@ class KitchenReceiptViewModel @Inject constructor(
                 }
 
             }
-        }
+        }*/
 
     }
 }

@@ -1,6 +1,8 @@
 package com.android.pos.data.model.responseModel
 
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
 data class GetKitchenReceiptSettingsResponse(
@@ -13,11 +15,13 @@ data class GetKitchenReceiptSettingsResponse(
     @SerializedName("type")
     val type: String
 ) {
+    @Entity(tableName = "TbKitchenSettings")
     data class Data(
         @SerializedName("created_at")
         val createdAt: String,
         @SerializedName("fonts")
         val fonts: String,
+        @PrimaryKey
         @SerializedName("id")
         val id: Int,
         @SerializedName("location_id")

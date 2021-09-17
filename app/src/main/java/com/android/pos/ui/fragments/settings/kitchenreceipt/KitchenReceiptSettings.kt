@@ -20,7 +20,9 @@ import com.android.pos.data.remote.Constants.SETTING_KEY
 import com.android.pos.data.remote.Constants.SMALL
 import com.android.pos.databinding.FragmentKitchenReceiptSettingsBinding
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.Event
 import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.statusUtils.Status
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -49,10 +51,39 @@ class KitchenReceiptSettings : Fragment(), CompoundButton.OnCheckedChangeListene
             navController.previousBackStackEntry?.savedStateHandle?.set(KEY, ORDER_RECEIPTS)
             navController.popBackStack()
         }
-        observeData()
+
+        getKitchenSettings()
         updateDate()
         observeShowProgress()
         return binding.root
+    }
+
+    private fun getKitchenSettings() {
+        viewModel.getKitchenSettings().observe(viewLifecycleOwner, { resources ->
+            when (resources.status) {
+                Status.SUCCESS -> {
+                    viewModel._showProgress.value = Event(false)
+                    resources.data.let {
+                        if (it != null) {
+                            viewModel.kitchenData.value = resources.data
+                            viewModel.kitchenId.value = resources.data?.id
+                        }
+
+                    }
+
+                }
+                Status.ERROR -> {
+                    viewModel._snackbarText.value = Event(resources.message)
+                    viewModel._showProgress.value = Event(false)
+                }
+                Status.LOADING -> {
+                    viewModel._showProgress.value = Event(true)
+
+                }
+
+            }
+
+        })
     }
 
     private fun updateDate() {
@@ -78,7 +109,7 @@ class KitchenReceiptSettings : Fragment(), CompoundButton.OnCheckedChangeListene
     private fun observeData() {
         viewModel.kitchenData.observe(requireActivity(), {
             Log.e(TAG, "KitchenReceiptRespone  ${Gson().toJson(it)}")
-            when (it.data.fonts) {
+            when (it.fonts) {
                 SMALL -> {
 
                     binding.rdGroup.check(binding.radioSmall.id)
@@ -93,28 +124,28 @@ class KitchenReceiptSettings : Fragment(), CompoundButton.OnCheckedChangeListene
 
             }
 
-            setTextSize(it.data.fonts)
-            binding.swtShowCategory.isChecked = it.data.showCategory
-            binding.swtSameGrpItem.isChecked = it.data.showItemsInGroup
-            binding.swtTeamMember.isChecked = it.data.showTeamMember
-            binding.swtOrderNote.isChecked = it.data.showOrderNote
-            binding.swtOrderType.isChecked = it.data.showOrderType
-            binding.swtName.isChecked = it.data.showCustomerName
-            binding.swtPhone.isChecked = it.data.showCustomerPhone
-            binding.swtAddress.isChecked = it.data.showCustomerAddress
+            setTextSize(it.fonts)
+            binding.swtShowCategory.isChecked = it.showCategory
+            binding.swtSameGrpItem.isChecked = it.showItemsInGroup
+            binding.swtTeamMember.isChecked = it.showTeamMember
+            binding.swtOrderNote.isChecked = it.showOrderNote
+            binding.swtOrderType.isChecked = it.showOrderType
+            binding.swtName.isChecked = it.showCustomerName
+            binding.swtPhone.isChecked = it.showCustomerPhone
+            binding.swtAddress.isChecked = it.showCustomerAddress
 
-            if (it.data.showCustomerName) {
+            if (it.showCustomerName) {
                 binding.txtName.visibility = View.VISIBLE
             } else {
                 binding.txtName.visibility = View.GONE
             }
-            if (it.data.showCustomerPhone) {
+            if (it.showCustomerPhone) {
                 binding.txtPhone.visibility = View.VISIBLE
             } else {
                 binding.txtPhone.visibility = View.GONE
 
             }
-            if (it.data.showCustomerAddress) {
+            if (it.showCustomerAddress) {
                 binding.txtAddress.visibility = View.VISIBLE
             } else {
                 binding.txtAddress.visibility = View.GONE
@@ -128,6 +159,7 @@ class KitchenReceiptSettings : Fragment(), CompoundButton.OnCheckedChangeListene
         super.onViewCreated(view, savedInstanceState)
         onClick()
         onChecked()
+        observeData()
         binding.rdGroup.setOnCheckedChangeListener { group, checkedId ->
             when (checkedId) {
                 binding.radioLarge.id -> {

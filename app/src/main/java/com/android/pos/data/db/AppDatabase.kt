@@ -8,10 +8,7 @@ import androidx.room.TypeConverters
 import com.android.pos.data.dao.*
 import com.android.pos.data.entities.*
 import com.android.pos.data.model.CharacterModel
-import com.android.pos.data.model.responseModel.GetTipReponse
-import com.android.pos.data.model.responseModel.NoteResponse
-import com.android.pos.data.model.responseModel.PrinterResponse
-import com.android.pos.data.model.responseModel.VenueDetailsResponse
+import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.Constants.DATABASE_NAME
 import com.android.pos.data.typeconvert.*
 
@@ -23,6 +20,8 @@ import com.android.pos.data.typeconvert.*
         TbCustomer::class, ModifierSet::class, TeamRole::class,
         ModulePermission::class, TbOrderType::class, VenueDetailsResponse.Data.Terminal::class,
         ItemModifierSets::class, OptionSet::class, PrinterResponse.Data.CustomerReceiptPrinters::class,
+        PrinterResponse.Data.KitchenReceiptPrinters::class, GetKitchenReceiptSettingsResponse.Data::class, GetCustomerReceiptSettingsResponse.Data::class],
+    version = 2
         PrinterResponse.Data.KitchenReceiptPrinters::class],
     version = 1
 )
@@ -68,6 +67,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun terminalDao(): TerminalsDao
     abstract fun itemModifierSetsDao(): ItemModifierSetsDao
     abstract fun printerDao(): PrinterDao
+    abstract fun kitchenSettingsDao(): KitchenSettingsDao
+    abstract fun customerSettingsDao(): CustomerSettingsDao
 
     companion object {
         @Volatile

@@ -73,6 +73,7 @@ import com.android.pos.utils.getBitmapFromVectorDrawable
 
 
 import com.android.pos.utils.padLine
+import com.android.pos.utils.printer.PrinterClass.BLUETOOTH_TIMEOUT
 import com.android.pos.utils.printer.PrinterClass.IMAGE_WIDTH_MAX
 import com.android.pos.utils.statusUtils.Status
 import javax.inject.Inject
@@ -134,9 +135,9 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
         getOrderTypes()
 
-
         return binding.root
     }
+
 
     private fun getOrderTypes() {
         viewModel.orderTypes.observe(viewLifecycleOwner, {
@@ -1141,7 +1142,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             terminalIds = listOf(prefProvider.getValueInt(TERMINAL_ID, 1)),
             status = false,
             locationId = prefProvider.getValueInt(LOCATION_ID, 1),
-            receiptPrintType = if (printerListModel.printerName == "TM-U220" ) {
+            receiptPrintType = if (printerListModel.printerName == "TM-U220") {
                 KITCHEN
             } else {
                 CUSTOMER
@@ -1231,8 +1232,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             PrinterClass.setPrinter(printer)
             Log.e(TAG, "printerListModel:  ${Gson().toJson(printerListModel)}")
 
-            generateKitchenReceipt(printerListModel)
-            //showPrinterStatus(printerListModel)
+            //generateKitchenReceipt(printerListModel)
+            showPrinterStatus(printerListModel)
         }
     }
 
@@ -1570,7 +1571,13 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         var method = ""
 
         try {
-            builder = Builder(printerListModel.printerName, language, requireActivity())
+            builder = Builder(
+                if (printerListModel.printerName == "TM-m30_030295") {
+                    "TM-m30"
+                } else {
+                    printerListModel.printerName
+                }, language, requireActivity()
+            )
 
             builder.addFeedLine(2)
             val bitmap = getBitmapFromVectorDrawable(requireContext(), R.drawable.ic_group)
@@ -1673,10 +1680,12 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             builder.addFeedLine(2)
             //builder.addHLine(0,46,Builder.LINE_THIN_DOUBLE)
 
-            builder.addTextFont(Builder.FONT_C)
+            builder.addTextLineSpace(30)
+            builder.addFeedUnit(30)
+            builder.addTextFont(Builder.FONT_E)
             // builder.addTextAlign(Builder.ALIGN_LEFT)
             builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(1, 2)
+            builder.addTextSize(1, 1)
             builder.addTextStyle(
                 Builder.FALSE,
                 Builder.FALSE,
@@ -1684,7 +1693,13 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                 Builder.COLOR_1
             )
 
-            builder.addText(padLine("1x Chicken Meals", "$9.99", 46))
+            builder.addText(
+                padLine(
+                    "1x Chicken Meals Chicken Meals Chicken Meals Chicken Meals Chicken Meals Chicken Meals Chicken Meals Chicken Meals Chicken Meals Chicken Meals",
+                    "$9.99",
+                    48
+                )
+            )
 
             builder.addFeedLine(1)
             builder.addTextFont(Builder.FONT_C)
@@ -1855,7 +1870,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
 
             try {
-                PrinterClass.getPrinter()?.sendData(builder, SEND_TIMEOUT, status, battery)
+                PrinterClass.getPrinter()?.sendData(builder, BLUETOOTH_TIMEOUT, status, battery)
                 //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
             } catch (e: Exception) {
                 PrinterClass.closePrinter()
