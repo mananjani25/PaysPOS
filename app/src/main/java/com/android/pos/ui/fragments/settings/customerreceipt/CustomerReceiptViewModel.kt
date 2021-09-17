@@ -25,42 +25,43 @@ class CustomerReceiptViewModel @Inject constructor(
     private val appDatabase: AppDatabase
 ) : ViewModel() {
     private val TAG = "CustomerReceiptViewModel"
-    private val _snackbarText = MutableLiveData<Event<Any?>>()
-    private val _showProgress = MutableLiveData<Event<Boolean>>()
+    internal val _snackbarText = MutableLiveData<Event<Any?>>()
+    internal val _showProgress = MutableLiveData<Event<Boolean>>()
 
-    val customerData = MutableLiveData<GetCustomerReceiptSettingsResponse>()
+    val customerData = MutableLiveData<GetCustomerReceiptSettingsResponse.Data>()
 
     private val _data = MutableLiveData<Event<String>>()
     val data: LiveData<Event<String>> = _data
     val showProgress: LiveData<Event<Boolean>> = _showProgress
     val customerId = MutableLiveData<Int>()
 
+    fun getCustomerSettings() = taxServiceChargeRepository.getCustomerReceiptSettings()
 
     init {
-        _showProgress.value = Event(true)
-        viewModelScope.launch {
-            val resource = taxServiceChargeRepository.getCustomerReceiptSettings()
-            when (resource.status) {
-                Status.ERROR -> {
-                    _snackbarText.value = Event(resource.message)
-                    _showProgress.value = Event(false)
-                }
-                Status.SUCCESS -> {
-                    _showProgress.value = Event(false)
-                    resource.data.let {
-                        customerData.value = it
-                        customerId.value = it?.data?.id
-
-                    }
-
-
-                }
-                Status.LOADING -> {
-                    _showProgress.value = Event(true)
-
-                }
-            }
-        }
+        /* _showProgress.value = Event(true)
+         viewModelScope.launch {
+             val resource = taxServiceChargeRepository.getCustomerReceiptSettings()
+             when (resource.status) {
+                 Status.ERROR -> {
+                     _snackbarText.value = Event(resource.message)
+                     _showProgress.value = Event(false)
+                 }
+                 Status.SUCCESS -> {
+                     _showProgress.value = Event(false)
+                     resource.data.let {
+                         customerData.value = it
+                         customerId.value = it?.data?.id
+ 
+                     }
+ 
+ 
+                 }
+                 Status.LOADING -> {
+                     _showProgress.value = Event(true)
+ 
+                 }
+             }
+         }*/
 
 
     }
@@ -82,6 +83,9 @@ class CustomerReceiptViewModel @Inject constructor(
                 Status.SUCCESS -> {
 
                     _showProgress.value = Event(false)
+                    if (resource.data != null) {
+                        appDatabase.customerSettingsDao().add(resource.data.data)
+                    }
                     _data.value = Event(resource.data?.message!!)
                 }
                 Status.ERROR -> {

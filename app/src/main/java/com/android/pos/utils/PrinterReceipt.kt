@@ -3,10 +3,8 @@ package com.android.pos.utils
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import androidx.annotation.Nullable
-import com.google.android.gms.common.util.Strings
 import android.os.Build
 import android.util.Log
 import androidx.core.content.ContextCompat
@@ -15,6 +13,7 @@ import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.model.responseModel.GetTipReponse
 import com.epson.eposprint.Builder
 
+private val TAG = "PrinterReceipt"
 
 fun padLine(
     @Nullable partOne: String?,
@@ -31,11 +30,91 @@ fun padLine(
     }
     val concat: String
     concat = if (partOne.length + partTwo.length > columnsPerLine) {
-        "$partOne $partTwo"
+        val strBuffer = StringBuffer()
+
+        strBuffer.append(partOne.substring(0, columnsPerLine - 8) + repeat(" ", 8 - partTwo.length) + partTwo)
+        strBuffer.append("\n")
+        var tempStr = ""
+        var tempPartOne = partOne.substring(columnsPerLine - 8, partOne.length)
+        val tempPadding = (columnsPerLine - tempPartOne.length) - partTwo.length
+        tempStr = tempPartOne + repeat(" ", tempPadding)
+
+        strBuffer.append(tempStr)
+
+        return strBuffer.toString()
+
+        //partOne + " " + partTwo
     } else {
         val padding = columnsPerLine - (partOne.length + partTwo.length)
         partOne + repeat(" ", padding) + partTwo
     }
+    return concat
+}
+
+
+fun padLineForItem(
+    @Nullable partOne: String?,
+    @Nullable partTwo: String?,
+    columnsPerLine: Int,
+    builder: Builder
+): Builder {
+    var partOne = partOne
+    var partTwo = partTwo
+    if (partOne == null) {
+        partOne = ""
+    }
+    if (partTwo == null) {
+        partTwo = ""
+    }
+    val concat: String
+    concat = if (partOne.length + partTwo.length > columnsPerLine) {
+        val padding = 8
+        val strBuffer = StringBuffer()
+        if (partOne.length > columnsPerLine - 6) {
+            strBuffer.append(partOne.substring(0, columnsPerLine - 6) + "\n")
+            if (columnsPerLine - 6 > (partOne.length - partOne.substring(
+                    0,
+                    columnsPerLine - 6
+                ).length)
+            ) {
+                strBuffer.append(
+                    "   " + partOne.substring(
+                        (partOne.length - partOne.substring(
+                            0,
+                            columnsPerLine - 6
+                        ).length), partOne.length
+                    )
+                )
+            } else {
+
+                strBuffer.append(
+                    "   " + partOne.substring(
+                        partOne.length - partOne.substring(
+                            0,
+                            columnsPerLine - 6
+                        ).length, partOne.length
+                    ) + "\n"
+                )
+
+            }
+            //  strBuffer.append(partOne.substring())
+        }
+        Log.e(TAG, "GeneratePartOne: ${strBuffer.toString()}")
+        partOne = ""
+        partOne = strBuffer.toString()
+        partOne + partTwo
+        Log.e(TAG, "FinalString : $partOne + partTwo")
+        builder.addText(partOne + partTwo)
+        return builder
+    } else {
+        val padding = columnsPerLine - (partOne.length + partTwo.length)
+        partOne + partTwo
+        Log.e(TAG, "FinalElseString: $partOne + partTwo")
+        builder.addText(partOne + partTwo)
+        return builder
+
+    }
+
     return concat
 }
 
@@ -179,7 +258,6 @@ fun addOrdersForKitchen(
                 //builder.addTextPosition(1)
 
 
-
                 builder.addText("  " + modifierObj.name)
 
 
@@ -226,6 +304,8 @@ fun addOrderItems(builder: Builder, list: List<CreateOrderResponse.Data.Order.Or
             Builder.COLOR_1
         )
 
+
+
         builder.addText(
             padLine(
                 obj.quantity.toString() + "x " + obj.itemName,
@@ -233,6 +313,7 @@ fun addOrderItems(builder: Builder, list: List<CreateOrderResponse.Data.Order.Or
                 48
             )
         )
+
 
         if (obj.orderItemModifiers.isNotEmpty()) {
             for (j in 0 until obj.orderItemModifiers.size) {

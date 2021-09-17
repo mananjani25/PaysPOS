@@ -105,11 +105,17 @@ class TaxServiceChargeRepository @Inject constructor(
     suspend fun getTeamMemberTimeSheet(data: CreateTeamRoleRequestModel) =
         apiHelperNew.getTeamMemberTimeSheet(data)
 
-    suspend fun getKitchenReceiptSettings() =
-        apiHelperNew.getKitchenReceiptSettings()
+    fun getKitchenReceiptSettings() =
+        performGetOperation(databaseQuery = { appDatabase.kitchenSettingsDao().getKitchenSettings },
+            networkCall = { apiHelperNew.getKitchenReceiptSettings() },
+            saveCallResult = { appDatabase.kitchenSettingsDao().add(it.data) })
 
-    suspend fun getCustomerReceiptSettings() =
-        apiHelperNew.getCustomerReceiptSettings()
+
+    fun getCustomerReceiptSettings() =
+        performGetOperation(databaseQuery = { appDatabase.customerSettingsDao().getCustomerSettings },
+            networkCall = { apiHelperNew.getCustomerReceiptSettings() },
+            saveCallResult = { appDatabase.customerSettingsDao().add(it.data) })
+
 
     suspend fun getTransactionList(data: HashMap<String, String>) =
         apiHelperNew.getTransactionList(data)
