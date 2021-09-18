@@ -34,13 +34,12 @@ class TransactionDetailsFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
 
-        binding =
-            DataBindingUtil.inflate(
-                inflater,
-                R.layout.fragment_transaction_details,
-                container,
-                false
-            )
+        binding = DataBindingUtil.inflate(
+            inflater,
+            R.layout.fragment_transaction_details,
+            container,
+            false
+        )
 
         binding.lifecycleOwner = this
         binding.viewModel = viewModel

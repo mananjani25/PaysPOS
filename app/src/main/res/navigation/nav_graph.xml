@@ -415,6 +415,9 @@
         <action
             android:id="@+id/action_dashboardCategoryNew_to_cashLogFragment"
             app:destination="@id/cashLogFragment" />
+        <action
+            android:id="@+id/action_dashboardCategoryNew_to_dineInFragment"
+            app:destination="@id/dineInFragment" />
 
     </fragment>
     <action
@@ -769,5 +772,9 @@
         android:id="@+id/reasonForRefundDialog"
         android:name="com.android.pos.ui.dialog.ReasonForRefundDialog"
         android:label="ReasonForRefundDialog" />
+    <fragment
+        android:id="@+id/dineInFragment"
+        android:name="com.android.pos.ui.fragments.dinein.DineInFragment"
+        android:label="DineInFragment" />
 
 </navigation>

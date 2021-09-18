@@ -101,7 +101,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-       // prefProvider.setValueboolean(IS_CLOCKOUT, false)
+        // prefProvider.setValueboolean(IS_CLOCKOUT, false)
         binding = FragmentDashboardCategoryNewBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
 
@@ -172,7 +172,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             val result = bundle.getParcelable<TbCustomer>("data")
             if (result != null) {
 
-              //  Log.e("request_key_customer", result.first_name)
+                //  Log.e("request_key_customer", result.first_name)
                 prefProvider.setValue(CUSTOMER_NAME, result.first_name + " " + result.last_name)
                 binding.layoutCart.txtCustomerName.text = result.first_name + " " + result.last_name
                 binding.layoutCart.txtCrtNewCustomer.text = "Remove Customer"
@@ -200,7 +200,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             val result = bundle.getParcelable<TbCustomer>("data")
             if (result != null) {
 
-              //  Log.e("request_key_customer", result.first_name)
+                //  Log.e("request_key_customer", result.first_name)
                 prefProvider.setValue(CUSTOMER_NAME, result.first_name + " " + result.last_name)
                 binding.layoutCart.txtCustomerName.text = result.first_name + " " + result.last_name
                 binding.layoutCart.txtCrtNewCustomer.text = "Remove Customer"
@@ -1026,7 +1026,13 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                                 rvVariationList.visibility = View.VISIBLE
                                 txtItemName.text = it.name + ":-  Choose One"
                                 variationAdapter.addVariations(it.variationsAttributes)
-                                showPriceTitle(variationsAttribute = null, variationAdapter, data, txtTitle, isItemClick)
+                                showPriceTitle(
+                                    variationsAttribute = null,
+                                    variationAdapter,
+                                    data,
+                                    txtTitle,
+                                    isItemClick
+                                )
 
                             }
 
@@ -1046,7 +1052,13 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         } else {
             rvVariationList.visibility = View.GONE
             txtItemName.visibility = View.GONE
-            showPriceTitle(variationsAttribute = null, variationAdapter, data, txtTitle, isItemClick)
+            showPriceTitle(
+                variationsAttribute = null,
+                variationAdapter,
+                data,
+                txtTitle,
+                isItemClick
+            )
         }
 
         edtNote.setText(data.note)
@@ -1228,7 +1240,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         if (variation != null) {
             data.price = variation.price
-            data.name=variation.name
+            data.name = variation.name
         } else {
             data.price = data.price
         }
@@ -1355,7 +1367,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 hideOrderType()
             }
             DINE_IN -> {
-
+                findNavController().navigate(
+                    R.id.action_dashboardCategoryNew_to_dineInFragment
+                )
             }
             OPEN_ORDER -> {
 
