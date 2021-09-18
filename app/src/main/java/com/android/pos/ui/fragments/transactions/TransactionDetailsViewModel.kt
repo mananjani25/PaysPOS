@@ -73,21 +73,12 @@ class TransactionDetailsViewModel @Inject constructor(
 
     fun refundPaymentApiCall(
         refundAmount: Double,
-        orderDetailsResponse: GetOrderDetailsResponse,
+        refundData: RefundRequestModel,
         refundReason: String
     ) {
-        val refundData = RefundRequestModel().apply {
-            paymentRefund = RefundRequestModel.PaymentRefund().apply {
-                amount = refundAmount
-                orderId=orderDetailsResponse.data.id
-                paymentId=orderDetailsResponse.data.payments.get(0).id
-                employeeId = orderDetailsResponse.data.employeeId
-                terminalId = orderDetailsResponse.data.terminalId
-                reasonForRefund = refundReason
 
-            }
-        }
-
+        refundData.paymentRefund?.reasonForRefund = refundReason
+        refundData.paymentRefund?.amount = refundAmount
         viewModelScope.launch {
 
             val resource = taxServiceChargeRepository.refundPayment(refundData)

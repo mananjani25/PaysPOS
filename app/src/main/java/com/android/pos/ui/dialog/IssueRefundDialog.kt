@@ -22,11 +22,13 @@ import androidx.navigation.fragment.findNavController
 import com.android.pos.data.model.requestModel.RefundRequestModel
 import com.android.pos.ui.adapter.RefundItemListAdapter
 import com.android.pos.utils.AlertUtils
+import kotlin.collections.ArrayList
 
 
 @AndroidEntryPoint
 class IssueRefundDialog : DialogFragment(), TextWatcher {
 
+    private lateinit var refundData: RefundRequestModel
     private var totalServiceCharge: Double = 0.0
     private var refundAmount: Double = 0.0
     var totalTax = 0.0
@@ -37,6 +39,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
     private lateinit var refundItemListAdapter: RefundItemListAdapter
     private var isItem = false
     private var subTotalPrice: Double = 0.0
+
 
     companion object {
         fun newInstance() = IssueRefundDialog()
@@ -81,10 +84,10 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                 if (TextUtils.isEmpty(binding.edtAmount.text.toString())) {
                     AlertUtils.showCustomAlert(requireActivity(), "Please Enter Amount To Refund")
                 } else {
-                    refundAmount = binding.edtAmount.text.toString().toDouble()
+                    subTotalPrice = binding.edtAmount.text.toString().toDouble()
                     val bundle = Bundle().apply {
-                        putParcelable("orderDetailsResponse", orderDetailsResponse)
-                        putDouble("refundAmount", refundAmount)
+                        putParcelable("refundData", refundData)
+                        putDouble("refundAmount", subTotalPrice)
                     }
                     findNavController().navigate(
                         R.id.action_issueRefundFragment_to_reasonForRefundDialog,
@@ -97,7 +100,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                 } else {
                     //  refundAmount = binding.edtAmount.text.toString().toDouble()
                     val bundle = Bundle().apply {
-                        putParcelable("orderDetailsResponse", orderDetailsResponse)
+                        putParcelable("refundData", refundData)
                         putDouble("refundAmount", subTotalPrice)
                         Log.d("subTotalPriceRefund", "::" + subTotalPrice)
                     }
@@ -120,54 +123,80 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
         refundItemListAdapter.addItems(orderDetailsResponse.data.orderItems)
 
         refundItemListAdapter.showItemSubTotal = {
-            subTotalPrice = 0.0
-            totalServiceCharge = 0.0
-            totalTax = 0.0
-            //  totalItemPrice = 0.0
-            refundItemListAdapter.selectedItemList().forEach { it ->
 
-                if (it.isChecked) {
-
-                    it.orderItemTaxes.forEach { tax ->
-                        totalTax += tax.taxTotalAmount
-                    }
-
-                    it.orderItemModifiers.forEach { modifiers ->
-                        modifiers.orderItemTaxes.forEach { taxes ->
-                            totalTax += taxes.taxTotalAmount
-                        }
-
-                    }
-
-                    subTotalPrice += it.totalPrice
-
-                    it.orderItemModifiers.forEach { modifiers ->
-                        subTotalPrice += modifiers.price
-                    }
-                    orderDetailsResponse.data.orderServiceCharges.forEach {
-                        totalServiceCharge = (subTotalPrice * it.rate) / 100
-                    }
-                }
-            }
-            subTotalPrice += totalTax + totalServiceCharge
+            calculationOfItems()
 
         }
 
-
-        val refundData = RefundRequestModel().apply {
+        refundData = RefundRequestModel().apply {
             paymentRefund = RefundRequestModel.PaymentRefund().apply {
                 amount = subTotalPrice
                 orderId = orderDetailsResponse.data.id
-                paymentId = orderDetailsResponse.data.payments.get(0).id
+                paymentId = orderDetailsResponse.data.payments[0].id
                 employeeId = orderDetailsResponse.data.employeeId
                 terminalId = orderDetailsResponse.data.terminalId
-                val orderItemRefundsAttributes =
-                    RefundRequestModel.PaymentRefund.OrderItemRefundsAttribute().apply {
-                        amount = 0.0
-                        employeeId = orderDetailsResponse.data.employeeId
-                        orderId = orderDetailsResponse.data.id
-                        refundType = 0
+                taxRefunded = totalTax
+                serviceChargeRefunded = totalServiceCharge
+            }
+        }
+
+
+    }
+
+    private fun calculationOfItems() {
+        subTotalPrice = 0.0
+        totalServiceCharge = 0.0
+        totalTax = 0.0
+        val orderItemRefundsAttributesList =
+            ArrayList<RefundRequestModel.PaymentRefund.OrderItemRefundsAttribute>()
+
+        //  totalItemPrice = 0.0
+        refundItemListAdapter.selectedItemList().forEach { it ->
+            if (it.isChecked) {
+
+                it.orderItemTaxes.forEach { tax ->
+                    totalTax += tax.taxTotalAmount
+                }
+
+                it.orderItemModifiers.forEach { modifiers ->
+                    modifiers.orderItemTaxes.forEach { taxes ->
+                        totalTax += taxes.taxTotalAmount
                     }
+
+                }
+
+                subTotalPrice += it.totalPrice
+
+                it.orderItemModifiers.forEach { modifiers ->
+                    subTotalPrice += (modifiers.price * modifiers.quantity)
+                }
+                orderDetailsResponse.data.orderServiceCharges.forEach {
+                    totalServiceCharge = (subTotalPrice * it.rate) / 100
+                }
+            }
+            val orderItemRefundsAttributeModel =
+                RefundRequestModel.PaymentRefund.OrderItemRefundsAttribute()
+
+            orderItemRefundsAttributeModel.amount = subTotalPrice
+            orderItemRefundsAttributeModel.employeeId = it.employeeId
+            orderItemRefundsAttributeModel.orderId = it.orderId
+            orderItemRefundsAttributeModel.refundType = 0
+            orderItemRefundsAttributeModel.orderItemId = it.itemId
+            orderItemRefundsAttributeModel.quantity = it.quantity
+            orderItemRefundsAttributesList.add(orderItemRefundsAttributeModel)
+        }
+        subTotalPrice += totalTax + totalServiceCharge
+
+        refundData = RefundRequestModel().apply {
+            paymentRefund = RefundRequestModel.PaymentRefund().apply {
+                amount = subTotalPrice
+                orderId = orderDetailsResponse.data.id
+                paymentId = orderDetailsResponse.data.payments[0].id
+                employeeId = orderDetailsResponse.data.employeeId
+                terminalId = orderDetailsResponse.data.terminalId
+                orderItemRefundsAttributes = orderItemRefundsAttributesList
+                taxRefunded = totalTax
+                serviceChargeRefunded = totalServiceCharge
             }
         }
     }

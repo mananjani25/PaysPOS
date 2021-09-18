@@ -8,6 +8,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
+import com.android.pos.data.model.requestModel.RefundRequestModel
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.databinding.DialogRefundReasonBinding
 import com.android.pos.ui.fragments.transactions.TransactionDetailsViewModel
@@ -23,7 +24,7 @@ class ReasonForRefundDialog : DialogFragment() {
 
     private var refundAmount: Double = 0.0
     private lateinit var binding: DialogRefundReasonBinding
-    private lateinit var orderDetailsResponse: GetOrderDetailsResponse
+    private lateinit var refundData: RefundRequestModel
     private val viewModel by viewModels<TransactionDetailsViewModel>()
 
     companion object {
@@ -39,8 +40,8 @@ class ReasonForRefundDialog : DialogFragment() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
-        orderDetailsResponse = arguments?.getParcelable("orderDetailsResponse")!!
-        binding.orderDetails = orderDetailsResponse
+        refundData = arguments?.getParcelable("refundData")!!
+
 
         refundAmount = arguments?.getDouble("refundAmount")!!
 
@@ -60,7 +61,7 @@ class ReasonForRefundDialog : DialogFragment() {
         binding.txtDone.setOnClickListener {
             viewModel.refundPaymentApiCall(
                 refundAmount,
-                orderDetailsResponse,
+                refundData,
                 binding.edtReasonForRefund.text.toString()
             )
         }

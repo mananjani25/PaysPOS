@@ -7,10 +7,6 @@
     <data>
 
         <variable
-            name="orderDetails"
-            type="com.android.pos.data.model.responseModel.GetOrderDetailsResponse" />
-
-        <variable
             name="viewModel"
             type="com.android.pos.ui.fragments.transactions.TransactionDetailsViewModel" />
     </data>
