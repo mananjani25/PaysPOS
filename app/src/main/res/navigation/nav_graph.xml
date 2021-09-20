@@ -190,7 +190,11 @@
     <fragment
         android:id="@+id/teamList"
         android:name="com.android.pos.ui.fragments.team.TeamList"
-        android:label="TeamList" />
+        android:label="TeamList" >
+        <action
+            android:id="@+id/action_teamList_to_dashboardCategoryNew"
+            app:destination="@id/dashboardCategoryNew" />
+    </fragment>
     <action
         android:id="@+id/action_global_teamList"
         app:destination="@id/teamList"

@@ -50,6 +50,7 @@ class CreateTeamMember : Fragment() {
 
         if (employeeModel != null) {
             binding.btnSave.text = getString(R.string.update)
+            binding.txtTitle.text = "Edit Team Member"
 
             viewModel.setTaxData(employeeModel!!)
             viewModel.isEditData(true, employeeModel!!.id)
@@ -87,7 +88,8 @@ class CreateTeamMember : Fragment() {
             event.getContentIfNotHandled()?.let { baseResponse ->
                 activity?.let {
                     AlertUtils.showCustomAlertWithListenerWithOK(
-                        it, baseResponse.message) { _, _ ->
+                        it, baseResponse.message
+                    ) { _, _ ->
                         findNavController().popBackStack()
                     }
                 }

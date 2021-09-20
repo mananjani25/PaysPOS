@@ -75,6 +75,11 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
             findNavController().navigate(R.id.action_global_createTeamMember)
         }
 
+        binding.layoutTool.txtHome.setOnClickListener {
+
+            findNavController().navigate(R.id.action_teamList_to_dashboardCategoryNew)
+        }
+
 
     }
 
