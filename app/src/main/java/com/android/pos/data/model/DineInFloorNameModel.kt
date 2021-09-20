@@ -6,7 +6,9 @@ data class DineInFloorNameModel(
 ) {
 
     data class FloorType(
-        var floorType: String = ""
+        var floorType: String = "",
+        var noOFChairs: Int = -1,
+        var tableName: String = ""
     )
 
 }
