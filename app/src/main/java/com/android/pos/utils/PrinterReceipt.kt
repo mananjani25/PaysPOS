@@ -11,6 +11,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.model.responseModel.GetTipReponse
+import com.android.pos.data.remote.Constants
 import com.epson.eposprint.Builder
 
 private val TAG = "PrinterReceipt"
@@ -30,9 +31,40 @@ fun padLine(
     }
     val concat: String
     concat = if (partOne.length + partTwo.length > columnsPerLine) {
+
+
+        partOne + " " + partTwo
+    } else {
+        val padding = columnsPerLine - (partOne.length + partTwo.length)
+        partOne + repeat(" ", padding) + partTwo
+    }
+    return concat
+}
+
+
+fun padLineCustomerItem(
+    @Nullable partOne: String?,
+    @Nullable partTwo: String?,
+    columnsPerLine: Int
+): String? {
+    var partOne = partOne
+    var partTwo = partTwo
+    if (partOne == null) {
+        partOne = ""
+    }
+    if (partTwo == null) {
+        partTwo = ""
+    }
+    val concat: String
+    concat = if (partOne.length + partTwo.length > columnsPerLine) {
         val strBuffer = StringBuffer()
 
-        strBuffer.append(partOne.substring(0, columnsPerLine - 8) + repeat(" ", 8 - partTwo.length) + partTwo)
+        strBuffer.append(
+            partOne.substring(0, columnsPerLine - 8) + repeat(
+                " ",
+                8 - partTwo.length
+            ) + partTwo
+        )
         strBuffer.append("\n")
         var tempStr = ""
         var tempPartOne = partOne.substring(columnsPerLine - 8, partOne.length)
@@ -51,6 +83,28 @@ fun padLine(
     return concat
 }
 
+
+fun addCustomerTextSize(builder: Builder, font: String): Builder {
+    when (font) {
+        Constants.SMALL -> {
+            builder.addTextSize(1, 1)
+        }
+        Constants.LARGE -> {
+            builder.addTextSize(2, 2)
+        }
+        Constants.MEDIUM -> {
+            builder.addTextSize(1, 2)
+
+        }
+        else -> {
+            builder.addTextSize(1, 1)
+
+        }
+
+    }
+    return builder
+
+}
 
 fun padLineForItem(
     @Nullable partOne: String?,
@@ -151,6 +205,18 @@ fun addBuilderText(
     return builder
 }
 
+fun addHorizontalLargeLine(builder: Builder): Builder {
+    var str: String = ""
+    for (i in 0 until 24) {
+        str += "-"
+    }
+    Log.e("strLine", "strLine  $str")
+    builder.addText(str)
+
+    return builder
+
+}
+
 fun addHorizontalLine(builder: Builder): Builder {
 
 
@@ -177,7 +243,12 @@ fun addHorizontalKitchenLine(builder: Builder): Builder {
     return builder
 }
 
-fun addTipsList(builder: Builder, list: List<GetTipReponse.Data>, totalAmt: Double): Builder {
+fun addTipsList(
+    builder: Builder,
+    list: List<GetTipReponse.Data>,
+    totalAmt: Double,
+    font: String
+): Builder {
     for (i in 0 until list.size) {
         val obj = list.get(i)
         builder.addTextLineSpace(30)
@@ -185,7 +256,7 @@ fun addTipsList(builder: Builder, list: List<GetTipReponse.Data>, totalAmt: Doub
         builder.addTextFont(Builder.FONT_E)
         // builder.addTextAlign(Builder.ALIGN_LEFT)
         builder.addTextLang(Builder.LANG_EN)
-        builder.addTextSize(1, 1)
+        addCustomerTextSize(builder, font)
         builder.addTextStyle(
             Builder.FALSE,
             Builder.FALSE,
@@ -198,7 +269,7 @@ fun addTipsList(builder: Builder, list: List<GetTipReponse.Data>, totalAmt: Doub
             obj.rate,
             totalAmt
         ) + " Total $" + MethodUtils.roundOffAmountString(
-            (totalAmt - calculateTipAmt(
+            (totalAmt + calculateTipAmt(
                 obj.rate,
                 totalAmt
             ))
@@ -207,7 +278,11 @@ fun addTipsList(builder: Builder, list: List<GetTipReponse.Data>, totalAmt: Doub
             padLine(
                 tipName,
                 price,
-                48
+                if (font == Constants.LARGE) {
+                    24
+                } else {
+                    48
+                }
             )
         )
 
@@ -288,7 +363,11 @@ fun addOrdersForKitchen(
     return builder
 }
 
-fun addOrderItems(builder: Builder, list: List<CreateOrderResponse.Data.Order.OrderItem>): Builder {
+fun addOrderItems(
+    builder: Builder,
+    list: List<CreateOrderResponse.Data.Order.OrderItem>,
+    font: String
+): Builder {
     for (i in 0 until list.size) {
         val obj = list.get(i)
         builder.addTextLineSpace(30)
@@ -296,7 +375,7 @@ fun addOrderItems(builder: Builder, list: List<CreateOrderResponse.Data.Order.Or
         builder.addTextFont(Builder.FONT_E)
         // builder.addTextAlign(Builder.ALIGN_LEFT)
         builder.addTextLang(Builder.LANG_EN)
-        builder.addTextSize(1, 1)
+        addCustomerTextSize(builder, font)
         builder.addTextStyle(
             Builder.FALSE,
             Builder.FALSE,
@@ -307,10 +386,14 @@ fun addOrderItems(builder: Builder, list: List<CreateOrderResponse.Data.Order.Or
 
 
         builder.addText(
-            padLine(
+            padLineCustomerItem(
                 obj.quantity.toString() + "x " + obj.itemName,
                 "$" + MethodUtils.roundOffAmountString(obj.price),
-                48
+                if (font == Constants.LARGE) {
+                    24
+                } else {
+                    48
+                }
             )
         )
 
@@ -323,7 +406,7 @@ fun addOrderItems(builder: Builder, list: List<CreateOrderResponse.Data.Order.Or
                 builder.addTextFont(Builder.FONT_E)
                 //builder.addTextAlign(Builder.ALIGN_LEFT)
                 builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(1, 1)
+                addCustomerTextSize(builder, font)
                 builder.addTextStyle(
                     Builder.FALSE,
                     Builder.FALSE,
@@ -332,10 +415,14 @@ fun addOrderItems(builder: Builder, list: List<CreateOrderResponse.Data.Order.Or
                 )
                 builder.addTextPosition(4)
                 builder.addText(
-                    padLine(
+                    padLineCustomerItem(
                         "   " + modifierObj.name,
                         "$" + MethodUtils.roundOffAmountString(modifierObj.price.toDouble()),
-                        47
+                        if (font == Constants.LARGE) {
+                            23
+                        } else {
+                            47
+                        }
                     )
                 )
 
