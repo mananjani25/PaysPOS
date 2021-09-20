@@ -45,6 +45,8 @@ class OrderCompleteViewModel @Inject constructor(
 
     fun getCustomerReceiptSettings() = posRepository.getCustomerReceiptSettings()
 
+    fun getKitchenReceiptSettings() = posRepository.getKitchenReceiptSettings()
+
     fun submit(type: String, email: String, phoneNumber: String, orderID: Int) {
 
 
@@ -111,7 +113,8 @@ class OrderCompleteViewModel @Inject constructor(
     fun getCustomerPrinterList(): LiveData<Resource<List<PrinterResponse.Data.CustomerReceiptPrinters>>> {
         return posRepository.getCustomerPrinters()
     }
-    fun getKitchenPrinterList() : LiveData<Resource<List<PrinterResponse.Data.KitchenReceiptPrinters>>>{
+
+    fun getKitchenPrinterList(): LiveData<Resource<List<PrinterResponse.Data.KitchenReceiptPrinters>>> {
         return posRepository.getKitchenPrinters()
     }
 

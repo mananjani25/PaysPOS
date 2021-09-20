@@ -9,8 +9,6 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.TbCustomer
-import com.android.pos.data.model.responseModel.CreateOrderResponse
-import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.BUSINESS_ADDRESS
 import com.android.pos.data.remote.Constants.BUSINESS_NAME
@@ -39,8 +37,7 @@ import android.view.*
 
 
 import androidx.core.content.ContextCompat.getSystemService
-import com.android.pos.data.model.responseModel.GetCustomerReceiptSettingsResponse
-import com.android.pos.data.model.responseModel.GetTipReponse
+import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.Constants.BLUETOOTH
 import com.android.pos.data.remote.Constants.CUSTOMER
 import com.android.pos.data.remote.Constants.KITCHEN
@@ -61,6 +58,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private val viewModel by viewModels<OrderCompleteViewModel>()
     private var receiptModel: CreateOrderResponse.Data? = null
     private var customerSettingModel = GetCustomerReceiptSettingsResponse.Data()
+    private var kitchenSettingModel = GetKitchenReceiptSettingsResponse.Data()
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -77,7 +75,18 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         binding.lifecycleOwner = this
         observeTipsList()
         getCustomerReceiptSettings()
+        getKitchenReceiptSettings()
+
+
         return binding.root
+    }
+
+    private fun getKitchenReceiptSettings() {
+        viewModel.getKitchenReceiptSettings().observe(viewLifecycleOwner, {
+            if (it != null) {
+                kitchenSettingModel = it
+            }
+        })
     }
 
     private fun getCustomerReceiptSettings() {
@@ -226,6 +235,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         kitchenPrinterList = it.data
                         Log.e(TAG, "kitchenPrinterList:   ${kitchenPrinterList.size}")
                         for (i in 0 until kitchenPrinterList.size) {
+
                             initKitchenPrinter(kitchenPrinterList.get(i), KITCHEN)
                         }
                     }
@@ -318,14 +328,18 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 printer = null
                 return
             }
+            try {
 
-            if (printer != null) {
-                PrinterClass.setPrinter(printer)
+                if (printer != null) {
+                    PrinterClass.setPrinter(printer)
 
-                generatePrint(customerReceiptPrinters, type)
+                    generatePrint(customerReceiptPrinters, type)
 
+                }
+
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
-
         } else {
             Log.e(TAG, "PrinterIsNotNull:")
         }
@@ -1167,8 +1181,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 customerReceiptPrinters.name
             }
 
-            builder =
-                Builder(pname, PrinterClass.language, requireActivity())
+            builder = Builder(pname, PrinterClass.language, requireActivity())
+
+
 
             builder.addFeedLine(0)
             builder.addTextFont(Builder.FONT_E)

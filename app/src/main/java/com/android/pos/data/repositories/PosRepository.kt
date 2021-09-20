@@ -27,6 +27,8 @@ class PosRepository @Inject constructor(
 
     fun getCustomerReceiptSettings() = appDatabase.customerSettingsDao().getCustomerSettings
 
+    fun getKitchenReceiptSettings() = appDatabase.kitchenSettingsDao().getKitchenSettings
+
      fun getTipsList() = appDatabase.tipDao().allTips
 
     fun syncVenueData() =
