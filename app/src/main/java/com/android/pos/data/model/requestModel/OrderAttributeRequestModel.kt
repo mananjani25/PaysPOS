@@ -167,7 +167,7 @@ data class CustomerAttributes(
 
 class OrderItemsAttribute {
     @SerializedName("category_id")
-    var categoryId: Int = 0
+    var category_id: Int = -1
 
     @SerializedName("discount_amount")
     var discountAmount: Double = 0.0

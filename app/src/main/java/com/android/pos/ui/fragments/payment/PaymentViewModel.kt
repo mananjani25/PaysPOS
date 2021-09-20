@@ -15,6 +15,7 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.TimeFormatUtils
+import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
 import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,8 +30,11 @@ class PaymentViewModel @Inject constructor(
     private val prefProvider: PrefProvider
 ) : ViewModel() {
 
+    private var isUpdateOrder: Boolean = false
     private var onlySave: Boolean = false
     private var totalPayAmounts: Double = 0.0
+    private var orderId: Int? = null
+    private var paymentId: Int? = null
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
 
@@ -47,7 +51,15 @@ class PaymentViewModel @Inject constructor(
 
         viewModelScope.launch {
 
-            val resource = posRepository.createOrder(orderRequestModel)
+            val resource: Resource<CreateOrderResponse> = if (isUpdateOrder) {
+                posRepository.updateOrder(
+                    orderId,
+                    orderRequestModel
+                ) as Resource<CreateOrderResponse>
+            } else {
+
+                posRepository.createOrder(orderRequestModel)
+            }
 
             when (resource.status) {
                 Status.SUCCESS -> {
@@ -104,6 +116,7 @@ class PaymentViewModel @Inject constructor(
             null,
             null
         )
+
 
         val resource = posRepository.cashInOut(cashLogRequest)
 
@@ -210,6 +223,10 @@ class PaymentViewModel @Inject constructor(
     ): OrderRequestModel {
 
         val orderAttributeRequestModel = OrderAttributeRequestModel()
+
+
+        if (isUpdateOrder)
+            orderAttributeRequestModel.id = orderId
 
         orderAttributeRequestModel.date = TimeFormatUtils.getCurrentDate()
         if (future_delivery_date.isNotEmpty())
@@ -354,7 +371,11 @@ class PaymentViewModel @Inject constructor(
         cartModel.items?.forEach { item ->
 
             val orderItemsAttribute = OrderItemsAttribute()
-            orderItemsAttribute.categoryId = if (item.isManualSales) 25 else item.categoryId
+            if (item.isManualSales) {
+                orderItemsAttribute.category_id = 25
+            } else {
+                orderItemsAttribute.category_id = item.categoryId
+            }
             orderItemsAttribute.discountAmount = 0.0
             orderItemsAttribute.discountTotalAmount = 0.0
             orderItemsAttribute.discountType = ""
@@ -526,6 +547,8 @@ class PaymentViewModel @Inject constructor(
         tipAmount: Double
     ): PaymentAttributes {
         return PaymentAttributes().apply {
+            if (isUpdateOrder)
+                id = paymentId
             amount = MethodUtils.roundOffAmountDouble(totalPrice)
 //            cardName = ""
 //            cardNumber = ""
@@ -578,5 +601,13 @@ class PaymentViewModel @Inject constructor(
 
     fun saveOrder(isSave: Boolean) {
         onlySave = isSave
+    }
+
+    fun updateOrder(updateOrder: Boolean, orderId: Int?, paymentId: Int?) {
+
+        isUpdateOrder = updateOrder
+        this.orderId = orderId
+        this.paymentId = paymentId
+
     }
 }

@@ -352,6 +352,11 @@
         android:name="com.android.pos.ui.fragments.dashboard.DashboardCategoryNew"
         android:label="DashboardCategoryNew"
         tools:layout="@layout/fragment_dashboard_category_new">
+
+        <argument
+            android:name="update"
+            android:defaultValue="false"
+            app:argType="boolean" />
         <action
             android:id="@+id/action_dashboardCategoryNew_to_createItem"
             app:destination="@id/createItem"

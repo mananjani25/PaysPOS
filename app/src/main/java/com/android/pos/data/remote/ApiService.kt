@@ -444,6 +444,12 @@ interface ApiService {
     @POST(ORDERS)
     suspend fun createOrder(@Body orderRequestModel: OrderRequestModel): CreateOrderResponse
 
+    @PUT(ORDER_DETAILS)
+    suspend fun updateOrder(
+        @Path("id") orderId: Int,
+        @Body orderRequestModel: OrderRequestModel
+    ): CreateOrderResponse
+
     @GET(ORDER_DETAILS)
     suspend fun orderDetailsById(@Path("id") orderId: Int): GetOrderDetailsResponse
 

@@ -496,6 +496,9 @@ class PosRepository @Inject constructor(
 
     suspend fun createOrder(data: OrderRequestModel) = apiHelperNew.createOrder(data)
 
+    suspend fun updateOrder(orderId: Int?, data: OrderRequestModel) =
+        apiHelperNew.updateOrder(orderId, data)
+
     suspend fun orderDetailsById(orderId: Int) =
         apiHelperNew.orderDetailsById(orderId)
 
