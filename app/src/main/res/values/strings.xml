@@ -537,4 +537,6 @@
     <string name="tv_reason_for_refund">Reason For Refund</string>
     <string name="tv_next">Next</string>
     <string name="tv_refund">Refund</string>
+    <string name="tv_item_refund_details">Item amount includes taxes,discounts and service charge where applicable</string>
+    <string name="tvRefundPaymentDetails">Refunding an amount(and not a specific item) may cause a discrepancy in your inventory,item sales reports, and gift card balances.</string>
 </resources>

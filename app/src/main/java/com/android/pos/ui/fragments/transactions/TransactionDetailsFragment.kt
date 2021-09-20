@@ -34,13 +34,12 @@ class TransactionDetailsFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
 
-        binding =
-            DataBindingUtil.inflate(
-                inflater,
-                R.layout.fragment_transaction_details,
-                container,
-                false
-            )
+        binding = DataBindingUtil.inflate(
+            inflater,
+            R.layout.fragment_transaction_details,
+            container,
+            false
+        )
 
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
@@ -65,8 +64,13 @@ class TransactionDetailsFragment : Fragment() {
         }
 
         binding.tvIssueRefund.setOnClickListener {
-                val bundle = Bundle().apply {
-                  putParcelable("orderDetailsResponse", orderDetailsResponse)
+            val bundle = Bundle().apply {
+
+                orderDetailsResponse.data.orderItems.forEach {
+                    it.isChecked = false
+                }
+
+                putParcelable("orderDetailsResponse", orderDetailsResponse)
             }
             findNavController().navigate(
                 R.id.action_transactionDetailsFragment_to_issueRefundFragment,

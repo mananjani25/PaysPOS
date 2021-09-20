@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.android.pos.R
 import com.android.pos.data.entities.VariationsAttribute
 import com.android.pos.data.model.OptionListModel
-import com.android.pos.data.model.VariationListModel
 import com.android.pos.data.remote.Constants.ADD_TAX
 import com.android.pos.data.remote.Constants.DIALOG_KEY
 import com.android.pos.data.remote.Constants.DIALOG_KEY_TAX

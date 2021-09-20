@@ -19,18 +19,27 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.text.NumberFormat
 import java.util.*
 import androidx.navigation.fragment.findNavController
+import com.android.pos.data.model.requestModel.RefundRequestModel
 import com.android.pos.ui.adapter.RefundItemListAdapter
 import com.android.pos.utils.AlertUtils
+import kotlin.collections.ArrayList
 
 
 @AndroidEntryPoint
 class IssueRefundDialog : DialogFragment(), TextWatcher {
 
+    private lateinit var refundData: RefundRequestModel
+    private var totalServiceCharge: Double = 0.0
     private var refundAmount: Double = 0.0
+    var totalTax = 0.0
+    var totalItemPrice = 0.0
     private lateinit var binding: DialogIssueRefundBinding
     private lateinit var orderDetailsResponse: GetOrderDetailsResponse
     private val viewModel by viewModels<TransactionDetailsViewModel>()
     private lateinit var refundItemListAdapter: RefundItemListAdapter
+    private var isItem = false
+    private var subTotalPrice: Double = 0.0
+
 
     companion object {
         fun newInstance() = IssueRefundDialog()
@@ -55,31 +64,53 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
         binding.rgRefundType.setOnCheckedChangeListener { group, checkedId ->
 
             if (checkedId == R.id.rbItems) {
+                isItem = false
                 binding.llItemList.visibility = View.VISIBLE
                 binding.llRefundAmount.visibility = View.GONE
+                binding.tvRefundItemDetails.visibility = View.VISIBLE
+                binding.tvRefundPaymentDetails.visibility = View.GONE
             } else if (checkedId == R.id.rbAmount) {
+                isItem = true
                 binding.llItemList.visibility = View.GONE
                 binding.llRefundAmount.visibility = View.VISIBLE
+                binding.tvRefundPaymentDetails.visibility = View.VISIBLE
+                binding.tvRefundItemDetails.visibility = View.GONE
+
             }
         }
 
         binding.txtDone.setOnClickListener {
-
-            Log.d("selectedItem", "::" + refundItemListAdapter.selectedItemList().size)
-
-            if (TextUtils.isEmpty(binding.edtAmount.text.toString())) {
-                AlertUtils.showCustomAlert(requireActivity(), "Please Enter Amount To Refund")
-            } else {
-                refundAmount = binding.edtAmount.text.toString().toDouble()
-                val bundle = Bundle().apply {
-                    putParcelable("orderDetailsResponse", orderDetailsResponse)
-                    putDouble("refundAmount", refundAmount)
+            if (isItem) {
+                if (TextUtils.isEmpty(binding.edtAmount.text.toString())) {
+                    AlertUtils.showCustomAlert(requireActivity(), "Please Enter Amount To Refund")
+                } else {
+                    subTotalPrice = binding.edtAmount.text.toString().toDouble()
+                    val bundle = Bundle().apply {
+                        putParcelable("refundData", refundData)
+                        putDouble("refundAmount", subTotalPrice)
+                    }
+                    findNavController().navigate(
+                        R.id.action_issueRefundFragment_to_reasonForRefundDialog,
+                        bundle
+                    )
                 }
-                findNavController().navigate(
-                    R.id.action_issueRefundFragment_to_reasonForRefundDialog,
-                    bundle
-                )
+            } else {
+                if (refundItemListAdapter.selectedItemList().size == 0) {
+                    AlertUtils.showCustomAlert(requireActivity(), "Please Select Item To Refund")
+                } else {
+                    //  refundAmount = binding.edtAmount.text.toString().toDouble()
+                    val bundle = Bundle().apply {
+                        putParcelable("refundData", refundData)
+                        putDouble("refundAmount", subTotalPrice)
+                        Log.d("subTotalPriceRefund", "::" + subTotalPrice)
+                    }
+                    findNavController().navigate(
+                        R.id.action_issueRefundFragment_to_reasonForRefundDialog,
+                        bundle
+                    )
+                }
             }
+
         }
 
         return binding.root
@@ -90,6 +121,84 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
         binding.rvItemListRefund.adapter = refundItemListAdapter
 
         refundItemListAdapter.addItems(orderDetailsResponse.data.orderItems)
+
+        refundItemListAdapter.showItemSubTotal = {
+
+            calculationOfItems()
+
+        }
+
+        refundData = RefundRequestModel().apply {
+            paymentRefund = RefundRequestModel.PaymentRefund().apply {
+                amount = subTotalPrice
+                orderId = orderDetailsResponse.data.id
+                paymentId = orderDetailsResponse.data.payments[0].id
+                employeeId = orderDetailsResponse.data.employeeId
+                terminalId = orderDetailsResponse.data.terminalId
+                taxRefunded = totalTax
+                serviceChargeRefunded = totalServiceCharge
+            }
+        }
+
+
+    }
+
+    private fun calculationOfItems() {
+        subTotalPrice = 0.0
+        totalServiceCharge = 0.0
+        totalTax = 0.0
+        val orderItemRefundsAttributesList =
+            ArrayList<RefundRequestModel.PaymentRefund.OrderItemRefundsAttribute>()
+
+        //  totalItemPrice = 0.0
+        refundItemListAdapter.selectedItemList().forEach { it ->
+            if (it.isChecked) {
+
+                it.orderItemTaxes.forEach { tax ->
+                    totalTax += tax.taxTotalAmount
+                }
+
+                it.orderItemModifiers.forEach { modifiers ->
+                    modifiers.orderItemTaxes.forEach { taxes ->
+                        totalTax += taxes.taxTotalAmount
+                    }
+
+                }
+
+                subTotalPrice += it.totalPrice
+
+                it.orderItemModifiers.forEach { modifiers ->
+                    subTotalPrice += (modifiers.price * modifiers.quantity)
+                }
+                orderDetailsResponse.data.orderServiceCharges.forEach {
+                    totalServiceCharge = (subTotalPrice * it.rate) / 100
+                }
+            }
+            val orderItemRefundsAttributeModel =
+                RefundRequestModel.PaymentRefund.OrderItemRefundsAttribute()
+
+            orderItemRefundsAttributeModel.amount = subTotalPrice
+            orderItemRefundsAttributeModel.employeeId = it.employeeId
+            orderItemRefundsAttributeModel.orderId = it.orderId
+            orderItemRefundsAttributeModel.refundType = 0
+            orderItemRefundsAttributeModel.orderItemId = it.itemId
+            orderItemRefundsAttributeModel.quantity = it.quantity
+            orderItemRefundsAttributesList.add(orderItemRefundsAttributeModel)
+        }
+        subTotalPrice += totalTax + totalServiceCharge
+
+        refundData = RefundRequestModel().apply {
+            paymentRefund = RefundRequestModel.PaymentRefund().apply {
+                amount = subTotalPrice
+                orderId = orderDetailsResponse.data.id
+                paymentId = orderDetailsResponse.data.payments[0].id
+                employeeId = orderDetailsResponse.data.employeeId
+                terminalId = orderDetailsResponse.data.terminalId
+                orderItemRefundsAttributes = orderItemRefundsAttributesList
+                taxRefunded = totalTax
+                serviceChargeRefunded = totalServiceCharge
+            }
+        }
     }
 
     override fun onResume() {

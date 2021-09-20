@@ -139,6 +139,20 @@
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:itemCount="5"
                     tools:listitem="@layout/view_refund_item" />
+
+                <TextView
+                    android:id="@+id/tvRefundItemDetails"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:gravity="center"
+                    android:text="@string/tv_item_refund_details"
+                    android:textColor="@color/color96"
+                    android:textSize="@dimen/_5mdpi" />
+
             </androidx.appcompat.widget.LinearLayoutCompat>
 
             <androidx.appcompat.widget.LinearLayoutCompat
@@ -201,6 +215,19 @@
                     android:layout_marginTop="@dimen/_5sdp"
                     android:text="@{`Total Refundable Amount is `+@string/symbole +``+String.format(@string/format,orderDetails.data.totalAmount)}"
                     android:textColor="@color/color65"
+                    android:textSize="@dimen/_5mdpi" />
+
+                <TextView
+                    android:id="@+id/tvRefundPaymentDetails"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:gravity="center"
+                    android:text="@string/tvRefundPaymentDetails"
+                    android:textColor="@color/color96"
                     android:textSize="@dimen/_5mdpi" />
             </androidx.appcompat.widget.LinearLayoutCompat>
         </LinearLayout>

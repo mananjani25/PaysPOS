@@ -1,12 +1,16 @@
 package com.android.pos.data.model.requestModel
 
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class RefundRequestModel(
     @SerializedName("payment_refund")
     var paymentRefund: PaymentRefund? = null
-) {
+) : Parcelable {
+    @Parcelize
     data class PaymentRefund(
         @SerializedName("amount")
         var amount: Double = 0.0,
@@ -30,7 +34,8 @@ data class RefundRequestModel(
         var terminalId: Int? = null,
         @SerializedName("tips_refunded")
         var tipsRefunded: Double = 0.0
-    ) {
+    ) : Parcelable {
+        @Parcelize
         data class OrderItemRefundsAttribute(
             @SerializedName("amount")
             var amount: Double = 0.0,
@@ -52,6 +57,6 @@ data class RefundRequestModel(
             var refundType: Int? = null,
             @SerializedName("wastage_id")
             var wastageId: Int? = null
-        )
+        ) : Parcelable
     }
 }
