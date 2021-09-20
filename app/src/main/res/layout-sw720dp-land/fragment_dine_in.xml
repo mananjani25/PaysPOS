@@ -5,12 +5,120 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingDefaultResource">
 
-    <FrameLayout
-        android:id="@+id/flFloorPlan"
-        android:layout_width="match_parent"
+    <RelativeLayout
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        tools:context=".ui.fragments.dinein.DineInFragment">
+        android:orientation="vertical">
 
-    </FrameLayout>
+        <LinearLayout
+            android:id="@+id/llHome"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:orientation="horizontal"
+            android:padding="@dimen/_5sdp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/txtHome"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/_10sdp"
+                    android:text="Home"
+                    android:textColor="@color/txt_color_blue"
+                    android:textSize="@dimen/_5mdpi" />
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+        <View
+            android:id="@+id/view1"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@+id/llHome"
+            android:background="@color/view" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvFloorName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/view1" />
+
+        <View
+            android:id="@+id/view2"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@+id/rvFloorName"
+            android:background="@color/view" />
+
+        <FrameLayout
+            android:id="@+id/flFloorPlan"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/llOtherMenus"
+            android:layout_below="@+id/view2">
+
+        </FrameLayout>
+
+        <View
+            android:id="@+id/view3"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@+id/flFloorPlan"
+            android:background="@color/view" />
+
+        <LinearLayout
+            android:id="@+id/llOtherMenus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/CustomFontSemiBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:padding="@dimen/_5sdp"
+                android:text="@string/tv_transactions"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_5mdpi" />
+
+            <View
+                android:id="@+id/view5"
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@color/view" />
+
+            <TextView
+                style="@style/CustomFontSemiBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:padding="@dimen/_5sdp"
+                android:text="@string/tv_orders"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_5mdpi" />
+
+        </LinearLayout>
+
+        <View
+            android:id="@+id/view4"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@+id/llOtherMenus"
+            android:layout_marginBottom="@dimen/_3sdp"
+            android:background="@color/view" />
+    </RelativeLayout>
 
 </layout>
