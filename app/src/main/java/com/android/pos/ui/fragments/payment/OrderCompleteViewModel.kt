@@ -43,6 +43,8 @@ class OrderCompleteViewModel @Inject constructor(
 
     fun getTipsList() = posRepository.getTipsList()
 
+    fun getCustomerReceiptSettings() = posRepository.getCustomerReceiptSettings()
+
     fun submit(type: String, email: String, phoneNumber: String, orderID: Int) {
 
 

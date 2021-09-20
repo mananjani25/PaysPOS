@@ -25,6 +25,8 @@ class PosRepository @Inject constructor(
     private val apiHelperNew: ApiHelper
 ) : IDataManager {
 
+    fun getCustomerReceiptSettings() = appDatabase.customerSettingsDao().getCustomerSettings
+
      fun getTipsList() = appDatabase.tipDao().allTips
 
     fun syncVenueData() =
