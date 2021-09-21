@@ -29,7 +29,7 @@ class PosRepository @Inject constructor(
 
     fun getKitchenReceiptSettings() = appDatabase.kitchenSettingsDao().getKitchenSettings
 
-     fun getTipsList() = appDatabase.tipDao().allTips
+    fun getTipsList() = appDatabase.tipDao().allTips
 
     fun syncVenueData() =
         performGetOperationNew(networkCall = { apiHelperNew.syncVenueData() })
@@ -49,7 +49,6 @@ class PosRepository @Inject constructor(
     fun getPrinters() = performGetOperation(
         databaseQuery = {
             appDatabase.printerDao().customerPrintList
-
         },
         networkCall = { apiHelperNew.getPrinterData() },
         saveCallResult = {
@@ -202,7 +201,7 @@ class PosRepository @Inject constructor(
     fun getItemsList() =
         performGetOperationDatabase(databaseQuery = { appDatabase.itemDao().allItem!! })
 
-    fun getItemsbyId(itemId:Int) =
+    fun getItemsbyId(itemId: Int) =
         performGetOperationDatabase(databaseQuery = { appDatabase.itemDao().itemById(itemId)!! })
 
     fun modifierSetsList() =
