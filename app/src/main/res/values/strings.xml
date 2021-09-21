@@ -541,5 +541,6 @@
     <string name="tvRefundPaymentDetails">Refunding an amount(and not a specific item) may cause a discrepancy in your inventory,item sales reports, and gift card balances.</string>
     <string name="tv_orders">Orders</string>
     <string name="tv_select_number_of_guests">Select Number Of Guests</string>
+    <string name="whole_table">Whole Table</string>
 
 </resources>

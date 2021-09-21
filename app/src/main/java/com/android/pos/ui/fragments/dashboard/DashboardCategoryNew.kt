@@ -365,6 +365,11 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             binding.lltakeout.visibility = View.GONE
             binding.layoutCart.txtOrderType.text =
                 prefProvider.getValue(ORDER_TYPE_NAME, TAKEOUT).toString()
+            if (prefProvider.getValue(ORDER_TYPE_NAME, TAKEOUT) == DINE_IN) {
+                binding.layoutCart.llShowMenu.visibility = View.GONE
+
+            }
+
             getCartList()
         } else {
             binding.layoutCart.txtOrderType.text = ""
