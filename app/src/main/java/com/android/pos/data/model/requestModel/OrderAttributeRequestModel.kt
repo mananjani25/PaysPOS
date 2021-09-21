@@ -256,6 +256,9 @@ class OrderItemTaxesAttribute {
     @SerializedName("order_id")
     var orderId: Int? = null
 
+    @SerializedName("order_item_id")
+    var orderItemId: Int? = null
+
     @SerializedName("rate")
     var rate: Double = 0.0
 
@@ -314,6 +317,7 @@ class OrderModifierTaxesAttribute {
 
     @SerializedName("tax_total_amount")
     var taxTotalAmount: Double = 0.0
+
 }
 
 class OrderItemModifierAttribute {

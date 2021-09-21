@@ -329,9 +329,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         binding.layoutCart.llPayment.visibility = View.VISIBLE
                         Log.e("cartList", cartList.size.toString())
 
-                        if (cartList.size > 1) {
-
-                        }
                         cartAdapter.addCart(cartList[0].items)
 
                         viewModel.itemCalculation(
@@ -1433,6 +1430,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         prefProvider.setValue(CUSTOMER_NAME, "")
                         binding.layoutCart.txtCrtNewCustomer.text = "Add Customer"
                         binding.layoutCart.txtCustomerName.text = "Add Customer"
+
+                        isOrderUpdate = false
 
                         hideOrderType()
                         hideOrderMenu()
