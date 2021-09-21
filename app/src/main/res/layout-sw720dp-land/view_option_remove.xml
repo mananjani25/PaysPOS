@@ -47,7 +47,7 @@
                 android:gravity="start"
                 android:padding="@dimen/_4sdp"
                 android:textColor="@color/viewTextColor"
-                android:textSize="@dimen/_6mdpi"
+                android:textSize="@dimen/_5mdpi"
                 tools:text="Modifier one" />
 
             <androidx.appcompat.widget.AppCompatEditText

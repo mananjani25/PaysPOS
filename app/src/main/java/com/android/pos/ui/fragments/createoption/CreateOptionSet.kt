@@ -23,8 +23,6 @@ import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import java.text.NumberFormat
-import java.util.*
 
 @AndroidEntryPoint
 class CreateOptionSet : Fragment(), TextWatcher {
@@ -75,7 +73,7 @@ class CreateOptionSet : Fragment(), TextWatcher {
 
             optionSet = arguments?.getParcelable("optionObject")!!
 
-            viewModel.setData(isEdit, optionSet!!.name, optionSet!!.id)
+            viewModel.setData(isEdit, optionSet!!.name, optionSet!!.id, optionSet!!.displayName)
 
 
             optionSet!!.options.sortedBy {
