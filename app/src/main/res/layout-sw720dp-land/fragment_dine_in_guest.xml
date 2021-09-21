@@ -31,7 +31,7 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="@string/tv_create_team_member"
+                android:text="Dining Room 1 Number of Guests"
                 android:textColor="@color/viewTextColor"
                 android:textSize="@dimen/_6mdpi" />
 

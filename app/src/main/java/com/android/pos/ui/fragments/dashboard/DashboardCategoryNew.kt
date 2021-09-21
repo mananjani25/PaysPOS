@@ -1174,7 +1174,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             totalPrice(data),
                             result.percentage
                         )
-                        discountPrice = data.discountPrice
+                        discountPrice = data.discountPrice / data.itemQuantity
                         data.discountId = result.id
                         data.discountType = result.discountType
                         data.isManualSales = false
@@ -1191,7 +1191,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         data.discountId = 0
                         data.discountType = result.discountType
                         data.isManualSales = false
-                        discountPrice = data.discountPrice
+                        discountPrice = data.discountPrice / data.itemQuantity
 
                         //viewModel.cartLogic(cartList, data, Constants.UPDATE)
                         txtTitle.text = data.name + "  $" + String.format(
@@ -1373,6 +1373,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     override fun onItemClickListener(view: View?, pos: Int) {
         orderType = orderTypeAdapter.getItem(pos)
 
+        Log.e(TAG, "orderType:  ${Gson().toJson(orderType)}")
         when (orderType!!.orderType) {
             TAKEOUT -> {
                 prefProvider.setValueInt(ORDER_TYPE_ID, orderType!!.id)

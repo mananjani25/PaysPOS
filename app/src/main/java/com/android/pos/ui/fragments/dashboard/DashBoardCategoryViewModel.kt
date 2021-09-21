@@ -299,7 +299,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 Log.e(TAG, "ItemDiscountPrice:  ${item.discountPrice}")
                 Log.e(TAG, "ItemPrice:  ${item.price}")
 
-                subTotalPrice += (item.price - item.discountPrice) * item.itemQuantity
+                subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice )
 
                 item.taxes?.forEach { tax ->
                     if (tax.isActive) {

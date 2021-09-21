@@ -10,6 +10,7 @@ class GuestListAdapter :
     RecyclerView.Adapter<GuestListAdapter.MyViewHolder>() {
 
     var noteList = ArrayList<Int>()
+    private lateinit var listner:GuestListner
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -40,7 +41,24 @@ class GuestListAdapter :
 
     }
 
-    inner class MyViewHolder(val noteItemBinding: ViewGuestTotalNumberBinding) :
-        RecyclerView.ViewHolder(noteItemBinding.root)
+    fun setListner(listner:GuestListner) {
+        this.listner = listner
 
+    }
+
+    inner class MyViewHolder(val noteItemBinding: ViewGuestTotalNumberBinding) :
+        RecyclerView.ViewHolder(noteItemBinding.root){
+
+            init {
+
+                itemView.setOnClickListener {
+                    listner.onGuestSelected(noteList.get(layoutPosition))
+                }
+            }
+        }
+
+
+    interface GuestListner {
+        fun onGuestSelected(numberOfGuest: Int)
+    }
 }

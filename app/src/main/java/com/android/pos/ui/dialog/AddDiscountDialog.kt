@@ -58,7 +58,8 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         val model: TbItem? = requireArguments().getParcelable("model")
         defaultModel = model ?: TbItem()
 
-
+        Log.e(TAG, "defaultModel:  ${Gson().toJson(defaultModel)}")
+        selectedCurrency = defaultModel.discountType
         binding.edtAmount.addTextChangedListener(this)
 
         setDiscountList()
@@ -400,8 +401,10 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
             if (selectedCurrency == AMOUNT) {
 
-                if (binding.edtAmount.text.toString().toDouble() > defaultModel.price) {
-                    binding.edtAmount.setText(MethodUtils.roundOffAmountString(defaultModel.price))
+                if (binding.edtAmount.text.toString()
+                        .toDouble() > (defaultModel.price )
+                ) {
+                    binding.edtAmount.setText(MethodUtils.roundOffAmountString(defaultModel.price ))
                 }
             }
 

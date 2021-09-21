@@ -190,7 +190,7 @@
     <fragment
         android:id="@+id/teamList"
         android:name="com.android.pos.ui.fragments.team.TeamList"
-        android:label="TeamList" >
+        android:label="TeamList">
         <action
             android:id="@+id/action_teamList_to_dashboardCategoryNew"
             app:destination="@id/dashboardCategoryNew" />
@@ -784,7 +784,7 @@
     <fragment
         android:id="@+id/dineInFragment"
         android:name="com.android.pos.ui.fragments.dinein.DineInFragment"
-        android:label="DineInFragment" >
+        android:label="DineInFragment">
         <action
             android:id="@+id/action_dineInFragment_to_transactionFragment"
             app:destination="@id/transactionFragment" />
@@ -798,6 +798,13 @@
     <fragment
         android:id="@+id/dineInGuestFragment"
         android:name="com.android.pos.ui.fragments.dinein.DineInGuestFragment"
-        android:label="DineInGuestFragment" />
+        android:label="DineInGuestFragment"
+        tools:layout="@layout/fragment_dine_in_guest" >
+        <action
+            android:id="@+id/action_dineInGuestFragment_to_dashboardCategoryNew"
+            app:destination="@id/dashboardCategoryNew"
+            app:popUpTo="@id/dineInGuestFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
 
 </navigation>
