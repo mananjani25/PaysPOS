@@ -237,9 +237,11 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
         getResult { apiService.reOrderOptionSet(id, oldPos, newPos) }
 
 
-
     suspend fun createOrder(data: OrderRequestModel) =
         getResult { apiService.createOrder(data) }
+
+    suspend fun updateOrder(orderId: Int?, data: OrderRequestModel) =
+        getResult { orderId?.let { apiService.updateOrder(it, data) } }
 
     suspend fun orderDetailsById(orderId: Int) =
         getResult { apiService.orderDetailsById(orderId) }
