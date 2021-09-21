@@ -786,6 +786,13 @@
         <action
             android:id="@+id/action_dineInFragment_to_orders"
             app:destination="@id/orders" />
+        <action
+            android:id="@+id/action_dineInFragment_to_dineInGuestFragment"
+            app:destination="@id/dineInGuestFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/dineInGuestFragment"
+        android:name="com.android.pos.ui.fragments.dinein.DineInGuestFragment"
+        android:label="DineInGuestFragment" />
 
 </navigation>

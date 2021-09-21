@@ -31,6 +31,7 @@ class DineInFloorNameListAdapter(val viewModel: DineInViewModel) :
             clear()
             addAll(noteList)
         }
+        notifyDataSetChanged()
     }
 
     fun getItem(position: Int): DineInFloorNameModel {

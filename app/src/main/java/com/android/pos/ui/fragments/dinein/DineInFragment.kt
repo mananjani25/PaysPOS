@@ -81,14 +81,14 @@ class DineInFragment : Fragment() {
             LinearLayoutManager(requireActivity(), LinearLayoutManager.HORIZONTAL, false)
         binding.rvFloorName.adapter = dineInFloorNameListAdapter
 
-        var floorTypeList = ArrayList<DineInFloorNameModel.FloorType>()
+        val floorTypeList = ArrayList<DineInFloorNameModel.FloorType>()
 
-        var floorType = DineInFloorNameModel.FloorType()
+        val floorType = DineInFloorNameModel.FloorType()
         floorType.floorType = "Square"
         floorType.noOFChairs = 4
         floorType.tableName = "001"
 
-        var floorType1 = DineInFloorNameModel.FloorType()
+        val floorType1 = DineInFloorNameModel.FloorType()
         floorType1.floorType = "Round"
         floorType1.noOFChairs = 5
         floorType1.tableName = "002"
@@ -236,6 +236,7 @@ class DineInFragment : Fragment() {
     private fun clickInInflatedLayout(): View.OnClickListener {
         return View.OnClickListener { v ->
             val position = v.tag.toString().toInt()
+            findNavController().navigate(R.id.action_dineInFragment_to_dineInGuestFragment)
             Log.d("Clickeditematposition", "::$position")
         }
     }
