@@ -27,7 +27,9 @@ class OptionAdapter(private val isEdit: Boolean) :
 
 
             binding.edtName.addTextChangedListener(EditTextWatcherOption(binding.edtName, item))
+            binding.llParent.requestFocus()
             binding.edtName.setText(item.name)
+            binding.edtName.setSelection(binding.edtName.text!!.length)
 
         }
 
