@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import com.android.pos.R
 import com.android.pos.data.entities.Option
 import com.android.pos.data.model.requestModel.CreateOptionRequestModel
-import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.model.responseModel.GetOptionSetResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.repositories.PosRepository
@@ -58,7 +57,7 @@ class CreateOptionViewModel @Inject constructor(
             val optionSets = CreateOptionRequestModel().apply {
 
                 name = data!!.name
-                displayName = data!!.displayName
+                displayName = data.displayName
                 locationId = prefProvider.getValueInt(Constants.LOCATION_ID, -1)
                 optionsAttributes = if (isEdit) {
                     list.addAll(deleteList)
@@ -114,9 +113,10 @@ class CreateOptionViewModel @Inject constructor(
         this.list = modifierList
     }
 
-    fun setData(edit: Boolean, name: String, id: Int?) {
+    fun setData(edit: Boolean, name: String, id: Int?, displayName: String) {
         isEdit = edit
         optionDetails.value?.name = name
+        optionDetails.value?.displayName = displayName
         optionSetId = id
     }
 

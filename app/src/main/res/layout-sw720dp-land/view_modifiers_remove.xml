@@ -23,6 +23,7 @@
             android:background="@color/view" />
 
         <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/llParent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
@@ -59,8 +60,8 @@
                 android:layout_marginStart="@dimen/_5sdp"
                 android:background="@null"
                 android:gravity="start"
-                android:inputType="numberDecimal"
                 android:hint="@string/_0_00"
+                android:inputType="numberDecimal"
                 android:padding="@dimen/_3sdp"
                 android:textColor="@color/txtColor"
                 android:textColorHint="@color/colorC5"
