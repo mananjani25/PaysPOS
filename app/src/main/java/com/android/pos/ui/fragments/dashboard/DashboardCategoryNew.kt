@@ -177,67 +177,48 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         if (prefProvider.getValue(CUSTOMER_NAME, "").toString().isNotEmpty()) {
             binding.layoutCart.txtCustomerName.text =
                 prefProvider.getValue(CUSTOMER_NAME, "").toString()
-            binding.layoutCart.txtCrtNewCustomer.text = "Remove Customer"
+            removeCustomerViewSet()
         }
 
         setFragmentResultListener("request_key_customer") { requestKey: String, bundle: Bundle ->
             val result = bundle.getParcelable<TbCustomer>("data")
             if (result != null) {
-
-                //  Log.e("request_key_customer", result.first_name)
-                prefProvider.setValue(CUSTOMER_NAME, result.first_name + " " + result.last_name)
-                binding.layoutCart.txtCustomerName.text = result.first_name + " " + result.last_name
-                binding.layoutCart.txtCrtNewCustomer.text = "Remove Customer"
-                assignCustomer = result
-
-
-                val openOrder = bundle.getBoolean("OPEN_ORDER")
-
-                if (openOrder) {
-                    future_delivery_date = bundle.getString("DATE").toString()
-
-                    prefProvider.setValueInt(ORDER_TYPE_ID, orderType!!.id)
-                    prefProvider.setValue(ORDER_TYPE_NAME, orderType!!.name)
-                    prefProvider.setValue(ORDER_TYPE, orderType!!.orderType)
-                    hideOrderType()
-                    // future_delivery_date = bundle.getString("TIME")
-                }
-
-
+                setUpCustomer(result, bundle)
             }
         }
-
-
         setFragmentResultListener("request_key_customer_open_order") { requestKey: String, bundle: Bundle ->
             val result = bundle.getParcelable<TbCustomer>("data")
             if (result != null) {
-
-                //  Log.e("request_key_customer", result.first_name)
-                prefProvider.setValue(CUSTOMER_NAME, result.first_name + " " + result.last_name)
-                binding.layoutCart.txtCustomerName.text = result.first_name + " " + result.last_name
-                binding.layoutCart.txtCrtNewCustomer.text = "Remove Customer"
-                assignCustomer = result
-
-
-                val openOrder = bundle.getBoolean("OPEN_ORDER")
-
-                if (openOrder) {
-                    future_delivery_date = bundle.getString("DATE").toString()
-                    future_delivery_time = bundle.getString("TIME").toString()
-
-
-                    prefProvider.setValueInt(ORDER_TYPE_ID, orderType!!.id)
-                    prefProvider.setValue(ORDER_TYPE_NAME, orderType!!.name)
-                    prefProvider.setValue(ORDER_TYPE, orderType!!.orderType)
-                    hideOrderType()
-                    // future_delivery_date = bundle.getString("TIME")
-                }
-
-
+                setUpCustomer(result, bundle)
             }
         }
 
 
+    }
+
+    private fun removeCustomerViewSet() {
+        binding.layoutCart.txtCrtNewCustomer.text = "Remove Customer"
+    }
+
+    private fun setUpCustomer(
+        result: TbCustomer,
+        bundle: Bundle
+    ) {
+        prefProvider.setValue(CUSTOMER_NAME, result.first_name + " " + result.last_name)
+        binding.layoutCart.txtCustomerName.text = result.first_name + " " + result.last_name
+        removeCustomerViewSet()
+        assignCustomer = result
+
+
+        val openOrder = bundle.getBoolean("OPEN_ORDER")
+        if (openOrder) {
+            future_delivery_date = bundle.getString("DATE").toString()
+            future_delivery_time = bundle.getString("TIME").toString()
+            prefProvider.setValueInt(ORDER_TYPE_ID, orderType!!.id)
+            prefProvider.setValue(ORDER_TYPE_NAME, orderType!!.name)
+            prefProvider.setValue(ORDER_TYPE, orderType!!.orderType)
+            hideOrderType()
+        }
     }
 
     private fun swipeListener() {
@@ -260,11 +241,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private fun getBackstack() {
         findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<String>(Constants.KEY)
             ?.observe(viewLifecycleOwner) { it ->
-
                 if (it == MANUALSALE) {
                     hideOrderType()
-
-
                 }
             }
     }
@@ -273,8 +251,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         orderTypeAdapter = OrderTypeAdapter()
         orderTypeAdapter.setCallback(this)
         binding.rvOrderType.adapter = orderTypeAdapter
-
-
 
         viewModel.orderTypes().observe(requireActivity(), {
             Log.e("ORDER_TYPE_SIZE", it.data?.size.toString())
@@ -287,9 +263,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         viewModel.serviceCharges.observe(requireActivity(), {
             serviceChargesList = it.data
-
             getCartList()
-
         })
     }
 
@@ -311,13 +285,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     private fun getCartList() {
 
-        Log.e("getCartList", "Call-->")
-
         cartAdapter = CartAdapter()
         cartAdapter.setCallback(this)
         binding.layoutCart.rvCart.adapter = cartAdapter
-
-        Log.e("ORDER_TYPE", prefProvider.getValue(ORDER_TYPE, "").toString())
 
         if (isAdded)
             viewModel.mAllWords(prefProvider.getValue(ORDER_TYPE, "").toString()).observe(
@@ -327,7 +297,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                         binding.layoutCart.rvCart.visibility = View.VISIBLE
                         binding.layoutCart.llPayment.visibility = View.VISIBLE
-                        Log.e("cartList", cartList.size.toString())
 
                         cartAdapter.addCart(cartList[0].items)
 
@@ -357,22 +326,21 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private fun hideOrderType() {
 
         if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
-
             binding.layoutCart.llCart.visibility = View.VISIBLE
             binding.lltakeout.visibility = View.GONE
             binding.layoutCart.txtOrderType.text =
                 prefProvider.getValue(ORDER_TYPE_NAME, TAKEOUT).toString()
+            if (prefProvider.getValue(ORDER_TYPE_NAME, TAKEOUT) == DINE_IN) {
+                binding.layoutCart.llShowMenu.visibility = View.GONE
+
+            }
+
             getCartList()
         } else {
             binding.layoutCart.txtOrderType.text = ""
             binding.lltakeout.visibility = View.VISIBLE
             binding.layoutCart.llCart.visibility = View.GONE
         }
-
-        if (prefProvider.getValue(ORDER_TYPE, "").toString() == OPEN_ORDER) {
-//            binding.layoutCart.btnSave
-        }
-
     }
 
     private fun searchCategory() {
@@ -382,14 +350,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         for (i in 0 until categoryList1.size) {
             for (j in 0 until categoryList1.get(i).inventoryLists!!.size) {
-
-                /* var imgPath = ""
-                 if (categoryList1.get(i).inventoryLists?.get(j)?.imageUrl != null || categoryList1.get(i).inventoryLists?.get(j)?.imageUrl != ""){
-                     imgPath = categoryList1.get(i).inventoryLists?.get(j)?.imageUrl.toString()
-                 }
-                 else {
-                     imgPath =""
-                 }*/
                 searchList.add(
                     CategorySearchData(
                         categoryList1.get(i).inventoryLists!!.get(j)!!.itemId,
@@ -1352,9 +1312,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         viewModelPayment.data.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let { it ->
-                binding.layoutCart.txtCrtNewCustomer.text = "Add Customer"
-                binding.layoutCart.txtCustomerName.text = "Add Customer"
-                prefProvider.setValue(CUSTOMER_NAME, "")
+                clearCustomer()
                 hideOrderType()
 
             }
@@ -1370,7 +1328,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     override fun onItemClickListener(view: View?, pos: Int) {
         orderType = orderTypeAdapter.getItem(pos)
 
-        Log.e(TAG, "orderType:  ${Gson().toJson(orderType)}")
         when (orderType!!.orderType) {
             TAKEOUT -> {
                 prefProvider.setValueInt(ORDER_TYPE_ID, orderType!!.id)
@@ -1406,9 +1363,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             }
             R.id.txtCrtNewCustomer -> {
                 if (prefProvider.getValue(CUSTOMER_NAME, "").toString().isNotEmpty()) {
-                    binding.layoutCart.txtCrtNewCustomer.text = "Add Customer"
-                    binding.layoutCart.txtCustomerName.text = "Add Customer"
-                    prefProvider.setValue(CUSTOMER_NAME, "")
+                    clearCustomer()
                 } else {
                     findNavController().navigate(
                         R.id.action_dashboardCategoryNew_to_assignCustomerOrderFragment
@@ -1424,16 +1379,12 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     positiveButton(getString(R.string.tv_delete)) {
                         // Do positive stuff here
                         viewModel.deleteCart()
+                        isOrderUpdate = false
 
                         if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
                             prefProvider.setValue(ORDER_TYPE, "")
                         }
-                        prefProvider.setValue(CUSTOMER_NAME, "")
-                        binding.layoutCart.txtCrtNewCustomer.text = "Add Customer"
-                        binding.layoutCart.txtCustomerName.text = "Add Customer"
-
-                        isOrderUpdate = false
-
+                        clearCustomer()
                         hideOrderType()
                         hideOrderMenu()
                     }
@@ -1514,11 +1465,14 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         }
     }
 
+    private fun clearCustomer() {
+        binding.layoutCart.txtCrtNewCustomer.text = "Add Customer"
+        binding.layoutCart.txtCustomerName.text = "Add Customer"
+        prefProvider.setValue(CUSTOMER_NAME, "")
+    }
+
     fun calculateDiscountPercentage(originalPrice: Double, percentage: Double): Double {
-
         val disPrice = MethodUtils.roundOffAmountDouble((originalPrice * percentage) / 100)
-
-        Log.e(TAG, "disPrice  $disPrice")
         return if (disPrice < originalPrice) {
             disPrice
         } else {

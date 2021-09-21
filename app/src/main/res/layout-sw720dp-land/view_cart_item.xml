@@ -12,114 +12,113 @@
     </data>
 
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:orientation="vertical">
 
-        <LinearLayout
+
+        <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackground"
-            android:orientation="vertical">
-
+            android:orientation="horizontal"
+            android:padding="@dimen/_3sdp">
 
             <androidx.appcompat.widget.LinearLayoutCompat
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="@dimen/_3sdp">
+                android:layout_weight="1">
 
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:layout_width="0dp"
+                <LinearLayout
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1">
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-
-                        <androidx.appcompat.widget.AppCompatTextView
-                            style="@style/CustomFontSemiBold"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="start"
-                            android:gravity="start"
-                            android:text="@{model.name}"
-                            android:textColor="@color/drawerBack"
-                            android:textSize="@dimen/_5mdpi"
-                            tools:text="Item" />
-
-                        <TextView
-                            android:id="@+id/txtNote"
-                            style="@style/CustomFontRegularStyle"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:ellipsize="end"
-                            android:lines="1"
-                            android:layout_gravity="start"
-                            android:gravity="start"
-                            android:maxLines="1"
-                            android:singleLine="true"
-                            android:text="@{@string/add_note_cart +``+model.note}"
-
-                            android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_5mdpi" />
-
-                    </LinearLayout>
+                    android:orientation="vertical">
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontSemiBold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/_5sdp"
-                        android:text="@{`x `+model.itemQuantity}"
-                        android:textColor="@color/color88"
-                        android:textSize="@dimen/_5mdpi"
-                        tools:text="x 10" />
-
-                </androidx.appcompat.widget.LinearLayoutCompat>
-
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/_5sdp"
-                    android:orientation="vertical">
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/tvRate"
-                        style="@style/CustomFontBold"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
+                        android:layout_gravity="start"
                         android:gravity="start"
+                        android:text="@{model.name}"
                         android:textColor="@color/drawerBack"
                         android:textSize="@dimen/_5mdpi"
-                        tools:text="$20.00" />
+                        tools:text="Item" />
 
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/tvDiscountRate"
-                        style="@style/CustomFontBold"
+                    <TextView
+                        android:id="@+id/txtNote"
+                        style="@style/CustomFontRegularStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginTop="@dimen/_2sdp"
+                        android:layout_gravity="start"
+                        android:ellipsize="end"
                         android:gravity="start"
-                        android:textColor="@color/colorRed"
-                        android:textSize="@dimen/_5mdpi"
-                        tools:text="$20.00" />
+                        android:lines="1"
+                        android:maxLines="1"
+                        android:singleLine="true"
+                        android:text="@{@string/add_note_cart +``+model.note}"
 
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_5mdpi" />
 
-                </androidx.appcompat.widget.LinearLayoutCompat>
+                </LinearLayout>
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:text="@{`x `+model.itemQuantity}"
+                    android:textColor="@color/color88"
+                    android:textSize="@dimen/_5mdpi"
+                    tools:text="x 10" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvModifiers"
-                android:layout_width="match_parent"
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:listitem="@layout/view_cart_modifier" />
+                android:layout_marginEnd="@dimen/_5sdp"
+                android:orientation="vertical">
 
-        </LinearLayout>
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvRate"
+                    style="@style/CustomFontBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="start"
+                    android:textColor="@color/drawerBack"
+                    android:textSize="@dimen/_5mdpi"
+                    tools:text="$20.00" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvDiscountRate"
+                    style="@style/CustomFontBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/_2sdp"
+                    android:gravity="start"
+                    android:textColor="@color/colorRed"
+                    android:textSize="@dimen/_5mdpi"
+                    tools:text="$20.00" />
+
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvModifiers"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/view_cart_modifier" />
+
+    </LinearLayout>
 
 
 </layout>
