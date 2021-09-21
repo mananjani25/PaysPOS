@@ -30,4 +30,6 @@ class Modifier : Parcelable {
 
     @SerializedName("itemQuantity")
     var itemQuantity: Int = 0
+
+    var orderModifierId: Int? = null
 }

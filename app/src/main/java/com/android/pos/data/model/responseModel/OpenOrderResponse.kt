@@ -156,7 +156,7 @@ data class OpenOrderResponse(
                     @SerializedName("item_id")
                     val itemId: Any,
                     @SerializedName("modifier_id")
-                    val modifierId: Any,
+                    val modifierId: Int,
                     @SerializedName("modifier_set_id")
                     val modifierSetId: Int,
                     @SerializedName("name")

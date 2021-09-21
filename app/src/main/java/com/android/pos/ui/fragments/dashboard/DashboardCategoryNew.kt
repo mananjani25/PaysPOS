@@ -66,6 +66,8 @@ import javax.inject.Inject
 class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, MyCallback,
     ItemCallback, View.OnClickListener {
 
+    private var orderOfflineId: String = ""
+    private var paymentOfflineId: String = ""
     private var orderId: Int? = null
     private var paymentId: Int? = null
     private var isOrderUpdate: Boolean = false
@@ -111,6 +113,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         if (isOrderUpdate) {
             orderId = requireArguments().getInt("orderId")
             paymentId = requireArguments().getInt("paymentId")
+            paymentOfflineId = requireArguments().getString("paymentOfflineId").toString()
+            orderOfflineId = requireArguments().getString("orderOfflineId").toString()
         }
 
         hideOrderType()
@@ -1454,7 +1458,13 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     cartList[0].customer = assignCustomer
 
                 if (isOrderUpdate)
-                    viewModelPayment.updateOrder(true, orderId, paymentId)
+                    viewModelPayment.updateOrder(
+                        true,
+                        orderId,
+                        paymentId,
+                        paymentOfflineId,
+                        orderOfflineId
+                    )
                 val request = viewModelPayment.createOrderRequest(
                     cartList[0],
                     viewModel.subTotalPrice,

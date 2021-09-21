@@ -152,6 +152,8 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
             bundle.putBoolean("update", true)
             bundle.putInt("orderId", order.id)
             bundle.putInt("paymentId", order.payments[0].id)
+            bundle.putString("paymentOfflineId", order.payments[0].offlineId)
+            bundle.putString("orderOfflineId", order.offlineId)
             findNavController().navigate(
                 R.id.action_orders_to_dashboardCategoryNew, bundle
             )
@@ -182,7 +184,8 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
         order.orderItems.forEach {
 
             val items = TbItem().apply {
-                itemId = it.id
+                orderItemId = it.id
+                itemId = it.itemId
                 name = it.itemName
                 cost = it.price
                 price = it.price
@@ -218,11 +221,12 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
         orderItemModifiers.forEach {
 
             val modifier = Modifier().apply {
-                id = it.id
+                id = it.modifierId
                 modifierSetId = it.modifierSetId
                 name = it.name
                 price = it.price
                 itemQuantity = it.quantity
+                orderModifierId = it.id
 
             }
             modifierList.add(modifier)
@@ -261,7 +265,8 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
                 it.isDefault,
                 false,
                 "",
-                listOf()
+                listOf(),
+                it.id
             )
             taxList.add(tax)
         }

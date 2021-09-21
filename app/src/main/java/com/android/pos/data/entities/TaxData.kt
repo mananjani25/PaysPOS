@@ -33,5 +33,6 @@ data class TaxData(
     @SerializedName("item_pricing")
     var itemPricing: String?,
     @SerializedName("item_ids")
-    val itemIds: List<Int>
+    val itemIds: List<Int>,
+    var orderTaxId: Int? = null
 ) : Parcelable
