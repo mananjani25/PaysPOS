@@ -401,10 +401,15 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
             if (selectedCurrency == AMOUNT) {
 
-                if (binding.edtAmount.text.toString()
-                        .toDouble() > (defaultModel.price )
-                ) {
-                    binding.edtAmount.setText(MethodUtils.roundOffAmountString(defaultModel.price ))
+                if (defaultModel.discountPrice == 0.0) {
+                    if (binding.edtAmount.text.toString().toDouble() > (defaultModel.price)) {
+                        binding.edtAmount.setText(MethodUtils.roundOffAmountString(defaultModel.price))
+                    }
+                }else{
+
+                    if (binding.edtAmount.text.toString().toDouble() > (defaultModel.price - defaultModel.discountPrice)) {
+                        binding.edtAmount.setText(MethodUtils.roundOffAmountString(defaultModel.price - defaultModel.discountPrice))
+                    }
                 }
             }
 
