@@ -26,7 +26,7 @@ data class UpdateCustomerReceiptRequestModel(
     var showOrderType: Boolean = false,
     @SerializedName("show_team")
 
-    val showTeam: Boolean = false,
+    var showTeam: Boolean = false,
     @SerializedName("show_order_time")
     var showOrderTime: Boolean = false,
     @SerializedName("show_print_time")

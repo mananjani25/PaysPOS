@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.entities.*
+import com.android.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ADD
 import com.android.pos.data.remote.Constants.BUSINESS_ADDRESS
@@ -295,7 +296,10 @@ class DashBoardCategoryViewModel @Inject constructor(
         if (cartList != null && cartList.isNotEmpty()) {
             cartList[0].items?.forEach { item ->
                 totalCount += item.itemQuantity
-                subTotalPrice += (item.price - item.discountPrice) * item.itemQuantity
+                Log.e(TAG, "ItemDiscountPrice:  ${item.discountPrice}")
+                Log.e(TAG, "ItemPrice:  ${item.price}")
+
+                subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice )
 
                 item.taxes?.forEach { tax ->
                     if (tax.isActive) {
@@ -350,9 +354,12 @@ class DashBoardCategoryViewModel @Inject constructor(
                 it.discountPrice
             }.sum()
             Log.e(TAG, "totalDiscount:  $totalDiscount")
-
+            Log.e(TAG, "SubTotalPrice:   $subTotalPrice")
+            Log.e(TAG, "totalTax:  $totalTax")
+            Log.e(TAG, "totalServiceCharge:  $totalServiceCharge")
 
             totalPrice = (subTotalPrice + totalTax + totalServiceCharge) /*- totalDiscount*/
+
         }
 
         MethodUtils.setPriceTextView(txtTotalAmount, totalPrice)

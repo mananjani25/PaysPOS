@@ -9,8 +9,6 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.TbCustomer
-import com.android.pos.data.model.responseModel.CreateOrderResponse
-import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.BUSINESS_ADDRESS
 import com.android.pos.data.remote.Constants.BUSINESS_NAME
@@ -39,8 +37,7 @@ import android.view.*
 
 
 import androidx.core.content.ContextCompat.getSystemService
-import com.android.pos.data.model.responseModel.GetCustomerReceiptSettingsResponse
-import com.android.pos.data.model.responseModel.GetTipReponse
+import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.Constants.BLUETOOTH
 import com.android.pos.data.remote.Constants.CUSTOMER
 import com.android.pos.data.remote.Constants.KITCHEN
@@ -61,6 +58,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private val viewModel by viewModels<OrderCompleteViewModel>()
     private var receiptModel: CreateOrderResponse.Data? = null
     private var customerSettingModel = GetCustomerReceiptSettingsResponse.Data()
+    private var kitchenSettingModel = GetKitchenReceiptSettingsResponse.Data()
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -77,13 +75,26 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         binding.lifecycleOwner = this
         observeTipsList()
         getCustomerReceiptSettings()
+        getKitchenReceiptSettings()
+
+
         return binding.root
+    }
+
+    private fun getKitchenReceiptSettings() {
+        viewModel.getKitchenReceiptSettings().observe(viewLifecycleOwner, {
+            if (it != null) {
+                kitchenSettingModel = it
+                getKitchenPrinters()
+            }
+        })
     }
 
     private fun getCustomerReceiptSettings() {
         viewModel.getCustomerReceiptSettings().observe(viewLifecycleOwner, {
             if (it != null) {
                 customerSettingModel = it
+
 
             }
 
@@ -104,7 +115,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        getKitchenPrinters()
+
 
         setupSnackbar()
         observeShowProgress()
@@ -226,6 +237,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         kitchenPrinterList = it.data
                         Log.e(TAG, "kitchenPrinterList:   ${kitchenPrinterList.size}")
                         for (i in 0 until kitchenPrinterList.size) {
+
                             initKitchenPrinter(kitchenPrinterList.get(i), KITCHEN)
                         }
                     }
@@ -318,14 +330,18 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 printer = null
                 return
             }
+            try {
 
-            if (printer != null) {
-                PrinterClass.setPrinter(printer)
+                if (printer != null) {
+                    PrinterClass.setPrinter(printer)
 
-                generatePrint(customerReceiptPrinters, type)
+                    generatePrint(customerReceiptPrinters, type)
 
+                }
+
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
-
         } else {
             Log.e(TAG, "PrinterIsNotNull:")
         }
@@ -585,6 +601,40 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             builder.addFeedLine(2)
 
+            if (receiptModel?.order?.totalDiscount != null) {
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addTextFont(Builder.FONT_E)
+                // builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+                builder.addText(
+                    padLine(
+                        "Total Discount",
+
+                        if (receiptModel?.order?.totalDiscount == 0.0) {
+                            "$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalDiscount!!)
+                        } else {
+                            "-$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalDiscount!!)
+                        },
+                        if (customerSettingModel.fonts == LARGE) {
+                            24
+                        } else {
+                            48
+                        }
+                    )
+                )
+
+            }
+
+            builder.addTextLineSpace(30)
+            builder.addFeedUnit(30)
             builder.addTextFont(Builder.FONT_E)
             // builder.addTextAlign(Builder.ALIGN_LEFT)
             builder.addTextLang(Builder.LANG_EN)
@@ -694,37 +744,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
 
 
-            if (receiptModel?.order?.totalDiscount != null) {
-                builder.addTextLineSpace(30)
-                builder.addFeedUnit(30)
-                builder.addTextFont(Builder.FONT_E)
-                // builder.addTextAlign(Builder.ALIGN_LEFT)
-                builder.addTextLang(Builder.LANG_EN)
-                addCustomerTextSize(builder, customerSettingModel.fonts)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.COLOR_1
-                )
-                builder.addText(
-                    padLine(
-                        "Total Discount",
 
-                        if (receiptModel?.order?.totalDiscount == 0.0) {
-                            "$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalDiscount!!)
-                        } else {
-                            "-$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalDiscount!!)
-                        },
-                        if (customerSettingModel.fonts == LARGE) {
-                            24
-                        } else {
-                            48
-                        }
-                    )
-                )
-
-            }
 
             if (receiptModel?.order?.totalCashDiscountFee != null) {
                 builder.addTextLineSpace(30)
@@ -785,7 +805,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 builder.addText(
                     padLine(
                         "Total Price",
-                        "$" + totalAmt,
+                        "$" + MethodUtils.roundOffAmountString(totalAmt),
                         if (customerSettingModel.fonts == LARGE) {
                             24
                         } else {
@@ -961,40 +981,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     }
                 )
             )
+            if (customerSettingModel.showCustomerAddress != false or customerSettingModel.showCustomerPhone != false or customerSettingModel.showCustomerName) {
 
-            if (receiptModel?.order?.customer != null) {
+                if (receiptModel?.order?.customer != null) {
 
-                builder.addFeedLine(1)
-                builder.addTextLineSpace(30)
-                builder.addFeedUnit(30)
-
-                builder.addTextFont(Builder.FONT_E)
-                // builder.addTextAlign(Builder.ALIGN_LEFT)
-                builder.addTextLang(Builder.LANG_EN)
-                addCustomerTextSize(builder, customerSettingModel.fonts)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.TRUE,
-                    Builder.COLOR_1
-                )
-                builder.addText(
-                    padLine(
-                        "Customer Details",
-                        "",
-                        if (customerSettingModel.fonts == LARGE) {
-                            24
-                        } else {
-                            48
-                        }
-                    )
-                )
-
-                builder.addFeedLine(1)
-
-                addHorizontalLine(builder)
-                builder.addFeedLine(1)
-                if (customerSettingModel.showCustomerName) {
+                    builder.addFeedLine(1)
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
 
                     builder.addTextFont(Builder.FONT_E)
                     // builder.addTextAlign(Builder.ALIGN_LEFT)
@@ -1003,31 +996,60 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     builder.addTextStyle(
                         Builder.FALSE,
                         Builder.FALSE,
-                        Builder.FALSE,
+                        Builder.TRUE,
                         Builder.COLOR_1
                     )
-
-                    builder.addText(receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName)
-                }
-
-                if (customerSettingModel.showCustomerAddress) {
-
-                    builder.addTextLineSpace(30)
-                    builder.addFeedUnit(30)
-                    builder.addTextFont(Builder.FONT_E)
-                    //builder.addTextAlign(Builder.ALIGN_LEFT)
-                    builder.addTextLang(Builder.LANG_EN)
-                    addCustomerTextSize(builder, customerSettingModel.fonts)
-                    builder.addTextStyle(
-                        Builder.FALSE,
-                        Builder.FALSE,
-                        Builder.FALSE,
-                        Builder.COLOR_1
+                    builder.addText(
+                        padLine(
+                            "Customer Details",
+                            "",
+                            if (customerSettingModel.fonts == LARGE) {
+                                24
+                            } else {
+                                48
+                            }
+                        )
                     )
 
-                    builder.addText("7450 DW 51 FH AT,Suite 503")
-                }
+                    builder.addFeedLine(1)
 
+                    addHorizontalLine(builder)
+                    builder.addFeedLine(1)
+                    if (customerSettingModel.showCustomerName) {
+
+                        builder.addTextFont(Builder.FONT_E)
+                        // builder.addTextAlign(Builder.ALIGN_LEFT)
+                        builder.addTextLang(Builder.LANG_EN)
+                        addCustomerTextSize(builder, customerSettingModel.fonts)
+                        builder.addTextStyle(
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.COLOR_1
+                        )
+
+                        builder.addText(receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName)
+                    }
+
+                    if (customerSettingModel.showCustomerAddress) {
+
+                        builder.addTextLineSpace(30)
+                        builder.addFeedUnit(30)
+                        builder.addTextFont(Builder.FONT_E)
+                        //builder.addTextAlign(Builder.ALIGN_LEFT)
+                        builder.addTextLang(Builder.LANG_EN)
+                        addCustomerTextSize(builder, customerSettingModel.fonts)
+                        builder.addTextStyle(
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.COLOR_1
+                        )
+
+                        builder.addText("7450 DW 51 FH AT,Suite 503")
+                    }
+
+                }
             }
 
 
@@ -1167,24 +1189,25 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 customerReceiptPrinters.name
             }
 
-            builder =
-                Builder(pname, PrinterClass.language, requireActivity())
+            builder = Builder(pname, PrinterClass.language, requireActivity())
 
-            builder.addFeedLine(0)
-            builder.addTextFont(Builder.FONT_E)
-            builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(2, 2)
-            builder.addTextStyle(
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.TRUE,
-                Builder.COLOR_1
-            )
-            builder.addTextAlign(Builder.ALIGN_CENTER)
-
-            addBuilderText(builder, receiptModel?.order?.orderType.toString())
+            if (kitchenSettingModel.showOrderType) {
 
 
+                builder.addFeedLine(0)
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(2, 2)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+
+                addBuilderText(builder, receiptModel?.order?.orderType.toString())
+            }
 
 
             builder.addFeedLine(2)
@@ -1220,6 +1243,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 Builder.COLOR_1
             )
 
+
             builder.addText(
                 padLine(
                     "ReceiptID:" + receiptModel?.order?.offlineId,
@@ -1227,26 +1251,28 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     33
                 )
             )
+            if (kitchenSettingModel.showTeamMember) {
 
-            builder.addTextLineSpace(30)
-            builder.addFeedUnit(30)
-            builder.addTextFont(Builder.FONT_E)
-            //  builder.addTextAlign(Builder.ALIGN_LEFT)
-            builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(1, 1)
-            builder.addTextStyle(
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.COLOR_1
-            )
-            builder.addText(
-                padLine(
-                    "Employee:" + receiptModel?.order?.employee?.name, "",
-                    33
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addTextFont(Builder.FONT_E)
+                //  builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(1, 1)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
                 )
-            )
+                builder.addText(
+                    padLine(
+                        "Employee:" + receiptModel?.order?.employee?.name, "",
+                        33
+                    )
+                )
 
+            }
             builder.addTextLineSpace(30)
             builder.addFeedUnit(30)
             builder.addTextFont(Builder.FONT_E)
@@ -1289,7 +1315,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             receiptModel?.order?.orderItems?.let { addOrdersForKitchen(builder, it) }
 
-            if (receiptModel?.order?.note?.isNotEmpty() == true) {
+            if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addFeedLine(1)
@@ -1325,68 +1351,75 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
 
 
-            if (receiptModel?.order?.customer != null) {
+            if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName) {
+                if (receiptModel?.order?.customer != null) {
 
-                builder.addTextLineSpace(30)
-                builder.addFeedUnit(30)
-                builder.addFeedLine(1)
-                builder.addTextFont(Builder.FONT_E)
-                //builder.addTextLineSpace(20)
-                builder.addTextAlign(Builder.ALIGN_LEFT)
-                builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(1, 1)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.TRUE,
-                    Builder.COLOR_1
-                )
-                builder.addText("Customer Details" + "\n")
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+                    builder.addFeedLine(1)
+                    builder.addTextFont(Builder.FONT_E)
+                    //builder.addTextLineSpace(20)
+                    builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    builder.addTextSize(1, 1)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.TRUE,
+                        Builder.COLOR_1
+                    )
+                    builder.addText("Customer Details" + "\n")
 
-                builder.addTextFont(Builder.FONT_B)
-                //builder.addTextLineSpace(20)
-                builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(1, 1)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.COLOR_1
-                )
-                addHorizontalKitchenLine(builder)
+                    builder.addTextFont(Builder.FONT_B)
+                    //builder.addTextLineSpace(20)
+                    builder.addTextLang(Builder.LANG_EN)
+                    builder.addTextSize(1, 1)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.COLOR_1
+                    )
+                    addHorizontalKitchenLine(builder)
+
+                    if (kitchenSettingModel.showCustomerName) {
+
+                        builder.addTextLineSpace(30)
+                        builder.addFeedUnit(30)
+                        builder.addTextFont(Builder.FONT_E)
+                        builder.addTextAlign(Builder.ALIGN_LEFT)
+                        //builder.addTextLineSpace(20)
+                        builder.addTextLang(Builder.LANG_EN)
+                        builder.addTextSize(1, 1)
+                        builder.addTextStyle(
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.TRUE,
+                            Builder.COLOR_1
+                        )
+                        builder.addText(receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName)
+
+                    }
 
 
-                builder.addTextLineSpace(30)
-                builder.addFeedUnit(30)
-                builder.addTextFont(Builder.FONT_E)
-                builder.addTextAlign(Builder.ALIGN_LEFT)
-                //builder.addTextLineSpace(20)
-                builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(1, 1)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.TRUE,
-                    Builder.COLOR_1
-                )
-                builder.addText(receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName)
+                    if (kitchenSettingModel.showCustomerPhone) {
+                        builder.addTextLineSpace(30)
+                        builder.addFeedUnit(30)
+                        builder.addTextFont(Builder.FONT_E)
+                        builder.addTextAlign(Builder.ALIGN_LEFT)
+                        //builder.addTextLineSpace(20)
+                        builder.addTextLang(Builder.LANG_EN)
+                        builder.addTextSize(1, 1)
+                        builder.addTextStyle(
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.TRUE,
+                            Builder.COLOR_1
+                        )
+                        builder.addText("(635)984-5211")
 
-                builder.addTextLineSpace(30)
-                builder.addFeedUnit(30)
-                builder.addTextFont(Builder.FONT_E)
-                builder.addTextAlign(Builder.ALIGN_LEFT)
-                //builder.addTextLineSpace(20)
-                builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(1, 1)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.TRUE,
-                    Builder.COLOR_1
-                )
-                builder.addText("(635)984-5211")
-
-                /* builder.addTextLineSpace(30)
+                    }
+                    /* builder.addTextLineSpace(30)
                  builder.addFeedUnit(30)
                  builder.addTextFont(Builder.FONT_E)
                  builder.addTextAlign(Builder.ALIGN_LEFT)
@@ -1401,23 +1434,26 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                  )
                  builder.addText(receiptModel?.order?.customer?.email)*/
 
+                    if (kitchenSettingModel.showCustomerAddress) {
 
-                builder.addTextLineSpace(30)
-                builder.addFeedUnit(30)
-                builder.addTextFont(Builder.FONT_E)
-                builder.addTextAlign(Builder.ALIGN_LEFT)
-                //builder.addTextLineSpace(20)
-                builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(1, 1)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.TRUE,
-                    Builder.COLOR_1
-                )
+                        builder.addTextLineSpace(30)
+                        builder.addFeedUnit(30)
+                        builder.addTextFont(Builder.FONT_E)
+                        builder.addTextAlign(Builder.ALIGN_LEFT)
+                        //builder.addTextLineSpace(20)
+                        builder.addTextLang(Builder.LANG_EN)
+                        builder.addTextSize(1, 1)
+                        builder.addTextStyle(
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.TRUE,
+                            Builder.COLOR_1
+                        )
 
-                builder.addText("7450 DW 51 FH AT,Suite 503")
+                        builder.addText("7450 DW 51 FH AT,Suite 503")
+                    }
 
+                }
             }
 
             builder.addFeedLine(2)

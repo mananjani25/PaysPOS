@@ -18,31 +18,31 @@ data class GetKitchenReceiptSettingsResponse(
     @Entity(tableName = "TbKitchenSettings")
     data class Data(
         @SerializedName("created_at")
-        val createdAt: String,
+        val createdAt: String ="",
         @SerializedName("fonts")
-        val fonts: String,
+        val fonts: String="",
         @PrimaryKey
         @SerializedName("id")
-        val id: Int,
+        val id: Int?=null,
         @SerializedName("location_id")
-        val locationId: Int,
+        val locationId: Int?=null,
         @SerializedName("show_category")
-        val showCategory: Boolean,
+        val showCategory: Boolean=false,
         @SerializedName("show_customer_address")
-        val showCustomerAddress: Boolean,
+        val showCustomerAddress: Boolean=false,
         @SerializedName("show_customer_name")
-        val showCustomerName: Boolean,
+        val showCustomerName: Boolean=false,
         @SerializedName("show_customer_phone")
-        val showCustomerPhone: Boolean,
+        val showCustomerPhone: Boolean=false,
         @SerializedName("show_items_in_group")
-        val showItemsInGroup: Boolean,
+        val showItemsInGroup: Boolean=false,
         @SerializedName("show_order_note")
-        val showOrderNote: Boolean,
+        val showOrderNote: Boolean=false,
         @SerializedName("show_order_type")
-        val showOrderType: Boolean,
+        val showOrderType: Boolean=false,
         @SerializedName("show_team_member")
-        val showTeamMember: Boolean,
+        val showTeamMember: Boolean=false,
         @SerializedName("updated_at")
-        val updatedAt: String
+        val updatedAt: String=""
     )
 }

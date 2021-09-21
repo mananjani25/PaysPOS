@@ -134,6 +134,11 @@ class KitchenReceiptSettings : Fragment(), CompoundButton.OnCheckedChangeListene
             binding.swtPhone.isChecked = it.showCustomerPhone
             binding.swtAddress.isChecked = it.showCustomerAddress
 
+            if (it.showCategory) {
+                binding.txtSoup.visibility = View.VISIBLE
+            } else {
+                binding.txtSoup.visibility = View.GONE
+            }
             if (it.showCustomerName) {
                 binding.txtName.visibility = View.VISIBLE
             } else {
@@ -144,6 +149,22 @@ class KitchenReceiptSettings : Fragment(), CompoundButton.OnCheckedChangeListene
             } else {
                 binding.txtPhone.visibility = View.GONE
 
+            }
+            if (it.showOrderNote) {
+                binding.linearOrderNote.visibility = View.VISIBLE
+            } else {
+                binding.linearOrderNote.visibility = View.GONE
+            }
+            if (it.showOrderType) {
+                binding.txtDineIn.visibility = View.VISIBLE
+            } else {
+                binding.txtDineIn.visibility = View.GONE
+            }
+
+            if (it.showTeamMember) {
+                binding.linearTeamMember.visibility = View.VISIBLE
+            } else {
+                binding.linearTeamMember.visibility = View.INVISIBLE
             }
             if (it.showCustomerAddress) {
                 binding.txtAddress.visibility = View.VISIBLE
@@ -180,6 +201,41 @@ class KitchenReceiptSettings : Fragment(), CompoundButton.OnCheckedChangeListene
     }
 
     private fun onChecked() {
+
+        binding.swtShowCategory.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                binding.txtSoup.visibility = View.VISIBLE
+            } else {
+                binding.txtSoup.visibility = View.GONE
+            }
+        }
+
+        binding.swtOrderNote.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                binding.linearOrderNote.visibility = View.VISIBLE
+            } else {
+                binding.linearOrderNote.visibility = View.GONE
+            }
+        }
+
+        binding.swtOrderType.setOnCheckedChangeListener { buttonView, isChecked ->
+
+            if (isChecked) {
+                binding.txtDineIn.visibility = View.VISIBLE
+            } else {
+                binding.txtDineIn.visibility = View.GONE
+            }
+        }
+        binding.swtTeamMember.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+
+                binding.linearTeamMember.visibility = View.VISIBLE
+            } else {
+                binding.linearTeamMember.visibility = View.INVISIBLE
+            }
+
+        }
+
         binding.swtName.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
                 binding.txtName.visibility = View.VISIBLE
