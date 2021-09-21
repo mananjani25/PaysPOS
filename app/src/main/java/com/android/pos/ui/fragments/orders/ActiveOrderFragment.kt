@@ -110,7 +110,11 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
                         ProgressUtils.dismissProgressDialog()
                         resource.data?.let {
 
-                            adapter.add(it.data.orders)
+                            val data = it.data.orders.filter {
+                                it.paymentStatus != "Cancelled"
+                            }
+
+                            adapter.add(data)
                         }
                     }
                     Status.ERROR -> {
@@ -132,6 +136,16 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
         val order = adapter.getItem(pos)
         if (status == "UPDATE") {
             prefProvider.setValue(Constants.ORDER_TYPE, order.orderType)
+
+
+            if (order.customer != null) {
+                prefProvider.setValue(
+                    Constants.CUSTOMER_NAME,
+                    order.customer.firstName + " " + order.customer.lastName
+                )
+            }
+
+
             dashboardViewModel.addCart(
                 CartModel().apply {
                     terminalId = order.terminalId
