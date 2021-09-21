@@ -9,7 +9,7 @@ class Modifier : Parcelable {
 
 
     @SerializedName("id")
-    val id: Int? = null
+    var id: Int? = null
 
     @SerializedName("modifier_set_id")
     var modifierSetId: Int? = null
@@ -30,4 +30,6 @@ class Modifier : Parcelable {
 
     @SerializedName("itemQuantity")
     var itemQuantity: Int = 0
+
+    var orderModifierId: Int? = null
 }

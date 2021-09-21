@@ -34,7 +34,6 @@ import com.android.pos.data.remote.Constants.CUSTOMER_NAME
 import com.android.pos.data.remote.Constants.DELETE
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.HORIZONTAL
-import com.android.pos.data.remote.Constants.IS_CLOCKOUT
 import com.android.pos.data.remote.Constants.MANUALSALE
 import com.android.pos.data.remote.Constants.OPEN_ORDER
 import com.android.pos.data.remote.Constants.ORDER_TYPE
@@ -67,6 +66,11 @@ import javax.inject.Inject
 class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, MyCallback,
     ItemCallback, View.OnClickListener {
 
+    private var orderOfflineId: String = ""
+    private var paymentOfflineId: String = ""
+    private var orderId: Int? = null
+    private var paymentId: Int? = null
+    private var isOrderUpdate: Boolean = false
     private var future_delivery_time: String = ""
     private var popupWindow: PopupWindow? = null
     private var orderType: TbOrderType? = null
@@ -104,6 +108,14 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         // prefProvider.setValueboolean(IS_CLOCKOUT, false)
         binding = FragmentDashboardCategoryNewBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
+
+        isOrderUpdate = requireArguments().getBoolean("update")
+        if (isOrderUpdate) {
+            orderId = requireArguments().getInt("orderId")
+            paymentId = requireArguments().getInt("paymentId")
+            paymentOfflineId = requireArguments().getString("paymentOfflineId").toString()
+            orderOfflineId = requireArguments().getString("orderOfflineId").toString()
+        }
 
         hideOrderType()
 
@@ -304,6 +316,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         cartAdapter = CartAdapter()
         cartAdapter.setCallback(this)
         binding.layoutCart.rvCart.adapter = cartAdapter
+
+        Log.e("ORDER_TYPE", prefProvider.getValue(ORDER_TYPE, "").toString())
 
         if (isAdded)
             viewModel.mAllWords(prefProvider.getValue(ORDER_TYPE, "").toString()).observe(
@@ -857,24 +871,24 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             viewModel.totalTax
         )
 
-        if (popupWindow == null) {
-            popupWindow = PopupWindow(
-                popupView,
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            )
-            popupWindow!!.setBackgroundDrawable(BitmapDrawable())
-            popupWindow!!.isOutsideTouchable = true
+//        if (popupWindow == null) {
+        popupWindow = PopupWindow(
+            popupView,
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+        popupWindow!!.setBackgroundDrawable(BitmapDrawable())
+        popupWindow!!.isOutsideTouchable = true
 
 
-            popupWindow!!.setOnDismissListener(PopupWindow.OnDismissListener {
-                //TODO do sth here on dismiss
-            })
-            popupWindow!!.showAtLocation(view, Gravity.TOP, 600, 650);
-        } else {
-            popupWindow!!.dismiss()
-            popupWindow = null
-        }
+        popupWindow!!.setOnDismissListener(PopupWindow.OnDismissListener {
+            //TODO do sth here on dismiss
+        })
+        popupWindow!!.showAtLocation(view, Gravity.TOP, 600, 650);
+//        } else {
+//            popupWindow!!.dismiss()
+//            popupWindow = null
+//        }
 
     }
 
@@ -1439,7 +1453,18 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
 //                if (prefProvider.getValue(ORDER_TYPE, "").toString() != TAKEOUT) {
 
-                cartList[0].customer = assignCustomer
+
+                if (!isOrderUpdate)
+                    cartList[0].customer = assignCustomer
+
+                if (isOrderUpdate)
+                    viewModelPayment.updateOrder(
+                        true,
+                        orderId,
+                        paymentId,
+                        paymentOfflineId,
+                        orderOfflineId
+                    )
                 val request = viewModelPayment.createOrderRequest(
                     cartList[0],
                     viewModel.subTotalPrice,

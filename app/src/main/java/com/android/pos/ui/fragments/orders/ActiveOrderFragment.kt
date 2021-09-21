@@ -13,7 +13,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.pos.R
 import com.android.pos.data.entities.*
 import com.android.pos.data.model.responseModel.OpenOrderResponse
+import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentActiveOrdersBinding
+import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.OpenOrderAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.utils.AlertUtils
@@ -23,6 +25,7 @@ import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class ActiveOrderFragment : Fragment(), OrderCallBack {
@@ -32,6 +35,10 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
     private val viewModel by viewModels<ActiveOrderViewModel>()
     private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
     private lateinit var adapter: OpenOrderAdapter
+
+    @Inject
+    lateinit var prefProvider: PrefProvider
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -124,6 +131,7 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
 
         val order = adapter.getItem(pos)
         if (status == "UPDATE") {
+            prefProvider.setValue(Constants.ORDER_TYPE, order.orderType)
             dashboardViewModel.addCart(
                 CartModel().apply {
                     terminalId = order.terminalId
@@ -137,10 +145,17 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
                     serviceCharge = serviceChargesList(order)
                     customer = assignCustomer(order)
                     items = inventoryList(order)
+                    note = order.note
                 }
             )
+            val bundle = Bundle()
+            bundle.putBoolean("update", true)
+            bundle.putInt("orderId", order.id)
+            bundle.putInt("paymentId", order.payments[0].id)
+            bundle.putString("paymentOfflineId", order.payments[0].offlineId)
+            bundle.putString("orderOfflineId", order.offlineId)
             findNavController().navigate(
-                R.id.action_orders_to_dashboardCategoryNew
+                R.id.action_orders_to_dashboardCategoryNew, bundle
             )
 
         } else {
@@ -169,12 +184,13 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
         order.orderItems.forEach {
 
             val items = TbItem().apply {
-                itemId = it.id
+                orderItemId = it.id
+                itemId = it.itemId
                 name = it.itemName
                 cost = it.price
                 price = it.price
                 priceType = ""
-                quantity = it.quantity
+                itemQuantity = it.quantity
                 kitchenName = ""
                 productCode = ""
                 sku = ""
@@ -185,7 +201,8 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
                 categoryId = it.categoryId
                 categoryName = ""
                 taxes = taxes(it.orderItemTax, order.locationId)
-//                modifier_set_ids = it.modifierIds
+                modifier_set_ids = modifiersIds(it.orderItemModifiers)
+                modifiers = modifierSets(it.orderItemModifiers)
 //                variationsAttributes = it.variations
 
             }
@@ -195,6 +212,38 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
         }
 
         return inventoryModelList
+    }
+
+    private fun modifierSets(orderItemModifiers: List<OpenOrderResponse.Data.Order.OrderItem.OrderItemModifier>): List<Modifier> {
+
+        val modifierList = ArrayList<Modifier>()
+
+        orderItemModifiers.forEach {
+
+            val modifier = Modifier().apply {
+                id = it.modifierId
+                modifierSetId = it.modifierSetId
+                name = it.name
+                price = it.price
+                itemQuantity = it.quantity
+                orderModifierId = it.id
+
+            }
+            modifierList.add(modifier)
+        }
+
+        return modifierList
+    }
+
+    private fun modifiersIds(orderItemModifiers: List<OpenOrderResponse.Data.Order.OrderItem.OrderItemModifier>): List<Int> {
+
+        val selectedIds = ArrayList<Int>()
+        if (orderItemModifiers.isNotEmpty()) {
+            orderItemModifiers.forEach {
+                selectedIds.add(it.id)
+            }
+        }
+        return selectedIds
     }
 
     private fun taxes(
@@ -210,13 +259,14 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
                 locationId,
                 it.name,
                 it.rate,
-                "",
+                "Percentage",
                 it.updatedAt,
                 true,
                 it.isDefault,
                 false,
                 "",
-                listOf()
+                listOf(),
+                it.id
             )
             taxList.add(tax)
         }

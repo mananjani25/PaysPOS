@@ -90,7 +90,7 @@
     <string name="delete_employee_message">Are you sure want to Delete Employee?</string>
     <string name="clockout_message">Are you sure want to Clockout?</string>
     <string name="delete_item_message">Are you sure want to Delete Item?</string>
-    <string name="delete_items_message">Are you sure want to Clear Item?</string>
+    <string name="delete_items_message">Are you sure you want to clear item?</string>
     <string name="delete_employee_role_message">Are you sure want to Delete Team Member Role?</string>
     <string name="delete_printer_message">Are you sure want to Delete Printer?</string>
 
@@ -539,4 +539,7 @@
     <string name="tv_refund">Refund</string>
     <string name="tv_item_refund_details">Item amount includes taxes,discounts and service charge where applicable</string>
     <string name="tvRefundPaymentDetails">Refunding an amount(and not a specific item) may cause a discrepancy in your inventory,item sales reports, and gift card balances.</string>
+    <string name="tv_orders">Orders</string>
+    <string name="tv_select_number_of_guests">Select Number Of Guests</string>
+
 </resources>

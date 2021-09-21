@@ -190,7 +190,11 @@
     <fragment
         android:id="@+id/teamList"
         android:name="com.android.pos.ui.fragments.team.TeamList"
-        android:label="TeamList" />
+        android:label="TeamList" >
+        <action
+            android:id="@+id/action_teamList_to_dashboardCategoryNew"
+            app:destination="@id/dashboardCategoryNew" />
+    </fragment>
     <action
         android:id="@+id/action_global_teamList"
         app:destination="@id/teamList"
@@ -352,6 +356,11 @@
         android:name="com.android.pos.ui.fragments.dashboard.DashboardCategoryNew"
         android:label="DashboardCategoryNew"
         tools:layout="@layout/fragment_dashboard_category_new">
+
+        <argument
+            android:name="update"
+            android:defaultValue="false"
+            app:argType="boolean" />
         <action
             android:id="@+id/action_dashboardCategoryNew_to_createItem"
             app:destination="@id/createItem"
@@ -775,6 +784,20 @@
     <fragment
         android:id="@+id/dineInFragment"
         android:name="com.android.pos.ui.fragments.dinein.DineInFragment"
-        android:label="DineInFragment" />
+        android:label="DineInFragment" >
+        <action
+            android:id="@+id/action_dineInFragment_to_transactionFragment"
+            app:destination="@id/transactionFragment" />
+        <action
+            android:id="@+id/action_dineInFragment_to_orders"
+            app:destination="@id/orders" />
+        <action
+            android:id="@+id/action_dineInFragment_to_dineInGuestFragment"
+            app:destination="@id/dineInGuestFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/dineInGuestFragment"
+        android:name="com.android.pos.ui.fragments.dinein.DineInGuestFragment"
+        android:label="DineInGuestFragment" />
 
 </navigation>
