@@ -23,6 +23,7 @@
             android:background="@color/view" />
 
         <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/llParent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
@@ -47,7 +48,7 @@
                 android:gravity="start"
                 android:padding="@dimen/_4sdp"
                 android:textColor="@color/viewTextColor"
-                android:textSize="@dimen/_6mdpi"
+                android:textSize="@dimen/_5mdpi"
                 tools:text="Modifier one" />
 
             <androidx.appcompat.widget.AppCompatEditText

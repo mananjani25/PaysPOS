@@ -93,7 +93,7 @@
                         android:layout_height="wrap_content"
                         android:text="Option Set"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_7mdpi" />
+                        android:textSize="@dimen/_6mdpi" />
 
 
                     <androidx.appcompat.widget.AppCompatEditText
@@ -127,7 +127,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/display_name"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_7mdpi" />
+                        android:textSize="@dimen/_6mdpi" />
 
 
                     <androidx.appcompat.widget.AppCompatEditText
@@ -160,7 +160,7 @@
                         android:layout_marginBottom="@dimen/_5sdp"
                         android:text="@string/options"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_7mdpi" />
+                        android:textSize="@dimen/_6mdpi" />
 
 
                     <androidx.recyclerview.widget.RecyclerView

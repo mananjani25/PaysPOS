@@ -159,7 +159,7 @@ class OpenOrderAdapter :
     }
 
     fun update(position: Int) {
-        orderList[position].paymentStatus = "Cancelled"
+        orderList.removeAt(position)
         notifyDataSetChanged()
     }
 

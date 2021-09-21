@@ -24,7 +24,9 @@ class ModifierAdapter(private val isEdit: Boolean) :
 
 
             binding.edtName.addTextChangedListener(EditTextWatcher(binding.edtName, item))
+            binding.llParent.requestFocus()
             binding.edtName.setText(item.name)
+            binding.edtName.setSelection(binding.edtName.text!!.length)
 
             binding.edtPrice.addTextChangedListener(PriceTextWatcher(binding.edtPrice, item))
             MethodUtils.setPriceEditText(binding.edtPrice, item.price)
