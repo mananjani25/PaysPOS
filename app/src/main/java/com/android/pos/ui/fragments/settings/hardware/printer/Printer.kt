@@ -64,6 +64,7 @@ import com.android.pos.data.remote.Constants.AVAILABLE
 import com.android.pos.data.remote.Constants.CUSTOMER
 import com.android.pos.data.remote.Constants.KITCHEN
 import com.android.pos.data.remote.Constants.LOCATION_ID
+import com.android.pos.data.remote.Constants.PRINTER
 import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.ProgressUtils
@@ -319,7 +320,13 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
           }*/
 
         binding.imgClose.setOnClickListener {
-            findNavController().popBackStack()
+            val navController = findNavController()
+            navController.previousBackStackEntry?.savedStateHandle?.set(
+                com.android.pos.data.remote.Constants.KEY,
+                PRINTER
+            )
+
+            navController.popBackStack()
         }
 
         binding.imgSync.setOnClickListener {

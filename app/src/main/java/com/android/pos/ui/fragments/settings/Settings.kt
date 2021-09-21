@@ -17,6 +17,7 @@ import com.android.pos.data.remote.Constants.CREATE_TAX
 import com.android.pos.data.remote.Constants.CREATE_TIP
 import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.data.remote.Constants.ORDER_RECEIPTS
+import com.android.pos.data.remote.Constants.PRINTER
 import com.android.pos.data.remote.Constants.TEAM_MEMBER
 import com.android.pos.databinding.FragmentSettingsBinding
 import com.android.pos.ui.activities.MainActivity
@@ -70,7 +71,7 @@ class Settings : Fragment() {
 
         findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<String>(KEY)
             ?.observe(viewLifecycleOwner) { it ->
-                Log.e("Settings", "Settings $it")
+
                 when (it) {
                     CREATE_TAX -> {
                         binding.txtBusiness.styleBold()
@@ -148,6 +149,20 @@ class Settings : Fragment() {
                         loadFragment(frag)
                         binding.commonToolbar.txtSubTitle.setText("Team Member")
 
+
+                    }
+                    PRINTER ->{
+
+                        binding.txtBusiness.styleNormal()
+                        binding.txtHardware.styleBold()
+                        binding.txtSecurity.styleNormal()
+                        binding.txtMarketing.styleNormal()
+                        binding.txtEmployee.styleNormal()
+                        binding.txtReports.styleNormal()
+                        binding.rvBusiness.visibility = View.GONE
+                        val frag: Fragment = Hardware()
+                        loadFragment(frag)
+                        binding.commonToolbar.txtSubTitle.setText("Hardware")
 
                     }
 

@@ -130,6 +130,7 @@ class CustomerReceiptSettings : Fragment() {
             model.showTipLineForCash = binding.customerReciptPart2.swtTipCash.isChecked
             model.showQrCode = binding.customerReciptPart2.swtQrCode.isChecked
             model.showCustomNote = binding.customerReciptPart2.swtCustomNote.isChecked
+            model.showTeam = binding.swtEmployee.isChecked
 
 
             viewModel.updateCustomer(model)
@@ -350,6 +351,8 @@ class CustomerReceiptSettings : Fragment() {
                 binding.customerReciptPart2.swtTipCash.isChecked = model.showTipLineForCash
                 binding.customerReciptPart2.swtQrCode.isChecked = model.showQrCode
                 binding.customerReciptPart2.swtCustomNote.isChecked = model.showCustomNote
+                binding.swtEmployee.isChecked = model.showTeam
+
 
                 /*if (model.emp){
                     binding.layoutCustomerReceipt.txtEmployee.visibility = View.VISIBLE
@@ -368,6 +371,11 @@ class CustomerReceiptSettings : Fragment() {
                     binding.layoutCustomerReceipt.linearModifier1.visibility = View.GONE
                     binding.layoutCustomerReceipt.linearModifier2.visibility = View.GONE
 
+                }
+                if (model.showTeam) {
+                    binding.layoutCustomerReceipt.txtEmployee.visibility = View.VISIBLE
+                } else {
+                    binding.layoutCustomerReceipt.txtEmployee.visibility = View.INVISIBLE
                 }
 
                 if (model.showQrCode) {
