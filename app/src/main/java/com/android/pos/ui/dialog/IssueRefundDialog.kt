@@ -194,7 +194,8 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
             orderItemRefundsAttributeModel.employeeId = it.employeeId
             orderItemRefundsAttributeModel.orderId = it.orderId
             orderItemRefundsAttributeModel.refundType = 0
-            orderItemRefundsAttributeModel.orderItemId = it.itemId
+            orderItemRefundsAttributeModel.paymentId = orderDetailsResponse.data.payments[0].id
+            orderItemRefundsAttributeModel.orderItemId = it.id
             orderItemRefundsAttributeModel.quantity = it.quantity
             orderItemRefundsAttributesList.add(orderItemRefundsAttributeModel)
         }

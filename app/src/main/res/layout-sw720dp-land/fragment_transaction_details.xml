@@ -565,7 +565,7 @@
                     android:paddingTop="@dimen/_8sdp"
                     android:paddingEnd="@dimen/_15sdp"
                     android:paddingBottom="@dimen/_8sdp"
-                    android:text="@string/tv_issue_refund"
+                    android:text="@string/tv_refund"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_6mdpi" />
 
@@ -582,7 +582,7 @@
                     android:paddingTop="@dimen/_8sdp"
                     android:paddingEnd="@dimen/_15sdp"
                     android:paddingBottom="@dimen/_8sdp"
-                    android:text="Reissue Receipt"
+                    android:text="@string/tv_print_receipt"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_6mdpi" />
             </LinearLayout>

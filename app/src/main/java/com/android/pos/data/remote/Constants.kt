@@ -29,6 +29,7 @@ object Constants {
     const val CUSTOMER_NAME = "customer_name"
     const val SALE_CUSTOMER_NAME = "sale_customer_name"
     const val IS_CLOCKOUT = "isClockout"
+    const val IS_REFUND = "isRefund"
     const val EMPLOYEE_ID = "employee_id"
     const val UPDATE = "UPDATE"
     const val DELETE = "DELETE"

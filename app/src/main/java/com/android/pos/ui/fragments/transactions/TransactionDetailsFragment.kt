@@ -10,7 +10,9 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
+import com.android.pos.data.remote.Constants.IS_REFUND
 import com.android.pos.databinding.FragmentTransactionDetailsBinding
+import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.OrderDetailsItemListAdapter
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.TimeFormatUtils.convertCurrentDate
@@ -18,6 +20,7 @@ import com.android.pos.utils.TimeFormatUtils.convertCurrentTime
 import com.android.pos.utils.extensions.liveSnackBar
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class TransactionDetailsFragment : Fragment() {
@@ -27,6 +30,9 @@ class TransactionDetailsFragment : Fragment() {
     private lateinit var orderDetailsItemAdapter: OrderDetailsItemListAdapter
     private lateinit var orderDetailsResponse: GetOrderDetailsResponse
     private var orderId: Int = -1
+
+    @Inject
+    lateinit var prefProvider: PrefProvider
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -49,6 +55,13 @@ class TransactionDetailsFragment : Fragment() {
         observeShowProgress()
         setUpRecyclerView()
         navigate()
+
+        /*if (prefProvider.getValueboolean(IS_REFUND, false)) {
+            binding.tvIssueRefund.visibility = View.GONE
+        } else {
+            binding.tvIssueRefund.visibility = View.VISIBLE
+        }*/
+
         return binding.root
     }
 
