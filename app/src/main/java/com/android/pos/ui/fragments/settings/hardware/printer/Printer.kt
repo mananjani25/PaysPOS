@@ -677,7 +677,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     private fun searchBluetooth() {
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
-        if (mBluetoothAdapter!!.isEnabled) {
+        if (mBluetoothAdapter?.isEnabled == true) {
 
             val availableDevices: Set<BluetoothDevice> = mBluetoothAdapter!!.bondedDevices
 

@@ -1,6 +1,8 @@
 package com.android.pos.ui.adapter
 
+import android.text.TextUtils
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
@@ -36,6 +38,18 @@ class OrderDetailsItemListAdapter :
             context.getString(R.string.format),
             taxList[position].price
         )
+
+        val modifierNames = taxList[position].orderItemModifiers.map {
+            it.name
+        }
+
+        if (modifierNames.isEmpty()) {
+            itemBinding.tvModifierName.visibility = View.GONE
+        } else {
+            itemBinding.tvModifierName.visibility = View.VISIBLE
+            itemBinding.tvModifierName.text = TextUtils.join(",", modifierNames)
+        }
+
         itemBinding.executePendingBindings()
     }
 
