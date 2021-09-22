@@ -56,7 +56,7 @@ class KitchenReceiptViewModel @Inject constructor(
                 Status.SUCCESS -> {
                     _showProgress.value = Event(false)
                     _data.value = Event(resource.data?.message!!)
-                    appDatabase.kitchenSettingsDao().add(resource.data.data)
+                    appDatabase.kitchenSettingsDao().add(resource.data.data!!)
 
                 }
                 Status.ERROR -> {

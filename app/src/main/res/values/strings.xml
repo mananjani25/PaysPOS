@@ -543,5 +543,6 @@
     <string name="tv_select_number_of_guests">Select Number Of Guests</string>
     <string name="whole_table">Whole Table</string>
     <string name="website">Website</string>
+    <string name="tv_discount">Discount</string>
 
 </resources>

@@ -40,7 +40,11 @@ class OrderDetailsItemListAdapter :
         )
 
         val modifierNames = taxList[position].orderItemModifiers.map {
-            it.name
+            it.name + " (" + itemBinding.root.context.getString(R.string.symbole) + " " + String.format(
+                itemBinding.root.context.getString(
+                    R.string.format
+                ), it.price
+            ) + ")"
         }
 
         if (modifierNames.isEmpty()) {
