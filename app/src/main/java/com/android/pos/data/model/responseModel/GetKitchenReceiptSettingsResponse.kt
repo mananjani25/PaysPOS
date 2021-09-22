@@ -7,7 +7,7 @@ import com.google.gson.annotations.SerializedName
 
 data class GetKitchenReceiptSettingsResponse(
     @SerializedName("data")
-    val `data`: Data,
+    val `data`: Data?=null,
     @SerializedName("message")
     val message: String,
     @SerializedName("status")

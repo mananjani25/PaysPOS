@@ -5,6 +5,8 @@ import com.android.pos.data.entities.TaxData
 import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.entities.TeamRole
 import com.android.pos.data.model.requestModel.*
+import com.android.pos.data.model.responseModel.GetCustomerReceiptSettingsResponse
+import com.android.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
 import com.android.pos.data.remote.ApiHelper
 import com.android.pos.utils.performGetOperation
 import java.util.HashMap
@@ -108,13 +110,29 @@ class TaxServiceChargeRepository @Inject constructor(
     fun getKitchenReceiptSettings() =
         performGetOperation(databaseQuery = { appDatabase.kitchenSettingsDao().getKitchenSettings },
             networkCall = { apiHelperNew.getKitchenReceiptSettings() },
-            saveCallResult = { appDatabase.kitchenSettingsDao().add(it.data) })
+            saveCallResult = { appDatabase.kitchenSettingsDao().add(
+                if (it.data != null) {
+                    it.data
+                } else {
+                    val model = GetKitchenReceiptSettingsResponse.Data()
+                    model
+                }
+            ) })
 
 
     fun getCustomerReceiptSettings() =
         performGetOperation(databaseQuery = { appDatabase.customerSettingsDao().getCustomerSettings },
             networkCall = { apiHelperNew.getCustomerReceiptSettings() },
-            saveCallResult = { appDatabase.customerSettingsDao().add(it.data) })
+            saveCallResult = {
+                appDatabase.customerSettingsDao().add(
+                    if (it.data != null) {
+                        it.data
+                    } else {
+                        val model = GetCustomerReceiptSettingsResponse.Data()
+                        model
+                    }
+                )
+            })
 
 
     suspend fun getTransactionList(data: HashMap<String, String>) =

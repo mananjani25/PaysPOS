@@ -85,6 +85,19 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                     AlertUtils.showCustomAlert(requireActivity(), "Please Enter Amount To Refund")
                 } else {
                     subTotalPrice = binding.edtAmount.text.toString().toDouble()
+
+                    refundData = RefundRequestModel().apply {
+                        paymentRefund = RefundRequestModel.PaymentRefund().apply {
+                            amount = subTotalPrice
+                            orderId = orderDetailsResponse.data.id
+                            paymentId = orderDetailsResponse.data.payments[0].id
+                            employeeId = orderDetailsResponse.data.employeeId
+                            terminalId = orderDetailsResponse.data.terminalId
+                            taxRefunded = totalTax
+                            serviceChargeRefunded = totalServiceCharge
+                        }
+                    }
+
                     val bundle = Bundle().apply {
                         putParcelable("refundData", refundData)
                         putDouble("refundAmount", subTotalPrice)
@@ -128,7 +141,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
 
         }
 
-        refundData = RefundRequestModel().apply {
+        /*refundData = RefundRequestModel().apply {
             paymentRefund = RefundRequestModel.PaymentRefund().apply {
                 amount = subTotalPrice
                 orderId = orderDetailsResponse.data.id
@@ -138,7 +151,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                 taxRefunded = totalTax
                 serviceChargeRefunded = totalServiceCharge
             }
-        }
+        }*/
 
 
     }
@@ -181,7 +194,8 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
             orderItemRefundsAttributeModel.employeeId = it.employeeId
             orderItemRefundsAttributeModel.orderId = it.orderId
             orderItemRefundsAttributeModel.refundType = 0
-            orderItemRefundsAttributeModel.orderItemId = it.itemId
+            orderItemRefundsAttributeModel.paymentId = orderDetailsResponse.data.payments[0].id
+            orderItemRefundsAttributeModel.orderItemId = it.id
             orderItemRefundsAttributeModel.quantity = it.quantity
             orderItemRefundsAttributesList.add(orderItemRefundsAttributeModel)
         }

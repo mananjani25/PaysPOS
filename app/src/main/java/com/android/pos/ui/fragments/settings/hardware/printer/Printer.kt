@@ -677,7 +677,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     private fun searchBluetooth() {
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
-        if (mBluetoothAdapter!!.isEnabled) {
+        if (mBluetoothAdapter?.isEnabled == true) {
 
             val availableDevices: Set<BluetoothDevice> = mBluetoothAdapter!!.bondedDevices
 
@@ -1149,7 +1149,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             macAddress = printerListModel.deviceModel?.macAddress,
             modalName = printerListModel.deviceModel?.printerName,
             terminalIds = listOf(prefProvider.getValueInt(TERMINAL_ID, 1)),
-            status = false,
+            status = true,
             locationId = prefProvider.getValueInt(LOCATION_ID, 1),
             receiptPrintType = if (printerListModel.printerName == "TM-U220") {
                 KITCHEN

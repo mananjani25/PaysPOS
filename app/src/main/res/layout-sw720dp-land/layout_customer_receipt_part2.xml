@@ -214,11 +214,13 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
+        android:visibility="gone"
         android:background="@color/view" />
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         android:orientation="horizontal">
 
         <TextView
@@ -228,6 +230,7 @@
             android:layout_weight="1"
             android:fontFamily="@font/sf_pro_display_semibold"
             android:gravity="start"
+
             android:padding="@dimen/_5sdp"
             android:text="@string/tv_photo"
             android:textColor="@color/viewTextColor"
@@ -263,7 +266,7 @@
             android:fontFamily="@font/sf_pro_display_semibold"
             android:gravity="start"
             android:padding="@dimen/_5sdp"
-            android:text="@string/tv_website_address"
+            android:text="@string/website"
             android:textColor="@color/viewTextColor"
             android:textSize="@dimen/_6mdpi" />
 
@@ -276,7 +279,7 @@
             android:checked="true"
             android:padding="@dimen/_5sdp"
             app:srcCompat="@drawable/ic_arrow_forward"
-            app:theme="@style/AppTheme"/>
+            app:theme="@style/AppTheme" />
     </androidx.appcompat.widget.LinearLayoutCompat>
 
     <View
@@ -564,7 +567,7 @@
             android:checked="true"
             android:padding="@dimen/_5sdp"
             app:srcCompat="@drawable/ic_arrow_forward"
-            app:theme="@style/AppTheme"/>
+            app:theme="@style/AppTheme" />
     </androidx.appcompat.widget.LinearLayoutCompat>
 
     <View
@@ -643,7 +646,8 @@
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:visibility="gone">
 
         <TextView
             android:layout_width="0dp"
@@ -662,12 +666,14 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/view" />
+        android:background="@color/view"
+        android:visibility="gone" />
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:visibility="gone">
 
         <TextView
             android:layout_width="0dp"
@@ -696,12 +702,14 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/view" />
+        android:background="@color/view"
+        android:visibility="gone" />
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:visibility="gone">
 
         <TextView
             android:layout_width="0dp"
@@ -727,5 +735,6 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/view" />
+        android:background="@color/view"
+        android:visibility="gone" />
 </LinearLayout>

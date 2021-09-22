@@ -84,7 +84,7 @@ class CustomerReceiptViewModel @Inject constructor(
 
                     _showProgress.value = Event(false)
                     if (resource.data != null) {
-                        appDatabase.customerSettingsDao().add(resource.data.data)
+                        appDatabase.customerSettingsDao().add(resource.data.data!!)
                     }
                     _data.value = Event(resource.data?.message!!)
                 }

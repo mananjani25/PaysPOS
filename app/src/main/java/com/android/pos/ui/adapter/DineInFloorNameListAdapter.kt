@@ -5,16 +5,15 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.model.DineInFloorNameModel
-import com.android.pos.data.model.responseModel.NoteResponse
+import com.android.pos.data.model.responseModel.GetFloorPlanResponse
 import com.android.pos.databinding.ViewDineInFloorNameBinding
 import com.android.pos.ui.fragments.dinein.DineInViewModel
-import com.android.pos.utils.callback.ItemCallback
 
 class DineInFloorNameListAdapter(val viewModel: DineInViewModel) :
     RecyclerView.Adapter<DineInFloorNameListAdapter.MyViewHolder>() {
 
-    var showFloorPlan: ((DineInFloorNameModel) -> Unit)? = null
-    var floorNameList = ArrayList<DineInFloorNameModel>()
+    var showFloorPlan: ((GetFloorPlanResponse.Data) -> Unit)? = null
+    var floorNameList = ArrayList<GetFloorPlanResponse.Data>()
     private var mpos: Int = 0
 
     override fun onCreateViewHolder(
@@ -26,7 +25,7 @@ class DineInFloorNameListAdapter(val viewModel: DineInViewModel) :
         return MyViewHolder(binding)
     }
 
-    fun addFloorName(noteList: ArrayList<DineInFloorNameModel>) {
+    fun addFloorName(noteList: List<GetFloorPlanResponse.Data>) {
         this.floorNameList.apply {
             clear()
             addAll(noteList)
@@ -34,9 +33,7 @@ class DineInFloorNameListAdapter(val viewModel: DineInViewModel) :
         notifyDataSetChanged()
     }
 
-    fun getItem(position: Int): DineInFloorNameModel {
-        return floorNameList[position]
-    }
+
 
     override fun onBindViewHolder(holder: DineInFloorNameListAdapter.MyViewHolder, position: Int) {
         holder.bind(floorNameList[position])
@@ -50,7 +47,7 @@ class DineInFloorNameListAdapter(val viewModel: DineInViewModel) :
 
     inner class MyViewHolder(val binding: ViewDineInFloorNameBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: DineInFloorNameModel) {
+        fun bind(item: GetFloorPlanResponse.Data) {
             binding.dineInModel = item
             binding.executePendingBindings()
 

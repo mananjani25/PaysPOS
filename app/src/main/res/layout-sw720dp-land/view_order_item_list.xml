@@ -16,17 +16,31 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center">
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tvItemName"
-                style="@style/CustomFontSemiBold"
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
                 android:layout_weight="2"
-                android:gravity="start"
-                android:text="Three layer ice cream"
-                android:textColor="@color/black"
-                android:textSize="@dimen/_5mdpi" />
+                android:orientation="vertical">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvItemName"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Three layer ice cream"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_5mdpi" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvModifierName"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/color65"
+                    android:textSize="@dimen/_5mdpi" />
+
+
+            </LinearLayout>
 
 
             <androidx.appcompat.widget.AppCompatTextView

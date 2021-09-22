@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName
 
 data class GetCustomerReceiptSettingsResponse(
     @SerializedName("data")
-    val `data`: Data,
+    val `data`: Data?=null,
     @SerializedName("message")
     val message: String,
     @SerializedName("status")
