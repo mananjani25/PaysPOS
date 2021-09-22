@@ -211,6 +211,7 @@
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontBold"
+                        android:id="@+id/txtSave"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:padding="@dimen/_4sdp"

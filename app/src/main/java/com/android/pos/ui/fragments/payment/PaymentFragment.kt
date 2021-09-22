@@ -25,7 +25,11 @@ import kotlin.math.floor
 
 @AndroidEntryPoint
 open class PaymentFragment : Fragment(), View.OnClickListener {
-
+    private var orderOfflineId: String = ""
+    private var paymentOfflineId: String = ""
+    private var orderId: Int? = null
+    private var paymentId: Int? = null
+    private var isUpdate: Boolean = false
     private var tipAmount: Double = 0.0
     private var future_delivery_date: String = ""
     private var future_delivery_time: String = ""
@@ -124,6 +128,15 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         totalDiscount = requireArguments().getDouble("totalDiscount")
         future_delivery_time = requireArguments().getString("future_delivery_time").toString()
         future_delivery_date = requireArguments().getString("future_delivery_date").toString()
+
+        isUpdate = requireArguments().getBoolean("update")
+        if (isUpdate) {
+
+            orderId = requireArguments().getInt("orderId")
+            paymentId = requireArguments().getInt("paymentId")
+            paymentOfflineId = requireArguments().getString("paymentOfflineId").toString()
+            orderOfflineId = requireArguments().getString("orderOfflineId").toString()
+        }
 
         getCashPaymentOptionList(totalPrice)
 
@@ -312,7 +325,18 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
     }
 
     private fun makePayment() {
+
+        if (isUpdate)
+            viewModel.updateOrder(
+                true,
+                orderId,
+                paymentId,
+                paymentOfflineId,
+                orderOfflineId
+            )
+
         val myRequest = cartList?.let {
+
             viewModel.createOrderRequest(
                 it,
                 subTotalPrice,
@@ -322,7 +346,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 prefProvider.getValue(Constants.ORDER_TYPE, "").toString(),
                 future_delivery_date,
                 future_delivery_date,
-                true, totalDiscount,
+                true,
+                totalDiscount,
                 tipAmount
             )
         }
@@ -357,7 +382,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 bundle.putDouble("totalPrice", totalPrice + tipAmount)
                 bundle.putDouble("paymentAmount", paymentAmount)
                 bundle.putInt("orderID", it.data.order.id)
-                bundle.putParcelable("receiptData",it.data)
+                bundle.putParcelable("receiptData", it.data)
                 findNavController().navigate(
                     R.id.action_paymentFragment_to_orderCompleteFragment,
                     bundle

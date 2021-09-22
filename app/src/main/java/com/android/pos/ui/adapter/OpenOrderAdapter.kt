@@ -128,6 +128,10 @@ class OpenOrderAdapter :
             binding.txtEditOrder.setOnClickListener {
                 mCallback?.onItemClickListener(it, bindingAdapterPosition, "UPDATE")
             }
+
+            binding.txtPayNow.setOnClickListener {
+                mCallback?.onItemClickListener(it, bindingAdapterPosition, "PAY")
+            }
         }
     }
 
