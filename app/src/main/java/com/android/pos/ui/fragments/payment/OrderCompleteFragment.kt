@@ -83,6 +83,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     private fun getKitchenReceiptSettings() {
         viewModel.getKitchenReceiptSettings().observe(viewLifecycleOwner, {
+
             if (it != null) {
                 kitchenSettingModel = it
                 getKitchenPrinters()
