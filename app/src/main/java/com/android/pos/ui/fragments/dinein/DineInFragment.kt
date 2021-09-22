@@ -113,82 +113,86 @@ class DineInFragment : Fragment() {
 
     private fun setFloorPlan(dineInFloorTablesList: List<GetFloorPlanResponse.Data.FloorPlanTable>) {
 
-        for (i in dineInFloorTablesList.indices) {
-            if (dineInFloorTablesList[i].tableType == "square") {
-                val inflatedViewSquare = layoutInflater.inflate(
-                    R.layout.view_floor_square,
-                    binding.flFloorPlan,
-                    false
-                )
+        if (dineInFloorTablesList.isNotEmpty()) {
+            for (i in dineInFloorTablesList.indices) {
+                if (dineInFloorTablesList[i].tableType == "square") {
+                    val inflatedViewSquare = layoutInflater.inflate(
+                        R.layout.view_floor_square,
+                        binding.flFloorPlan,
+                        false
+                    )
 
-                if (inflatedViewSquare != null) {
-                    val llMainParentSquare: LinearLayout =
-                        inflatedViewSquare.findViewById(R.id.llMainParentSquare)
+                    if (inflatedViewSquare != null) {
+                        val llMainParentSquare: LinearLayout =
+                            inflatedViewSquare.findViewById(R.id.llMainParentSquare)
 
-                    val tvNoOFChairs: AppCompatTextView =
-                        inflatedViewSquare.findViewById(R.id.tvNoOFChairs)
+                        val tvNoOFChairs: AppCompatTextView =
+                            inflatedViewSquare.findViewById(R.id.tvNoOFChairs)
 
-                    tvNoOFChairs.text = "" + dineInFloorTablesList[i].chairCount
+                        tvNoOFChairs.text = "" + dineInFloorTablesList[i].chairCount
 
-                    val tvTableName: AppCompatTextView =
-                        inflatedViewSquare.findViewById(R.id.tvTableName)
+                        val tvTableName: AppCompatTextView =
+                            inflatedViewSquare.findViewById(R.id.tvTableName)
 
-                    tvTableName.text = "" + dineInFloorTablesList[i].tableNumber
+                        tvTableName.text = "" + dineInFloorTablesList[i].tableNumber
 
-                    if (llMainParentSquare.parent != null) {
-                        (llMainParentSquare.parent as ViewGroup).removeView(llMainParentSquare)
+                        if (llMainParentSquare.parent != null) {
+                            (llMainParentSquare.parent as ViewGroup).removeView(llMainParentSquare)
+                        }
+
+                        /*pass object in settag*/
+                        inflatedViewSquare.tag = dineInFloorTablesList[i]
+
+                        val paramsSquare = FrameLayout.LayoutParams(110, 110)
+                        paramsSquare.leftMargin = dineInFloorTablesList[i].xPosition
+                        paramsSquare.topMargin = dineInFloorTablesList[i].yPosition
+                        binding.flFloorPlan.removeAllViews()
+                        binding.flFloorPlan.addView(llMainParentSquare, paramsSquare)
+
+                        inflatedViewSquare.setOnClickListener(clickInInflatedLayout()) //setting click to each item_content
+                    }
+                } else if (dineInFloorTablesList[i].tableType == "round") {
+                    val inflatedViewRound = layoutInflater.inflate(
+                        R.layout.view_floor_round,
+                        binding.flFloorPlan,
+                        false
+                    )
+
+                    if (inflatedViewRound != null) {
+                        val llMainParentRound: LinearLayout =
+                            inflatedViewRound.findViewById(R.id.llMainParentRound)
+
+                        val tvNoOFChairs: AppCompatTextView =
+                            inflatedViewRound.findViewById(R.id.tvNoOFChairs)
+
+                        tvNoOFChairs.text = "" + dineInFloorTablesList[i].chairCount
+
+
+                        val tvTableName: AppCompatTextView =
+                            inflatedViewRound.findViewById(R.id.tvTableName)
+
+                        tvTableName.text = "" + dineInFloorTablesList[i].tableNumber
+
+                        if (llMainParentRound.parent != null) {
+                            (llMainParentRound.parent as ViewGroup).removeView(llMainParentRound)
+                        }
+
+                        /*pass object in settag*/
+                        inflatedViewRound.tag = i.toString()
+
+                        val paramsRound = FrameLayout.LayoutParams(120, 120)
+                        paramsRound.leftMargin = dineInFloorTablesList[i].xPosition
+                        paramsRound.topMargin = dineInFloorTablesList[i].yPosition
+                        binding.flFloorPlan.removeAllViews()
+                        binding.flFloorPlan.addView(llMainParentRound, paramsRound)
+
+                        inflatedViewRound.setOnClickListener(clickInInflatedLayout()) //setting click to each item_content
                     }
 
-                    /*pass object in settag*/
-                    inflatedViewSquare.tag = dineInFloorTablesList[i]
-
-                    val paramsSquare = FrameLayout.LayoutParams(110, 110)
-                    paramsSquare.leftMargin = dineInFloorTablesList[i].xPosition
-                    paramsSquare.topMargin = dineInFloorTablesList[i].yPosition
-                    binding.flFloorPlan.removeAllViews()
-                    binding.flFloorPlan.addView(llMainParentSquare, paramsSquare)
-
-                    inflatedViewSquare.setOnClickListener(clickInInflatedLayout()) //setting click to each item_content
                 }
-            } else if (dineInFloorTablesList[i].tableType == "round") {
-                val inflatedViewRound = layoutInflater.inflate(
-                    R.layout.view_floor_round,
-                    binding.flFloorPlan,
-                    false
-                )
-
-                if (inflatedViewRound != null) {
-                    val llMainParentRound: LinearLayout =
-                        inflatedViewRound.findViewById(R.id.llMainParentRound)
-
-                    val tvNoOFChairs: AppCompatTextView =
-                        inflatedViewRound.findViewById(R.id.tvNoOFChairs)
-
-                    tvNoOFChairs.text = "" + dineInFloorTablesList[i].chairCount
-
-
-                    val tvTableName: AppCompatTextView =
-                        inflatedViewRound.findViewById(R.id.tvTableName)
-
-                    tvTableName.text = "" + dineInFloorTablesList[i].tableNumber
-
-                    if (llMainParentRound.parent != null) {
-                        (llMainParentRound.parent as ViewGroup).removeView(llMainParentRound)
-                    }
-
-                    /*pass object in settag*/
-                    inflatedViewRound.tag = i.toString()
-
-                    val paramsRound = FrameLayout.LayoutParams(120, 120)
-                    paramsRound.leftMargin = dineInFloorTablesList[i].xPosition
-                    paramsRound.topMargin = dineInFloorTablesList[i].yPosition
-                    binding.flFloorPlan.removeAllViews()
-                    binding.flFloorPlan.addView(llMainParentRound, paramsRound)
-
-                    inflatedViewRound.setOnClickListener(clickInInflatedLayout()) //setting click to each item_content
-                }
-
             }
+        } else {
+            binding.flFloorPlan.removeAllViews()
         }
     }
 
@@ -197,7 +201,7 @@ class DineInFragment : Fragment() {
             val dineInFloorTableModel = v.tag as GetFloorPlanResponse.Data.FloorPlanTable
             val bundle = Bundle()
             bundle.putParcelable("dineInFloorTableObject", dineInFloorTableModel)
-            findNavController().navigate(R.id.action_dineInFragment_to_dineInGuestFragment)
+            findNavController().navigate(R.id.action_dineInFragment_to_dineInGuestFragment, bundle)
             Log.d("Clickeditematposition", "::$dineInFloorTableModel")
         }
     }

@@ -9,6 +9,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
+import com.android.pos.data.model.responseModel.GetFloorPlanResponse
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.ORDER_TYPE_NAME
@@ -21,7 +22,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class DineInGuestFragment : Fragment(), GuestListAdapter.GuestListner {
     private lateinit var binding: FragmentDineInGuestBinding
-
+    private lateinit var dineInFloorTableModel: GetFloorPlanResponse.Data.FloorPlanTable
     private lateinit var guestListAdapter: GuestListAdapter
     private val TAG = "DineInGuestFragment"
 
@@ -33,6 +34,9 @@ class DineInGuestFragment : Fragment(), GuestListAdapter.GuestListner {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentDineInGuestBinding.inflate(inflater, container, false)
+
+        dineInFloorTableModel = arguments?.getParcelable("dineInFloorTableObject")!!
+
         return binding.root
     }
 
@@ -64,8 +68,8 @@ class DineInGuestFragment : Fragment(), GuestListAdapter.GuestListner {
 
     override fun onGuestSelected(numberOfGuest: Int) {
         Log.e(TAG, "numberOfGuest:  $numberOfGuest")
-        prefProvider.setValue(ORDER_TYPE,DINE_IN)
-        prefProvider.setValue(ORDER_TYPE_NAME,DINE_IN)
+        prefProvider.setValue(ORDER_TYPE, DINE_IN)
+        prefProvider.setValue(ORDER_TYPE_NAME, DINE_IN)
         val bundle = bundleOf("isFromDineIn" to true, "numberOfGuest" to numberOfGuest)
         findNavController().navigate(
             R.id.action_dineInGuestFragment_to_dashboardCategoryNew,
