@@ -112,7 +112,8 @@ class ReasonForRefundDialog : DialogFragment() {
                     AlertUtils.showCustomAlertWithListenerWithOK(
                         it, createTaxResponse.message
                     ) { _, _ ->
-                        findNavController().navigateUp()
+                        findNavController().popBackStack(R.id.issueRefundFragment, true)
+                        //  findNavController().navigateUp()
                     }
                 }
             }

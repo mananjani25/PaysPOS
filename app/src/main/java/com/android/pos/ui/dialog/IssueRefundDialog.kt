@@ -85,6 +85,19 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                     AlertUtils.showCustomAlert(requireActivity(), "Please Enter Amount To Refund")
                 } else {
                     subTotalPrice = binding.edtAmount.text.toString().toDouble()
+
+                    refundData = RefundRequestModel().apply {
+                        paymentRefund = RefundRequestModel.PaymentRefund().apply {
+                            amount = subTotalPrice
+                            orderId = orderDetailsResponse.data.id
+                            paymentId = orderDetailsResponse.data.payments[0].id
+                            employeeId = orderDetailsResponse.data.employeeId
+                            terminalId = orderDetailsResponse.data.terminalId
+                            taxRefunded = totalTax
+                            serviceChargeRefunded = totalServiceCharge
+                        }
+                    }
+
                     val bundle = Bundle().apply {
                         putParcelable("refundData", refundData)
                         putDouble("refundAmount", subTotalPrice)
@@ -128,7 +141,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
 
         }
 
-        refundData = RefundRequestModel().apply {
+        /*refundData = RefundRequestModel().apply {
             paymentRefund = RefundRequestModel.PaymentRefund().apply {
                 amount = subTotalPrice
                 orderId = orderDetailsResponse.data.id
@@ -138,7 +151,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                 taxRefunded = totalTax
                 serviceChargeRefunded = totalServiceCharge
             }
-        }
+        }*/
 
 
     }

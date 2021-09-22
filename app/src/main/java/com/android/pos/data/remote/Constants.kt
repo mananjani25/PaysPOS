@@ -121,7 +121,7 @@ object Constants {
     const val CREATEDISCOUNT = "create_discount"
     const val CREATEOPTION = "create_option"
     const val CREATEITEM = "create_item"
-    const val PRINTER ="printer"
+    const val PRINTER = "printer"
 
     const val SETTING_KEY = "setting_key"
     const val CREATE_TAX = "create_tax"
@@ -175,6 +175,8 @@ object Constants {
 
 
     const val UPDATE_TIP = "orders/{id}/update_tip"
+
+    const val GET_FLOOR_PLAN = "floor_plans"
 
     const val BUSINESS_NAME = "business_name"
     const val BUSINESS_ADDRESS = "business_address"

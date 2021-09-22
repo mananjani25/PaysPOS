@@ -538,5 +538,8 @@ class PosRepository @Inject constructor(
 
     suspend fun orderCancel(id: Int, data: OrderCancelRequest) =
         apiHelperNew.orderCancel(id, data)
+
+    fun getFloorPlan(locationId: Int) =
+        performGetOperationNew(networkCall = { apiHelperNew.getFloorPlan(locationId) })
 }
 
