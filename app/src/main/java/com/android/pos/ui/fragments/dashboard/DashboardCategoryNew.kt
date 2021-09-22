@@ -66,6 +66,7 @@ import javax.inject.Inject
 class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, MyCallback,
     ItemCallback, View.OnClickListener {
 
+    private var customerUpdate: Boolean = false
     private var orderOfflineId: String = ""
     private var paymentOfflineId: String = ""
     private var orderId: Int? = null
@@ -78,7 +79,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private var assignCustomer: TbCustomer? = null
     private var serviceChargesList: List<TbServiceCharge>? = null
     private var singleItem: TbItem? = null
-    private var cartList: List<CartModel> = emptyList()
+    private var cartList: ArrayList<CartModel> = arrayListOf()
     private lateinit var binding: FragmentDashboardCategoryNewBinding
 
     private val TAG = "DashboardCategoryNew"
@@ -191,6 +192,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             val result = bundle.getParcelable<TbCustomer>("data")
             if (result != null) {
                 setUpCustomer(result, bundle)
+
+
             }
         }
 
@@ -211,6 +214,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         assignCustomer = result
 
 
+        if (isOrderUpdate) {
+            cartList[0].customer = assignCustomer
+            viewModel.addCart(cartList[0])
+        }
         val openOrder = bundle.getBoolean("OPEN_ORDER")
         if (openOrder) {
             future_delivery_date = bundle.getString("DATE").toString()
@@ -293,7 +300,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         if (isAdded)
             viewModel.mAllWords(prefProvider.getValue(ORDER_TYPE, "").toString()).observe(
                 requireActivity(), {
-                    cartList = it
+                    cartList = it as ArrayList<CartModel>
                     if (cartList.isNotEmpty()) {
 
                         binding.layoutCart.rvCart.visibility = View.VISIBLE
@@ -1408,9 +1415,12 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
 //                if (prefProvider.getValue(ORDER_TYPE, "").toString() != TAKEOUT) {
 
+                val cartList = cartList[0]
 
                 if (!isOrderUpdate)
-                    cartList[0].customer = assignCustomer
+                    cartList.customer = assignCustomer
+
+
 
                 if (isOrderUpdate)
                     viewModelPayment.updateOrder(
@@ -1421,7 +1431,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         orderOfflineId
                     )
                 val request = viewModelPayment.createOrderRequest(
-                    cartList[0],
+                    cartList,
                     viewModel.subTotalPrice,
                     viewModel.totalPrice,
                     viewModel.totalServiceCharge,
