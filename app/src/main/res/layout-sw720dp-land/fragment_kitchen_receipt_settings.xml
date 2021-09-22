@@ -300,6 +300,7 @@
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
                     <View
+
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:background="@color/view" />
@@ -307,7 +308,8 @@
                     <androidx.appcompat.widget.LinearLayoutCompat
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        android:visibility="gone">
 
                         <TextView
                             android:layout_width="0dp"
@@ -327,12 +329,14 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="@color/view" />
+                        android:background="@color/view"
+                        android:visibility="gone" />
 
                     <androidx.appcompat.widget.LinearLayoutCompat
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        android:visibility="gone">
 
                         <TextView
                             android:layout_width="0dp"
@@ -361,7 +365,8 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="@color/view" />
+                        android:background="@color/view"
+                        android:visibility="gone" />
 
                     <androidx.appcompat.widget.LinearLayoutCompat
                         android:layout_width="match_parent"
@@ -919,7 +924,8 @@
                                 android:padding="@dimen/_5sdp"
                                 android:text="$9.99"
                                 android:textColor="@color/viewTextColor"
-                                android:textSize="@dimen/_6mdpi" />
+                                android:textSize="@dimen/_6mdpi"
+                                android:visibility="invisible" />
 
                             <View
                                 android:layout_width="match_parent"
@@ -952,7 +958,8 @@
                                 android:padding="@dimen/_5sdp"
                                 android:text="$1.99"
                                 android:textColor="@color/viewTextColor"
-                                android:textSize="@dimen/_6mdpi" />
+                                android:textSize="@dimen/_6mdpi"
+                                android:visibility="invisible" />
 
                         </LinearLayout>
 
@@ -981,7 +988,8 @@
                                 android:padding="@dimen/_5sdp"
                                 android:text="$1.99"
                                 android:textColor="@color/viewTextColor"
-                                android:textSize="@dimen/_6mdpi" />
+                                android:textSize="@dimen/_6mdpi"
+                                android:visibility="invisible" />
 
                         </LinearLayout>
 

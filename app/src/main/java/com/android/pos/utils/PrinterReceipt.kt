@@ -366,7 +366,8 @@ fun addOrdersForKitchen(
 fun addOrderItems(
     builder: Builder,
     list: List<CreateOrderResponse.Data.Order.OrderItem>,
-    font: String
+    font: String,
+    showModifiers:Boolean
 ): Builder {
     for (i in 0 until list.size) {
         val obj = list.get(i)
@@ -388,7 +389,7 @@ fun addOrderItems(
         builder.addText(
             padLineCustomerItem(
                 obj.quantity.toString() + "x " + obj.itemName,
-                "$" + MethodUtils.roundOffAmountString(obj.price),
+                "$" + MethodUtils.roundOffAmountString(totalPrice(obj)),
                 if (font == Constants.LARGE) {
                     24
                 } else {
@@ -398,7 +399,7 @@ fun addOrderItems(
         )
 
 
-        if (obj.orderItemModifiers.isNotEmpty()) {
+        if (obj.orderItemModifiers.isNotEmpty() && showModifiers) {
             for (j in 0 until obj.orderItemModifiers.size) {
                 val modifierObj = obj.orderItemModifiers.get(j)
                 builder.addTextLineSpace(30)
@@ -417,7 +418,7 @@ fun addOrderItems(
                 builder.addText(
                     padLineCustomerItem(
                         "   " + modifierObj.name,
-                        "$" + MethodUtils.roundOffAmountString(modifierObj.price.toDouble()),
+                        "$" + MethodUtils.roundOffAmountString(modifierObj.price.toDouble() * modifierObj.quantity),
                         if (font == Constants.LARGE) {
                             23
                         } else {
@@ -435,6 +436,26 @@ fun addOrderItems(
 
     return builder
 }
+
+private fun totalPrice(model: CreateOrderResponse.Data.Order.OrderItem): Double {
+
+    return if (model.orderItemModifiers.isNotEmpty()) {
+
+        var totalPrice = 0.0
+
+        val mList = model.orderItemModifiers
+        mList.forEach { items ->
+            totalPrice += items.price * items.quantity
+        }
+
+        (model.price * model.quantity) + totalPrice
+    } else {
+
+        model.price * model.quantity
+
+    }
+}
+
 
 fun calculateTipAmt(percentage: Double, price: Double): Double {
 

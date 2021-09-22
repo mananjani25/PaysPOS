@@ -140,6 +140,46 @@ class CustomerReceiptSettings : Fragment() {
 
     private fun onChecked() {
 
+        binding.customerReciptPart2.swtTipSuggestion.setOnCheckedChangeListener { buttonView, isChecked ->
+
+            if (isChecked) {
+                binding.layoutCustomerReceipt.txtAdditionalTip.visibility = View.VISIBLE
+                binding.layoutCustomerReceipt.viewLineTip.visibility = View.VISIBLE
+                binding.layoutCustomerReceipt.linearTip1.visibility = View.VISIBLE
+                binding.layoutCustomerReceipt.linearTip2.visibility = View.VISIBLE
+
+            } else {
+                binding.layoutCustomerReceipt.txtAdditionalTip.visibility = View.GONE
+                binding.layoutCustomerReceipt.viewLineTip.visibility = View.GONE
+                binding.layoutCustomerReceipt.linearTip1.visibility = View.GONE
+                binding.layoutCustomerReceipt.linearTip2.visibility = View.GONE
+            }
+        }
+
+        binding.swtOrderType.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                binding.layoutCustomerReceipt.txtOrderType.visibility = View.VISIBLE
+            } else {
+                binding.layoutCustomerReceipt.txtOrderType.visibility = View.GONE
+
+            }
+        }
+
+        binding.customerReciptPart2.swtOrderTime.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                binding.layoutCustomerReceipt.txtDateTime.visibility = View.VISIBLE
+            } else {
+                binding.layoutCustomerReceipt.txtDateTime.visibility = View.GONE
+            }
+        }
+        binding.customerReciptPart2.swtPrintTime.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                binding.layoutCustomerReceipt.txtPrintDateTime.visibility = View.VISIBLE
+            } else {
+                binding.layoutCustomerReceipt.txtPrintDateTime.visibility = View.GONE
+            }
+        }
+
         binding.customerReciptPart2.swtQrCode.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
                 binding.layoutCustomerReceipt.imgQrCode.visibility = View.VISIBLE
@@ -227,11 +267,14 @@ class CustomerReceiptSettings : Fragment() {
 
 
         binding.swtOrderNote.setOnCheckedChangeListener { buttonView, isChecked ->
+            Log.e(TAG, "ORderNoteChecked ${isChecked}")
             if (isChecked) {
                 binding.layoutCustomerReceipt.txtOrderNoteLable.visibility = View.VISIBLE
+                binding.layoutCustomerReceipt.txtSugarLabel.visibility = View.VISIBLE
 
             } else {
                 binding.layoutCustomerReceipt.txtOrderNoteLable.visibility = View.GONE
+                binding.layoutCustomerReceipt.txtSugarLabel.visibility = View.GONE
             }
         }
 
@@ -241,7 +284,6 @@ class CustomerReceiptSettings : Fragment() {
             } else {
 
             }
-
 
         }
 
@@ -361,6 +403,37 @@ class CustomerReceiptSettings : Fragment() {
                     binding.layoutCustomerReceipt.txtEmployee.visibility = View.GONE
                 }*/
 
+
+                if (model.showTipSuggestion) {
+                    binding.layoutCustomerReceipt.txtAdditionalTip.visibility = View.VISIBLE
+                    binding.layoutCustomerReceipt.viewLineTip.visibility = View.VISIBLE
+                    binding.layoutCustomerReceipt.linearTip1.visibility = View.VISIBLE
+                    binding.layoutCustomerReceipt.linearTip2.visibility = View.VISIBLE
+
+                } else {
+                    binding.layoutCustomerReceipt.txtAdditionalTip.visibility = View.GONE
+                    binding.layoutCustomerReceipt.viewLineTip.visibility = View.GONE
+                    binding.layoutCustomerReceipt.linearTip1.visibility = View.GONE
+                    binding.layoutCustomerReceipt.linearTip2.visibility = View.GONE
+                }
+                if (model.showOrderType) {
+                    binding.layoutCustomerReceipt.txtOrderType.visibility = View.VISIBLE
+                } else {
+                    binding.layoutCustomerReceipt.txtOrderType.visibility = View.GONE
+                }
+
+                if (model.showOrderTime) {
+                    binding.layoutCustomerReceipt.txtDateTime.visibility = View.VISIBLE
+                } else {
+                    binding.layoutCustomerReceipt.txtDateTime.visibility = View.GONE
+                }
+                if (model.showPrintTime) {
+                    binding.layoutCustomerReceipt.txtPrintDateTime.visibility = View.VISIBLE
+                } else {
+                    binding.layoutCustomerReceipt.txtPrintDateTime.visibility = View.GONE
+
+                }
+
                 if (model.showModifiers) {
                     binding.layoutCustomerReceipt.linearModifier.visibility = View.VISIBLE
                     binding.layoutCustomerReceipt.linearModifier1.visibility = View.VISIBLE
@@ -409,11 +482,11 @@ class CustomerReceiptSettings : Fragment() {
                 } else {
                     binding.layoutCustomerReceipt.txtCustomerPhone.visibility = View.GONE
                 }
-                if (model.showCustomNote) {
+                /*if (model.showCustomNote) {
                     binding.layoutCustomerReceipt.txtSugarLabel.visibility = View.VISIBLE
                 } else {
                     binding.layoutCustomerReceipt.txtSugarLabel.visibility = View.GONE
-                }
+                }*/
                 if (model.showTipLineForCash) {
                     binding.layoutCustomerReceipt.linearTips.visibility = View.VISIBLE
                 } else {
@@ -487,6 +560,8 @@ class CustomerReceiptSettings : Fragment() {
                     requireContext().resources.getDimension(R.dimen._5mdpi)
                 binding.layoutCustomerReceipt.txtDateTime.textSize =
                     requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.layoutCustomerReceipt.txtPrintDateTime.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
                 binding.layoutCustomerReceipt.txtChicken.textSize =
                     requireContext().resources.getDimension(R.dimen._5mdpi)
                 binding.layoutCustomerReceipt.txtChickerPrice.textSize =
@@ -570,6 +645,8 @@ class CustomerReceiptSettings : Fragment() {
                 binding.layoutCustomerReceipt.txtSugarLabel.textSize =
                     requireContext().resources.getDimension(R.dimen._5mdpi)
                 binding.layoutCustomerReceipt.txtWebSiteName.textSize =
+                    requireContext().resources.getDimension(R.dimen._5mdpi)
+                binding.layoutCustomerReceipt.txtOrderType.textSize =
                     requireContext().resources.getDimension(R.dimen._5mdpi)
 
             }
@@ -593,6 +670,8 @@ class CustomerReceiptSettings : Fragment() {
                     requireContext().resources.getDimension(R.dimen._6mdpi)
                 binding.layoutCustomerReceipt.txtDateTime.textSize =
                     requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.layoutCustomerReceipt.txtPrintDateTime.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
                 binding.layoutCustomerReceipt.txtChicken.textSize =
                     requireContext().resources.getDimension(R.dimen._6mdpi)
                 binding.layoutCustomerReceipt.txtChickerPrice.textSize =
@@ -676,6 +755,8 @@ class CustomerReceiptSettings : Fragment() {
                 binding.layoutCustomerReceipt.txtSugarLabel.textSize =
                     requireContext().resources.getDimension(R.dimen._6mdpi)
                 binding.layoutCustomerReceipt.txtWebSiteName.textSize =
+                    requireContext().resources.getDimension(R.dimen._6mdpi)
+                binding.layoutCustomerReceipt.txtOrderType.textSize =
                     requireContext().resources.getDimension(R.dimen._6mdpi)
 
             }
@@ -699,6 +780,8 @@ class CustomerReceiptSettings : Fragment() {
                     requireContext().resources.getDimension(R.dimen._7mdpi)
                 binding.layoutCustomerReceipt.txtDateTime.textSize =
                     requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.layoutCustomerReceipt.txtPrintDateTime.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
                 binding.layoutCustomerReceipt.txtChicken.textSize =
                     requireContext().resources.getDimension(R.dimen._7mdpi)
                 binding.layoutCustomerReceipt.txtChickerPrice.textSize =
@@ -782,6 +865,8 @@ class CustomerReceiptSettings : Fragment() {
                 binding.layoutCustomerReceipt.txtSugarLabel.textSize =
                     requireContext().resources.getDimension(R.dimen._7mdpi)
                 binding.layoutCustomerReceipt.txtWebSiteName.textSize =
+                    requireContext().resources.getDimension(R.dimen._7mdpi)
+                binding.layoutCustomerReceipt.txtOrderType.textSize =
                     requireContext().resources.getDimension(R.dimen._7mdpi)
 
 

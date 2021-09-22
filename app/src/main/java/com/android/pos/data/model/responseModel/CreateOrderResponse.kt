@@ -117,9 +117,35 @@ data class CreateOrderResponse(
                 @SerializedName("created_at") var createdAt: String,
                 @SerializedName("updated_at") var updatedAt: String,
                 @SerializedName("birth_date") var birthDate: String,
-                @SerializedName("email") var email: String
+                @SerializedName("email") var email: String,
+                @SerializedName("phones") var phones: List<Phones>,
+                @SerializedName("addresses") var addresses: List<Addresses>
 
-            )
+            ) {
+                data class Phones(
+
+                    @SerializedName("id") var id: Int,
+                    @SerializedName("phone_number") var phoneNumber: String
+
+                )
+
+                data class Addresses(
+
+                    @SerializedName("id") var id: Int,
+                    @SerializedName("address1") var address1: String,
+                    @SerializedName("address2") var address2: String,
+                    @SerializedName("city") var city: String,
+                    @SerializedName("state") var state: String,
+                    @SerializedName("country") var country: String,
+                    @SerializedName("postcode") var postcode: String,
+                    @SerializedName("type_of_address") var typeOfAddress: String,
+                    @SerializedName("latitude") var latitude: String,
+                    @SerializedName("longitude") var longitude: String,
+                    @SerializedName("full_address") var fullAddress: String,
+                    @SerializedName("street") var street: String
+
+                )
+            }
 
             data class OrderItem(
                 @SerializedName("category_id")
