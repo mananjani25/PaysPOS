@@ -334,6 +334,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             if (prefProvider.getValue(ORDER_TYPE_NAME, TAKEOUT) == DINE_IN) {
                 binding.layoutCart.llShowMenu.visibility = View.GONE
 
+            } else {
+                binding.layoutCart.llShowMenu.visibility = View.VISIBLE
             }
 
             getCartList()

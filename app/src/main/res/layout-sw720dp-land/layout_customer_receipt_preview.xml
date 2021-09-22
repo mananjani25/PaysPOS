@@ -83,6 +83,16 @@
                     android:text="www.foodcourt.com"
                     android:textColor="@color/viewTextColor"
                     android:textSize="@dimen/_6mdpi" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtOrderType"
+                    style="@style/CustomFontBold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="Open Order"
+                    android:textColor="@color/viewTextColor"
+                    android:textSize="@dimen/_7mdpi" />
             </androidx.appcompat.widget.LinearLayoutCompat>
 
             <LinearLayout
@@ -118,7 +128,6 @@
             </LinearLayout>
 
             <LinearLayout
-
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -135,18 +144,34 @@
                     android:textColor="@color/viewTextColor"
                     android:textSize="@dimen/_6mdpi" />
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/txtDateTime"
-                    style="@style/CustomFontSemiBold"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:layout_marginLeft="@dimen/_3sdp"
-                    android:gravity="end"
-                    android:text="29-Apr-2021 07:15 PM"
-                    android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_6mdpi" />
+
             </LinearLayout>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtDateTime"
+                style="@style/CustomFontSemiBold"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:layout_marginStart="@dimen/_3sdp"
+                android:gravity="start"
+                android:paddingLeft="@dimen/_3sdp"
+                android:text="Order Time: 29-Apr-2021 07:15 PM"
+                android:textColor="@color/viewTextColor"
+                android:textSize="@dimen/_6mdpi" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtPrintDateTime"
+                style="@style/CustomFontSemiBold"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:layout_marginStart="@dimen/_3sdp"
+                android:gravity="start"
+                android:paddingLeft="@dimen/_3sdp"
+                android:text="Print Time: 29-Apr-2021 10:17 PM"
+                android:textColor="@color/viewTextColor"
+                android:textSize="@dimen/_6mdpi" />
 
             <View
                 android:layout_width="match_parent"
@@ -511,11 +536,13 @@
                 android:textSize="@dimen/_7mdpi" />
 
             <View
+                android:id="@+id/viewLineTip"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="@color/view" />
 
             <LinearLayout
+                android:id="@+id/linearTip1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/_3sdp"
@@ -546,6 +573,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/linearTip2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/_3sdp"
@@ -799,7 +827,8 @@
                     android:gravity="center"
                     android:text="www.smartpos.com"
                     android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_6mdpi" />
+                    android:textSize="@dimen/_6mdpi"
+                    android:visibility="gone" />
             </LinearLayout>
 
         </androidx.appcompat.widget.LinearLayoutCompat>
