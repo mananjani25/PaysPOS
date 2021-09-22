@@ -82,7 +82,7 @@ class Orders : Fragment() {
     private fun changePosition(position: Int) {
         when (position) {
             0 -> {
-                val allItem: Fragment = ActiveOrderFragment()
+                val allItem: Fragment = ActiveOrderFragment.newInstance("Unpaid")
                 loadFragment(allItem)
                 binding.commonToolbar.txtSetItem.visibility = View.GONE
                 binding.commonToolbar.txtSubTitle.text = "Active Orders"
@@ -99,6 +99,13 @@ class Orders : Fragment() {
                 loadFragment(modifier)
                 binding.commonToolbar.txtSetItem.visibility = View.VISIBLE
                 binding.commonToolbar.txtSubTitle.text = "Completed"
+            }
+
+            3 -> {
+                val allItem: Fragment = ActiveOrderFragment.newInstance("Cancelled")
+                loadFragment(allItem)
+                binding.commonToolbar.txtSetItem.visibility = View.GONE
+                binding.commonToolbar.txtSubTitle.text = "Cancelled Orders"
             }
 
         }
@@ -119,18 +126,27 @@ class Orders : Fragment() {
                 list.add(InventoryItemModel(0, "Active Orders", true))
                 list.add(InventoryItemModel(0, "Upcoming Orders"))
                 list.add(InventoryItemModel(0, "Completed"))
+                list.add(InventoryItemModel(0, "Cancelled Orders"))
             }
             1 -> {
                 list.add(InventoryItemModel(0, "Active Orders"))
                 list.add(InventoryItemModel(0, "Upcoming Orders", true))
                 list.add(InventoryItemModel(0, "Completed"))
-
+                list.add(InventoryItemModel(0, "Cancelled Orders"))
 
             }
             2 -> {
                 list.add(InventoryItemModel(0, "Active Orders"))
                 list.add(InventoryItemModel(0, "Upcoming Orders"))
                 list.add(InventoryItemModel(0, "Completed", true))
+                list.add(InventoryItemModel(0, "Cancelled Orders"))
+
+            }
+            3 -> {
+                list.add(InventoryItemModel(0, "Active Orders"))
+                list.add(InventoryItemModel(0, "Upcoming Orders"))
+                list.add(InventoryItemModel(0, "Completed"))
+                list.add(InventoryItemModel(0, "Cancelled Orders", true))
 
             }
         }
