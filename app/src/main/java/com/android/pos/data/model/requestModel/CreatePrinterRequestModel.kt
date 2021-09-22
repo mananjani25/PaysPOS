@@ -2,12 +2,12 @@ package com.android.pos.data.model.requestModel
 
 import com.google.gson.annotations.SerializedName
 
-    data class CreatePrinterRequestModel(
+data class CreatePrinterRequestModel(
     @SerializedName("id") var id: Int? = null,
     @SerializedName("name") var name: String? = null,
     @SerializedName("mac_address") var macAddress: String? = null,
     @SerializedName("modal_name") var modalName: String? = null,
-    @SerializedName("terminal_ids") var terminalIds: List<Int>?=null,
+    @SerializedName("terminal_ids") var terminalIds: List<Int>? = null,
     @SerializedName("status") var status: Boolean = true,
     @SerializedName("ip_address") var ip_address: String? = null,
     @SerializedName("is_cash_drawer_open") var isCashDrawerOpen: Boolean = true,
@@ -28,7 +28,7 @@ import com.google.gson.annotations.SerializedName
         @SerializedName("order_type_id") var orderTypeId: Int? = null,
         @SerializedName("print_type") var printType: String? = null,
         @SerializedName("manual_printing") var manualPrinting: Boolean = false,
-        @SerializedName("auto_printing") var autoPrinting: Boolean = false
+        @SerializedName("auto_printing") var autoPrinting: Boolean = true
 
     )
 }
