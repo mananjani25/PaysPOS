@@ -111,6 +111,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         isOrderUpdate = requireArguments().getBoolean("update")
         if (isOrderUpdate) {
+            binding.layoutCart.txtSave.text = getString(R.string.update)
             orderId = requireArguments().getInt("orderId")
             paymentId = requireArguments().getInt("paymentId")
             paymentOfflineId = requireArguments().getString("paymentOfflineId").toString()
@@ -1312,6 +1313,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         viewModelPayment.data.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let { it ->
+                AlertUtils.showCustomAlert(requireActivity(), it.message)
+                binding.layoutCart.txtSave.text = getString(R.string.save)
                 clearCustomer()
                 hideOrderType()
 
@@ -1384,6 +1387,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
                             prefProvider.setValue(ORDER_TYPE, "")
                         }
+                        binding.layoutCart.txtSave.text = getString(R.string.save)
                         clearCustomer()
                         hideOrderType()
                         hideOrderMenu()
@@ -1451,6 +1455,13 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     cartList[0].customer = assignCustomer
                     bundle.putParcelable("cartList", cartList[0])
 
+                    if (isOrderUpdate) {
+                        bundle.putBoolean("update", true)
+                        orderId?.let { bundle.putInt("orderId", it) }
+                        paymentId?.let { bundle.putInt("paymentId", it) }
+                        bundle.putString("paymentOfflineId", paymentOfflineId)
+                        bundle.putString("orderOfflineId", orderOfflineId)
+                    }
 
                     findNavController().navigate(
                         R.id.action_dashboardCategoryNew_to_paymentFragment,

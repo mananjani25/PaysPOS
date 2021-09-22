@@ -111,7 +111,7 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
                         resource.data?.let {
 
                             val data = it.data.orders.filter {
-                                it.paymentStatus != "Cancelled"
+                                it.paymentStatus == "Unpaid"
                             }
 
                             adapter.add(data)
@@ -132,7 +132,7 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
     }
 
     override fun onItemClickListener(view: View?, pos: Int, status: String) {
-
+//action_orders_to_paymentFragment
         val order = adapter.getItem(pos)
         if (status == "UPDATE") {
             prefProvider.setValue(Constants.ORDER_TYPE, order.orderType)
@@ -147,20 +147,7 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
 
 
             dashboardViewModel.addCart(
-                CartModel().apply {
-                    terminalId = order.terminalId
-                    employeeID = order.employeeId
-                    locationId = order.locationId
-                    orderTypeId = order.orderTypeId
-                    orderType = order.orderType
-                    orderTypeName = order.orderType
-                    futureDeliveryDate = order.date
-                    isOpenOrder = true
-                    serviceCharge = serviceChargesList(order)
-                    customer = assignCustomer(order)
-                    items = inventoryList(order)
-                    note = order.note
-                }
+                cartModel(order)
             )
             val bundle = Bundle()
             bundle.putBoolean("update", true)
@@ -170,6 +157,32 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
             bundle.putString("orderOfflineId", order.offlineId)
             findNavController().navigate(
                 R.id.action_orders_to_dashboardCategoryNew, bundle
+            )
+
+        } else if (status == "PAY") {
+
+            val cartModel = cartModel(order)
+
+            val bundle = Bundle()
+            bundle.putDouble("totalPrice", order.payments[0].amount)
+            bundle.putDouble("subTotalPrice", order.payments[0].subTotal)
+            bundle.putDouble("totalTax", order.payments[0].taxAmount)
+            bundle.putDouble("totalDiscount", order.payments[0].totalDiscount)
+            bundle.putDouble("totalServiceCharge", order.payments[0].serviceChargeAmount)
+            bundle.putString("future_delivery_date", order.futureDeliveryDate)
+            bundle.putString("future_delivery_time", order.futureDeliveryTime)
+            bundle.putParcelable("cartList", cartModel)
+
+
+            bundle.putBoolean("update", true)
+            bundle.putInt("orderId", order.id)
+            bundle.putInt("paymentId", order.payments[0].id)
+            bundle.putString("paymentOfflineId", order.payments[0].offlineId)
+            bundle.putString("orderOfflineId", order.offlineId)
+
+            findNavController().navigate(
+                R.id.action_orders_to_paymentFragment,
+                bundle
             )
 
         } else {
@@ -189,6 +202,23 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
             }
         }
 
+    }
+
+    private fun cartModel(order: OpenOrderResponse.Data.Order): CartModel {
+        return CartModel().apply {
+            terminalId = order.terminalId
+            employeeID = order.employeeId
+            locationId = order.locationId
+            orderTypeId = order.orderTypeId
+            orderType = order.orderType
+            orderTypeName = order.orderType
+            futureDeliveryDate = order.date
+            isOpenOrder = true
+            serviceCharge = serviceChargesList(order)
+            customer = assignCustomer(order)
+            items = inventoryList(order)
+            note = order.note
+        }
     }
 
     private fun inventoryList(order: OpenOrderResponse.Data.Order): List<TbItem>? {

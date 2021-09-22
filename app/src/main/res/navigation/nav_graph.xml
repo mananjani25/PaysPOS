@@ -554,6 +554,11 @@
         android:id="@+id/paymentFragment"
         android:name="com.android.pos.ui.fragments.payment.PaymentFragment"
         android:label="PaymentFragment">
+        <argument
+            android:name="update"
+            android:defaultValue="false"
+            app:argType="boolean" />
+
         <action
             android:id="@+id/action_paymentFragment_to_splitAmountFragment"
             app:destination="@id/splitAmountFragment" />
@@ -689,6 +694,9 @@
             android:id="@+id/action_orders_to_dashboardCategoryNew"
             app:destination="@id/dashboardCategoryNew"
             app:launchSingleTop="true" />
+        <action
+            android:id="@+id/action_orders_to_paymentFragment"
+            app:destination="@id/paymentFragment" />
     </fragment>
     <action
         android:id="@+id/action_global_orders"
