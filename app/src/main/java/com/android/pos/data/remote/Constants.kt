@@ -10,6 +10,8 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 object Constants {
+    const val ARG_PARAM1 = "param1"
+    const val ARG_PARAM2 = "param2"
 
     //Database Name
     const val DATABASE_NAME = "androidPos-db"

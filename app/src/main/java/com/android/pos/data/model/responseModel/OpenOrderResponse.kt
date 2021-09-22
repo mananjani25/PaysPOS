@@ -45,7 +45,7 @@ data class OpenOrderResponse(
             @SerializedName("employee_id")
             val employeeId: Int,
             @SerializedName("future_delivery_date")
-            val futureDeliveryDate: Any,
+            val futureDeliveryDate: String = "",
             @SerializedName("future_delivery_time")
             val futureDeliveryTime: String,
             @SerializedName("id")
