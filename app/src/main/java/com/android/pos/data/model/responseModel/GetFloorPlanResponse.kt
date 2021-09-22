@@ -1,0 +1,62 @@
+package com.android.pos.data.model.responseModel
+
+
+import com.google.gson.annotations.SerializedName
+import android.os.Parcelable
+
+import kotlinx.parcelize.Parcelize
+
+
+@Parcelize
+data class GetFloorPlanResponse(
+    @SerializedName("data")
+    val `data`: List<Data>,
+    @SerializedName("message")
+    val message: String,
+    @SerializedName("status")
+    val status: Int,
+    @SerializedName("type")
+    val type: String
+) : Parcelable {
+    @Parcelize
+    data class Data(
+        @SerializedName("floor_plan_tables")
+        val floorPlanTables: List<FloorPlanTable>,
+        @SerializedName("id")
+        val id: Int,
+        @SerializedName("name")
+        val name: String
+    ) : Parcelable {
+        @Parcelize
+        data class FloorPlanTable(
+            @SerializedName("chair_count")
+            val chairCount: Int,
+            @SerializedName("created_at")
+            val createdAt: String,
+            @SerializedName("floor_plan_id")
+            val floorPlanId: Int,
+            @SerializedName("height")
+            val height: Int,
+            @SerializedName("id")
+            val id: Int,
+            @SerializedName("status")
+            val status: Int,
+            @SerializedName("style")
+            val style: String,
+            @SerializedName("table_name")
+            val tableName: String,
+            @SerializedName("table_number")
+            val tableNumber: Int,
+            @SerializedName("table_type")
+            val tableType: String,
+            @SerializedName("updated_at")
+            val updatedAt: String,
+            @SerializedName("width")
+            val width: Int,
+            @SerializedName("x_position")
+            val xPosition: Int,
+            @SerializedName("y_position")
+            val yPosition: Int
+        ) : Parcelable
+    }
+}

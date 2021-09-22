@@ -23,6 +23,7 @@ import com.android.pos.data.remote.Constants.EMPLOYEES_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.EMPLOYEE_CLOCK_IN
 import com.android.pos.data.remote.Constants.EMPLOYEE_LOG_IN
 import com.android.pos.data.remote.Constants.FORGOT_PASSWORD
+import com.android.pos.data.remote.Constants.GET_FLOOR_PLAN
 import com.android.pos.data.remote.Constants.GET_PRINTERS
 import com.android.pos.data.remote.Constants.GET_TEAM_MODULE
 import com.android.pos.data.remote.Constants.HIDE_CATEGORY
@@ -520,4 +521,7 @@ interface ApiService {
         @Path("id") id: Int,
         @Body updateItem: OrderCancelRequest
     ): BaseResponse
+
+    @GET(GET_FLOOR_PLAN)
+    suspend fun getFloorPlan(@Query("location_id") location_id: Int): GetFloorPlanResponse
 }

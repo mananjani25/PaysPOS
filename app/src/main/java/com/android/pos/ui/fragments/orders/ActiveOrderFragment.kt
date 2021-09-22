@@ -14,6 +14,7 @@ import com.android.pos.R
 import com.android.pos.data.entities.*
 import com.android.pos.data.model.responseModel.OpenOrderResponse
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.ARG_PARAM1
 import com.android.pos.databinding.FragmentActiveOrdersBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.OpenOrderAdapter
@@ -29,6 +30,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class ActiveOrderFragment : Fragment(), OrderCallBack {
+    private var param1: String = "Unpaid"
 
     private var itemPos: Int = 0
     private lateinit var binding: FragmentActiveOrdersBinding
@@ -38,6 +40,24 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
 
     @Inject
     lateinit var prefProvider: PrefProvider
+
+    companion object {
+        @JvmStatic
+        fun newInstance(param1: String) =
+            ActiveOrderFragment().apply {
+                arguments = Bundle().apply {
+                    putString(ARG_PARAM1, param1)
+                }
+            }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            param1 = it.getString(ARG_PARAM1).toString()
+        }
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -111,7 +131,7 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
                         resource.data?.let {
 
                             val data = it.data.orders.filter {
-                                it.paymentStatus == "Unpaid"
+                                it.paymentStatus == param1
                             }
 
                             adapter.add(data)

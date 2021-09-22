@@ -290,4 +290,7 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
 
     suspend fun orderCancel(id: Int, data: OrderCancelRequest) =
         getResult { apiService.cancelOrder(id, data) }
+
+    suspend fun getFloorPlan(locationId: Int) =
+        getResult { apiService.getFloorPlan(locationId) }
 }

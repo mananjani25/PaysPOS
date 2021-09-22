@@ -9,7 +9,7 @@
 
         <variable
             name="dineInModel"
-            type="com.android.pos.data.model.DineInFloorNameModel" />
+            type="com.android.pos.data.model.responseModel.GetFloorPlanResponse.Data" />
 
         <variable
             name="viewModel"
@@ -38,7 +38,7 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/_5sdp"
                 android:padding="@dimen/_5sdp"
-                android:text="@{dineInModel.floorName}"
+                android:text="@{dineInModel.name}"
                 android:textColor="@color/viewTextColor"
                 android:textSize="@dimen/_5mdpi" />
         </androidx.appcompat.widget.LinearLayoutCompat>
