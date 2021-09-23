@@ -33,9 +33,9 @@
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_marginStart="@dimen/_5sdp"
                 android:layout_weight="1"
-                android:layout_gravity="center"
                 android:gravity="center"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_5mdpi" />
@@ -51,16 +51,34 @@
                 android:textColor="@color/btnColor"
                 android:textSize="@dimen/_5mdpi" />
 
-            <androidx.appcompat.widget.AppCompatTextView
-                style="@style/CustomFontMediumStyle"
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center"
-                android:layout_gravity="center"
-                android:text="@{@string/symbole +``+String.format(@string/format,(itemSheetModel.amount + itemSheetModel.tips))+`\n`+itemSheetModel.paymentType}"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:orientation="vertical">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvTotalAmount"
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:text="@{@string/symbole +``+String.format(@string/format,(itemSheetModel.amount + itemSheetModel.tips))+`\n`+itemSheetModel.paymentType}"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_5mdpi" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvRefundedAmount"
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:textColor="@color/colorRed"
+                    android:textSize="@dimen/_5mdpi" />
+
+            </LinearLayout>
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtTip"
@@ -115,8 +133,8 @@
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_gravity="center"
+                android:layout_weight="1"
                 android:gravity="center"
                 android:text="@{itemSheetModel.transactionId+`\n`+itemSheetModel.orderDetails.receiptId}"
                 android:textColor="@color/txtColor"
@@ -126,8 +144,8 @@
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_gravity="center"
+                android:layout_weight="1"
                 android:gravity="center"
                 android:text="@{itemSheetModel.terminalName}"
                 android:textColor="@color/txtColor"

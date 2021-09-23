@@ -2,6 +2,7 @@ package com.android.pos.ui.fragments.team
 
 import android.text.TextUtils
 import android.util.Log
+import android.util.Patterns
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -71,6 +72,7 @@ class CreateTeamViewModel @Inject constructor(
 
 
         val value = createTaxDetails.value
+
         if (TextUtils.isEmpty(value?.firstName?.trim())) {
             _snackbarText.value = Event(R.string.first_name_validate)
         } else if (TextUtils.isEmpty(
@@ -78,6 +80,14 @@ class CreateTeamViewModel @Inject constructor(
             )
         ) {
             _snackbarText.value = Event(R.string.last_name_validate)
+        } else if (TextUtils.isEmpty(value?.email?.trim())) {
+            _snackbarText.value = Event(R.string.email_validate)
+        } else if (!Patterns.EMAIL_ADDRESS.matcher(value?.email?.trim())
+                .matches()
+        ) {
+            _snackbarText.value = Event(R.string.valid_email_validate)
+        } else if (value?.phoneNumber?.length == 0) {
+            _snackbarText.value = Event(R.string.phone_no_validate)
         } else {
             _showProgress.value = Event(true)
 

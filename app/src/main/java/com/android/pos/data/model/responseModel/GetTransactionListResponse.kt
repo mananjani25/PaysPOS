@@ -93,7 +93,11 @@ data class GetTransactionListResponse(
                 @SerializedName("receipt_id")
                 val receiptId: String,
                 @SerializedName("short_receipt_url")
-                val shortReceiptUrl: String
+                val shortReceiptUrl: String,
+                @SerializedName("refunded_quantity")
+                val refundedQuantity: String,
+                @SerializedName("refunded_amount")
+                val refundedAmount: Double,
             )
         }
     }
