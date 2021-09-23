@@ -9,10 +9,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.entities.*
-import com.android.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ADD
-import com.android.pos.data.remote.Constants.BUSINESS_ADDRESS
 import com.android.pos.data.remote.Constants.BUSINESS_NAME
 import com.android.pos.data.remote.Constants.BUSINESS_PHONE_NO
 import com.android.pos.data.remote.Constants.BUSINESS_WEBSITE
@@ -304,8 +302,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                 item.taxes?.forEach { tax ->
                     if (tax.isActive) {
                         if (tax.taxType == "Percentage") {
+
+                            val price = (item.price * item.itemQuantity) - item.discountPrice
                             val itemTaxPrice =
-                                (tax.rate * ((item.price - item.discountPrice) * item.itemQuantity)) / 100
+                                (tax.rate * price) / 100
                             Log.e("itemTaxPrice", "" + itemTaxPrice)
                             totalTax += String.format("%.2f", itemTaxPrice)
                                 .toDouble()

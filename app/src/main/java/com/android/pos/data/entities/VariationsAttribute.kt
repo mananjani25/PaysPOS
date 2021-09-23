@@ -26,6 +26,8 @@ data class VariationsAttribute(
     var stockQty: String = "",
     @SerializedName("_destroy")
     var _destroy: Boolean = false,
-    var isChecked: Boolean = false
+    var isChecked: Boolean = false,
+    var orderVariationId: Int? = null
+
 ) : Parcelable
 

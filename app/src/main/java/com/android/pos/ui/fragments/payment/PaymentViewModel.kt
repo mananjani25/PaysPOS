@@ -383,9 +383,10 @@ class PaymentViewModel @Inject constructor(
             } else {
                 orderItemsAttribute.category_id = item.categoryId
             }
-            orderItemsAttribute.discountAmount = 0.0
-            orderItemsAttribute.discountTotalAmount = 0.0
-            orderItemsAttribute.discountType = ""
+            orderItemsAttribute.discountAmount = item.discountPrice
+            orderItemsAttribute.discountType = item.discountType
+            if (item.discountId != -1)
+                orderItemsAttribute.discountId = item.discountId
             orderItemsAttribute.employeeId = cartModel.employeeID
             orderItemsAttribute.isCount = 0
             orderItemsAttribute.isEdited = false
@@ -405,9 +406,47 @@ class PaymentViewModel @Inject constructor(
             orderItemsAttribute.orderItemTaxesAttributes = orderItemTaxesAttributes(item)
             orderItemsAttribute.orderItemModifiersAttributes =
                 orderItemModifierAttributes(item, cartModel.terminalId)
+
+            orderItemsAttribute.orderItemVariationAttributes =
+                orderItemVariationAttributes(item)
+
+            if (item.variationsAttributes.isNotEmpty()) {
+                orderItemsAttribute.variationId = item.variationsAttributes[0].id
+            }
+
             orderItemsAttributeList.add(orderItemsAttribute)
         }
         return orderItemsAttributeList
+    }
+
+    private fun orderItemVariationAttributes(
+        item: TbItem
+    ): OrderItemVariationAttribute? {
+
+        if (item.variationsAttributes.isNotEmpty()) {
+
+            item.variationsAttributes.forEach {
+
+                val orderItemVariationAttribute = OrderItemVariationAttribute()
+                orderItemVariationAttribute.name = it.name
+                orderItemVariationAttribute.price = it.price
+                orderItemVariationAttribute.totalPrice = it.price * item.itemQuantity
+                orderItemVariationAttribute.variationId = it.id!!
+                orderItemVariationAttribute.quantity = item.itemQuantity
+
+                if (isUpdateOrder) {
+                    orderItemVariationAttribute.orderId = orderId
+                    orderItemVariationAttribute.order_item_id = item.orderItemId
+                    orderItemVariationAttribute.id = it.orderVariationId
+                }
+
+                return orderItemVariationAttribute
+
+            }
+
+        }
+
+        return null
     }
 
     private fun orderItemModifierAttributes(

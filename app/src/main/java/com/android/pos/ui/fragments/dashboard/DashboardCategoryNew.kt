@@ -1495,14 +1495,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     }
 
     fun calculateDiscountPercentage(originalPrice: Double, percentage: Double): Double {
-        val disPrice = MethodUtils.roundOffAmountDouble((originalPrice * percentage) / 100)
-        return if (disPrice < originalPrice) {
-            disPrice
-        } else {
-            0.0
-        }
-
-
+        return MethodUtils.roundOffAmountDouble((originalPrice * percentage) / 100)
     }
 
     private fun totalPrice(model: TbItem): Double {
@@ -1612,7 +1605,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
 
                                 }
-                                data.price > result.percentage -> {
+                                result.discountType == "" -> {
 
                                     data.discountPrice = result.percentage
                                     data.discountId = 0

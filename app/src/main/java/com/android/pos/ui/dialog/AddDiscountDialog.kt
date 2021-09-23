@@ -401,14 +401,20 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
             if (selectedCurrency == AMOUNT) {
 
-                if (defaultModel.discountPrice == 0.0) {
-                    if (binding.edtAmount.text.toString().toDouble() > (defaultModel.price)) {
-                        binding.edtAmount.setText(MethodUtils.roundOffAmountString(defaultModel.price))
-                    }
-                }else{
+                val price =
+                    ((defaultModel.price - defaultModel.discountPrice) * defaultModel.itemQuantity)
 
-                    if (binding.edtAmount.text.toString().toDouble() > (defaultModel.price - defaultModel.discountPrice)) {
-                        binding.edtAmount.setText(MethodUtils.roundOffAmountString(defaultModel.price - defaultModel.discountPrice))
+                if (defaultModel.discountPrice == 0.0) {
+
+                    if (binding.edtAmount.text.toString().toDouble() > price) {
+                        binding.edtAmount.setText(MethodUtils.roundOffAmountString(price))
+                    }
+                } else {
+
+                    if (binding.edtAmount.text.toString()
+                            .toDouble() > price
+                    ) {
+                        binding.edtAmount.setText(MethodUtils.roundOffAmountString(price))
                     }
                 }
             }

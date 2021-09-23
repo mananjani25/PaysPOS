@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.pos.R
 import com.android.pos.data.entities.*
+import com.android.pos.data.model.requestModel.OrderItemVariationAttribute
 import com.android.pos.data.model.responseModel.OpenOrderResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ARG_PARAM1
@@ -267,7 +268,11 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
                 taxes = taxes(it.orderItemTax, order.locationId)
                 modifier_set_ids = modifiersIds(it.orderItemModifiers)
                 modifiers = modifierSets(it.orderItemModifiers)
-//                variationsAttributes = it.variations
+                discountPrice = it.discountAmount
+                discountType = it.discountType
+                if (it.discountId != null)
+                    discountId = it.discountId
+                variationsAttributes = variationAtt(it.order_item_variation)
 
             }
 
@@ -276,6 +281,20 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
         }
 
         return inventoryModelList
+    }
+
+    private fun variationAtt(variation: OrderItemVariationAttribute): List<VariationsAttribute> {
+
+        val variationsAttributeList = ArrayList<VariationsAttribute>()
+
+        val variationsAttribute = VariationsAttribute()
+        variationsAttribute.id = variation.variationId
+        variationsAttribute.name = variation.name
+        variationsAttribute.price = variation.price
+        variationsAttribute.orderVariationId = variation.id
+        variationsAttributeList.add(variationsAttribute)
+
+        return variationsAttributeList
     }
 
     private fun modifierSets(orderItemModifiers: List<OpenOrderResponse.Data.Order.OrderItem.OrderItemModifier>): List<Modifier> {
