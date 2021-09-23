@@ -172,8 +172,8 @@ class OrderItemsAttribute {
     @SerializedName("discount_amount")
     var discountAmount: Double = 0.0
 
-    @SerializedName("discount_total_amount")
-    var discountTotalAmount: Double = 0.0
+    @SerializedName("discount_id")
+    var discountId: Int? = null
 
     @SerializedName("discount_type")
     var discountType: String = ""
@@ -238,6 +238,12 @@ class OrderItemsAttribute {
 
     @SerializedName("order_item_modifiers_attributes")
     var orderItemModifiersAttributes: List<OrderItemModifierAttribute> = emptyList()
+
+    @SerializedName("order_items_variation_attributes")
+    var orderItemVariationAttributes: OrderItemVariationAttribute? = null
+
+    @SerializedName("variation_id")
+    var variationId: Int? = null
 }
 
 class OrderItemTaxesAttribute {
@@ -348,6 +354,32 @@ class OrderItemModifierAttribute {
     @SerializedName("order_item_taxes_attributes")
     var order_item_taxes_attributes: List<OrderModifierTaxesAttribute> = emptyList()
 
+}
+
+class OrderItemVariationAttribute {
+    @SerializedName("id")
+    var id: Int? = null
+
+    @SerializedName("order_item_id")
+    var order_item_id: Int? = null
+
+    @SerializedName("name")
+    var name: String = ""
+
+    @SerializedName("order_id")
+    var orderId: Int? = null
+
+    @SerializedName("unit_price")
+    var price: Double = 0.0
+
+    @SerializedName("total_price")
+    var totalPrice: Double = 0.0
+
+    @SerializedName("quantity")
+    var quantity: Int = 0
+
+    @SerializedName("variation_id")
+    var variationId: Int = 0
 }
 
 data class OrderServiceChargesAttribute(
