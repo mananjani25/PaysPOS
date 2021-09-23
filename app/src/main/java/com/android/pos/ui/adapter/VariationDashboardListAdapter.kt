@@ -47,6 +47,7 @@ class VariationDashboardListAdapter :
         notifyDataSetChanged()
     }
 
+
     fun getItem(): VariationsAttribute {
         return variationList[mpos]
     }

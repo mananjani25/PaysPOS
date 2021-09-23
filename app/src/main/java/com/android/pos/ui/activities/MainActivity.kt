@@ -25,6 +25,7 @@ import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.data.repositories.UserRepository
 import com.android.pos.databinding.ParentActivityBinding
 import com.android.pos.di.PrefProvider
+import com.android.pos.ui.fragments.dashboard.DashboardCategoryNew
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
@@ -162,7 +163,6 @@ class MainActivity : AppCompatActivity() {
         alert("Logout", "Are You Sure want to Logout?") {
             this.positiveButton("Logout") {
                 logoutAPI()
-
             }
 
             this.negativeButton("Cancel") {

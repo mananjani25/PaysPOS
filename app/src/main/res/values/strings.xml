@@ -89,7 +89,7 @@
     <string name="delete_service_charge_message">Are you sure want to Delete Service Charge?</string>
     <string name="delete_employee_message">Are you sure want to Delete Employee?</string>
     <string name="clockout_message">Are you sure want to Clockout?</string>
-    <string name="delete_item_message">Are you sure want to Delete Item?</string>
+    <string name="delete_item_message">Are you sure you want to delete this item?</string>
     <string name="delete_items_message">Are you sure you want to clear item?</string>
     <string name="delete_employee_role_message">Are you sure want to Delete Team Member Role?</string>
     <string name="delete_printer_message">Are you sure want to Delete Printer?</string>

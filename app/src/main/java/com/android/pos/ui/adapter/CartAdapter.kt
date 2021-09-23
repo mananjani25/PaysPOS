@@ -54,6 +54,8 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
 
         fun bind(item: TbItem, pos: Int) {
 
+            binding.tvItemName.text=item.name
+
             if (item.discountPrice != 0.0) {
                 binding.tvDiscountRate.visibility = View.VISIBLE
                 binding.tvRate.paintFlags = binding.tvRate.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG

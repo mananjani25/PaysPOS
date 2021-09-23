@@ -34,7 +34,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="@dimen/_5sdp"
                 android:padding="@dimen/_5sdp"
-                android:text="@string/sign_out"
+                android:text="Logout"
                 android:textColor="@color/btnColorDark_"
                 android:textSize="@dimen/_6mdpi" />
 

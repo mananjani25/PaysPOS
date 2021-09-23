@@ -36,12 +36,12 @@
                     android:orientation="vertical">
 
                     <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvItemName"
                         style="@style/CustomFontSemiBold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="start"
                         android:gravity="start"
-                        android:text="@{model.name}"
                         android:textColor="@color/drawerBack"
                         android:textSize="@dimen/_5mdpi"
                         tools:text="Item" />
