@@ -64,6 +64,7 @@
     <string name="category_name_validate">Please Enter Category Name</string>
     <string name="modifier_name_validate">Please Enter Modifier Name</string>
     <string name="option_name_validate">Please Enter Option Name</string>
+    <string name="display_option_name_validate">Please Enter Display Name</string>
 
     <string name="tax_name_validate">Please Enter Tax Name</string>
     <string name="tax_rate_validate">Please Enter valid Tax Rate</string>
@@ -544,5 +545,6 @@
     <string name="whole_table">Whole Table</string>
     <string name="website">Website</string>
     <string name="tv_discount">Discount</string>
+    <string name="tv_refunded_amount">Refunded Amount</string>
 
 </resources>

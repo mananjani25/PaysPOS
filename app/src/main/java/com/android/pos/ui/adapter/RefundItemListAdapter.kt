@@ -73,9 +73,7 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
 
             var totalTax = 0.0
 
-            var totalItemPrice = 0.0
-
-            totalItemPrice = item.totalPrice
+            var totalItemPrice = item.totalPrice
 
 
             item.orderItemTaxes.forEach { tax ->

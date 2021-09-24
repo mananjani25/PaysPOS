@@ -145,6 +145,8 @@ class Customer : Fragment() {
                             val data =
                                 resource.data as ArrayList<TbCustomer>
 
+                            loadFragment(data[0])
+
                             Log.e(TAG, "getCustomerData ${Gson().toJson(data)}")
                             dynamicCustomerList.clear()
                             dynamicCustomerList.addAll(data)
