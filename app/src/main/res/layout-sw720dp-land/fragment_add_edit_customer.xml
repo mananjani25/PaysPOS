@@ -205,7 +205,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/_15sdp"
                     android:layout_marginTop="@dimen/_10sdp"
-                    android:text="Email Address"
+                    android:text="@string/tv_email_address"
                     android:textColor="@color/color65"
                     android:textSize="@dimen/_6mdpi" />
 
@@ -486,7 +486,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/_15sdp"
                     android:layout_marginTop="@dimen/_10sdp"
-                    android:text="Birthday"
+                    android:text="@string/tv_birthday"
                     android:textColor="@color/color65"
                     android:textSize="@dimen/_6mdpi" />
 

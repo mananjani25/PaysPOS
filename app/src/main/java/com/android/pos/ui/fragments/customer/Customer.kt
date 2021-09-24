@@ -141,20 +141,26 @@ class Customer : Fragment() {
                     Status.SUCCESS -> {
 
                         ProgressUtils.dismissProgressDialog()
+                        var data: ArrayList<TbCustomer>
                         if (resource.data != null) {
-                            val data =
+                            data =
                                 resource.data as ArrayList<TbCustomer>
-
-                            loadFragment(data[0])
 
                             Log.e(TAG, "getCustomerData ${Gson().toJson(data)}")
                             dynamicCustomerList.clear()
                             dynamicCustomerList.addAll(data)
                             customerAdapter.setList(data)
+
                             //setUpRecyclerView()
 
+                            try {
+                                loadFragment(data[0])
+                            }catch (e:Exception){
+
+                            }
 
                         }
+
                     }
                     Status.LOADING -> {
 
