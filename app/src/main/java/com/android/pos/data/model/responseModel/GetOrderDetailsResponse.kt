@@ -44,6 +44,8 @@ data class GetOrderDetailsResponse(
         val editedOrderTimestamp: String?,
         @SerializedName("employee")
         val employee: Employee,
+        @SerializedName("refund_detail")
+        val refundDetails: RefundDetails,
         @SerializedName("employee_id")
         val employeeId: Int,
         @SerializedName("future_delivery_date")
@@ -90,8 +92,6 @@ data class GetOrderDetailsResponse(
         val terminalId: Int,
         @SerializedName("total_amount")
         val totalAmount: Double,
-        @SerializedName("refunded_amount")
-        val refundedAmount: Double,
         @SerializedName("total_cash_discount_fee")
         val totalCashDiscountFee: Double,
         @SerializedName("total_discount")
@@ -198,6 +198,14 @@ data class GetOrderDetailsResponse(
         ) : Parcelable
 
         @Parcelize
+        data class RefundDetails(
+            @SerializedName("refunded_quantity")
+            val refundedQuantity: Int,
+            @SerializedName("refunded_amount")
+            val refundedAmount: Double,
+        ) : Parcelable
+
+        @Parcelize
         data class OrderItem(
             @SerializedName("category_id")
             val categoryId: Int,
@@ -239,6 +247,10 @@ data class GetOrderDetailsResponse(
             val timestamp: String,
             @SerializedName("total_price")
             val totalPrice: Double,
+            @SerializedName("refunded_quantity")
+            val refundedQuantity: Int,
+            @SerializedName("refunded_amount")
+            val refundedAmount: Double,
             var isChecked: Boolean = false
         ) : Parcelable {
             @Parcelize
@@ -399,5 +411,6 @@ data class GetOrderDetailsResponse(
             @SerializedName("updated_at")
             val updatedAt: String
         ) : Parcelable
+
     }
 }

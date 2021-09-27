@@ -10,6 +10,7 @@ import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.model.requestModel.RefundRequestModel
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
+import com.android.pos.data.remote.Constants.DIALOG_KEY_VARIATION_DETAILS
 import com.android.pos.data.remote.Constants.IS_CLOCKOUT
 import com.android.pos.data.remote.Constants.IS_REFUND
 import com.android.pos.databinding.DialogRefundReasonBinding
@@ -18,6 +19,7 @@ import com.android.pos.ui.fragments.transactions.TransactionDetailsViewModel
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
+import com.android.pos.utils.extensions.setNavigationResult
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -119,8 +121,15 @@ class ReasonForRefundDialog : DialogFragment() {
                     AlertUtils.showCustomAlertWithListenerWithOK(
                         it, createTaxResponse.message
                     ) { _, _ ->
-                      //  prefProvider.setValueboolean(IS_REFUND, true)
-                        findNavController().popBackStack(R.id.issueRefundFragment, true)
+                        //  prefProvider.setValueboolean(IS_REFUND, true)
+
+                        val bundle = Bundle().apply {
+                            putInt("orderId", refundData.paymentRefund?.orderId!!)
+                        }
+
+                        findNavController().navigate(
+                            R.id.action_reasonForRefundDialog_to_transactionDetailsFragment, bundle
+                        )
                         //  findNavController().navigateUp()
                     }
                 }
