@@ -21,7 +21,7 @@ import com.android.pos.data.typeconvert.*
         ModulePermission::class, TbOrderType::class, VenueDetailsResponse.Data.Terminal::class,
         ItemModifierSets::class, OptionSet::class, PrinterResponse.Data.CustomerReceiptPrinters::class,
         PrinterResponse.Data.KitchenReceiptPrinters::class, GetKitchenReceiptSettingsResponse.Data::class, GetCustomerReceiptSettingsResponse.Data::class],
-    version = 1
+    version = 2
 )
 @TypeConverters(
     TypeConvertersIds::class,
@@ -40,7 +40,8 @@ import com.android.pos.data.typeconvert.*
     TCPrinter::class,
     TCOrderTypes::class,
     TCKitchenReceiptPrinters::class,
-    TCPrinterCategories::class
+    TCPrinterCategories::class,
+    TCDineInList::class
 )
 
 

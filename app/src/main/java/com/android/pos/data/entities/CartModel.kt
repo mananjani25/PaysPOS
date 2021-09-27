@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.android.pos.data.model.CustomerListResponse
+import com.android.pos.data.model.DineInModel
 import com.android.pos.data.typeconvert.TypeConvertersItems
 import kotlinx.parcelize.Parcelize
 
@@ -29,6 +30,7 @@ class CartModel : Parcelable {
     var customer: TbCustomer? = null
     var futureDeliveryDate: String = ""
     var futureDeliveryTime: String = ""
-
+    var selectedTableName: String = ""
+    var dineInList: List<DineInModel>? = emptyList()
 
 }

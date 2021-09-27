@@ -3,11 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingDefaultResource">
-<data>
-    <variable
-        name="model"
-        type="com.android.pos.data.model.DineInModel" />
-</data>
+
+    <data>
+
+        <variable
+            name="model"
+            type="com.android.pos.data.model.DineInModel" />
+    </data>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -16,29 +19,24 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintHeader"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/txtColor"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content">
 
             <ImageView
                 android:id="@+id/imgProfile"
-                android:layout_width="@dimen/_12sdp"
-                android:layout_height="@dimen/_12sdp"
+                android:layout_width="@dimen/_8sdp"
+                android:layout_height="@dimen/_8sdp"
                 android:layout_marginStart="@dimen/_5sdp"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:layout_marginBottom="@dimen/_5sdp"
                 android:src="@drawable/ic_groups"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:tint="@color/white" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/txtTableName"
+                style="@style/CustomFontSemiBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_7sdp"
-                android:text="@string/whole_table"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_6mdpi"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -49,11 +47,12 @@
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/imgOrderMenu"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_width="@dimen/_12sdp"
+                android:layout_height="@dimen/_12sdp"
                 android:layout_gravity="center"
-                android:background="?attr/selectableItemBackground"
-                android:padding="@dimen/_4sdp"
+                android:layout_marginVertical="@dimen/_3sdp"
+                android:layout_marginEnd="@dimen/_2sdp"
+                android:padding="@dimen/_2sdp"
                 android:tint="@color/white"
                 android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -67,9 +66,15 @@
             android:id="@+id/rvCart"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="@dimen/_3sdp"
             android:visibility="gone"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:listitem="@layout/view_cart_item" />
+
+        <View
+            android:id="@+id/viewFooter"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/view" />
+
     </LinearLayout>
 </layout>

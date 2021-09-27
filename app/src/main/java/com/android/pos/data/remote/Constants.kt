@@ -45,6 +45,7 @@ object Constants {
 
     const val TAKEOUT = "TakeOut"
     const val DINE_IN = "DineIn"
+    const val DINE_IN_ITEM = "DineInItem"
     const val OPEN_ORDER = "OpenOrder"
 
     //Api End Points

@@ -56,8 +56,8 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
             if (item.discountPrice != 0.0) {
                 binding.tvDiscountRate.visibility = View.VISIBLE
                 binding.tvRate.paintFlags = binding.tvRate.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
-                Log.e(TAG,"PriceOriginalTotal  ${totalPrice(item)}")
-                Log.e(TAG,"PriceDiscounted  ${item.discountPrice}")
+                Log.e(TAG, "PriceOriginalTotal  ${totalPrice(item)}")
+                Log.e(TAG, "PriceDiscounted  ${item.discountPrice}")
                 val dPrice = totalPrice(item) - item.discountPrice
                 MethodUtils.setPriceTextView(binding.tvDiscountRate, dPrice)
             } else {
@@ -80,10 +80,9 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
                 binding.rvModifiers.visibility = View.GONE
             }
 
-            if (item.note.isEmpty()){
+            if (item.note.isEmpty()) {
                 binding.txtNote.visibility = View.GONE
-            }
-            else{
+            } else {
                 binding.txtNote.visibility = View.VISIBLE
             }
         }
@@ -99,7 +98,6 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
     fun removeItem(pos: Int) {
         this.cartList.removeAt(pos)
         notifyItemRemoved(pos)
-
     }
 
 

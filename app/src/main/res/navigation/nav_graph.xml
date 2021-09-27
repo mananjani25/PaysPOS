@@ -811,7 +811,7 @@
         <action
             android:id="@+id/action_dineInGuestFragment_to_dashboardCategoryNew"
             app:destination="@id/dashboardCategoryNew"
-            app:popUpTo="@id/dineInGuestFragment"
+            app:popUpTo="@id/dashboardCategoryNew"
             app:popUpToInclusive="true" />
     </fragment>
 
