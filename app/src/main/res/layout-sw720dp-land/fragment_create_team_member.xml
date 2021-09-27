@@ -23,10 +23,10 @@
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/imgClose"
-                android:background="?attr/selectableItemBackground"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:background="?attr/selectableItemBackground"
                 android:padding="@dimen/_5sdp"
                 android:src="@drawable/ic_cancel_black" />
 
@@ -141,7 +141,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:background="@drawable/edt_border_light_gray"
-                            android:hint="@string/last_name"
+                            android:hint="Last Name"
                             android:imeOptions="actionNext"
                             android:inputType="textCapWords"
                             android:padding="@dimen/_5sdp"
@@ -175,7 +175,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:background="@drawable/edt_border_light_gray"
-                        android:hint="@string/tv_hint_email"
+                        android:hint="Email Address"
                         android:imeOptions="actionNext"
                         android:inputType="textCapWords"
                         android:padding="@dimen/_5sdp"

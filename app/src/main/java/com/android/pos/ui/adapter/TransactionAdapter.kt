@@ -2,10 +2,12 @@ package com.android.pos.ui.adapter
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
 import androidx.recyclerview.widget.RecyclerView
+import com.android.pos.R
 import com.android.pos.data.model.responseModel.GetTransactionListResponse
 import com.android.pos.databinding.ViewTransactionItemBinding
 import com.android.pos.ui.fragments.transactions.TransactionViewModel
@@ -38,6 +40,7 @@ class TransactionAdapter(val viewModel: TransactionViewModel) :
         val itemBinding = holder.discountItemBinding
         itemBinding.itemSheetModel = filterList[position]
         itemBinding.viewModel = viewModel
+        val context = itemBinding.root.context
 
         val model = filterList[position]
 
@@ -47,6 +50,16 @@ class TransactionAdapter(val viewModel: TransactionViewModel) :
             )
         itemBinding.txtCustomerName.text =
             (model.customer.firstName ?: "") + " " + (model.customer.lastName ?: "")
+
+        if (filterList[position].orderDetails.refundedAmount != 0.0) {
+            itemBinding.tvRefundedAmount.text =
+                "(Refunded \n" + context.getString(R.string.symbole) + " " + String.format(
+                    context.getString(R.string.format),
+                    filterList[position].orderDetails.refundedAmount
+                ) + ")"
+        } else {
+          //  itemBinding.tvRefundedAmount.visibility = View.GONE
+        }
 
         itemBinding.executePendingBindings()
 
@@ -112,6 +125,14 @@ class TransactionAdapter(val viewModel: TransactionViewModel) :
     fun getItem(pos: Int): GetTransactionListResponse.Data.Payment {
 
         return filterList[pos]
+    }
+
+    override fun getItemId(position: Int): Long {
+        return position.toLong()
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return position
     }
 
 

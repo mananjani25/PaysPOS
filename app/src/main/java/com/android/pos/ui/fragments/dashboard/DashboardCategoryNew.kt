@@ -491,8 +491,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
 
         txtSignOut.setOnClickListener {
-
             (activity as MainActivity).alertLogout()
+            closeDialog(dialog)
         }
 
         imgCalculator.setColorFilter(resources.getColor(R.color.txtColor))
@@ -906,7 +906,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     override fun onClick(item: TbItem) {
 
         if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
-            //change logic here regarding variations
 
             if (item.modifier_set_ids.isEmpty() && item.variationsAttributes.isEmpty()) {
                 item.itemQuantity = 1
@@ -1077,6 +1076,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             if (data.variationsAttributes.isNotEmpty()) {
                 val variation = variationAdapter?.getItem()!!
                 variationList.add(variation)
+                data.name = data.name.substringBefore(" (") + " (" + variation.name + ")"
                 data.variationsAttributes = variationList
             }
 
@@ -1228,22 +1228,21 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         if (variation != null) {
             data.price = variation.price
-            data.name = variation.name
         } else {
             data.price = data.price
         }
         if (data.discountPrice != 0.0) {
-            txtTitle.text = data.name + "  $" + String.format(
+            txtTitle.text = data.name.substringBefore(" (") + "  $" + String.format(
                 "%.2f", (totalPrice(data) - data.discountPrice)
             )
         } else {
             if (isItemClick) {
-                txtTitle.text = data.name + "  $" + String.format(
+                txtTitle.text = data.name.substringBefore(" (") + "  $" + String.format(
                     "%.2f",
                     data.price
                 )
             } else
-                txtTitle.text = data.name + "  $" + String.format(
+                txtTitle.text = data.name.substringBefore(" (") + "  $" + String.format(
                     "%.2f",
                     totalPrice(data)
                 )
@@ -1502,14 +1501,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     }
 
     fun calculateDiscountPercentage(originalPrice: Double, percentage: Double): Double {
-        val disPrice = MethodUtils.roundOffAmountDouble((originalPrice * percentage) / 100)
-        return if (disPrice < originalPrice) {
-            disPrice
-        } else {
-            0.0
-        }
-
-
+        return MethodUtils.roundOffAmountDouble((originalPrice * percentage) / 100)
     }
 
     private fun totalPrice(model: TbItem): Double {
@@ -1619,7 +1611,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
 
                                 }
-                                data.price > result.percentage -> {
+                                result.discountType == "" -> {
 
                                     data.discountPrice = result.percentage
                                     data.discountId = 0

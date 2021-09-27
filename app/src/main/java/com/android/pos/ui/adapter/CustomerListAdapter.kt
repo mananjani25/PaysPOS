@@ -25,7 +25,7 @@ class CustomerListAdapter(
 
     private var list: ArrayList<TbCustomer> =
         arrayListOf()
-    private var isSelectedPos: Int = -1
+    private var isSelectedPos: Int = 0
 
     init {
 

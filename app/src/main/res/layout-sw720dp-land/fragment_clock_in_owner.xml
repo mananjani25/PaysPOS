@@ -33,7 +33,7 @@
             android:fontFamily="@font/sf_pro_display_bold"
             android:text="Rohan Patange"
             android:textColor="#292E32"
-            android:textSize="@dimen/_8mdpi"
+            android:textSize="@dimen/_6mdpi"
             app:layout_constraintBottom_toBottomOf="@+id/imgCacncel"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -48,7 +48,7 @@
             android:text="@string/tv_clock_in_out"
             android:textColor="#00A3E0"
             android:onClick="@{() -> clockInViewModel.submit()}"
-            android:textSize="@dimen/_8mdpi"
+            android:textSize="@dimen/_6mdpi"
             app:layout_constraintBottom_toBottomOf="@+id/txtTitle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/txtTitle" />

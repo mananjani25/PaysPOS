@@ -269,7 +269,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.imgBack -> {
-                findNavController().popBackStack()
+                findNavController().navigateUp()
             }
 
             R.id.txtOriginalAmount -> {

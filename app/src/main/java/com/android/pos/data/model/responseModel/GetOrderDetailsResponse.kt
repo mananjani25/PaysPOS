@@ -90,6 +90,8 @@ data class GetOrderDetailsResponse(
         val terminalId: Int,
         @SerializedName("total_amount")
         val totalAmount: Double,
+        @SerializedName("refunded_amount")
+        val refundedAmount: Double,
         @SerializedName("total_cash_discount_fee")
         val totalCashDiscountFee: Double,
         @SerializedName("total_discount")

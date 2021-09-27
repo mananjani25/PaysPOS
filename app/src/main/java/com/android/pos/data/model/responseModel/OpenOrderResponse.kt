@@ -1,6 +1,7 @@
 package com.android.pos.data.model.responseModel
 
 
+import com.android.pos.data.model.requestModel.OrderItemVariationAttribute
 import com.google.gson.annotations.SerializedName
 
 data class OpenOrderResponse(
@@ -108,9 +109,9 @@ data class OpenOrderResponse(
                 @SerializedName("completed_in_kitchen")
                 val completedInKitchen: Boolean,
                 @SerializedName("discount_amount")
-                val discountAmount: Int,
+                val discountAmount: Double,
                 @SerializedName("discount_id")
-                val discountId: Any,
+                val discountId: Int? = null,
                 @SerializedName("discount_type")
                 val discountType: String,
                 @SerializedName("employee_id")
@@ -142,8 +143,11 @@ data class OpenOrderResponse(
                 @SerializedName("timestamp")
                 val timestamp: String,
                 @SerializedName("total_price")
-                val totalPrice: Double
-            ) {
+                val totalPrice: Double,
+                @SerializedName("order_item_variation")
+                val order_item_variation: OrderItemVariationAttribute,
+
+                ) {
                 data class OrderItemModifier(
                     @SerializedName("category_id")
                     val categoryId: Any,

@@ -2,13 +2,13 @@
     <string name="app_name">POS Android</string>
     <string name="tv_pos">POS</string>
     <string name="tv_Info">Enterprise Cloud Point of Sale</string>
-    <string name="tv_hint_email">Email Address</string>
-    <string name="tv_hint_password">Password</string>
+    <string name="tv_hint_email">Email Address<font color='#E90C0C'>*</font></string>
+    <string name="tv_hint_password">Password <font color='#E90C0C'>*</font></string>
     <string name="tv_login">Login</string>
     <string name="tv_info_provider">If you forgot password, please <font color='#00A3E0'>contact</font> your sales provider</string>
     <string name="tv_pos_2021">&#169; POS 2021</string>
     <string name="save">Save</string>
-    <string name="add_category_name">Add Category Name</string>
+    <string name="add_category_name">Add Category Name <font color='#E90C0C'>*</font></string>
     <string name="assign_item_to_category">Assign Item to category</string>
     <string name="tap_to_edit">Tap to Edit</string>
     <string name="edit_item_title">Edit Item Title</string>
@@ -23,9 +23,9 @@
     <string name="loading">Loading…</string>
     <string name="no_internet">Internet is required for the application to work. Please enable the internet and try again.</string>
 
-    <string name="first_name">First Name</string>
-    <string name="last_name">Last Name</string>
-    <string name="phone">Phone Number</string>
+    <string name="first_name">First Name <font color='#E90C0C'>*</font></string>
+    <string name="last_name">Last Name <font color='#E90C0C'>*</font></string>
+    <string name="phone">Phone Number <font color='#E90C0C'>*</font></string>
     <string name="address_empty_validation">Please Enter Full Address</string>
     <string name="birth_date_validation">Please Enter Birth Date</string>
     `
@@ -64,6 +64,7 @@
     <string name="category_name_validate">Please Enter Category Name</string>
     <string name="modifier_name_validate">Please Enter Modifier Name</string>
     <string name="option_name_validate">Please Enter Option Name</string>
+    <string name="display_option_name_validate">Please Enter Display Name</string>
 
     <string name="tax_name_validate">Please Enter Tax Name</string>
     <string name="tax_rate_validate">Please Enter valid Tax Rate</string>
@@ -89,7 +90,7 @@
     <string name="delete_service_charge_message">Are you sure want to Delete Service Charge?</string>
     <string name="delete_employee_message">Are you sure want to Delete Employee?</string>
     <string name="clockout_message">Are you sure want to Clockout?</string>
-    <string name="delete_item_message">Are you sure want to Delete Item?</string>
+    <string name="delete_item_message">Are you sure you want to delete this item?</string>
     <string name="delete_items_message">Are you sure you want to clear item?</string>
     <string name="delete_employee_role_message">Are you sure want to Delete Team Member Role?</string>
     <string name="delete_printer_message">Are you sure want to Delete Printer?</string>
@@ -117,7 +118,7 @@
     <string name="tv_team_permissions">Team Permissions</string>
     <string name="tv_clock_in">Clock In</string>
     <string name="tv_continue_to_pos">Continue to POS</string>
-    <string name="name">Name</string>
+    <string name="name">Name <font color='#E90C0C'>*</font></string>
     <string name="plus">+</string>
     <string name="options">Options</string>
     <string name="add_options">Add Options</string>
@@ -134,7 +135,7 @@
     <string name="leave_the_price_blank_to_enter_at_the_time_of_sale">Leave the price blank to enter at the time of sale.</string>
     <string name="modifier_sets">Modifier sets</string>
     <string name="description">Description</string>
-    <string name="modifier_set_name">Modifier Set Name</string>
+    <string name="modifier_set_name">Modifier Set Name <font color='#E90C0C'>*</font></string>
     <string name="to_set_pre_selected_modifiers_or_update_the_minimum_maximum_number_of_modifiers_that_can_be_applied_visit_your_dashboard_if_you_modify_this_set_in_point_of_sale_it_will_only_apply_the_basic_settings_below">To set pre-selected modifiers or update the minimum/maximum number of modifiers that can be applied, visit your Dashboard. If you modify this set in Point of Sale, it will only apply the basic settings below.</string>
     <string name="modifiers">Modifiers</string>
     <string name="modifier">Modifier</string>
@@ -161,11 +162,11 @@
     <string name="tv_add_create_another"><![CDATA[Add & Create Another]]></string>
     <string name="add_service_charge">Add Service Charge</string>
     <string name="enable_service_charge">Enable Service Charge</string>
-    <string name="service_charge_name">Service Charge Name</string>
+    <string name="service_charge_name">Service Charge Name <font color='#E90C0C'>*</font></string>
     <string name="service_charge">Service Charge</string>
-    <string name="percentage">Percentage</string>
+    <string name="percentage">Percentage <font color='#E90C0C'>*</font></string>
     <string name="create_note">Create Note</string>
-    <string name="note_title">Note Title</string>
+    <string name="note_title">Note Title <font color='#E90C0C'>*</font></string>
     <string name="create">Create</string>
     <string name="create_notes">Create Notes</string>
     <string name="tax_rates_can_be_applied_to_specific_items_and_will_be_automatically_calculated_at_purchase">Tax rates can be applied to specific items and will be automatically calculated at purchase.</string>
@@ -177,7 +178,7 @@
     <string name="tv_new_tax">New Tax</string>
     <string name="tv_enable_default_tax">Enable Default Tax</string>
     <string name="tv_sales_tax">Sales Tax</string>
-    <string name="item_pricing">Item Pricing</string>
+    <string name="item_pricing">Item Pricing <font color='#E90C0C'>*</font></string>
     <string name="tv_apply_tax_to">APPLY TAX TO</string>
     <string name="tv_custom_amount">Custom Amount</string>
     <string name="tv_items">Items</string>
@@ -186,7 +187,7 @@
     <string name="tv_add_a_new_tax">Add a New Tax</string>
     <string name="tv_add_a_new_tip">Add a New Tip</string>
     <string name="tv_entertainment_tip">Entertainment Tip</string>
-    <string name="tv_tip_name">Tip Name</string>
+    <string name="tv_tip_name">Tip Name <font color='#E90C0C'>*</font></string>
     <string name="tv_entertainment">Entertainment</string>
     <string name="tv_create_discount">Create Discount</string>
     <string name="no_shifts_worked_so_far_today">No shifts worked so far today</string>
@@ -206,7 +207,7 @@
     <string name="tv_kitchen_receipt_preview">KITCHEN RECEIPT PREVIEW</string>
     <string name="tv_paid_unpaid">PAID/UNPAID</string>
     <string name="tv_printer_kitchen">PRINTER : KITCHEN</string>
-    <string name="select_category">Select Category</string>
+    <string name="select_category">Select Category <font color='#E90C0C'>*</font></string>
     <string name="tv_show_order_id_at_the_top">SHOW ORDER ID AT THE TOP</string>
     <string name="tv_order_id">Order ID</string>
     <string name="tv_show_addons_modifiers"><![CDATA[SHOW ADDONS & MODIFIERS]]></string>
@@ -284,7 +285,7 @@
     <string name="percantage">-100%</string>
     <string name="option_set">Option Set</string>
     <string name="option_set_title">Option set title</string>
-    <string name="display_name">Display name</string>
+    <string name="display_name">Display name <font color='#E90C0C'>*</font></string>
     <string name="scan_barcode_or_search">Scan barcode or search</string>
     <string name="take_out">Take Out</string>
     <string name="dine_in">Dine In</string>
@@ -294,7 +295,7 @@
     <string name="remove_tip">Remove Tip</string>
     <string name="update">Update</string>
     <string name="update_role">Update Role</string>
-    <string name="disc_percentage">Percentage</string>
+    <string name="disc_percentage">Percentage<font color='#E90C0C'>*</font></string>
     <string name="disc_amount">Amount</string>
     <string name="dollar_amount">Dollar</string>
 
@@ -372,7 +373,7 @@
     <string name="tv_employee_role_list">Employee Role List</string>
     <string name="tv_assign_permission">Assign Permission</string>
     <string name="tv_assign_role">Assign Role</string>
-    <string name="tv_add_role_name">Add Role Name</string>
+    <string name="tv_add_role_name">Add Role Name <font color='#E90C0C'>*</font></string>
     <string name="tv_select_module">Select Module</string>
     <string name="tv_add_all">Add All</string>
     <string name="tv_remove_all">Remove All</string>
@@ -544,5 +545,9 @@
     <string name="whole_table">Whole Table</string>
     <string name="website">Website</string>
     <string name="tv_discount">Discount</string>
+    <string name="tv_refunded_amount">Refunded Amount</string>
+    <string name="tv_email_address">Email Address <font color='#E90C0C'>*</font></string>
+    <string name="tv_birthday">Birthday <font color='#E90C0C'>*</font></string>
+    <string name="tv_option_set">Option Set <font color='#E90C0C'>*</font></string>
 
 </resources>

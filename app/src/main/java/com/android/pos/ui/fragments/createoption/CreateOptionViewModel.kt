@@ -50,6 +50,8 @@ class CreateOptionViewModel @Inject constructor(
 
         if (TextUtils.isEmpty(data?.name?.trim())) {
             _snackbarText.value = Event(R.string.option_name_validate)
+        } else if (TextUtils.isEmpty(data?.displayName?.trim())) {
+            _snackbarText.value = Event(R.string.display_option_name_validate)
         } else {
             _showProgress.value = Event(true)
 

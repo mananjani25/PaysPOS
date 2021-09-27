@@ -159,15 +159,14 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
                 }
                 viewModel.saveManualSaleData(cartList!!)
 
-
+                val navControll = findNavController()
+                navControll.previousBackStackEntry?.savedStateHandle?.set(
+                    Constants.KEY,
+                    Constants.MANUALSALE
+                )
+                findNavController().popBackStack()
             }
 
-            val navControll = findNavController()
-            navControll.previousBackStackEntry?.savedStateHandle?.set(
-                Constants.KEY,
-                Constants.MANUALSALE
-            )
-            findNavController().popBackStack()
         }
 
         binding.imgOrderMenu.setOnClickListener {

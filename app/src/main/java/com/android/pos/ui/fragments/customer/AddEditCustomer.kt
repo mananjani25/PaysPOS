@@ -161,9 +161,9 @@ class AddEditCustomer : Fragment() {
             viewModel.addCustomerDetails.value?.data?.first_name = editModel?.first_name.toString()
             viewModel.addCustomerDetails.value?.data?.last_name = editModel?.last_name.toString()
 
-            Log.e(TAG, "Date  ${getDay(editModel?.birth_date!!)}")
+            /*Log.e(TAG, "Date  ${getDay(editModel?.birth_date!!)}")
             Log.e(TAG, "Month  ${getMonth(editModel?.birth_date!!)}")
-            Log.e(TAG, "Year  ${getYear(editModel?.birth_date!!)}")
+            Log.e(TAG, "Year  ${getYear(editModel?.birth_date!!)}")*/
             viewModel.addCustomerDetails.value?.data?.birth_day = getDay(editModel?.birth_date!!)
             viewModel.addCustomerDetails.value?.data?.birthday_year =
                 getYear(editModel?.birth_date!!)
