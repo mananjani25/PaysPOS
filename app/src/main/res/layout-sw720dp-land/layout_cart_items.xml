@@ -100,7 +100,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="1dp"
-
             android:background="@drawable/background_button_menu"
             android:orientation="horizontal">
 
@@ -210,8 +209,8 @@
                     android:gravity="center">
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontBold"
                         android:id="@+id/txtSave"
+                        style="@style/CustomFontBold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:padding="@dimen/_4sdp"

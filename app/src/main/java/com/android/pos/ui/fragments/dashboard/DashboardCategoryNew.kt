@@ -340,18 +340,25 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 prefProvider.getValue(ORDER_TYPE_NAME, TAKEOUT).toString()
             if (prefProvider.getValue(ORDER_TYPE_NAME, TAKEOUT) == DINE_IN) {
                 binding.layoutCart.llShowMenu.visibility = View.GONE
+                binding.layoutCart.rvCart.visibility = View.GONE
+                binding.layoutCart.rvCartDineIn.visibility = View.VISIBLE
+                getDineInCartList()
 
             } else {
                 binding.layoutCart.llShowMenu.visibility = View.VISIBLE
+                binding.layoutCart.rvCart.visibility = View.VISIBLE
+                binding.layoutCart.rvCartDineIn.visibility = View.GONE
+                getCartList()
             }
 
-            getCartList()
+
         } else {
             binding.layoutCart.txtOrderType.text = ""
             binding.lltakeout.visibility = View.VISIBLE
             binding.layoutCart.llCart.visibility = View.GONE
         }
     }
+
 
     private fun searchCategory() {
 
@@ -1639,5 +1646,11 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 }
             })
     }
+
+    private fun getDineInCartList() {
+        binding.layoutCart.rvCartDineIn.adapter = DineInAdapter()
+
+    }
+
 
 }
