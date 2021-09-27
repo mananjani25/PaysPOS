@@ -5,11 +5,13 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
+import com.android.pos.data.remote.Constants.DIALOG_KEY_VARIATION_DETAILS
 import com.android.pos.data.remote.Constants.IS_REFUND
 import com.android.pos.databinding.FragmentTransactionDetailsBinding
 import com.android.pos.di.PrefProvider
@@ -17,6 +19,7 @@ import com.android.pos.ui.adapter.OrderDetailsItemListAdapter
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.TimeFormatUtils.convertCurrentDate
 import com.android.pos.utils.TimeFormatUtils.convertCurrentTime
+import com.android.pos.utils.extensions.getNavigationResultLiveData
 import com.android.pos.utils.extensions.liveSnackBar
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -62,6 +65,14 @@ class TransactionDetailsFragment : Fragment() {
             binding.tvIssueRefund.visibility = View.VISIBLE
         }*/
 
+        val callback: OnBackPressedCallback =
+            object : OnBackPressedCallback(true /* enabled by default */) {
+                override fun handleOnBackPressed() {
+                    findNavController().popBackStack(R.id.transactionFragment, false)
+                }
+            }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+
         return binding.root
     }
 
@@ -93,9 +104,10 @@ class TransactionDetailsFragment : Fragment() {
     }
 
     private fun navigate() {
-
+        ProgressUtils.showProgressDialog(requireActivity())
         viewModel.data.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
+
                 orderDetailsResponse = it
                 binding.tvDate.text =
                     convertCurrentDate(it.data.createdAt) + " " + convertCurrentTime(
@@ -115,6 +127,12 @@ class TransactionDetailsFragment : Fragment() {
                 }
                 binding.orderDetails = it
                 orderDetailsItemAdapter.addOrderDetailsItems(it.data.orderItems)
+
+                if (orderDetailsResponse.data.totalAmount == orderDetailsResponse.data.refundDetails.refundedAmount) {
+                    binding.tvIssueRefund.visibility = View.GONE
+                }
+
+                ProgressUtils.dismissProgressDialog()
             }
         })
 
