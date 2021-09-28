@@ -301,6 +301,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         dineInCartAdapter = DineInAdapter()
         binding.layoutCart.rvCart.adapter = cartAdapter
         binding.layoutCart.rvCartDineIn.adapter = dineInCartAdapter
+        // dineInCartAdapter.itemAdapter.setCallback(this)
 
 
         if (isAdded)
@@ -358,22 +359,27 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private fun hideOrderType() {
 
         if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
-            getCartList()
             binding.layoutCart.llCart.visibility = View.VISIBLE
             binding.lltakeout.visibility = View.GONE
             binding.layoutCart.txtOrderType.text =
                 prefProvider.getValue(ORDER_TYPE_NAME, TAKEOUT).toString()
             if (prefProvider.getValue(ORDER_TYPE_NAME, TAKEOUT) == DINE_IN) {
                 binding.layoutCart.llShowMenu.visibility = View.GONE
+                binding.layoutCart.viewDineIn.visibility = View.VISIBLE
+
                 binding.layoutCart.rvCart.visibility = View.GONE
                 binding.layoutCart.rvCartDineIn.visibility = View.VISIBLE
-                getDineInCartList()
+                if (requireArguments().getBoolean("isFromDineIn")) {
+                    getDineInCartList()
+                }
 
             } else {
                 binding.layoutCart.llShowMenu.visibility = View.VISIBLE
+                binding.layoutCart.viewDineIn.visibility = View.GONE
                 binding.layoutCart.rvCart.visibility = View.VISIBLE
                 binding.layoutCart.rvCartDineIn.visibility = View.GONE
             }
+            getCartList()
 
 
         } else {
@@ -942,10 +948,12 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                     cartList.get(0).orderType = DINE_IN
 
-                    cartList.get(0).dineInList?.get(dineInCartAdapter.getHeaderPosition())?.items?.add(
+                    Log.e(TAG, "HeaderPosition:  ${dineInCartAdapter.getHeaderPosition()}")
+                    /*cartList.get(0).dineInList?.get(dineInCartAdapter.getHeaderPosition())?.items?.add(
                         item
-                    )
+                    )*/
                     val dineInList = dineInCartAdapter.getList()
+                    dineInList.get(dineInCartAdapter.getHeaderPosition()).items.add(item)
                     viewModel.cartLogic(cartList, item, DINE_IN_ITEM, dineInList = dineInList)
 
                 } else {
@@ -1142,7 +1150,14 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 }
 
                 if (isItemClick) {
-                    viewModel.cartLogic(cartList, data, ADD)
+                    if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
+
+                        val dineInList = dineInCartAdapter.getList()
+                        dineInList.get(dineInCartAdapter.getHeaderPosition()).items.add(data)
+                        viewModel.cartLogic(cartList, data, DINE_IN_ITEM, dineInList = dineInList)
+                    } else {
+                        viewModel.cartLogic(cartList, data, ADD)
+                    }
                 } else
                     viewModel.cartLogic(cartList, data, UPDATE)
             } else {
@@ -1461,36 +1476,39 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
 //                if (prefProvider.getValue(ORDER_TYPE, "").toString() != TAKEOUT) {
 
-                val cartList = cartList[0]
+                if (prefProvider.getValue(ORDER_TYPE, "") != DINE_IN) {
 
-                if (!isOrderUpdate)
-                    cartList.customer = assignCustomer
+                    val cartList = cartList[0]
+
+                    if (!isOrderUpdate)
+                        cartList.customer = assignCustomer
 
 
 
-                if (isOrderUpdate)
-                    viewModelPayment.updateOrder(
-                        true,
-                        orderId,
-                        paymentId,
-                        paymentOfflineId,
-                        orderOfflineId
+                    if (isOrderUpdate)
+                        viewModelPayment.updateOrder(
+                            true,
+                            orderId,
+                            paymentId,
+                            paymentOfflineId,
+                            orderOfflineId
+                        )
+                    val request = viewModelPayment.createOrderRequest(
+                        cartList,
+                        viewModel.subTotalPrice,
+                        viewModel.totalPrice,
+                        viewModel.totalServiceCharge,
+                        viewModel.totalTax,
+                        OPEN_ORDER,
+                        future_delivery_date,
+                        future_delivery_time,
+                        false,
+                        viewModel.totalDiscount,
+                        0.00
                     )
-                val request = viewModelPayment.createOrderRequest(
-                    cartList,
-                    viewModel.subTotalPrice,
-                    viewModel.totalPrice,
-                    viewModel.totalServiceCharge,
-                    viewModel.totalTax,
-                    OPEN_ORDER,
-                    future_delivery_date,
-                    future_delivery_time,
-                    false,
-                    viewModel.totalDiscount,
-                    0.00
-                )
-                viewModelPayment.saveOrder(true)
-                viewModelPayment.submit(request)
+                    viewModelPayment.saveOrder(true)
+                    viewModelPayment.submit(request)
+                }
 //                }
 
             }

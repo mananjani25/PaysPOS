@@ -40,7 +40,13 @@
                 android:padding="@dimen/_4sdp"
                 android:visibility="visible"
                 app:srcCompat="@drawable/ic_dots" />
+
         </androidx.appcompat.widget.LinearLayoutCompat>
+        <View
+            android:id="@+id/viewDineIn"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/view" />
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/llOrderMenu"
