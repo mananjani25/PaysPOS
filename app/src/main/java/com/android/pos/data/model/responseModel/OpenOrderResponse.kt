@@ -145,7 +145,7 @@ data class OpenOrderResponse(
                 @SerializedName("total_price")
                 val totalPrice: Double,
                 @SerializedName("order_item_variation")
-                val order_item_variation: OrderItemVariationAttribute,
+                val order_item_variation: OrderItemVariationAttribute?,
 
                 ) {
                 data class OrderItemModifier(

@@ -12,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.model.InventoryItemModel
 import com.android.pos.data.remote.Constants.ACTIVE_ORDER
+import com.android.pos.data.remote.Constants.CANCELED_ORDER
 import com.android.pos.data.remote.Constants.COMPLETED_ORDER
 import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.data.remote.Constants.UPCOMING_ORDER
@@ -57,7 +58,10 @@ class Orders : Fragment() {
                         changePosition(2)
                         setAdapter(2)
                     }
-
+                    CANCELED_ORDER -> {
+                        changePosition(3)
+                        setAdapter(3)
+                    }
                 }
 
             }
@@ -82,28 +86,28 @@ class Orders : Fragment() {
     private fun changePosition(position: Int) {
         when (position) {
             0 -> {
-                val allItem: Fragment = ActiveOrderFragment.newInstance("Unpaid")
-                loadFragment(allItem)
+                val activeOrders = ActiveOrderFragment.newInstance("0")
+                loadFragment(activeOrders)
                 binding.commonToolbar.txtSetItem.visibility = View.GONE
                 binding.commonToolbar.txtSubTitle.text = "Active Orders"
             }
             1 -> {
-                val category: Fragment = UpcomingOrderFragment()
-                loadFragment(category)
+                val upcomingOrders = ActiveOrderFragment.newInstance("Upcoming")
+                loadFragment(upcomingOrders)
                 binding.commonToolbar.txtSetItem.visibility = View.VISIBLE
                 binding.commonToolbar.txtSubTitle.text = "Upcoming Orders"
 
             }
             2 -> {
-                val modifier: Fragment = CompletedOrderFragment()
+                val modifier: Fragment = ActiveOrderFragment.newInstance("1")
                 loadFragment(modifier)
                 binding.commonToolbar.txtSetItem.visibility = View.VISIBLE
                 binding.commonToolbar.txtSubTitle.text = "Completed"
             }
 
             3 -> {
-                val allItem: Fragment = ActiveOrderFragment.newInstance("Cancelled")
-                loadFragment(allItem)
+                val cancelled = ActiveOrderFragment.newInstance("2")
+                loadFragment(cancelled)
                 binding.commonToolbar.txtSetItem.visibility = View.GONE
                 binding.commonToolbar.txtSubTitle.text = "Cancelled Orders"
             }

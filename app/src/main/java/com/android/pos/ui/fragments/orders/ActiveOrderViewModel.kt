@@ -6,9 +6,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.data.model.requestModel.OrderCancelRequest
 import com.android.pos.data.model.responseModel.BaseResponse
-import com.android.pos.data.model.responseModel.CreateTaxResponse
+import com.android.pos.data.model.responseModel.OpenOrderResponse
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.utils.Event
+import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -27,7 +28,8 @@ class ActiveOrderViewModel @Inject constructor(
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
-    val openOrders = posRepository.getOpenOrders()
+    fun openOrders(param1: String): LiveData<Resource<OpenOrderResponse>> =
+        posRepository.getOpenOrders(param1)
 
     fun cancelOrder(orderId: Int) {
         _showProgress.value = Event(true)

@@ -10,12 +10,14 @@ import com.android.pos.data.entities.*
 import com.android.pos.data.entities.ModifierSet
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.NoteResponse
+import com.android.pos.data.model.responseModel.OpenOrderResponse
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.model.responseModel.VenueDetailsResponse
 import com.android.pos.data.remote.ApiHelper
 import com.android.pos.utils.performGetOperation
 import com.android.pos.utils.performGetOperationDatabase
 import com.android.pos.utils.performGetOperationNew
+import com.android.pos.utils.statusUtils.Resource
 import com.google.gson.Gson
 import javax.inject.Inject
 
@@ -418,6 +420,9 @@ class PosRepository @Inject constructor(
         return appDatabase.cartDao().manualItem
     }
 
+    fun getManualCategoryId(): LiveData<TbCategory> {
+        return appDatabase.categoryDao().manualCategoryId
+    }
 
     suspend fun addItemCart(cartModel: CartModel) {
 
@@ -524,8 +529,13 @@ class PosRepository @Inject constructor(
     }
 
 
-    fun getOpenOrders() =
-        performGetOperationNew(networkCall = { apiHelperNew.getOpenOrders() })
+    fun getOpenOrders(param1: String): LiveData<Resource<OpenOrderResponse>> =
+        performGetOperationNew(networkCall = {
+            if (param1 == "Upcoming") apiHelperNew.getUpcomingOpenOrders() else apiHelperNew.getOpenOrders(
+                param1
+            )
+        })
+
 
     suspend fun cashInOut(data: CashLogRequest) = apiHelperNew.cashInOut(data)
 

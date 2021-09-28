@@ -495,7 +495,12 @@ interface ApiService {
     ): BaseResponse
 
     @GET(OPEN_ORDERS)
-    suspend fun getOpenOrders(): OpenOrderResponse
+    suspend fun getOpenOrders(@Query("payment_status") payment_status: String): OpenOrderResponse
+
+    @GET(OPEN_ORDERS)
+    suspend fun getUpcomingOpenOrders(
+        @Query("upcoming_orders") upcoming_orders: Boolean?,
+    ): OpenOrderResponse
 
 
     @POST(CASH_EVENTS)

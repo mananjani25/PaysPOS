@@ -13,6 +13,7 @@ class CategoryItemAdapter1(
     var list: ArrayList<TbItem?>,
     val listner: CategoryItemList
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
     inner class MyViewHolder(private val binding: ViewDashboardItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
@@ -29,6 +30,9 @@ class CategoryItemAdapter1(
     inner class CustomItemHolder(private val binding: ViewCreateItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
         init {
+
+            list.filter { it!!.isHide }
+
             binding.root.setOnClickListener {
                 listner.onClickedCreateItem()
             }
