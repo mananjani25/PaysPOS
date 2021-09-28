@@ -133,11 +133,11 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
         refundItemListAdapter = RefundItemListAdapter(viewModel)
         binding.rvItemListRefund.adapter = refundItemListAdapter
 
-         orderDetailsResponse.data.orderItems.forEach {
+         /*orderDetailsResponse.data.orderItems.forEach {
              for (item in 0..it.quantity) {
 
              }
-         }
+         }*/
 
 
         refundItemListAdapter.addItems(orderDetailsResponse.data.orderItems)

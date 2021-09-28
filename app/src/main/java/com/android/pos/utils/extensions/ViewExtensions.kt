@@ -2,6 +2,7 @@ package com.android.pos.utils.extensions
 
 
 import android.content.Context
+import android.content.res.Resources
 import android.content.res.TypedArray
 import android.graphics.Color
 import android.graphics.PorterDuff
@@ -28,6 +29,8 @@ import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.Event
 import com.google.android.material.snackbar.Snackbar
 import java.io.IOException
+import android.util.DisplayMetrics
+
 
 /**
  * Created by Waheed on 04,November,2019
@@ -129,9 +132,14 @@ fun <T> Fragment.getNavigationResult(key: String = "result") =
 fun <T> Fragment.getNavigationResultLiveData(key: String = "result") =
     findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<T>(key)
 
-fun <T> Fragment.setNavigationResult(key: String = "result",result: T ) {
+fun <T> Fragment.setNavigationResult(key: String = "result", result: T) {
     findNavController().previousBackStackEntry?.savedStateHandle?.set(key, result)
 }
+
+fun Int.toDp(): Int = (this / Resources.getSystem().displayMetrics.density).toInt()
+
+fun Int.toPx(): Int = (this * Resources.getSystem().displayMetrics.density).toInt()
+
 
 class NoInternetException(message: String) : IOException(message)
 
