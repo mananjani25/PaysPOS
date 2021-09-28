@@ -9,12 +9,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.entities.*
+import com.android.pos.data.model.DineInModel
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ADD
 import com.android.pos.data.remote.Constants.BUSINESS_NAME
 import com.android.pos.data.remote.Constants.BUSINESS_PHONE_NO
 import com.android.pos.data.remote.Constants.BUSINESS_WEBSITE
 import com.android.pos.data.remote.Constants.DELETE
+import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.UPDATE
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.TaxServiceChargeRepository
@@ -143,89 +145,100 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
     }
 
-    fun cartLogic(cartList: List<CartModel>?, item: TbItem, type: String) {
-
+    fun cartLogic(
+        cartList: List<CartModel>?,
+        item: TbItem,
+        type: String,
+        dineInList: List<DineInModel> = arrayListOf()
+    ) {
 
         if (cartList != null && cartList.isEmpty()) {
             // empty cart hoy to new cart create kare
             val cartModel = addCartModel(item)
             addCart(cartModel)
         } else {
+            if (cartList?.get(0)?.orderType == DINE_IN) {
+                val cartModel = cartList[0]
+                cartModel.dineInList = dineInList
 
-            // already cart ma hoy to add/update/delete kare flag wise
-            val list = cartList?.get(0)?.items?.toMutableList()
-            if (list != null && list.isNotEmpty()) {
+                addCart(cartModel)
 
-                if (type == ADD || type == UPDATE) {
-                    var index = -1
+            } else {
+                // already cart ma hoy to add/update/delete kare flag wise
+                val list = cartList?.get(0)?.items?.toMutableList()
+                if (list != null && list.isNotEmpty()) {
 
-                    list.forEachIndexed { pos, tbItem ->
-                        if (tbItem.itemId == item.itemId && checkVariation(
-                                tbItem,
-                                item
-                            ) && checkModifier(tbItem, item)
-                        ) {
-                            //   if (checkModifier(tbItem, item)) {
-                            index = pos
-                            return@forEachIndexed
-                            //  }
-                        }
+                    if (type == ADD || type == UPDATE) {
+                        var index = -1
 
-                        /*if (tbItem.itemId == item.itemId && checkModifier(tbItem, item)) {
+                        list.forEachIndexed { pos, tbItem ->
+                            if (tbItem.itemId == item.itemId && checkVariation(
+                                    tbItem,
+                                    item
+                                ) && checkModifier(tbItem, item)
+                            ) {
+                                //   if (checkModifier(tbItem, item)) {
+                                index = pos
+                                return@forEachIndexed
+                                //  }
+                            }
+
+                            /*if (tbItem.itemId == item.itemId && checkModifier(tbItem, item)) {
                             index = pos
                             return@forEachIndexed
                         }*/
-                    }
-                    if (index != -1) {
-                        val model = cartList[0].items?.get(index)
-                        if (model != null) {
-                            if (type == "UPDATE") {
-                                model.itemQuantity = item.itemQuantity
-                                list[index] = model
-                            } else {
-                                if (index != -1) {
-                                    model.itemQuantity = item.itemQuantity + model.itemQuantity
-                                    item.modifiers.forEach {
-                                        it.itemQuantity = model.itemQuantity
-                                    }
-                                    model.modifiers = item.modifiers
-
-                                    list[index] = model
-                                } else {
+                        }
+                        if (index != -1) {
+                            val model = cartList[0].items?.get(index)
+                            if (model != null) {
+                                if (type == "UPDATE") {
                                     model.itemQuantity = item.itemQuantity
                                     list[index] = model
+                                } else {
+                                    if (index != -1) {
+                                        model.itemQuantity = item.itemQuantity + model.itemQuantity
+                                        item.modifiers.forEach {
+                                            it.itemQuantity = model.itemQuantity
+                                        }
+                                        model.modifiers = item.modifiers
+
+                                        list[index] = model
+                                    } else {
+                                        model.itemQuantity = item.itemQuantity
+                                        list[index] = model
+                                    }
                                 }
+
                             }
-
+                        } else {
+                            list.add(item)
                         }
-                    } else {
-                        list.add(item)
+                    } else if (type == DELETE) {
+                        list.remove(item)
                     }
-                } else if (type == DELETE) {
-                    list.remove(item)
-                }
 
-                val cartModel = cartList[0]
-                cartModel.items = list
-                addCart(cartModel)
+                    val cartModel = cartList[0]
+                    cartModel.items = list
+                    addCart(cartModel)
 
-                if (list.isEmpty()) {
-                    // delete carts
-                    deleteCart()
-                }
-            } else {
-
-                if (type == DELETE) {
-                    deleteCart()
+                    if (list.isEmpty()) {
+                        // delete carts
+                        deleteCart()
+                    }
                 } else {
-                    val cartModel = cartList?.get(0)
-                    cartModel?.items = listOf(item)
-                    if (cartModel != null) {
-                        addCart(cartModel)
+
+                    if (type == DELETE) {
+                        deleteCart()
+                    } else {
+                        val cartModel = cartList?.get(0)
+                        cartModel?.items = listOf(item)
+                        if (cartModel != null) {
+                            addCart(cartModel)
+                        }
                     }
+
+
                 }
-
-
             }
 
 
@@ -379,7 +392,6 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     fun getMinMax(_itemId: Int, modifierSetId: Int?): LiveData<ItemModifierSets?>? {
-
 
         return posRepository.getMinMax(_itemId, modifierSetId)
 

@@ -27,7 +27,7 @@ interface ModifierSetDao {
     @Insert(onConflict = REPLACE)
     suspend fun addAll(modifierModel: List<ModifierSet>)
 
-    @get:Query("select * from ModifierSet ORDER BY ModifierSet.sort ASC")
+    @get:Query("select * from ModifierSet ORDER BY ModifierSet.sort DESC")
     val all: LiveData<List<ModifierSet>>
 
 

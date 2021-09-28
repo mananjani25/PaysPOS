@@ -57,4 +57,5 @@ class TbItem : Parcelable {
     var optionSets: List<OptionSet>? = null
 
     var orderItemId: Int? = null
+
 }

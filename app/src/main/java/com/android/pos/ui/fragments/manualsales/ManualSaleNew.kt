@@ -20,6 +20,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
@@ -41,6 +42,8 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
+
+    private lateinit var nameObserver: Observer<List<CartModel>>
     private lateinit var binding: FragmentManualSaleNewBinding
     private val TAG = "ManualSaleNew"
     private var cartList: List<CartModel>? = null
@@ -148,23 +151,74 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
         }
     }
 
-    private fun onClick() {
+    private fun <TbItem> merge(first: List<TbItem>, second: List<TbItem>): List<TbItem> {
+        return first + second
+    }
 
-        binding.txtSave.setOnClickListener {
-            if (cartList?.isNotEmpty() == true) {
-                cartList?.forEach { it ->
-                    it.isMaual = false
-                    it.orderType = Constants.TAKEOUT
+    private fun onClick() {
+        var mainCartList: ArrayList<CartModel>
+
+        nameObserver = Observer<List<CartModel>> {
+
+
+            if (it != null && it.isNotEmpty()) {
+
+                mainCartList = it as ArrayList<CartModel>
+
+                if (cartList != null && cartList!!.isNotEmpty()) {
+                    val manualItems = cartList!![0].items
+                    val mainItems = mainCartList[0].items
+
+                    val mergeItems = merge(mainItems!!, manualItems!!)
+
+                    mainCartList[0].items = mergeItems
+
+                    dashboardViewModel.addCart(mainCartList[0])
+
+                    viewModel.deleteCart()
+
+                    dashboardViewModel.mAllWords(
+                        prefProvider.getValue(Constants.ORDER_TYPE, "").toString()
+                    ).removeObserver(nameObserver)
+
+                    val navControll = findNavController()
+                    navControll.previousBackStackEntry?.savedStateHandle?.set(
+                        Constants.KEY,
+                        Constants.MANUALSALE
+                    )
+                    navControll.popBackStack()
 
                 }
-                viewModel.saveManualSaleData(cartList!!)
+            } else {
+
+                if (cartList != null && cartList!!.isNotEmpty()) {
+                    cartList?.forEach { it ->
+                        it.isMaual = false
+                        it.orderType = Constants.TAKEOUT
+
+                    }
+                    viewModel.saveManualSaleData(cartList!!)
+                }
 
                 val navControll = findNavController()
                 navControll.previousBackStackEntry?.savedStateHandle?.set(
                     Constants.KEY,
                     Constants.MANUALSALE
                 )
-                findNavController().popBackStack()
+                navControll.popBackStack()
+            }
+
+        }
+
+        binding.txtSave.setOnClickListener {
+            if (cartList?.isNotEmpty() == true) {
+
+                dashboardViewModel.mAllWords(
+                    prefProvider.getValue(Constants.ORDER_TYPE, "").toString()
+                ).observe(
+                    viewLifecycleOwner, nameObserver
+                )
+
             }
 
         }
@@ -182,7 +236,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
                     positiveButton(getString(R.string.tv_delete)) {
                         viewModel.deleteCart()
 
-                        binding.txtTotalAmount.setText("$0.00")
+                        binding.txtTotalAmount.text = "$0.00"
 
                     }
                     negativeButton(R.string.tv_cancel) {

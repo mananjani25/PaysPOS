@@ -28,11 +28,13 @@ import com.android.pos.R
 import com.android.pos.data.entities.*
 import com.android.pos.data.model.CategorySearchData
 import com.android.pos.data.model.CategoryTabModel
+import com.android.pos.data.model.DineInModel
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ADD
 import com.android.pos.data.remote.Constants.CUSTOMER_NAME
 import com.android.pos.data.remote.Constants.DELETE
 import com.android.pos.data.remote.Constants.DINE_IN
+import com.android.pos.data.remote.Constants.DINE_IN_ITEM
 import com.android.pos.data.remote.Constants.HORIZONTAL
 import com.android.pos.data.remote.Constants.MANUALSALE
 import com.android.pos.data.remote.Constants.OPEN_ORDER
@@ -94,6 +96,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private lateinit var cartAdapter: CartAdapter
     private lateinit var orderTypeAdapter: OrderTypeAdapter
     private val viewModelPayment by viewModels<PaymentViewModel>()
+    private lateinit var dineInCartAdapter: DineInAdapter
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -295,18 +298,39 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         cartAdapter = CartAdapter()
         cartAdapter.setCallback(this)
+        dineInCartAdapter = DineInAdapter()
         binding.layoutCart.rvCart.adapter = cartAdapter
+        binding.layoutCart.rvCartDineIn.adapter = dineInCartAdapter
+
 
         if (isAdded)
             viewModel.mAllWords(prefProvider.getValue(ORDER_TYPE, "").toString()).observe(
                 requireActivity(), {
                     cartList = it as ArrayList<CartModel>
+                    Log.e(TAG, "cartSize:  ${cartList.size}")
+                    Log.e(TAG, "OrderType:  ${prefProvider.getValue(ORDER_TYPE, "").toString()}")
                     if (cartList.isNotEmpty()) {
 
-                        binding.layoutCart.rvCart.visibility = View.VISIBLE
-                        binding.layoutCart.llPayment.visibility = View.VISIBLE
+                        if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
+                            binding.layoutCart.rvCart.visibility = View.GONE
+                            binding.layoutCart.rvCartDineIn.visibility = View.VISIBLE
+                            binding.layoutCart.llPayment.visibility = View.VISIBLE
+                            Log.e(TAG, "DineInList:  ${Gson().toJson(cartList.get(0).dineInList)}")
+                            cartList.get(0).dineInList?.toCollection(
+                                arrayListOf()
+                            )?.let { it1 -> dineInCartAdapter.setList(it1) }
 
-                        cartAdapter.addCart(cartList[0].items)
+
+                        } else {
+
+
+                            binding.layoutCart.rvCart.visibility = View.VISIBLE
+                            binding.layoutCart.rvCartDineIn.visibility = View.GONE
+                            binding.layoutCart.llPayment.visibility = View.VISIBLE
+
+                            cartAdapter.addCart(cartList[0].items)
+                        }
+
 
                         viewModel.itemCalculation(
                             cartList,
@@ -334,6 +358,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private fun hideOrderType() {
 
         if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
+            getCartList()
             binding.layoutCart.llCart.visibility = View.VISIBLE
             binding.lltakeout.visibility = View.GONE
             binding.layoutCart.txtOrderType.text =
@@ -348,7 +373,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 binding.layoutCart.llShowMenu.visibility = View.VISIBLE
                 binding.layoutCart.rvCart.visibility = View.VISIBLE
                 binding.layoutCart.rvCartDineIn.visibility = View.GONE
-                getCartList()
             }
 
 
@@ -749,7 +773,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                                                 categoryList1[pos].inventoryLists?.let { it1 ->
                                                     listCategories.addAll(
-                                                        it1
+                                                        it1.filter {
+                                                            it!!.isHide
+                                                        }
                                                     )
                                                 }
                                                 (binding.rvPagerCategory.adapter as CategoryItemAdapter1).list =
@@ -768,13 +794,19 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                                     categoryList1[0].inventoryLists?.let { it1 ->
                                         itemList1.addAll(
-                                            it1
+                                            it1.filter {
+                                                it!!.isHide
+                                            }
                                         )
                                     }
 
+
+
                                     searchCategory()
                                     binding.rvPagerCategory.adapter =
-                                        CategoryItemAdapter1(requireContext(), itemList1, this)
+                                        CategoryItemAdapter1(requireContext(), itemList1.filter {
+                                            it!!.isHide
+                                        } as ArrayList<TbItem?>, this)
                                 }
                             }
 
@@ -893,7 +925,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         )
         categoryList1[tabPos].inventoryLists?.let { it1 ->
             listCategry.addAll(
-                it1
+                it1.filter {
+                    it!!.isHide
+                }
             )
         }
         (binding.rvPagerCategory.adapter as CategoryItemAdapter1).list.clear()
@@ -912,8 +946,20 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 if (cartList.isEmpty()) {
                     viewModel.setServiceCharges(serviceChargesList)
                 }
+                if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
 
-                viewModel.cartLogic(cartList, item, ADD)
+                    cartList.get(0).orderType = DINE_IN
+
+                    cartList.get(0).dineInList?.get(dineInCartAdapter.getHeaderPosition())?.items?.add(
+                        item
+                    )
+                    val dineInList = dineInCartAdapter.getList()
+                    viewModel.cartLogic(cartList, item, DINE_IN_ITEM, dineInList = dineInList)
+
+                } else {
+
+                    viewModel.cartLogic(cartList, item, ADD)
+                }
             } else {
                 ItemPopup(item, true)
             }
@@ -1648,7 +1694,28 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     }
 
     private fun getDineInCartList() {
-        binding.layoutCart.rvCartDineIn.adapter = DineInAdapter()
+        dineInCartAdapter = DineInAdapter()
+        binding.layoutCart.rvCartDineIn.adapter = dineInCartAdapter
+        val numOfGuest: Int by lazy {
+            requireArguments().getInt("numberOfGuest")
+        }
+
+        Log.e(TAG, "numOfGuest:  $numOfGuest")
+        val dineInList: ArrayList<DineInModel> = arrayListOf()
+        dineInList.add(DineInModel(0, true, 0, "Whole Table"))
+        for (i in 1..numOfGuest) {
+            dineInList.add(DineInModel(0, false, 0, "Guest $i"))
+        }
+        dineInCartAdapter.setList(dineInList)
+
+        if (cartList.isEmpty()) {
+            cartList.add(CartModel())
+        }
+        val nullItem = TbItem()
+
+
+        cartList.get(0).orderType = DINE_IN
+        viewModel.cartLogic(cartList, nullItem, ADD, dineInList = dineInList)
 
     }
 

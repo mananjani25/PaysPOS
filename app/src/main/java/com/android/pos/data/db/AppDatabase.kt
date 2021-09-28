@@ -40,7 +40,8 @@ import com.android.pos.data.typeconvert.*
     TCPrinter::class,
     TCOrderTypes::class,
     TCKitchenReceiptPrinters::class,
-    TCPrinterCategories::class
+    TCPrinterCategories::class,
+    TCDineInList::class
 )
 
 
