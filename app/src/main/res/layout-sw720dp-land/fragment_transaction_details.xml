@@ -562,11 +562,13 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/llDiscount"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_3sdp"
                     android:orientation="horizontal"
-                    android:padding="@dimen/_2sdp">
+                    android:padding="@dimen/_2sdp"
+                    android:visibility="gone">
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontMediumStyle"
@@ -574,7 +576,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/_3sdp"
                         android:text="@string/tv_discount"
-                        android:textColor="@color/viewTextColor"
+                        android:textColor="@color/colorRed"
                         android:textSize="@dimen/_5mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
@@ -583,8 +585,8 @@
                         android:layout_height="wrap_content"
                         android:layout_marginRight="@dimen/_5sdp"
                         android:gravity="end"
-                        android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.totalDiscount)}"
-                        android:textColor="@color/viewTextColor"
+                        android:text="@{`- `+@string/symbole +``+String.format(@string/format,orderDetails.data.totalDiscount)}"
+                        android:textColor="@color/colorRed"
                         android:textSize="@dimen/_5mdpi" />
                 </LinearLayout>
 
@@ -616,11 +618,13 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/llRefundAmount"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_3sdp"
                     android:orientation="horizontal"
-                    android:padding="@dimen/_2sdp">
+                    android:padding="@dimen/_2sdp"
+                    android:visibility="gone">
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontBold"
@@ -628,7 +632,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/_3sdp"
                         android:text="@string/tv_refunded_amount"
-                        android:textColor="@color/viewTextColor"
+                        android:textColor="@color/colorRed"
                         android:textSize="@dimen/_5mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
@@ -638,7 +642,7 @@
                         android:layout_marginRight="@dimen/_5sdp"
                         android:gravity="end"
                         android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.refundDetails.refundedAmount)}"
-                        android:textColor="@color/viewTextColor"
+                        android:textColor="@color/colorRed"
                         android:textSize="@dimen/_5mdpi" />
                 </LinearLayout>
 

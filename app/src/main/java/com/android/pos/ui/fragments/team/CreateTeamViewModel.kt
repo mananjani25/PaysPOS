@@ -88,6 +88,8 @@ class CreateTeamViewModel @Inject constructor(
             _snackbarText.value = Event(R.string.valid_email_validate)
         } else if (value?.phoneNumber?.length == 0) {
             _snackbarText.value = Event(R.string.phone_no_validate)
+        } else if (value?.phoneNumber?.length!! < 14) {
+            _snackbarText.value = Event(R.string.valid_phone_no_validate)
         } else {
             _showProgress.value = Event(true)
 

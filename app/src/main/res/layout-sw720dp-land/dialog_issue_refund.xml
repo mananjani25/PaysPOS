@@ -206,7 +206,7 @@
                 </LinearLayout>
 
 
-                <TextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvTotalRefundAmount"
                     style="@style/CustomFontRegularStyle"
                     android:layout_width="wrap_content"

@@ -76,6 +76,19 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                 binding.tvRefundPaymentDetails.visibility = View.VISIBLE
                 binding.tvRefundItemDetails.visibility = View.GONE
 
+                if (orderDetailsResponse.data.refundDetails.refundedAmount == 0.0) {
+
+                    MethodUtils.setRefundPriceTextView(
+                        binding.tvTotalRefundAmount,
+                        orderDetailsResponse.data.totalAmount
+                    )
+                } else {
+                    MethodUtils.setRefundPriceTextView(
+                        binding.tvTotalRefundAmount,
+                        orderDetailsResponse.data.totalAmount - orderDetailsResponse.data.refundDetails.refundedAmount
+                    )
+                }
+
             }
         }
 
@@ -133,13 +146,6 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
         refundItemListAdapter = RefundItemListAdapter(viewModel)
         binding.rvItemListRefund.adapter = refundItemListAdapter
 
-         /*orderDetailsResponse.data.orderItems.forEach {
-             for (item in 0..it.quantity) {
-
-             }
-         }*/
-
-
         refundItemListAdapter.addItems(orderDetailsResponse.data.orderItems)
 
         refundItemListAdapter.showItemSubTotal = {
@@ -175,7 +181,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
         refundItemListAdapter.selectedItemList().forEach { it ->
             subTotalPrice = 0.0
             if (it.isChecked) {
-                subTotalPrice += it.totalPrice
+                subTotalPrice += it.totalPrice - it.discountAmount
 
                 it.orderItemTaxes.forEach { tax ->
                     totalTax += tax.taxTotalAmount
@@ -262,11 +268,20 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
 
 
 
-            if (binding.edtAmount.text.toString()
-                    .toDouble() > orderDetailsResponse.data.totalAmount
-            ) {
-                binding.edtAmount.setText(MethodUtils.roundOffAmountString(orderDetailsResponse.data.totalAmount))
+            if (orderDetailsResponse.data.refundDetails.refundedAmount == 0.0) {
+                if (binding.edtAmount.text.toString()
+                        .toDouble() > orderDetailsResponse.data.totalAmount
+                ) {
+                    binding.edtAmount.setText(MethodUtils.roundOffAmountString(orderDetailsResponse.data.totalAmount))
+                }
+            } else {
+                val newPrice =
+                    orderDetailsResponse.data.totalAmount - orderDetailsResponse.data.refundDetails.refundedAmount
+                if (binding.edtAmount.text.toString().toDouble() > newPrice) {
+                    binding.edtAmount.setText(MethodUtils.roundOffAmountString(newPrice))
+                }
             }
+
 
             binding.edtAmount.addTextChangedListener(this)
         }
