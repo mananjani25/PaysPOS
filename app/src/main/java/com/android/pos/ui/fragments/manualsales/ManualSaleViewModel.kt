@@ -3,14 +3,13 @@ package com.android.pos.ui.fragments.manualsales
 import android.annotation.SuppressLint
 import android.util.Log
 import android.widget.TextView
-import androidx.appcompat.widget.AppCompatTextView
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.entities.TbServiceCharge
-import com.android.pos.data.model.responseModel.GetServiceChargeResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ADD
 import com.android.pos.data.remote.Constants.DELETE
@@ -28,11 +27,16 @@ class ManualSaleViewModel @Inject constructor(
     private val appDataBase: AppDatabase,
     private val prefProvider: PrefProvider
 ) : ViewModel() {
+    private lateinit var aa: LiveData<Int>
     private val TAG = "ManualSaleViewModel"
 
     val serviceCharge = posRepository.serviceChargeList()
 
     val cartList = posRepository.getManualSaleList()
+
+
+    val returnedVal = posRepository.getManualCategoryId()
+
 
     var totalPrice: Double = 0.0
     var totalCount = 0
@@ -40,6 +44,11 @@ class ManualSaleViewModel @Inject constructor(
     var totalTax = 0.0
     var totalDiscount = 0.0
     var totalServiceCharge = 0.0
+
+    init {
+        deleteCart()
+    }
+
     private fun addCart(cartModel: CartModel) {
         viewModelScope.launch {
             posRepository.addItemCart(cartModel)

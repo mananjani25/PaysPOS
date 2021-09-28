@@ -176,6 +176,7 @@ object Constants {
     const val ACTIVE_ORDER = "active_order"
     const val UPCOMING_ORDER = "upcoming_order"
     const val COMPLETED_ORDER = "completed_order"
+    const val CANCELED_ORDER = "canceled_order"
 
 
     const val UPDATE_TIP = "orders/{id}/update_tip"

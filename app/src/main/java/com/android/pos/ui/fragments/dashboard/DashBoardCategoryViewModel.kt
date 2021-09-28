@@ -305,39 +305,100 @@ class DashBoardCategoryViewModel @Inject constructor(
         totalServiceCharge = 0.0
 
         if (cartList != null && cartList.isNotEmpty()) {
-            cartList[0].items?.forEach { item ->
-                totalCount += item.itemQuantity
-                Log.e(TAG, "ItemDiscountPrice:  ${item.discountPrice}")
-                Log.e(TAG, "ItemPrice:  ${item.price}")
+            if (cartList.get(0).orderType == DINE_IN) {
 
-                subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice)
+                cartList[0].dineInList?.forEach { dine ->
 
-                item.taxes?.forEach { tax ->
-                    if (tax.isActive) {
-                        if (tax.taxType == "Percentage") {
+                    dine.items.forEach { item ->
+                        totalCount += item.itemQuantity
+                        Log.e(TAG, "ItemDiscountPrice:  ${item.discountPrice}")
+                        Log.e(TAG, "ItemPrice:  ${item.price}")
 
-                            val price = (item.price * item.itemQuantity) - item.discountPrice
-                            val itemTaxPrice =
-                                (tax.rate * price) / 100
-                            Log.e("itemTaxPrice", "" + itemTaxPrice)
-                            totalTax += String.format("%.2f", itemTaxPrice)
-                                .toDouble()
-                        } else {
+                        subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice)
 
-                            totalTax += String.format("%.2f", tax.rate)
-                                .toDouble()
+                        item.taxes?.forEach { tax ->
+                            if (tax.isActive) {
+                                if (tax.taxType == "Percentage") {
+
+                                    val price =
+                                        (item.price * item.itemQuantity) - item.discountPrice
+                                    val itemTaxPrice =
+                                        (tax.rate * price) / 100
+                                    Log.e("itemTaxPrice", "" + itemTaxPrice)
+                                    totalTax += String.format("%.2f", itemTaxPrice)
+                                        .toDouble()
+                                } else {
+
+                                    totalTax += String.format("%.2f", tax.rate)
+                                        .toDouble()
+                                }
+                            }
+                        }
+
+
+                        item.modifiers.forEach {
+                            subTotalPrice += (it.price * it.itemQuantity)
+
+                            item.taxes?.forEach { tax ->
+                                if (tax.isActive) {
+                                    if (tax.taxType == "Percentage") {
+                                        val itemTaxPrice =
+                                            (tax.rate * (it.price * it.itemQuantity)) / 100
+                                        Log.e("itemTaxPrice", "" + itemTaxPrice)
+                                        totalTax += String.format("%.2f", itemTaxPrice)
+                                            .toDouble()
+                                    } else {
+
+                                        totalTax += String.format("%.2f", tax.rate)
+                                            .toDouble()
+                                    }
+                                }
+                            }
                         }
                     }
+
+
+                }
+                val serviceChargesList = cartList[0].serviceCharge
+                if (serviceChargesList != null && serviceChargesList.isNotEmpty()) {
+                    serviceChargesList.forEach {
+                        if (it.isEnabled) {
+                            totalServiceCharge = (subTotalPrice * it.percentage) / 100
+                            Log.e("totalServiceCharge", totalServiceCharge.toString())
+                        }
+                    }
+
                 }
 
+                totalDiscount = cartList[0].items!!.map {
+                    it.discountPrice
+                }.sum()
+                Log.e(TAG, "totalDiscount:  $totalDiscount")
+                Log.e(TAG, "SubTotalPrice:   $subTotalPrice")
+                Log.e(TAG, "totalTax:  $totalTax")
+                Log.e(TAG, "totalServiceCharge:  $totalServiceCharge")
 
-                item.modifiers.forEach {
-                    subTotalPrice += (it.price * it.itemQuantity)
+                totalPrice = (subTotalPrice + totalTax + totalServiceCharge) /*- totalDiscount*/
+
+
+
+            } else {
+
+
+                cartList[0].items?.forEach { item ->
+                    totalCount += item.itemQuantity
+                    Log.e(TAG, "ItemDiscountPrice:  ${item.discountPrice}")
+                    Log.e(TAG, "ItemPrice:  ${item.price}")
+
+                    subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice)
 
                     item.taxes?.forEach { tax ->
                         if (tax.isActive) {
                             if (tax.taxType == "Percentage") {
-                                val itemTaxPrice = (tax.rate * (it.price * it.itemQuantity)) / 100
+
+                                val price = (item.price * item.itemQuantity) - item.discountPrice
+                                val itemTaxPrice =
+                                    (tax.rate * price) / 100
                                 Log.e("itemTaxPrice", "" + itemTaxPrice)
                                 totalTax += String.format("%.2f", itemTaxPrice)
                                     .toDouble()
@@ -348,35 +409,55 @@ class DashBoardCategoryViewModel @Inject constructor(
                             }
                         }
                     }
-                }
-            }
 
-            val serviceChargesList = cartList[0].serviceCharge
 
-            if (serviceChargesList != null && serviceChargesList.isNotEmpty()) {
-                serviceChargesList.forEach {
-                    if (it.isEnabled) {
-                        totalServiceCharge = (subTotalPrice * it.percentage) / 100
-                        Log.e("totalServiceCharge", totalServiceCharge.toString())
+                    item.modifiers.forEach {
+                        subTotalPrice += (it.price * it.itemQuantity)
+
+                        item.taxes?.forEach { tax ->
+                            if (tax.isActive) {
+                                if (tax.taxType == "Percentage") {
+                                    val itemTaxPrice =
+                                        (tax.rate * (it.price * it.itemQuantity)) / 100
+                                    Log.e("itemTaxPrice", "" + itemTaxPrice)
+                                    totalTax += String.format("%.2f", itemTaxPrice)
+                                        .toDouble()
+                                } else {
+
+                                    totalTax += String.format("%.2f", tax.rate)
+                                        .toDouble()
+                                }
+                            }
+                        }
                     }
                 }
 
+                val serviceChargesList = cartList[0].serviceCharge
+
+                if (serviceChargesList != null && serviceChargesList.isNotEmpty()) {
+                    serviceChargesList.forEach {
+                        if (it.isEnabled) {
+                            totalServiceCharge = (subTotalPrice * it.percentage) / 100
+                            Log.e("totalServiceCharge", totalServiceCharge.toString())
+                        }
+                    }
+
+                }
+
+                totalDiscount = cartList[0].items!!.map {
+                    it.discountPrice
+                }.sum()
+                Log.e(TAG, "totalDiscount:  $totalDiscount")
+                Log.e(TAG, "SubTotalPrice:   $subTotalPrice")
+                Log.e(TAG, "totalTax:  $totalTax")
+                Log.e(TAG, "totalServiceCharge:  $totalServiceCharge")
+
+                totalPrice = (subTotalPrice + totalTax + totalServiceCharge) /*- totalDiscount*/
+
             }
 
-            totalDiscount = cartList[0].items!!.map {
-                it.discountPrice
-            }.sum()
-            Log.e(TAG, "totalDiscount:  $totalDiscount")
-            Log.e(TAG, "SubTotalPrice:   $subTotalPrice")
-            Log.e(TAG, "totalTax:  $totalTax")
-            Log.e(TAG, "totalServiceCharge:  $totalServiceCharge")
-
-            totalPrice = (subTotalPrice + totalTax + totalServiceCharge) /*- totalDiscount*/
-
+            MethodUtils.setPriceTextView(txtTotalAmount, totalPrice)
         }
-
-        MethodUtils.setPriceTextView(txtTotalAmount, totalPrice)
-
 
     }
 

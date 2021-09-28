@@ -378,11 +378,9 @@ class PaymentViewModel @Inject constructor(
             if (isUpdateOrder && item.orderItemId != null)
                 orderItemsAttribute.id = item.orderItemId
 
-            if (item.isManualSales) {
-                orderItemsAttribute.category_id = 25
-            } else {
-                orderItemsAttribute.category_id = item.categoryId
-            }
+
+            orderItemsAttribute.category_id = item.categoryId
+
             orderItemsAttribute.discountAmount = item.discountPrice
             orderItemsAttribute.discountType = item.discountType
             if (item.discountId != -1)

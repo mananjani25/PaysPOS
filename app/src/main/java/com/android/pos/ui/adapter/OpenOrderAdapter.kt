@@ -59,7 +59,7 @@ class OpenOrderAdapter :
             }
 
 
-            if (item.paymentStatus == "Cancelled") {
+            if (item.paymentStatus == "Cancelled" || item.paymentStatus == "Paid") {
 
                 binding.txtCancelOrder.visibility = View.GONE
                 binding.txtEditOrder.visibility = View.GONE

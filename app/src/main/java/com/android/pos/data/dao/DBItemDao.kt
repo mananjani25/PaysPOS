@@ -5,6 +5,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.android.pos.data.entities.TbCategory
 import com.android.pos.data.entities.TbItem
 import com.google.android.material.tabs.TabItem
 
@@ -19,19 +20,19 @@ interface DBItemDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addAllItem(elementsBeanList: List<TbItem>)
 
-    @get:Query("select * from TbItem where TbItem.isHide = 1 GROUP by TbItem.itemId ORDER BY TbItem.sort DESC ")
+    @get:Query("select * from TbItem where TbItem.isHide = 1 and TbItem.name != 'Manual Item' GROUP by TbItem.itemId ORDER BY TbItem.sort DESC ")
     val allItem: LiveData<List<TbItem?>>?
 
     /*@get:Query("select * from TbItem whe  re TbItem.isManualSales = 1")
     val manualItems : LiveData<List<TabItem?>>?
 */
-    @get:Query("select * from TbItem where TbItem.isHide = 0 ORDER BY TbItem.sort DESC")
+    @get:Query("select * from TbItem where TbItem.isHide = 0 and TbItem.name != 'Manual Item' ORDER BY TbItem.sort DESC")
     val unhideItem: LiveData<List<TbItem>>
 
-    @Query("select * from TbItem where TbItem.categoryId  = :id")
+    @Query("select * from TbItem where TbItem.categoryId  = :id and TbItem.name != 'Manual Item'")
     fun getItemList(id: Int?): LiveData<List<TbItem?>>?
 
-    @Query("SELECT * from TbItem where TbItem.itemId  = :id LIMIT 1")
+    @Query("SELECT * from TbItem where TbItem.itemId  = :id and TbItem.name != 'Manual Item' LIMIT 1")
     fun itemById(id: Int?): LiveData<TbItem>?
 
     @Query("SELECT * from TbItem LIMIT 1")
@@ -72,4 +73,5 @@ interface DBItemDao {
 
     @Query("UPDATE TbItem SET itemQuantity = :qty WHERE  TbItem.itemId = :id")
     fun updateItemQty(id: Int?, qty: Int?)
+
 }
