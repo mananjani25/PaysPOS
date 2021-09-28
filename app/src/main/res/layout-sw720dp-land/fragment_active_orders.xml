@@ -29,9 +29,9 @@
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_5sdp"
                 android:layout_weight="1"
                 android:gravity="center"
+                android:layout_gravity="center"
                 android:text="@string/tv_order_id"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_5mdpi" />
@@ -40,8 +40,8 @@
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_5sdp"
                 android:layout_weight="1"
+                android:layout_gravity="center"
                 android:gravity="center"
                 android:text="@string/tv_date_time"
                 android:textColor="@color/txtColor"
@@ -51,9 +51,9 @@
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_5sdp"
                 android:layout_weight="1"
                 android:gravity="center"
+                android:layout_gravity="center"
                 android:text="@string/payment_status"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_5mdpi" />
@@ -64,6 +64,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
                 android:gravity="center"
+                android:layout_gravity="center"
                 android:text="@string/tv_order_type"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_5mdpi"
@@ -75,6 +76,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
+                android:layout_gravity="center"
                 android:text="@string/tv_total_amount"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_5mdpi" />
@@ -86,6 +88,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="@string/tv_tip_amount"
+                android:layout_gravity="center"
                 android:visibility="gone"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_5mdpi" />
@@ -96,6 +99,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
+                android:layout_gravity="center"
                 android:text="@string/tv_customer_name"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_5mdpi" />
@@ -106,6 +110,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
+                android:layout_gravity="center"
                 android:text="@string/tv_team_member"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_5mdpi" />
@@ -116,6 +121,8 @@
             android:id="@+id/rvOpenOrder"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            tools:itemCount="2"
+            tools:listitem="@layout/view_open_order_item"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
 

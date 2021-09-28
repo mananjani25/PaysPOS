@@ -18,10 +18,10 @@ interface CategoryDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addAll(categoryModel: List<TbCategory>)
 
-    @Query("select * from TbCategory where TbCategory.active = 1 ORDER BY TbCategory.sort ASC")
+    @Query("select * from TbCategory where TbCategory.active = 1 ORDER BY TbCategory.sort DESC")
     fun all(): LiveData<List<TbCategory>>
 
-    @get:Query("select * from TbCategory where TbCategory.active = 0 ORDER BY TbCategory.sort ASC")
+    @get:Query("select * from TbCategory where TbCategory.active = 0 ORDER BY TbCategory.sort DESC")
     val unhideCategory: LiveData<List<TbCategory>>
 
     @Query("SELECT * from TbCategory where TbCategory.id  = :id LIMIT 1")
@@ -49,7 +49,7 @@ interface CategoryDao {
     suspend fun hideCategory(id: Int, active: Boolean?): Int
 
     @Transaction
-    @Query("SELECT * FROM TbCategory where TbCategory.active = 1 ORDER BY TbCategory.sort ASC")
+    @Query("SELECT * FROM TbCategory where TbCategory.active = 1 ORDER BY TbCategory.sort DESC")
     fun categoryWithInventory(): LiveData<List<CategoryWithInventory?>>?
 
     @Query("SELECT * FROM TbCategory WHERE TbCategory.id IN (:userIds)")
