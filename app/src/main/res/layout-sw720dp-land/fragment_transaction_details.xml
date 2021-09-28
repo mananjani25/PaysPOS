@@ -637,7 +637,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginRight="@dimen/_5sdp"
                         android:gravity="end"
-                        android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.refundedAmount)}"
+                        android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.refundDetails.refundedAmount)}"
                         android:textColor="@color/viewTextColor"
                         android:textSize="@dimen/_5mdpi" />
                 </LinearLayout>

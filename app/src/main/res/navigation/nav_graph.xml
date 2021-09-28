@@ -788,7 +788,11 @@
     <dialog
         android:id="@+id/reasonForRefundDialog"
         android:name="com.android.pos.ui.dialog.ReasonForRefundDialog"
-        android:label="ReasonForRefundDialog" />
+        android:label="ReasonForRefundDialog">
+        <action
+            android:id="@+id/action_reasonForRefundDialog_to_transactionDetailsFragment"
+            app:destination="@id/transactionDetailsFragment" />
+    </dialog>
     <fragment
         android:id="@+id/dineInFragment"
         android:name="com.android.pos.ui.fragments.dinein.DineInFragment"
@@ -807,11 +811,11 @@
         android:id="@+id/dineInGuestFragment"
         android:name="com.android.pos.ui.fragments.dinein.DineInGuestFragment"
         android:label="DineInGuestFragment"
-        tools:layout="@layout/fragment_dine_in_guest" >
+        tools:layout="@layout/fragment_dine_in_guest">
         <action
             android:id="@+id/action_dineInGuestFragment_to_dashboardCategoryNew"
             app:destination="@id/dashboardCategoryNew"
-            app:popUpTo="@id/dineInGuestFragment"
+            app:popUpTo="@id/dashboardCategoryNew"
             app:popUpToInclusive="true" />
     </fragment>
 

@@ -114,8 +114,8 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                     //  refundAmount = binding.edtAmount.text.toString().toDouble()
                     val bundle = Bundle().apply {
                         putParcelable("refundData", refundData)
-                        putDouble("refundAmount", subTotalPrice)
-                        Log.d("subTotalPriceRefund", "::" + subTotalPrice)
+                        putDouble("refundAmount", totalItemPrice)
+                        Log.d("subTotalPriceRefund", "::$totalItemPrice")
                     }
                     findNavController().navigate(
                         R.id.action_issueRefundFragment_to_reasonForRefundDialog,
@@ -132,6 +132,13 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
     private fun setUpRecyclerView() {
         refundItemListAdapter = RefundItemListAdapter(viewModel)
         binding.rvItemListRefund.adapter = refundItemListAdapter
+
+         orderDetailsResponse.data.orderItems.forEach {
+             for (item in 0..it.quantity) {
+
+             }
+         }
+
 
         refundItemListAdapter.addItems(orderDetailsResponse.data.orderItems)
 
@@ -157,15 +164,18 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
     }
 
     private fun calculationOfItems() {
-        subTotalPrice = 0.0
+
         totalServiceCharge = 0.0
+        totalItemPrice = 0.0
         totalTax = 0.0
         val orderItemRefundsAttributesList =
             ArrayList<RefundRequestModel.PaymentRefund.OrderItemRefundsAttribute>()
 
         //  totalItemPrice = 0.0
         refundItemListAdapter.selectedItemList().forEach { it ->
+            subTotalPrice = 0.0
             if (it.isChecked) {
+                subTotalPrice += it.totalPrice
 
                 it.orderItemTaxes.forEach { tax ->
                     totalTax += tax.taxTotalAmount
@@ -178,14 +188,13 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
 
                 }
 
-                subTotalPrice += it.totalPrice
-
                 it.orderItemModifiers.forEach { modifiers ->
                     subTotalPrice += (modifiers.price * modifiers.quantity)
                 }
                 orderDetailsResponse.data.orderServiceCharges.forEach {
-                    totalServiceCharge = (subTotalPrice * it.rate) / 100
+                    totalServiceCharge += (subTotalPrice * it.rate) / 100
                 }
+                totalItemPrice += subTotalPrice
             }
             val orderItemRefundsAttributeModel =
                 RefundRequestModel.PaymentRefund.OrderItemRefundsAttribute()
@@ -199,11 +208,11 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
             orderItemRefundsAttributeModel.quantity = it.quantity
             orderItemRefundsAttributesList.add(orderItemRefundsAttributeModel)
         }
-        subTotalPrice += totalTax + totalServiceCharge
+        totalItemPrice += totalTax + totalServiceCharge
 
         refundData = RefundRequestModel().apply {
             paymentRefund = RefundRequestModel.PaymentRefund().apply {
-                amount = subTotalPrice
+                amount = totalItemPrice
                 orderId = orderDetailsResponse.data.id
                 paymentId = orderDetailsResponse.data.payments[0].id
                 employeeId = orderDetailsResponse.data.employeeId

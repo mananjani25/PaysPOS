@@ -51,11 +51,11 @@ class TransactionAdapter(val viewModel: TransactionViewModel) :
         itemBinding.txtCustomerName.text =
             (model.customer.firstName ?: "") + " " + (model.customer.lastName ?: "")
 
-        if (filterList[position].orderDetails.refundedAmount != 0.0) {
+        if (filterList[position].refundedAmount != 0.0) {
             itemBinding.tvRefundedAmount.text =
                 "(Refunded \n" + context.getString(R.string.symbole) + " " + String.format(
                     context.getString(R.string.format),
-                    filterList[position].orderDetails.refundedAmount
+                    filterList[position].refundedAmount
                 ) + ")"
         } else {
           //  itemBinding.tvRefundedAmount.visibility = View.GONE
