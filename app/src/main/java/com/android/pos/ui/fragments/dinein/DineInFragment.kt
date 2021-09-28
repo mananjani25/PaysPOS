@@ -20,6 +20,7 @@ import androidx.navigation.fragment.findNavController
 import com.android.pos.data.model.responseModel.GetFloorPlanResponse
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.showAlert
+import com.android.pos.utils.extensions.toDp
 import com.android.pos.utils.statusUtils.Status
 
 @AndroidEntryPoint
@@ -113,6 +114,7 @@ class DineInFragment : Fragment() {
 
     private fun setFloorPlan(dineInFloorTablesList: List<GetFloorPlanResponse.Data.FloorPlanTable>) {
 
+        binding.flFloorPlan.removeAllViews()
         if (dineInFloorTablesList.isNotEmpty()) {
             for (i in dineInFloorTablesList.indices) {
                 if (dineInFloorTablesList[i].tableType == "square") {
@@ -143,10 +145,13 @@ class DineInFragment : Fragment() {
                         /*pass object in settag*/
                         inflatedViewSquare.tag = dineInFloorTablesList[i]
 
-                        val paramsSquare = FrameLayout.LayoutParams(110, 110)
-                        paramsSquare.leftMargin = dineInFloorTablesList[i].xPosition
-                        paramsSquare.topMargin = dineInFloorTablesList[i].yPosition
-                        binding.flFloorPlan.removeAllViews()
+                        val paramsSquare = FrameLayout.LayoutParams(
+                            dineInFloorTablesList[i].width.toDp(),
+                            dineInFloorTablesList[i].height.toDp()
+                        )
+
+                        paramsSquare.leftMargin = dineInFloorTablesList[i].xPosition.toInt().toDp()
+                        paramsSquare.topMargin = dineInFloorTablesList[i].yPosition.toInt().toDp()
                         binding.flFloorPlan.addView(llMainParentSquare, paramsSquare)
 
                         inflatedViewSquare.setOnClickListener(clickInInflatedLayout()) //setting click to each item_content
@@ -178,12 +183,15 @@ class DineInFragment : Fragment() {
                         }
 
                         /*pass object in settag*/
-                        inflatedViewRound.tag = i.toString()
+                        inflatedViewRound.tag = dineInFloorTablesList[i]
 
-                        val paramsRound = FrameLayout.LayoutParams(120, 120)
-                        paramsRound.leftMargin = dineInFloorTablesList[i].xPosition
-                        paramsRound.topMargin = dineInFloorTablesList[i].yPosition
-                        binding.flFloorPlan.removeAllViews()
+                        val paramsRound = FrameLayout.LayoutParams(
+                            dineInFloorTablesList[i].width.toDp(),
+                            dineInFloorTablesList[i].height.toDp()
+                        )
+                        paramsRound.leftMargin = dineInFloorTablesList[i].xPosition.toInt().toDp()
+                        paramsRound.topMargin = dineInFloorTablesList[i].yPosition.toInt().toDp()
+                        // binding.flFloorPlan.removeAllViews()
                         binding.flFloorPlan.addView(llMainParentRound, paramsRound)
 
                         inflatedViewRound.setOnClickListener(clickInInflatedLayout()) //setting click to each item_content

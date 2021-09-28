@@ -54,9 +54,9 @@ data class GetFloorPlanResponse(
             @SerializedName("width")
             val width: Int,
             @SerializedName("x_position")
-            val xPosition: Int,
+            val xPosition: Double,
             @SerializedName("y_position")
-            val yPosition: Int
+            val yPosition: Double
         ) : Parcelable
     }
 }
