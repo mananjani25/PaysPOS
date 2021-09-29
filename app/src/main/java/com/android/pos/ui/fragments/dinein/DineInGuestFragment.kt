@@ -36,6 +36,7 @@ class DineInGuestFragment : Fragment(), GuestListAdapter.GuestListner {
         binding = FragmentDineInGuestBinding.inflate(inflater, container, false)
 
         dineInFloorTableModel = arguments?.getParcelable("dineInFloorTableObject")!!
+
         return binding.root
     }
 
@@ -46,7 +47,7 @@ class DineInGuestFragment : Fragment(), GuestListAdapter.GuestListner {
         binding.rvNumberOfGuests.adapter = guestListAdapter
 
         val numberOfGuestList = ArrayList<Int>()
-        for (i in 1..20) {
+        for (i in 1..dineInFloorTableModel.chairCount) {
             numberOfGuestList.add(i)
         }
         guestListAdapter.addGuests(numberOfGuestList)

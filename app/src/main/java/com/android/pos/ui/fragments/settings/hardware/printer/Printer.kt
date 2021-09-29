@@ -991,8 +991,6 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                     }
 
                     Log.e(TAG, "DeviceisAdded:  ${isAdded}")
-
-
                 }
 
             }
