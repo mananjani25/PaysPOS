@@ -45,6 +45,7 @@ import com.android.pos.data.remote.Constants.KITCHEN
 import com.android.pos.data.remote.Constants.LARGE
 import com.android.pos.data.remote.Constants.WIFI
 import com.android.pos.utils.printer.PrinterClass.BLUETOOTH_TIMEOUT
+import com.android.pos.utils.printer.PrinterClass.TEST_PRINT_LAN_TIME
 import com.google.zxing.qrcode.encoder.QRCode
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -273,10 +274,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             Log.e(TAG, "PrinterName:  ${it.name}")
                             Log.e(TAG, "PrinterModelName:  ${it.modalName}")
                             Log.e(TAG, "PrinterType:  ${it.printer_type}")
-                            if (it.name == "TM-m30_030295") {
+
                                 initPrinter(it, CUSTOMER)
 
-                            }
+
                         }
 
 
@@ -316,6 +317,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             val enabled = Print.FALSE
 
             try {
+                var interval :Int = 1000
+                if (customerReceiptPrinters.printer_type == BLUETOOTH){
+                    interval = BLUETOOTH_TIMEOUT
+                }
                 printer?.openPrinter(
 
                     if (customerReceiptPrinters.printer_type == BLUETOOTH) {
