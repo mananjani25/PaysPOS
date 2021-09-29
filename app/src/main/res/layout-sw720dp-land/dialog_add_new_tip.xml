@@ -133,7 +133,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:padding="@dimen/_5sdp"
-                            android:text="@string/percentage"
+                            android:text="@string/tip_percentage"
                             android:textColor="@color/viewTextColor"
                             android:textSize="@dimen/_5mdpi" />
 
@@ -158,8 +158,8 @@
                             android:id="@+id/tvSymbolPer"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginRight="@dimen/_5sdp"
                             android:layout_marginLeft="@dimen/_5sdp"
+                            android:layout_marginRight="@dimen/_5sdp"
                             android:fontFamily="@font/sf_pro_display_semibold"
                             android:text="@string/percentage_symbol"
                             android:textColor="@color/viewTextColor"

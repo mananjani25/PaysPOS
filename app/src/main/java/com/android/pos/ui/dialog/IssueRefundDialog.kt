@@ -139,6 +139,10 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
 
         }
 
+        binding.imgBack.setOnClickListener {
+            findNavController().navigateUp()
+        }
+
         return binding.root
     }
 

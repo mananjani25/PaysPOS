@@ -148,7 +148,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_10sdp"
                     android:background="@drawable/edt_border_light_gray"
-                    android:hint="@string/name"
+                    android:hint="@string/item_name_1"
                     android:imeOptions="actionNext"
                     android:inputType="textCapWords"
                     android:padding="@dimen/_5sdp"
