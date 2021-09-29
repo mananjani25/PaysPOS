@@ -279,7 +279,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private fun getServiceCharges() {
 
         viewModel.serviceCharges.observe(requireActivity(), {
-            Log.e(TAG,"ServiceChargeListSize: ${it.data?.size}")
+            Log.e(TAG, "ServiceChargeListSize: ${it.data?.size}")
             serviceChargesList = it.data
             getCartList()
         })
@@ -964,7 +964,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     val dineInList = dineInCartAdapter.getList()
                     dineInList.get(dineInCartAdapter.getHeaderPosition()).items.add(item)
                     viewModel.cartLogic(cartList, item, DINE_IN_ITEM, dineInList = dineInList)
-                    Log.e(TAG,"serviceChargesList:  ${Gson().toJson(serviceChargesList)}")
+                    Log.e(TAG, "serviceChargesList:  ${Gson().toJson(serviceChargesList)}")
 
 
                 } else {
