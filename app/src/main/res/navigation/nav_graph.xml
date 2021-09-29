@@ -427,6 +427,9 @@
         <action
             android:id="@+id/action_dashboardCategoryNew_to_dineInFragment"
             app:destination="@id/dineInFragment" />
+        <action
+            android:id="@+id/action_dashboardCategoryNew_to_orderTypeDialog"
+            app:destination="@id/orderTypeDialog" />
 
     </fragment>
     <action
@@ -818,5 +821,9 @@
             app:popUpTo="@id/dashboardCategoryNew"
             app:popUpToInclusive="true" />
     </fragment>
+    <dialog
+        android:id="@+id/orderTypeDialog"
+        android:name="com.android.pos.ui.dialog.OrderTypeDialog"
+        android:label="OrderTypeDialog" />
 
 </navigation>
