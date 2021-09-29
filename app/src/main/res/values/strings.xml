@@ -554,5 +554,7 @@
     <string name="tv_email_address">Email Address <font color='#E90C0C'>*</font></string>
     <string name="tv_birthday">Birthday <font color='#E90C0C'>*</font></string>
     <string name="tv_option_set">Option Set <font color='#E90C0C'>*</font></string>
+    <string name="please_select_order_type_to_add_item">Please select order type to add item</string>
+    <string name="cancel">Cancel</string>
 
 </resources>

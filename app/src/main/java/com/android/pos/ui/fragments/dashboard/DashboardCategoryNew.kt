@@ -200,6 +200,12 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             }
         }
 
+        setFragmentResultListener("request_key_orderType") { requestKey: String, bundle: Bundle ->
+            val result = bundle.getParcelable<TbOrderType>("data")
+            if (result != null) {
+                chooseOrderType(result)
+            }
+        }
 
     }
 
@@ -273,7 +279,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private fun getServiceCharges() {
 
         viewModel.serviceCharges.observe(requireActivity(), {
-            Log.e(TAG,"ServiceChargeListSize: ${it.data?.size}")
+            Log.e(TAG, "ServiceChargeListSize: ${it.data?.size}")
             serviceChargesList = it.data
             getCartList()
         })
@@ -722,7 +728,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private fun configureDrawer() {
         binding.layoutMenu.txtKeypad.setOnClickListener {
             findNavController().navigate(R.id.action_dashboardCategoryNew_to_manualSales)
-            // (requireActivity() as MainActivity).enableDrawer()
         }
 
 
@@ -959,7 +964,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     val dineInList = dineInCartAdapter.getList()
                     dineInList.get(dineInCartAdapter.getHeaderPosition()).items.add(item)
                     viewModel.cartLogic(cartList, item, DINE_IN_ITEM, dineInList = dineInList)
-                    Log.e(TAG,"serviceChargesList:  ${Gson().toJson(serviceChargesList)}")
+                    Log.e(TAG, "serviceChargesList:  ${Gson().toJson(serviceChargesList)}")
 
 
                 } else {
@@ -970,7 +975,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 ItemPopup(item, true)
             }
         } else {
-            AlertUtils.showCustomAlert(requireActivity(), "Please choose order type")
+            orderTypeDialog()
         }
 
     }
@@ -986,8 +991,20 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
             ItemPopup(data, false)
         } else {
-            AlertUtils.showCustomAlert(requireActivity(), "Please choose order type")
+            orderTypeDialog()
         }
+    }
+
+    private fun orderTypeDialog() {
+
+        val bundle = Bundle().apply {
+            putParcelableArrayList("data", orderTypeAdapter.list)
+        }
+        findNavController().navigate(
+            R.id.action_dashboardCategoryNew_to_orderTypeDialog,
+            bundle
+        )
+
     }
 
     private fun ItemPopup(data: TbItem, isItemClick: Boolean) {
@@ -1405,11 +1422,15 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     override fun onItemClickListener(view: View?, pos: Int) {
         orderType = orderTypeAdapter.getItem(pos)
 
-        when (orderType!!.orderType) {
+        chooseOrderType(orderType!!)
+    }
+
+    private fun chooseOrderType(orderType: TbOrderType) {
+        when (orderType.orderType) {
             TAKEOUT -> {
-                prefProvider.setValueInt(ORDER_TYPE_ID, orderType!!.id)
-                prefProvider.setValue(ORDER_TYPE_NAME, orderType!!.name)
-                prefProvider.setValue(ORDER_TYPE, orderType!!.orderType)
+                prefProvider.setValueInt(ORDER_TYPE_ID, orderType.id)
+                prefProvider.setValue(ORDER_TYPE_NAME, orderType.name)
+                prefProvider.setValue(ORDER_TYPE, orderType.orderType)
                 hideOrderType()
             }
             DINE_IN -> {
@@ -1424,8 +1445,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 )
             }
         }
-
-
     }
 
     override fun onClick(v: View?) {

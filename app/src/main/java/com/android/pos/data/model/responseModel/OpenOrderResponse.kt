@@ -309,15 +309,15 @@ data class OpenOrderResponse(
                     @SerializedName("city")
                     val city: String,
                     @SerializedName("country")
-                    val country: String,
+                    val country: String?,
                     @SerializedName("full_address")
                     val fullAddress: String,
                     @SerializedName("id")
                     val id: Int,
                     @SerializedName("latitude")
-                    val latitude: String,
+                    val latitude: String?,
                     @SerializedName("longitude")
-                    val longitude: String,
+                    val longitude: String?,
                     @SerializedName("postcode")
                     val postcode: String,
                     @SerializedName("state")
