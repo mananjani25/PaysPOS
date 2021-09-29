@@ -86,7 +86,7 @@
     <string name="delete_tip_message">Are you sure want to Delete Tip?</string>
     <string name="delete_note_message">Are you sure want to Delete Note?</string>
     <string name="delete_discount_message">Are you sure want to Delete Discount?</string>
-    <string name="delete_customer_message">Are you sure want to Delete Customer?</string>
+    <string name="delete_customer_message">Are you sure, you want to Delete the Customer?</string>
     <string name="delete_service_charge_message">Are you sure want to Delete Service Charge?</string>
     <string name="delete_employee_message">Are you sure want to Delete Employee?</string>
     <string name="clockout_message">Are you sure want to Clockout?</string>
@@ -106,7 +106,7 @@
 
     <string name="tv_personal_info">Personal Info</string>
     <string name="tv_jobs">Jobs</string>
-    <string name="tv_primary_job_title">Primary job title</string>
+    <string name="tv_primary_job_title">Primary Job Title</string>
     <string name="tv_hourly_rate">Hourly Rate</string>
     <string name="tv_access">Access</string>
     <string name="tv_permission_set">Permission set</string>
@@ -114,11 +114,13 @@
     <string name="tv_location">Location</string>
     <string name="tv_create_team_member">Create Team Member</string>
     <string name="tv_info_email">Adding an email will invite this team member to create their login for POS.</string>
-    <string name="tv_add_job_title">Add job title</string>
+    <string name="tv_add_job_title">Add Job Title</string>
     <string name="tv_team_permissions">Team Permissions</string>
     <string name="tv_clock_in">Clock In</string>
     <string name="tv_continue_to_pos">Continue to POS</string>
     <string name="name">Name <font color='#E90C0C'>*</font></string>
+    <string name="item_name_1">Item Name <font color='#E90C0C'>*</font></string>
+    <string name="tax_name">Tax Name <font color='#E90C0C'>*</font></string>
     <string name="plus">+</string>
     <string name="options">Options</string>
     <string name="add_options">Add Options</string>
@@ -165,6 +167,8 @@
     <string name="service_charge_name">Service Charge Name <font color='#E90C0C'>*</font></string>
     <string name="service_charge">Service Charge</string>
     <string name="percentage">Percentage <font color='#E90C0C'>*</font></string>
+    <string name="tip_percentage">Tip Percentage <font color='#E90C0C'>*</font></string>
+    <string name="tax_percentage">Tax Percentage <font color='#E90C0C'>*</font></string>
     <string name="create_note">Create Note</string>
     <string name="note_title">Note Title <font color='#E90C0C'>*</font></string>
     <string name="create">Create</string>

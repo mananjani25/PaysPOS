@@ -79,6 +79,10 @@ class ReasonForRefundDialog : DialogFragment() {
         observeShowProgress()
         navigate()
 
+        binding.imgBack.setOnClickListener {
+            findNavController().navigateUp()
+        }
+
         return binding.root
     }
 

@@ -72,6 +72,10 @@ class DineInFragment : Fragment() {
             setFloorPlan(dineInFloorTablesList)
         }
 
+        binding.llHome.setOnClickListener {
+            findNavController().popBackStack(R.id.dashboardCategoryNew, false)
+        }
+
         return binding.root
     }
 
