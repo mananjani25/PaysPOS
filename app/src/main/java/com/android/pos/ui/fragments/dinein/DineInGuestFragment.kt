@@ -36,7 +36,6 @@ class DineInGuestFragment : Fragment(), GuestListAdapter.GuestListner {
         binding = FragmentDineInGuestBinding.inflate(inflater, container, false)
 
         dineInFloorTableModel = arguments?.getParcelable("dineInFloorTableObject")!!
-
         return binding.root
     }
 

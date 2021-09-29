@@ -34,9 +34,15 @@ class OrderDetailsItemListAdapter :
         val context = itemBinding.root.context
         itemBinding.tvItemName.text = taxList[position].itemName
         itemBinding.tvQuantity.text = "x" + taxList[position].quantity
+
+        var totalPrice = taxList[position].price
+        taxList[position].orderItemModifiers.forEach {
+            totalPrice = taxList[position].price + (it.price * it.quantity)
+        }
+
         itemBinding.tvRate.text = context.getString(R.string.symbole) + " " + String.format(
             context.getString(R.string.format),
-            taxList[position].price
+            totalPrice
         )
 
         val modifierNames = taxList[position].orderItemModifiers.map {

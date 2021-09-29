@@ -779,9 +779,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                                                 categoryList1[pos].inventoryLists?.let { it1 ->
                                                     listCategories.addAll(
-                                                        it1.filter {
-                                                            it!!.isHide
-                                                        }
+                                                        it1
                                                     )
                                                 }
                                                 (binding.rvPagerCategory.adapter as CategoryItemAdapter1).list =
@@ -800,9 +798,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                                     categoryList1[0].inventoryLists?.let { it1 ->
                                         itemList1.addAll(
-                                            it1.filter {
-                                                it!!.isHide
-                                            }
+                                            it1
                                         )
                                     }
 
@@ -810,9 +806,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                                     searchCategory()
                                     binding.rvPagerCategory.adapter =
-                                        CategoryItemAdapter1(requireContext(), itemList1.filter {
-                                            it!!.isHide
-                                        } as ArrayList<TbItem?>, this)
+                                        CategoryItemAdapter1(requireContext(), itemList1, this)
                                 }
                             }
 
@@ -931,9 +925,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         )
         categoryList1[tabPos].inventoryLists?.let { it1 ->
             listCategry.addAll(
-                it1.filter {
-                    it!!.isHide
-                }
+                it1
             )
         }
         (binding.rvPagerCategory.adapter as CategoryItemAdapter1).list.clear()

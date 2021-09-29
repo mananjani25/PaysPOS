@@ -43,6 +43,8 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
 
+    private var manualItemId: Int = 0
+    private var manualCategoryId: Int = 0
     private lateinit var nameObserver: Observer<List<CartModel>>
     private lateinit var binding: FragmentManualSaleNewBinding
     private val TAG = "ManualSaleNew"
@@ -55,6 +57,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
     private var serviceChargesList: List<TbServiceCharge>? = null
     private var discountList: List<TbDiscount>? = null
     private var taxList: List<TaxData>? = null
+    private var assignCustomer: TbCustomer? = null
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -95,12 +98,29 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
 
         binding.layoutMenu.imgSearch.visibility = View.GONE
         binding.layoutMenu.autoSearch.visibility = View.GONE
+
+        prefProvider.setValue(SALE_CUSTOMER_NAME, "")
+
+
+        getManualCategoryId()
         onConfig()
         onClickKeypad()
         getCartList()
         getTaxList()
         onClick()
         listner()
+    }
+
+    private fun getManualCategoryId() {
+
+        viewModel.returnedVal.observe(viewLifecycleOwner, {
+
+            manualCategoryId = it.id
+            manualItemId = it.item_ids[0]
+
+        })
+
+
     }
 
     private fun getCartList() {
@@ -147,6 +167,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
                 )
                 binding.txtCustomerName.text = result.first_name + " " + result.last_name
                 binding.txtCrtNewCustomer.text = "Remove Customer"
+
+                assignCustomer = result
             }
         }
     }
@@ -194,7 +216,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
                 if (cartList != null && cartList!!.isNotEmpty()) {
                     cartList?.forEach { it ->
                         it.isMaual = false
-                        it.orderType = Constants.TAKEOUT
+                        it.orderType = prefProvider.getValue(Constants.ORDER_TYPE, "").toString()
 
                     }
                     viewModel.saveManualSaleData(cartList!!)
@@ -263,6 +285,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
                 bundle.putDouble("totalTax", viewModel.totalTax)
                 bundle.putDouble("totalDiscount", viewModel.totalDiscount)
                 bundle.putDouble("totalServiceCharge", viewModel.totalServiceCharge)
+                cartList?.get(0)?.customer = assignCustomer
+                bundle.putParcelable("cartList", cartList?.get(0))
 
                 findNavController().navigate(R.id.action_manualSaleNew_to_paymentFragment, bundle)
             }
@@ -405,7 +429,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
         Log.e(TAG, "replaceCurrency  ${replaceCurrency}")
         var count = 0
         if (isAdd) {
-            var model = TbItem()
+            val model = TbItem()
             var count = 0
 
 
@@ -446,6 +470,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
 
             }
 
+            model.itemId = manualItemId
+            model.categoryId = manualCategoryId
 
             Log.e(TAG, "Parsemodel  ${Gson().toJson(model)}")
             viewModel.cartLogic(cartList, model, ADD)
@@ -461,6 +487,9 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
         if (prefProvider.getValue(SALE_CUSTOMER_NAME, "").toString().isNotEmpty()) {
             binding.txtCustomerName.text = prefProvider.getValue(SALE_CUSTOMER_NAME, "")
             binding.txtCrtNewCustomer.text = "Remove Customer"
+        } else {
+            binding.txtCustomerName.text = "Add Customer"
+            binding.txtCrtNewCustomer.text = "Add Customer"
         }
         cartAdapter = ManualSaleCartAdapter()
         cartAdapter.setCallBack(this)

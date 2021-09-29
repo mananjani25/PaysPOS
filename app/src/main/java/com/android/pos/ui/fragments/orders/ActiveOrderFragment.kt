@@ -123,7 +123,8 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
 
     private fun getOpenOrders() {
 
-        viewModel.openOrders.observe(viewLifecycleOwner, { it ->
+
+        viewModel.openOrders(param1).observe(viewLifecycleOwner, { it ->
 
             it?.let { resource ->
                 when (resource.status) {
@@ -131,10 +132,7 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
                         ProgressUtils.dismissProgressDialog()
                         resource.data?.let {
 
-                            val data = it.data.orders.filter {
-                                it.paymentStatus == param1
-                            }
-
+                            val data = it.data.orders
                             adapter.add(data)
                         }
                     }
@@ -153,72 +151,75 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
     }
 
     override fun onItemClickListener(view: View?, pos: Int, status: String) {
-//action_orders_to_paymentFragment
         val order = adapter.getItem(pos)
-        if (status == "UPDATE") {
-            prefProvider.setValue(Constants.ORDER_TYPE, order.orderType)
+        when (status) {
+            "UPDATE" -> {
+                prefProvider.setValue(Constants.ORDER_TYPE, order.orderType)
 
 
-            if (order.customer != null) {
-                prefProvider.setValue(
-                    Constants.CUSTOMER_NAME,
-                    order.customer.firstName + " " + order.customer.lastName
-                )
-            }
-
-
-            dashboardViewModel.addCart(
-                cartModel(order)
-            )
-            val bundle = Bundle()
-            bundle.putBoolean("update", true)
-            bundle.putInt("orderId", order.id)
-            bundle.putInt("paymentId", order.payments[0].id)
-            bundle.putString("paymentOfflineId", order.payments[0].offlineId)
-            bundle.putString("orderOfflineId", order.offlineId)
-            findNavController().navigate(
-                R.id.action_orders_to_dashboardCategoryNew, bundle
-            )
-
-        } else if (status == "PAY") {
-
-            val cartModel = cartModel(order)
-
-            val bundle = Bundle()
-            bundle.putDouble("totalPrice", order.payments[0].amount)
-            bundle.putDouble("subTotalPrice", order.payments[0].subTotal)
-            bundle.putDouble("totalTax", order.payments[0].taxAmount)
-            bundle.putDouble("totalDiscount", order.payments[0].totalDiscount)
-            bundle.putDouble("totalServiceCharge", order.payments[0].serviceChargeAmount)
-            bundle.putString("future_delivery_date", order.futureDeliveryDate)
-            bundle.putString("future_delivery_time", order.futureDeliveryTime)
-            bundle.putParcelable("cartList", cartModel)
-
-
-            bundle.putBoolean("update", true)
-            bundle.putInt("orderId", order.id)
-            bundle.putInt("paymentId", order.payments[0].id)
-            bundle.putString("paymentOfflineId", order.payments[0].offlineId)
-            bundle.putString("orderOfflineId", order.offlineId)
-
-            findNavController().navigate(
-                R.id.action_orders_to_paymentFragment,
-                bundle
-            )
-
-        } else {
-
-            alert(
-                getString(R.string.app_name),
-                getString(R.string.cancel_order_message)
-            ) {
-                positiveButton(getString(R.string.yes)) {
-
-                    itemPos = pos
-                    viewModel.cancelOrder(order.id)
+                if (order.customer != null) {
+                    prefProvider.setValue(
+                        Constants.CUSTOMER_NAME,
+                        order.customer.firstName + " " + order.customer.lastName
+                    )
                 }
-                negativeButton(R.string.no) {
-                    // Do negative stuff here
+
+
+                dashboardViewModel.addCart(
+                    cartModel(order)
+                )
+                val bundle = Bundle()
+                bundle.putBoolean("update", true)
+                bundle.putInt("orderId", order.id)
+                bundle.putInt("paymentId", order.payments[0].id)
+                bundle.putString("paymentOfflineId", order.payments[0].offlineId)
+                bundle.putString("orderOfflineId", order.offlineId)
+                findNavController().navigate(
+                    R.id.action_orders_to_dashboardCategoryNew, bundle
+                )
+
+            }
+            "PAY" -> {
+
+                val cartModel = cartModel(order)
+
+                val bundle = Bundle()
+                bundle.putDouble("totalPrice", order.payments[0].amount)
+                bundle.putDouble("subTotalPrice", order.payments[0].subTotal)
+                bundle.putDouble("totalTax", order.payments[0].taxAmount)
+                bundle.putDouble("totalDiscount", order.payments[0].totalDiscount)
+                bundle.putDouble("totalServiceCharge", order.payments[0].serviceChargeAmount)
+                bundle.putString("future_delivery_date", order.futureDeliveryDate)
+                bundle.putString("future_delivery_time", order.futureDeliveryTime)
+                bundle.putParcelable("cartList", cartModel)
+
+
+                bundle.putBoolean("update", true)
+                bundle.putInt("orderId", order.id)
+                bundle.putInt("paymentId", order.payments[0].id)
+                bundle.putString("paymentOfflineId", order.payments[0].offlineId)
+                bundle.putString("orderOfflineId", order.offlineId)
+
+                findNavController().navigate(
+                    R.id.action_orders_to_paymentFragment,
+                    bundle
+                )
+
+            }
+            else -> {
+
+                alert(
+                    getString(R.string.app_name),
+                    getString(R.string.cancel_order_message)
+                ) {
+                    positiveButton(getString(R.string.yes)) {
+
+                        itemPos = pos
+                        viewModel.cancelOrder(order.id)
+                    }
+                    negativeButton(R.string.no) {
+                        // Do negative stuff here
+                    }
                 }
             }
         }
@@ -272,7 +273,8 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
                 discountType = it.discountType
                 if (it.discountId != null)
                     discountId = it.discountId
-                variationsAttributes = variationAtt(it.order_item_variation)
+                if (it.order_item_variation != null)
+                    variationsAttributes = variationAtt(it.order_item_variation)
 
             }
 

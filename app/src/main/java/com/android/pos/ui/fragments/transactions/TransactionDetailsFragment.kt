@@ -128,7 +128,20 @@ class TransactionDetailsFragment : Fragment() {
                 binding.orderDetails = it
                 orderDetailsItemAdapter.addOrderDetailsItems(it.data.orderItems)
 
-                if (orderDetailsResponse.data.totalAmount == orderDetailsResponse.data.refundDetails.refundedAmount) {
+
+                if (orderDetailsResponse.data.totalDiscount != 0.0) {
+                    binding.llDiscount.visibility = View.VISIBLE
+                }
+
+                if (orderDetailsResponse.data.refundDetails.refundedAmount != 0.0) {
+                    binding.llRefundAmount.visibility = View.VISIBLE
+                }
+
+                /*if (orderDetailsResponse.data.totalAmount == orderDetailsResponse.data.refundDetails.refundedAmount) {
+                    binding.tvIssueRefund.visibility = View.GONE
+                }*/
+
+                if (orderDetailsResponse.data.refundDetails.refundedAmount != 0.0) {
                     binding.tvIssueRefund.visibility = View.GONE
                 }
 

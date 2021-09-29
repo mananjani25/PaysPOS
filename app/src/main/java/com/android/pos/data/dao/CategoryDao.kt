@@ -18,10 +18,10 @@ interface CategoryDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addAll(categoryModel: List<TbCategory>)
 
-    @Query("select * from TbCategory where TbCategory.active = 1 ORDER BY TbCategory.sort DESC")
+    @Query("select * from TbCategory where TbCategory.active = 1 and TbCategory.name != 'Manual Sales' ORDER BY TbCategory.sort DESC")
     fun all(): LiveData<List<TbCategory>>
 
-    @get:Query("select * from TbCategory where TbCategory.active = 0 ORDER BY TbCategory.sort DESC")
+    @get:Query("select * from TbCategory where TbCategory.active = 0 and TbCategory.name != 'Manual Sales' ORDER BY TbCategory.sort DESC")
     val unhideCategory: LiveData<List<TbCategory>>
 
     @Query("SELECT * from TbCategory where TbCategory.id  = :id LIMIT 1")
@@ -45,11 +45,14 @@ interface CategoryDao {
     @Query("UPDATE TbCategory SET sort = :sort WHERE  TbCategory.id = :id")
     fun updateSorting(id: Int, sort: Int?): Int
 
+    @get:Query("SELECT * from TbCategory WHERE TbCategory.name == 'Manual Sales' LIMIT 1")
+    val manualCategoryId: LiveData<TbCategory>
+
     @Query("UPDATE TbCategory SET active = :active WHERE  TbCategory.id = :id")
     suspend fun hideCategory(id: Int, active: Boolean?): Int
 
     @Transaction
-    @Query("SELECT * FROM TbCategory where TbCategory.active = 1 ORDER BY TbCategory.sort DESC")
+    @Query("SELECT * FROM TbCategory where TbCategory.active = 1 and TbCategory.name != 'Manual Sales' ORDER BY TbCategory.sort DESC")
     fun categoryWithInventory(): LiveData<List<CategoryWithInventory?>>?
 
     @Query("SELECT * FROM TbCategory WHERE TbCategory.id IN (:userIds)")

@@ -37,6 +37,18 @@ class MethodUtils {
 
         }
 
+
+        @SuppressLint("SetTextI18n")
+        fun setRefundPriceTextView(appCompatTextView: AppCompatTextView, price: Double) {
+
+            appCompatTextView.text = "Total Refundable Amount is " + MainApplication.getInstance()!!
+                .getText(R.string.symbole)
+                .toString() + String.format(
+                "%.2f", price
+            )
+
+        }
+
         fun roundOffAmount(price: Double): String {
             return MainApplication.getInstance()!!.getText(R.string.symbole)
                 .toString() + String.format("%.2f", price)
