@@ -49,7 +49,7 @@
                     android:layout_weight="1"
                     android:fontFamily="@font/sf_pro_display_medium"
                     android:gravity="center"
-                    android:text="@{`Order`+orderDetails.data.offlineId}"
+                    android:text="@{`Order `+orderDetails.data.offlineId}"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi"
                     app:layout_constraintBottom_toBottomOf="parent"

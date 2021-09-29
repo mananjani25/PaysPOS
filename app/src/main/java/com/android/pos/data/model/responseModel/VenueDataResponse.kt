@@ -3,6 +3,7 @@ package com.android.pos.data.model.responseModel
 
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
+import com.android.pos.R
 import com.android.pos.data.entities.ModifierSet
 import com.android.pos.data.entities.OptionSet
 import com.android.pos.data.entities.TaxData
@@ -102,7 +103,7 @@ data class VenueDataResponse(
         fun loadImage(view: ImageView, imageUrl: String?, thumbNail: String?) {
             if (imageUrl.isNullOrBlank() || imageUrl.trim() == "" || imageUrl.trim() == "null" || imageUrl.isNullOrEmpty()
             ) {
-                return
+                view.setImageDrawable(view.context.resources.getDrawable(android.R.drawable.screen_background_dark_transparent))
 
             } else {
                 Glide.with(view.context)
