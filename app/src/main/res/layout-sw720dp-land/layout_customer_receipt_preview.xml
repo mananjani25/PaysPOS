@@ -33,8 +33,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginStart="@dimen/_5sdp"
-                android:layout_marginEnd="@dimen/_10sdp"
                 android:src="@mipmap/ic_launcher" />
 
             <androidx.appcompat.widget.LinearLayoutCompat
@@ -69,7 +67,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_5sdp"
                     android:gravity="center"
-                    android:text="(635)987-3354"
+                    android:text="(635) 987-3354"
                     android:textColor="@color/viewTextColor"
                     android:textSize="@dimen/_7mdpi" />
 
@@ -766,7 +764,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
-                    android:text="(635)987-3354"
+                    android:text="(635) 987-3354"
                     android:textColor="@color/viewTextColor"
                     android:textSize="@dimen/_6mdpi" />
 

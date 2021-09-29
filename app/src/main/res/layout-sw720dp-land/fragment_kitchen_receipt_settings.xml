@@ -1103,7 +1103,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/_10sdp"
                             android:layout_marginTop="@dimen/_2sdp"
-                            android:text="(635)987-3354"
+                            android:text="(635) 987-3354"
                             android:textColor="@color/viewTextColor"
                             android:textSize="@dimen/_6mdpi" />
 
