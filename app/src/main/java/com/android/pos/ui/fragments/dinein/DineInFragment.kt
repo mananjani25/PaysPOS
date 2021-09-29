@@ -140,7 +140,12 @@ class DineInFragment : Fragment() {
                         val tvTableName: AppCompatTextView =
                             inflatedViewSquare.findViewById(R.id.tvTableName)
 
-                        tvTableName.text = "" + dineInFloorTablesList[i].tableNumber
+                        tvTableName.text = "" + dineInFloorTablesList[i].tableName
+
+                        val tvTableNumber: AppCompatTextView =
+                            inflatedViewSquare.findViewById(R.id.tvTableNumber)
+
+                        tvTableNumber.text = "" + dineInFloorTablesList[i].tableNumber
 
                         if (llMainParentSquare.parent != null) {
                             (llMainParentSquare.parent as ViewGroup).removeView(llMainParentSquare)
@@ -176,11 +181,15 @@ class DineInFragment : Fragment() {
 
                         tvNoOFChairs.text = "" + dineInFloorTablesList[i].chairCount
 
-
                         val tvTableName: AppCompatTextView =
                             inflatedViewRound.findViewById(R.id.tvTableName)
 
-                        tvTableName.text = "" + dineInFloorTablesList[i].tableNumber
+                        tvTableName.text = "" + dineInFloorTablesList[i].tableName
+
+                        val tvTableNumber: AppCompatTextView =
+                            inflatedViewRound.findViewById(R.id.tvTableNumber)
+
+                        tvTableNumber.text = "" + dineInFloorTablesList[i].tableNumber
 
                         if (llMainParentRound.parent != null) {
                             (llMainParentRound.parent as ViewGroup).removeView(llMainParentRound)
