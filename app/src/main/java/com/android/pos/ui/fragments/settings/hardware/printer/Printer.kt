@@ -76,6 +76,7 @@ import com.android.pos.utils.getBitmapFromVectorDrawable
 import com.android.pos.utils.padLine
 import com.android.pos.utils.printer.PrinterClass.BLUETOOTH_TIMEOUT
 import com.android.pos.utils.printer.PrinterClass.IMAGE_WIDTH_MAX
+import com.android.pos.utils.printer.PrinterClass.TEST_PRINT_LAN_TIME
 import com.android.pos.utils.statusUtils.Status
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -320,6 +321,16 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
           }*/
 
         binding.imgClose.setOnClickListener {
+            val navController = findNavController()
+            navController.previousBackStackEntry?.savedStateHandle?.set(
+                com.android.pos.data.remote.Constants.KEY,
+                PRINTER
+            )
+
+            navController.popBackStack()
+        }
+
+        binding.txtSave.setOnClickListener {
             val navController = findNavController()
             navController.previousBackStackEntry?.savedStateHandle?.set(
                 com.android.pos.data.remote.Constants.KEY,
@@ -1919,7 +1930,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                     builder, if (printerListModel.connectionType == BLUETOOTH) {
                         BLUETOOTH_TIMEOUT
                     } else {
-                        SEND_TIMEOUT
+                        TEST_PRINT_LAN_TIME
                     }, status, battery
                 )
                 //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
