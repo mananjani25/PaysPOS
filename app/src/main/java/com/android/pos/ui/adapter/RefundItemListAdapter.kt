@@ -1,14 +1,12 @@
 package com.android.pos.ui.adapter
 
 import android.text.TextUtils
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
-import com.android.pos.data.model.responseModel.NoteResponse
 import com.android.pos.databinding.ViewRefundItemBinding
 import com.android.pos.ui.fragments.transactions.TransactionDetailsViewModel
 import com.android.pos.utils.MethodUtils
@@ -19,6 +17,7 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
     var showItemSubTotal: (() -> Unit)? = null
     var selectedItemList = ArrayList<GetOrderDetailsResponse.Data.OrderItem>()
     var noteList = ArrayList<GetOrderDetailsResponse.Data.OrderItem>()
+    var serviceCharge = ArrayList<GetOrderDetailsResponse.Data.OrderServiceCharge>()
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -29,11 +28,16 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
         return MyViewHolder(binding)
     }
 
-    fun addItems(noteList: List<GetOrderDetailsResponse.Data.OrderItem>) {
+    fun addItems(
+        noteList: List<GetOrderDetailsResponse.Data.OrderItem>,
+        serviceCharge: List<GetOrderDetailsResponse.Data.OrderServiceCharge>
+    ) {
         this.noteList.apply {
             clear()
             addAll(noteList)
         }
+        this.serviceCharge =
+            serviceCharge as ArrayList<GetOrderDetailsResponse.Data.OrderServiceCharge>
         notifyDataSetChanged()
     }
 
@@ -72,6 +76,7 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
 
 
             var totalTax = 0.0
+            var totalServiceCharge = 0.0
 
             var totalItemPrice = item.totalPrice - item.discountAmount
 
@@ -83,11 +88,15 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
             item.orderItemModifiers.forEach { modifiers ->
                 totalItemPrice += (modifiers.price * modifiers.quantity)
                 modifiers.orderItemTaxes.forEach { taxes ->
-                    totalItemPrice += taxes.taxTotalAmount
+                    totalTax += taxes.taxTotalAmount
                 }
 
             }
-            totalItemPrice += totalTax
+
+            serviceCharge.forEach {
+                totalServiceCharge += (totalItemPrice * it.rate) / 100
+            }
+            totalItemPrice += totalTax + totalServiceCharge
             MethodUtils.setPriceTextView(itemBinding.tvItemPrice, totalItemPrice)
 
             itemBinding.ivCheck.setOnClickListener {

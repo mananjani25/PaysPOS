@@ -279,6 +279,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private fun getServiceCharges() {
 
         viewModel.serviceCharges.observe(requireActivity(), {
+            Log.e(TAG,"ServiceChargeListSize: ${it.data?.size}")
             serviceChargesList = it.data
             getCartList()
         })
@@ -319,6 +320,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     if (cartList.isNotEmpty()) {
 
                         if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
+
+                            viewModel.setServiceCharges(serviceChargesList)
+                            cartList.get(0).serviceCharge = serviceChargesList
                             binding.layoutCart.rvCart.visibility = View.GONE
                             binding.layoutCart.rvCartDineIn.visibility = View.VISIBLE
                             binding.layoutCart.llPayment.visibility = View.VISIBLE
@@ -960,6 +964,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     val dineInList = dineInCartAdapter.getList()
                     dineInList.get(dineInCartAdapter.getHeaderPosition()).items.add(item)
                     viewModel.cartLogic(cartList, item, DINE_IN_ITEM, dineInList = dineInList)
+                    Log.e(TAG,"serviceChargesList:  ${Gson().toJson(serviceChargesList)}")
+
 
                 } else {
 

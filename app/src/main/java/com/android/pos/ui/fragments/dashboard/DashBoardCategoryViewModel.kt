@@ -161,6 +161,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 val cartModel = cartList[0]
                 cartModel.dineInList = dineInList
 
+
                 addCart(cartModel)
 
             } else {
@@ -282,6 +283,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             orderTypeId = prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
             orderType = prefProvider.getValue(Constants.ORDER_TYPE, "").toString()
             orderTypeName = prefProvider.getValue(Constants.ORDER_TYPE_NAME, "").toString()
+
             serviceCharge = serviceChargesList
             customer = assignCustomer
             item.itemQuantity = item.itemQuantity
@@ -360,6 +362,10 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 }
                 val serviceChargesList = cartList[0].serviceCharge
+                Log.e(
+                    TAG,
+                    "serviceChargeDashViewModel:  ${Gson().toJson(cartList[0].serviceCharge)}"
+                )
                 if (serviceChargesList != null && serviceChargesList.isNotEmpty()) {
                     serviceChargesList.forEach {
                         if (it.isEnabled) {
@@ -379,7 +385,6 @@ class DashBoardCategoryViewModel @Inject constructor(
                 Log.e(TAG, "totalServiceCharge:  $totalServiceCharge")
 
                 totalPrice = (subTotalPrice + totalTax + totalServiceCharge) /*- totalDiscount*/
-
 
 
             } else {

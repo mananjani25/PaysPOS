@@ -150,7 +150,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
         refundItemListAdapter = RefundItemListAdapter(viewModel)
         binding.rvItemListRefund.adapter = refundItemListAdapter
 
-        refundItemListAdapter.addItems(orderDetailsResponse.data.orderItems)
+        refundItemListAdapter.addItems(orderDetailsResponse.data.orderItems,orderDetailsResponse.data.orderServiceCharges)
 
         refundItemListAdapter.showItemSubTotal = {
 

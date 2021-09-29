@@ -8,9 +8,8 @@
 
     <LinearLayout
         android:id="@+id/llMainParentSquare"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/_5sdp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:background="@drawable/background_drawer_button"
         android:gravity="center"
         android:orientation="horizontal">
@@ -26,9 +25,21 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/_2sdp"
+                android:text="Table 1"
+                android:layout_marginTop="@dimen/_1sdp"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_5mdpi" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvTableNumber"
+                style="@style/CustomFontBold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/_3sdp"
+                android:layout_marginBottom="@dimen/_2sdp"
                 android:text="3"
                 android:textColor="@color/black"
-                android:textSize="@dimen/_6mdpi" />
+                android:textSize="@dimen/_5mdpi" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -47,7 +58,7 @@
                     android:layout_marginLeft="@dimen/_3sdp"
                     android:text="3"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/_6mdpi" />
+                    android:textSize="@dimen/_5mdpi" />
             </LinearLayout>
 
         </LinearLayout>

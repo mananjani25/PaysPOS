@@ -50,7 +50,7 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>() {
                 }
 
             } else {
-                binding.rvCart.visibility = View.GONE
+                binding.rvCart.visibility = View.VISIBLE
                 binding.constraintHeader.setBackground(
                     binding.root.context.resources.getDrawable(R.drawable.background_dine_in_unselected)
                 )
@@ -60,7 +60,7 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>() {
                     binding.imgProfile.setColorFilter(binding.root.context.resources.getColor(R.color.txtColor))
                 }
             }
-            itemAdapter
+
 
             if (layoutPosition == 0) {
                 binding.imgProfile.setImageDrawable(binding.root.context.getDrawable(R.drawable.ic_simple_table))
