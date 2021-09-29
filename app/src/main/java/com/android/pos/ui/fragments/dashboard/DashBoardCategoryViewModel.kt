@@ -331,7 +331,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         .toDouble()
                                 } else {
 
-                                    totalTax += String.format("%.2f", tax.rate)
+                                    val ss = tax.rate * item.itemQuantity
+                                    Log.e("tt",ss.toString())
+
+                                    totalTax += String.format("%.2f", ss)
                                         .toDouble()
                                 }
                             }
@@ -351,7 +354,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                             .toDouble()
                                     } else {
 
-                                        totalTax += String.format("%.2f", tax.rate)
+                                        totalTax += String.format("%.2f", tax.rate* item.itemQuantity)
                                             .toDouble()
                                     }
                                 }
@@ -409,7 +412,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     .toDouble()
                             } else {
 
-                                totalTax += String.format("%.2f", tax.rate)
+                                totalTax += String.format("%.2f", tax.rate * item.itemQuantity)
                                     .toDouble()
                             }
                         }
@@ -429,7 +432,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         .toDouble()
                                 } else {
 
-                                    totalTax += String.format("%.2f", tax.rate)
+                                    totalTax += String.format("%.2f", tax.rate* item.itemQuantity)
                                         .toDouble()
                                 }
                             }
