@@ -147,22 +147,92 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun cartLogic(
         cartList: List<CartModel>?,
-        item: TbItem,
+        item: TbItem?,
         type: String,
         dineInList: List<DineInModel> = arrayListOf()
     ) {
 
         if (cartList != null && cartList.isEmpty()) {
             // empty cart hoy to new cart create kare
-            val cartModel = addCartModel(item)
-            addCart(cartModel)
+            val cartModel = item?.let { addCartModel(it) }
+            if (cartModel != null) {
+                addCart(cartModel)
+            }
         } else {
             if (cartList?.get(0)?.orderType == DINE_IN) {
                 val cartModel = cartList[0]
                 cartModel.dineInList = dineInList
+                if (type == ADD || type == UPDATE) {
+                    var index = -1
+                    val dineIn = dineInList
+                    if (dineIn != null && dineIn.isNotEmpty()) {
+                        val selectedHeader = dineInList.get(0).selectedPosition
+
+                        dineIn.get(selectedHeader).items.forEachIndexed { pos, tbItem ->
+                            if (item != null) {
+                                if (tbItem.itemId == item.itemId && checkVariation(
+                                        tbItem,
+                                        item
+                                    ) && checkModifier(tbItem, item)
+                                ) {
+
+                                    index = pos
+                                    return@forEachIndexed
+
+                                }
+                            }
 
 
-                addCart(cartModel)
+                        }
+                        Log.e(TAG, "DineInIndax: ${index}")
+
+                        if (index != -1) {
+                            val model =
+                                cartList[0].dineInList?.get(selectedHeader)?.items?.get(index)
+                            if (model != null) {
+                                if (type == "UPDATE") {
+                                    if (item != null) {
+                                        model.itemQuantity = item.itemQuantity
+                                    }
+                                    dineIn.get(selectedHeader).items[index] = model
+                                } else {
+                                    if (index != -1) {
+                                        if (item != null) {
+                                            model.itemQuantity =
+                                                item.itemQuantity + model.itemQuantity
+                                            item.modifiers.forEach {
+                                                it.itemQuantity = model.itemQuantity
+                                            }
+                                            model.modifiers = item.modifiers
+                                        }
+
+                                        dineIn.get(selectedHeader).items[index] = model
+                                        cartModel.dineInList = dineIn
+                                        addCart(cartModel)
+                                    } else {
+                                        cartModel.dineInList = dineInList
+                                        addCart(cartModel)
+
+                                    }
+                                }
+
+
+                            }
+                        } else {
+
+                            if (item != null) {
+                                dineInList.get(dineInList.get(0).selectedPosition).items.add(item)
+                            }
+                            cartModel.dineInList = dineInList
+                            addCart(cartModel)
+                        }
+
+
+                    }
+
+
+                }
+
 
             } else {
                 // already cart ma hoy to add/update/delete kare flag wise
@@ -173,15 +243,17 @@ class DashBoardCategoryViewModel @Inject constructor(
                         var index = -1
 
                         list.forEachIndexed { pos, tbItem ->
-                            if (tbItem.itemId == item.itemId && checkVariation(
-                                    tbItem,
-                                    item
-                                ) && checkModifier(tbItem, item)
-                            ) {
-                                //   if (checkModifier(tbItem, item)) {
-                                index = pos
-                                return@forEachIndexed
-                                //  }
+                            if (item != null) {
+                                if (tbItem.itemId == item.itemId && checkVariation(
+                                        tbItem,
+                                        item
+                                    ) && checkModifier(tbItem, item)
+                                ) {
+                                    //   if (checkModifier(tbItem, item)) {
+                                    index = pos
+                                    return@forEachIndexed
+                                    //  }
+                                }
                             }
 
                             /*if (tbItem.itemId == item.itemId && checkModifier(tbItem, item)) {
@@ -193,26 +265,35 @@ class DashBoardCategoryViewModel @Inject constructor(
                             val model = cartList[0].items?.get(index)
                             if (model != null) {
                                 if (type == "UPDATE") {
-                                    model.itemQuantity = item.itemQuantity
+                                    if (item != null) {
+                                        model.itemQuantity = item.itemQuantity
+                                    }
                                     list[index] = model
                                 } else {
                                     if (index != -1) {
-                                        model.itemQuantity = item.itemQuantity + model.itemQuantity
-                                        item.modifiers.forEach {
-                                            it.itemQuantity = model.itemQuantity
+                                        if (item != null) {
+                                            model.itemQuantity =
+                                                item.itemQuantity + model.itemQuantity
+                                            item.modifiers.forEach {
+                                                it.itemQuantity = model.itemQuantity
+                                            }
+                                            model.modifiers = item.modifiers
                                         }
-                                        model.modifiers = item.modifiers
 
                                         list[index] = model
                                     } else {
-                                        model.itemQuantity = item.itemQuantity
+                                        if (item != null) {
+                                            model.itemQuantity = item.itemQuantity
+                                        }
                                         list[index] = model
                                     }
                                 }
 
                             }
                         } else {
-                            list.add(item)
+                            if (item != null) {
+                                list.add(item)
+                            }
                         }
                     } else if (type == DELETE) {
                         list.remove(item)
@@ -232,7 +313,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                         deleteCart()
                     } else {
                         val cartModel = cartList?.get(0)
-                        cartModel?.items = listOf(item)
+                        cartModel?.items = listOf(item!!)
                         if (cartModel != null) {
                             addCart(cartModel)
                         }

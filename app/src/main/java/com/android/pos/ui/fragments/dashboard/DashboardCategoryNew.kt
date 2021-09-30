@@ -34,7 +34,6 @@ import com.android.pos.data.remote.Constants.ADD
 import com.android.pos.data.remote.Constants.CUSTOMER_NAME
 import com.android.pos.data.remote.Constants.DELETE
 import com.android.pos.data.remote.Constants.DINE_IN
-import com.android.pos.data.remote.Constants.DINE_IN_ITEM
 import com.android.pos.data.remote.Constants.HORIZONTAL
 import com.android.pos.data.remote.Constants.MANUALSALE
 import com.android.pos.data.remote.Constants.OPEN_ORDER
@@ -962,8 +961,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         item
                     )*/
                     val dineInList = dineInCartAdapter.getList()
-                    dineInList.get(dineInCartAdapter.getHeaderPosition()).items.add(item)
-                    viewModel.cartLogic(cartList, item, DINE_IN_ITEM, dineInList = dineInList)
+                    //dineInList.get(dineInCartAdapter.getHeaderPosition()).items.add(item)
+                    viewModel.cartLogic(cartList, item, ADD, dineInList = dineInList)
                     Log.e(TAG, "serviceChargesList:  ${Gson().toJson(serviceChargesList)}")
 
 
@@ -1177,12 +1176,20 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                         val dineInList = dineInCartAdapter.getList()
                         dineInList.get(dineInCartAdapter.getHeaderPosition()).items.add(data)
-                        viewModel.cartLogic(cartList, data, DINE_IN_ITEM, dineInList = dineInList)
+                        viewModel.cartLogic(cartList, data, ADD, dineInList = dineInList)
                     } else {
                         viewModel.cartLogic(cartList, data, ADD)
                     }
                 } else
-                    viewModel.cartLogic(cartList, data, UPDATE)
+                    if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
+                        val dineInList = dineInCartAdapter.getList()
+                        dineInList.get(dineInCartAdapter.getHeaderPosition()).items.add(data)
+                        viewModel.cartLogic(cartList, data, UPDATE, dineInList = dineInList)
+
+                    } else {
+
+                        viewModel.cartLogic(cartList, data, UPDATE)
+                    }
             } else {
                 AlertUtils.showCustomAlert(
                     binding.root.context,
@@ -1746,11 +1753,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         if (cartList.isEmpty()) {
             cartList.add(CartModel())
         }
-        val nullItem = TbItem()
-
 
         cartList.get(0).orderType = DINE_IN
-        viewModel.cartLogic(cartList, nullItem, ADD, dineInList = dineInList)
+        viewModel.cartLogic(cartList, null, ADD, dineInList = dineInList)
 
     }
 
