@@ -16,7 +16,7 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
     var cartList = ArrayList<TbItem>()
     private val TAG = "CartAdapter"
 
-    private  var mCallback: MyCallback?=null
+    private lateinit var mCallback: MyCallback
 
     fun setCallback(callback: MyCallback) {
         mCallback = callback
@@ -91,7 +91,7 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
         init {
 
             binding.root.setOnClickListener {
-                mCallback?.onItemClickListener(it, cartList[bindingAdapterPosition])
+                mCallback!!.onItemClickListener(it, cartList[bindingAdapterPosition])
             }
         }
     }

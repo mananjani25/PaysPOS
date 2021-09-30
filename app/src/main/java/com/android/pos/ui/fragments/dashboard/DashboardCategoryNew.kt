@@ -65,6 +65,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, MyCallback,
+    DineInAdapter.DineInCallback,
     ItemCallback, View.OnClickListener {
 
     private var customerUpdate: Boolean = false
@@ -305,6 +306,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         cartAdapter = CartAdapter()
         cartAdapter.setCallback(this)
         dineInCartAdapter = DineInAdapter()
+        dineInCartAdapter.setListner(this)
         binding.layoutCart.rvCart.adapter = cartAdapter
         binding.layoutCart.rvCartDineIn.adapter = dineInCartAdapter
         // dineInCartAdapter.itemAdapter.setCallback(this)
@@ -1176,18 +1178,21 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 }
 
                 if (isItemClick) {
+
                     if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
 
+                        cartList.get(0).orderType = DINE_IN
                         val dineInList = dineInCartAdapter.getList()
-                        dineInList.get(dineInCartAdapter.getHeaderPosition()).items.add(data)
+                        // dineInList.get(dineInCartAdapter.getHeaderPosition()).items.add(data)
                         viewModel.cartLogic(cartList, data, ADD, dineInList = dineInList)
                     } else {
                         viewModel.cartLogic(cartList, data, ADD)
                     }
                 } else
                     if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
+                        cartList.get(0).orderType = DINE_IN
                         val dineInList = dineInCartAdapter.getList()
-                        dineInList.get(dineInCartAdapter.getHeaderPosition()).items.add(data)
+                        // dineInList.get(dineInCartAdapter.getHeaderPosition()).items.add(data)
                         viewModel.cartLogic(cartList, data, UPDATE, dineInList = dineInList)
 
                     } else {
@@ -1760,6 +1765,14 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         cartList.get(0).orderType = DINE_IN
         viewModel.cartLogic(cartList, null, ADD, dineInList = dineInList)
+
+    }
+
+    override fun onHeaderSelected(position: Int) {
+
+    }
+
+    override fun onItemSelected(headerPosition: Int, position: Int, item: TbItem) {
 
     }
 

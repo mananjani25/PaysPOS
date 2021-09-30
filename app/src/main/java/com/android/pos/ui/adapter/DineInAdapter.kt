@@ -1,6 +1,7 @@
 package com.android.pos.ui.adapter
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,11 +10,14 @@ import com.android.pos.R
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.DineInModel
 import com.android.pos.databinding.ViewDineInItemBinding
+import com.android.pos.utils.callback.MyCallback
+import com.google.gson.Gson
 
-class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>() {
+class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>(), MyCallback {
     private var list: ArrayList<DineInModel> = arrayListOf()
     private lateinit var listner: DineInCallback
     private lateinit var itemAdapter: CartAdapter
+    private val TAG = "DineInAdapter"
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DineInAdapter.MyViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -30,13 +34,14 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>() {
     }
 
     inner class MyViewHolder(private val binding: ViewDineInItemBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+        RecyclerView.ViewHolder(binding.root), MyCallback {
         @SuppressLint("UseCompatLoadingForDrawables")
         fun bind(model: DineInModel) {
             binding.model = model
             binding.executePendingBindings()
             itemAdapter = CartAdapter()
             binding.rvCart.adapter = itemAdapter
+
             itemAdapter.addCart(list.get(layoutPosition).items)
             binding.txtTableName.setText(list.get(layoutPosition).title)
             if (layoutPosition == list.get(0).selectedPosition) {
@@ -69,7 +74,7 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>() {
                 binding.imgProfile.setImageDrawable(binding.root.context.getDrawable(R.drawable.ic_group_person))
             }
 
-
+            itemAdapter.setCallback(this)
         }
 
         init {
@@ -80,6 +85,12 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>() {
                 list.get(0).selectedPosition = layoutPosition
                 notifyDataSetChanged()
             }
+        }
+
+        override fun onItemClickListener(view: View?, data: TbItem) {
+            Log.e(TAG, "DineInMyView ${Gson().toJson(data)}")
+            listner.onItemSelected(getHeaderPosition(),layoutPosition,data)
+
         }
 
     }
@@ -103,6 +114,7 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>() {
 
     interface DineInCallback {
         fun onHeaderSelected(position: Int)
+        fun onItemSelected(headerPosition: Int, position: Int, item: TbItem)
     }
 
     fun getHeaderPosition(): Int {
@@ -112,5 +124,10 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>() {
     fun getList(): ArrayList<DineInModel> {
         return list
     }
+
+    override fun onItemClickListener(view: View?, data: TbItem) {
+        Log.e(TAG, "DineInItem:  ${Gson().toJson(data)}")
+    }
+
 
 }
