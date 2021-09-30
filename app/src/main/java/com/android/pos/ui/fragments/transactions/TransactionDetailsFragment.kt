@@ -84,7 +84,11 @@ class TransactionDetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.imgBack.setOnClickListener {
-            findNavController().navigateUp()
+            findNavController().popBackStack(R.id.transactionFragment, false)
+        }
+
+        binding.txtHome.setOnClickListener {
+            findNavController().popBackStack(R.id.dashboardCategoryNew, false)
         }
 
         binding.tvIssueRefund.setOnClickListener {
