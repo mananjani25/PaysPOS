@@ -30,7 +30,7 @@ interface DiscountDao {
     fun discountById(id: Int?): TbDiscount
 
     @Query("DELETE FROM TbDiscount")
-    fun delete()
+    suspend fun delete()
 
     @Query("DELETE FROM TbDiscount where TbDiscount.id  = :id")
     suspend fun deleteDiscountById(id: Int)

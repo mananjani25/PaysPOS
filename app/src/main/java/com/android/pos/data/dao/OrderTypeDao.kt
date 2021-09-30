@@ -27,7 +27,7 @@ interface OrderTypeDao {
     fun tipsById(id: Int?): TbOrderType
 
     @Query("DELETE FROM TbOrderType")
-    fun delete()
+    suspend fun delete()
 
     @Query("DELETE FROM TbOrderType where TbOrderType.id  = :id")
     suspend fun deleteTipById(id: Int)

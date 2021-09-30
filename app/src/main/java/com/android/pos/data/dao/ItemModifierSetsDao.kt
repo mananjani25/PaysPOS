@@ -18,7 +18,7 @@ interface ItemModifierSetsDao {
     suspend fun addAll(modifierSets: List<ItemModifierSets>)
 
     @Query("DELETE FROM ItemModifierSets")
-    fun delete()
+    suspend fun delete()
 
     @Query("SELECT * from ItemModifierSets where ItemModifierSets.itemId  = :itemId and ItemModifierSets.modifierSetId  = :modifierSetId LIMIT 1")
     fun minMaxByItemModifier(itemId: Int, modifierSetId: Int): LiveData<ItemModifierSets?>

@@ -57,6 +57,6 @@ interface ModifierSetDao {
     suspend fun delete(id: Int?)
 
     @Query("DELETE FROM ModifierSet")
-    fun delete()
+    suspend fun delete()
 
 }

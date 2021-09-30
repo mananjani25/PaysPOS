@@ -35,7 +35,8 @@ interface PrinterDao {
     suspend fun updateCustomerStatus(status: Boolean, id: Int)
 
     @Query("UPDATE TbKitchenPrint set status = :status WHERE TbKitchenPrint.id = :id")
-    suspend   fun updateKitchenStatus(status: Boolean, id: Int)
+    suspend fun updateKitchenStatus(status: Boolean, id: Int)
 
-
+    @Query("DELETE FROM TbKitchenPrint")
+    suspend fun delete()
 }

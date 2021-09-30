@@ -40,7 +40,7 @@ interface CategoryDao {
     suspend fun deleteCategoryById(id: Int?)
 
     @Query("DELETE FROM TbCategory")
-    fun delete()
+    suspend fun delete()
 
     @Query("UPDATE TbCategory SET sort = :sort WHERE  TbCategory.id = :id")
     fun updateSorting(id: Int, sort: Int?): Int

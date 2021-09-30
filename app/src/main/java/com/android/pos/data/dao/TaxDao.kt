@@ -29,7 +29,7 @@ interface TaxDao {
     fun taxById(id: Int?): TaxData
 
     @Query("DELETE FROM TbTax")
-    fun delete()
+    suspend fun delete()
 
     @Query("DELETE FROM TbTax where TbTax.id  = :id")
     suspend fun deleteTaxById(id: Int)

@@ -29,7 +29,7 @@ interface ServiceChargeDao {
     fun serviceChargeById(id: Int?): TbServiceCharge
 
     @Query("DELETE FROM TbServiceCharge")
-    fun delete()
+    suspend fun delete()
 
     @Query("DELETE FROM TbServiceCharge where TbServiceCharge.id  = :id")
     suspend fun deleteServiceChargeById(id: Int)
