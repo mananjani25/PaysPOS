@@ -71,6 +71,7 @@ class PaymentViewModel @Inject constructor(
 
                             prefProvider.setValue(Constants.ORDER_TYPE, "")
                             prefProvider.setValue(Constants.CUSTOMER_NAME, "")
+                            prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
                             posRepository.deleteCart()
                             resource.data?.let { createOrderResponse ->
 
@@ -246,15 +247,24 @@ class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.serviceChargeEnabled = true
         orderAttributeRequestModel.taxEnabled = true
         orderAttributeRequestModel.subTotal = MethodUtils.roundOffAmountDouble(subTotalPrice)
-        orderAttributeRequestModel.totalAmount = MethodUtils.roundOffAmountDouble(totalPrice)
+        orderAttributeRequestModel.totalAmount =
+            MethodUtils.roundOffAmountDouble(totalPrice) - MethodUtils.roundOffAmountDouble(
+                tipAmount
+            )
         // orderAttributeRequestModel.totalCashDiscount = 0.0
         orderAttributeRequestModel.totalDiscount = totalDiscount
         orderAttributeRequestModel.totalServiceCharges =
             MethodUtils.roundOffAmountDouble(totalServiceCharge)
         orderAttributeRequestModel.totalTaxAmount = MethodUtils.roundOffAmountDouble(totalTax)
         orderAttributeRequestModel.totalTips = MethodUtils.roundOffAmountDouble(tipAmount)
-        if (cartModel.customer != null)
-            orderAttributeRequestModel.customer_id = cartModel.customer?.id
+
+//        if (cartModel.customer != null)
+//            orderAttributeRequestModel.customer_id = cartModel.customer?.id
+
+        val customerId = prefProvider.getValueInt(Constants.CUSTOMER_ID, -1)
+        if (customerId != -1) {
+            orderAttributeRequestModel.customer_id = customerId
+        }
 
 
         orderAttributeRequestModel.paymentAttributes =
@@ -518,7 +528,7 @@ class PaymentViewModel @Inject constructor(
                 val ss = tax.rate * modifier.itemQuantity
 
                 orderModifierTaxesAttribute.taxTotalAmount =
-                    MethodUtils.roundOffAmountDouble((ss ))
+                    MethodUtils.roundOffAmountDouble((ss))
             }
 
 
@@ -561,7 +571,7 @@ class PaymentViewModel @Inject constructor(
                     MethodUtils.roundOffAmountDouble(itemTaxPrice)
             } else {
 
-                val ss= tax.rate * items.itemQuantity
+                val ss = tax.rate * items.itemQuantity
 
                 orderItemTaxesAttribute.taxTotalAmount =
                     MethodUtils.roundOffAmountDouble((ss))
@@ -620,7 +630,10 @@ class PaymentViewModel @Inject constructor(
         return PaymentAttributes().apply {
 //            if (isUpdateOrder)
 //                id = paymentId
-            amount = MethodUtils.roundOffAmountDouble(totalPrice)
+            amount =
+                MethodUtils.roundOffAmountDouble(totalPrice) - MethodUtils.roundOffAmountDouble(
+                    tipAmount
+                )
 //            cardName = ""
 //            cardNumber = ""
 //            cardType = 0

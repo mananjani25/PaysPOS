@@ -64,6 +64,8 @@ data class GetTransactionListResponse(
             val terminalId: Int,
             @SerializedName("tips")
             val tips: Double,
+            @SerializedName("total_amount")
+            val totalAmount: Double,
             @SerializedName("transaction_id")
             val transactionId: String,
             @SerializedName("terminal_name")

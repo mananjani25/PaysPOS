@@ -31,6 +31,8 @@ object Constants {
     const val IS_CLOCKOUT = "isClockout"
     const val IS_REFUND = "isRefund"
     const val EMPLOYEE_ID = "employee_id"
+    const val EMPLOYEE_NAME = "employee_name"
+    const val EMPLOYEE_ROLE = "employee_role"
     const val UPDATE = "UPDATE"
     const val DELETE = "DELETE"
     const val ADD = "ADD"
@@ -187,6 +189,8 @@ object Constants {
     const val BUSINESS_ADDRESS = "business_address"
     const val BUSINESS_PHONE_NO = "business_phone_no"
     const val BUSINESS_WEBSITE = "business_website"
+
+    const val CUSTOMER_ID = "customer_id"
 
     fun createRequestModelForUpdatePrinter(
         model: ArrayList<PrinterResponse.Data.OrderTypes>,

@@ -31,10 +31,12 @@ import com.android.pos.data.model.CategoryTabModel
 import com.android.pos.data.model.DineInModel
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ADD
+import com.android.pos.data.remote.Constants.CUSTOMER_ID
 import com.android.pos.data.remote.Constants.CUSTOMER_NAME
 import com.android.pos.data.remote.Constants.DELETE
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.DINE_IN_ITEM
+import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
 import com.android.pos.data.remote.Constants.HORIZONTAL
 import com.android.pos.data.remote.Constants.MANUALSALE
 import com.android.pos.data.remote.Constants.OPEN_ORDER
@@ -167,6 +169,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         binding.layoutCart.btnSave.setOnClickListener(this)
         binding.layoutCart.llCartMenu.setOnClickListener(this)
         binding.layoutCart.imgOrderMenu.setOnClickListener(this)
+        binding.footer.txtEmployeeName.text = prefProvider.getValue(EMPLOYEE_NAME, "")
 
         binding.root.setOnClickListener {
             if (binding.layoutCart.llCustomerDialog.visibility == View.VISIBLE) {
@@ -224,6 +227,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         removeCustomerViewSet()
         assignCustomer = result
 
+        result.id?.let { prefProvider.setValueInt(CUSTOMER_ID, it) }
 
         if (isOrderUpdate) {
             cartList[0].customer = assignCustomer
@@ -494,7 +498,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         val txtSignOut: TextView = dialog.findViewById(R.id.txtSignOut)
         val txtBusinessName: TextView = dialog.findViewById(R.id.txtBusinessName)
 
-        txtBusinessName.text = prefProvider.getValue(Constants.BUSINESS_NAME, "")
+        txtBusinessName.text = getString(R.string.business_name) + " :- " + prefProvider.getValue(
+            Constants.BUSINESS_NAME,
+            ""
+        )
 
 
         linearHome.setOnClickListener {
@@ -1598,6 +1605,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         binding.layoutCart.txtCrtNewCustomer.text = "Add Customer"
         binding.layoutCart.txtCustomerName.text = "Add Customer"
         prefProvider.setValue(CUSTOMER_NAME, "")
+        prefProvider.setValueInt(CUSTOMER_ID, -1)
     }
 
     fun calculateDiscountPercentage(originalPrice: Double, percentage: Double): Double {

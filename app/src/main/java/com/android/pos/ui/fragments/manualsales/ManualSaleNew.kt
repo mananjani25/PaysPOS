@@ -169,6 +169,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
                 binding.txtCrtNewCustomer.text = "Remove Customer"
 
                 assignCustomer = result
+
+                result.id?.let { prefProvider.setValueInt(Constants.CUSTOMER_ID, it) }
             }
         }
     }
@@ -257,7 +259,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
                 ) {
                     positiveButton(getString(R.string.tv_delete)) {
                         viewModel.deleteCart()
-
+                        prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
                         binding.txtTotalAmount.text = "$0.00"
 
                     }
