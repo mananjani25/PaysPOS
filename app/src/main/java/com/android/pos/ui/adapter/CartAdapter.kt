@@ -17,6 +17,7 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
     private val TAG = "CartAdapter"
 
     private  var mCallback: MyCallback?=null
+
     fun setCallback(callback: MyCallback) {
         mCallback = callback
     }

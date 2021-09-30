@@ -28,7 +28,7 @@ interface TeamRoleDao {
     fun roleById(id: Int?): TeamRole
 
     @Query("DELETE FROM TbTeamRole")
-    fun delete()
+    suspend fun delete()
 
     @Query("DELETE FROM TbTeamRole where TbTeamRole.id  = :id")
     suspend fun deleteRoleById(id: Int)

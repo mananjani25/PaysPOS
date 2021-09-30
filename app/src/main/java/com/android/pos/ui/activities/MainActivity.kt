@@ -1,35 +1,27 @@
 package com.android.pos.ui.activities
 
 import android.app.Dialog
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.WindowManager
 import android.widget.ImageView
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.android.pos.R
 import com.android.pos.data.remote.Constants
-import com.android.pos.data.remote.Constants.IS_CLOCKOUT
-import com.android.pos.data.remote.Constants.PASSCODE
-import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.data.repositories.UserRepository
 import com.android.pos.databinding.ParentActivityBinding
 import com.android.pos.di.PrefProvider
-import com.android.pos.ui.fragments.dashboard.DashboardCategoryNew
+import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.alert
-import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -38,6 +30,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ParentActivityBinding
     private var navController: NavController? = null
     private lateinit var listner: NavController.OnDestinationChangedListener
+    private val viewModel by viewModels<DashBoardCategoryViewModel>()
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -139,8 +132,6 @@ class MainActivity : AppCompatActivity() {
                 R.id.menuLogout -> {
 
                     alertLogout()
-                    //logoutAPI()
-
                     return@setNavigationItemSelectedListener true
 
                 }
@@ -149,25 +140,16 @@ class MainActivity : AppCompatActivity() {
 
             return@setNavigationItemSelectedListener false
         }
-        // setContentView(R.layout.fragment_custom_item)
 
-
-//         passCodeView.setKeyTextColor(resources.getColor(R.color.white))
-//
-//         val typeface: Typeface? =
-//             ResourcesCompat.getFont(this, R.font.sf_pro_display_regular)
-//         passCodeView.setTypeFace(typeface)
+        observeShowProgress()
     }
 
     fun alertLogout() {
         alert("Logout", "Are You Sure want to Logout?") {
             this.positiveButton("Logout") {
-                logoutAPI()
+                viewModel.logoutAPI()
             }
-
             this.negativeButton("Cancel") {
-
-
             }
 
         }
@@ -194,7 +176,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    fun disableDrawer() {
+    private fun disableDrawer() {
         binding.drawerLayout.closeDrawer(GravityCompat.START)
     }
 
@@ -211,102 +193,34 @@ class MainActivity : AppCompatActivity() {
         return super.onSupportNavigateUp()
     }
 
-    fun logoutAPI() {
-
-        showDialog()
-
-        lifecycleScope.launch {
-            val dataClockout = HashMap<String, String>()
-            dataClockout["passcode"] = prefProvider.getValue(PASSCODE, "").toString()
-            dataClockout["terminal_id"] = prefProvider.getValueInt(TERMINAL_ID, -1).toString()
-
-            val resourceClockout = repo.employeeClockOut(dataClockout)
-            when (resourceClockout.status) {
-                Status.SUCCESS -> {
-                    prefProvider.setValueboolean(IS_CLOCKOUT, true)
-                    resourceClockout.data.let {
-                        if (it?.status == 200) {
-                            resourceClockout.data?.let {
-                                val data = HashMap<String, String>()
-                                data["email"] =
-                                    prefProvider.getValue(Constants.EMAIL, "").toString()
-                                val resource = repo.logout(data)
-                                when (resource.status) {
-                                    Status.SUCCESS -> {
-                                        resource.data?.let { it ->
-                                            dismissDialog()
-                                            if (it?.status == 200) {
-                                                clearPreferances()
-                                                disableDrawer()
-                                                logout()
-                                            }
-
-                                        }
-                                    }
-                                    Status.LOADING -> {
-
-
-                                    }
-                                    Status.ERROR -> {
-                                        dismissDialog()
-
-                                    }
-
-                                }
-                            }
-                        } else {
-                        }
-
-                    }
-
-                }
-
-                Status.ERROR -> {
-                    dismissDialog()
-                }
-
-                Status.LOADING -> {
-                }
-            }
-
-
-        }
-    }
-
-    private fun clearPreferances() {
+    private fun clearPreferences() {
         prefProvider.setClear()
     }
 
-    private fun showDialog() {
-        if (builder == null) {
-            builder = Dialog(this@MainActivity)
-        }
-        val inflater = LayoutInflater.from(this)
-        val dialogView = inflater.inflate(R.layout.view_loading, null)
-        builder?.setContentView(dialogView)
-        builder?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        builder?.window?.setBackgroundDrawable(
-            ColorDrawable(Color.WHITE)
-        )
-        builder?.setCanceledOnTouchOutside(false)
-        builder?.setCancelable(false)
-        builder?.window?.setLayout(
-            WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.WRAP_CONTENT
-        )
+    private fun observeShowProgress() {
 
-        if (!builder!!.isShowing) {
-            if (!this.isFinishing) {
-                builder!!.show()
+        viewModel.showProgress.observe(this, { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    ProgressUtils.showProgressDialog(this)
+                } else {
+                    ProgressUtils.dismissProgressDialog()
+                }
             }
-        }
+        })
 
-    }
 
-    private fun dismissDialog() {
-        if (builder != null && builder!!.isShowing) {
-            builder?.dismiss()
-        }
+        viewModel.logout.observe(this, { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    clearPreferences()
+                    disableDrawer()
+                    logout()
+
+                    viewModel.clearTable()
+                }
+            }
+        })
 
     }
 }

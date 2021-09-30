@@ -15,7 +15,11 @@ data class GetTransactionListResponse(
 ) {
     data class Data(
         @SerializedName("payments")
-        val payments: List<Payment>
+        val payments: List<Payment>,
+
+        @SerializedName("pagination")
+        val pagination: Pagination
+
     ) {
         data class Payment(
             @SerializedName("amount")
@@ -102,5 +106,12 @@ data class GetTransactionListResponse(
                 val refundedAmount: Double,
             )
         }
+
+        data class Pagination(
+            @SerializedName("max_page_size")
+            val maxPageSize: String,
+            @SerializedName("per_page")
+            val perPage: Int
+        )
     }
 }

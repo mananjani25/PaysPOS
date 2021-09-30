@@ -489,6 +489,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         val linearSetting: LinearLayout = dialog.findViewById(R.id.linearSetting)
         val linearSupport: LinearLayout = dialog.findViewById(R.id.linearSupport)
         val txtSignOut: TextView = dialog.findViewById(R.id.txtSignOut)
+        val txtBusinessName: TextView = dialog.findViewById(R.id.txtBusinessName)
+
+        txtBusinessName.text = prefProvider.getValue(Constants.BUSINESS_NAME, "")
+
 
         linearHome.setOnClickListener {
             closeDialog(dialog)

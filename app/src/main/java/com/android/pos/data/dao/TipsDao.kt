@@ -24,7 +24,7 @@ interface TipsDao {
     fun tipsById(id: Int?): GetTipReponse.Data
 
     @Query("DELETE FROM TbTips")
-    fun delete()
+    suspend fun delete()
 
     @Query("DELETE FROM TbTips where TbTips.id  = :id")
     suspend fun deleteTipById(id: Int)

@@ -43,7 +43,7 @@
                         android:gravity="start"
                         android:text="@{model.name}"
                         android:textColor="@color/drawerBack"
-                        android:textSize="@dimen/_5ssp"
+                        android:textSize="@dimen/_5mdpi"
                         tools:text="Item" />
 
                     <TextView

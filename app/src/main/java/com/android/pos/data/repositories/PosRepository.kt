@@ -312,7 +312,6 @@ class PosRepository @Inject constructor(
     /*fun employeesTimeSheetDetails(startDate: String, endDate: String, teamId: String) =
         performGetOperationNew(networkCall = { apiHelperNew.employeesTimeSheetDetails(startDate, endDate, teamId) })*/
 
-    suspend fun clearCustomerTb() = appDatabase.customerDao().deleteCustomerTb()
 
     fun customerList() = performGetOperation(
         databaseQuery = { appDatabase.customerDao().allCustomer },
@@ -551,5 +550,34 @@ class PosRepository @Inject constructor(
 
     fun getFloorPlan(locationId: Int) =
         performGetOperationNew(networkCall = { apiHelperNew.getFloorPlan(locationId) })
+
+
+    suspend fun employeeClockOut(data: HashMap<String, String>) =
+        apiHelperNew.employeeClockOut(data)
+
+    suspend fun clearTable() {
+
+        appDatabase.characterDao().delete()
+        appDatabase.categoryDao().delete()
+        appDatabase.itemDao().delete()
+        appDatabase.taxDao().delete()
+        appDatabase.tipDao().delete()
+        appDatabase.discountDao().delete()
+        appDatabase.notesDao().delete()
+        appDatabase.serviceChargeDao().delete()
+        appDatabase.cartDao().delete()
+        appDatabase.employeeDao().delete()
+        appDatabase.customerDao().deleteCustomerTb()
+        appDatabase.teamRoleDao().delete()
+        appDatabase.moduleDao().delete()
+        appDatabase.modifierSetDao().delete()
+        appDatabase.optionSetDao().delete()
+        appDatabase.orderTypeDao().delete()
+        appDatabase.terminalDao().delete()
+        appDatabase.itemModifierSetsDao().delete()
+        appDatabase.printerDao().delete()
+        appDatabase.kitchenSettingsDao().delete()
+        appDatabase.customerSettingsDao().delete()
+    }
 }
 

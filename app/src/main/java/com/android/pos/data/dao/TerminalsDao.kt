@@ -27,7 +27,7 @@ interface TerminalsDao {
     fun terminalsById(id: Int?): VenueDetailsResponse.Data.Terminal
 
     @Query("DELETE FROM TbTerminals")
-    fun delete()
+    suspend fun delete()
 
     @Query("DELETE FROM TbTerminals where TbTerminals.id  = :id")
     suspend fun deleteTerminalById(id: Int)

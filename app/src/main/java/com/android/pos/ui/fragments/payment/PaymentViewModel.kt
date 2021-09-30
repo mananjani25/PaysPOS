@@ -515,10 +515,10 @@ class PaymentViewModel @Inject constructor(
                     MethodUtils.roundOffAmountDouble(itemTaxPrice)
             } else {
 
-                val ss = modifier.price * modifier.itemQuantity
+                val ss = tax.rate * modifier.itemQuantity
 
                 orderModifierTaxesAttribute.taxTotalAmount =
-                    MethodUtils.roundOffAmountDouble((tax.rate + ss))
+                    MethodUtils.roundOffAmountDouble((ss ))
             }
 
 
@@ -561,10 +561,10 @@ class PaymentViewModel @Inject constructor(
                     MethodUtils.roundOffAmountDouble(itemTaxPrice)
             } else {
 
-                val ss = (items.price - items.discountPrice) * items.itemQuantity
+                val ss= tax.rate * items.itemQuantity
 
                 orderItemTaxesAttribute.taxTotalAmount =
-                    MethodUtils.roundOffAmountDouble((tax.rate + ss))
+                    MethodUtils.roundOffAmountDouble((ss))
             }
 
 
