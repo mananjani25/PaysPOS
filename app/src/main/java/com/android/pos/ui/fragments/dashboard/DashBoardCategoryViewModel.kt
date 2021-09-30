@@ -9,6 +9,7 @@ import com.android.pos.data.entities.*
 import com.android.pos.data.model.DineInModel
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ADD
+import com.android.pos.data.remote.Constants.AUTH_TOKEN
 import com.android.pos.data.remote.Constants.BUSINESS_NAME
 import com.android.pos.data.remote.Constants.BUSINESS_PHONE_NO
 import com.android.pos.data.remote.Constants.BUSINESS_WEBSITE
@@ -47,7 +48,6 @@ class DashBoardCategoryViewModel @Inject constructor(
     var totalDiscount = 0.0
     var assignCustomer: TbCustomer? = null
 
-    val venueData = posRepository.syncVenueData()
 
     fun venueDataLocal(): LiveData<Resource<List<CategoryWithInventory?>>> {
         return posRepository.venueDataLocal()
@@ -56,8 +56,6 @@ class DashBoardCategoryViewModel @Inject constructor(
     fun orderTypes(): LiveData<Resource<List<TbOrderType>>> {
         return posRepository.orderTypes()
     }
-
-    val venueDataLocal = posRepository.venueDataLocal()
 
     val serviceCharges = posRepository.serviceChargeList()
 
@@ -79,7 +77,6 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun getItemsbyId(itemId: Int) = posRepository.getItemsbyId(itemId)
 
-//    fun mAllWords(orderType: String) = posRepository.getCartList(orderType)
 
     fun mAllWords(orderType: String): LiveData<List<CartModel>> {
         return posRepository.getCartList(orderType)
@@ -89,45 +86,50 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            val resource = posRepository.syncVenueDetails()
 
-            when (resource.status) {
-                Status.SUCCESS -> {
-                    _showProgress.value = Event(false)
-                    resource.data.let { venueDetailsResponse ->
-                        if (venueDetailsResponse?.status == 200) {
+            if (prefProvider.getValue(AUTH_TOKEN, "").toString().isNotEmpty()) {
 
-                            resource.data?.let {
-                                Log.e(TAG, "FullData  ${Gson().toJson(it)}")
+                val resource = posRepository.syncVenueDetails()
 
-                                prefProvider.setValue(BUSINESS_NAME, it.data.businessName)
-                                prefProvider.setValue(BUSINESS_PHONE_NO, it.data.phoneNumber)
-                                prefProvider.setValue(
-                                    BUSINESS_WEBSITE,
-                                    it.data.businessWebsite.toString()
-                                )
+                when (resource.status) {
+                    Status.SUCCESS -> {
+                        _showProgress.value = Event(false)
+                        resource.data.let { venueDetailsResponse ->
+                            if (venueDetailsResponse?.status == 200) {
 
-                                taxServiceChargeRepository.addAllTaxDatabase(it.data.taxes)
+                                resource.data?.let {
+                                    Log.e(TAG, "FullData  ${Gson().toJson(it)}")
 
-                                posRepository.addAllNotesDatabase(it.data.notes)
-                                tipDiscountRepository.addDiscount(it.data.discounts)
-                                taxServiceChargeRepository.addServiceCharges(it.data.service_charges)
-                                posRepository.addTerminalsDatabase(it.data.terminals)
+                                    prefProvider.setValue(BUSINESS_NAME, it.data.businessName)
+                                    prefProvider.setValue(BUSINESS_PHONE_NO, it.data.phoneNumber)
+                                    prefProvider.setValue(
+                                        BUSINESS_WEBSITE,
+                                        it.data.businessWebsite.toString()
+                                    )
 
+                                    taxServiceChargeRepository.addAllTaxDatabase(it.data.taxes)
+
+                                    posRepository.addAllNotesDatabase(it.data.notes)
+                                    tipDiscountRepository.addDiscount(it.data.discounts)
+                                    taxServiceChargeRepository.addServiceCharges(it.data.service_charges)
+                                    posRepository.addTerminalsDatabase(it.data.terminals)
+                                    tipDiscountRepository.addTips(it.data.tip_settings)
+
+                                }
+                            } else {
+                                _snackbarText.value = Event(resource.message)
                             }
-                        } else {
-                            _snackbarText.value = Event(resource.message)
                         }
                     }
-                }
 
-                Status.ERROR -> {
-                    _snackbarText.value = Event(resource.message)
-                    _showProgress.value = Event(false)
-                }
+                    Status.ERROR -> {
+                        _snackbarText.value = Event(resource.message)
+                        _showProgress.value = Event(false)
+                    }
 
-                Status.LOADING -> {
-                    _showProgress.value = Event(true)
+                    Status.LOADING -> {
+                        _showProgress.value = Event(true)
+                    }
                 }
             }
         }

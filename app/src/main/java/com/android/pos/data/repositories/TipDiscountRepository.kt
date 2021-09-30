@@ -20,6 +20,10 @@ class TipDiscountRepository @Inject constructor(
         networkCall = { apiHelperNew.getTipsList() },
         saveCallResult = { appDatabase.tipDao().addAllTips(it.data) })
 
+    suspend fun addTips(tipSettings: List<GetTipReponse.Data>) {
+        appDatabase.tipDao().addAllTips(tipSettings)
+    }
+
     suspend fun createTips(data: CreateTipRequestModel) = apiHelperNew.createTips(data)
 
     suspend fun createTipsDatabase(data: GetTipReponse.Data) =
