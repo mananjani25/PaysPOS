@@ -51,6 +51,9 @@ data class VenueDetailsResponse(
         val service_charges: List<TbServiceCharge>,
         @SerializedName("terminals")
         val terminals: List<Terminal>,
+
+        @SerializedName("tip_settings")
+        val tip_settings: List<GetTipReponse.Data>,
         @SerializedName("time_zone")
         val timeZone: String,
         @SerializedName("user_id")

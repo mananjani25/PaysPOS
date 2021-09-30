@@ -21,14 +21,15 @@
         android:orientation="horizontal">
 
         <TextView
+            android:id="@+id/txtEmployeeName"
             style="@style/CustomFontSemiBold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_marginEnd="@dimen/_10sdp"
+            android:layout_marginEnd="@dimen/_5sdp"
             android:layout_toStartOf="@+id/imgInfo"
             android:textColor="@color/txt_color_blue"
-            android:textSize="@dimen/_5mdpi"
+            android:textSize="@dimen/_6mdpi"
             tools:ignore="RelativeOverlap"
             tools:text="John Smith" />
 

@@ -10,6 +10,10 @@ data class ClockInReponse(
     data class Data(
         @SerializedName("employee_id")
         val employeeId: Int,
+        @SerializedName("employee_name")
+        val employee_name: String,
+        @SerializedName("employee_role")
+        val employee_role: String,
         @SerializedName("module_records")
         val moduleRecords: List<ModuleRecord>
     ) {

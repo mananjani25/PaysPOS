@@ -215,7 +215,7 @@
 
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontBold"
+                        style="@style/CustomFontSemiBold"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"

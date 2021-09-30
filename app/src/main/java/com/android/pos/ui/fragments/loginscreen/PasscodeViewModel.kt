@@ -6,10 +6,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
+import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
+import com.android.pos.data.remote.Constants.EMPLOYEE_ROLE
 import com.android.pos.data.remote.Constants.IS_CLOCKOUT
 import com.android.pos.data.remote.Constants.PASSCODE
 import com.android.pos.data.remote.Constants.TERMINAL_ID
-import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.UserRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
@@ -57,7 +58,7 @@ class PasscodeViewModel @Inject constructor(
                         resource.data.let {
                             if (it?.status == 200) {
                                 resource.data?.let {
-                                    _data.value =  Event(it)
+                                    _data.value = Event(it)
                                 }
                             } else {
                                 _snackbarText.value = Event(resource.message)
@@ -93,6 +94,8 @@ class PasscodeViewModel @Inject constructor(
                                 resource.data?.let {
 
                                     prefProvider.setValueInt(EMPLOYEE_ID, it.data.employeeId)
+                                    prefProvider.setValue(EMPLOYEE_NAME, it.data.employee_name)
+                                    prefProvider.setValue(EMPLOYEE_ROLE, it.data.employee_role)
                                     prefProvider.setValue(PASSCODE, passcode)
                                     employeeLogin(data)
 

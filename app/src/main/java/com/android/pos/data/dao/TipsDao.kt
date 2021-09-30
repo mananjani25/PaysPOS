@@ -12,7 +12,7 @@ interface TipsDao {
     suspend fun addTips(tipModel: GetTipReponse.Data): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun addAllTips(tipList: List<GetTipReponse.Data>)
+    suspend fun addAllTips(tipList: List<GetTipReponse.Data>)
 
     @get:Query("select * from TbTips")
     val allTips: LiveData<List<GetTipReponse.Data>>
