@@ -68,6 +68,7 @@ import javax.inject.Inject
 class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, MyCallback,
     ItemCallback, View.OnClickListener {
 
+    private var clickManualSales: Boolean = false
     private var customerUpdate: Boolean = false
     private var orderOfflineId: String = ""
     private var paymentOfflineId: String = ""
@@ -204,6 +205,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             val result = bundle.getParcelable<TbOrderType>("data")
             if (result != null) {
                 chooseOrderType(result)
+
             }
         }
 
@@ -731,7 +733,15 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     private fun configureDrawer() {
         binding.layoutMenu.txtKeypad.setOnClickListener {
-            findNavController().navigate(R.id.action_dashboardCategoryNew_to_manualSales)
+
+            if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
+                findNavController().navigate(R.id.action_dashboardCategoryNew_to_manualSales)
+            } else {
+                clickManualSales = true
+                orderTypeDialog()
+            }
+
+
         }
 
 
@@ -1449,6 +1459,11 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 )
             }
         }
+
+//        if (clickManualSales) {
+//            clickManualSales = false
+//            findNavController().navigate(R.id.action_dashboardCategoryNew_to_manualSales)
+//        }
     }
 
     override fun onClick(v: View?) {

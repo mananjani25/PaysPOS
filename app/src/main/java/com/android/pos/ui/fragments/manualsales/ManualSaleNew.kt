@@ -27,7 +27,7 @@ import com.android.pos.R
 import com.android.pos.data.entities.*
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ADD
-import com.android.pos.data.remote.Constants.SALE_CUSTOMER_NAME
+import com.android.pos.data.remote.Constants.CUSTOMER_NAME
 import com.android.pos.databinding.FragmentManualSaleNewBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.ManualSaleCartAdapter
@@ -99,7 +99,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
         binding.layoutMenu.imgSearch.visibility = View.GONE
         binding.layoutMenu.autoSearch.visibility = View.GONE
 
-        prefProvider.setValue(SALE_CUSTOMER_NAME, "")
+        prefProvider.setValue(CUSTOMER_NAME, "")
 
 
         getManualCategoryId()
@@ -162,7 +162,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
             val result = bundle.getParcelable<TbCustomer>("data")
             if (result != null) {
                 prefProvider.setValue(
-                    SALE_CUSTOMER_NAME,
+                    CUSTOMER_NAME,
                     result.first_name + " " + result.last_name
                 )
                 binding.txtCustomerName.text = result.first_name + " " + result.last_name
@@ -320,10 +320,10 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
 
         }
         binding.txtCrtNewCustomer.setOnClickListener {
-            if (prefProvider.getValue(SALE_CUSTOMER_NAME, "").toString().isNotEmpty()) {
+            if (prefProvider.getValue(CUSTOMER_NAME, "").toString().isNotEmpty()) {
                 binding.txtCrtNewCustomer.text = "Add Customer"
                 binding.txtCustomerName.text = "Add Customer"
-                prefProvider.setValue(SALE_CUSTOMER_NAME, "")
+                prefProvider.setValue(CUSTOMER_NAME, "")
             } else {
                 findNavController().navigate(R.id.action_manualSaleNew_to_assignCustomerOrderFragment)
 
@@ -484,8 +484,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
     private fun onConfig() {
         binding.txtAmount.addTextChangedListener(AmountTextWatcher(binding.txtAmount, true))
         binding.txtAmount.setText("0.00")
-        if (prefProvider.getValue(SALE_CUSTOMER_NAME, "").toString().isNotEmpty()) {
-            binding.txtCustomerName.text = prefProvider.getValue(SALE_CUSTOMER_NAME, "")
+        if (prefProvider.getValue(CUSTOMER_NAME, "").toString().isNotEmpty()) {
+            binding.txtCustomerName.text = prefProvider.getValue(CUSTOMER_NAME, "")
             binding.txtCrtNewCustomer.text = "Remove Customer"
         } else {
             binding.txtCustomerName.text = "Add Customer"
