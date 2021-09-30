@@ -25,7 +25,7 @@ interface EmployeeDao {
     fun employeeById(id: Int?): Employee
 
     @Query("DELETE FROM TbEmployee")
-    fun delete()
+    suspend fun delete()
 
     @Query("DELETE FROM TbEmployee where TbEmployee.id  = :id")
     suspend fun deleteEmployeeById(id: Int)

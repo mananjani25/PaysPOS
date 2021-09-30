@@ -27,7 +27,7 @@ interface NotesDao {
     fun notessById(id: Int?): NoteResponse.Data
 
     @Query("DELETE FROM TbNotes")
-    fun delete()
+    suspend fun delete()
 
     @Query("DELETE FROM TbNotes where TbNotes.id  = :id")
     suspend fun deleteNotesById(id: Int)

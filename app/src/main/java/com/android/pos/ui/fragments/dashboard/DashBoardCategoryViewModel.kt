@@ -3,10 +3,7 @@ package com.android.pos.ui.fragments.dashboard
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.appcompat.widget.AppCompatTextView
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.entities.*
 import com.android.pos.data.model.DineInModel
@@ -71,8 +68,12 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
+
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
+
+    private val _logout = MutableLiveData<Event<Boolean>>()
+    val logout: LiveData<Event<Boolean>> = _logout
 
     fun modifierSet(intArray: IntArray) = posRepository.modifierSetList(intArray)
 
@@ -332,7 +333,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 } else {
 
                                     val ss = tax.rate * item.itemQuantity
-                                    Log.e("tt",ss.toString())
+                                    Log.e("tt", ss.toString())
 
                                     totalTax += String.format("%.2f", ss)
                                         .toDouble()
@@ -354,7 +355,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                                             .toDouble()
                                     } else {
 
-                                        totalTax += String.format("%.2f", tax.rate* item.itemQuantity)
+                                        totalTax += String.format(
+                                            "%.2f",
+                                            tax.rate * item.itemQuantity
+                                        )
                                             .toDouble()
                                     }
                                 }
@@ -432,7 +436,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         .toDouble()
                                 } else {
 
-                                    totalTax += String.format("%.2f", tax.rate* item.itemQuantity)
+                                    totalTax += String.format("%.2f", tax.rate * item.itemQuantity)
                                         .toDouble()
                                 }
                             }
@@ -484,6 +488,81 @@ class DashBoardCategoryViewModel @Inject constructor(
 
         return posRepository.getMinMax(_itemId, modifierSetId)
 
+    }
+
+
+    fun logoutAPI() {
+
+        _showProgress.value = Event(true)
+        viewModelScope.launch {
+            val dataClockout = HashMap<String, String>()
+            dataClockout["passcode"] = prefProvider.getValue(Constants.PASSCODE, "").toString()
+            dataClockout["terminal_id"] =
+                prefProvider.getValueInt(Constants.TERMINAL_ID, -1).toString()
+
+            val resourceClockout = posRepository.employeeClockOut(dataClockout)
+            when (resourceClockout.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+                    prefProvider.setValueboolean(Constants.IS_CLOCKOUT, true)
+                    resourceClockout.data.let {
+                        if (it?.status == 200) {
+                            resourceClockout.data?.let {
+                                logoutApi()
+                            }
+                        }
+
+                    }
+
+                }
+
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resourceClockout.message)
+                    _showProgress.value = Event(false)
+                }
+
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
+            }
+
+
+        }
+    }
+
+    private suspend fun logoutApi() {
+        _showProgress.value = Event(true)
+        val data = HashMap<String, String>()
+        data["email"] =
+            prefProvider.getValue(Constants.EMAIL, "").toString()
+        val resource = posRepository.logout(data)
+        when (resource.status) {
+            Status.SUCCESS -> {
+                _showProgress.value = Event(false)
+                resource.data?.let { it ->
+
+                    _logout.value = Event(true)
+
+
+                }
+            }
+            Status.ERROR -> {
+                _snackbarText.value = Event(resource.message)
+                _showProgress.value = Event(false)
+            }
+
+            Status.LOADING -> {
+                _showProgress.value = Event(true)
+            }
+
+        }
+    }
+
+    fun clearTable() {
+
+        viewModelScope.launch {
+            posRepository.clearTable()
+        }
     }
 
 }

@@ -14,4 +14,7 @@ interface CustomerSettingsDao {
 
     @get:Query("select * from TbCustomerSettings")
     val getCustomerSettings: LiveData<GetCustomerReceiptSettingsResponse.Data>
+
+    @Query("DELETE FROM TbCustomerSettings")
+    suspend fun delete()
 }

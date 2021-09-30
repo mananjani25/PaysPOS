@@ -26,7 +26,7 @@ interface ModuleDao {
     fun tipsById(id: Int?): ModulePermission
 
     @Query("DELETE FROM TbModule")
-    fun delete()
+    suspend fun delete()
 
     @Query("DELETE FROM TbModule where TbModule.id  = :id")
     suspend fun deleteTipById(id: Int)

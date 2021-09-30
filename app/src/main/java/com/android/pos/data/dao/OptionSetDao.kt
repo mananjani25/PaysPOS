@@ -54,6 +54,6 @@ interface OptionSetDao {
     suspend fun delete(id: Int?)
 
     @Query("DELETE FROM OptionSet")
-    fun delete()
+    suspend fun delete()
 
 }
