@@ -24,22 +24,33 @@
                 style="@style/CustomFontBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_1sdp"
                 android:layout_marginBottom="@dimen/_2sdp"
                 android:text="Table 1"
-                android:layout_marginTop="@dimen/_1sdp"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_5mdpi" />
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tvTableNumber"
-                style="@style/CustomFontBold"
+            <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/_3sdp"
-                android:layout_marginBottom="@dimen/_2sdp"
-                android:text="3"
-                android:textColor="@color/black"
-                android:textSize="@dimen/_5mdpi" />
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_table" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvTableNumber"
+                    style="@style/CustomFontBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/_3sdp"
+                    android:layout_marginBottom="@dimen/_2sdp"
+                    android:text="3"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_5mdpi" />
+
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="wrap_content"

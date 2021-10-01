@@ -299,7 +299,7 @@
     <string name="remove_tip">Remove Tip</string>
     <string name="update">Update</string>
     <string name="update_role">Update Role</string>
-    <string name="disc_percentage">Percentage<font color='#E90C0C'>*</font></string>
+    <string name="disc_percentage">Percentage</string>
     <string name="disc_amount">Amount</string>
     <string name="dollar_amount">Dollar</string>
 
