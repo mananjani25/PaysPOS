@@ -35,6 +35,7 @@ import com.android.pos.data.remote.Constants.CUSTOMER_ID
 import com.android.pos.data.remote.Constants.CUSTOMER_NAME
 import com.android.pos.data.remote.Constants.DELETE
 import com.android.pos.data.remote.Constants.DINE_IN
+
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
 import com.android.pos.data.remote.Constants.HORIZONTAL
 import com.android.pos.data.remote.Constants.MANUALSALE
@@ -990,7 +991,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     }
 
     @SuppressLint("SetTextI18n")
-    override fun onItemClickListener(view: View?, data: TbItem) {
+    override fun onItemClickListener(view: View?, data: TbItem, position: Int?) {
 
         if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
 
@@ -1778,7 +1779,297 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     }
 
-    override fun onItemSelected(headerPosition: Int, position: Int, item: TbItem) {
+    override fun onItemSelected(headerPosition: Int, position: Int, data: TbItem) {
+        val isItemClick = false
+        val dialog = Dialog(requireContext())
+        dialog.window?.requestFeature(Window.FEATURE_NO_TITLE)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+        val lp = WindowManager.LayoutParams()
+        lp.copyFrom(dialog.window!!.attributes)
+        lp.width = WindowManager.LayoutParams.WRAP_CONTENT
+        lp.height = WindowManager.LayoutParams.MATCH_PARENT
+        dialog.window!!.attributes = lp
+
+        dialog.setContentView(R.layout.dialog_update_quantity)
+
+        val imgClose: AppCompatImageView = dialog.findViewById(R.id.imgBack)
+        val txtSave: AppCompatTextView = dialog.findViewById(R.id.txtSave)
+        val txtTitle: AppCompatTextView = dialog.findViewById(R.id.txtTitle)
+        val txtQty: AppCompatEditText = dialog.findViewById(R.id.txtQty)
+        val llPlus: LinearLayoutCompat = dialog.findViewById(R.id.llPlus)
+        val llMinus: LinearLayoutCompat = dialog.findViewById(R.id.llMinus)
+        val btnRemove: AppCompatTextView = dialog.findViewById(R.id.btnRemove)
+        val btnAddDiscount: AppCompatTextView = dialog.findViewById(R.id.btnAddDiscount)
+        val edtNote: AppCompatEditText = dialog.findViewById(R.id.edtNote)
+        val rvModifierSets: RecyclerView = dialog.findViewById(R.id.rvModifierSets)
+        val rvVariationList: RecyclerView = dialog.findViewById(R.id.rvVariationList)
+        val txtItemName: AppCompatTextView = dialog.findViewById(R.id.txtItemName)
+        val edtItemName: AppCompatEditText = dialog.findViewById(R.id.edtItemName)
+
+        edtItemName.visibility = View.GONE
+        var discountPrice = data.discountPrice / data.itemQuantity
+
+
+        var adapter: ItemModifierSetAdapter? = null
+        var variationAdapter: VariationDashboardListAdapter? = null
+
+        var qty = data.itemQuantity
+        if (isItemClick) {
+            qty = 1
+            txtQty.setText(qty.toString())
+            btnRemove.visibility = View.GONE
+            btnAddDiscount.visibility = View.GONE
+        }
+
+        if (data.modifier_set_ids.isNotEmpty()) {
+            adapter = ItemModifierSetAdapter(viewModel, data.itemId, viewLifecycleOwner)
+            rvModifierSets.adapter = adapter
+
+            val intArray = IntArray(data.modifier_set_ids.size) { i ->
+                data.modifier_set_ids[i]
+            }
+            viewModel.modifierSet(intArray).observe(requireActivity(), {
+                if (it.data != null && it.data.isNotEmpty()) {
+                    rvModifierSets.visibility = View.VISIBLE
+                    it.data.let { it1 -> adapter.add(it1) }
+
+                    if (!isItemClick) {
+                        adapter.setData(data.modifiers)
+                    }
+
+                } else rvModifierSets.visibility = View.GONE
+
+            })
+        }
+        if (data.variationsAttributes.isNotEmpty()) {
+            rvVariationList.layoutManager = GridLayoutManager(activity, 3);
+            variationAdapter = VariationDashboardListAdapter()
+            rvVariationList.adapter = variationAdapter
+            viewModel.getItemsbyId(data.itemId).observe(viewLifecycleOwner, {
+
+                it?.let { resource ->
+                    when (resource.status) {
+                        Status.SUCCESS -> {
+                            it.data?.let {
+                                rvVariationList.visibility = View.VISIBLE
+                                txtItemName.text = it.name + ":-  Choose One"
+                                variationAdapter.addVariations(it.variationsAttributes)
+                                showPriceTitle(
+                                    variationsAttribute = null,
+                                    variationAdapter,
+                                    data,
+                                    txtTitle,
+                                    isItemClick
+                                )
+
+                            }
+
+                        }
+                        Status.ERROR -> {
+                            rvVariationList.visibility = View.GONE
+                        }
+                        Status.LOADING -> {
+                            rvVariationList.visibility = View.GONE
+                        }
+                    }
+                }
+
+
+            })
+
+        } else {
+            rvVariationList.visibility = View.GONE
+            txtItemName.visibility = View.GONE
+            showPriceTitle(
+                variationsAttribute = null,
+                variationAdapter,
+                data,
+                txtTitle,
+                isItemClick
+            )
+        }
+
+        edtNote.setText(data.note)
+
+
+
+        txtQty.setText(qty.toString())
+
+        variationAdapter?.showVariationPriceClick = {
+            showPriceTitle(it, variationAdapter = null, data, txtTitle, isItemClick)
+        }
+
+
+
+        imgClose.setOnClickListener {
+            dialog.dismiss()
+        }
+        txtSave.setOnClickListener {
+
+            /*showPriceTitle(
+                variationsAttribute = null,
+                variationAdapter,
+                data,
+                txtTitle,
+                isItemClick
+            )*/
+            val variationList = ArrayList<VariationsAttribute>()
+            if (data.variationsAttributes.isNotEmpty()) {
+                val variation = variationAdapter?.getItem()!!
+                variationList.add(variation)
+                data.name = data.name.substringBefore(" (") + " (" + variation.name + ")"
+                data.variationsAttributes = variationList
+            }
+
+
+            if (minMaxValidationCheck(adapter)) {
+                dialog.dismiss()
+
+                data.note = edtNote.text.toString().trim()
+                data.itemQuantity = txtQty.text.toString().toInt()
+                if (!isItemClick) {
+                    data.discountPrice = (discountPrice * txtQty.text.toString().toInt())
+                }
+
+
+                val modifiers = adapter?.getSelectedModifiers()
+                if (modifiers != null) {
+                    modifiers.forEach {
+                        it.itemQuantity = data.itemQuantity
+                    }
+                    data.modifiers = modifiers
+                }
+
+                if (cartList.isEmpty()) {
+                    viewModel.setServiceCharges(serviceChargesList)
+                }
+
+                if (isItemClick) {
+
+                    if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
+
+                        cartList.get(0).orderType = DINE_IN
+                        val dineInList = dineInCartAdapter.getList()
+
+                        viewModel.cartLogic(cartList, data, ADD, dineInList = dineInList)
+                    } else {
+                        viewModel.cartLogic(cartList, data, ADD)
+                    }
+                } else
+                    if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
+                        cartList.get(0).orderType = DINE_IN
+                        val dineInList = dineInCartAdapter.getList()
+                        // dineInList.get(dineInCartAdapter.getHeaderPosition()).items.add(data)
+                        viewModel.cartLogic(cartList, data, UPDATE, dineInList = dineInList)
+
+                    } else {
+
+                        //  viewModel.cartLogic(cartList, data, UPDATE)
+                    }
+            } else {
+                AlertUtils.showCustomAlert(
+                    binding.root.context,
+                    binding.root.context.getString(R.string.you_can_add)
+                )
+
+            }
+        }
+
+        llPlus.setOnClickListener {
+            qty += 1
+            txtQty.setText(qty.toString())
+
+
+        }
+        llMinus.setOnClickListener {
+
+            if (qty > 1) {
+                qty -= 1
+            }
+            txtQty.setText(qty.toString())
+
+
+        }
+        btnRemove.setOnClickListener {
+            Log.e(TAG, "RemoveMayItem")
+
+            cartList.get(0).orderType = DINE_IN
+
+            viewModel.cartLogic(cartList, data, DELETE, dineInList = dineInCartAdapter.getList())
+            dialog.dismiss()
+        }
+        btnAddDiscount.setOnClickListener {
+            setFragmentResultListener("request_key_discount_details") { requestKey: String, bundle: Bundle ->
+                val result = bundle.getParcelable<TbDiscount>("data")
+                if (result != null) {
+                    Log.e(TAG, "GetDiscountResult:  ${Gson().toJson(result)}")
+                    if (result.discountType == requireContext().getString(R.string.disc_percentage)) {
+
+                        data.discountPrice = calculateDiscountPercentage(
+                            totalPrice(data),
+                            result.percentage
+                        )
+                        discountPrice = data.discountPrice / data.itemQuantity
+                        data.discountId = result.id
+                        data.discountType = result.discountType
+                        data.isManualSales = false
+                        Log.e(TAG, "insideDiscountmodel:  ${Gson().toJson(data)}")
+                        //   viewModel.cartLogic(cartList, data, Constants.UPDATE)
+                        txtTitle.text = data.name + "  $" + String.format(
+                            "%.2f",
+                            (totalPrice(data) - data.discountPrice)
+                        )
+
+                    } else if (data.price > result.percentage) {
+
+                        data.discountPrice = result.percentage
+                        data.discountId = 0
+                        data.discountType = result.discountType
+                        data.isManualSales = false
+                        discountPrice = data.discountPrice / data.itemQuantity
+
+                        //viewModel.cartLogic(cartList, data, Constants.UPDATE)
+                        txtTitle.text = data.name + "  $" + String.format(
+                            "%.2f",
+                            (totalPrice(data) - data.discountPrice)
+                        )
+                    } else {
+                        /*  data.discountPrice = 0.0
+                          data.discountType = ""
+                          data.isManualSales = false
+                          data.discountId = 0
+                          discountPrice = data.discountPrice*/
+
+                    }
+
+                } else {
+                    data.discountPrice = 0.0
+                    data.discountType = ""
+                    data.isManualSales = false
+                    data.discountId = 0
+                    discountPrice = data.discountPrice
+                    // viewModel.cartLogic(cartList, data, Constants.UPDATE)
+                }
+
+            }
+
+
+            val bundle = Bundle().apply {
+                putBoolean("isFromDetails", true)
+                putParcelable("model", data)
+            }
+
+            findNavController().navigate(
+                R.id.action_dashboardCategoryNew_to_addDiscountDialog,
+                bundle
+            )
+        }
+
+
+        dialog.setCanceledOnTouchOutside(false)
+        dialog.show()
+
 
     }
 

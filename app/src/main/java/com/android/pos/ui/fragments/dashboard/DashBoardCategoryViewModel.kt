@@ -198,6 +198,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         model.itemQuantity = item.itemQuantity
                                     }
                                     dineIn.get(selectedHeader).items[index] = model
+                                    cartModel.dineInList = dineIn
+                                    addCart(cartModel)
                                 } else {
                                     if (index != -1) {
                                         if (item != null) {
@@ -227,6 +229,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 dineInList.get(dineInList.get(0).selectedPosition).items.add(item)
                             }
                             cartModel.dineInList = dineInList
+
                             addCart(cartModel)
                         }
 
@@ -234,6 +237,26 @@ class DashBoardCategoryViewModel @Inject constructor(
                     }
 
 
+                } else if (type == DELETE) {
+                    Log.e(TAG, "HeaderPos:  ${dineInList.get(0).selectedPosition}")
+                    Log.e(TAG, "ItemPos: ${dineInList.get(0).itemPosition}")
+                    var dine = dineInList.toMutableList()
+
+                    dine.get(0).headerPosition?.let {
+                        dine.get(it).items.remove(
+                            dine.get(dine.get(0).headerPosition!!).items.get(
+                                dine.get(0).itemPosition!!
+                            )
+                        )
+                    }
+                    Log.e(TAG, "dinedinedine  ${Gson().toJson(dine)}")
+                    cartModel.dineInList = dine
+                    addCart(cartModel)
+                    /*dineInList.toMutableList().remove(
+                        dineInList.get(dineInList.get(0).selectedPosition).items.get(
+                            dineInList.get(0).selectedPosition
+                        )
+                    )*/
                 }
 
 
