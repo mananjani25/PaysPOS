@@ -85,4 +85,9 @@ class CategoryItemAdapter1(
         }
 
     }
+
+    fun addAll(itemList: java.util.ArrayList<TbItem?>) {
+        list = itemList
+        notifyDataSetChanged()
+    }
 }

@@ -35,7 +35,6 @@ import com.android.pos.data.remote.Constants.CUSTOMER_ID
 import com.android.pos.data.remote.Constants.CUSTOMER_NAME
 import com.android.pos.data.remote.Constants.DELETE
 import com.android.pos.data.remote.Constants.DINE_IN
-import com.android.pos.data.remote.Constants.DINE_IN_ITEM
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
 import com.android.pos.data.remote.Constants.HORIZONTAL
 import com.android.pos.data.remote.Constants.MANUALSALE
@@ -43,6 +42,7 @@ import com.android.pos.data.remote.Constants.OPEN_ORDER
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
 import com.android.pos.data.remote.Constants.ORDER_TYPE_NAME
+import com.android.pos.data.remote.Constants.PERCENTAGE
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.remote.Constants.UPDATE
 import com.android.pos.data.remote.Constants.VERTICAL
@@ -68,9 +68,11 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, MyCallback,
-    DineInAdapter.DineInCallback,
+    DineInAdapter.DineInCallback, CategoryTabAdapter1.TabListner,
     ItemCallback, View.OnClickListener {
 
+    private var categoryItemAdapter1: CategoryItemAdapter1? = null
+    private var categoryTabAdapter1: CategoryTabAdapter1? = null
     private var clickManualSales: Boolean = false
     private var customerUpdate: Boolean = false
     private var orderOfflineId: String = ""
@@ -152,6 +154,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setupAdapter()
         setVenueData()
         configureDrawer()
         onClick()
@@ -212,6 +215,15 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
             }
         }
+
+    }
+
+    private fun setupAdapter() {
+        categoryTabAdapter1 = CategoryTabAdapter1(requireContext(), tabList, this)
+        binding.rvTabLayout.adapter = categoryTabAdapter1
+
+        categoryItemAdapter1 = CategoryItemAdapter1(requireContext(), itemList1, this)
+        binding.rvPagerCategory.adapter = categoryItemAdapter1
 
     }
 
@@ -414,7 +426,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
 
         for (i in 0 until categoryList1.size) {
-            for (j in 0 until categoryList1.get(i).inventoryLists!!.size) {
+            for (j in categoryList1[i].inventoryLists!!.indices) {
                 searchList.add(
                     CategorySearchData(
                         categoryList1.get(i).inventoryLists!!.get(j)!!.itemId,
@@ -774,8 +786,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                                 if (i == 0) {
                                     tabList.add(
                                         CategoryTabModel(
-                                            categoryList1.get(i).category.id,
-                                            categoryList1.get(i).category.name,
+                                            categoryList1[i].category.id,
+                                            categoryList1[i].category.name,
                                             true,
                                             0
                                         )
@@ -783,63 +795,33 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                                 } else {
                                     tabList.add(
                                         CategoryTabModel(
-                                            categoryList1.get(i).category.id,
-                                            categoryList1.get(i).category.name,
+                                            categoryList1[i].category.id,
+                                            categoryList1[i].category.name,
                                             false,
                                             0
                                         )
                                     )
                                 }
                             }
+
                             if (categoryList1.isNotEmpty()) {
-                                categoryList1.forEach {
-                                    categoryTabsList.add(it.category.name)
 
-                                    binding.rvTabLayout.adapter = CategoryTabAdapter1(
-                                        requireContext(),
-                                        tabList,
-                                        object : CategoryTabAdapter1.TabListner {
-                                            override fun onTabSelected(pos: Int) {
-                                                Log.e("CatTab", "CatTab $pos")
-                                                val listCategories =
-                                                    (binding.rvPagerCategory.adapter as CategoryItemAdapter1).list
-                                                listCategories.clear()
-                                                listCategories.add(
-                                                    0,
-                                                    TbItem()
-                                                )
+                                categoryTabAdapter1?.addAll(tabList)
 
-                                                categoryList1[pos].inventoryLists?.let { it1 ->
-                                                    listCategories.addAll(
-                                                        it1
-                                                    )
-                                                }
-                                                (binding.rvPagerCategory.adapter as CategoryItemAdapter1).list =
-                                                    listCategories
-
-                                                binding.rvPagerCategory.adapter?.notifyDataSetChanged()
-
-
-                                            }
-                                        })
-                                    itemList1.clear()
-                                    itemList1.add(
-                                        0,
-                                        TbItem()
-                                    )
-
-                                    categoryList1[0].inventoryLists?.let { it1 ->
-                                        itemList1.addAll(
-                                            it1
-                                        )
-                                    }
-
-
-
-                                    searchCategory()
-                                    binding.rvPagerCategory.adapter =
-                                        CategoryItemAdapter1(requireContext(), itemList1, this)
+                                itemList1.clear()
+                                itemList1.add(
+                                    0,
+                                    TbItem()
+                                )
+                                categoryList1[0].inventoryLists?.filter {
+                                    it!!.isHide
+                                }?.let { it1 ->
+                                    itemList1.addAll(it1)
                                 }
+
+                                searchCategory()
+                                categoryItemAdapter1?.addAll(itemList1)
+
                             }
 
                         }
@@ -1717,7 +1699,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         if (result != null) {
                             Log.e(TAG, "GetDiscountResult:  ${Gson().toJson(result)}")
                             when {
-                                result.discountType == requireContext().getString(R.string.disc_percentage) -> {
+                                result.discountType == PERCENTAGE -> {
 
                                     data.discountPrice = calculateDiscountPercentage(
                                         totalPrice(data),
@@ -1797,6 +1779,24 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     }
 
     override fun onItemSelected(headerPosition: Int, position: Int, item: TbItem) {
+
+    }
+
+    override fun onTabSelected(pos: Int) {
+
+        val listCategories = categoryItemAdapter1?.list
+
+        listCategories?.clear()
+        listCategories?.add(
+            0,
+            TbItem()
+        )
+        categoryList1[pos].inventoryLists?.filter {
+            it!!.isHide
+        }?.let { it1 ->
+            listCategories?.addAll(it1)
+        }
+        listCategories?.let { categoryItemAdapter1?.addAll(it) }
 
     }
 

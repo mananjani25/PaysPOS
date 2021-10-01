@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import androidx.viewbinding.ViewBinding
 import com.android.pos.data.model.CategoryTabModel
 import com.android.pos.data.remote.Constants.VERTICAL
 import com.android.pos.databinding.ViewDashboardTabItemBinding
@@ -120,4 +119,10 @@ class CategoryTabAdapter1(
         }
 
     }
+
+    fun addAll(categoryList: List<CategoryTabModel>) {
+        list = categoryList as ArrayList<CategoryTabModel>
+        notifyDataSetChanged()
+    }
+
 }
