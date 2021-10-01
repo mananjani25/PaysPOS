@@ -413,7 +413,11 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                         resource.data?.let { roleList ->
 
                             teamRoleListGlobal = roleList as ArrayList<TeamRole>
-                            teamRoleListGlobal.add(0, TeamRole(-1, "All Roles", null, null))
+                            val isPresent = teamRoleListGlobal.any { it.name == "All Roles" }
+
+                            if (!isPresent) {
+                                teamRoleListGlobal.add(0, TeamRole(-1, "All Roles", null, null))
+                            }
                             val roleName = teamRoleListGlobal.map { it.name }
 
                             setUpRoleSpinnerAdapter(roleName as ArrayList<String>)
@@ -444,24 +448,28 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                         ProgressUtils.dismissProgressDialog()
                         resource.data?.let { employeeList ->
                             teamEmployeeListGlobal = employeeList as ArrayList<Employee>
-                            teamEmployeeListGlobal.add(
-                                0,
-                                Employee(
-                                    "",
-                                    "",
-                                    -1,
-                                    false,
-                                    "",
-                                    -1,
-                                    "All Team Members",
-                                    "",
-                                    "",
-                                    "",
-                                    false,
-                                    -1,
-                                    "",
+
+                            val isPresent = teamEmployeeListGlobal.any { it.name == "All Team Members" }
+                            if (!isPresent) {
+                                teamEmployeeListGlobal.add(
+                                    0,
+                                    Employee(
+                                        "",
+                                        "",
+                                        -1,
+                                        false,
+                                        "",
+                                        -1,
+                                        "All Team Members",
+                                        "",
+                                        "",
+                                        "",
+                                        false,
+                                        -1,
+                                        "",
+                                    )
                                 )
-                            )
+                            }
                             val roleName = teamEmployeeListGlobal.map { it.name }
 
                             setUpEmployeeSpinnerAdapter(roleName as ArrayList<String>)
@@ -491,18 +499,22 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                             terminalListGlobal =
                                 terminalList as ArrayList<VenueDetailsResponse.Data.Terminal>
 
-                            terminalListGlobal.add(
-                                0,
-                                VenueDetailsResponse.Data.Terminal(
-                                    "",
-                                    -1,
-                                    -1,
-                                    false,
-                                    "All Terminals",
-                                    "",
-                                    ""
+                            val isPresent = terminalListGlobal.any { it.name == "All Terminals" }
+
+                            if (!isPresent) {
+                                terminalListGlobal.add(
+                                    0,
+                                    VenueDetailsResponse.Data.Terminal(
+                                        "",
+                                        -1,
+                                        -1,
+                                        false,
+                                        "All Terminals",
+                                        "",
+                                        ""
+                                    )
                                 )
-                            )
+                            }
 
                             val roleName = terminalListGlobal.map { it.name }
 
@@ -533,10 +545,15 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                         resource.data?.let { terminalList ->
                             orderTypeListGlobal =
                                 terminalList as ArrayList<TbOrderType>
-                            orderTypeListGlobal.add(
-                                0,
-                                TbOrderType("", -1, false, -1, "All Orders", "", -1, "")
-                            )
+
+                            val isPresent = orderTypeListGlobal.any { it.name == "All Orders" }
+
+                            if (!isPresent) {
+                                orderTypeListGlobal.add(
+                                    0,
+                                    TbOrderType("", -1, false, -1, "All Orders", "", -1, "")
+                                )
+                            }
                             val roleName = orderTypeListGlobal.map { it.name }
 
                             setUpOrderTypeSpinnerAdapter(roleName as ArrayList<String>)
