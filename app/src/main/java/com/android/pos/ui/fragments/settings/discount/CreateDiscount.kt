@@ -52,7 +52,7 @@ class CreateDiscount : Fragment() {
 
             if (discountData.discountType == getString(R.string.disc_percentage)) {
                 binding.swtDiscountType.isChecked = true
-                binding.swtDiscountType.text = getString(R.string.disc_percentage)
+                binding.swtDiscountType.text = getString(R.string.percentage)
                 binding.tvSymbolPer.visibility = View.VISIBLE
                 binding.tvSymbolDollar.visibility = View.GONE
             } else {
@@ -103,7 +103,7 @@ class CreateDiscount : Fragment() {
 
     fun discountType(isChecked: Boolean) {
         if (isChecked) {
-            binding.swtDiscountType.text = getString(R.string.disc_percentage)
+            binding.swtDiscountType.text = getString(R.string.percentage)
             viewModel.discountType(getString(R.string.disc_percentage))
             binding.tvSymbolPer.visibility = View.VISIBLE
             binding.tvSymbolDollar.visibility = View.GONE

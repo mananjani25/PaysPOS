@@ -213,7 +213,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginTop="@dimen/_5sdp"
-                    android:text="@{`Total Refundable Amount is `+@string/symbole +``+String.format(@string/format,orderDetails.data.totalAmount)}"
+                    android:text="@{`Total Refundable Amount is `+@string/symbole +``+String.format(@string/format,(orderDetails.data.totalAmount-orderDetails.data.totalTips))}"
                     android:textColor="@color/color65"
                     android:textSize="@dimen/_5mdpi" />
 

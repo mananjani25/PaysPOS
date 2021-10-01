@@ -53,6 +53,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
     private var paymentTypeList = ArrayList<String>()
     val myCalendar = Calendar.getInstance()
     val myCalendar1 = Calendar.getInstance()
+    private var spinnerTouched = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -151,6 +152,46 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
             singleTransaction?.let { viewModel.orderUpdateTip(it.orderId, tipAmount) }
 
         }
+
+        binding.includeView.spTerminals.setOnTouchListener { v, event ->
+            spinnerTouched = true
+            false
+        }
+
+        binding.includeView.spRoles.setOnTouchListener { v, event ->
+            spinnerTouched = true
+            false
+        }
+
+        binding.includeView.spEmployees.setOnTouchListener { v, event ->
+            spinnerTouched = true
+            false
+        }
+
+        binding.includeView.spOrders.setOnTouchListener { v, event ->
+            spinnerTouched = true
+            false
+        }
+
+        binding.includeView.spTipTypes.setOnTouchListener { v, event ->
+            spinnerTouched = true
+            false
+        }
+        binding.includeView.spTransactionTypes.setOnTouchListener { v, event ->
+            spinnerTouched = true
+            false
+        }
+
+
+        viewModel.apiCallTimeSheet(
+            getTerminalId(binding.includeView.spTerminals.selectedItemPosition).toString(),
+            getRoleId(binding.includeView.spRoles.selectedItemPosition).toString(),
+            getEmployeeId(binding.includeView.spEmployees.selectedItemPosition).toString(),
+            getOrderId(binding.includeView.spOrders.selectedItemPosition).toString(),
+            getTipType(binding.includeView.spTipTypes.selectedItemPosition),
+            getPaymentType(binding.includeView.spTransactionTypes.selectedItemPosition)
+
+        )
 
         return binding.root
     }
@@ -276,16 +317,27 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
     private fun getTerminalId(position: Int): Int? {
         return if (this::terminalListGlobal.isInitialized) {
-            terminalListGlobal?.get(position)?.id
+
+            if (position == -1) {
+                terminalListGlobal?.get(0)?.id
+            } else {
+                terminalListGlobal?.get(position)?.id
+            }
+
         } else {
             -1
         }
     }
 
     private fun getRoleId(position: Int): Int? {
-
         return if (this::teamRoleListGlobal.isInitialized) {
-            teamRoleListGlobal?.get(position)?.id
+
+            if (position == -1) {
+                teamRoleListGlobal?.get(0)?.id
+            } else {
+                teamRoleListGlobal?.get(position)?.id
+            }
+
         } else {
             -1
         }
@@ -293,7 +345,12 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
     private fun getEmployeeId(position: Int): Int? {
         return if (this::teamEmployeeListGlobal.isInitialized) {
-            teamEmployeeListGlobal?.get(position)?.id
+
+            if (position == -1) {
+                teamEmployeeListGlobal?.get(0)?.id
+            } else {
+                teamEmployeeListGlobal?.get(position)?.id
+            }
         } else {
             -1
         }
@@ -301,7 +358,13 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
     private fun getOrderId(position: Int): Int? {
         return if (this::orderTypeListGlobal.isInitialized) {
-            orderTypeListGlobal?.get(position)?.id
+
+            if (position == -1) {
+                orderTypeListGlobal?.get(0)?.id
+            } else {
+                orderTypeListGlobal?.get(position)?.id
+            }
+
         } else {
             -1
         }
@@ -428,6 +491,19 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                             terminalListGlobal =
                                 terminalList as ArrayList<VenueDetailsResponse.Data.Terminal>
 
+                            terminalListGlobal.add(
+                                0,
+                                VenueDetailsResponse.Data.Terminal(
+                                    "",
+                                    -1,
+                                    -1,
+                                    false,
+                                    "All Terminals",
+                                    "",
+                                    ""
+                                )
+                            )
+
                             val roleName = terminalListGlobal.map { it.name }
 
                             setUpTerminalSpinnerAdapter(roleName as ArrayList<String>)
@@ -482,15 +558,19 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-        viewModel.apiCallTimeSheet(
-            getTerminalId(binding.includeView.spTerminals.selectedItemPosition).toString(),
-            getRoleId(binding.includeView.spRoles.selectedItemPosition).toString(),
-            getEmployeeId(binding.includeView.spEmployees.selectedItemPosition).toString(),
-            getOrderId(binding.includeView.spOrders.selectedItemPosition).toString(),
-            getTipType(binding.includeView.spTipTypes.selectedItemPosition),
-            getPaymentType(binding.includeView.spTransactionTypes.selectedItemPosition)
-        )
 
+        if (spinnerTouched) {
+            viewModel.apiCallTimeSheet(
+                getTerminalId(binding.includeView.spTerminals.selectedItemPosition).toString(),
+                getRoleId(binding.includeView.spRoles.selectedItemPosition).toString(),
+                getEmployeeId(binding.includeView.spEmployees.selectedItemPosition).toString(),
+                getOrderId(binding.includeView.spOrders.selectedItemPosition).toString(),
+                getTipType(binding.includeView.spTipTypes.selectedItemPosition),
+                getPaymentType(binding.includeView.spTransactionTypes.selectedItemPosition)
+            )
+
+        }
+        spinnerTouched = false
     }
 
     override fun onNothingSelected(parent: AdapterView<*>?) {

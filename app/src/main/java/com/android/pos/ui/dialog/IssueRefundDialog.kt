@@ -80,12 +80,12 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
 
                     MethodUtils.setRefundPriceTextView(
                         binding.tvTotalRefundAmount,
-                        orderDetailsResponse.data.totalAmount
+                        orderDetailsResponse.data.totalAmount - orderDetailsResponse.data.totalTips
                     )
                 } else {
                     MethodUtils.setRefundPriceTextView(
                         binding.tvTotalRefundAmount,
-                        orderDetailsResponse.data.totalAmount - orderDetailsResponse.data.refundDetails.refundedAmount
+                        (orderDetailsResponse.data.totalAmount - orderDetailsResponse.data.totalTips) - orderDetailsResponse.data.refundDetails.refundedAmount
                     )
                 }
 
@@ -150,7 +150,10 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
         refundItemListAdapter = RefundItemListAdapter(viewModel)
         binding.rvItemListRefund.adapter = refundItemListAdapter
 
-        refundItemListAdapter.addItems(orderDetailsResponse.data.orderItems,orderDetailsResponse.data.orderServiceCharges)
+        refundItemListAdapter.addItems(
+            orderDetailsResponse.data.orderItems,
+            orderDetailsResponse.data.orderServiceCharges
+        )
 
         refundItemListAdapter.showItemSubTotal = {
 
@@ -276,11 +279,11 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                 if (binding.edtAmount.text.toString()
                         .toDouble() > orderDetailsResponse.data.totalAmount
                 ) {
-                    binding.edtAmount.setText(MethodUtils.roundOffAmountString(orderDetailsResponse.data.totalAmount))
+                    binding.edtAmount.setText(MethodUtils.roundOffAmountString(orderDetailsResponse.data.totalAmount - orderDetailsResponse.data.totalTips))
                 }
             } else {
                 val newPrice =
-                    orderDetailsResponse.data.totalAmount - orderDetailsResponse.data.refundDetails.refundedAmount
+                    (orderDetailsResponse.data.totalAmount - orderDetailsResponse.data.totalTips) - orderDetailsResponse.data.refundDetails.refundedAmount
                 if (binding.edtAmount.text.toString().toDouble() > newPrice) {
                     binding.edtAmount.setText(MethodUtils.roundOffAmountString(newPrice))
                 }
