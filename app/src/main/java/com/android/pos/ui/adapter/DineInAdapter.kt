@@ -87,9 +87,10 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>(), MyCall
             }
         }
 
-        override fun onItemClickListener(view: View?, data: TbItem) {
+        override fun onItemClickListener(view: View?, data: TbItem, position: Int?) {
             Log.e(TAG, "DineInMyView ${Gson().toJson(data)}")
-            listner.onItemSelected(getHeaderPosition(),layoutPosition,data)
+            list.get(0).itemPosition = position
+            position?.let { listner.onItemSelected(layoutPosition, it, data) }
 
         }
 
@@ -125,7 +126,7 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>(), MyCall
         return list
     }
 
-    override fun onItemClickListener(view: View?, data: TbItem) {
+    override fun onItemClickListener(view: View?, data: TbItem, position: Int?) {
         Log.e(TAG, "DineInItem:  ${Gson().toJson(data)}")
     }
 

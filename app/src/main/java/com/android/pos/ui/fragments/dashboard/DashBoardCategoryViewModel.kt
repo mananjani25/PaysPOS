@@ -234,6 +234,20 @@ class DashBoardCategoryViewModel @Inject constructor(
                     }
 
 
+                } else if (type == DELETE) {
+                    Log.e(TAG, "HeaderPos:  ${dineInList.get(0).selectedPosition}")
+                    Log.e(TAG, "ItemPos: ${dineInList.get(0).itemPosition}")
+                    var dine = dineInList.toMutableList()
+
+                    dine.get(dine.get(0).selectedPosition).items.remove(dine.get(dine.get(0).selectedPosition).items.get(dine.get(0).itemPosition!!))
+                    Log.e(TAG, "dinedinedine  ${Gson().toJson(dine)}")
+                    cartModel.dineInList = dine
+                    addCart(cartModel)
+                    /*dineInList.toMutableList().remove(
+                        dineInList.get(dineInList.get(0).selectedPosition).items.get(
+                            dineInList.get(0).selectedPosition
+                        )
+                    )*/
                 }
 
 

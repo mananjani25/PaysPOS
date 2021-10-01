@@ -7,5 +7,6 @@ data class DineInModel(
     val isTypeHeader: Boolean = true,
     var selectedPosition: Int,
     val title: String? = null,
+    var itemPosition:Int?=null,
     val items: ArrayList<TbItem> = arrayListOf()
 )
