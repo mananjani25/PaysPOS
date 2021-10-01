@@ -255,9 +255,6 @@ class PosRepository @Inject constructor(
             }
         )
 
-    suspend fun createItemDatabase(item: TbItem) =
-        appDatabase.itemDao().add(item)
-
 
     fun getNoteList() = performGetOperation(
         databaseQuery = { appDatabase.notesDao().alllNotes },
@@ -285,8 +282,8 @@ class PosRepository @Inject constructor(
 
     suspend fun deleteNoteDatabase(noteId: Int) = appDatabase.notesDao().deleteNotesById(noteId)
 
-    /*fun employeesList(locationId: Int) =
-        performGetOperationNew(networkCall = { apiHelperNew.employeesList(locationId) })*/
+/*fun employeesList(locationId: Int) =
+    performGetOperationNew(networkCall = { apiHelperNew.employeesList(locationId) })*/
 
     fun employeesList(locationId: Int) = performGetOperation(
         databaseQuery = { appDatabase.employeeDao().allEmployee },
@@ -300,8 +297,8 @@ class PosRepository @Inject constructor(
         performGetOperationDatabase(databaseQuery = { appDatabase.orderTypeDao().orderTypes })
 
 
-    /*fun employeesTimeSheet(startDate: String, endDate: String, teamRoleId: String) =
-        performGetOperationNew(networkCall = { apiHelperNew.employeesTimeSheet(startDate, endDate, teamRoleId) })*/
+/*fun employeesTimeSheet(startDate: String, endDate: String, teamRoleId: String) =
+    performGetOperationNew(networkCall = { apiHelperNew.employeesTimeSheet(startDate, endDate, teamRoleId) })*/
 
     suspend fun employeesTimeSheet(startDate: String, endDate: String, teamRoleId: String) =
         apiHelperNew.employeesTimeSheet(startDate, endDate, teamRoleId)
@@ -309,8 +306,8 @@ class PosRepository @Inject constructor(
     suspend fun employeesTimeSheetDetails(startDate: String, endDate: String, teamRoleId: String) =
         apiHelperNew.employeesTimeSheetDetails(startDate, endDate, teamRoleId)
 
-    /*fun employeesTimeSheetDetails(startDate: String, endDate: String, teamId: String) =
-        performGetOperationNew(networkCall = { apiHelperNew.employeesTimeSheetDetails(startDate, endDate, teamId) })*/
+/*fun employeesTimeSheetDetails(startDate: String, endDate: String, teamId: String) =
+    performGetOperationNew(networkCall = { apiHelperNew.employeesTimeSheetDetails(startDate, endDate, teamId) })*/
 
 
     fun customerList() = performGetOperation(

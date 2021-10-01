@@ -9,6 +9,7 @@ import com.android.pos.data.entities.*
 import com.android.pos.data.model.DineInModel
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ADD
+import com.android.pos.data.remote.Constants.AUTH_TOKEN
 import com.android.pos.data.remote.Constants.BUSINESS_NAME
 import com.android.pos.data.remote.Constants.BUSINESS_PHONE_NO
 import com.android.pos.data.remote.Constants.BUSINESS_WEBSITE
@@ -47,7 +48,6 @@ class DashBoardCategoryViewModel @Inject constructor(
     var totalDiscount = 0.0
     var assignCustomer: TbCustomer? = null
 
-    val venueData = posRepository.syncVenueData()
 
     fun venueDataLocal(): LiveData<Resource<List<CategoryWithInventory?>>> {
         return posRepository.venueDataLocal()
@@ -56,8 +56,6 @@ class DashBoardCategoryViewModel @Inject constructor(
     fun orderTypes(): LiveData<Resource<List<TbOrderType>>> {
         return posRepository.orderTypes()
     }
-
-    val venueDataLocal = posRepository.venueDataLocal()
 
     val serviceCharges = posRepository.serviceChargeList()
 
@@ -79,7 +77,6 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun getItemsbyId(itemId: Int) = posRepository.getItemsbyId(itemId)
 
-//    fun mAllWords(orderType: String) = posRepository.getCartList(orderType)
 
     fun mAllWords(orderType: String): LiveData<List<CartModel>> {
         return posRepository.getCartList(orderType)
@@ -89,45 +86,50 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            val resource = posRepository.syncVenueDetails()
 
-            when (resource.status) {
-                Status.SUCCESS -> {
-                    _showProgress.value = Event(false)
-                    resource.data.let { venueDetailsResponse ->
-                        if (venueDetailsResponse?.status == 200) {
+            if (prefProvider.getValue(AUTH_TOKEN, "").toString().isNotEmpty()) {
 
-                            resource.data?.let {
-                                Log.e(TAG, "FullData  ${Gson().toJson(it)}")
+                val resource = posRepository.syncVenueDetails()
 
-                                prefProvider.setValue(BUSINESS_NAME, it.data.businessName)
-                                prefProvider.setValue(BUSINESS_PHONE_NO, it.data.phoneNumber)
-                                prefProvider.setValue(
-                                    BUSINESS_WEBSITE,
-                                    it.data.businessWebsite.toString()
-                                )
+                when (resource.status) {
+                    Status.SUCCESS -> {
+                        _showProgress.value = Event(false)
+                        resource.data.let { venueDetailsResponse ->
+                            if (venueDetailsResponse?.status == 200) {
 
-                                taxServiceChargeRepository.addAllTaxDatabase(it.data.taxes)
+                                resource.data?.let {
+                                    Log.e(TAG, "FullData  ${Gson().toJson(it)}")
 
-                                posRepository.addAllNotesDatabase(it.data.notes)
-                                tipDiscountRepository.addDiscount(it.data.discounts)
-                                taxServiceChargeRepository.addServiceCharges(it.data.service_charges)
-                                posRepository.addTerminalsDatabase(it.data.terminals)
+                                    prefProvider.setValue(BUSINESS_NAME, it.data.businessName)
+                                    prefProvider.setValue(BUSINESS_PHONE_NO, it.data.phoneNumber)
+                                    prefProvider.setValue(
+                                        BUSINESS_WEBSITE,
+                                        it.data.businessWebsite.toString()
+                                    )
 
+                                    taxServiceChargeRepository.addAllTaxDatabase(it.data.taxes)
+
+                                    posRepository.addAllNotesDatabase(it.data.notes)
+                                    tipDiscountRepository.addDiscount(it.data.discounts)
+                                    taxServiceChargeRepository.addServiceCharges(it.data.service_charges)
+                                    posRepository.addTerminalsDatabase(it.data.terminals)
+                                    tipDiscountRepository.addTips(it.data.tip_settings)
+
+                                }
+                            } else {
+                                _snackbarText.value = Event(resource.message)
                             }
-                        } else {
-                            _snackbarText.value = Event(resource.message)
                         }
                     }
-                }
 
-                Status.ERROR -> {
-                    _snackbarText.value = Event(resource.message)
-                    _showProgress.value = Event(false)
-                }
+                    Status.ERROR -> {
+                        _snackbarText.value = Event(resource.message)
+                        _showProgress.value = Event(false)
+                    }
 
-                Status.LOADING -> {
-                    _showProgress.value = Event(true)
+                    Status.LOADING -> {
+                        _showProgress.value = Event(true)
+                    }
                 }
             }
         }
@@ -148,22 +150,106 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun cartLogic(
         cartList: List<CartModel>?,
-        item: TbItem,
+        item: TbItem?,
         type: String,
         dineInList: List<DineInModel> = arrayListOf()
     ) {
 
         if (cartList != null && cartList.isEmpty()) {
             // empty cart hoy to new cart create kare
-            val cartModel = addCartModel(item)
-            addCart(cartModel)
+            val cartModel = item?.let { addCartModel(it) }
+            if (cartModel != null) {
+                addCart(cartModel)
+            }
         } else {
             if (cartList?.get(0)?.orderType == DINE_IN) {
                 val cartModel = cartList[0]
                 cartModel.dineInList = dineInList
+                if (type == ADD || type == UPDATE) {
+                    var index = -1
+                    val dineIn = dineInList
+                    if (dineIn != null && dineIn.isNotEmpty()) {
+                        val selectedHeader = dineInList.get(0).selectedPosition
+
+                        dineIn.get(selectedHeader).items.forEachIndexed { pos, tbItem ->
+                            if (item != null) {
+                                if (tbItem.itemId == item.itemId && checkVariation(
+                                        tbItem,
+                                        item
+                                    ) && checkModifier(tbItem, item)
+                                ) {
+
+                                    index = pos
+                                    return@forEachIndexed
+
+                                }
+                            }
 
 
-                addCart(cartModel)
+                        }
+                        Log.e(TAG, "DineInIndax: ${index}")
+
+                        if (index != -1) {
+                            val model =
+                                cartList[0].dineInList?.get(selectedHeader)?.items?.get(index)
+                            if (model != null) {
+                                if (type == "UPDATE") {
+                                    if (item != null) {
+                                        model.itemQuantity = item.itemQuantity
+                                    }
+                                    dineIn.get(selectedHeader).items[index] = model
+                                } else {
+                                    if (index != -1) {
+                                        if (item != null) {
+                                            model.itemQuantity =
+                                                item.itemQuantity + model.itemQuantity
+                                            item.modifiers.forEach {
+                                                it.itemQuantity = model.itemQuantity
+                                            }
+                                            model.modifiers = item.modifiers
+                                        }
+
+                                        dineIn.get(selectedHeader).items[index] = model
+                                        cartModel.dineInList = dineIn
+                                        addCart(cartModel)
+                                    } else {
+                                        cartModel.dineInList = dineInList
+                                        addCart(cartModel)
+
+                                    }
+                                }
+
+
+                            }
+                        } else {
+
+                            if (item != null) {
+                                dineInList.get(dineInList.get(0).selectedPosition).items.add(item)
+                            }
+                            cartModel.dineInList = dineInList
+                            addCart(cartModel)
+                        }
+
+
+                    }
+
+
+                } else if (type == DELETE) {
+                    Log.e(TAG, "HeaderPos:  ${dineInList.get(0).selectedPosition}")
+                    Log.e(TAG, "ItemPos: ${dineInList.get(0).itemPosition}")
+                    var dine = dineInList.toMutableList()
+
+                    dine.get(dine.get(0).selectedPosition).items.remove(dine.get(dine.get(0).selectedPosition).items.get(dine.get(0).itemPosition!!))
+                    Log.e(TAG, "dinedinedine  ${Gson().toJson(dine)}")
+                    cartModel.dineInList = dine
+                    addCart(cartModel)
+                    /*dineInList.toMutableList().remove(
+                        dineInList.get(dineInList.get(0).selectedPosition).items.get(
+                            dineInList.get(0).selectedPosition
+                        )
+                    )*/
+                }
+
 
             } else {
                 // already cart ma hoy to add/update/delete kare flag wise
@@ -174,15 +260,17 @@ class DashBoardCategoryViewModel @Inject constructor(
                         var index = -1
 
                         list.forEachIndexed { pos, tbItem ->
-                            if (tbItem.itemId == item.itemId && checkVariation(
-                                    tbItem,
-                                    item
-                                ) && checkModifier(tbItem, item)
-                            ) {
-                                //   if (checkModifier(tbItem, item)) {
-                                index = pos
-                                return@forEachIndexed
-                                //  }
+                            if (item != null) {
+                                if (tbItem.itemId == item.itemId && checkVariation(
+                                        tbItem,
+                                        item
+                                    ) && checkModifier(tbItem, item)
+                                ) {
+                                    //   if (checkModifier(tbItem, item)) {
+                                    index = pos
+                                    return@forEachIndexed
+                                    //  }
+                                }
                             }
 
                             /*if (tbItem.itemId == item.itemId && checkModifier(tbItem, item)) {
@@ -194,26 +282,35 @@ class DashBoardCategoryViewModel @Inject constructor(
                             val model = cartList[0].items?.get(index)
                             if (model != null) {
                                 if (type == "UPDATE") {
-                                    model.itemQuantity = item.itemQuantity
+                                    if (item != null) {
+                                        model.itemQuantity = item.itemQuantity
+                                    }
                                     list[index] = model
                                 } else {
                                     if (index != -1) {
-                                        model.itemQuantity = item.itemQuantity + model.itemQuantity
-                                        item.modifiers.forEach {
-                                            it.itemQuantity = model.itemQuantity
+                                        if (item != null) {
+                                            model.itemQuantity =
+                                                item.itemQuantity + model.itemQuantity
+                                            item.modifiers.forEach {
+                                                it.itemQuantity = model.itemQuantity
+                                            }
+                                            model.modifiers = item.modifiers
                                         }
-                                        model.modifiers = item.modifiers
 
                                         list[index] = model
                                     } else {
-                                        model.itemQuantity = item.itemQuantity
+                                        if (item != null) {
+                                            model.itemQuantity = item.itemQuantity
+                                        }
                                         list[index] = model
                                     }
                                 }
 
                             }
                         } else {
-                            list.add(item)
+                            if (item != null) {
+                                list.add(item)
+                            }
                         }
                     } else if (type == DELETE) {
                         list.remove(item)
@@ -233,7 +330,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                         deleteCart()
                     } else {
                         val cartModel = cartList?.get(0)
-                        cartModel?.items = listOf(item)
+                        cartModel?.items = listOf(item!!)
                         if (cartModel != null) {
                             addCart(cartModel)
                         }

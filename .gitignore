@@ -16,3 +16,5 @@ local.properties
 /app/src/androidTest/
 /app/src/test/
 /.idea/
+/app/release/output-metadata.json
+keystore
