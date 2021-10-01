@@ -1968,7 +1968,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                         cartList.get(0).orderType = DINE_IN
                         val dineInList = dineInCartAdapter.getList()
-                        // dineInList.get(dineInCartAdapter.getHeaderPosition()).items.add(data)
+
                         viewModel.cartLogic(cartList, data, ADD, dineInList = dineInList)
                     } else {
                         viewModel.cartLogic(cartList, data, ADD)
@@ -1982,7 +1982,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                     } else {
 
-                      //  viewModel.cartLogic(cartList, data, UPDATE)
+                        //  viewModel.cartLogic(cartList, data, UPDATE)
                     }
             } else {
                 AlertUtils.showCustomAlert(
@@ -2009,7 +2009,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         }
         btnRemove.setOnClickListener {
-            Log.e(TAG,"RemoveMayItem")
+            Log.e(TAG, "RemoveMayItem")
 
             cartList.get(0).orderType = DINE_IN
 
