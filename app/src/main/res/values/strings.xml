@@ -495,7 +495,7 @@
     <string name="tv_status">Status</string>
     <string name="tv_note">Note</string>
     <string name="tv_transactions">Transactions</string>
-    <string name="tv_order_subtotal">Order Subtotal</string>
+    <string name="tv_order_subtotal">Order Sub Total</string>
     <string name="tv_tax">Tax</string>
     <string name="tv_exchange_refund">Exchange Refund</string>
     <string name="tv_date">Date</string>
