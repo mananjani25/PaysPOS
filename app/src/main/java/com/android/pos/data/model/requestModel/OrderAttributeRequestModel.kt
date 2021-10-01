@@ -443,6 +443,9 @@ class PaymentAttributes {
     @SerializedName("terminal_id")
     var terminalId: Int = 0
 
+    @SerializedName("order_id")
+    var order_id: Int? = null
+
     @SerializedName("tips")
     var tips: Double = 0.0
 

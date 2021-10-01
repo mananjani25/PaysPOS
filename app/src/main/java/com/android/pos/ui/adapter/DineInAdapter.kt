@@ -90,6 +90,7 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>(), MyCall
         override fun onItemClickListener(view: View?, data: TbItem, position: Int?) {
             Log.e(TAG, "DineInMyView ${Gson().toJson(data)}")
             list.get(0).itemPosition = position
+            list.get(0).headerPosition = layoutPosition
             position?.let { listner.onItemSelected(layoutPosition, it, data) }
 
         }
