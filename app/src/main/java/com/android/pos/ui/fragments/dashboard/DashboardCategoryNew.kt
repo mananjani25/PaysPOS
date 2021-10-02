@@ -1130,7 +1130,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         txtQty.setText(qty.toString())
 
         variationAdapter?.showVariationPriceClick = {
-            showPriceTitle(it, variationAdapter = null, data, txtTitle, isItemClick)
+            //  showPriceTitle(it, variationAdapter = null, data, txtTitle, isItemClick)
+            findNavController().navigate(
+                R.id.action_dashboardCategoryNew_to_addVariablePriceDialog
+            )
         }
 
 
