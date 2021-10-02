@@ -27,6 +27,7 @@ import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.TransactionAdapter
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.ItemCallback
+import com.android.pos.utils.callback.PaginationScrollListener
 import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.statusUtils.Status
@@ -54,6 +55,14 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
     val myCalendar = Calendar.getInstance()
     val myCalendar1 = Calendar.getInstance()
     private var spinnerTouched = false
+
+    private var employeeTimeSheet = ArrayList<GetTransactionListResponse.Data.Payment>()
+
+    private var TOTAL_PAGES = 0
+    var PAGE_START = 1
+    private var isLoading = false
+    private var currentPage = PAGE_START
+    private var isLastPage = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -105,6 +114,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
             viewModel.updateLabel(myCalendar)
             viewModel.apiCallTimeSheet(
+                currentPage,
                 getTerminalId(binding.includeView.spTerminals.selectedItemPosition).toString(),
                 getRoleId(binding.includeView.spRoles.selectedItemPosition).toString(),
                 getEmployeeId(binding.includeView.spEmployees.selectedItemPosition).toString(),
@@ -122,6 +132,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
             viewModel.updateLabel(myCalendar1)
             viewModel.apiCallTimeSheet(
+                currentPage,
                 getTerminalId(binding.includeView.spTerminals.selectedItemPosition).toString(),
                 getRoleId(binding.includeView.spRoles.selectedItemPosition).toString(),
                 getEmployeeId(binding.includeView.spEmployees.selectedItemPosition).toString(),
@@ -182,8 +193,48 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
             false
         }
 
+        val layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        binding.rvTeamTimeSheet.layoutManager = layoutManager
+
+        binding.rvTeamTimeSheet.addOnScrollListener(object :
+            PaginationScrollListener(layoutManager) {
+
+
+            override fun isLastPage(): Boolean {
+                return isLastPage
+            }
+
+            override fun isLoading(): Boolean {
+                return isLoading
+            }
+
+            override fun getTotalPageCount(): Int {
+
+                return TOTAL_PAGES
+            }
+
+
+            override fun loadMoreItems() {
+                isLoading = true
+                currentPage += 1
+
+                viewModel.apiCallTimeSheet(
+                    currentPage,
+                    getTerminalId(binding.includeView.spTerminals.selectedItemPosition).toString(),
+                    getRoleId(binding.includeView.spRoles.selectedItemPosition).toString(),
+                    getEmployeeId(binding.includeView.spEmployees.selectedItemPosition).toString(),
+                    getOrderId(binding.includeView.spOrders.selectedItemPosition).toString(),
+                    getTipType(binding.includeView.spTipTypes.selectedItemPosition),
+                    getPaymentType(binding.includeView.spTransactionTypes.selectedItemPosition)
+                )
+            }
+
+        })
+
 
         viewModel.apiCallTimeSheet(
+            currentPage,
             getTerminalId(binding.includeView.spTerminals.selectedItemPosition).toString(),
             getRoleId(binding.includeView.spRoles.selectedItemPosition).toString(),
             getEmployeeId(binding.includeView.spEmployees.selectedItemPosition).toString(),
@@ -192,6 +243,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
             getPaymentType(binding.includeView.spTransactionTypes.selectedItemPosition)
 
         )
+
 
         return binding.root
     }
@@ -386,18 +438,38 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                 LinearLayoutManager.VERTICAL
             )
         )
+
         transactionAdapter = TransactionAdapter(viewModel)
         transactionAdapter.setCallback(this)
         binding.rvTeamTimeSheet.adapter = transactionAdapter
+
+
     }
 
     private fun getEmployeesTimeSheetObserver() {
         viewModel.data.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let { timeSheet ->
                 binding.rvTeamTimeSheet.visibility = View.VISIBLE
-                transactionAdapter.teamTimesheetList(
-                    timeSheet.data.payments
-                )
+                employeeTimeSheet.addAll(timeSheet.data.payments)
+                TOTAL_PAGES = timeSheet.data.pagination.maxPageSize.toInt()
+
+                if (currentPage != TOTAL_PAGES) {
+                    transactionAdapter.showLoading(false)
+                }
+
+                if (timeSheet.data.payments.isNotEmpty()) {
+                    transactionAdapter.teamTimesheetList(
+                        employeeTimeSheet
+                    )
+                }
+
+                if (currentPage <= TOTAL_PAGES) {
+                    transactionAdapter.showLoading(true)
+                } else {
+                    transactionAdapter.showLoading(false)
+                    isLastPage = true
+                }
+                isLoading = false
 
             }
         })
@@ -449,7 +521,8 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                         resource.data?.let { employeeList ->
                             teamEmployeeListGlobal = employeeList as ArrayList<Employee>
 
-                            val isPresent = teamEmployeeListGlobal.any { it.name == "All Team Members" }
+                            val isPresent =
+                                teamEmployeeListGlobal.any { it.name == "All Team Members" }
                             if (!isPresent) {
                                 teamEmployeeListGlobal.add(
                                     0,
@@ -578,6 +651,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
         if (spinnerTouched) {
             viewModel.apiCallTimeSheet(
+                currentPage,
                 getTerminalId(binding.includeView.spTerminals.selectedItemPosition).toString(),
                 getRoleId(binding.includeView.spRoles.selectedItemPosition).toString(),
                 getEmployeeId(binding.includeView.spEmployees.selectedItemPosition).toString(),
@@ -609,10 +683,12 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
         viewModel.showProgress.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
-                if (it) {
-                    ProgressUtils.showProgressDialog(requireActivity())
-                } else {
-                    ProgressUtils.dismissProgressDialog()
+                if (currentPage == 1) {
+                    if (it) {
+                        ProgressUtils.showProgressDialog(requireActivity())
+                    } else {
+                        ProgressUtils.dismissProgressDialog()
+                    }
                 }
             }
         })
@@ -642,6 +718,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                 binding.root.showAlert(it.message)
 
                 viewModel.apiCallTimeSheet(
+                    currentPage,
                     getTerminalId(binding.includeView.spTerminals.selectedItemPosition).toString(),
                     getRoleId(binding.includeView.spRoles.selectedItemPosition).toString(),
                     getEmployeeId(binding.includeView.spEmployees.selectedItemPosition).toString(),

@@ -9,6 +9,7 @@ import android.widget.Filterable
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.model.responseModel.GetTransactionListResponse
+import com.android.pos.databinding.ViewPaginationBinding
 import com.android.pos.databinding.ViewTransactionItemBinding
 import com.android.pos.ui.fragments.transactions.TransactionViewModel
 import com.android.pos.utils.TimeFormatUtils.convertCurrentDate
@@ -16,10 +17,12 @@ import com.android.pos.utils.TimeFormatUtils.convertCurrentTime
 import com.android.pos.utils.callback.ItemCallback
 
 class TransactionAdapter(val viewModel: TransactionViewModel) :
-    RecyclerView.Adapter<TransactionAdapter.MyViewHolder>(), Filterable {
+    RecyclerView.Adapter<RecyclerView.ViewHolder>(), Filterable {
 
     var employeeTimeSheet = ArrayList<GetTransactionListResponse.Data.Payment>()
     private var filterList = ArrayList<GetTransactionListResponse.Data.Payment>()
+    private val TYPE_FOOTER = 1
+    private val TYPE_ITEM = 2
 
 
     private var mCallback: ItemCallback? = null
@@ -27,45 +30,59 @@ class TransactionAdapter(val viewModel: TransactionViewModel) :
         mCallback = callback
     }
 
+    private var showLoader = false
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
+    fun showLoading(status: Boolean) {
+        showLoader = status
+    }
+
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+
         val inflater = LayoutInflater.from(parent.context)
-        val binding = ViewTransactionItemBinding.inflate(inflater, parent, false)
+        if (viewType == TYPE_ITEM) {
+            val binding = ViewTransactionItemBinding.inflate(inflater, parent, false)
+            return MyViewHolder(binding)
+        } else {
+            val binding = ViewPaginationBinding.inflate(inflater, parent, false)
+            return FooterViewHolder(binding)
+        }
 
-        return MyViewHolder(binding)
     }
 
     @SuppressLint("SetTextI18n")
-    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        val itemBinding = holder.discountItemBinding
-        itemBinding.itemSheetModel = filterList[position]
-        itemBinding.viewModel = viewModel
-        val context = itemBinding.root.context
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        if (holder is MyViewHolder) {
+            val itemBinding = holder.discountItemBinding
+            itemBinding.itemSheetModel = filterList[position]
+            itemBinding.viewModel = viewModel
+            val context = itemBinding.root.context
 
-        val model = filterList[position]
+            val model = filterList[position]
 
-        itemBinding.tvDate.text =
-            convertCurrentDate(filterList[position].createdAt) + "\n" + convertCurrentTime(
-                filterList[position].createdAt
-            )
-        itemBinding.txtCustomerName.text =
-            (model.customer.firstName ?: "") + " " + (model.customer.lastName ?: "")
+            itemBinding.tvDate.text =
+                convertCurrentDate(filterList[position].createdAt) + "\n" + convertCurrentTime(
+                    filterList[position].createdAt
+                )
+            itemBinding.txtCustomerName.text =
+                (model.customer.firstName ?: "") + " " + (model.customer.lastName ?: "")
 
-        if (filterList[position].refundedAmount != 0.0) {
-            itemBinding.tvRefundedAmount.text =
-                "(Refunded \n" + context.getString(R.string.symbole) + " " + String.format(
-                    context.getString(R.string.format),
-                    filterList[position].refundedAmount
-                ) + ")"
-        } else {
-          //  itemBinding.tvRefundedAmount.visibility = View.GONE
-        }
+            if (filterList[position].refundedAmount != 0.0) {
+                itemBinding.tvRefundedAmount.text =
+                    "(Refunded \n" + context.getString(R.string.symbole) + " " + String.format(
+                        context.getString(R.string.format),
+                        filterList[position].refundedAmount
+                    ) + ")"
+            } else {
+                //  itemBinding.tvRefundedAmount.visibility = View.GONE
+            }
 
-        itemBinding.executePendingBindings()
+            itemBinding.executePendingBindings()
 
-        itemBinding.txtTip.setOnClickListener {
+            itemBinding.txtTip.setOnClickListener {
 
-            mCallback?.onItemClickListener(it, position)
+                mCallback?.onItemClickListener(it, position)
+            }
         }
     }
 
@@ -74,7 +91,7 @@ class TransactionAdapter(val viewModel: TransactionViewModel) :
     fun teamTimesheetList(employeeTimeSheet: List<GetTransactionListResponse.Data.Payment>) {
 
         this.employeeTimeSheet.apply {
-            clear()
+           // clear()
             addAll(employeeTimeSheet)
             notifyDataSetChanged()
         }
@@ -85,6 +102,11 @@ class TransactionAdapter(val viewModel: TransactionViewModel) :
 
     inner class MyViewHolder(val discountItemBinding: ViewTransactionItemBinding) :
         RecyclerView.ViewHolder(discountItemBinding.root) {
+
+    }
+
+    inner class FooterViewHolder(val paginationBinding: ViewPaginationBinding) :
+        RecyclerView.ViewHolder(paginationBinding.root) {
 
     }
 
@@ -131,8 +153,16 @@ class TransactionAdapter(val viewModel: TransactionViewModel) :
         return position.toLong()
     }
 
-    override fun getItemViewType(position: Int): Int {
+    /*override fun getItemViewType(position: Int): Int {
         return position
+    }*/
+
+    override fun getItemViewType(position: Int): Int {
+        return if (showLoader) {
+            if (position == filterList.size - 1) TYPE_FOOTER else TYPE_ITEM
+        } else {
+            TYPE_ITEM
+        }
     }
 
 
