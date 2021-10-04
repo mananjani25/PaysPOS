@@ -16,6 +16,7 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
@@ -217,6 +218,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             }
         }
 
+
     }
 
     private fun setupAdapter() {
@@ -352,6 +354,33 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                                 arrayListOf()
                             )?.let { it1 -> dineInCartAdapter.setList(it1) }
 
+                            val list1 = cartList.get(0).dineInList
+                            if (isAdded) {
+
+                                setFragmentResultListener("request_key_customer_dine_in") { requestKey, bundle ->
+                                    val result = bundle.getParcelable<TbCustomer>("data")
+                                    if (result != null) {
+
+
+                                        if (list1?.isNotEmpty() == true) {
+
+                                            var position = bundle.getInt("position")
+
+                                            val dineInList = list1
+                                            if (dineInList.size >= position && position != 0) {
+
+                                                dineInList.get(position).customer = result
+
+                                                viewModel.dineInCartUpdate(
+                                                    cartList,
+                                                    dineInList
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
 
                         } else {
 
@@ -369,7 +398,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             binding.layoutCart.txtTotalAmount
                         )
 
-                        if (prefProvider.getValue(ORDER_TYPE, "").toString() == TAKEOUT) {
+                        if (prefProvider.getValue(ORDER_TYPE, "")
+                                .toString() == TAKEOUT || prefProvider.getValue(ORDER_TYPE, "")
+                                .toString() == Constants.DINE_IN
+                        ) {
                             binding.layoutCart.rlSave.visibility = View.GONE
                         }
                     } else {
@@ -392,8 +424,13 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
             binding.layoutCart.llCart.visibility = View.VISIBLE
             binding.lltakeout.visibility = View.GONE
-            binding.layoutCart.txtOrderType.text =
-                prefProvider.getValue(ORDER_TYPE_NAME, TAKEOUT).toString()
+            if (prefProvider.getValue(ORDER_TYPE_NAME, TAKEOUT).toString() == DINE_IN){
+                binding.layoutCart.txtOrderType.setText("Dine In")
+            }
+            else {
+                binding.layoutCart.txtOrderType.text =
+                    prefProvider.getValue(ORDER_TYPE_NAME, TAKEOUT).toString()
+            }
             if (prefProvider.getValue(ORDER_TYPE_NAME, TAKEOUT) == DINE_IN) {
                 binding.layoutCart.llShowMenu.visibility = View.GONE
                 binding.layoutCart.viewDineIn.visibility = View.VISIBLE
@@ -2081,7 +2118,21 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     }
 
-    override fun onCustomerClicked(position: Int) {
+    override fun onCustomerClicked(position: Int, isRemoved: Boolean) {
+        if (isRemoved) {
+            if (cartList.get(0).dineInList?.size!! >= position) {
+                var dineIn = cartList.get(0).dineInList
+                dineIn?.get(position)?.customer = null
+                viewModel.dineInCartUpdate(cartList, dineIn!!)
+            }
+
+        } else {
+
+            val bundle = bundleOf("DINE_IN" to true, "position" to position)
+            findNavController().navigate(
+                R.id.action_dashboardCategoryNew_to_assignCustomerOrderFragment, bundle
+            )
+        }
 
 
     }
@@ -2103,6 +2154,4 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         listCategories?.let { categoryItemAdapter1?.addAll(it) }
 
     }
-
-
 }

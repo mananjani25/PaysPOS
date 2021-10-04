@@ -297,6 +297,7 @@
     <string name="products">Products</string>
     <string name="keypad">Keypad</string>
     <string name="remove_tip">Remove Tip</string>
+    <string name="remove_customer">Remove Customer</string>
     <string name="update">Update</string>
     <string name="update_role">Update Role</string>
     <string name="disc_percentage">Percentage</string>
