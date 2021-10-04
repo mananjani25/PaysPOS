@@ -83,6 +83,13 @@ class CategoryListItemAdapter :
 
     }
 
+    override fun getItemId(position: Int): Long {
+        return position.toLong()
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return position
+    }
     /* fun add(categoryModel: List<TbCategory>) {
          this.categoryList = categoryModel as ArrayList<TbCategory>
          this.filterList = categoryModel

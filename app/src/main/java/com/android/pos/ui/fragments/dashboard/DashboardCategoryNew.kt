@@ -1130,7 +1130,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         txtQty.setText(qty.toString())
 
         variationAdapter?.showVariationPriceClick = {
-            showPriceTitle(it, variationAdapter = null, data, txtTitle, isItemClick)
+            //  showPriceTitle(it, variationAdapter = null, data, txtTitle, isItemClick)
+            findNavController().navigate(
+                R.id.action_dashboardCategoryNew_to_addVariablePriceDialog
+            )
         }
 
 
@@ -1162,7 +1165,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 data.note = edtNote.text.toString().trim()
                 data.itemQuantity = txtQty.text.toString().toInt()
                 if (!isItemClick) {
-                    data.discountPrice = (discountPrice * txtQty.text.toString().toInt())
+                    data.discountPrice = (discountPrice
+                            /** txtQty.text.toString().toInt()*/
+                            )
                 }
 
 

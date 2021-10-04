@@ -104,6 +104,7 @@ class TransactionViewModel @Inject constructor(
 
 
     fun apiCallTimeSheet(
+        currentPage: Int,
         terminalId: String,
         roleId: String,
         employeeId: String,
@@ -137,7 +138,8 @@ class TransactionViewModel @Inject constructor(
 
         viewModelScope.launch {
             val data = LinkedHashMap<String, String>()
-            data["per_page"] = 9999.toString()
+            data["page"] = currentPage.toString()
+            data["per_page"] = 10.toString()
             data["start_date"] = startDate.value.toString()
             data["end_date"] = endDate.value.toString()
             data["terminal_id"] = terminalIdViewModel
@@ -187,7 +189,8 @@ class TransactionViewModel @Inject constructor(
                 }
 
                 Status.ERROR -> {
-                    _snackbarText.value = Event(resource.message)
+                   // _snackbarText.value = Event(resource.message)
+
                     _showProgress.value = Event(false)
                 }
 
