@@ -148,6 +148,21 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
     }
 
+    fun dineInCartUpdate(
+        cartList: List<CartModel>?,
+        dineInList: List<DineInModel> = arrayListOf()
+    ) {
+
+        val cartModel = cartList?.get(0)
+        cartModel?.dineInList = dineInList
+        cartModel?.orderType = DINE_IN
+        cartModel?.let {
+            addCart(it)
+            Log.e(TAG, "CustomerAdded")
+        }
+
+    }
+
     fun cartLogic(
         cartList: List<CartModel>?,
         item: TbItem?,
@@ -475,10 +490,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 }
                 val serviceChargesList = cartList[0].serviceCharge
-                Log.e(
-                    TAG,
-                    "serviceChargeDashViewModel:  ${Gson().toJson(cartList[0].serviceCharge)}"
-                )
+
                 if (serviceChargesList != null && serviceChargesList.isNotEmpty()) {
                     serviceChargesList.forEach {
                         if (it.isEnabled) {
@@ -489,9 +501,14 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 }
 
-                totalDiscount = cartList[0].items!!.map {
-                    it.discountPrice
-                }.sum()
+                cartList[0].dineInList?.forEach {
+                    totalDiscount += it.items.map {
+                        it.discountPrice
+                    }.sum()
+                }
+                /*   totalDiscount = cartList[0].items!!.map {
+                       it.discountPrice
+                   }.sum()*/
                 Log.e(TAG, "totalDiscount:  $totalDiscount")
                 Log.e(TAG, "SubTotalPrice:   $subTotalPrice")
                 Log.e(TAG, "totalTax:  $totalTax")
