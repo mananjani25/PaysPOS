@@ -33,7 +33,7 @@ class CreateItemViewModel @Inject constructor(
     var itemDetails = MutableLiveData(CreateItemRequestModel())
     private lateinit var itemData: CreateItemRequestModel
     private lateinit var modifierSetIdsViewModel: ArrayList<Int>
-    private var itemPriceViewModel: Double = 0.0
+    private var itemPriceViewModel: Double? = 0.0
     private var descViewModel: String = ""
     private var skuViewModel: String = ""
     private var stockViewModel: Int = 0
@@ -112,6 +112,11 @@ class CreateItemViewModel @Inject constructor(
                 if (isEdit) id = itemId
                 active = true
                 name = value!!.name
+                if (itemPriceViewModel != null) {
+                    priceType = "Fixed"
+                } else {
+                    priceType = "Variable"
+                }
                 price = itemPriceViewModel
                 sku = skuViewModel
                 quantity = stockViewModel
@@ -173,7 +178,7 @@ class CreateItemViewModel @Inject constructor(
         this.variationAttributeModel = variationAttribute
     }
 
-    fun itemDetails(itemPrice: Double, desc: String, sku: String, stock: Int) {
+    fun itemDetails(itemPrice: Double?, desc: String, sku: String, stock: Int) {
         this.itemPriceViewModel = itemPrice
         this.descViewModel = desc
         this.skuViewModel = sku

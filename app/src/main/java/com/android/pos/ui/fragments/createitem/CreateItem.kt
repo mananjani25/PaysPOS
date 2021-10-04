@@ -29,7 +29,6 @@ import com.android.pos.utils.callback.UpdateVariationCallback
 import com.android.pos.utils.extensions.getNavigationResultLiveData
 import com.android.pos.utils.extensions.liveSnackBar
 import com.google.android.material.snackbar.Snackbar
-import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -117,6 +116,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
                     val optionSetIds = ArrayList<Int>()
                     builder.append(it.name.trim() + ",").toString()
                     variation.name = builder.substring(0, builder.length - 1).toString()
+                    variation.priceType = "Variable"
                     variation._destroy = false
 
                     optionSetList?.forEach {
@@ -182,6 +182,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
                         isCustom = true
                         price = binding.etItemPrice.text.toString().replace("$", "").toDouble()
                         name = "Regular"
+                        priceType = "Fixed"
                         sku = binding.etSku.text.toString()
                         stockQty = binding.etStock.text.toString()
                     }
@@ -189,7 +190,8 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
                     customVariation = VariationsAttribute().apply {
                         isActive = true
                         isCustom = true
-                        price = 0.00
+                        price = null
+                        priceType = "Variable"
                         name = "Regular"
                     }
                 }
@@ -278,16 +280,16 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
 
             if (variationListAdapter.selectedVariation().size > 0 && variationListAdapter.selectedVariation() != null) {
                 viewModel.itemDetails(
-                    0.00,
+                    null,
                     binding.etDesc.text.toString(),
                     "",
                     0
                 )
             } else {
-                val itemPrice: Double
+                val itemPrice: Double?
                 val stock: Int
                 if (TextUtils.isEmpty(binding.etItemPrice.text.toString())) {
-                    itemPrice = 0.00
+                    itemPrice = null
                 } else {
                     itemPrice = binding.etItemPrice.text.toString().replace("$", "").toDouble()
                 }

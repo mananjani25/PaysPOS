@@ -38,11 +38,16 @@ class VariationListAdapter(val viewModel: CreateItemViewModel) :
         val variationName = variationList[position].name
         itemBinding.tvVariationsName.text = variationName
 
-        itemBinding.tvPrice.text =
-            context.getString(R.string.symbole) + " " + String.format(
-                context.getString(R.string.format),
-                variationList[position].price
-            )
+        if (variationList[position].price != null) {
+            itemBinding.tvPrice.text =
+                context.getString(R.string.symbole) + " " + String.format(
+                    context.getString(R.string.format),
+                    variationList[position].price
+                )
+        } else {
+            itemBinding.tvPrice.text = "Variable"
+        }
+
         itemBinding.tvSku.text = variationList[position].sku
         itemBinding.tvStock.text = variationList[position].stockQty
 
