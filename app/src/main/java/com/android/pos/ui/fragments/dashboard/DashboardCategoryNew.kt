@@ -34,6 +34,7 @@ import com.android.pos.data.remote.Constants.ADD
 import com.android.pos.data.remote.Constants.CUSTOMER_ID
 import com.android.pos.data.remote.Constants.CUSTOMER_NAME
 import com.android.pos.data.remote.Constants.DELETE
+import com.android.pos.data.remote.Constants.DIALOG_KEY_VARIATION_DETAILS
 import com.android.pos.data.remote.Constants.DINE_IN
 
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
@@ -59,6 +60,7 @@ import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.callback.MyCallback
 import com.android.pos.utils.extensions.alert
+import com.android.pos.utils.extensions.getNavigationResultLiveData
 import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.statusUtils.Status
 import com.google.android.material.snackbar.Snackbar
@@ -1130,14 +1132,28 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         txtQty.setText(qty.toString())
 
-        variationAdapter?.showVariationPriceClick = {
-            //  showPriceTitle(it, variationAdapter = null, data, txtTitle, isItemClick)
-            findNavController().navigate(
-                R.id.action_dashboardCategoryNew_to_addVariablePriceDialog
-            )
+        variationAdapter?.showVariationPriceClick = { it: VariationsAttribute ->
+
+            if (it.priceType == "Variable") {
+                val bundle = Bundle().apply {
+                    putParcelable("variationAttribute", it)
+                }
+                findNavController().navigate(
+                    R.id.action_dashboardCategoryNew_to_addVariablePriceDialog, bundle
+                )
+            } else if (it.priceType == "Fixed") {
+                showPriceTitle(it, variationAdapter = null, data, txtTitle, isItemClick)
+            }
+
         }
 
+        val resultVariationDetails =
+            getNavigationResultLiveData<VariationsAttribute>(DIALOG_KEY_VARIATION_DETAILS)
+        resultVariationDetails?.observe(viewLifecycleOwner) {
+            variationAdapter?.updateVariation(it)
+            showPriceTitle(it, variationAdapter = null, data, txtTitle, isItemClick)
 
+        }
 
         imgClose.setOnClickListener {
             dialog.dismiss()
@@ -1902,7 +1918,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         txtQty.setText(qty.toString())
 
-        variationAdapter?.showVariationPriceClick = {
+        variationAdapter?.showVariationPriceClick = { it: VariationsAttribute ->
             showPriceTitle(it, variationAdapter = null, data, txtTitle, isItemClick)
         }
 
