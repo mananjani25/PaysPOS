@@ -969,6 +969,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     )*/
                     val dineInList = dineInCartAdapter.getList()
                     //dineInList.get(dineInCartAdapter.getHeaderPosition()).items.add(item)
+                    dineInList.get(0).selectedPosition = dineInCartAdapter.getHeaderPosition()
                     viewModel.cartLogic(cartList, item, ADD, dineInList = dineInList)
                     Log.e(TAG, "serviceChargesList:  ${Gson().toJson(serviceChargesList)}")
 
@@ -1190,6 +1191,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         cartList.get(0).orderType = DINE_IN
                         val dineInList = dineInCartAdapter.getList()
                         // dineInList.get(dineInCartAdapter.getHeaderPosition()).items.add(data)
+                        dineInList.get(0).selectedPosition = dineInCartAdapter.getHeaderPosition()
                         viewModel.cartLogic(cartList, data, ADD, dineInList = dineInList)
                     } else {
                         viewModel.cartLogic(cartList, data, ADD)
@@ -1198,6 +1200,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
                         cartList.get(0).orderType = DINE_IN
                         val dineInList = dineInCartAdapter.getList()
+                        dineInList.get(0).selectedPosition = dineInCartAdapter.getHeaderPosition()
                         // dineInList.get(dineInCartAdapter.getHeaderPosition()).items.add(data)
                         viewModel.cartLogic(cartList, data, UPDATE, dineInList = dineInList)
 
@@ -1954,6 +1957,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                         cartList.get(0).orderType = DINE_IN
                         val dineInList = dineInCartAdapter.getList()
+                        dineInList.get(0).selectedPosition = dineInCartAdapter.getHeaderPosition()
 
                         viewModel.cartLogic(cartList, data, ADD, dineInList = dineInList)
                     } else {
@@ -1963,6 +1967,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
                         cartList.get(0).orderType = DINE_IN
                         val dineInList = dineInCartAdapter.getList()
+                        dineInList.get(0).selectedPosition = headerPosition
                         // dineInList.get(dineInCartAdapter.getHeaderPosition()).items.add(data)
                         viewModel.cartLogic(cartList, data, UPDATE, dineInList = dineInList)
 
@@ -2072,6 +2077,11 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         dialog.setCanceledOnTouchOutside(false)
         dialog.show()
+
+
+    }
+
+    override fun onCustomerClicked(position: Int) {
 
 
     }

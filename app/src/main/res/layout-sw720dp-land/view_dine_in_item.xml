@@ -37,6 +37,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_7sdp"
+                android:paddingVertical="@dimen/_3sdp"
                 android:textColor="@color/white"
                 android:textSize="19sp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -47,11 +48,12 @@
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/imgOrderMenu"
-                android:layout_width="@dimen/_12sdp"
+                android:layout_width="@dimen/_18sdp"
                 android:layout_height="@dimen/_12sdp"
                 android:layout_gravity="center"
                 android:layout_marginVertical="@dimen/_3sdp"
                 android:layout_marginEnd="@dimen/_2sdp"
+                android:foreground="?attr/selectableItemBackground"
                 android:padding="@dimen/_2sdp"
                 android:tint="@color/white"
                 android:visibility="visible"
@@ -61,6 +63,40 @@
                 app:srcCompat="@drawable/ic_dots" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/llCustomerDialog"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/txtColor"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="@color/view" />
+
+            <TextView
+                android:id="@+id/txtCrtNewCustomer"
+                style="@style/CustomFontMediumStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:padding="@dimen/_5sdp"
+                android:text="@string/assign_customer"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_5mdpi" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="@color/view" />
+
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvCart"
