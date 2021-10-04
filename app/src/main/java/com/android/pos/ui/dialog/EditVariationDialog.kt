@@ -3,6 +3,7 @@ package com.android.pos.ui.dialog
 import android.app.Activity
 import android.graphics.Point
 import android.os.Bundle
+import android.text.TextUtils
 import android.util.Log
 import android.view.*
 import androidx.databinding.DataBindingUtil
@@ -63,12 +64,17 @@ class EditVariationDialog : DialogFragment(), View.OnClickListener {
         )
 
 
-        binding.tvVariationsPrice.setText(
-            activity.getString(R.string.symbole) + " " + String.format(
-                activity.getString(R.string.format),
-                variationAttribute?.price
+        if (variationAttribute?.price != null) {
+            binding.tvVariationsPrice.setText(
+                activity.getString(R.string.symbole) + " " + String.format(
+                    activity.getString(R.string.format),
+                    variationAttribute?.price
+                )
             )
-        )
+        } else {
+            binding.tvVariationsPrice.setText("")
+        }
+
         binding.tvVariationsSku.setText(variationAttribute?.sku)
         binding.tvVariationsStock.setText(variationAttribute?.stockQty)
 
@@ -96,8 +102,17 @@ class EditVariationDialog : DialogFragment(), View.OnClickListener {
 
                 variationAttribute?.name = binding.tvVariationsName.text.toString()
 
-                variationAttribute?.price =
-                    binding.tvVariationsPrice.text.toString().replace("$", "").toDouble()
+                if (TextUtils.isEmpty(binding.tvVariationsPrice.text.toString())) {
+                 //   variationAttribute?.price = null
+                    variationAttribute?.priceType = "Variable"
+                } else {
+
+                    variationAttribute?.price =
+                        binding.tvVariationsPrice.text.toString().replace("$", "").toDouble()
+
+                    variationAttribute?.priceType = "Fixed"
+                }
+
                 variationAttribute?.sku = binding.tvVariationsSku.text.toString()
                 variationAttribute?.stockQty = binding.tvVariationsStock.text.toString()
 

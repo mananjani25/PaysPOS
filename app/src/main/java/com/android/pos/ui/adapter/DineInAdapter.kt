@@ -37,7 +37,7 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>(), MyCall
 
     inner class MyViewHolder(private val binding: ViewDineInItemBinding) :
         RecyclerView.ViewHolder(binding.root), MyCallback {
-        @SuppressLint("UseCompatLoadingForDrawables")
+
         fun bind(model: DineInModel) {
             binding.model = model
             binding.executePendingBindings()
@@ -45,14 +45,17 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>(), MyCall
             binding.rvCart.adapter = itemAdapter
 
             itemAdapter.addCart(list.get(layoutPosition).items)
+            Log.e(TAG, "Customer:  ${list.get(layoutPosition).customer}")
             if (list.get(layoutPosition).customer != null) {
                 binding.txtTableName.setText(
                     list.get(layoutPosition).customer?.first_name + " " + list.get(
                         layoutPosition
                     ).customer?.last_name
                 )
+                binding.txtCrtNewCustomer.setText(binding.root.resources.getString(R.string.remove_customer))
             } else {
                 binding.txtTableName.setText(list.get(layoutPosition).title)
+                binding.txtCrtNewCustomer.setText(binding.root.resources.getString(R.string.assign_customer))
             }
             if (layoutPosition == list.get(0).selectedPosition) {
                 binding.rvCart.visibility = View.VISIBLE
@@ -67,7 +70,7 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>(), MyCall
             } else {
                 binding.rvCart.visibility = View.VISIBLE
                 binding.constraintHeader.setBackground(
-                    binding.root.context.resources.getDrawable(R.drawable.background_dine_in_unselected)
+                    binding.root.context.getDrawable(R.drawable.background_dine_in_unselected)
                 )
                 binding.txtTableName.setTextColor(binding.root.context.resources.getColor(R.color.txtColor))
                 binding.imgOrderMenu.setColorFilter(binding.root.context.resources.getColor(R.color.txtColor))
@@ -79,23 +82,28 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>(), MyCall
 
             if (layoutPosition == 0) {
                 binding.imgProfile.setImageDrawable(binding.root.context.getDrawable(R.drawable.ic_simple_table))
+                binding.imgOrderMenu.visibility = View.GONE
 
             } else {
                 binding.imgProfile.setImageDrawable(binding.root.context.getDrawable(R.drawable.ic_group_person))
+                binding.imgOrderMenu.visibility = View.VISIBLE
             }
 
             itemAdapter.setCallback(this)
-            if (layoutPosition == 0) {
-                binding.imgOrderMenu.visibility = View.GONE
-            } else {
-                binding.imgOrderMenu.visibility = View.VISIBLE
-            }
         }
 
         init {
 
             binding.txtCrtNewCustomer.setOnClickListener {
-                listner.onCustomerClicked(layoutPosition)
+                Log.e(TAG, "DineInlayoutPosition:  $layoutPosition")
+                if (list.get(layoutPosition).customer != null) {
+                    //list.get(layoutPosition).customer = null
+                    listner.onCustomerClicked(layoutPosition, true)
+                    binding.llCustomerDialog.visibility = View.GONE
+
+                } else {
+                    listner.onCustomerClicked(layoutPosition, false)
+                }
 
             }
 
@@ -119,8 +127,6 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>(), MyCall
         }
 
         override fun onItemClickListener(view: View?, data: TbItem, position: Int?) {
-            Log.e(TAG, "DineInMyView ${Gson().toJson(data)}")
-
             list.get(0).itemPosition = position
             list.get(0).headerPosition = layoutPosition
             position?.let { listner.onItemSelected(layoutPosition, it, data) }
@@ -149,15 +155,19 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>(), MyCall
     interface DineInCallback {
         fun onHeaderSelected(position: Int)
         fun onItemSelected(headerPosition: Int, position: Int, item: TbItem)
-        fun onCustomerClicked(position: Int)
+        fun onCustomerClicked(position: Int, isRemoved: Boolean)
     }
 
     fun getHeaderPosition(): Int {
         return list.get(0).selectedPosition
     }
 
+    fun getItem(position: Int): DineInModel {
+        return list.get(position)
+    }
+
     fun getList(): ArrayList<DineInModel> {
-        return list
+        return this.list
     }
 
     override fun onItemClickListener(view: View?, data: TbItem, position: Int?) {

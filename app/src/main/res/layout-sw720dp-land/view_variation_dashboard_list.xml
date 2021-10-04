@@ -47,7 +47,6 @@
             android:hint="@string/_0_00"
             android:inputType="numberDecimal"
             android:padding="@dimen/_3sdp"
-            android:text="@{@string/symbole +``+String.format(@string/format,variationModel.price)}"
             android:textSize="@dimen/_5mdpi" />
     </androidx.appcompat.widget.LinearLayoutCompat>
 </layout>

@@ -3,6 +3,7 @@ package com.android.pos.ui.fragments.orderassign
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,6 +23,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class AssignCustomerOrderFragment : Fragment(), ItemCallback {
+    private val TAG = "AssignCustomerOrderFr"
 
     companion object {
         fun newInstance() = AssignCustomerOrderFragment()
@@ -30,6 +32,8 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
     private lateinit var binding: FragmentAssignCustomerOrderBinding
     private val viewModel by viewModels<CustomerListViewModel>()
     private lateinit var adapter: AssignCustomerToOrderAdapter
+    private var isFromDineIn: Boolean? = false
+    private var dineInPosition: Int? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,6 +48,8 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
 
         setupUI()
         loadCustomerLocalList()
+        isFromDineIn = arguments?.getBoolean("DINE_IN", false)
+        dineInPosition = arguments?.getInt("position")
         return binding.root
     }
 
@@ -128,8 +134,18 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
         val result = Bundle().apply {
             putParcelable("data", customer)
             putBoolean("OPEN_ORDER", false)
+            isFromDineIn?.let { putBoolean("DINE_IN", it) }
+            dineInPosition?.let {
+                Log.e(TAG, "position:  $it")
+                putInt("position", it)
+            }
         }
-        setFragmentResult("request_key_customer", result)
+
+        if (isFromDineIn == true) {
+            setFragmentResult("request_key_customer_dine_in", result)
+        } else {
+            setFragmentResult("request_key_customer", result)
+        }
 
         findNavController().navigateUp()
     }

@@ -56,9 +56,20 @@ class VariationDashboardListAdapter :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: VariationsAttribute) {
+
+            val context = binding.root.context
             binding.variationModel = item
             binding.executePendingBindings()
 
+            if (item.priceType == "Fixed") {
+                binding.edtPrice.text =
+                    context.getString(R.string.symbole) + " " + String.format(
+                        context.getString(R.string.format),
+                        variationList[bindingAdapterPosition].price
+                    )
+            } else if (item.priceType == "Variable") {
+                binding.edtPrice.text = "Variable"
+            }
 
             if (mpos == bindingAdapterPosition) {
                 binding.llItemName.setBackgroundResource(R.drawable.bg_squre_modifier_choose)
@@ -82,6 +93,23 @@ class VariationDashboardListAdapter :
             }
 
         }
+
+    }
+
+    fun updateVariation(variation: VariationsAttribute) {
+        var position = -1
+        variationList.forEachIndexed { index, variationsAttribute ->
+            if (variationsAttribute.id == variation.id) {
+                position = index
+                return@forEachIndexed
+            }
+        }
+
+        if (position != -1) {
+            variationList.set(position, variation)
+        }
+
+        notifyDataSetChanged()
 
     }
 }
