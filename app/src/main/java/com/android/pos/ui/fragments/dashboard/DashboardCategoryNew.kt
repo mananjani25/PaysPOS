@@ -1698,7 +1698,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         val result = bundle.getParcelable<TbDiscount>("data")
 
                         if (result != null) {
-                            Log.e(TAG, "GetDiscountResult:  ${Gson().toJson(result)}")
                             when {
                                 result.discountType == PERCENTAGE -> {
 
@@ -1710,7 +1709,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                                     data.discountId = result.id
                                     data.discountType = result.discountType
                                     data.isManualSales = false
-                                    Log.e(TAG, "insideDiscountmodel:  ${Gson().toJson(data)}")
+
                                     viewModel.cartLogic(cartList, data, UPDATE)
 
 
@@ -1758,7 +1757,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             requireArguments().getInt("numberOfGuest")
         }
 
-        Log.e(TAG, "numOfGuest:  $numOfGuest")
         val dineInList: ArrayList<DineInModel> = arrayListOf()
         dineInList.add(DineInModel(0, true, 0, "Whole Table"))
         for (i in 1..numOfGuest) {

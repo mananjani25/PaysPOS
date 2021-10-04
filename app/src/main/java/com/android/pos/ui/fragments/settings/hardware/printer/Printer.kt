@@ -1237,7 +1237,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                     if (printerListModel.connectionType == BLUETOOTH) Print.DEVTYPE_BLUETOOTH else Print.DEVTYPE_TCP,
                     printerListModel.deviceModel?.ipAddress,
                     enabled,
-                    1000
+                    10000
                 )
                 printer?.setStatusChangeEventCallback(this)
 
