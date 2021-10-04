@@ -155,7 +155,7 @@ class Customer : Fragment() {
 
                             try {
                                 loadFragment(data[0])
-                            }catch (e:Exception){
+                            } catch (e: Exception) {
 
                             }
 

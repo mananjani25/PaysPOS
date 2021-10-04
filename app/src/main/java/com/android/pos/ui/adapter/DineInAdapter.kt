@@ -5,6 +5,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.NavHostFragment.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.entities.TbItem
@@ -43,7 +45,15 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>(), MyCall
             binding.rvCart.adapter = itemAdapter
 
             itemAdapter.addCart(list.get(layoutPosition).items)
-            binding.txtTableName.setText(list.get(layoutPosition).title)
+            if (list.get(layoutPosition).customer != null) {
+                binding.txtTableName.setText(
+                    list.get(layoutPosition).customer?.first_name + " " + list.get(
+                        layoutPosition
+                    ).customer?.last_name
+                )
+            } else {
+                binding.txtTableName.setText(list.get(layoutPosition).title)
+            }
             if (layoutPosition == list.get(0).selectedPosition) {
                 binding.rvCart.visibility = View.VISIBLE
                 binding.constraintHeader.setBackground(binding.root.context.getDrawable(R.drawable.background_dine_in_selected))
@@ -75,11 +85,32 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>(), MyCall
             }
 
             itemAdapter.setCallback(this)
+            if (layoutPosition == 0) {
+                binding.imgOrderMenu.visibility = View.GONE
+            } else {
+                binding.imgOrderMenu.visibility = View.VISIBLE
+            }
         }
 
         init {
 
+            binding.txtCrtNewCustomer.setOnClickListener {
+                listner.onCustomerClicked(layoutPosition)
+
+            }
+
+            binding.imgOrderMenu.setOnClickListener {
+                if (binding.llCustomerDialog.visibility == View.VISIBLE) {
+                    binding.llCustomerDialog.visibility = View.GONE
+                } else {
+                    binding.llCustomerDialog.visibility = View.VISIBLE
+                }
+            }
+
             binding.constraintHeader.setOnClickListener {
+                if (binding.llCustomerDialog.visibility == View.VISIBLE) {
+                    binding.llCustomerDialog.visibility = View.GONE
+                }
 
                 //  listner.onHeaderSelected(layoutPosition)
                 list.get(0).selectedPosition = layoutPosition
@@ -89,6 +120,7 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>(), MyCall
 
         override fun onItemClickListener(view: View?, data: TbItem, position: Int?) {
             Log.e(TAG, "DineInMyView ${Gson().toJson(data)}")
+
             list.get(0).itemPosition = position
             list.get(0).headerPosition = layoutPosition
             position?.let { listner.onItemSelected(layoutPosition, it, data) }
@@ -117,6 +149,7 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>(), MyCall
     interface DineInCallback {
         fun onHeaderSelected(position: Int)
         fun onItemSelected(headerPosition: Int, position: Int, item: TbItem)
+        fun onCustomerClicked(position: Int)
     }
 
     fun getHeaderPosition(): Int {

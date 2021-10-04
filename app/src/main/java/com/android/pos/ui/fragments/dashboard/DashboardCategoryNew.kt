@@ -969,6 +969,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     )*/
                     val dineInList = dineInCartAdapter.getList()
                     //dineInList.get(dineInCartAdapter.getHeaderPosition()).items.add(item)
+                    dineInList.get(0).selectedPosition = dineInCartAdapter.getHeaderPosition()
                     viewModel.cartLogic(cartList, item, ADD, dineInList = dineInList)
                     Log.e(TAG, "serviceChargesList:  ${Gson().toJson(serviceChargesList)}")
 
@@ -1190,6 +1191,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         cartList.get(0).orderType = DINE_IN
                         val dineInList = dineInCartAdapter.getList()
                         // dineInList.get(dineInCartAdapter.getHeaderPosition()).items.add(data)
+                        dineInList.get(0).selectedPosition = dineInCartAdapter.getHeaderPosition()
                         viewModel.cartLogic(cartList, data, ADD, dineInList = dineInList)
                     } else {
                         viewModel.cartLogic(cartList, data, ADD)
@@ -1198,6 +1200,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
                         cartList.get(0).orderType = DINE_IN
                         val dineInList = dineInCartAdapter.getList()
+                        dineInList.get(0).selectedPosition = dineInCartAdapter.getHeaderPosition()
                         // dineInList.get(dineInCartAdapter.getHeaderPosition()).items.add(data)
                         viewModel.cartLogic(cartList, data, UPDATE, dineInList = dineInList)
 
@@ -1703,7 +1706,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         val result = bundle.getParcelable<TbDiscount>("data")
 
                         if (result != null) {
-                            Log.e(TAG, "GetDiscountResult:  ${Gson().toJson(result)}")
                             when {
                                 result.discountType == PERCENTAGE -> {
 
@@ -1715,7 +1717,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                                     data.discountId = result.id
                                     data.discountType = result.discountType
                                     data.isManualSales = false
-                                    Log.e(TAG, "insideDiscountmodel:  ${Gson().toJson(data)}")
+
                                     viewModel.cartLogic(cartList, data, UPDATE)
 
 
@@ -1763,7 +1765,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             requireArguments().getInt("numberOfGuest")
         }
 
-        Log.e(TAG, "numOfGuest:  $numOfGuest")
         val dineInList: ArrayList<DineInModel> = arrayListOf()
         dineInList.add(DineInModel(0, true, 0, "Whole Table"))
         for (i in 1..numOfGuest) {
@@ -1956,6 +1957,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                         cartList.get(0).orderType = DINE_IN
                         val dineInList = dineInCartAdapter.getList()
+                        dineInList.get(0).selectedPosition = dineInCartAdapter.getHeaderPosition()
 
                         viewModel.cartLogic(cartList, data, ADD, dineInList = dineInList)
                     } else {
@@ -1965,6 +1967,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
                         cartList.get(0).orderType = DINE_IN
                         val dineInList = dineInCartAdapter.getList()
+                        dineInList.get(0).selectedPosition = headerPosition
                         // dineInList.get(dineInCartAdapter.getHeaderPosition()).items.add(data)
                         viewModel.cartLogic(cartList, data, UPDATE, dineInList = dineInList)
 
@@ -2074,6 +2077,11 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         dialog.setCanceledOnTouchOutside(false)
         dialog.show()
+
+
+    }
+
+    override fun onCustomerClicked(position: Int) {
 
 
     }
