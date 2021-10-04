@@ -13,6 +13,7 @@ import java.util.*
 import kotlin.math.abs
 import kotlin.math.max
 
+@SuppressLint("ClickableViewAccessibility")
 abstract class SwipeHelper(
     private val recyclerView: RecyclerView
 ) : ItemTouchHelper.SimpleCallback(
@@ -28,7 +29,6 @@ abstract class SwipeHelper(
         }
     }
 
-    @SuppressLint("ClickableViewAccessibility")
     private val touchListener = View.OnTouchListener { _, event ->
         if (swipedPosition < 0) return@OnTouchListener false
         buttonsBuffer[swipedPosition]?.forEach { it.handle(event) }
@@ -77,7 +77,7 @@ abstract class SwipeHelper(
         actionState: Int,
         isCurrentlyActive: Boolean
     ) {
-        val position = viewHolder.adapterPosition
+        val position = viewHolder.bindingAdapterPosition
         var maxDX = dX
         val itemView = viewHolder.itemView
 
@@ -114,7 +114,7 @@ abstract class SwipeHelper(
     }
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-        val position = viewHolder.adapterPosition
+        val position = viewHolder.bindingAdapterPosition
         if (swipedPosition != position) recoverQueue.add(swipedPosition)
         swipedPosition = position
         recoverSwipedItem()

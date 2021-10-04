@@ -45,14 +45,14 @@ class PasscodeViewModel @Inject constructor(
         _showProgress.value = Event(true)
         if (isDashboard) {
             val data = HashMap<String, String>()
-            data["passcode"] = prefProvider.getValue(PASSCODE, "").toString()
+            data["passcode"] = passcode
             data["terminal_id"] = prefProvider.getValueInt(TERMINAL_ID, -1).toString()
 
             viewModelScope.launch {
                 val resource = userRepository.employeeClockOut(data)
                 when (resource.status) {
                     Status.SUCCESS -> {
-                        prefProvider.setValueboolean(IS_CLOCKOUT, true)
+                        prefProvider.setValueboolean(IS_CLOCKOUT, false)
                         _showProgress.value = Event(false)
 
                         resource.data.let {
@@ -92,7 +92,7 @@ class PasscodeViewModel @Inject constructor(
                         resource.data.let {
                             if (it?.status == 200) {
                                 resource.data?.let {
-
+                                    prefProvider.setValueboolean(IS_CLOCKOUT, true)
                                     prefProvider.setValueInt(EMPLOYEE_ID, it.data.employeeId)
                                     prefProvider.setValue(EMPLOYEE_NAME, it.data.employee_name)
                                     prefProvider.setValue(EMPLOYEE_ROLE, it.data.employee_role)

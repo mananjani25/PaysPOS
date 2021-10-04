@@ -48,7 +48,7 @@ class ClockInOwnerViewModel @Inject constructor(
                     resource.data.let {
                         if (it?.status == 200) {
                             resource.data?.let {
-                                prefProvider.setValueboolean(IS_CLOCKOUT, true)
+                                prefProvider.setValueboolean(IS_CLOCKOUT, false)
                                 _data.value = Event(true)
 
                             }

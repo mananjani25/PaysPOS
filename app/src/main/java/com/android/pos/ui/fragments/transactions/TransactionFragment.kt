@@ -488,6 +488,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                             val isPresent = teamRoleListGlobal.any { it.name == "All Roles" }
 
                             if (!isPresent) {
+                                teamRoleListGlobal.removeAt(0)
                                 teamRoleListGlobal.add(0, TeamRole(-1, "All Roles", null, null))
                             }
                             val roleName = teamRoleListGlobal.map { it.name }
@@ -524,6 +525,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                             val isPresent =
                                 teamEmployeeListGlobal.any { it.name == "All Team Members" }
                             if (!isPresent) {
+                                teamEmployeeListGlobal.removeAt(0)
                                 teamEmployeeListGlobal.add(
                                     0,
                                     Employee(
@@ -575,6 +577,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                             val isPresent = terminalListGlobal.any { it.name == "All Terminals" }
 
                             if (!isPresent) {
+                                terminalListGlobal.removeAt(0)
                                 terminalListGlobal.add(
                                     0,
                                     VenueDetailsResponse.Data.Terminal(
@@ -622,6 +625,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                             val isPresent = orderTypeListGlobal.any { it.name == "All Orders" }
 
                             if (!isPresent) {
+                                orderTypeListGlobal.removeAt(0)
                                 orderTypeListGlobal.add(
                                     0,
                                     TbOrderType("", -1, false, -1, "All Orders", "", -1, "")

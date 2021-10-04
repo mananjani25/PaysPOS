@@ -58,15 +58,15 @@
                 tools:text="@string/tv_order_type" />
 
             <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtEvent"
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_5sdp"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="@{viewModel.event}"
                 android:textColor="@color/txtColor"
-                android:textAllCaps="true"
+                android:textAllCaps="false"
                 android:textSize="@dimen/_5mdpi"
                 tools:text="@string/event_type" />
 

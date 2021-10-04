@@ -25,6 +25,12 @@ class CashLogAdapter :
                 TimeFormatUtils.convertCurrentDate(item.createdAt) + " " + TimeFormatUtils.convertCurrentTime(
                     item.createdAt
                 )
+
+            if (item.event.equals("IN", ignoreCase = true)) {
+                binding.txtEvent.text = "Cash IN"
+            } else {
+                binding.txtEvent.text = "Cash OUT"
+            }
         }
 
     }

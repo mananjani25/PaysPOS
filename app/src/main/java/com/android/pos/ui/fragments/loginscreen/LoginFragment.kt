@@ -38,8 +38,8 @@ class LoginFragment : Fragment() {
     ): View? {
 
 
-        if (!prefProvider.getValue(AUTH_TOKEN, "").toString().isEmpty()) {
-            if (prefProvider.getValueboolean(IS_CLOCKOUT, false)) {
+        if (prefProvider.getValue(AUTH_TOKEN, "").toString().isNotEmpty()) {
+            if (!prefProvider.getValueboolean(IS_CLOCKOUT, false)) {
                 findNavController().navigate(R.id.action_login_to_scheduledShifts)
             } else {
                 findNavController().navigate(R.id.action_login_to_dashboardCategory)
