@@ -1325,7 +1325,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
 
         if (variation != null) {
-            data.price = variation.price
+            data.price = variation.price!!
         } else {
             data.price = data.price
         }

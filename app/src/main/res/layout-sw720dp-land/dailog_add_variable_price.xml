@@ -32,12 +32,11 @@
                     style="@style/CustomFontSemiBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:layout_centerVertical="true"
+                    android:layout_centerInParent="true"
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:padding="@dimen/_5sdp"
-                    android:text="@string/add_discount"
+                    android:text="Add Price"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />
 

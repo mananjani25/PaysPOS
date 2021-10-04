@@ -27,13 +27,9 @@ import java.text.NumberFormat
 import java.util.*
 
 @AndroidEntryPoint
-class AddVariablePriceDialog : DialogFragment(),
-    TextWatcher {
+class AddVariablePriceDialog : DialogFragment(), TextWatcher {
 
     private lateinit var binding: DailogAddVariablePriceBinding
-
-    private var selectedCurrency: String = AMOUNT
-
 
     companion object {
         fun newInstance() = AddVariablePriceDialog()

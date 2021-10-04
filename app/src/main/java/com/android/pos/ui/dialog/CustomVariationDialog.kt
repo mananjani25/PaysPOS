@@ -65,12 +65,17 @@ class CustomVariationDialog : DialogFragment(), View.OnClickListener,
                 false
             )
         )
-        binding.tvVariationsPrice.setText(
-            activity.getString(R.string.symbole) + " " + String.format(
-                activity.getString(R.string.format),
-                variationAttribute?.price
+        if (variationAttribute.price != null) {
+            binding.tvVariationsPrice.setText(
+                activity.getString(R.string.symbole) + " " + String.format(
+                    activity.getString(R.string.format),
+                    variationAttribute?.price
+                )
             )
-        )
+        } else {
+            binding.tvVariationsPrice.setText("")
+        }
+
 
         setUpUnitTypeSpinnerAdapter()
 
@@ -116,8 +121,18 @@ class CustomVariationDialog : DialogFragment(), View.OnClickListener,
 
                 } else {
                     variationAttribute.name = binding.etVariationsName.text.toString()
-                    variationAttribute.price =
-                        binding.tvVariationsPrice.text.toString().replace("$", "").toDouble()
+
+                    if (TextUtils.isEmpty(binding.tvVariationsPrice.text.toString())) {
+                        //   variationAttribute?.price = null
+                        variationAttribute?.priceType = "Variable"
+                    } else {
+                        variationAttribute.price =
+                            binding.tvVariationsPrice.text.toString().replace("$", "").toDouble()
+
+                        variationAttribute?.priceType = "Fixed"
+                    }
+
+
                     variationAttribute.sku = binding.tvVariationsSku.text.toString()
                     variationAttribute.stockQty = binding.tvVariationsStock.text.toString()
                     variationAttribute.isCustom = true
