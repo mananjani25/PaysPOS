@@ -245,7 +245,7 @@
                             android:checked="true"
                             android:onCheckedChanged="@{(button, bool)-> createTaxFragment.taxType(bool)}"
                             android:padding="@dimen/_5sdp"
-                            android:text="@string/percentage"
+                            android:text="Percentage"
                             android:textSize="@dimen/_5mdpi"
                             app:theme="@style/AppTheme" />
 

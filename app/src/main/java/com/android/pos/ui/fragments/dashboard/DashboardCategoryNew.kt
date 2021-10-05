@@ -426,10 +426,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
             binding.layoutCart.llCart.visibility = View.VISIBLE
             binding.lltakeout.visibility = View.GONE
-            if (prefProvider.getValue(ORDER_TYPE_NAME, TAKEOUT).toString() == DINE_IN){
+            if (prefProvider.getValue(ORDER_TYPE_NAME, TAKEOUT).toString() == DINE_IN) {
                 binding.layoutCart.txtOrderType.setText("Dine In")
-            }
-            else {
+            } else {
                 binding.layoutCart.txtOrderType.text =
                     prefProvider.getValue(ORDER_TYPE_NAME, TAKEOUT).toString()
             }
@@ -1204,6 +1203,15 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 txtTitle,
                 isItemClick
             )*/
+
+            if (data.price == 0.0) {
+                AlertUtils.showCustomAlert(
+                    requireActivity(),
+                    "Please enter atleast one price of item"
+                )
+                return@setOnClickListener
+            }
+
             val variationList = ArrayList<VariationsAttribute>()
             if (data.variationsAttributes.isNotEmpty()) {
                 val variation = variationAdapter?.getItem()!!
@@ -1380,7 +1388,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
 
 
-        if (variation != null) {
+        if (variation?.price != null) {
             data.price = variation.price!!
         } else {
             data.price = data.price

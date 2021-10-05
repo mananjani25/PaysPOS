@@ -76,7 +76,7 @@ class CreateTax : Fragment() {
 
             if (taxData.taxType == getString(R.string.disc_percentage)) {
                 binding.swtTaxType.isChecked = true
-                binding.swtTaxType.text = getString(R.string.percentage)
+                binding.swtTaxType.text = getString(R.string.disc_percentage)
                 binding.tvSymbolPer.visibility = View.VISIBLE
                 binding.tvSymbolDollar.visibility = View.GONE
             } else {
@@ -194,7 +194,7 @@ class CreateTax : Fragment() {
 
     fun taxType(isChecked: Boolean) {
         if (isChecked) {
-            binding.swtTaxType.text = getString(R.string.percentage)
+            binding.swtTaxType.text = getString(R.string.disc_percentage)
             binding.tvSymbolPer.visibility = View.VISIBLE
             binding.tvSymbolDollar.visibility = View.GONE
             viewModel.discountType(getString(R.string.disc_percentage))
