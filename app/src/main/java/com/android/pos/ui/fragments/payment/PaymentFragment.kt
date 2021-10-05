@@ -18,6 +18,7 @@ import com.android.pos.databinding.PaymentFragmentBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlin.math.ceil
@@ -67,7 +68,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         binding.model = viewModel
 
         cartList = requireArguments().getParcelable("cartList")
-
+        Log.e(TAG, "cartListPayment:   ${Gson().toJson(cartList)}")
         setupData()
         callbackSetup()
         observeShowProgress()

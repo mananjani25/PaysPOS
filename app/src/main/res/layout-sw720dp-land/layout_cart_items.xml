@@ -42,6 +42,7 @@
                 app:srcCompat="@drawable/ic_dots" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
+
         <View
             android:id="@+id/viewDineIn"
             android:layout_width="match_parent"

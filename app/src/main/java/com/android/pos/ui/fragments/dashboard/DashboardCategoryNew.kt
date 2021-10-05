@@ -426,10 +426,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
             binding.layoutCart.llCart.visibility = View.VISIBLE
             binding.lltakeout.visibility = View.GONE
-            if (prefProvider.getValue(ORDER_TYPE_NAME, TAKEOUT).toString() == DINE_IN){
+            if (prefProvider.getValue(ORDER_TYPE_NAME, TAKEOUT).toString() == DINE_IN) {
                 binding.layoutCart.txtOrderType.setText("Dine In")
-            }
-            else {
+            } else {
                 binding.layoutCart.txtOrderType.text =
                     prefProvider.getValue(ORDER_TYPE_NAME, TAKEOUT).toString()
             }
@@ -1826,7 +1825,18 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         dineInCartAdapter.setList(dineInList)
 
         if (cartList.isEmpty()) {
-            cartList.add(CartModel())
+            val cartModel = CartModel().apply {
+                terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
+                employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
+                locationId = prefProvider.getValueInt(Constants.LOCATION_ID, -1)
+                orderTypeId = prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
+                orderType = prefProvider.getValue(Constants.ORDER_TYPE, "").toString()
+                orderTypeName = prefProvider.getValue(Constants.ORDER_TYPE_NAME, "").toString()
+
+                serviceCharge = serviceChargesList
+
+            }
+            cartList.add(cartModel)
         }
 
         cartList.get(0).orderType = DINE_IN
