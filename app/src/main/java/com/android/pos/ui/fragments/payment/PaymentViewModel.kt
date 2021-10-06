@@ -290,7 +290,10 @@ class PaymentViewModel @Inject constructor(
             )
 
             orderAttributeRequestModel.orderItemsAttributes = dineInOrderItemAttributed(cartModel)
-            Log.e(TAG,"dineInOrderItemData:  ${Gson().toJson(orderAttributeRequestModel.orderItemsAttributes)}")
+            Log.e(
+                TAG,
+                "dineInOrderItemData:  ${Gson().toJson(orderAttributeRequestModel.orderItemsAttributes)}"
+            )
         } else {
 
             orderAttributeRequestModel.orderItemsAttributes = orderItemsAttributes(cartModel)
@@ -374,16 +377,16 @@ class PaymentViewModel @Inject constructor(
                     phoneList.add(phoneModel)
                 }
                 val customerModel = CustomerAttributes()
-                customerModel.addressesAttributes = addressList
-                customerModel.birthDate = it.customer?.birth_date.toString()
-                customerModel.firstName = it.customer?.first_name.toString()
-                customerModel.lastName = it.customer?.last_name.toString()
+                /*  customerModel.addressesAttributes = addressList
+                  customerModel.birthDate = it.customer?.birth_date.toString()
+                  customerModel.firstName = it.customer?.first_name.toString()
+                  customerModel.lastName = it.customer?.last_name.toString()*/
                 customerModel.id = it.customer?.id
-                customerModel.companyName = it.customer?.company.toString()
-                customerModel.phonesAttributes = phoneList
-                customerModel.locationId = prefProvider.getValueInt(LOCATION_ID, 1)
-
-                model.customerAttributes = customerModel
+                /* customerModel.companyName = it.customer?.company.toString()
+                 customerModel.phonesAttributes = phoneList
+                 customerModel.locationId = prefProvider.getValueInt(LOCATION_ID, 1)
+ */
+                //  model.customerAttributes = customerModel
 
             }
             orderItemsAttributeList.add(model)

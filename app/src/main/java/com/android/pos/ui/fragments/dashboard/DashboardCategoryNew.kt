@@ -1526,18 +1526,29 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 prefProvider.setValueInt(ORDER_TYPE_ID, orderType.id)
                 prefProvider.setValue(ORDER_TYPE_NAME, orderType.name)
                 prefProvider.setValue(ORDER_TYPE, orderType.orderType)
-                findNavController().navigate(
-                    R.id.action_dashboardCategoryNew_to_dineInFragment
-                )
+                if (findNavController().currentDestination?.id == R.id.orderTypeDialog) {
+                    findNavController().navigate(
+                        R.id.action_orderTypeDialog_to_dineInFragment
+                    )
+                } else {
+                    findNavController().navigate(R.id.action_dashboardCategoryNew_to_dineInFragment)
+                }
             }
             OPEN_ORDER -> {
 
                 /*findNavController().navigate(
                     R.id.action_dashboardCategoryNew_to_openOrderCustomerFragment
                 )*/
-                findNavController().navigate(
-                    R.id.action_orderTypeDialog_to_dineInFragment
-                )
+                if (findNavController().currentDestination?.id == R.id.orderTypeDialog) {
+
+                    findNavController().navigate(
+                        R.id.action_orderTypeDialog_to_openOrderCustomerFragment
+                    )
+                } else {
+                    findNavController().navigate(
+                        R.id.action_dashboardCategoryNew_to_openOrderCustomerFragment
+                    )
+                }
             }
         }
 

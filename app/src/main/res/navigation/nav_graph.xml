@@ -840,7 +840,8 @@
             app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_orderTypeDialog_to_openOrderCustomerFragment"
-            app:destination="@id/openOrderCustomerFragment" />
+            app:destination="@id/openOrderCustomerFragment"
+            app:enterAnim="@anim/nav_default_enter_anim" />
         <action
             android:id="@+id/action_orderTypeDialog_to_dineInFragment"
             app:destination="@id/dineInFragment"
