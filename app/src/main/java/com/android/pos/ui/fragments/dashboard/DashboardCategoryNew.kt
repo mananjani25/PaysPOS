@@ -1202,6 +1202,15 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 txtTitle,
                 isItemClick
             )*/
+
+            if (data.price == 0.0) {
+                AlertUtils.showCustomAlert(
+                    requireActivity(),
+                    "Please enter atleast one price of item"
+                )
+                return@setOnClickListener
+            }
+
             val variationList = ArrayList<VariationsAttribute>()
             if (data.variationsAttributes.isNotEmpty()) {
                 val variation = variationAdapter?.getItem()!!

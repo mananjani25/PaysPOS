@@ -832,5 +832,10 @@
         android:id="@+id/addVariablePriceDialog"
         android:name="com.android.pos.ui.dialog.AddVariablePriceDialog"
         android:label="AddVariablePriceDialog" />
+    <fragment
+        android:id="@+id/dineInOrderTable"
+        android:name="com.android.pos.ui.fragments.dinein.DineInOrderTable"
+        android:label="DineInOrderTable"
+        tools:layout="@layout/fragment_dine_in_order_table"/>
 
 </navigation>
