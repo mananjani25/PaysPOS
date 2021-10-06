@@ -231,10 +231,11 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 val discount = discountApplyPrice - orderDiscount
 
                 MethodUtils.setPriceTextView(binding.layoutCart.txtTotalAmount, discount)
-
-                cartList[0].discountPrice = orderDiscount
-                cartList[0].discountType = result.discountType
-                viewModel.addCart(cartList[0])
+                if (cartList.isNotEmpty()) {
+                    cartList[0].discountPrice = orderDiscount
+                    cartList[0].discountType = result.discountType
+                    viewModel.addCart(cartList[0])
+                }
             }
         }
 
@@ -1795,7 +1796,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private fun markAsUnreadButton(position: Int): SwipeHelper.UnderlayButton {
         return SwipeHelper.UnderlayButton(
             requireContext(),
-            "AddNote",
+            "Note",
             14.0f,
             R.color.addNote,
             object : SwipeHelper.UnderlayButtonClickListener {
@@ -1824,7 +1825,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private fun archiveButton(pos: Int): SwipeHelper.UnderlayButton {
         return SwipeHelper.UnderlayButton(
             requireContext(),
-            "Add Discount",
+            "Discount",
             14.0f,
             R.color.addDiscount,
             object : SwipeHelper.UnderlayButtonClickListener {
