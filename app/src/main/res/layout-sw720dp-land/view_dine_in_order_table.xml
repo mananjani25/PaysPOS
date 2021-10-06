@@ -49,7 +49,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:layout_marginEnd="@dimen/_10sdp"
+                android:layout_marginEnd="@dimen/_9sdp"
                 android:text="Total: $15.00"
                 android:textColor="@color/txtColor" />
 
@@ -60,6 +60,7 @@
             android:id="@+id/rvItems"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/background_square_border_grey"
             android:orientation="vertical"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintTop_toBottomOf="@+id/linearHeader" />

@@ -1,10 +1,15 @@
 package com.android.pos.ui.fragments.dinein
 
+import android.annotation.SuppressLint
+import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.PopupWindow
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -12,6 +17,7 @@ import com.android.pos.R
 import com.android.pos.data.entities.CartModel
 import com.android.pos.databinding.FragmentDineInOrderTableBinding
 import com.android.pos.ui.adapter.DineInTableAdapter
+import com.android.pos.utils.MethodUtils
 import com.google.gson.Gson
 import java.util.zip.DeflaterOutputStream
 
@@ -28,6 +34,7 @@ class DineInOrderTable : Fragment() {
     private var paymentAmount: Double = 0.0
     private var future_delivery_date: String = ""
     private var future_delivery_time: String = ""
+    private var popupWindow: PopupWindow? = null
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -57,7 +64,7 @@ class DineInOrderTable : Fragment() {
 
         if (cartList?.dineInList != null) {
             dineInTableAdapter.setList(cartList?.dineInList!!.toCollection(arrayListOf()))
-            binding.txtTotalAmount.setText("$$totalPrice")
+            binding.txtTotalAmount.setText("${MethodUtils.roundOffAmount(totalPrice)}")
 
         }
 
@@ -98,6 +105,60 @@ class DineInOrderTable : Fragment() {
         binding.imgClose.setOnClickListener {
             findNavController().popBackStack()
         }
+
+        binding.llInfo.setOnClickListener {
+            showPopupWindow(it)
+        }
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun showPopupWindow(view: View) {
+
+        val popupView: View = layoutInflater.inflate(R.layout.info_popup_window, null)
+
+        val txtSubTotal: AppCompatTextView = popupView.findViewById(R.id.txtSubTotal)
+        val txtServiceCharge: AppCompatTextView = popupView.findViewById(R.id.txtServiceCharge)
+        val txtDiscount: AppCompatTextView = popupView.findViewById(R.id.txtDiscount)
+        val txtTotalAmount: AppCompatTextView = popupView.findViewById(R.id.txtTotalAmount)
+        val txtTotalTax: AppCompatTextView = popupView.findViewById(R.id.txtTotalTax)
+
+        txtSubTotal.text = "$" + String.format(
+            "%.2f",
+            subTotalPrice
+        )
+        txtServiceCharge.text = "$" + String.format(
+            "%.2f",
+            totalServiceCharge
+        )
+        txtDiscount.text = "- $" + String.format(
+            "%.2f",
+            totalDiscount
+        )
+        txtTotalAmount.text = binding.txtTotalAmount.text.toString()
+        txtTotalTax.text = "$" + String.format(
+            "%.2f",
+            totalTax
+        )
+
+//        if (popupWindow == null) {
+        popupWindow = PopupWindow(
+            popupView,
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+        popupWindow!!.setBackgroundDrawable(BitmapDrawable())
+        popupWindow!!.isOutsideTouchable = true
+
+
+        popupWindow!!.setOnDismissListener(PopupWindow.OnDismissListener {
+            
+        })
+        popupWindow!!.showAtLocation(view, Gravity.TOP, 600, 650);
+//        } else {
+//            popupWindow!!.dismiss()
+//            popupWindow = null
+//        }
+
     }
 
 

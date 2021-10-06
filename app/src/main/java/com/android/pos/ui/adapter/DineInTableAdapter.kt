@@ -10,6 +10,7 @@ import com.android.pos.R
 import com.android.pos.data.model.DineInModel
 import com.android.pos.databinding.ViewDineInItemBinding
 import com.android.pos.databinding.ViewDineInOrderTableBinding
+import com.android.pos.utils.MethodUtils
 
 class DineInTableAdapter : RecyclerView.Adapter<DineInTableAdapter.MyViewHolder>() {
     private var list: ArrayList<DineInModel> = arrayListOf()
@@ -49,7 +50,8 @@ class DineInTableAdapter : RecyclerView.Adapter<DineInTableAdapter.MyViewHolder>
                         sum += it.price
                     }
 
-                    binding.txtTotal.setText("Total : $${sum}")
+
+                    binding.txtTotal.setText("Total : ${MethodUtils.roundOffAmount(sum)}")
                 }
 
 
