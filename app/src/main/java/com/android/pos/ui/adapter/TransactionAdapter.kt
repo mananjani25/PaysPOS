@@ -1,6 +1,7 @@
 package com.android.pos.ui.adapter
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -88,15 +89,12 @@ class TransactionAdapter(val viewModel: TransactionViewModel) :
 
     override fun getItemCount() = filterList.size
 
-    fun teamTimesheetList(employeeTimeSheet: List<GetTransactionListResponse.Data.Payment>) {
+    fun teamTimesheetList(employeeTimeSheets: List<GetTransactionListResponse.Data.Payment>) {
 
-        this.employeeTimeSheet.apply {
-           // clear()
-            addAll(employeeTimeSheet)
-            notifyDataSetChanged()
-        }
-        this.filterList = employeeTimeSheet as ArrayList<GetTransactionListResponse.Data.Payment>
-
+        Log.e("teamTimesheetList", employeeTimeSheets.size.toString())
+        employeeTimeSheet.addAll(employeeTimeSheets)
+        filterList.addAll(employeeTimeSheets)
+        notifyDataSetChanged()
     }
 
 
@@ -159,7 +157,7 @@ class TransactionAdapter(val viewModel: TransactionViewModel) :
 
     override fun getItemViewType(position: Int): Int {
         return if (showLoader) {
-            TYPE_FOOTER
+            if (position == filterList.size - 1) TYPE_FOOTER else TYPE_ITEM
         } else {
             TYPE_ITEM
         }

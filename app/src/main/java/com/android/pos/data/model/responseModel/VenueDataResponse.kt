@@ -66,7 +66,7 @@ data class VenueDataResponse(
                 @SerializedName("price")
                 val price: Double,
                 @SerializedName("price_type")
-                val priceType: String,
+                val priceType: String?,
                 @SerializedName("product_code")
                 val productCode: String,
                 @SerializedName("quantity")

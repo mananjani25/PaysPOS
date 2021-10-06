@@ -932,7 +932,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         txtSubTotal.text = "$" + String.format(
             "%.2f",
-            viewModel.subTotalPrice
+            viewModel.subTotalPrice /*- cartList[0].discountPrice*/
         )
         txtServiceCharge.text = "$" + String.format(
             "%.2f",
@@ -1589,8 +1589,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 val bundle = Bundle()
                 bundle.putBoolean("isOrderDiscount", true)
                 bundle.putDouble("totalPrice", viewModel.totalPrice)
-                bundle.putDouble("orderDiscountPrice", cartList[0].discountPrice)
-                bundle.putString("orderDiscountType", cartList[0].discountType)
+                if (cartList.isNotEmpty()) {
+                    bundle.putDouble("orderDiscountPrice", cartList[0].discountPrice)
+                    bundle.putString("orderDiscountType", cartList[0].discountType)
+                }
                 findNavController().navigate(
                     R.id.action_dashboardCategoryNew_to_addDiscountDialog,
                     bundle

@@ -14,7 +14,7 @@ data class GetFloorPlanResponse(
     @SerializedName("message")
     val message: String,
     @SerializedName("status")
-    val status: Int,
+    val status: String,
     @SerializedName("type")
     val type: String
 ) : Parcelable {

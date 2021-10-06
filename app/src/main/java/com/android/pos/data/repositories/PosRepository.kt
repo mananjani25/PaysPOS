@@ -129,7 +129,7 @@ class PosRepository @Inject constructor(
                         name = it.name
                         cost = it.cost
                         price = it.price
-                        priceType = it.priceType
+                        priceType = it.priceType ?: ""
                         quantity = it.quantity
                         kitchenName = it.kitchenName
                         productCode = it.productCode
@@ -232,7 +232,7 @@ class PosRepository @Inject constructor(
                         name = it.name
                         cost = it.cost
                         price = it.price
-                        priceType = it.priceType
+                        priceType = it.priceType ?: ""
                         quantity = it.quantity
                         kitchenName = it.kitchenName
                         productCode = it.productCode
