@@ -154,8 +154,6 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                 }
                 Status.SUCCESS -> {
                     ProgressUtils.dismissProgressDialog()
-                    Log.e(TAG, "OrderTypesList:  ${Gson().toJson(it.data)}")
-
                     if (it.data != null) {
                         orderTypeList.addAll(it.data.toCollection(ArrayList()))
 

@@ -8,9 +8,11 @@ import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatTextView
 import com.android.pos.MainApplication
 import com.android.pos.R
+import com.android.pos.data.model.DineInModel
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 class MethodUtils {
@@ -99,4 +101,17 @@ class MethodUtils {
             return edtFirstName.text.toString().trim()
         }
     }
+
+    /*fun addItemsForDineIn(list: ArrayList<DineInModel>): ArrayList<DineInModel> {
+        for (i in 0 until list.size) {
+            if (list.get(i).items.isNotEmpty()) {
+                list[i].items.forEach {
+
+                }
+            }
+
+        }
+
+
+    }*/
 }

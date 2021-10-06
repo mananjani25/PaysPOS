@@ -1,18 +1,25 @@
 package com.android.pos.ui.adapter
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.util.Log
+import android.view.ContextMenu
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.navigation.fragment.NavHostFragment.findNavController
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.DineInModel
+import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.ViewDineInItemBinding
+import com.android.pos.ui.activities.SwipeHelper
 import com.android.pos.utils.callback.MyCallback
+import com.android.pos.utils.extensions.alert
 import com.google.gson.Gson
 
 class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>(), MyCallback {
@@ -43,6 +50,7 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>(), MyCall
             binding.executePendingBindings()
             itemAdapter = CartAdapter()
             binding.rvCart.adapter = itemAdapter
+            swipeListener(binding.rvCart, layoutPosition, binding.root.context)
 
             itemAdapter.addCart(list.get(layoutPosition).items)
             Log.e(TAG, "Customer:  ${list.get(layoutPosition).customer}")
@@ -88,6 +96,7 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>(), MyCall
                 binding.imgProfile.setImageDrawable(binding.root.context.getDrawable(R.drawable.ic_group_person))
                 binding.imgOrderMenu.visibility = View.VISIBLE
             }
+            // list.get(0).headerPosition = layoutPosition
 
             itemAdapter.setCallback(this)
         }
@@ -156,6 +165,7 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>(), MyCall
         fun onHeaderSelected(position: Int)
         fun onItemSelected(headerPosition: Int, position: Int, item: TbItem)
         fun onCustomerClicked(position: Int, isRemoved: Boolean)
+        fun onItemDelete(position: Int, itemPosition: Int, data: TbItem)
     }
 
     fun getHeaderPosition(): Int {
@@ -174,5 +184,45 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>(), MyCall
         Log.e(TAG, "DineInItem:  ${Gson().toJson(data)}")
     }
 
+    private fun swipeListener(recyclerView: RecyclerView, headerPosition: Int, context: Context) {
+
+
+        val itemTouchHelper = ItemTouchHelper(object : SwipeHelper(recyclerView) {
+            override fun instantiateUnderlayButton(position: Int): List<UnderlayButton> {
+
+
+                val deleteButton = deleteButton(position, context, headerPosition)
+                /*  val markAsUnreadButton = markAsUnreadButton(position)
+                  val archiveButton = archiveButton(position)*/
+                return listOf(deleteButton)
+            }
+        })
+
+        itemTouchHelper.attachToRecyclerView(recyclerView)
+
+    }
+
+    private fun deleteButton(
+        position: Int,
+        context: Context,
+        headerPos: Int
+    ): SwipeHelper.UnderlayButton {
+        return SwipeHelper.UnderlayButton(
+            context,
+            "Delete",
+            14.0f,
+            R.color.delete,
+            object : SwipeHelper.UnderlayButtonClickListener {
+                override fun onClick() {
+                    list.get(0).headerPosition = headerPos
+                    list.get(0).itemPosition = position
+                    listner.onItemDelete(
+                        headerPos,
+                        position,
+                        list.get(headerPos).items.get(position)
+                    )
+                }
+            })
+    }
 
 }

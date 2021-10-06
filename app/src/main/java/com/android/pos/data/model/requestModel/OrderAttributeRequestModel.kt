@@ -42,6 +42,9 @@ class OrderAttributeRequestModel {
     @SerializedName("order_items_attributes")
     var orderItemsAttributes: List<OrderItemsAttribute> = emptyList()
 
+    @SerializedName("guests_attributes")
+    var guestsAttributes: List<GuestsAttributes> = emptyList()
+
     @SerializedName("order_service_charges_attributes")
     var orderServiceChargesAttributes: List<OrderServiceChargesAttribute> = emptyList()
 
@@ -164,6 +167,41 @@ data class CustomerAttributes(
         var phoneNumber: String = ""
     )
 }
+
+class GuestsAttributes(
+
+    @SerializedName("id") var id: Int? = null,
+    @SerializedName("order_id") var orderId: Int? = null,
+    @SerializedName("name") var name: String = "",
+    @SerializedName("is_paid") var isPaid: Boolean = true,
+    @SerializedName("total_amount") var totalAmount: Double? = null,
+    @SerializedName("cash_discount") var cashDiscount: Double? = null,
+    @SerializedName("total_discount") var totalDiscount: Double? = null,
+    @SerializedName("total_service_charge") var totalServiceCharge: Double? = null,
+    @SerializedName("sub_total") var subTotal: Double? = null,
+    @SerializedName("total_tax") var totalTax: Double? = null,
+    @SerializedName("total_tips") var totalTips: Double? = null,
+    @SerializedName("customer_id") var customerId: Int? = null,
+    @SerializedName("_destroy") var Destroy: Boolean = false,
+    @SerializedName("guest_items_attributes") var guestItemsAttributes: List<GuestItemsAttributes> = emptyList(),
+    @SerializedName("customer_attributes") var customerAttributes: CustomerAttributes? = null
+
+)
+
+class GuestItemsAttributes(
+
+    @SerializedName("id") var id: Int? = null,
+    @SerializedName("order_id") var orderId: Int? = null,
+    @SerializedName("order_item_id") var orderItemId: Int? = null,
+    @SerializedName("quantity") var quantity: Int? = null,
+    @SerializedName("item_id") var itemId: Int? = null,
+    @SerializedName("amount") var amount: Double? = null,
+    @SerializedName("is_paid") var isPaid: Boolean = true,
+    @SerializedName("guest_id") var guestId: Int? = null,
+    @SerializedName("_destroy") var Destroy: Boolean = false,
+    @SerializedName("percentage") var percentage: Int? = null
+
+)
 
 class OrderItemsAttribute {
     @SerializedName("category_id")

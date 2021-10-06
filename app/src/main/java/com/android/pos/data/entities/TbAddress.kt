@@ -14,8 +14,8 @@ data class TbAddress(
     @SerializedName("country") val country: String,
     @SerializedName("postcode") val postcode: String,
     @SerializedName("address_type") val address_type: String = "",
-    @SerializedName("latitude") val latitude: String,
-    @SerializedName("longitude") val longitude: String,
+    @SerializedName("latitude") val latitude: String="",
+    @SerializedName("longitude") val longitude: String="",
     @SerializedName("type_of_address") val type_of_address: String,
     @SerializedName("full_address") val full_address: String,
     @SerializedName("street") val street: String

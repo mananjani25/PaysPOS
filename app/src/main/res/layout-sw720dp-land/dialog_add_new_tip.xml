@@ -43,7 +43,7 @@
                     android:layout_gravity="center"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:text="@string/tv_entertainment_tip"
+                    android:text="Create Tip"
                     android:textSize="@dimen/_7mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -106,7 +106,7 @@
                             android:layout_weight="1"
                             android:background="@null"
                             android:gravity="end"
-                            android:hint="@string/tv_entertainment"
+                            android:hint="Tip Name"
                             android:imeOptions="actionNext"
                             android:inputType="textCapWords"
                             android:padding="@dimen/_5sdp"

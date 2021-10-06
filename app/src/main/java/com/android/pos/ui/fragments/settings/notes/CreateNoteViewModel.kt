@@ -60,7 +60,7 @@ class CreateNoteViewModel @Inject constructor(
     fun submit() {
         val value = createNoteDetails.value
         if (TextUtils.isEmpty(value?.note!!.name.trim())) {
-            _snackbarText.value = Event(R.string.tax_name_validate)
+            _snackbarText.value = Event(R.string.note_name_validate)
         } else {
             _showProgress.value = Event(true)
 
