@@ -40,12 +40,12 @@ class TransactionAdapter(val viewModel: TransactionViewModel) :
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
 
         val inflater = LayoutInflater.from(parent.context)
-        if (viewType == TYPE_ITEM) {
+        return if (viewType == TYPE_ITEM) {
             val binding = ViewTransactionItemBinding.inflate(inflater, parent, false)
-            return MyViewHolder(binding)
+            MyViewHolder(binding)
         } else {
             val binding = ViewPaginationBinding.inflate(inflater, parent, false)
-            return FooterViewHolder(binding)
+            FooterViewHolder(binding)
         }
 
     }
@@ -105,7 +105,7 @@ class TransactionAdapter(val viewModel: TransactionViewModel) :
 
     }
 
-    inner class FooterViewHolder(val paginationBinding: ViewPaginationBinding) :
+    inner class FooterViewHolder(paginationBinding: ViewPaginationBinding) :
         RecyclerView.ViewHolder(paginationBinding.root) {
 
     }
@@ -159,7 +159,7 @@ class TransactionAdapter(val viewModel: TransactionViewModel) :
 
     override fun getItemViewType(position: Int): Int {
         return if (showLoader) {
-            if (position == filterList.size - 1) TYPE_FOOTER else TYPE_ITEM
+            TYPE_FOOTER
         } else {
             TYPE_ITEM
         }

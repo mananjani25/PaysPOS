@@ -105,7 +105,8 @@
             android:id="@+id/llShowMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="1dp"
+            android:paddingTop="@dimen/_1sdp"
+            android:paddingBottom="@dimen/_1sdp"
             android:background="@drawable/background_button_menu"
             android:orientation="horizontal">
 
@@ -125,10 +126,11 @@
                 app:textAllCaps="false" />
 
             <androidx.appcompat.widget.AppCompatImageView
-                android:layout_width="@dimen/_8sdp"
-                android:layout_height="@dimen/_8sdp"
+                android:layout_width="@dimen/_15sdp"
+                android:layout_height="@dimen/_15sdp"
+                android:padding="@dimen/_4sdp"
+                android:layout_marginEnd="@dimen/_4sdp"
                 android:layout_gravity="center"
-                android:layout_marginEnd="@dimen/_5sdp"
                 app:srcCompat="@drawable/down_arrow" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>

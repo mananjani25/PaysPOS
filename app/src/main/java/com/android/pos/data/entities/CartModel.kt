@@ -33,4 +33,7 @@ class CartModel : Parcelable {
     var selectedTableName: String = ""
     var dineInList: List<DineInModel>? = emptyList()
 
+    var discountPrice: Double = 0.0
+    var discountType: String = ""
+
 }

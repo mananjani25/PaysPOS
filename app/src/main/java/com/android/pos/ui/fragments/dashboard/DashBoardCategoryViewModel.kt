@@ -591,7 +591,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
             }
 
-            MethodUtils.setPriceTextView(txtTotalAmount, totalPrice)
+            MethodUtils.setPriceTextView(txtTotalAmount, totalPrice - cartList[0].discountPrice)
         }
 
     }

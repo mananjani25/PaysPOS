@@ -600,6 +600,10 @@
             android:name="isFromDetails"
             android:defaultValue="false"
             app:argType="boolean" />
+        <argument
+            android:name="isOrderDiscount"
+            android:defaultValue="false"
+            app:argType="boolean" />
     </dialog>
     <fragment
         android:id="@+id/assignCustomerOrderFragment"
