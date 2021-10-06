@@ -560,5 +560,6 @@
     <string name="please_select_order_type_to_add_item">Please select order type to add item</string>
     <string name="cancel">Cancel</string>
     <string name="assign_customer">Assign Customer</string>
+    <string name="tv_choose_photo">Choose Photo</string>
 
 </resources>
