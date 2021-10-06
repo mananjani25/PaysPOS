@@ -420,7 +420,8 @@ class OpenOrderCustomerFragment : Fragment(), View.OnClickListener {
                 currentSelectedDate!!
             ), ZoneId.systemDefault()
         )
-        val dateAsFormattedText: String = dateTime.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+        val dateAsFormattedText: String =
+            dateTime.format(DateTimeFormatter.ofPattern("MMM-dd-yyyy"))
         binding.edtDate.text = dateAsFormattedText
     }
 

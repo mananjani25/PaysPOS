@@ -9,12 +9,25 @@
     android:orientation="vertical"
     tools:ignore="MissingDefaultResource">
 
-    <androidx.appcompat.widget.AppCompatImageView
-        android:layout_width="@dimen/_40sdp"
-        android:layout_height="@dimen/_30sdp"
-        android:layout_gravity="center"
-        android:background="@color/boxColor"
-        android:padding="@dimen/_5sdp" />
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/ivImage"
+            android:layout_width="@dimen/_40sdp"
+            android:layout_height="@dimen/_30sdp"
+            android:layout_gravity="center"
+            android:background="@color/boxColor"
+            android:padding="@dimen/_5sdp" />
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:visibility="gone" />
+    </RelativeLayout>
 
     <androidx.appcompat.widget.AppCompatTextView
         style="@style/CustomFontSemiBold"

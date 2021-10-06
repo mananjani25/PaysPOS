@@ -189,7 +189,7 @@ class TransactionViewModel @Inject constructor(
                 }
 
                 Status.ERROR -> {
-                   // _snackbarText.value = Event(resource.message)
+                    _snackbarText.value = Event(resource.message)
 
                     _showProgress.value = Event(false)
                 }

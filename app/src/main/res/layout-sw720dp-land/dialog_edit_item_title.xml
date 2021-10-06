@@ -77,7 +77,9 @@
                     android:orientation="vertical">
 
 
-                    <include layout="@layout/label_box" />
+                    <include
+                        android:id="@+id/includeLayout"
+                        layout="@layout/label_box" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontSemiBold"
@@ -87,6 +89,7 @@
                         android:textColor="@color/txtColor"
                         android:textColorHint="@color/hintColor"
                         android:textSize="@dimen/_7mdpi"
+                        android:visibility="gone"
                         app:textAllCaps="true" />
 
 
@@ -100,21 +103,48 @@
                         tools:itemCount="1"
                         tools:listitem="@layout/color_box" />
 
-                    <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontBold"
+                    <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginTop="@dimen/_10sdp"
-                        android:layout_marginBottom="@dimen/_5sdp"
-                        android:background="@drawable/bg_button_border_gray"
-                        android:gravity="center"
-                        android:padding="@dimen/_5sdp"
-                        android:text="@string/take_photo"
-                        android:textColor="@color/btnColor"
-                        android:textColorHint="@color/hintColor"
-                        android:textSize="@dimen/_7mdpi"
-                        app:textAllCaps="false" />
+                        android:layout_height="wrap_content">
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/tvTakePhoto"
+                            style="@style/CustomFontBold"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="@dimen/_10sdp"
+                            android:layout_marginRight="@dimen/_10sdp"
+                            android:layout_marginBottom="@dimen/_5sdp"
+                            android:layout_weight="1"
+                            android:background="@drawable/bg_button_border_gray"
+                            android:gravity="center"
+                            android:padding="@dimen/_5sdp"
+                            android:text="@string/take_photo"
+                            android:textColor="@color/btnColor"
+                            android:textColorHint="@color/hintColor"
+                            android:textSize="@dimen/_7mdpi"
+                            app:textAllCaps="false" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/tvChoosePhoto"
+                            style="@style/CustomFontBold"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="@dimen/_10sdp"
+                            android:layout_marginBottom="@dimen/_5sdp"
+                            android:layout_weight="1"
+                            android:background="@drawable/bg_button_border_gray"
+                            android:gravity="center"
+                            android:padding="@dimen/_5sdp"
+                            android:text="@string/tv_choose_photo"
+                            android:textColor="@color/btnColor"
+                            android:textColorHint="@color/hintColor"
+                            android:textSize="@dimen/_7mdpi"
+                            app:textAllCaps="false" />
+
+                    </LinearLayout>
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontMediumStyle"
@@ -126,12 +156,14 @@
                         android:textColor="@color/txtColor"
                         android:textColorHint="@color/hintColor"
                         android:textSize="@dimen/_7mdpi"
+                        android:visibility="gone"
                         app:textAllCaps="true" />
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/_10sdp"
+                        android:visibility="gone"
                         tools:itemCount="2"
                         tools:listitem="@layout/view_choose_images" />
 

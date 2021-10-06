@@ -450,18 +450,18 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
         viewModel.data.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let { timeSheet ->
                 binding.rvTeamTimeSheet.visibility = View.VISIBLE
-                employeeTimeSheet.addAll(timeSheet.data.payments)
+                // employeeTimeSheet.addAll(timeSheet.data.payments)
                 TOTAL_PAGES = timeSheet.data.pagination.maxPageSize.toInt()
 
                 if (currentPage != TOTAL_PAGES) {
                     transactionAdapter.showLoading(false)
                 }
 
-                if (timeSheet.data.payments.isNotEmpty()) {
-                    transactionAdapter.teamTimesheetList(
-                        employeeTimeSheet
-                    )
-                }
+                // if (timeSheet.data.payments.isNotEmpty()) {
+                transactionAdapter.teamTimesheetList(
+                    timeSheet.data.payments
+                )
+                // }
 
                 if (currentPage <= TOTAL_PAGES) {
                     transactionAdapter.showLoading(true)
@@ -488,7 +488,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                             val isPresent = teamRoleListGlobal.any { it.name == "All Roles" }
 
                             if (!isPresent) {
-                                teamRoleListGlobal.removeAt(0)
+                                // teamRoleListGlobal.removeAt(0)
                                 teamRoleListGlobal.add(0, TeamRole(-1, "All Roles", null, null))
                             }
                             val roleName = teamRoleListGlobal.map { it.name }
@@ -525,7 +525,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                             val isPresent =
                                 teamEmployeeListGlobal.any { it.name == "All Team Members" }
                             if (!isPresent) {
-                                teamEmployeeListGlobal.removeAt(0)
+                                //  teamEmployeeListGlobal.removeAt(0)
                                 teamEmployeeListGlobal.add(
                                     0,
                                     Employee(
@@ -577,7 +577,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                             val isPresent = terminalListGlobal.any { it.name == "All Terminals" }
 
                             if (!isPresent) {
-                                terminalListGlobal.removeAt(0)
+                                //    terminalListGlobal.removeAt(0)
                                 terminalListGlobal.add(
                                     0,
                                     VenueDetailsResponse.Data.Terminal(
@@ -625,7 +625,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                             val isPresent = orderTypeListGlobal.any { it.name == "All Orders" }
 
                             if (!isPresent) {
-                                orderTypeListGlobal.removeAt(0)
+                                //   orderTypeListGlobal.removeAt(0)
                                 orderTypeListGlobal.add(
                                     0,
                                     TbOrderType("", -1, false, -1, "All Orders", "", -1, "")
