@@ -14,6 +14,7 @@ import com.android.pos.MainApplication
 import com.android.pos.R
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.databinding.PaymentFragmentBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.MethodUtils
@@ -170,6 +171,10 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         binding.txtFourthAmount.setOnClickListener(this)
         binding.txtAddTips.setOnClickListener(this)
 
+
+        if (cartList?.orderType == DINE_IN) {
+
+        }
 
     }
 

@@ -429,10 +429,16 @@
             app:destination="@id/dineInFragment" />
         <action
             android:id="@+id/action_dashboardCategoryNew_to_orderTypeDialog"
-            app:destination="@id/orderTypeDialog" />
+            app:destination="@id/orderTypeDialog"
+            app:popUpTo="@id/dashboardCategoryNew"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_dashboardCategoryNew_to_addVariablePriceDialog"
             app:destination="@id/addVariablePriceDialog" />
+        <action
+            android:id="@+id/action_dashboardCategoryNew_to_dineInOrderTable"
+            app:destination="@id/dineInOrderTable"
+            app:enterAnim="@anim/nav_default_enter_anim" />
 
     </fragment>
     <action
@@ -826,8 +832,22 @@
     </fragment>
     <dialog
         android:id="@+id/orderTypeDialog"
-        android:name="com.android.pos.ui.dialog.OrderTypeDialog"
-        android:label="OrderTypeDialog" />
+        android:name="com.android.pos.ui.dialog.OrderTypeDialog">
+        <action
+            android:id="@+id/action_orderTypeDialog_to_dashboardCategoryNew"
+            app:destination="@id/dashboardCategoryNew"
+            app:popUpTo="@id/orderTypeDialog"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_orderTypeDialog_to_openOrderCustomerFragment"
+            app:destination="@id/openOrderCustomerFragment" />
+        <action
+            android:id="@+id/action_orderTypeDialog_to_dineInFragment"
+            app:destination="@id/dineInFragment"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+
+
+    </dialog>
     <dialog
         android:id="@+id/addVariablePriceDialog"
         android:name="com.android.pos.ui.dialog.AddVariablePriceDialog"
@@ -836,6 +856,12 @@
         android:id="@+id/dineInOrderTable"
         android:name="com.android.pos.ui.fragments.dinein.DineInOrderTable"
         android:label="DineInOrderTable"
-        tools:layout="@layout/fragment_dine_in_order_table"/>
+        tools:layout="@layout/fragment_dine_in_order_table">
+        <action
+            android:id="@+id/action_dineInOrderTable_to_paymentFragment"
+            app:destination="@id/paymentFragment"
+            app:popUpTo="@id/dineInOrderTable"
+            app:popUpToInclusive="true" />
+    </fragment>
 
 </navigation>

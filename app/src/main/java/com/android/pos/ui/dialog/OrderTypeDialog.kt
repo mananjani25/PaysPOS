@@ -71,15 +71,13 @@ class OrderTypeDialog : DialogFragment(), ItemCallback {
     }
 
     override fun onItemClickListener(view: View?, pos: Int) {
-
         val orderType = orderTypeAdapter.getItem(pos)
 
         val result = Bundle().apply {
             putParcelable("data", orderType)
         }
         setFragmentResult("request_key_orderType", result)
-
-        findNavController().navigateUp()
+        dismiss()
 
 
     }

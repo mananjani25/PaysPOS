@@ -1514,6 +1514,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     }
 
     private fun chooseOrderType(orderType: TbOrderType) {
+
         when (orderType.orderType) {
             TAKEOUT -> {
                 prefProvider.setValueInt(ORDER_TYPE_ID, orderType.id)
@@ -1531,8 +1532,11 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             }
             OPEN_ORDER -> {
 
-                findNavController().navigate(
+                /*findNavController().navigate(
                     R.id.action_dashboardCategoryNew_to_openOrderCustomerFragment
+                )*/
+                findNavController().navigate(
+                    R.id.action_orderTypeDialog_to_dineInFragment
                 )
             }
         }
@@ -1660,6 +1664,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                     if (prefProvider.getValue(ORDER_TYPE, "").toString() == DINE_IN) {
 
+                        findNavController().navigate(
+                            R.id.action_dashboardCategoryNew_to_dineInOrderTable,
+                            bundle
+                        )
                     } else {
 
                         findNavController().navigate(

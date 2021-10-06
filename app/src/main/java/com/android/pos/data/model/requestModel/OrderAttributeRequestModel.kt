@@ -173,18 +173,18 @@ class GuestsAttributes(
     @SerializedName("id") var id: Int? = null,
     @SerializedName("order_id") var orderId: Int? = null,
     @SerializedName("name") var name: String = "",
-    @SerializedName("is_paid") var isPaid: Boolean = false,
-    @SerializedName("total_amount") var totalAmount: Int? = null,
-    @SerializedName("cash_discount") var cashDiscount: Int? = null,
-    @SerializedName("total_discount") var totalDiscount: Int? = null,
-    @SerializedName("total_service_charge") var totalServiceCharge: Int,
-    @SerializedName("sub_total") var subTotal: Int? = null,
-    @SerializedName("total_tax") var totalTax: Int? = null,
-    @SerializedName("total_tips") var totalTips: Int? = null,
+    @SerializedName("is_paid") var isPaid: Boolean = true,
+    @SerializedName("total_amount") var totalAmount: Double? = null,
+    @SerializedName("cash_discount") var cashDiscount: Double? = null,
+    @SerializedName("total_discount") var totalDiscount: Double? = null,
+    @SerializedName("total_service_charge") var totalServiceCharge: Double? = null,
+    @SerializedName("sub_total") var subTotal: Double? = null,
+    @SerializedName("total_tax") var totalTax: Double? = null,
+    @SerializedName("total_tips") var totalTips: Double? = null,
     @SerializedName("customer_id") var customerId: Int? = null,
     @SerializedName("_destroy") var Destroy: Boolean = false,
     @SerializedName("guest_items_attributes") var guestItemsAttributes: List<GuestItemsAttributes> = emptyList(),
-    @SerializedName("customer_attributes") var customerAttributes: CustomerAttributes
+    @SerializedName("customer_attributes") var customerAttributes: CustomerAttributes? = null
 
 )
 
@@ -195,10 +195,10 @@ class GuestItemsAttributes(
     @SerializedName("order_item_id") var orderItemId: Int? = null,
     @SerializedName("quantity") var quantity: Int? = null,
     @SerializedName("item_id") var itemId: Int? = null,
-    @SerializedName("amount") var amount: Int? = null,
-    @SerializedName("is_paid") var isPaid: Boolean,
+    @SerializedName("amount") var amount: Double? = null,
+    @SerializedName("is_paid") var isPaid: Boolean = true,
     @SerializedName("guest_id") var guestId: Int? = null,
-    @SerializedName("_destroy") var Destroy: Boolean,
+    @SerializedName("_destroy") var Destroy: Boolean = false,
     @SerializedName("percentage") var percentage: Int? = null
 
 )

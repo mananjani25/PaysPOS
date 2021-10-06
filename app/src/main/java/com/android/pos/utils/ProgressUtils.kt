@@ -58,7 +58,7 @@ object ProgressUtils {
             val activity: Activity = context as Activity
             if (!activity.isFinishing) {
                 try {
-                    builder!!.show()
+                    builder?.show()
                 } catch (e: Exception) {
                 }
 
