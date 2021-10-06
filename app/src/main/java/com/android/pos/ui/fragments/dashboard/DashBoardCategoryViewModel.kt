@@ -176,6 +176,8 @@ class DashBoardCategoryViewModel @Inject constructor(
             if (cartModel != null) {
                 addCart(cartModel)
             }
+
+
         } else {
             if (cartList?.get(0)?.orderType == DINE_IN) {
                 val cartModel = cartList[0]

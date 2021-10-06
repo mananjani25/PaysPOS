@@ -294,7 +294,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         binding.rvOrderType.adapter = orderTypeAdapter
 
         viewModel.orderTypes().observe(requireActivity(), {
-            Log.e("ORDER_TYPE_SIZE", it.data?.size.toString())
+            Log.e("ORDER_TYPE_SIZE", "${Gson().toJson(it.data)}")
             it.data?.let { it1 -> orderTypeAdapter.addAll(it1) }
         })
 
@@ -303,7 +303,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private fun getServiceCharges() {
 
         viewModel.serviceCharges.observe(requireActivity(), {
-            Log.e(TAG, "ServiceChargeListSize: ${it.data?.size}")
             serviceChargesList = it.data
             getCartList()
         })
@@ -1388,8 +1387,11 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
 
 
-        if (variation?.price != null) {
-            data.price = variation.price!!
+        if (variation != null) {
+            variation.price?.let {
+                data.price = it
+            }
+
         } else {
             data.price = data.price
         }
@@ -1520,6 +1522,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 hideOrderType()
             }
             DINE_IN -> {
+                prefProvider.setValueInt(ORDER_TYPE_ID, orderType.id)
+                prefProvider.setValue(ORDER_TYPE_NAME, orderType.name)
+                prefProvider.setValue(ORDER_TYPE, orderType.orderType)
                 findNavController().navigate(
                     R.id.action_dashboardCategoryNew_to_dineInFragment
                 )
@@ -1653,10 +1658,15 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         bundle.putString("orderOfflineId", orderOfflineId)
                     }
 
-                    findNavController().navigate(
-                        R.id.action_dashboardCategoryNew_to_paymentFragment,
-                        bundle
-                    )
+                    if (prefProvider.getValue(ORDER_TYPE, "").toString() == DINE_IN) {
+
+                    } else {
+
+                        findNavController().navigate(
+                            R.id.action_dashboardCategoryNew_to_paymentFragment,
+                            bundle
+                        )
+                    }
 
                 }
             }
@@ -1834,9 +1844,27 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         dineInCartAdapter.setList(dineInList)
 
         if (cartList.isEmpty()) {
-            cartList.add(CartModel())
+            val cartModel = CartModel().apply {
+                terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
+                employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
+                locationId = prefProvider.getValueInt(Constants.LOCATION_ID, -1)
+                orderTypeId = prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
+                orderType = prefProvider.getValue(Constants.ORDER_TYPE, "").toString()
+                orderTypeName = prefProvider.getValue(Constants.ORDER_TYPE_NAME, "").toString()
+
+                serviceCharge = serviceChargesList
+
+            }
+            cartList.add(cartModel)
         }
 
+        /* Log.e(TAG, "OrderId:   ${orderType!!.id}")
+         Log.e(TAG, "OrderName:   ${orderType!!.name}")
+         Log.e(TAG, "OrderOrderType:   ${orderType!!.orderType}")
+         prefProvider.setValueInt(ORDER_TYPE_ID, orderType!!.id)
+         prefProvider.setValue(ORDER_TYPE_NAME, orderType!!.name)
+         prefProvider.setValue(ORDER_TYPE, orderType!!.orderType)
+ */
         cartList.get(0).orderType = DINE_IN
         viewModel.cartLogic(cartList, null, ADD, dineInList = dineInList)
 
@@ -2158,6 +2186,34 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             )
         }
 
+
+    }
+
+    override fun onItemDelete(position: Int, itemPosition: Int, data: TbItem) {
+        Log.e(TAG, "ItemDineDeleteHeader ${position}")
+        Log.e(TAG, "ItemDineDelete ${itemPosition}")
+
+        alert(
+            getString(R.string.app_name),
+            getString(R.string.delete_item_message)
+        ) {
+            positiveButton(getString(R.string.tv_delete)) {
+                // Do positive stuff here
+                cartList.get(0).orderType = DINE_IN
+
+                viewModel.cartLogic(
+                    cartList,
+                    data,
+                    DELETE,
+                    dineInList = dineInCartAdapter.getList()
+                )
+
+
+            }
+            negativeButton(R.string.tv_cancel) {
+                // Do negative stuff here
+            }
+        }
 
     }
 
