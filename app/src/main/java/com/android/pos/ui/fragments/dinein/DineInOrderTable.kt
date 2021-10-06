@@ -151,7 +151,7 @@ class DineInOrderTable : Fragment() {
 
 
         popupWindow!!.setOnDismissListener(PopupWindow.OnDismissListener {
-            
+
         })
         popupWindow!!.showAtLocation(view, Gravity.TOP, 600, 650);
 //        } else {

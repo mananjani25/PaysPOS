@@ -835,7 +835,7 @@
                                     android:layout_gravity="end"
                                     android:layout_marginLeft="@dimen/_3sdp"
                                     android:gravity="end"
-                                    android:text="29-Apr-2021 07:15 PM"
+                                    android:text="Apr-29-2021 07:15 PM"
                                     android:textColor="@color/viewTextColor"
                                     android:textSize="@dimen/_6mdpi" />
                             </LinearLayout>
