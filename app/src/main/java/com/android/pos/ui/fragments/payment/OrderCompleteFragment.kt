@@ -533,7 +533,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
                         val current = LocalDateTime.now()
-                        val formatter = DateTimeFormatter.ofPattern("dd-MMM-yyyy HH:mm:a")
+                        val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy HH:mm:a")
                         val formatted = current.format(formatter)
 
                         builder.addTextLineSpace(30)
@@ -658,7 +658,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
                         val current = LocalDateTime.now()
-                        val formatter = DateTimeFormatter.ofPattern("dd-MMM-yyyy HH:mm:a")
+                        val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy HH:mm:a")
                         val formatted = current.format(formatter)
                         builder.addTextLineSpace(30)
                         builder.addFeedUnit(30)
