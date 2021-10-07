@@ -163,7 +163,8 @@ class ItemListAdapter(private val isChoose: Boolean) :
                     val fList = ArrayList<TbItem>()
 
                     itemsList.filter {
-                        it.name.lowercase(Locale.getDefault()).contains(charSequence)
+                        it.name.lowercase(Locale.getDefault())
+                            .contains(charString.lowercase(Locale.getDefault()))
                     }.forEach { fList.add(it) }
 
                     fList

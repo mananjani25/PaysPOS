@@ -91,7 +91,7 @@ class TransactionAdapter(val viewModel: TransactionViewModel) :
     fun teamTimesheetList(employeeTimeSheet: List<GetTransactionListResponse.Data.Payment>) {
 
         this.employeeTimeSheet.apply {
-           // clear()
+//            clear()
             addAll(employeeTimeSheet)
             notifyDataSetChanged()
         }
