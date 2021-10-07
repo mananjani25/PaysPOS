@@ -62,7 +62,7 @@ data class VenueDetailsResponse(
         @SerializedName("kitchen_receipt")
         val kitchenReceipt: GetKitchenReceiptSettingsResponse.Data,
 
-    ) {
+        ) {
         data class CancelOrderReason(
             @SerializedName("created_at")
             val createdAt: String,
