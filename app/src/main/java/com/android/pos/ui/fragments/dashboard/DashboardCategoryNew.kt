@@ -75,6 +75,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     DineInAdapter.DineInCallback, CategoryTabAdapter1.TabListner,
     ItemCallback, View.OnClickListener {
 
+    private var orderDiscount: Double = 0.0
     private var categoryItemAdapter1: CategoryItemAdapter1? = null
     private var categoryTabAdapter1: CategoryTabAdapter1? = null
     private var clickManualSales: Boolean = false
@@ -177,6 +178,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         binding.layoutCart.btnSave.setOnClickListener(this)
         binding.layoutCart.llCartMenu.setOnClickListener(this)
         binding.layoutCart.imgOrderMenu.setOnClickListener(this)
+        binding.layoutCart.txtAddDiscount.setOnClickListener(this)
         binding.footer.txtEmployeeName.text = prefProvider.getValue(EMPLOYEE_NAME, "")
 
         binding.root.setOnClickListener {
@@ -217,6 +219,23 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             if (result != null) {
                 chooseOrderType(result)
 
+            }
+        }
+        setFragmentResultListener("request_key_discount_order") { requestKey: String, bundle: Bundle ->
+            val result = bundle.getParcelable<TbDiscount>("data")
+            if (result != null) {
+                orderDiscount = result.percentage
+
+                val discountApplyPrice = viewModel.totalPrice
+
+                val discount = discountApplyPrice - orderDiscount
+
+                MethodUtils.setPriceTextView(binding.layoutCart.txtTotalAmount, discount)
+                if (cartList.isNotEmpty()) {
+                    cartList[0].discountPrice = orderDiscount
+                    cartList[0].discountType = result.discountType
+                    viewModel.addCart(cartList[0])
+                }
             }
         }
 
@@ -397,6 +416,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         viewModel.itemCalculation(
                             cartList,
                             binding.layoutCart.txtTotalAmount
+
                         )
 
                         if (prefProvider.getValue(ORDER_TYPE, "")
@@ -913,7 +933,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         txtSubTotal.text = "$" + String.format(
             "%.2f",
-            viewModel.subTotalPrice
+            viewModel.subTotalPrice /*- cartList[0].discountPrice*/
         )
         txtServiceCharge.text = "$" + String.format(
             "%.2f",
@@ -921,9 +941,14 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         )
         txtDiscount.text = "- $" + String.format(
             "%.2f",
-            viewModel.totalDiscount
+            viewModel.totalDiscount + cartList[0].discountPrice
         )
-        txtTotalAmount.text = binding.layoutCart.txtTotalAmount.text.toString()
+
+        val total = viewModel.totalPrice - cartList[0].discountPrice
+
+        MethodUtils.setPriceTextView(txtTotalAmount, total)
+
+        //  txtTotalAmount.text = total.toString()
         txtTotalTax.text = "$" + String.format(
             "%.2f",
             viewModel.totalTax
@@ -1044,6 +1069,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         val bundle = Bundle().apply {
             putParcelableArrayList("data", orderTypeAdapter.list)
         }
+        Log.e(TAG,"currentDestination:   ${findNavController().currentDestination}")
         findNavController().navigate(
             R.id.action_dashboardCategoryNew_to_orderTypeDialog,
             bundle
@@ -1514,6 +1540,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     }
 
     private fun chooseOrderType(orderType: TbOrderType) {
+        Log.e(TAG,"CurrentDestination:   ${findNavController().currentDestination}")
+
         when (orderType.orderType) {
             TAKEOUT -> {
                 prefProvider.setValueInt(ORDER_TYPE_ID, orderType.id)
@@ -1525,15 +1553,30 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 prefProvider.setValueInt(ORDER_TYPE_ID, orderType.id)
                 prefProvider.setValue(ORDER_TYPE_NAME, orderType.name)
                 prefProvider.setValue(ORDER_TYPE, orderType.orderType)
-                findNavController().navigate(
-                    R.id.action_dashboardCategoryNew_to_dineInFragment
-                )
+                findNavController().graph.startDestination = R.id.dashboardCategoryNew
+                if (findNavController().currentDestination?.id == R.id.orderTypeDialog) {
+                    findNavController().navigate(
+                        R.id.action_orderTypeDialog_to_dineInFragment
+                    )
+                } else {
+                    findNavController().navigate(R.id.action_dashboardCategoryNew_to_dineInFragment)
+                }
             }
             OPEN_ORDER -> {
 
-                findNavController().navigate(
+                /*findNavController().navigate(
                     R.id.action_dashboardCategoryNew_to_openOrderCustomerFragment
-                )
+                )*/
+                if (findNavController().currentDestination?.id == R.id.orderTypeDialog) {
+
+                    findNavController().navigate(
+                        R.id.action_orderTypeDialog_to_openOrderCustomerFragment
+                    )
+                } else {
+                    findNavController().navigate(
+                        R.id.action_dashboardCategoryNew_to_openOrderCustomerFragment
+                    )
+                }
             }
         }
 
@@ -1546,6 +1589,21 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     override fun onClick(v: View?) {
 
         when (v?.id) {
+            R.id.txtAddDiscount -> {
+
+                hideOrderMenu()
+                val bundle = Bundle()
+                bundle.putBoolean("isOrderDiscount", true)
+                bundle.putDouble("totalPrice", viewModel.totalPrice)
+                if (cartList.isNotEmpty()) {
+                    bundle.putDouble("orderDiscountPrice", cartList[0].discountPrice)
+                    bundle.putString("orderDiscountType", cartList[0].discountType)
+                }
+                findNavController().navigate(
+                    R.id.action_dashboardCategoryNew_to_addDiscountDialog,
+                    bundle
+                )
+            }
 
             R.id.llShowMenu -> {
                 hideMenu()
@@ -1617,14 +1675,14 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     val request = viewModelPayment.createOrderRequest(
                         cartList,
                         viewModel.subTotalPrice,
-                        viewModel.totalPrice,
+                        viewModel.totalPrice - cartList.discountPrice,
                         viewModel.totalServiceCharge,
                         viewModel.totalTax,
                         OPEN_ORDER,
                         future_delivery_date,
                         future_delivery_time,
                         false,
-                        viewModel.totalDiscount,
+                        viewModel.totalDiscount + cartList.discountPrice,
                         0.00
                     )
                     viewModelPayment.saveOrder(true)
@@ -1640,10 +1698,13 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 if (cartList.isNotEmpty()) {
 
                     val bundle = Bundle()
-                    bundle.putDouble("totalPrice", viewModel.totalPrice)
+                    bundle.putDouble("totalPrice", viewModel.totalPrice - cartList[0].discountPrice)
                     bundle.putDouble("subTotalPrice", viewModel.subTotalPrice)
                     bundle.putDouble("totalTax", viewModel.totalTax)
-                    bundle.putDouble("totalDiscount", viewModel.totalDiscount)
+                    bundle.putDouble(
+                        "totalDiscount",
+                        viewModel.totalDiscount + cartList[0].discountPrice
+                    )
                     bundle.putDouble("totalServiceCharge", viewModel.totalServiceCharge)
                     bundle.putString("future_delivery_date", future_delivery_date)
                     bundle.putString("future_delivery_time", future_delivery_time)
@@ -1660,6 +1721,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                     if (prefProvider.getValue(ORDER_TYPE, "").toString() == DINE_IN) {
 
+                        findNavController().navigate(
+                            R.id.action_dashboardCategoryNew_to_dineInOrderTable,
+                            bundle
+                        )
                     } else {
 
                         findNavController().navigate(
@@ -1736,7 +1801,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private fun markAsUnreadButton(position: Int): SwipeHelper.UnderlayButton {
         return SwipeHelper.UnderlayButton(
             requireContext(),
-            "AddNote",
+            "Note",
             14.0f,
             R.color.addNote,
             object : SwipeHelper.UnderlayButtonClickListener {
@@ -1765,7 +1830,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private fun archiveButton(pos: Int): SwipeHelper.UnderlayButton {
         return SwipeHelper.UnderlayButton(
             requireContext(),
-            "Add Discount",
+            "Discount",
             14.0f,
             R.color.addDiscount,
             object : SwipeHelper.UnderlayButtonClickListener {
@@ -1777,8 +1842,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         val result = bundle.getParcelable<TbDiscount>("data")
 
                         if (result != null) {
-                            when {
-                                result.discountType == PERCENTAGE -> {
+                            when (result.discountType) {
+                                PERCENTAGE -> {
 
                                     data.discountPrice = calculateDiscountPercentage(
                                         totalPrice(data),
@@ -1793,7 +1858,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
 
                                 }
-                                result.discountType == "" -> {
+                                "" -> {
 
                                     data.discountPrice = result.percentage
                                     data.discountId = 0
@@ -2131,13 +2196,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             "%.2f",
                             (totalPrice(data) - data.discountPrice)
                         )
-                    } else {
-                        /*  data.discountPrice = 0.0
-                          data.discountType = ""
-                          data.isManualSales = false
-                          data.discountId = 0
-                          discountPrice = data.discountPrice*/
-
                     }
 
                 } else {
@@ -2146,7 +2204,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     data.isManualSales = false
                     data.discountId = 0
                     discountPrice = data.discountPrice
-                    // viewModel.cartLogic(cartList, data, Constants.UPDATE)
                 }
 
             }

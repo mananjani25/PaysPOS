@@ -50,7 +50,7 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>(), MyCall
             binding.executePendingBindings()
             itemAdapter = CartAdapter()
             binding.rvCart.adapter = itemAdapter
-            swipeListener(binding.rvCart,layoutPosition,binding.root.context)
+            swipeListener(binding.rvCart, layoutPosition, binding.root.context)
 
             itemAdapter.addCart(list.get(layoutPosition).items)
             Log.e(TAG, "Customer:  ${list.get(layoutPosition).customer}")
@@ -96,7 +96,7 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>(), MyCall
                 binding.imgProfile.setImageDrawable(binding.root.context.getDrawable(R.drawable.ic_group_person))
                 binding.imgOrderMenu.visibility = View.VISIBLE
             }
-           // list.get(0).headerPosition = layoutPosition
+            // list.get(0).headerPosition = layoutPosition
 
             itemAdapter.setCallback(this)
         }
@@ -165,7 +165,7 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>(), MyCall
         fun onHeaderSelected(position: Int)
         fun onItemSelected(headerPosition: Int, position: Int, item: TbItem)
         fun onCustomerClicked(position: Int, isRemoved: Boolean)
-        fun onItemDelete(position: Int, itemPosition: Int,data:TbItem)
+        fun onItemDelete(position: Int, itemPosition: Int, data: TbItem)
     }
 
     fun getHeaderPosition(): Int {
@@ -184,15 +184,14 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>(), MyCall
         Log.e(TAG, "DineInItem:  ${Gson().toJson(data)}")
     }
 
-    private fun swipeListener(recyclerView: RecyclerView,headerPosition: Int,context: Context) {
+    private fun swipeListener(recyclerView: RecyclerView, headerPosition: Int, context: Context) {
 
 
         val itemTouchHelper = ItemTouchHelper(object : SwipeHelper(recyclerView) {
             override fun instantiateUnderlayButton(position: Int): List<UnderlayButton> {
 
 
-
-                val deleteButton = deleteButton(position, context,headerPosition)
+                val deleteButton = deleteButton(position, context, headerPosition)
                 /*  val markAsUnreadButton = markAsUnreadButton(position)
                   val archiveButton = archiveButton(position)*/
                 return listOf(deleteButton)
@@ -203,7 +202,11 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>(), MyCall
 
     }
 
-    private fun deleteButton(position: Int, context: Context,headerPos:Int): SwipeHelper.UnderlayButton {
+    private fun deleteButton(
+        position: Int,
+        context: Context,
+        headerPos: Int
+    ): SwipeHelper.UnderlayButton {
         return SwipeHelper.UnderlayButton(
             context,
             "Delete",
@@ -213,7 +216,11 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>(), MyCall
                 override fun onClick() {
                     list.get(0).headerPosition = headerPos
                     list.get(0).itemPosition = position
-                    listner.onItemDelete(headerPos,position,list.get(headerPos).items.get(position))
+                    listner.onItemDelete(
+                        headerPos,
+                        position,
+                        list.get(headerPos).items.get(position)
+                    )
                 }
             })
     }

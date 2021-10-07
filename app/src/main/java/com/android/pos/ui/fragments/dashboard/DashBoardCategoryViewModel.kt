@@ -114,6 +114,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     taxServiceChargeRepository.addServiceCharges(it.data.service_charges)
                                     posRepository.addTerminalsDatabase(it.data.terminals)
                                     tipDiscountRepository.addTips(it.data.tip_settings)
+                                    posRepository.addCustomerReceiptSettings(it.data.customerReceipt)
+                                    posRepository.addKitchenReceiptSettings(it.data.kitchenReceipt)
 
                                 }
                             } else {
@@ -516,7 +518,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 Log.e(TAG, "totalTax:  $totalTax")
                 Log.e(TAG, "totalServiceCharge:  $totalServiceCharge")
 
-                totalPrice = (subTotalPrice + totalTax + totalServiceCharge) /*- totalDiscount*/
+                totalPrice = (subTotalPrice + totalTax + totalServiceCharge) - totalDiscount
 
 
             } else {
@@ -589,11 +591,11 @@ class DashBoardCategoryViewModel @Inject constructor(
                 Log.e(TAG, "totalTax:  $totalTax")
                 Log.e(TAG, "totalServiceCharge:  $totalServiceCharge")
 
-                totalPrice = (subTotalPrice + totalTax + totalServiceCharge) /*- totalDiscount*/
+                totalPrice = (subTotalPrice + totalTax + totalServiceCharge) - totalDiscount
 
             }
 
-            MethodUtils.setPriceTextView(txtTotalAmount, totalPrice)
+            MethodUtils.setPriceTextView(txtTotalAmount, totalPrice - cartList[0].discountPrice)
         }
 
     }

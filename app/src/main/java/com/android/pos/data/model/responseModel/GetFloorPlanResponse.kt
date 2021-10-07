@@ -14,7 +14,7 @@ data class GetFloorPlanResponse(
     @SerializedName("message")
     val message: String,
     @SerializedName("status")
-    val status: Int,
+    val status: String,
     @SerializedName("type")
     val type: String
 ) : Parcelable {
@@ -36,11 +36,11 @@ data class GetFloorPlanResponse(
             @SerializedName("floor_plan_id")
             val floorPlanId: Int,
             @SerializedName("height")
-            val height: Int,
+            val height: Double,
             @SerializedName("id")
             val id: Int,
             @SerializedName("status")
-            val status: Int,
+            val status: String,
             @SerializedName("style")
             val style: String,
             @SerializedName("table_name")
@@ -52,7 +52,7 @@ data class GetFloorPlanResponse(
             @SerializedName("updated_at")
             val updatedAt: String,
             @SerializedName("width")
-            val width: Int,
+            val width: Double,
             @SerializedName("x_position")
             val xPosition: Double,
             @SerializedName("y_position")

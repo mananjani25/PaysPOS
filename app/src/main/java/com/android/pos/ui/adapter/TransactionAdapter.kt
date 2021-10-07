@@ -1,6 +1,7 @@
 package com.android.pos.ui.adapter
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -40,12 +41,12 @@ class TransactionAdapter(val viewModel: TransactionViewModel) :
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
 
         val inflater = LayoutInflater.from(parent.context)
-        if (viewType == TYPE_ITEM) {
+        return if (viewType == TYPE_ITEM) {
             val binding = ViewTransactionItemBinding.inflate(inflater, parent, false)
-            return MyViewHolder(binding)
+            MyViewHolder(binding)
         } else {
             val binding = ViewPaginationBinding.inflate(inflater, parent, false)
-            return FooterViewHolder(binding)
+            FooterViewHolder(binding)
         }
 
     }
@@ -88,15 +89,12 @@ class TransactionAdapter(val viewModel: TransactionViewModel) :
 
     override fun getItemCount() = filterList.size
 
-    fun teamTimesheetList(employeeTimeSheet: List<GetTransactionListResponse.Data.Payment>) {
+    fun AddAll(employeeTimeSheets: List<GetTransactionListResponse.Data.Payment>) {
 
-        this.employeeTimeSheet.apply {
-//            clear()
-            addAll(employeeTimeSheet)
-            notifyDataSetChanged()
-        }
-        this.filterList = employeeTimeSheet as ArrayList<GetTransactionListResponse.Data.Payment>
-
+        Log.e("teamTimesheetList", employeeTimeSheets.size.toString())
+        employeeTimeSheet.addAll(employeeTimeSheets)
+        filterList.addAll(employeeTimeSheets)
+        notifyDataSetChanged()
     }
 
 
@@ -105,7 +103,7 @@ class TransactionAdapter(val viewModel: TransactionViewModel) :
 
     }
 
-    inner class FooterViewHolder(val paginationBinding: ViewPaginationBinding) :
+    inner class FooterViewHolder(paginationBinding: ViewPaginationBinding) :
         RecyclerView.ViewHolder(paginationBinding.root) {
 
     }

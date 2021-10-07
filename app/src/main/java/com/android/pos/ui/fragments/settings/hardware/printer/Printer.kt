@@ -154,8 +154,6 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                 }
                 Status.SUCCESS -> {
                     ProgressUtils.dismissProgressDialog()
-                    Log.e(TAG, "OrderTypesList:  ${Gson().toJson(it.data)}")
-
                     if (it.data != null) {
                         orderTypeList.addAll(it.data.toCollection(ArrayList()))
 
@@ -1628,7 +1626,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                     Builder.COLOR_1
                 )
                 val current = LocalDateTime.now()
-                val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
+                val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy HH:mm:ss.SSS")
                 val formatted = current.format(formatter)
                 builder.addText(formatted)
             }

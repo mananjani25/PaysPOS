@@ -453,23 +453,18 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                 // employeeTimeSheet.addAll(timeSheet.data.payments)
                 TOTAL_PAGES = timeSheet.data.pagination.maxPageSize.toInt()
 
+                isLoading = false
+                transactionAdapter.showLoading(false)
+
+                transactionAdapter.AddAll(timeSheet.data.payments)
+
+
                 if (currentPage != TOTAL_PAGES) {
-                    transactionAdapter.showLoading(false)
-                }
-
-                // if (timeSheet.data.payments.isNotEmpty()) {
-                transactionAdapter.teamTimesheetList(
-                    timeSheet.data.payments
-                )
-                // }
-
-                if (currentPage <= TOTAL_PAGES) {
                     transactionAdapter.showLoading(true)
                 } else {
-                    transactionAdapter.showLoading(false)
                     isLastPage = true
                 }
-                isLoading = false
+
 
             }
         })

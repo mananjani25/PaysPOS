@@ -154,7 +154,7 @@
                 android:layout_marginStart="@dimen/_3sdp"
                 android:gravity="start"
                 android:paddingLeft="@dimen/_3sdp"
-                android:text="Order Time: 29-Apr-2021 07:15 PM"
+                android:text="Order Time: Apr-29-2021 07:15 PM"
                 android:textColor="@color/viewTextColor"
                 android:textSize="@dimen/_6mdpi" />
 
@@ -167,7 +167,7 @@
                 android:layout_marginStart="@dimen/_3sdp"
                 android:gravity="start"
                 android:paddingLeft="@dimen/_3sdp"
-                android:text="Print Time: 29-Apr-2021 10:17 PM"
+                android:text="Print Time: Apr-29-2021 10:17 PM"
                 android:textColor="@color/viewTextColor"
                 android:textSize="@dimen/_6mdpi" />
 

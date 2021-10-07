@@ -9,10 +9,7 @@ import com.android.pos.data.db.IDataManager
 import com.android.pos.data.entities.*
 import com.android.pos.data.entities.ModifierSet
 import com.android.pos.data.model.requestModel.*
-import com.android.pos.data.model.responseModel.NoteResponse
-import com.android.pos.data.model.responseModel.OpenOrderResponse
-import com.android.pos.data.model.responseModel.PrinterResponse
-import com.android.pos.data.model.responseModel.VenueDetailsResponse
+import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.ApiHelper
 import com.android.pos.utils.performGetOperation
 import com.android.pos.utils.performGetOperationDatabase
@@ -130,7 +127,7 @@ class PosRepository @Inject constructor(
                         name = it.name
                         cost = it.cost
                         price = it.price
-                        priceType = it.priceType
+                        priceType = it.priceType ?: ""
                         quantity = it.quantity
                         kitchenName = it.kitchenName
                         productCode = it.productCode
@@ -233,7 +230,7 @@ class PosRepository @Inject constructor(
                         name = it.name
                         cost = it.cost
                         price = it.price
-                        priceType = it.priceType
+                        priceType = it.priceType ?: ""
                         quantity = it.quantity
                         kitchenName = it.kitchenName
                         productCode = it.productCode
@@ -264,6 +261,14 @@ class PosRepository @Inject constructor(
 
     suspend fun addAllNotesDatabase(data: List<NoteResponse.Data>) =
         appDatabase.notesDao().addAllNotesSuspend(data)
+
+    suspend fun addKitchenReceiptSettings(data: GetKitchenReceiptSettingsResponse.Data) {
+        appDatabase.kitchenSettingsDao().add(data)
+    }
+
+    suspend fun addCustomerReceiptSettings(data: GetCustomerReceiptSettingsResponse.Data) {
+        appDatabase.customerSettingsDao().add(data)
+    }
 
     suspend fun createNote(data: CreateNoteRequest) = apiHelperNew.createNote(data)
 
