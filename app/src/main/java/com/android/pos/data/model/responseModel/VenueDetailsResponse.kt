@@ -51,13 +51,17 @@ data class VenueDetailsResponse(
         val service_charges: List<TbServiceCharge>,
         @SerializedName("terminals")
         val terminals: List<Terminal>,
-
         @SerializedName("tip_settings")
         val tip_settings: List<GetTipReponse.Data>,
         @SerializedName("time_zone")
         val timeZone: String,
         @SerializedName("user_id")
-        val userId: Int
+        val userId: Int,
+        @SerializedName("customer_receipt")
+        val customerReceipt: GetCustomerReceiptSettingsResponse.Data,
+        @SerializedName("kitchen_receipt")
+        val kitchenReceipt: GetKitchenReceiptSettingsResponse.Data,
+
     ) {
         data class CancelOrderReason(
             @SerializedName("created_at")

@@ -114,6 +114,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     taxServiceChargeRepository.addServiceCharges(it.data.service_charges)
                                     posRepository.addTerminalsDatabase(it.data.terminals)
                                     tipDiscountRepository.addTips(it.data.tip_settings)
+                                    posRepository.addCustomerReceiptSettings(it.data.customerReceipt)
+                                    posRepository.addKitchenReceiptSettings(it.data.kitchenReceipt)
 
                                 }
                             } else {
