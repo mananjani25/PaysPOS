@@ -376,6 +376,7 @@
     <string name="remove_discount">Remove Discount</string>
     <string name="pay">Pay</string>
     <string name="pay_total">Pay Total</string>
+    <string name="pay_now">Pay Now</string>
     <string name="tv_user_access_permission">User Access Permission</string>
     <string name="tv_add_new_role">Add New Role</string>
     <string name="tv_employee_role_list">Employee Role List</string>

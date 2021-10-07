@@ -1069,6 +1069,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         val bundle = Bundle().apply {
             putParcelableArrayList("data", orderTypeAdapter.list)
         }
+        Log.e(TAG,"currentDestination:   ${findNavController().currentDestination}")
         findNavController().navigate(
             R.id.action_dashboardCategoryNew_to_orderTypeDialog,
             bundle
@@ -1539,6 +1540,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     }
 
     private fun chooseOrderType(orderType: TbOrderType) {
+        Log.e(TAG,"CurrentDestination:   ${findNavController().currentDestination}")
 
         when (orderType.orderType) {
             TAKEOUT -> {
@@ -1551,6 +1553,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 prefProvider.setValueInt(ORDER_TYPE_ID, orderType.id)
                 prefProvider.setValue(ORDER_TYPE_NAME, orderType.name)
                 prefProvider.setValue(ORDER_TYPE, orderType.orderType)
+                findNavController().graph.startDestination = R.id.dashboardCategoryNew
                 if (findNavController().currentDestination?.id == R.id.orderTypeDialog) {
                     findNavController().navigate(
                         R.id.action_orderTypeDialog_to_dineInFragment

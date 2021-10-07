@@ -429,9 +429,7 @@
             app:destination="@id/dineInFragment" />
         <action
             android:id="@+id/action_dashboardCategoryNew_to_orderTypeDialog"
-            app:destination="@id/orderTypeDialog"
-            app:popUpTo="@id/dashboardCategoryNew"
-            app:popUpToInclusive="true" />
+            app:destination="@id/orderTypeDialog" />
         <action
             android:id="@+id/action_dashboardCategoryNew_to_addVariablePriceDialog"
             app:destination="@id/addVariablePriceDialog" />
@@ -839,9 +837,7 @@
         android:name="com.android.pos.ui.dialog.OrderTypeDialog">
         <action
             android:id="@+id/action_orderTypeDialog_to_dashboardCategoryNew"
-            app:destination="@id/dashboardCategoryNew"
-            app:popUpTo="@id/orderTypeDialog"
-            app:popUpToInclusive="true" />
+            app:destination="@id/dashboardCategoryNew" />
         <action
             android:id="@+id/action_orderTypeDialog_to_openOrderCustomerFragment"
             app:destination="@id/openOrderCustomerFragment"
