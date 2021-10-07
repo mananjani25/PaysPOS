@@ -424,6 +424,14 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                                 .toString() == Constants.DINE_IN
                         ) {
                             binding.layoutCart.rlSave.visibility = View.GONE
+                            if (prefProvider.getValue(ORDER_TYPE, "").toString() == DINE_IN) {
+                                binding.layoutCart.txtTotalAmount.visibility = View.GONE
+                                binding.layoutCart.txtPay.visibility = View.GONE
+                                binding.layoutCart.txtDineInProceed.visibility = View.VISIBLE
+                                binding.layoutCart.txtDineInProceed.setText("Proceed To Fire")
+                            } else {
+                                binding.layoutCart.txtDineInProceed.visibility = View.GONE
+                            }
                         }
                     } else {
                         viewModel.itemCalculation(
@@ -1069,7 +1077,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         val bundle = Bundle().apply {
             putParcelableArrayList("data", orderTypeAdapter.list)
         }
-        Log.e(TAG,"currentDestination:   ${findNavController().currentDestination}")
+        Log.e(TAG, "currentDestination:   ${findNavController().currentDestination}")
         findNavController().navigate(
             R.id.action_dashboardCategoryNew_to_orderTypeDialog,
             bundle
@@ -1540,7 +1548,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     }
 
     private fun chooseOrderType(orderType: TbOrderType) {
-        Log.e(TAG,"CurrentDestination:   ${findNavController().currentDestination}")
+        Log.e(TAG, "CurrentDestination:   ${findNavController().currentDestination}")
 
         when (orderType.orderType) {
             TAKEOUT -> {

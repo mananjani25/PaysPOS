@@ -14,7 +14,7 @@ import com.android.pos.utils.MethodUtils
 
 class DineInTableAdapter : RecyclerView.Adapter<DineInTableAdapter.MyViewHolder>() {
     private var list: ArrayList<DineInModel> = arrayListOf()
-    private lateinit var itemAdapter: CartAdapter
+    private lateinit var itemAdapter: DineInTableItemAdapter
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -37,7 +37,7 @@ class DineInTableAdapter : RecyclerView.Adapter<DineInTableAdapter.MyViewHolder>
         RecyclerView.ViewHolder(binding.root) {
         fun bind(model: DineInModel) {
 
-            itemAdapter = CartAdapter()
+            itemAdapter = DineInTableItemAdapter()
             binding.rvItems.adapter = itemAdapter
             itemAdapter.addCart(list[layoutPosition].items)
 

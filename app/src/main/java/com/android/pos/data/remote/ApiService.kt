@@ -70,6 +70,7 @@ import com.android.pos.data.remote.Constants.TRANSACTION_LIST
 import com.android.pos.data.remote.Constants.UPDATE_PRINTER_STATUS
 import com.android.pos.data.remote.Constants.UPDATE_TIP
 import com.android.pos.data.remote.Constants.USERS_LOG_IN
+import okhttp3.MultipartBody
 import retrofit2.http.*
 
 

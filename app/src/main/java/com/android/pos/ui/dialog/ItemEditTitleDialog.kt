@@ -12,6 +12,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.core.content.ContextCompat.checkSelfPermission
@@ -154,7 +155,7 @@ class ItemEditTitleDialog : DialogFragment(), View.OnClickListener {
     }
 
     private fun capturePhoto() {
-        /*val capturedImage = File(externalCacheDir, "androidPos.jpg")
+       /* val capturedImage = File(externalCacheDir, "androidPos.jpg")
           if (capturedImage.exists()) {
               capturedImage.delete()
           }
@@ -237,6 +238,7 @@ class ItemEditTitleDialog : DialogFragment(), View.OnClickListener {
 
     private fun viewProfile(profileImage: String?) {
 
+        Log.d("profileImage", "::" + profileImage)
         binding.includeLayout.progressBar.visibility = View.VISIBLE
 
         Glide.with(requireActivity()).load(profileImage)

@@ -1,7 +1,12 @@
 package com.android.pos.ui.fragments.createitem
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.TextUtils
+import android.util.Base64
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -30,6 +35,12 @@ import com.android.pos.utils.extensions.getNavigationResultLiveData
 import com.android.pos.utils.extensions.liveSnackBar
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import java.io.ByteArrayOutputStream
+import java.io.File
 
 @AndroidEntryPoint
 class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
@@ -48,6 +59,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
     var customVariationList = ArrayList<VariationsAttribute>()
     private val TAG = "CreateItem"
     private var isNewVariation: Boolean = false
+    private var base64: String = ""
 
     // private lateinit var passedVariationList: ArrayList<List<VariationsAttribute>>
 
@@ -278,8 +290,29 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
 
             // viewModel.variationAttribute(variationListAdapter.selectedVariation())
 
+            /*var body2: MultipartBody.Part? = null
+            //  if (!TextUtils.isEmpty(imagePath)) {
+
+            //   if (!(imagePath?.startsWith("https")!! || imagePath!!.startsWith("http"))) {
+            val file1 = File("/storage/emulated/0/DCIM/Camera/IMG_20211006_120155.jpg")
+            val requestFile1: RequestBody =
+                file1.asRequestBody("multipart/form-data".toMediaTypeOrNull())
+            body2 = MultipartBody.Part.createFormData("image", file1.name, requestFile1)
+*/            //  }
+
+            //  }
+
+
+            val bitmap =
+                BitmapFactory.decodeFile("/storage/emulated/0/DCIM/Camera/IMG_20211006_120155.jpg")
+            if (bitmap != null) {
+                base64 = convertBase64(bitmap)
+            }
+
+
             if (variationListAdapter.selectedVariation().size > 0 && variationListAdapter.selectedVariation() != null) {
                 viewModel.itemDetails(
+                    base64,
                     null,
                     binding.etDesc.text.toString(),
                     "",
@@ -300,6 +333,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
                     stock = binding.etStock.text.toString().toInt()
                 }
                 viewModel.itemDetails(
+                    base64,
                     itemPrice,
                     binding.etDesc.text.toString(),
                     binding.etSku.text.toString(),
@@ -313,6 +347,32 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
         }
 
         return binding.root
+    }
+
+    private fun convertBase64(bitmap: Bitmap): String {
+
+
+        // a potentially time consuming task
+        var byteArrayOutputStream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.PNG, 75, byteArrayOutputStream)
+        var byteArray: ByteArray = byteArrayOutputStream.toByteArray()
+
+        try {
+            System.gc()
+            base64 = Base64.encodeToString(byteArray, Base64.DEFAULT)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } catch (e: OutOfMemoryError) {
+            byteArrayOutputStream = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.PNG, 50, byteArrayOutputStream)
+            byteArray = byteArrayOutputStream.toByteArray()
+            base64 = Base64.encodeToString(byteArray, Base64.DEFAULT)
+            Log.e("Out of memory", "Out of memory error catched");
+
+
+        }
+        return base64
+
     }
 
     private fun getModifiers() {

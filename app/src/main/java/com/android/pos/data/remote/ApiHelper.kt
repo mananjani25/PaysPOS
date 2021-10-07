@@ -1,6 +1,7 @@
 package com.android.pos.data.remote
 
 import com.android.pos.data.model.requestModel.*
+import okhttp3.MultipartBody
 import javax.inject.Inject
 
 class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDataSource() {

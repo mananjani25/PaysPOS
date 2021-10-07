@@ -18,6 +18,7 @@ import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import okhttp3.MultipartBody
 import javax.inject.Inject
 
 @HiltViewModel
@@ -37,6 +38,7 @@ class CreateItemViewModel @Inject constructor(
     private var descViewModel: String = ""
     private var skuViewModel: String = ""
     private var stockViewModel: Int = 0
+    private var body2ViewModel: String? = ""
     private lateinit var variationAttributeModel: ArrayList<VariationsAttribute>
 
     private val _snackbarText = MutableLiveData<Event<Any?>>()
@@ -118,6 +120,7 @@ class CreateItemViewModel @Inject constructor(
                     priceType = "Variable"
                 }
                 price = itemPriceViewModel
+               // image = body2ViewModel?.dropLast(1)
                 sku = skuViewModel
                 quantity = stockViewModel
                 desc = descViewModel
@@ -178,7 +181,14 @@ class CreateItemViewModel @Inject constructor(
         this.variationAttributeModel = variationAttribute
     }
 
-    fun itemDetails(itemPrice: Double?, desc: String, sku: String, stock: Int) {
+    fun itemDetails(
+        body2: String,
+        itemPrice: Double?,
+        desc: String,
+        sku: String,
+        stock: Int
+    ) {
+        this.body2ViewModel = body2
         this.itemPriceViewModel = itemPrice
         this.descViewModel = desc
         this.skuViewModel = sku

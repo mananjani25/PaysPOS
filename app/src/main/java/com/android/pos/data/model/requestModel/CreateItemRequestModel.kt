@@ -25,6 +25,8 @@ data class CreateItemRequestModel(
     var name: String = "",
     @SerializedName("price")
     var price: Double? = null,
+    @SerializedName("image")
+    var image: String? = "",
     @SerializedName("price_type")
     var priceType: String = "",
     @SerializedName("product_code")
