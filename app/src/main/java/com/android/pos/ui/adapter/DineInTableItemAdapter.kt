@@ -7,12 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.entities.TbItem
-import com.android.pos.databinding.ViewCartItemBinding
+import com.android.pos.databinding.ViewDineInTableItemsBinding
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.callback.MyCallback
 
-class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
-
+class DineInTableItemAdapter : RecyclerView.Adapter<DineInTableItemAdapter.MyViewHolder>() {
     var cartList = ArrayList<TbItem>()
     private val TAG = "CartAdapter"
 
@@ -23,36 +22,8 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
     }
 
 
-    override fun onCreateViewHolder(
-        parent: ViewGroup,
-        viewType: Int
-    ): CartAdapter.MyViewHolder {
-        val inflater = LayoutInflater.from(parent.context)
-        val binding = ViewCartItemBinding.inflate(inflater, parent, false)
-        return MyViewHolder(binding)
-    }
-
-    fun addCart(mList: List<TbItem>?) {
-        cartList = mList as ArrayList<TbItem>
-        notifyDataSetChanged()
-    }
-
-    fun getItem(position: Int): TbItem {
-        return cartList[position]
-    }
-
-    override fun onBindViewHolder(holder: CartAdapter.MyViewHolder, position: Int) {
-        holder.bind(cartList[position], position)
-    }
-
-    override fun getItemCount(): Int {
-        return cartList.size
-
-    }
-
-    inner class MyViewHolder(val binding: ViewCartItemBinding) :
+    inner class MyViewHolder(private val binding: ViewDineInTableItemsBinding) :
         RecyclerView.ViewHolder(binding.root) {
-
         fun bind(item: TbItem, pos: Int) {
             if (item.discountPrice != 0.0) {
                 binding.tvDiscountRate.visibility = View.VISIBLE
@@ -74,7 +45,7 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
 
             if (item.modifiers.isNotEmpty()) {
                 binding.rvModifiers.visibility = View.VISIBLE
-                val adapter = CartItemModifierAdapter()
+                val adapter = DineInModifiersAdapter()
                 binding.rvModifiers.adapter = adapter
                 adapter.addAll(item.modifiers)
             } else {
@@ -94,13 +65,38 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
                 mCallback.onItemClickListener(it, cartList[bindingAdapterPosition], layoutPosition)
             }
         }
+
+    }
+
+    fun addCart(mList: List<TbItem>?) {
+        cartList = mList as ArrayList<TbItem>
+        notifyDataSetChanged()
+    }
+
+
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ): DineInTableItemAdapter.MyViewHolder {
+        val inflater = LayoutInflater.from(parent.context)
+        val binding = ViewDineInTableItemsBinding.inflate(inflater, parent, false)
+        return MyViewHolder(binding)
+
+    }
+
+    override fun onBindViewHolder(holder: DineInTableItemAdapter.MyViewHolder, position: Int) {
+        holder.bind(cartList[position], position)
+
+    }
+
+    override fun getItemCount(): Int {
+        return cartList.size
     }
 
     fun removeItem(pos: Int) {
         this.cartList.removeAt(pos)
         notifyItemRemoved(pos)
     }
-
 
     private fun totalPrice(model: TbItem): Double {
 
@@ -120,6 +116,5 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
 
         }
     }
-
 
 }

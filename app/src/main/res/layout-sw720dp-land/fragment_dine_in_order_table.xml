@@ -45,6 +45,114 @@
             android:background="@color/view"
             app:layout_constraintTop_toBottomOf="@+id/linearHeader" />
 
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/linearHeaderNew"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_50sdp"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:layout_marginEnd="@dimen/_50sdp"
+            android:background="@drawable/background_printer_labels"
+            android:orientation="horizontal"
+
+            android:weightSum="5"
+            app:layout_constraintTop_toBottomOf="@+id/viewLine">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/CustomFontMediumStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="0.5"
+                android:gravity="center"
+                android:paddingVertical="@dimen/_5sdp"
+                android:text="Fire"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_5mdpi" />
+
+            <View
+                android:id="@+id/viewLine1"
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@color/view"
+                app:layout_constraintTop_toBottomOf="@+id/linearHeader" />
+
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtGuestItemName"
+                style="@style/CustomFontMediumStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="2"
+                android:gravity="center"
+                android:text="Guest &amp; Item Name"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_5mdpi" />
+
+            <View
+                android:id="@+id/viewLine2"
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@color/view"
+                app:layout_constraintTop_toBottomOf="@+id/linearHeader" />
+
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtQuantity"
+                style="@style/CustomFontMediumStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="0.5"
+                android:gravity="center"
+                android:text="Qty"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_5mdpi" />
+
+            <View
+                android:id="@+id/viewLine3"
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@color/view"
+                app:layout_constraintTop_toBottomOf="@+id/linearHeader" />
+
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtStaffName"
+                style="@style/CustomFontMediumStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Staff Name"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_5mdpi" />
+
+            <View
+                android:id="@+id/viewLine4"
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@color/view"
+                app:layout_constraintTop_toBottomOf="@+id/linearHeader" />
+
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtPriceLabel"
+                style="@style/CustomFontMediumStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Price"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_5mdpi" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvItemList"
             android:layout_width="match_parent"
@@ -56,7 +164,7 @@
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constrainedHeight="true"
             app:layout_constraintBottom_toTopOf="@+id/linearFooter"
-            app:layout_constraintTop_toBottomOf="@+id/viewLine"
+            app:layout_constraintTop_toBottomOf="@+id/linearHeaderNew"
             app:layout_constraintVertical_bias="0"
             tools:listitem="@layout/view_dine_in_order_table" />
 
