@@ -39,6 +39,7 @@ import kotlin.collections.ArrayList
 @AndroidEntryPoint
 class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, ItemCallback {
 
+    private var checkFilter: Boolean = false
     private var singleTransaction: GetTransactionListResponse.Data.Payment? = null
     private var tipAmount: Double = 0.0
     private lateinit var binding: FragmentTransactionBinding
@@ -456,7 +457,11 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                 isLoading = false
                 transactionAdapter.showLoading(false)
 
-                transactionAdapter.AddAll(timeSheet.data.payments)
+                if (checkFilter) {
+                    checkFilter = false
+                    transactionAdapter.clear()
+                }
+                transactionAdapter.addAll(timeSheet.data.payments)
 
 
                 if (currentPage != TOTAL_PAGES) {
@@ -649,6 +654,8 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
 
         if (spinnerTouched) {
+
+            checkFilter = true
             viewModel.apiCallTimeSheet(
                 currentPage,
                 getTerminalId(binding.includeView.spTerminals.selectedItemPosition).toString(),

@@ -108,8 +108,8 @@ class HideCategoryListing : Fragment() {
 
         viewModel.data.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
-
-                AlertUtils.showCustomAlert(requireActivity(), it.message)
+                if (!isreOrder)
+                    AlertUtils.showCustomAlert(requireActivity(), it.message)
 
                 if (isreOrder) {
 

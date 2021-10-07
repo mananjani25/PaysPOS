@@ -89,7 +89,7 @@ class TransactionAdapter(val viewModel: TransactionViewModel) :
 
     override fun getItemCount() = filterList.size
 
-    fun AddAll(employeeTimeSheets: List<GetTransactionListResponse.Data.Payment>) {
+    fun addAll(employeeTimeSheets: List<GetTransactionListResponse.Data.Payment>) {
 
         Log.e("teamTimesheetList", employeeTimeSheets.size.toString())
         employeeTimeSheet.addAll(employeeTimeSheets)
@@ -161,6 +161,11 @@ class TransactionAdapter(val viewModel: TransactionViewModel) :
         } else {
             TYPE_ITEM
         }
+    }
+
+    fun clear() {
+        employeeTimeSheet.clear()
+        filterList.clear()
     }
 
 
