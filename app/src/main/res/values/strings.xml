@@ -313,9 +313,9 @@
     <string name="modifier_empty_validation">Please Enter Modifier Name</string>
     <string name="amount_empty_validation">Please Enter Item Price</string>
 
-    <string name="company_name_validate">Pleae Enter Company Name</string>
+    <string name="company_name_validate">Please Enter Company Name</string>
     <string name="tv_delete">Delete</string>
-    <string name="symbole">$</string>
+    <string name="symbole">$&#160;</string>
     <string name="percentage_symbol">%</string>
     <string name="format">%.2f</string>
     <string name="zero">0.00</string>

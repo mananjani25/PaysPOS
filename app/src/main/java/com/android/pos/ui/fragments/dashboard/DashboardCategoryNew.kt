@@ -1587,6 +1587,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         when (v?.id) {
             R.id.txtAddDiscount -> {
+
+                hideOrderMenu()
                 val bundle = Bundle()
                 bundle.putBoolean("isOrderDiscount", true)
                 bundle.putDouble("totalPrice", viewModel.totalPrice)

@@ -145,7 +145,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun alertLogout() {
-        alert("", "Are you sure, you want to Logout?") {
+        alert("", "Are you sure you want to Logout?") {
             this.positiveButton("Logout") {
                 viewModel.logoutAPI()
             }
