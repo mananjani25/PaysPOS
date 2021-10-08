@@ -591,7 +591,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 Log.e(TAG, "totalTax:  $totalTax")
                 Log.e(TAG, "totalServiceCharge:  $totalServiceCharge")
 
-                totalPrice = (subTotalPrice + totalTax + totalServiceCharge) - totalDiscount
+                totalPrice = (subTotalPrice + totalTax + totalServiceCharge)
 
             }
 

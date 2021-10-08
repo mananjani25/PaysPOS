@@ -941,7 +941,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         txtSubTotal.text = "$" + String.format(
             "%.2f",
-            viewModel.subTotalPrice /*- cartList[0].discountPrice*/
+            viewModel.subTotalPrice - (cartList[0].discountPrice)
         )
         txtServiceCharge.text = "$" + String.format(
             "%.2f",
