@@ -115,8 +115,10 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
 
         viewModel.returnedVal.observe(viewLifecycleOwner, {
 
-            manualCategoryId = it.id
-            manualItemId = it.item_ids[0]
+            if (it != null) {
+                manualCategoryId = it.id
+                manualItemId = it.item_ids[0]
+            }
 
         })
 
@@ -532,7 +534,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
                 )
 
                 underlayButtons.add(UnderlayButton(
-                    "Add Note",
+                    "Note",
                     0,
                     Color.parseColor("#FA9905")
                 ) { pos ->
@@ -565,7 +567,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
                 })
 
                 underlayButtons.add(UnderlayButton(
-                    "Add Discount",
+                    "Discount",
                     0,
                     Color.parseColor("#2997cc")
                 ) { pos ->
@@ -756,7 +758,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
             model.itemQuantity = txtQty.text.toString().toInt()
             model.name = edtItemName.text.toString()
 
-            model.price = String.format("%.2f", (itemCost * model.itemQuantity)).toDouble()
+            model.price = String.format("%.2f", (itemCost)).toDouble()
 
             viewModel.cartLogic(cartList, model, Constants.UPDATE)
         }

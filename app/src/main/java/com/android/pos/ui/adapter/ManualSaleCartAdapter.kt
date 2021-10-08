@@ -27,7 +27,7 @@ class ManualSaleCartAdapter : RecyclerView.Adapter<ManualSaleCartAdapter.MyViewH
         val txtItem: TextView = binding.root.findViewById(R.id.txtItem)
         fun bind(model: TbItem, pos: Int) {
             binding.txtQuantity.setText("x ${model.itemQuantity}")
-            MethodUtils.setPriceTextView(binding.txtItemPrice, model.price)
+            MethodUtils.setPriceTextView(binding.txtItemPrice, (model.price * model.itemQuantity))
 
 
             txtItem.setText(list[pos].name)
