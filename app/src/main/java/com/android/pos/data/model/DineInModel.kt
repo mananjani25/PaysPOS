@@ -11,5 +11,6 @@ data class DineInModel(
     var itemPosition: Int? = null,
     var headerPosition: Int? = null,
     val items: ArrayList<TbItem> = arrayListOf(),
-    var customer: TbCustomer? = null
+    var customer: TbCustomer? = null,
+    var isFired:Boolean = false
 )

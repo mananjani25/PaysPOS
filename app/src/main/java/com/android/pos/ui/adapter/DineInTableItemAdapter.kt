@@ -62,7 +62,7 @@ class DineInTableItemAdapter : RecyclerView.Adapter<DineInTableItemAdapter.MyVie
         init {
 
             binding.root.setOnClickListener {
-                mCallback.onItemClickListener(it, cartList[bindingAdapterPosition], layoutPosition)
+//                mCallback.onItemClickListener(it, cartList[bindingAdapterPosition], layoutPosition)
             }
         }
 
@@ -81,7 +81,6 @@ class DineInTableItemAdapter : RecyclerView.Adapter<DineInTableItemAdapter.MyVie
         val inflater = LayoutInflater.from(parent.context)
         val binding = ViewDineInTableItemsBinding.inflate(inflater, parent, false)
         return MyViewHolder(binding)
-
     }
 
     override fun onBindViewHolder(holder: DineInTableItemAdapter.MyViewHolder, position: Int) {
