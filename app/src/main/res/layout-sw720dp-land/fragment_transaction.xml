@@ -26,20 +26,19 @@
             bind:includeLayoutViewModel="@{viewModel}" />
 
         <LinearLayout
+            android:layout_marginTop="@dimen/_5sdp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_5sdp"
+            android:padding="@dimen/_5sdp"
             android:background="@drawable/background_timesheet"
-            android:orientation="horizontal"
-            android:paddingTop="@dimen/_5sdp"
-            android:paddingBottom="@dimen/_5sdp">
+            android:orientation="horizontal">
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_5sdp"
                 android:layout_weight="1"
+                android:layout_gravity="center"
                 android:gravity="center"
                 android:text="@string/tv_date_time"
                 android:textColor="@color/txtColor"
@@ -48,6 +47,7 @@
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="0dp"
+                android:layout_gravity="center"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
@@ -62,6 +62,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="@string/tv_total_amount"
+                android:layout_gravity="center"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_5mdpi" />
 
@@ -70,6 +71,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:layout_gravity="center"
                 android:gravity="center"
                 android:text="@string/tv_tip_amount"
                 android:textColor="@color/txtColor"
@@ -81,6 +83,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
+                android:layout_gravity="center"
                 android:text="Customer Name"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_5mdpi" />
@@ -92,6 +95,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="Role"
+                android:layout_gravity="center"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_5mdpi" />
 
@@ -101,6 +105,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
+                android:layout_gravity="center"
                 android:text="Team Member"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_5mdpi" />
@@ -111,6 +116,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
+                android:layout_gravity="center"
                 android:text="@string/tv_transaction_receipt_id"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_5mdpi" />
@@ -120,6 +126,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:layout_gravity="center"
                 android:gravity="center"
                 android:text="@string/tv_terminal_id"
                 android:textColor="@color/txtColor"

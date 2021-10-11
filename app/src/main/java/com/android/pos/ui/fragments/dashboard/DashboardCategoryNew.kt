@@ -1260,9 +1260,17 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 data.note = edtNote.text.toString().trim()
                 data.itemQuantity = txtQty.text.toString().toInt()
                 if (!isItemClick) {
-                    data.discountPrice = (discountPrice
-                            /** txtQty.text.toString().toInt()*/
-                            )
+
+
+                    if (data.itemQuantity == txtQty.text.toString().toInt()) {
+                        data.discountPrice = (discountPrice
+                                * txtQty.text.toString().toInt()
+                                )
+                    } else {
+                        data.discountPrice = discountPrice
+                    }
+
+
                 }
 
 

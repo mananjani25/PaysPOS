@@ -408,15 +408,21 @@ class OpenOrderCustomerFragment : Fragment(), View.OnClickListener {
 
         return when {
             TextUtils.isEmpty(binding.edtFirstName.text.toString().trim()) -> {
-                AlertUtils.showAlert(requireContext(), getString(R.string.first_name_validate))
+                AlertUtils.showCustomAlert(
+                    requireContext(),
+                    getString(R.string.first_name_validate)
+                )
                 false
             }
             TextUtils.isEmpty(binding.edtPhoneNo.text.toString().trim()) -> {
-                AlertUtils.showAlert(requireContext(), getString(R.string.phone_no_validate))
+                AlertUtils.showCustomAlert(requireContext(), getString(R.string.phone_no_validate))
                 false
             }
             binding.edtPhoneNo.text.toString().trim().length < 14 -> {
-                AlertUtils.showAlert(requireContext(), getString(R.string.valid_phone_no_validate))
+                AlertUtils.showCustomAlert(
+                    requireContext(),
+                    getString(R.string.valid_phone_no_validate)
+                )
                 false
             }
             else -> true

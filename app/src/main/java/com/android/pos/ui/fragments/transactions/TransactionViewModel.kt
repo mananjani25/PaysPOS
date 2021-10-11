@@ -37,6 +37,9 @@ class TransactionViewModel @Inject constructor(
     private val _data1 = MutableLiveData<Event<BaseResponse?>>()
     val data1: LiveData<Event<BaseResponse?>> = _data1
 
+    private val _data2 = MutableLiveData<Event<Double>>()
+    val data2: LiveData<Event<Double>> = _data2
+
     private val _transactionDetails =
         MutableLiveData<Event<GetTransactionListResponse.Data.Payment>>()
     val transactionDetails: LiveData<Event<GetTransactionListResponse.Data.Payment>> =
@@ -230,8 +233,8 @@ class TransactionViewModel @Inject constructor(
 
                             resource.data?.let { response ->
 
-                                response.status
                                 _data1.value = Event(response)
+                                _data2.value = Event(tipAmount)
 
                             }
                         } else {

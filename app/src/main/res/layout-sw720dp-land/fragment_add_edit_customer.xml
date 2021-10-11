@@ -39,7 +39,7 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:textSize="@dimen/_8mdpi" />
+                android:textSize="@dimen/_7mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtSave"
@@ -92,7 +92,7 @@
                             android:layout_height="wrap_content"
                             android:text="@string/first_name"
                             android:textColor="@color/color65"
-                            android:textSize="@dimen/_6mdpi" />
+                            android:textSize="@dimen/_5mdpi" />
 
                         <EditText
                             android:id="@+id/edtFName"
@@ -107,7 +107,7 @@
                             android:textColorHint="@color/hintColor"
                             android:text="@={viewModel.addCustomerDetails.data.first_name}"
                             android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_6mdpi" />
+                            android:textSize="@dimen/_5mdpi" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -124,7 +124,7 @@
                             android:layout_height="wrap_content"
                             android:text="@string/last_name"
                             android:textColor="@color/color65"
-                            android:textSize="@dimen/_6mdpi" />
+                            android:textSize="@dimen/_5mdpi" />
 
                         <EditText
                             android:id="@+id/edtLName"
@@ -139,7 +139,7 @@
                             android:textColorHint="@color/hintColor"
                             android:text="@={viewModel.addCustomerDetails.data.last_name}"
                             android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_6mdpi" />
+                            android:textSize="@dimen/_5mdpi" />
                     </LinearLayout>
 
                 </LinearLayout>
@@ -152,7 +152,7 @@
                     android:layout_marginTop="@dimen/_10sdp"
                     android:text="@string/phone"
                     android:textColor="@color/color65"
-                    android:textSize="@dimen/_6mdpi"
+                    android:textSize="@dimen/_5mdpi"
                     android:visibility="visible" />
 
                 <androidx.appcompat.widget.LinearLayoutCompat
@@ -174,7 +174,7 @@
                         android:padding="@dimen/_5sdp"
                         android:theme="@style/SpinnerTheme"
                         android:textColor="@color/txt_color_blue"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textSize="@dimen/_5mdpi" />
 
                     <View
                         android:layout_width="match_parent"
@@ -194,7 +194,7 @@
                         android:text="@={viewModel.phoneNo}"
                         android:textColor="@color/txtColor"
                         android:textColorHint="@color/hint_color_"
-                        android:textSize="@dimen/_6mdpi"
+                        android:textSize="@dimen/_5mdpi"
                         app:met_mask="(###) ###-####" />
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
@@ -207,7 +207,7 @@
                     android:layout_marginTop="@dimen/_10sdp"
                     android:text="@string/tv_email_address"
                     android:textColor="@color/color65"
-                    android:textSize="@dimen/_6mdpi" />
+                    android:textSize="@dimen/_5mdpi" />
 
                 <EditText
                     android:id="@+id/edtEmailAdd"
@@ -223,7 +223,7 @@
                     android:padding="@dimen/_5sdp"
                     android:text="@={viewModel.addCustomerDetails.data.email}"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_6mdpi" />
+                    android:textSize="@dimen/_5mdpi" />
 
 
                 <RelativeLayout
@@ -239,7 +239,7 @@
                         android:layout_height="wrap_content"
                         android:text="Address"
                         android:textColor="@color/color65"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textSize="@dimen/_5mdpi" />
 
                     <ImageView
                         android:id="@+id/imgAddressAdd"
@@ -271,7 +271,7 @@
                     android:padding="@dimen/_5sdp"
                     android:text="United States"
                     android:textColor="@color/txt_color_blue"
-                    android:textSize="@dimen/_6mdpi" />
+                    android:textSize="@dimen/_5mdpi" />
 
                 <AutoCompleteTextView
                     android:id="@+id/edtStreet"
@@ -287,7 +287,7 @@
                     android:padding="@dimen/_5sdp"
                     android:text=""
                     android:textColor="@color/hintColor"
-                    android:textSize="@dimen/_6mdpi" />
+                    android:textSize="@dimen/_5mdpi" />
 
                 <EditText
                     android:id="@+id/edtSuite"
@@ -301,7 +301,7 @@
                     android:padding="@dimen/_5sdp"
                     android:text=""
                     android:textColor="@color/hintColor"
-                    android:textSize="@dimen/_6mdpi" />
+                    android:textSize="@dimen/_5mdpi" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -323,7 +323,7 @@
                         android:padding="@dimen/_5sdp"
                         android:text=""
                         android:textColor="@color/hintColor"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textSize="@dimen/_5mdpi" />
 
                     <EditText
                         android:id="@+id/edtState"
@@ -336,7 +336,7 @@
                         android:padding="@dimen/_5sdp"
                         android:text=""
                         android:textColor="@color/hintColor"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textSize="@dimen/_5mdpi" />
 
                     <EditText
                         android:id="@+id/edtZip"
@@ -349,7 +349,7 @@
                         android:padding="@dimen/_5sdp"
                         android:text=""
                         android:textColor="@color/hintColor"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textSize="@dimen/_5mdpi" />
 
 
                 </LinearLayout>
@@ -368,7 +368,7 @@
                     android:padding="@dimen/_5sdp"
                     android:text="United States"
                     android:textColor="@color/txt_color_blue"
-                    android:textSize="@dimen/_6mdpi"
+                    android:textSize="@dimen/_5mdpi"
                     android:visibility="gone" />
 
                 <EditText
@@ -383,7 +383,7 @@
                     android:padding="@dimen/_5sdp"
                     android:text="Street"
                     android:textColor="@color/hintColor"
-                    android:textSize="@dimen/_6mdpi"
+                    android:textSize="@dimen/_5mdpi"
                     android:visibility="gone" />
 
                 <EditText
@@ -398,7 +398,7 @@
                     android:padding="@dimen/_5sdp"
                     android:text="Apt/Suite"
                     android:textColor="@color/hintColor"
-                    android:textSize="@dimen/_6mdpi"
+                    android:textSize="@dimen/_5mdpi"
                     android:visibility="gone" />
 
                 <LinearLayout
@@ -422,7 +422,7 @@
                         android:hint="City"
                         android:padding="@dimen/_5sdp"
                         android:textColor="@color/hintColor"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textSize="@dimen/_5mdpi" />
 
                     <EditText
                         android:id="@+id/edtState2"
@@ -435,7 +435,7 @@
                         android:padding="@dimen/_5sdp"
                         android:text="State"
                         android:textColor="@color/hintColor"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textSize="@dimen/_5mdpi" />
 
                     <EditText
                         android:id="@+id/edtZip2"
@@ -448,7 +448,7 @@
                         android:padding="@dimen/_5sdp"
                         android:text="Zip"
                         android:textColor="@color/hintColor"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textSize="@dimen/_5mdpi" />
 
 
                 </LinearLayout>
@@ -462,7 +462,7 @@
                     android:layout_marginTop="@dimen/_10sdp"
                     android:text="Company"
                     android:textColor="@color/color65"
-                    android:textSize="@dimen/_6mdpi" />
+                    android:textSize="@dimen/_5mdpi" />
 
                 <EditText
                     android:id="@+id/edtCompany"
@@ -478,7 +478,7 @@
                     android:padding="@dimen/_5sdp"
                     android:text="@={viewModel.addCustomerDetails.data.company}"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_6mdpi" />
+                    android:textSize="@dimen/_5mdpi" />
 
                 <TextView
                     style="@style/CustomFontSemiBold"
@@ -488,7 +488,7 @@
                     android:layout_marginTop="@dimen/_10sdp"
                     android:text="@string/tv_birthday"
                     android:textColor="@color/color65"
-                    android:textSize="@dimen/_6mdpi" />
+                    android:textSize="@dimen/_5mdpi" />
 
                 <TextView
                     android:id="@+id/edtBirthDay"
@@ -504,7 +504,7 @@
                     android:padding="@dimen/_5sdp"
                     android:text=""
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_6mdpi" />
+                    android:textSize="@dimen/_5mdpi" />
 
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
