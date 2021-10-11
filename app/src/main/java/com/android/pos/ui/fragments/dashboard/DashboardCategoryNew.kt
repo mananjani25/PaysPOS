@@ -134,6 +134,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         }
 
         hideOrderType()
+        navigateDineInOrder()
 
         binding.footer.imgClock.setOnClickListener {
             alert(
@@ -369,7 +370,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             binding.layoutCart.rvCart.visibility = View.GONE
                             binding.layoutCart.rvCartDineIn.visibility = View.VISIBLE
                             binding.layoutCart.llPayment.visibility = View.VISIBLE
-                            Log.e(TAG, "DineInList:  ${Gson().toJson(cartList.get(0).dineInList)}")
+
                             cartList.get(0).dineInList?.toCollection(
                                 arrayListOf()
                             )?.let { it1 -> dineInCartAdapter.setList(it1) }
@@ -444,8 +445,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     }
                 }
             )
-
-
     }
 
     private fun hideOrderType() {
@@ -1729,10 +1728,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                     if (prefProvider.getValue(ORDER_TYPE, "").toString() == DINE_IN) {
 
-                        findNavController().navigate(
-                            R.id.action_dashboardCategoryNew_to_dineInOrderTable,
-                            bundle
-                        )
+                        createDineInRequest()
+
+
                     } else {
 
                         findNavController().navigate(
@@ -1747,6 +1745,27 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
             }
         }
+    }
+
+    private fun createDineInRequest() {
+        val orderRequestModel = viewModel.createDineInOrderRequest(
+            cartModel = cartList[0],
+            subTotalPrice = viewModel.subTotalPrice,
+            totalPrice = viewModel.totalPrice - cartList[0].discountPrice,
+            totalServiceCharge = viewModel.totalServiceCharge,
+            totalTax = viewModel.totalTax,
+            ORDER_TYPE = DINE_IN,
+            "",
+            "",
+            false,
+            totalDiscount = viewModel.totalDiscount + cartList[0].discountPrice,
+            0.0
+        )
+        Log.e(TAG, "orderRequestModel:  ${Gson().toJson(orderRequestModel)}")
+        if (orderRequestModel != null) {
+            viewModel.submit(orderRequestModel)
+        }
+
     }
 
     private fun clearCustomer() {
@@ -2119,7 +2138,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                         cartList.get(0).orderType = DINE_IN
                         val dineInList = dineInCartAdapter.getList()
-                        dineInList.get(0).selectedPosition = dineInCartAdapter.getHeaderPosition()
+                        dineInList.get(0).selectedPosition =
+                            dineInCartAdapter.getHeaderPosition()
 
                         viewModel.cartLogic(cartList, data, ADD, dineInList = dineInList)
                     } else {
@@ -2166,7 +2186,12 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
             cartList.get(0).orderType = DINE_IN
 
-            viewModel.cartLogic(cartList, data, DELETE, dineInList = dineInCartAdapter.getList())
+            viewModel.cartLogic(
+                cartList,
+                data,
+                DELETE,
+                dineInList = dineInCartAdapter.getList()
+            )
             dialog.dismiss()
         }
         btnAddDiscount.setOnClickListener {
@@ -2298,5 +2323,27 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         }
         listCategories?.let { categoryItemAdapter1?.addAll(it) }
 
+    }
+
+    private fun navigateDineInOrder() {
+        viewModel._Basedata.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let { baseResponse ->
+                if (baseResponse != null) {
+                    Log.e(TAG, "BaseResponseInDash ${Gson().toJson(baseResponse)}")
+                    var bundle = Bundle()
+                    bundle.putDouble("totalPrice", baseResponse.order.totalAmount)
+                    bundle.putParcelable("cartList", cartList[0])
+
+                    prefProvider.setValue(Constants.ORDER_TYPE, "")
+                    prefProvider.setValue(Constants.CUSTOMER_NAME, "")
+                    prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
+                    viewModel.deleteCart()
+                    findNavController().navigate(
+                        R.id.action_dashboardCategoryNew_to_dineInOrderTable,
+                        bundle
+                    )
+                }
+            }
+        })
     }
 }

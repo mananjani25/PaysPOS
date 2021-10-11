@@ -138,7 +138,6 @@
 
 
         <RelativeLayout
-
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1">
@@ -283,8 +282,8 @@
                         android:padding="@dimen/_4sdp"
                         android:text="$0.00"
                         android:textColor="@color/white"
-                        android:textSize="@dimen/_7mdpi" />
-
+                        android:textSize="@dimen/_7mdpi"
+                        android:visibility="gone" />
 
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
