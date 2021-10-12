@@ -1,6 +1,7 @@
 package com.android.pos.ui.fragments.createitem
 
 import android.text.TextUtils
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -38,6 +39,7 @@ class CreateItemViewModel @Inject constructor(
     private var descViewModel: String = ""
     private var skuViewModel: String = ""
     private var stockViewModel: Int = 0
+    private var imageViewModel: String? = ""
     private var body2ViewModel: String? = ""
     private lateinit var variationAttributeModel: ArrayList<VariationsAttribute>
 
@@ -120,7 +122,9 @@ class CreateItemViewModel @Inject constructor(
                     priceType = "Variable"
                 }
                 price = itemPriceViewModel
-               // image = body2ViewModel?.dropLast(1)
+                Log.e("!_@_ image path", " in viewmodel $imageViewModel")
+//                image = body2ViewModel?.dropLast(1)
+                image = imageViewModel
                 sku = skuViewModel
                 quantity = stockViewModel
                 desc = descViewModel
@@ -182,13 +186,13 @@ class CreateItemViewModel @Inject constructor(
     }
 
     fun itemDetails(
-        body2: String,
+        filePath: String?,
         itemPrice: Double?,
         desc: String,
         sku: String,
         stock: Int
     ) {
-        this.body2ViewModel = body2
+        this.imageViewModel= filePath
         this.itemPriceViewModel = itemPrice
         this.descViewModel = desc
         this.skuViewModel = sku

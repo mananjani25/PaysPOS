@@ -147,6 +147,7 @@ object Constants {
     const val DIALOG_KEY_TAX = "dialog_key_tax"
     const val ADD_TAX = "Add Tax To Item Price"
     const val INCLUDE_TAX = "Include Tax in Item Price"
+    const val DIALOG_IMAGE_PATH = "dialog_image_path"
 
     const val CATEGORY_UPDATE_DELETE = "categories/{id}"
     const val HIDE_CATEGORY = "categories/{id}/active"

@@ -1030,7 +1030,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 }
                 if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
 
-                    cartList.get(0).orderType = DINE_IN
+                    //TODO bugsolve
+                    if (cartList.isNotEmpty()) {
+                        cartList[0].orderType = DINE_IN
+                    }
 
                     Log.e(TAG, "HeaderPosition:  ${dineInCartAdapter.getHeaderPosition()}")
                     /*cartList.get(0).dineInList?.get(dineInCartAdapter.getHeaderPosition())?.items?.add(
