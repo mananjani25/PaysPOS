@@ -132,7 +132,7 @@ data class CreateOrderResponse(
 
                     @SerializedName("id") var id: Int,
                     @SerializedName("order_id") var orderId: String,
-                    @SerializedName("order_item_id") var orderItemId: String,
+                    @SerializedName("order_item_id") var orderItemId: Int?,
                     @SerializedName("quantity") var quantity: Int,
                     @SerializedName("item_id") var itemId: Int,
                     @SerializedName("amount") var amount: Int,
@@ -140,9 +140,12 @@ data class CreateOrderResponse(
                     @SerializedName("guest_id") var guestId: Int,
                     @SerializedName("created_at") var createdAt: String,
                     @SerializedName("updated_at") var updatedAt: String,
-                    @SerializedName("item_type") var itemType: String
+                    @SerializedName("item_type") var itemType: String,
+                    @SerializedName("timestamp") var timestamp: String,
+                    @SerializedName("is_fired") var is_fired: String,
 
-                )
+
+                    )
             }
 
             data class Customer(

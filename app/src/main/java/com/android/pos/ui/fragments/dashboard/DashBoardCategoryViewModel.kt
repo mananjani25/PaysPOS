@@ -254,6 +254,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                         } else {
 
                             if (item != null) {
+                                item.timeStamp = randomOfflineId()
                                 dineInList.get(dineInList.get(0).selectedPosition).items.add(item)
                             }
                             cartModel.dineInList = dineInList
@@ -884,7 +885,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                             orderItemId = tb.orderItemId,
                             quantity = tb.itemQuantity,
                             itemId = tb.itemId,
-                            amount = tb.price
+                            amount = tb.price,
+                            timestamp = tb.timeStamp
+
                         )
 
                     )
@@ -993,6 +996,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 orderItemsAttribute.orderItemVariationAttributes =
                     orderItemVariationAttributes(item)
+                orderItemsAttribute.timestamp = item.timeStamp.toString()
 
                 if (item.variationsAttributes.isNotEmpty()) {
                     orderItemsAttribute.variationId = item.variationsAttributes[0].id
@@ -1188,11 +1192,6 @@ class DashBoardCategoryViewModel @Inject constructor(
                         if (response?.status == 200) {
 
                             resource.data?.let { createOrderResponse ->
-                                Log.e(
-                                    TAG,
-                                    "createOrderResponseDineIn:  ${Gson().toJson(createOrderResponse)}"
-                                )
-
                                 _Basedata.value = Event(createOrderResponse.data)
 
                             }

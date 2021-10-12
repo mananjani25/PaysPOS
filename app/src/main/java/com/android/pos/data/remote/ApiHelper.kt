@@ -292,6 +292,11 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun orderUpdateTip(orderId: Int, customerId: Double) =
         getResult { apiService.orderUpdateTip(orderId, customerId) }
 
+    suspend fun updateKitchenFireStatus(id: Int, isFired: Boolean, items: ArrayList<Int>) =
+        getResult {
+            apiService.updateKitchenFireStatus(id, isFired, items)
+        }
+
     suspend fun orderCancel(id: Int, data: OrderCancelRequest) =
         getResult { apiService.cancelOrder(id, data) }
 

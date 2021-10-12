@@ -182,6 +182,7 @@ object Constants {
 
 
     const val UPDATE_TIP = "orders/{id}/update_tip"
+    const val FIRE_ITEM_TO_KITCHEN = "orders/{id}/update_fire_status_of_items"
 
     const val GET_FLOOR_PLAN = "floor_plans"
 
