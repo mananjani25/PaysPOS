@@ -99,7 +99,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
         binding.layoutMenu.imgSearch.visibility = View.GONE
         binding.layoutMenu.autoSearch.visibility = View.GONE
 
-        prefProvider.setValue(CUSTOMER_NAME, "")
+    //    prefProvider.setValue(CUSTOMER_NAME, "")
 
 
         getManualCategoryId()

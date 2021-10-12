@@ -10,6 +10,7 @@ import android.location.Address
 import android.location.Geocoder
 import android.os.Build
 import android.os.Bundle
+import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,8 +27,11 @@ import com.android.pos.data.entities.TbCustomer
 import com.android.pos.data.entities.TbPhones
 import com.android.pos.databinding.FragmentOpenOrderBinding
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.Event
 import com.android.pos.utils.MethodUtils
+import com.android.pos.utils.extensions.liveSnackBar
 import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import dagger.hilt.android.AndroidEntryPoint
@@ -312,83 +316,116 @@ class OpenOrderCustomerFragment : Fragment(), View.OnClickListener {
 
             R.id.txtSave -> {
 
-                val phonesList: ArrayList<TbPhones> =
-                    arrayListOf()
 
-                if (binding.edtPhoneNo.text?.isNotEmpty()!!) {
+                if (validation()) {
 
-                    val phone = TbPhones(
-                        null, binding.edtPhoneNo.text.toString().trim().replace(
-                            ("[\\D]").toRegex(),
-                            ""
+                    val phonesList: ArrayList<TbPhones> =
+                        arrayListOf()
+
+                    if (binding.edtPhoneNo.text?.isNotEmpty()!!) {
+
+                        val phone = TbPhones(
+                            null, binding.edtPhoneNo.text.toString().trim().replace(
+                                ("[\\D]").toRegex(),
+                                ""
+                            )
                         )
+                        phonesList.add(phone)
+                    }
+
+                    val list: ArrayList<TbAddress> = arrayListOf()
+
+                    if (binding.edtStreet.text.toString().trim().isNotEmpty()) {
+
+                        val address = TbAddress(
+                            null,
+                            binding.edtStreet.text.toString().trim(),
+                            binding.edtSuite.text.toString().trim(),
+                            binding.edtCity.text.toString().trim(),
+                            binding.edtState.text.toString().trim(),
+                            binding.spDelivery.selectedItem.toString(),
+                            binding.edtZip.text.toString().trim(),
+                            "",
+                            "0.0",
+                            "0.0",
+                            "Shipping",
+                            "",
+                            binding.edtStreet.text.toString().trim(),
+                        )
+                        list.add(address)
+                    }
+
+                    if (binding.edtStreetBill.text.toString().trim().isNotEmpty()) {
+
+                        val address = TbAddress(
+                            null,
+                            binding.edtStreetBill.text.toString().trim(),
+                            binding.edtSuiteBill.text.toString().trim(),
+                            binding.edtCityBill.text.toString().trim(),
+                            binding.edtStateBill.text.toString().trim(),
+                            binding.spBill.selectedItem.toString(),
+                            binding.edtZipBill.text.toString().trim(),
+                            "",
+                            "0.0",
+                            "0.0",
+                            "Billing",
+                            "",
+                            binding.edtStreetBill.text.toString().trim(),
+                        )
+                        list.add(address)
+                    }
+
+
+                    val customer = TbCustomer(
+                        customerID,
+                        MethodUtils.getText(binding.edtFirstName),
+                        MethodUtils.getText(binding.edtLastName),
+                        "",
+                        MethodUtils.getText(binding.edtEmail),
+                        MethodUtils.getText(binding.edtCompany),
+                        phonesList,
+                        list
                     )
-                    phonesList.add(phone)
+
+
+                    val result = Bundle().apply {
+                        putParcelable("data", customer)
+                        putString("DATE", binding.edtDate.text.toString())
+                        putString("TIME", binding.edtTime.text.toString())
+                        putBoolean("OPEN_ORDER", true)
+                    }
+                    setFragmentResult("request_key_customer_open_order", result)
+
+                    findNavController().navigateUp()
+
                 }
-
-                val list: ArrayList<TbAddress> = arrayListOf()
-
-                if (binding.edtStreet.text.toString().trim().isNotEmpty()) {
-
-                    val address = TbAddress(
-                        null,
-                        binding.edtStreet.text.toString().trim(),
-                        binding.edtSuite.text.toString().trim(),
-                        binding.edtCity.text.toString().trim(),
-                        binding.edtState.text.toString().trim(),
-                        binding.spDelivery.selectedItem.toString(),
-                        binding.edtZip.text.toString().trim(),
-                        "",
-                        "0.0",
-                        "0.0",
-                        "Shipping",
-                        "",
-                        binding.edtStreet.text.toString().trim(),
-                    )
-                    list.add(address)
-                }
-
-                if (binding.edtStreetBill.text.toString().trim().isNotEmpty()) {
-
-                    val address = TbAddress(
-                        null,
-                        binding.edtStreetBill.text.toString().trim(),
-                        binding.edtSuiteBill.text.toString().trim(),
-                        binding.edtCityBill.text.toString().trim(),
-                        binding.edtStateBill.text.toString().trim(),
-                        binding.spBill.selectedItem.toString(),
-                        binding.edtZipBill.text.toString().trim(),
-                        "",
-                        "0.0",
-                        "0.0",
-                        "Billing",
-                        "",
-                        binding.edtStreetBill.text.toString().trim(),
-                    )
-                    list.add(address)
-                }
-
-
-                val customer = TbCustomer(
-                    customerID, MethodUtils.getText(binding.edtFirstName),
-                    MethodUtils.getText(binding.edtLastName), "",
-                    MethodUtils.getText(binding.edtEmail), MethodUtils.getText(binding.edtCompany),
-                    phonesList,
-                    list
-                )
-
-
-                val result = Bundle().apply {
-                    putParcelable("data", customer)
-                    putString("DATE", binding.edtDate.text.toString())
-                    putString("TIME", binding.edtTime.text.toString())
-                    putBoolean("OPEN_ORDER", true)
-                }
-                setFragmentResult("request_key_customer_open_order", result)
-
-                findNavController().navigateUp()
-
             }
+        }
+
+    }
+
+    private fun validation(): Boolean {
+
+        return when {
+            TextUtils.isEmpty(binding.edtFirstName.text.toString().trim()) -> {
+                AlertUtils.showCustomAlert(
+                    requireContext(),
+                    getString(R.string.first_name_validate)
+                )
+                false
+            }
+            TextUtils.isEmpty(binding.edtPhoneNo.text.toString().trim()) -> {
+                AlertUtils.showCustomAlert(requireContext(), getString(R.string.phone_no_validate))
+                false
+            }
+            binding.edtPhoneNo.text.toString().trim().length < 14 -> {
+                AlertUtils.showCustomAlert(
+                    requireContext(),
+                    getString(R.string.valid_phone_no_validate)
+                )
+                false
+            }
+            else -> true
         }
 
     }

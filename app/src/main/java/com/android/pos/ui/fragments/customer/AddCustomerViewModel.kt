@@ -155,6 +155,8 @@ class AddCustomerViewModel @Inject constructor(
         } else if (value?.data?.phones_attributes?.size == 0) {
 
             _snackbarText.value = Event(R.string.phone_no_validate)
+        } else if (value?.data?.phones_attributes?.get(0)?.phone_number?.length!! < 10) {
+            _snackbarText.value = Event(R.string.valid_phone_no_validate)
         } else if (TextUtils.isEmpty(value?.data?.email)) {
             _snackbarText.value = Event(R.string.email_validate)
         } else if (!Patterns.EMAIL_ADDRESS.matcher(value?.data?.email).matches()) {
