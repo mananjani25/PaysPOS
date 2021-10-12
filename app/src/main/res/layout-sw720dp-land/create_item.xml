@@ -359,7 +359,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:background="@null"
-                            android:hint="$0.0"
+                            android:hint="$0.00"
                             android:imeOptions="actionNext"
                             android:inputType="numberDecimal"
                             android:padding="@dimen/_5sdp"

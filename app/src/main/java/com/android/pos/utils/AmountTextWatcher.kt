@@ -20,7 +20,7 @@ class AmountTextWatcher(private val editText: AppCompatEditText, private val isM
             val cleanString: String = s.replace("""[$,.]""".toRegex(), "")
 
 
-            val parsed = cleanString.toDouble()
+            val parsed = cleanString.trim().toDouble()
 
             val formatted =
                 if (isManual) {

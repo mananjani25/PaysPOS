@@ -58,7 +58,7 @@ class DineInOrderTable : Fragment() {
 
 
         cartList = requireArguments().getParcelable("cartList")
-        totalPrice = requireArguments().getDouble("totalPrice")
+        //totalPrice = requireArguments().getDouble("totalPrice")
 
         Log.e(TAG, "getDineIncartList:   ${Gson().toJson(cartList)}")
 

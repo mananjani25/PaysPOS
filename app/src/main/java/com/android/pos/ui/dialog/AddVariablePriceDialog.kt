@@ -75,6 +75,10 @@ class AddVariablePriceDialog : DialogFragment(), TextWatcher {
 
         setKeyPad()
 
+        binding.imgBack.setOnClickListener {
+            dismiss()
+        }
+
     }
 
     override fun onCreateView(

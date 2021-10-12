@@ -68,14 +68,21 @@ class TransactionAdapter(val viewModel: TransactionViewModel) :
             itemBinding.txtCustomerName.text =
                 (model.customer.firstName ?: "") + " " + (model.customer.lastName ?: "")
 
-            if (filterList[position].refundedAmount != 0.0) {
+            if (model.refundedAmount != 0.0) {
+                itemBinding.tvRefundedAmount.visibility = View.VISIBLE
                 itemBinding.tvRefundedAmount.text =
                     "(Refunded \n" + context.getString(R.string.symbole) + " " + String.format(
                         context.getString(R.string.format),
-                        filterList[position].refundedAmount
+                        model.refundedAmount
                     ) + ")"
             } else {
-                //  itemBinding.tvRefundedAmount.visibility = View.GONE
+                itemBinding.tvRefundedAmount.visibility = View.GONE
+            }
+
+            if (model.transactionId.isNotEmpty()) {
+                itemBinding.txtTransactionId.visibility = View.VISIBLE
+            } else {
+                itemBinding.txtTransactionId.visibility = View.GONE
             }
 
             itemBinding.executePendingBindings()
@@ -166,6 +173,15 @@ class TransactionAdapter(val viewModel: TransactionViewModel) :
     fun clear() {
         employeeTimeSheet.clear()
         filterList.clear()
+    }
+
+
+    fun updateTip(selectedPos: Int, amountTip: Double) {
+        val singleTransaction = getItem(selectedPos)
+        val amountTotal = singleTransaction.amount + amountTip
+        singleTransaction.tips = amountTip
+        singleTransaction.totalAmount = amountTotal
+        notifyItemChanged(selectedPos)
     }
 
 

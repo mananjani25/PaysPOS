@@ -26,7 +26,6 @@ class OrderAttributeRequestModel {
     @SerializedName("id")
     var id: Int? = null
 
-
     @SerializedName("location_id")
     var locationId: Int = 0
 
@@ -182,7 +181,7 @@ class GuestsAttributes(
     @SerializedName("total_tax") var totalTax: Double? = null,
     @SerializedName("total_tips") var totalTips: Double? = null,
     @SerializedName("customer_id") var customerId: Int? = null,
-    @SerializedName("_destroy") var Destroy: Boolean = false,
+    @SerializedName("_destroy") var Destroy: Boolean? = null,
     @SerializedName("guest_items_attributes") var guestItemsAttributes: List<GuestItemsAttributes> = emptyList(),
     @SerializedName("customer_attributes") var customerAttributes: CustomerAttributes? = null
 
@@ -196,7 +195,7 @@ class GuestItemsAttributes(
     @SerializedName("quantity") var quantity: Int? = null,
     @SerializedName("item_id") var itemId: Int? = null,
     @SerializedName("amount") var amount: Double? = null,
-    @SerializedName("is_paid") var isPaid: Boolean = true,
+    @SerializedName("is_paid") var isPaid: Boolean = false,
     @SerializedName("guest_id") var guestId: Int? = null,
     @SerializedName("_destroy") var Destroy: Boolean = false,
     @SerializedName("percentage") var percentage: Int? = null

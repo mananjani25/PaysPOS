@@ -122,12 +122,17 @@ class ManualSaleViewModel @Inject constructor(
                     list.remove(item)
                 }
 
-                val cartModel = CartModel().apply {
-                    cartId = cartList[0].cartId
-                    items = list
-                    isMaual = true
+                val cartModel = cartList[0]
+                cartModel.items = list
+                cartModel.isMaual = true
+                addCart(cartModel)
 
-                }
+//                val cartModel = CartModel().apply {
+//                    cartId = cartList[0].cartId
+//                    items = list
+//                    isMaual = true
+//
+//                }
 
                 Log.e(TAG, "cartModel:  ${Gson().toJson(cartModel)}")
 
@@ -161,7 +166,7 @@ class ManualSaleViewModel @Inject constructor(
 
         itemList?.forEach { item ->
             totalCount += item.itemQuantity
-            subTotalPrice += item.price
+            subTotalPrice += item.price * item.itemQuantity
 
             item.taxes?.forEach { tax ->
                 if (tax.isActive) {

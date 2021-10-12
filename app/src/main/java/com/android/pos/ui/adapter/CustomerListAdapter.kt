@@ -1,5 +1,6 @@
 package com.android.pos.ui.adapter
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Filter
@@ -7,7 +8,6 @@ import android.widget.Filterable
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.entities.TbCustomer
-import com.android.pos.data.model.CustomerListResponse
 import com.android.pos.databinding.ViewCustomerListBinding
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.extensions.getColorCompat
@@ -35,50 +35,53 @@ class CustomerListAdapter(
 
     inner class MyViewHolder(private val binding: ViewCustomerListBinding) :
         RecyclerView.ViewHolder(binding.root) {
+        @SuppressLint("SetTextI18n")
         fun bind(model: TbCustomer, pos: Int) {
 
+            val mModel = filterList[pos]
 
             try {
-                if (filterList.get(pos).first_name != null && filterList.get(
-                        pos
-                    ).last_name != null
-                ) {
-                    binding.tvInitialName.setText(
-                        filterList.get(pos).first_name!!.first() + "" + filterList.get(
-                            pos
-                        ).last_name!!.first()
-                    )
+                if (mModel.first_name != null && mModel.last_name != null) {
+                    binding.tvInitialName.text =
+                        mModel.first_name.first() + "" + filterList[pos].last_name!!.first()
 
                 } else {
-                    binding.tvInitialName.setText(
-                        "${
-                            filterList.get(pos).first_name?.subSequence(
-                                0,
-                                2
-                            )
-                        }"
-                    )
+                    binding.tvInitialName.text = "${
+                        mModel.first_name?.subSequence(
+                            0,
+                            2
+                        )
+                    }"
                 }
 
-                if (filterList.get(pos).email != null && filterList.get(
+
+                if (mModel.last_name != null && !mModel.last_name.equals(
+                        "null",
+                        ignoreCase = true
+                    )
+                ) {
+                    binding.txtName.text =
+                        mModel.first_name + "" + mModel.last_name
+
+                } else {
+                    binding.txtName.text =
+                        mModel.first_name
+                }
+
+
+                if (filterList.get(
                         pos
-                    ).phones.size > 0
+                    ).phones.isNotEmpty()
                 ) {
 
-                    binding.txtNumber.setText(
-                        "" + AlertUtils.usNumberFormat(
-                            filterList.get(pos).phones.get(
-                                0
-                            ).phone_number
-                        ) + " | " + filterList.get(pos).email
-                    )
-                } else if (filterList.get(pos).phones.size > 0) {
-                    binding.txtNumber.setText(
-                        "" + AlertUtils.usNumberFormat(
-                            filterList.get(pos).phones.get(
-                                0
-                            ).phone_number
-                        )
+                    binding.txtNumber.text = "" + AlertUtils.usNumberFormat(
+                        mModel.phones[0].phone_number
+                    ) + " | " + mModel.email
+                } else if (mModel.phones.isNotEmpty()) {
+                    binding.txtNumber.text = "" + AlertUtils.usNumberFormat(
+                        filterList[pos].phones.get(
+                            0
+                        ).phone_number
                     )
 
                 }
@@ -98,14 +101,6 @@ class CustomerListAdapter(
                 binding.model = model
                 binding.executePendingBindings()
 
-                /* binding.root.setOnClickListener {
-
-                 Log.e(TAG, "filterSize  ${filterList.size}")
-
-                 //notifyDataSetChanged()
-                 listner.onCustomerSelect(layoutPosition, filterList.get(layoutPosition))
-
-             }*/
             } catch (e: Exception) {
                 e.printStackTrace()
             }

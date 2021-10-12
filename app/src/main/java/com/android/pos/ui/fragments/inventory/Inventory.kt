@@ -63,13 +63,13 @@ class Inventory : Fragment() {
                         changePosition(2)
                         setAdapter(2)
                     }
-                    CREATEDISCOUNT -> {
+                  /*  CREATEDISCOUNT -> {
                         changePosition(3)
                         setAdapter(3)
-                    }
+                    }*/
                     CREATEOPTION -> {
-                        changePosition(4)
-                        setAdapter(4)
+                        changePosition(3)
+                        setAdapter(3)
                     }
                 }
 
@@ -113,27 +113,27 @@ class Inventory : Fragment() {
                 binding.commonToolbar.txtSetItem.visibility = View.VISIBLE
                 binding.commonToolbar.txtSubTitle.text = "Modifiers"
             }
-            3 -> {
+           /* 3 -> {
                 val discount: Fragment = DiscountList()
                 loadFragment(discount)
                 binding.commonToolbar.txtSetItem.visibility = View.VISIBLE
                 binding.commonToolbar.txtSubTitle.text = "Discounts"
 
-            }
-            4 -> {
+            }*/
+            3 -> {
                 val option: Fragment = Options()
                 loadFragment(option)
                 binding.commonToolbar.txtSetItem.visibility = View.VISIBLE
                 binding.commonToolbar.txtSubTitle.text = "Options"
             }
-            5 -> {
+            4 -> {
                 val hideCategory: Fragment = HideCategoryListing()
                 loadFragment(hideCategory)
                 binding.commonToolbar.txtSetItem.visibility = View.VISIBLE
                 binding.commonToolbar.txtSubTitle.text = "Hidden Categories"
             }
 
-            6 -> {
+            5 -> {
                 val hideItem: Fragment = HideItemListing()
                 loadFragment(hideItem)
                 binding.commonToolbar.txtSetItem.visibility = View.VISIBLE
@@ -157,7 +157,7 @@ class Inventory : Fragment() {
                 list.add(InventoryItemModel(0, "All Items", true))
                 list.add(InventoryItemModel(0, "Categories"))
                 list.add(InventoryItemModel(0, "Modifiers"))
-                list.add(InventoryItemModel(0, "Discounts"))
+                //list.add(InventoryItemModel(0, "Discounts"))
                 list.add(InventoryItemModel(0, "Options"))
                 list.add(InventoryItemModel(0, "Hidden Categories"))
                 list.add(InventoryItemModel(0, "Hidden Items"))
@@ -166,7 +166,7 @@ class Inventory : Fragment() {
                 list.add(InventoryItemModel(0, "All Items"))
                 list.add(InventoryItemModel(0, "Categories", true))
                 list.add(InventoryItemModel(0, "Modifiers"))
-                list.add(InventoryItemModel(0, "Discounts"))
+               // list.add(InventoryItemModel(0, "Discounts"))
                 list.add(InventoryItemModel(0, "Options"))
                 list.add(InventoryItemModel(0, "Hidden Categories"))
                 list.add(InventoryItemModel(0, "Hidden Items"))
@@ -176,7 +176,7 @@ class Inventory : Fragment() {
                 list.add(InventoryItemModel(0, "All Items"))
                 list.add(InventoryItemModel(0, "Categories"))
                 list.add(InventoryItemModel(0, "Modifiers", true))
-                list.add(InventoryItemModel(0, "Discounts"))
+              //  list.add(InventoryItemModel(0, "Discounts"))
                 list.add(InventoryItemModel(0, "Options"))
                 list.add(InventoryItemModel(0, "Hidden Categories"))
                 list.add(InventoryItemModel(0, "Hidden Items"))
@@ -186,8 +186,8 @@ class Inventory : Fragment() {
                 list.add(InventoryItemModel(0, "All Items"))
                 list.add(InventoryItemModel(0, "Categories"))
                 list.add(InventoryItemModel(0, "Modifiers"))
-                list.add(InventoryItemModel(0, "Discounts", true))
-                list.add(InventoryItemModel(0, "Options"))
+               // list.add(InventoryItemModel(0, "Discounts", true))
+                list.add(InventoryItemModel(0, "Options",true))
                 list.add(InventoryItemModel(0, "Hidden Categories"))
                 list.add(InventoryItemModel(0, "Hidden Items"))
 
@@ -197,9 +197,9 @@ class Inventory : Fragment() {
                 list.add(InventoryItemModel(0, "All Items"))
                 list.add(InventoryItemModel(0, "Categories"))
                 list.add(InventoryItemModel(0, "Modifiers"))
-                list.add(InventoryItemModel(0, "Discounts"))
-                list.add(InventoryItemModel(0, "Options", true))
-                list.add(InventoryItemModel(0, "Hidden Categories"))
+                //list.add(InventoryItemModel(0, "Discounts"))
+                list.add(InventoryItemModel(0, "Options"))
+                list.add(InventoryItemModel(0, "Hidden Categories",true))
                 list.add(InventoryItemModel(0, "Hidden Items"))
 
             }
@@ -208,23 +208,23 @@ class Inventory : Fragment() {
                 list.add(InventoryItemModel(0, "All Items"))
                 list.add(InventoryItemModel(0, "Categories"))
                 list.add(InventoryItemModel(0, "Modifiers"))
-                list.add(InventoryItemModel(0, "Discounts"))
+                //list.add(InventoryItemModel(0, "Discounts"))
                 list.add(InventoryItemModel(0, "Options"))
-                list.add(InventoryItemModel(0, "Hidden Categories", true))
-                list.add(InventoryItemModel(0, "Hidden Items"))
+                list.add(InventoryItemModel(0, "Hidden Categories"))
+                list.add(InventoryItemModel(0, "Hidden Items",true))
 
             }
 
-            6 -> {
+           /* 6 -> {
                 list.add(InventoryItemModel(0, "All Items"))
                 list.add(InventoryItemModel(0, "Categories"))
                 list.add(InventoryItemModel(0, "Modifiers"))
-                list.add(InventoryItemModel(0, "Discounts"))
+                //list.add(InventoryItemModel(0, "Discounts"))
                 list.add(InventoryItemModel(0, "Options"))
                 list.add(InventoryItemModel(0, "Hidden Categories"))
                 list.add(InventoryItemModel(0, "Hidden Items", true))
 
-            }
+            }*/
 
         }
         binding.recyclerViewItemsList.adapter =

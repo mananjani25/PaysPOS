@@ -39,6 +39,7 @@ import kotlin.collections.ArrayList
 @AndroidEntryPoint
 class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, ItemCallback {
 
+    private var selectedPos: Int = 0
     private var checkFilter: Boolean = false
     private var singleTransaction: GetTransactionListResponse.Data.Payment? = null
     private var tipAmount: Double = 0.0
@@ -723,16 +724,13 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
                 binding.root.showAlert(it.message)
 
-                viewModel.apiCallTimeSheet(
-                    currentPage,
-                    getTerminalId(binding.includeView.spTerminals.selectedItemPosition).toString(),
-                    getRoleId(binding.includeView.spRoles.selectedItemPosition).toString(),
-                    getEmployeeId(binding.includeView.spEmployees.selectedItemPosition).toString(),
-                    getOrderId(binding.includeView.spOrders.selectedItemPosition).toString(),
-                    getTipType(binding.includeView.spTipTypes.selectedItemPosition),
-                    getPaymentType(binding.includeView.spTransactionTypes.selectedItemPosition)
+            }
+        })
 
-                )
+        viewModel.data2.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+
+                transactionAdapter.updateTip(selectedPos, it)
             }
         })
 
@@ -740,6 +738,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
     override fun onItemClickListener(view: View?, pos: Int) {
 
+        selectedPos = pos
         singleTransaction = transactionAdapter.getItem(pos)
 
         val bundle = Bundle()

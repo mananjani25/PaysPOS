@@ -3,6 +3,7 @@ package com.android.pos.data.model.responseModel
 
 import android.os.Parcel
 import android.os.Parcelable
+import com.android.pos.data.model.requestModel.GuestsAttributes
 import com.google.gson.annotations.SerializedName
 
 
@@ -22,7 +23,6 @@ data class CreateOrderResponse(
             @SerializedName("created_at")
             val createdAt: String,
             @SerializedName("creation_time_on_terminal")
-
             val creationTimeOnTerminal: Any,
             @SerializedName("customer")
             val customer: Customer,
@@ -70,6 +70,7 @@ data class CreateOrderResponse(
             val openOrderTypeId: Any,
             @SerializedName("order_items")
             val orderItems: List<OrderItem>,
+
             @SerializedName("order_service_charges")
             val orderServiceCharges: List<OrderServiceCharge>,
             @SerializedName("order_type")
@@ -104,9 +105,46 @@ data class CreateOrderResponse(
             val updatedAt: String,
             @SerializedName("digital_receipt_url")
             val digital_receipt_url: String,
+            @SerializedName("guest_attributes")
+            var guestAttributes: List<GuestAttributes>,
             @SerializedName("venue_website")
             val venue_website: String
         ) {
+
+            data class GuestAttributes(
+
+                @SerializedName("id") var id: Int,
+                @SerializedName("order_id") var orderId: Int,
+                @SerializedName("name") var name: String,
+                @SerializedName("is_paid") var isPaid: Boolean,
+                @SerializedName("total_amount") var totalAmount: Int,
+                @SerializedName("cash_discount") var cashDiscount: String,
+                @SerializedName("total_discount") var totalDiscount: String,
+                @SerializedName("total_service_charge") var totalServiceCharge: String,
+                @SerializedName("sub_total") var subTotal: String,
+                @SerializedName("total_tax") var totalTax: Int,
+                @SerializedName("total_tips") var totalTips: Int,
+                @SerializedName("customer_id") var customerId: String,
+                @SerializedName("guest_item_attributes") var guestItemAttributes: List<GuestItemAttributes>
+
+            ) {
+                data class GuestItemAttributes(
+
+                    @SerializedName("id") var id: Int,
+                    @SerializedName("order_id") var orderId: String,
+                    @SerializedName("order_item_id") var orderItemId: String,
+                    @SerializedName("quantity") var quantity: Int,
+                    @SerializedName("item_id") var itemId: Int,
+                    @SerializedName("amount") var amount: Int,
+                    @SerializedName("is_paid") var isPaid: Boolean,
+                    @SerializedName("guest_id") var guestId: Int,
+                    @SerializedName("created_at") var createdAt: String,
+                    @SerializedName("updated_at") var updatedAt: String,
+                    @SerializedName("item_type") var itemType: String
+
+                )
+            }
+
             data class Customer(
 
                 @SerializedName("id") var id: Int,
@@ -123,10 +161,8 @@ data class CreateOrderResponse(
 
             ) {
                 data class Phones(
-
                     @SerializedName("id") var id: Int,
                     @SerializedName("phone_number") var phoneNumber: String
-
                 )
 
                 data class Addresses(
