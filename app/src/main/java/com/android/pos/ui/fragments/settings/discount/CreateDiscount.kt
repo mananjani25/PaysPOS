@@ -63,6 +63,8 @@ class CreateDiscount : Fragment() {
             }
 
             viewModel.isEditData(isEdit, discountData.id)
+        } else {
+
         }
 
         setupSnackbar()

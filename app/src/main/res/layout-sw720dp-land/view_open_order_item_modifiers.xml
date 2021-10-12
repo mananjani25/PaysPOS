@@ -30,6 +30,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
+                android:layout_gravity="center"
                 android:text="@{model.name}"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_5mdpi"
@@ -40,8 +41,8 @@
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_5sdp"
                 android:layout_weight="1"
+                android:layout_gravity="center"
                 android:gravity="center"
                 android:text="@{@string/cross+``+model.quantity}"
                 android:textColor="@color/txtColor"
@@ -53,8 +54,8 @@
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_5sdp"
                 android:layout_weight="1"
+                android:layout_gravity="center"
                 android:gravity="center"
                 android:text="@{@string/symbole +``+String.format(@string/format,model.price)}"
                 android:textColor="@color/txtColor"
@@ -83,9 +84,19 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:textColor="@color/txtColor"
+                android:textSize="@dimen/_5mdpi" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtEmployeeName"
+                style="@style/CustomFontSemiBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textColor="@color/txtColor"
                 android:textSize="@dimen/_5mdpi"
-                android:visibility="invisible"
-                android:text="Terminal Name" />
+                tools:text="Terminal Name" />
 
         </LinearLayout>
 

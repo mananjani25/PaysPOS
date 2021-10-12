@@ -22,6 +22,7 @@ import com.android.pos.data.remote.Constants.INCLUDE_TAX
 import com.android.pos.data.remote.Constants.SETTING_KEY
 import com.android.pos.databinding.DialogCreateNewTaxBinding
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.AmountTextWatcher
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.getNavigationResultLiveData
 import com.android.pos.utils.extensions.liveSnackBar
@@ -62,7 +63,7 @@ class CreateTax : Fragment() {
             binding.txtSave.text = getString(R.string.update)
             viewModel.setTaxData(taxData)
 
-            binding.itemsCount.setText("" + taxData.itemIds.size + " Items")
+            binding.itemsCount.text = "" + taxData.itemIds.size + " Items"
             binding.tvItemPricing.text = taxData.itemPricing
 
             binding.swtEnableTax.isChecked = taxData.isDefault

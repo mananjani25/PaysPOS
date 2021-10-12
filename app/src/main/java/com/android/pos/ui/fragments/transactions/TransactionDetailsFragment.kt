@@ -1,5 +1,6 @@
 package com.android.pos.ui.fragments.transactions
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -59,12 +60,6 @@ class TransactionDetailsFragment : Fragment() {
         setUpRecyclerView()
         navigate()
 
-        /*if (prefProvider.getValueboolean(IS_REFUND, false)) {
-            binding.tvIssueRefund.visibility = View.GONE
-        } else {
-            binding.tvIssueRefund.visibility = View.VISIBLE
-        }*/
-
         val callback: OnBackPressedCallback =
             object : OnBackPressedCallback(true /* enabled by default */) {
                 override fun handleOnBackPressed() {
@@ -107,6 +102,7 @@ class TransactionDetailsFragment : Fragment() {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun navigate() {
         ProgressUtils.showProgressDialog(requireActivity())
         viewModel.data.observe(viewLifecycleOwner, { event ->
@@ -147,6 +143,14 @@ class TransactionDetailsFragment : Fragment() {
 
                 if (orderDetailsResponse.data.refundDetails.refundedAmount != 0.0) {
                     binding.tvIssueRefund.visibility = View.GONE
+                }
+
+                if (orderDetailsResponse.data.orderType.equals("Open Order", ignoreCase = true) &&
+                    orderDetailsResponse.data.paymentStatus.equals("unpaid", ignoreCase = true)
+                ) {
+                    binding.tvIssueRefund.visibility = View.GONE
+                } else {
+                    binding.tvIssueRefund.visibility = View.VISIBLE
                 }
 
                 ProgressUtils.dismissProgressDialog()

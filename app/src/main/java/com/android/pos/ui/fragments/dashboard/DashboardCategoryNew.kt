@@ -1112,7 +1112,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         val edtItemName: AppCompatEditText = dialog.findViewById(R.id.edtItemName)
 
         edtItemName.visibility = View.GONE
-        var discountPrice = data.discountPrice / data.itemQuantity
+        var discountPrice = data.discountPrice
 
 
         var adapter: ItemModifierSetAdapter? = null
@@ -1261,7 +1261,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 if (!isItemClick) {
 
 
-                    if (data.itemQuantity == txtQty.text.toString().toInt()) {
+                    if (discountPrice == 0.00) {
                         data.discountPrice = (discountPrice
                                 * txtQty.text.toString().toInt()
                                 )

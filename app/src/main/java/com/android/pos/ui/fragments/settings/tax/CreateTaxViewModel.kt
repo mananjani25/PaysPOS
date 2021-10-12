@@ -89,7 +89,7 @@ class CreateTaxViewModel @Inject constructor(
         val value = createTaxDetails.value
         if (TextUtils.isEmpty(value?.name?.trim())) {
             _snackbarText.value = Event(R.string.tax_name_validate)
-        } else if (TextUtils.isEmpty(value?.rate?.toString()?.trim()) || value?.rate == 0.0) {
+        } else if (TextUtils.isEmpty(value?.rate?.toString()?.trim()) || value?.rate == 0.00) {
             _snackbarText.value = Event(R.string.tax_rate_validate)
         } else if (TextUtils.isEmpty(itemPricingViewModel.trim())) {
             _snackbarText.value = Event(R.string.item_pricing_validate)

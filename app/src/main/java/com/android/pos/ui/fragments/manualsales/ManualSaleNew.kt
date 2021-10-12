@@ -832,6 +832,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
 
 
         dialog.setCanceledOnTouchOutside(false)
+        dialog.dismiss()
         dialog.show()
 
 

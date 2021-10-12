@@ -13,7 +13,7 @@ data class CreateDiscountRequestModel(
         @SerializedName("name")
         var name: String = "",
         @SerializedName("percentage")
-        var percentage: Double = 0.0,
+        var percentage: Double = 0.00,
         @SerializedName("location_id")
         var locationId: Int = -1,
     )
