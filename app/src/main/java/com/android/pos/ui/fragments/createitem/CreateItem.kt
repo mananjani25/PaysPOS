@@ -2,9 +2,8 @@ package com.android.pos.ui.fragments.createitem
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.TextUtils
 import android.util.Base64
 import android.util.Log
@@ -19,6 +18,7 @@ import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.*
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.DIALOG_IMAGE_PATH
 import com.android.pos.data.remote.Constants.DIALOG_KEY
 import com.android.pos.data.remote.Constants.DIALOG_KEY_ADD_VARIATION_DETAILS
 import com.android.pos.data.remote.Constants.DIALOG_KEY_OPTIONS
@@ -33,18 +33,23 @@ import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.UpdateVariationCallback
 import com.android.pos.utils.extensions.getNavigationResultLiveData
 import com.android.pos.utils.extensions.liveSnackBar
+import com.bumptech.glide.Glide
+import com.bumptech.glide.Priority
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.DecodeFormat
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.Target
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
-import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.ByteArrayOutputStream
-import java.io.File
 
 @AndroidEntryPoint
 class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
 
+    private var imagePath: String? = ""
     private var variationList1: ArrayList<VariationsAttribute>? = null
     private var variationListApi = ArrayList<VariationsAttribute>()
     private var selectedId: Int = -2
@@ -81,6 +86,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
         getModifiers()
         navigate()
         navigateToEditVariation()
+        callBackFromImage()
 
         binding.tvAddOptions.setOnClickListener {
 
@@ -222,131 +228,135 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
         Log.d("variationListdelete", "::" + variationList1?.size)
 
         binding.txtSave.setOnClickListener {
-
-            adapter.selectedItemList().forEach {
-                modifierSetIds.add(it.id!!)
-            }
-            viewModel.selectedModifierList(modifierSetIds)
-
-            // variationListApi = ArrayList()
-
-
-            if (isEdit) {
-                /*variationListApi.forEach { variationOriginal ->
-                    variationListAdapter.selectedVariation().forEach { variationDeleted ->
-                        if (variationOriginal.name == variationDeleted.name) {
-                            variationOriginal._destroy = false
-                        } else {
-                            variationOriginal._destroy = true
-                        }
-                    }
-                }*/
-                var mList: ArrayList<VariationsAttribute> = arrayListOf()
-
-                for (i in 0 until variationListApi.size) {
-                    val temp = variationListAdapter.selectedVariation().any {
-                        it.name == variationListApi.get(i).name
-                    }
-
-                    if (temp) {
-                        val obj = variationListApi.get(i)
-                        obj._destroy = false
-                        mList.add(obj)
-
-
-                    } else {
-                        val obj = variationListApi.get(i)
-                        obj._destroy = true
-                        mList.add(obj)
-
-                    }
-
-                }
-
-                for (newVariation in mList) {
-                    if (!newVariation._destroy) {
-                        isNewVariation = true
-                        viewModel.variationAttribute(mList)
-                        break
-                    }
-                }
-
-
-                if (!isNewVariation) {
-                    mList.addAll(variationListAdapter.selectedVariation())
-                    viewModel.variationAttribute(mList)
-                }
-
-
-                /*Log.e(
-                    TAG,
-                    "FinalvariationListApi:  ${Gson().toJson(mList)}"
-                )*/
-
-                // viewModel.variationAttribute(mList)
-            } else {
-                viewModel.variationAttribute(variationListAdapter.selectedVariation())
-            }
-
-            // viewModel.variationAttribute(variationListAdapter.selectedVariation())
-
-            /*var body2: MultipartBody.Part? = null
-            //  if (!TextUtils.isEmpty(imagePath)) {
-
-            //   if (!(imagePath?.startsWith("https")!! || imagePath!!.startsWith("http"))) {
-            val file1 = File("/storage/emulated/0/DCIM/Camera/IMG_20211006_120155.jpg")
-            val requestFile1: RequestBody =
-                file1.asRequestBody("multipart/form-data".toMediaTypeOrNull())
-            body2 = MultipartBody.Part.createFormData("image", file1.name, requestFile1)
-*/            //  }
-
-            //  }
-
-
-            val bitmap =
-                BitmapFactory.decodeFile("/storage/emulated/0/DCIM/Camera/IMG_20211006_120155.jpg")
-            if (bitmap != null) {
-                base64 = convertBase64(bitmap)
-            }
-
-
-            if (variationListAdapter.selectedVariation().size > 0 && variationListAdapter.selectedVariation() != null) {
-                viewModel.itemDetails(
-                    base64,
-                    null,
-                    binding.etDesc.text.toString(),
-                    "",
-                    0
-                )
-            } else {
-                val itemPrice: Double?
-                val stock: Int
-                if (TextUtils.isEmpty(binding.etItemPrice.text.toString())) {
-                    itemPrice = null
-                } else {
-                    itemPrice = binding.etItemPrice.text.toString().replace("$", "").toDouble()
-                }
-
-                if (TextUtils.isEmpty(binding.etStock.text.toString())) {
-                    stock = 0
-                } else {
-                    stock = binding.etStock.text.toString().toInt()
-                }
-                viewModel.itemDetails(
-                    base64,
-                    itemPrice,
-                    binding.etDesc.text.toString(),
-                    binding.etSku.text.toString(),
-                    stock
-                )
-            }
-
-
-
-            viewModel.submit()
+            saveItem()
         }
 
         return binding.root
+    }
+
+    private fun saveItem() {
+
+        adapter.selectedItemList().forEach {
+            modifierSetIds.add(it.id!!)
+        }
+        viewModel.selectedModifierList(modifierSetIds)
+
+        // variationListApi = ArrayList()
+
+
+        if (isEdit) {
+            /*variationListApi.forEach { variationOriginal ->
+                variationListAdapter.selectedVariation().forEach { variationDeleted ->
+                    if (variationOriginal.name == variationDeleted.name) {
+                        variationOriginal._destroy = false
+                    } else {
+                        variationOriginal._destroy = true
+                    }
+                }
+            }*/
+            var mList: ArrayList<VariationsAttribute> = arrayListOf()
+
+            for (i in 0 until variationListApi.size) {
+                val temp = variationListAdapter.selectedVariation().any {
+                    it.name == variationListApi.get(i).name
+                }
+
+                if (temp) {
+                    val obj = variationListApi.get(i)
+                    obj._destroy = false
+                    mList.add(obj)
+
+
+                } else {
+                    val obj = variationListApi.get(i)
+                    obj._destroy = true
+                    mList.add(obj)
+
+                }
+
+            }
+
+            for (newVariation in mList) {
+                if (!newVariation._destroy) {
+                    isNewVariation = true
+                    viewModel.variationAttribute(mList)
+                    break
+                }
+            }
+
+
+            if (!isNewVariation) {
+                mList.addAll(variationListAdapter.selectedVariation())
+                viewModel.variationAttribute(mList)
+            }
+
+
+            /*Log.e(
+                TAG,
+                "FinalvariationListApi:  ${Gson().toJson(mList)}"
+            )*/
+
+            // viewModel.variationAttribute(mList)
+        } else {
+            viewModel.variationAttribute(variationListAdapter.selectedVariation())
+        }
+
+        // viewModel.variationAttribute(variationListAdapter.selectedVariation())
+
+        /*var body2: MultipartBody.Part? = null
+        //  if (!TextUtils.isEmpty(imagePath)) {
+
+        //   if (!(imagePath?.startsWith("https")!! || imagePath!!.startsWith("http"))) {
+        val file1 = File("/storage/emulated/0/DCIM/Camera/IMG_20211006_120155.jpg")
+        val requestFile1: RequestBody =
+            file1.asRequestBody("multipart/form-data".toMediaTypeOrNull())
+        body2 = MultipartBody.Part.createFormData("image", file1.name, requestFile1)
+*/            //  }
+
+        //  }
+
+
+       /* val bitmap =
+            BitmapFactory.decodeFile(imagePath)
+        if (bitmap != null) {
+            base64 = convertBase64(bitmap)
+        }*/
+
+
+        if (variationListAdapter.selectedVariation().size > 0 && variationListAdapter.selectedVariation() != null) {
+            viewModel.itemDetails(
+                imagePath,
+                null,
+                binding.etDesc.text.toString(),
+                "",
+                0
+            )
+        } else {
+            val itemPrice: Double?
+            val stock: Int
+            if (TextUtils.isEmpty(binding.etItemPrice.text.toString())) {
+                itemPrice = null
+            } else {
+                itemPrice = binding.etItemPrice.text.toString().replace("$", "").toDouble()
+            }
+
+            if (TextUtils.isEmpty(binding.etStock.text.toString())) {
+                stock = 0
+            } else {
+                stock = binding.etStock.text.toString().toInt()
+            }
+            viewModel.itemDetails(
+                imagePath,
+                itemPrice,
+                binding.etDesc.text.toString(),
+                binding.etSku.text.toString(),
+                stock
+            )
+        }
+
+
+
+        viewModel.submit()
     }
 
     private fun convertBase64(bitmap: Bitmap): String {
@@ -536,6 +546,17 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
 
     }
 
+    private fun callBackFromImage() {
+        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<String>(
+            DIALOG_IMAGE_PATH
+        )?.observe(viewLifecycleOwner) { result ->
+            // Do something with the result.
+            Log.e("!_@_ image path", result)
+            imagePath = result
+            viewProfile(imagePath)
+        }
+    }
+
     override fun onItemClickListener(position: Int, variation: VariationsAttribute) {
         position1 = position
         val bundle = Bundle().apply {
@@ -545,5 +566,39 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
             R.id.action_createItem_to_editVariationDialog,
             bundle
         )
+    }
+
+    private fun viewProfile(profileImage: String?) {
+
+        Log.d("!_@_ profileImage", "::$profileImage")
+
+        Glide.with(requireActivity()).load(profileImage)
+            .apply(RequestOptions().override(100, 100))
+            .placeholder(R.drawable.ic_item_placeholder)
+
+            .listener(object : RequestListener<Drawable> {
+                override fun onLoadFailed(
+                    e: GlideException?,
+                    model: Any?,
+                    target: Target<Drawable>?,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    return false
+                }
+
+                override fun onResourceReady(
+                    resource: Drawable?,
+                    model: Any?,
+                    target: Target<Drawable>?,
+                    dataSource: DataSource?,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    return false
+                }
+
+            }).dontTransform().dontAnimate().diskCacheStrategy(DiskCacheStrategy.ALL)
+            .encodeFormat(Bitmap.CompressFormat.PNG).skipMemoryCache(true)
+            .format(DecodeFormat.DEFAULT).priority(Priority.IMMEDIATE).centerCrop()
+            .into(binding.imgItem)
     }
 }

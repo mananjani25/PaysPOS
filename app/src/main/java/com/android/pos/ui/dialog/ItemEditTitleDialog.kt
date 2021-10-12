@@ -38,6 +38,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 import android.view.View
 import androidx.core.content.ContextCompat.getExternalCacheDirs
+import androidx.navigation.fragment.findNavController
+import com.android.pos.data.remote.Constants.DIALOG_IMAGE_PATH
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -75,6 +77,11 @@ class ItemEditTitleDialog : DialogFragment(), View.OnClickListener {
         binding.tvChoosePhoto.setOnClickListener {
             selectOption = "2"
             requestPermissionDialog(selectOption)
+        }
+
+        binding.txtSave.setOnClickListener {
+            findNavController().previousBackStackEntry?.savedStateHandle?.set(DIALOG_IMAGE_PATH, imagePath)
+            dismiss()
         }
 
         return binding.root

@@ -645,7 +645,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     resourceClockout.data.let {
                         if (it?.status == 200) {
                             resourceClockout.data?.let {
-                                logoutApi()
+                                callLogoutApi()
                             }
                         }
 
@@ -667,7 +667,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
     }
 
-    private suspend fun logoutApi() {
+    private suspend fun callLogoutApi() {
         _showProgress.value = Event(true)
         val data = HashMap<String, String>()
         data["email"] =
