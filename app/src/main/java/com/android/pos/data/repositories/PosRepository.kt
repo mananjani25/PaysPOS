@@ -548,6 +548,9 @@ class PosRepository @Inject constructor(
     suspend fun orderUpdateTip(orderId: Int, customerId: Double) =
         apiHelperNew.orderUpdateTip(orderId, customerId)
 
+    suspend fun updateKitchenFireStatus(id: Int, isFired: Boolean, items: ArrayList<Int>) =
+        apiHelperNew.updateKitchenFireStatus(id, isFired, items)
+
     suspend fun orderCancel(id: Int, data: OrderCancelRequest) =
         apiHelperNew.orderCancel(id, data)
 

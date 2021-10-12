@@ -198,7 +198,8 @@ class GuestItemsAttributes(
     @SerializedName("is_paid") var isPaid: Boolean = false,
     @SerializedName("guest_id") var guestId: Int? = null,
     @SerializedName("_destroy") var Destroy: Boolean = false,
-    @SerializedName("percentage") var percentage: Int? = null
+    @SerializedName("percentage") var percentage: Int? = null,
+    @SerializedName("timestamp") var timestamp:String? = null
 
 )
 

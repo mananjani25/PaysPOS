@@ -22,6 +22,7 @@ import com.android.pos.data.remote.Constants.EMPLOYEES_TIMESHEET_DETAILS
 import com.android.pos.data.remote.Constants.EMPLOYEES_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.EMPLOYEE_CLOCK_IN
 import com.android.pos.data.remote.Constants.EMPLOYEE_LOG_IN
+import com.android.pos.data.remote.Constants.FIRE_ITEM_TO_KITCHEN
 import com.android.pos.data.remote.Constants.FORGOT_PASSWORD
 import com.android.pos.data.remote.Constants.GET_FLOOR_PLAN
 import com.android.pos.data.remote.Constants.GET_PRINTERS
@@ -446,6 +447,7 @@ interface ApiService {
     @POST(ORDERS)
     suspend fun createOrder(@Body orderRequestModel: OrderRequestModel): CreateOrderResponse
 
+
     @PUT(ORDER_DETAILS)
     suspend fun updateOrder(
         @Path("id") orderId: Int,
@@ -519,6 +521,14 @@ interface ApiService {
     suspend fun orderUpdateTip(
         @Path("id") id: Int,
         @Query("tips") old_position: Double
+    ): BaseResponse
+
+
+    @PUT(FIRE_ITEM_TO_KITCHEN)
+    suspend fun updateKitchenFireStatus(
+        @Path("id") id: Int,
+        @Query("is_fired") is_fired: Boolean,
+        @Query("order_item_ids") order_item_ids: ArrayList<Int>
     ): BaseResponse
 
 

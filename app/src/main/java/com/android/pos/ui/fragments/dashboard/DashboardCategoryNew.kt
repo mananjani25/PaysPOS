@@ -2337,10 +2337,14 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         viewModel._Basedata.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let { baseResponse ->
                 if (baseResponse != null) {
+
+
                     Log.e(TAG, "BaseResponseInDash ${Gson().toJson(baseResponse)}")
                     var bundle = Bundle()
                     bundle.putDouble("totalPrice", baseResponse.order.totalAmount)
                     bundle.putParcelable("cartList", cartList[0])
+                    bundle.putParcelable("dineInList",baseResponse)
+
 
                     prefProvider.setValue(Constants.ORDER_TYPE, "")
                     prefProvider.setValue(Constants.CUSTOMER_NAME, "")
