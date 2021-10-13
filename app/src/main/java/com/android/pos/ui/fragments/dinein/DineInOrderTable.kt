@@ -95,6 +95,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             orderId = floorPlanModel?.currentOrderDetails?.orderId
             floorPlanModel?.currentOrderDetails?.orderId?.let { viewModel.apiCallOrderDetails(it) }
 
+
         } else {
 
 
@@ -123,6 +124,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             guestAttributes.get(i).guestItemAttributes.forEach {
                                 if (list.get(j).items.get(k).timeStamp == it.timestamp) {
                                     list.get(j).items.get(k).isPaid = it.isPaid
+                                    list.get(j).items.get(k).orderItemId = it.orderItemId
                                 }
                             }
                         }
@@ -147,6 +149,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 }
 
                 dineInTableAdapter.setList(list)
+
+
                 binding.txtTotalAmount.setText("${MethodUtils.roundOffAmount(totalPrice)}")
 
             }
@@ -203,7 +207,28 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                 viewModel.fireItemToKitchen(dineInData?.order?.id!!, true, idStr)
 
+            } else {
+                Log.e(TAG,"Else")
+               var  guestAttribute = dineInTableAdapter.getList()
+                val ids: MutableList<Int> = ArrayList()
+
+                for (i in 0 until guestAttribute.size) {
+                    guestAttribute[i].items.forEach { it ->
+                        Log.e(TAG, "OrderItemId ${it.orderItemId}")
+                        ids.add(it.orderItemId!!)
+                        //ids.toMutableList().add(it.orderItemId!!)
+                    }
+
+                }
+
+
+                Log.e(TAG, "orderITemIDs;  ${Gson().toJson(ids)}")
+                var idStr = Gson().toJson(ids.toTypedArray())
+                Log.e(TAG, "idStr:   $idStr")
+
+                viewModel.fireItemToKitchen(orderId!!, true, idStr)
             }
+
         }
 
         binding.btnPay.setOnClickListener {
@@ -329,7 +354,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     subTotalPrice = subTotal
                     offlineId = randomOfflineId()
                     payableType = "GuestTab"
-                    payableType = "Cash"
+                    paymentType = "Cash"
                     transactionId = randomOfflineId()
                     terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
 
@@ -340,6 +365,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             val list = dineInTableAdapter.getList()
             list[position].isPaid = true
             dineInTableAdapter.setList(list.toCollection(arrayListOf()))
+
 
         }
 
@@ -401,6 +427,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             event.getContentIfNotHandled()?.let { baseResponse ->
                 if (baseResponse != null) {
                     var list: ArrayList<DineInModel> = arrayListOf()
+                    var totalAmount = 0.0
 
                     for (i in 0 until baseResponse.guestAttributes.size) {
                         val model = DineInModel()
@@ -417,6 +444,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                     item.discountPrice = it.discountAmount
                                     item.discountId = it.discountId
                                     item.discountType = it.discountType
+
                                     item.name = it.itemName
 
                                     if (it.orderItemModifiers.isNotEmpty()) {
@@ -439,7 +467,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                     item.itemQuantity = it.quantity
                                     item.orderItemId = it.id
                                     item.note = it.note
+                                    item.isFired = it.isFired
+                                    Log.e(TAG, "isFired  ${it.isFired}")
 
+                                    totalAmount += it.price
                                     listTbItem.add(item)
 
                                 }
@@ -447,8 +478,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         }
 
                         model.items = listTbItem
-                        model.isPaid = baseResponse.guestAttributes.get(i).isPaid
+                        model.isPaid = listTbItem.get(0).isPaid
+
                         model.title = baseResponse.guestAttributes.get(i).name
+                        model.id = baseResponse.guestAttributes[i].id
 
                         list.add(model)
 
@@ -472,6 +505,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         Log.e(TAG, "listData:  ${Gson().toJson(list)}")
                         dineInTableAdapter.setList(list)
                     }
+
+
+
+                    binding.txtTotalAmount.setText("${MethodUtils.roundOffAmount(totalAmount)}")
 
 
 

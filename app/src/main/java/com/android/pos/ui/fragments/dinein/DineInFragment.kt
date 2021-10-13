@@ -221,7 +221,7 @@ class DineInFragment : Fragment() {
     private fun clickInInflatedLayout(): View.OnClickListener {
         return View.OnClickListener { v ->
             val dineInFloorTableModel = v.tag as GetFloorPlanResponse.Data.FloorPlanTable
-            if (dineInFloorTableModel.status == OCCUPIED) {
+            if (dineInFloorTableModel.currentOrderDetails != null) {
                 val bundle = Bundle()
                 bundle.putBoolean("isFromFloor", true)
                 bundle.putParcelable("floorPlan", dineInFloorTableModel)

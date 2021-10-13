@@ -66,6 +66,13 @@ class DineInTableItemAdapter : RecyclerView.Adapter<DineInTableItemAdapter.MyVie
 
             }
 
+
+            binding.model = item
+            binding.executePendingBindings()
+        }
+
+        init {
+
             binding.chkIsFired.setOnCheckedChangeListener { buttonView, isChecked ->
                 if (isChecked) {
                     mCallback.onSendOrderToKitchen(cartList[layoutPosition])
@@ -74,11 +81,6 @@ class DineInTableItemAdapter : RecyclerView.Adapter<DineInTableItemAdapter.MyVie
                 }
 
             }
-            binding.model = item
-            binding.executePendingBindings()
-        }
-
-        init {
 
             binding.root.setOnClickListener {
 //                mCallback.onItemClickListener(it, cartList[bindingAdapterPosition], layoutPosition)
@@ -88,6 +90,12 @@ class DineInTableItemAdapter : RecyclerView.Adapter<DineInTableItemAdapter.MyVie
     }
 
     fun addCart(mList: List<TbItem>?) {
+        cartList = mList as ArrayList<TbItem>
+        notifyDataSetChanged()
+    }
+
+    fun updateCart(mList: List<TbItem?>) {
+        cartList.clear()
         cartList = mList as ArrayList<TbItem>
         notifyDataSetChanged()
     }

@@ -43,7 +43,7 @@ class DineInOrderTableViewModel @Inject constructor(
         _showProgress.value = Event(true)
         viewModelScope.launch {
             val resource: Resource<BaseResponse> =
-                posRepository.payByGuest(id, true, model)
+                posRepository.payByGuest(id, false, model)
 
             when (resource.status) {
                 Status.SUCCESS -> {

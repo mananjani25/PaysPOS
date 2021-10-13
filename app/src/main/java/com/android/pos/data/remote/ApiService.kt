@@ -356,9 +356,9 @@ interface ApiService {
         @Part("productCode") productCode: RequestBody,
         @Part("quantity") quantity: RequestBody,
         @Part("sku") sku: RequestBody,
-        @PartMap() taxIds: @JvmSuppressWildcards Map<String,@JvmSuppressWildcards List<Int>>,
-        @PartMap() modifierIds:  @JvmSuppressWildcards Map<String,@JvmSuppressWildcards List<Int>>,
-        @PartMap() variationAttributes: @JvmSuppressWildcards  Map<String, @JvmSuppressWildcards List<VariationsAttribute>>
+        @PartMap() taxIds: @JvmSuppressWildcards Map<String, @JvmSuppressWildcards List<Int>>,
+        @PartMap() modifierIds: @JvmSuppressWildcards Map<String, @JvmSuppressWildcards List<Int>>,
+        @PartMap() variationAttributes: @JvmSuppressWildcards Map<String, @JvmSuppressWildcards List<VariationsAttribute>>
     ): ItemsResponse
 
     @PUT(ITEM_UPDATE_DELETE)

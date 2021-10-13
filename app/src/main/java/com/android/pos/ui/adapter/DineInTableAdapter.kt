@@ -62,7 +62,6 @@ class DineInTableAdapter : RecyclerView.Adapter<DineInTableAdapter.MyViewHolder>
                         sum += it.price
                     }
 
-
                     binding.txtTotal.setText("Total : ${MethodUtils.roundOffAmount(sum)}")
                 }
                 itemAdapter.cartList.forEach {
@@ -85,6 +84,10 @@ class DineInTableAdapter : RecyclerView.Adapter<DineInTableAdapter.MyViewHolder>
 
             } else {
                 binding.txtTotal.visibility = View.INVISIBLE
+            }
+
+            if (list.get(layoutPosition).items.isEmpty()) {
+                binding.btnPay.visibility = View.GONE
             }
 
 
@@ -120,10 +123,11 @@ class DineInTableAdapter : RecyclerView.Adapter<DineInTableAdapter.MyViewHolder>
             binding.chkIsFired.setOnCheckedChangeListener { buttonView, isChecked ->
                 if (isChecked) {
                     if (itemAdapter.cartList.isNotEmpty()) {
+                        var itemsNew = list[bindingAdapterPosition].items
                         val ids: MutableList<Int> = ArrayList()
-                        for (i in 0 until itemAdapter.cartList.size) {
-                            itemAdapter.cartList.get(i).orderItemId?.let { ids.add(it) }
-                            itemAdapter.cartList.get(i).isFired = true
+                        for (i in 0 until itemsNew.size) {
+                            itemsNew.get(i).orderItemId?.let { ids.add(it) }
+                            itemsNew.get(i).isFired = true
 
                         }
                         Log.e(TAG, "WholeOrderIds:  ${ids.size}")
@@ -132,7 +136,9 @@ class DineInTableAdapter : RecyclerView.Adapter<DineInTableAdapter.MyViewHolder>
                         listner.onWholeTableToKitchen(idStr)
                         binding.chkIsFired.isChecked = true
                         binding.chkIsFired.isEnabled = false
-                        itemAdapter.notifyDataSetChanged()
+                        list[bindingAdapterPosition].items = itemsNew
+                        notifyDataSetChanged()
+                        //itemAdapter.updateCart(list[bindingAdapterPosition].items)
 
 
                     }

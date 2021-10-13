@@ -68,7 +68,7 @@ data class GetFloorPlanResponse(
                 @SerializedName("customer_id") var customerId: String,
                 @SerializedName("customer_name") var customerName: String,
                 @SerializedName("order_id") var orderId: Int,
-                @SerializedName("total_amount") var totalAmount: Int
+                @SerializedName("total_amount") var totalAmount: Double
 
             ) : Parcelable
         }
