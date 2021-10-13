@@ -1,7 +1,6 @@
 package com.android.pos.ui.dialog
 
 import android.Manifest
-import android.app.Activity
 import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -11,18 +10,21 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.provider.MediaStore
 import android.util.Log
 import android.view.*
+import android.view.View
 import android.widget.Toast
 import androidx.core.content.ContextCompat.checkSelfPermission
-import androidx.core.content.FileProvider
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.android.pos.R
 import com.android.pos.data.model.OptionListModel
+import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.DIALOG_IMAGE_PATH
 import com.android.pos.databinding.DialogEditItemTitleBinding
+import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.ChooseColorsAdapter
 import com.android.pos.utils.FileUtils.handleImageOnKitkat
 import com.bumptech.glide.Glide
@@ -35,17 +37,11 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
 import dagger.hilt.android.AndroidEntryPoint
-import java.io.File
-import android.view.View
-import androidx.core.content.ContextCompat.getExternalCacheDirs
-import androidx.navigation.fragment.findNavController
-import com.android.pos.data.remote.Constants.DIALOG_IMAGE_PATH
-import java.util.*
-import kotlin.collections.ArrayList
 
 
 @AndroidEntryPoint
-class ItemEditTitleDialog : DialogFragment(), View.OnClickListener {
+class ItemEditTitleDialog : DialogFragment() {
+
     private lateinit var adapter: ChooseColorsAdapter
     private lateinit var binding: DialogEditItemTitleBinding
     private var mUri: Uri? = null
@@ -54,9 +50,6 @@ class ItemEditTitleDialog : DialogFragment(), View.OnClickListener {
     private val OPERATION_CHOOSE_PHOTO = 2
     private val PERMISSION = 3
     private var selectOption: String = ""
-
-    val MULTIPART_FORM_DATA = "multipart/form-data"
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -68,7 +61,12 @@ class ItemEditTitleDialog : DialogFragment(), View.OnClickListener {
         binding.lifecycleOwner = this
 
         setAdapter()
+        initListeners()
 
+        return binding.root
+    }
+
+    private fun initListeners() {
         binding.tvTakePhoto.setOnClickListener {
             selectOption = "1"
             requestPermissionDialog(selectOption)
@@ -80,21 +78,27 @@ class ItemEditTitleDialog : DialogFragment(), View.OnClickListener {
         }
 
         binding.txtSave.setOnClickListener {
-            findNavController().previousBackStackEntry?.savedStateHandle?.set(DIALOG_IMAGE_PATH, imagePath)
+            findNavController().previousBackStackEntry?.savedStateHandle?.set(
+                DIALOG_IMAGE_PATH,
+                imagePath
+            )
             dismiss()
         }
 
-        return binding.root
-    }
+        binding.imgBack.setOnClickListener {
+            dismiss()
+        }
 
-    override fun onStart() {
-        super.onStart()
+        (activity as MainActivity).activityResultCallBack = object :
+            MainActivity.ActivityResultCallBack {
+            override fun onReceivedCameraCapturedPath(mediaType: Int, mediaPath: String?) {
+                if (mediaType == Constants.MEDIA_TYPE_IMAGE) {
+                    imagePath = mediaPath
+                    showImage()
+                }
+            }
+        }
     }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-    }
-
 
     private fun setAdapter() {
         val list: ArrayList<OptionListModel> = arrayListOf()
@@ -111,26 +115,7 @@ class ItemEditTitleDialog : DialogFragment(), View.OnClickListener {
         binding.rvColors.layoutManager = GridLayoutManager(requireContext(), 5)
         adapter = ChooseColorsAdapter(list)
         binding.rvColors.adapter = adapter
-        binding.imgBack.setOnClickListener(this)
-        binding.txtSave.setOnClickListener(this)
-
-
     }
-
-    override fun onClick(v: View?) {
-
-
-        when (v?.id) {
-            R.id.imgBack -> {
-                dismiss()
-            }
-            R.id.txtSave -> {
-
-            }
-
-        }
-    }
-
 
     private fun requestPermissionDialog(selectOption: String) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -162,33 +147,13 @@ class ItemEditTitleDialog : DialogFragment(), View.OnClickListener {
     }
 
     private fun capturePhoto() {
-       /* val capturedImage = File(externalCacheDir, "androidPos.jpg")
-          if (capturedImage.exists()) {
-              capturedImage.delete()
-          }
-          capturedImage.createNewFile()
-
-          mUri = if (Build.VERSION.SDK_INT >= 24) {
-              FileProvider.getUriForFile(
-                  requireActivity(),
-                  "com.android.pos.fileprovider",
-                  capturedImage
-              )
-          } else {
-              Uri.fromFile(capturedImage)
-          }
-
-          val intent = Intent("android.media.action.IMAGE_CAPTURE")
-          intent.putExtra(MediaStore.EXTRA_OUTPUT, mUri)
-          startActivityForResult(intent, OPERATION_CAPTURE_PHOTO)*/
+        (activity as MainActivity).capturePhoto()
     }
 
     private fun openGallery() {
         val intent = Intent("android.intent.action.GET_CONTENT")
         intent.type = "image/*"
         startActivityForResult(intent, OPERATION_CHOOSE_PHOTO)
-
-
     }
 
     override fun onRequestPermissionsResult(
@@ -226,16 +191,18 @@ class ItemEditTitleDialog : DialogFragment(), View.OnClickListener {
             }
             OPERATION_CHOOSE_PHOTO -> if (resultCode == RESULT_OK) {
                 if (Build.VERSION.SDK_INT >= 19) {
-
                     imagePath = handleImageOnKitkat(data, requireActivity())
-
-                    if (imagePath != null) {
-                        viewProfile(imagePath)
-                    } else {
-                        show("ImagePath is null")
-                    }
+                    showImage()
                 }
             }
+        }
+    }
+
+    private fun showImage() {
+        if (imagePath != null) {
+            viewProfile(imagePath)
+        } else {
+            show("ImagePath is null")
         }
     }
 
@@ -245,7 +212,7 @@ class ItemEditTitleDialog : DialogFragment(), View.OnClickListener {
 
     private fun viewProfile(profileImage: String?) {
 
-        Log.d("profileImage", "::" + profileImage)
+        Log.d("profileImage", "::$profileImage")
         binding.includeLayout.progressBar.visibility = View.VISIBLE
 
         Glide.with(requireActivity()).load(profileImage)
