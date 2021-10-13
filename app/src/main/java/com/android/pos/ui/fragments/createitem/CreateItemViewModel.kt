@@ -11,6 +11,7 @@ import com.android.pos.data.entities.TbItem
 import com.android.pos.data.entities.VariationsAttribute
 import com.android.pos.data.model.requestModel.CreateItemRequestModel
 import com.android.pos.data.model.responseModel.ItemResponse
+import com.android.pos.data.model.responseModel.ItemResponseNew
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
@@ -49,8 +50,8 @@ class CreateItemViewModel @Inject constructor(
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
-    private val _data = MutableLiveData<Event<ItemResponse?>>()
-    val data: LiveData<Event<ItemResponse?>> = _data
+    private val _data = MutableLiveData<Event<ItemResponseNew?>>()
+    val data: LiveData<Event<ItemResponseNew?>> = _data
 
     private val _variationListLiveData = MutableLiveData<Event<ArrayList<VariationsAttribute>>>()
     val variationListLiveData: LiveData<Event<ArrayList<VariationsAttribute>>> =
@@ -136,7 +137,7 @@ class CreateItemViewModel @Inject constructor(
             }
 
             viewModelScope.launch {
-                val resource: Resource<ItemResponse> = if (isEdit) {
+                val resource: Resource<ItemResponseNew> = if (isEdit) {
                     posRepository.updateItem(itemId!!, itemData)
                 } else {
                     posRepository.createItem(itemData)

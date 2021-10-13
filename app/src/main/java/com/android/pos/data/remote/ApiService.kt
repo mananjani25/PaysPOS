@@ -369,13 +369,13 @@ interface ApiService {
         @PartMap() taxIds: @JvmSuppressWildcards Map<String, List<Int>>,
         @PartMap() modifierIds: @JvmSuppressWildcards Map<String, List<Int>>,
         @PartMap() variationAttributes: @JvmSuppressWildcards Map<String, List<VariationsAttribute>>
-    ): ItemResponse
+    ): ItemResponseNew
 
     @PUT(ITEM_UPDATE_DELETE)
     suspend fun updateItem(
         @Path("id") id: Int,
         @Body updateItem: CreateItemRequestModel
-    ): ItemResponse
+    ): ItemResponseNew
 
     @PUT(CUSTOMER_UPDATE)
     suspend fun updateCustomer(
