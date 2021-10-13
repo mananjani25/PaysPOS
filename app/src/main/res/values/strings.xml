@@ -566,4 +566,8 @@
     <string name="tv_choose_photo">Choose Photo</string>
     <string name="_201_555_0123">(201) 555-0123 <font color='#E90C0C'>*</font></string>
 
+    <!--Error Messages-->
+    <string name="error_something_wrong">Something went wrong. Please try again.</string>
+    <string name="error_camera_app_not_found">Please install/enable camera app.</string>
+
 </resources>

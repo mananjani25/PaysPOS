@@ -1,36 +1,50 @@
 package com.android.pos.ui.activities
 
 import android.app.Dialog
+import android.content.ClipData
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.View
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
+import com.android.pos.BuildConfig
 import com.android.pos.R
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.repositories.UserRepository
 import com.android.pos.databinding.ParentActivityBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.android.pos.utils.FileUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.alert
 import dagger.hilt.android.AndroidEntryPoint
+import java.io.File
+import java.io.IOException
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
+
+    private var cameraUri: Uri? = null
+    private var selectedFilePath: String? = ""
     private var builder: Dialog? = null
     private lateinit var binding: ParentActivityBinding
     private var navController: NavController? = null
     private lateinit var listner: NavController.OnDestinationChangedListener
     private val viewModel by viewModels<DashBoardCategoryViewModel>()
+    var activityResultCallBack: ActivityResultCallBack? = null
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -222,5 +236,65 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
+    }
+
+    //Capture Photo
+    public fun capturePhoto() {
+        selectedFilePath = null
+        //Create a file to store the image
+        var photoFile: File? = null
+        try {
+            photoFile = FileUtils.createImageOrVideoFile(this, Constants.MEDIA_TYPE_IMAGE)
+        } catch (ex: IOException) {
+            ex.printStackTrace()
+            Toast.makeText(this, R.string.error_something_wrong, Toast.LENGTH_SHORT).show()
+        }
+
+        photoFile?.let { photo ->
+            selectedFilePath = photo.absolutePath
+            cameraUri = FileProvider.getUriForFile(
+                this,
+                BuildConfig.APPLICATION_ID + ".provider",
+                photo
+            )
+            val pictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            pictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, cameraUri)
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) {
+                pictureIntent.clipData = ClipData.newRawUri("", cameraUri)
+                pictureIntent.addFlags(
+                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION or
+                            Intent.FLAG_GRANT_READ_URI_PERMISSION
+                )
+            }
+            if (pictureIntent.resolveActivity(this.packageManager) != null) {
+                this.startActivityForResult(pictureIntent, Constants.REQUEST_GET_IMAGE_CAMERA)
+            } else {
+                Toast.makeText(
+                    this,
+                    R.string.error_camera_app_not_found,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == RESULT_OK) {
+            if (requestCode == Constants.REQUEST_GET_IMAGE_CAMERA && cameraUri != null) {
+                if (selectedFilePath == null && cameraUri != null) {
+                    selectedFilePath = FileUtils.getPath(this, cameraUri!!)
+                }
+                //received new file path
+                activityResultCallBack?.onReceivedCameraCapturedPath(
+                    mediaType = Constants.MEDIA_TYPE_IMAGE,
+                    mediaPath = selectedFilePath
+                )
+            }
+        }
+    }
+
+    interface ActivityResultCallBack {
+        fun onReceivedCameraCapturedPath(mediaType: Int, mediaPath: String?)
     }
 }

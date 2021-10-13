@@ -356,16 +356,26 @@ interface ApiService {
         @Part("productCode") productCode: RequestBody,
         @Part("quantity") quantity: RequestBody,
         @Part("sku") sku: RequestBody,
-        @PartMap() taxIds: @JvmSuppressWildcards Map<String,@JvmSuppressWildcards List<Int>>,
-        @PartMap() modifierIds:  @JvmSuppressWildcards Map<String,@JvmSuppressWildcards List<Int>>,
-        @PartMap() variationAttributes: @JvmSuppressWildcards  Map<String, @JvmSuppressWildcards List<VariationsAttribute>>
+        @PartMap() taxIds: @JvmSuppressWildcards Map<String, @JvmSuppressWildcards List<Int>>,
+        @PartMap() modifierIds: @JvmSuppressWildcards Map<String, @JvmSuppressWildcards List<Int>>,
+        @PartMap() variationAttributes: @JvmSuppressWildcards Map<String, @JvmSuppressWildcards List<VariationsAttribute>>
     ): ItemsResponse
+
+    @Multipart
+    @POST(ITEMS)
+    suspend fun createItemMultiPar(
+        @Part file: MultipartBody.Part?,
+        @PartMap() request: @JvmSuppressWildcards Map<String, RequestBody>,
+        @PartMap() taxIds: @JvmSuppressWildcards Map<String, List<Int>>,
+        @PartMap() modifierIds: @JvmSuppressWildcards Map<String, List<Int>>,
+        @PartMap() variationAttributes: @JvmSuppressWildcards Map<String, List<VariationsAttribute>>
+    ): ItemResponse
 
     @PUT(ITEM_UPDATE_DELETE)
     suspend fun updateItem(
         @Path("id") id: Int,
         @Body updateItem: CreateItemRequestModel
-    ): ItemsResponse
+    ): ItemResponse
 
     @PUT(CUSTOMER_UPDATE)
     suspend fun updateCustomer(
