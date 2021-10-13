@@ -15,6 +15,7 @@ import android.provider.MediaStore
 import android.text.TextUtils
 import android.util.Log
 import android.webkit.MimeTypeMap
+import com.android.pos.data.remote.Constants
 import java.io.*
 import java.text.DateFormat
 import java.text.DecimalFormat
@@ -982,6 +983,45 @@ object FileUtils {
             // date in wrong format
         }
         return localTimeModelList
+    }
+
+    @Throws(IOException::class)
+    fun createImageOrVideoFile(context: Context, mediaTypeImage: Int): File? {
+        var storageDir: File? = context.filesDir
+        val dirCreated: Boolean
+        if (storageDir == null) {
+            val externalStorage: File? = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+            if (externalStorage == null) {
+                storageDir = File(context.cacheDir, Environment.DIRECTORY_PICTURES)
+                dirCreated = storageDir.exists() || storageDir.mkdirs()
+            } else {
+                dirCreated = true
+            }
+        } else {
+            storageDir = File(context.filesDir, Environment.DIRECTORY_PICTURES)
+            dirCreated = storageDir.exists() || storageDir.mkdirs()
+        }
+        return if (dirCreated) {
+            val timeStamp = System.currentTimeMillis().toString()
+            val file: File? = if (mediaTypeImage == Constants.MEDIA_TYPE_IMAGE) {
+                val imageFileName: String = Constants.FILE_NAME_IMG.toString() + timeStamp
+                File.createTempFile(
+                    imageFileName,  //prefix
+                    "." + Constants.EXTENSION_CAMERA_IMAGE_TEMP_IMG,  //suffix
+                    storageDir //directory
+                )
+            } else {
+                val videoFileName: String = Constants.FILE_NAME_VIDEO.toString() + timeStamp
+                File.createTempFile(
+                    videoFileName,  //prefix
+                    "." + Constants.EXTENSION_CAMERA_VIDEO_TEMP_IMG,  //suffix
+                    storageDir //directory
+                )
+            }
+            file
+        } else {
+            null
+        }
     }
 
 }

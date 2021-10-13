@@ -2,11 +2,9 @@ package com.android.pos.data.remote
 
 import com.android.pos.data.entities.VariationsAttribute
 import com.android.pos.data.model.requestModel.*
+import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressRequestBody
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 import javax.inject.Inject
 
@@ -185,32 +183,8 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
 
     suspend fun createItem(data: CreateItemRequestModel) =
         getResult {
-            //apiService.createItem(data)
-            val active: RequestBody =
-                data.active.toString().toRequestBody("text/plain".toMediaTypeOrNull())
-            val categoryId: RequestBody =
-                data.categoryId.toString().toRequestBody("text/plain".toMediaTypeOrNull())
-            val cost: RequestBody =
-                data.cost.toString().toRequestBody("text/plain".toMediaTypeOrNull())
-            val desc: RequestBody =
-                data.desc.toString().toRequestBody("text/plain".toMediaTypeOrNull())
-            val id: RequestBody = data.id.toString().toRequestBody("text/plain".toMediaTypeOrNull())
-            val kitchenName: RequestBody =
-                data.kitchenName.toString().toRequestBody("text/plain".toMediaTypeOrNull())
-            val locationId: RequestBody =
-                data.locationId.toString().toRequestBody("text/plain".toMediaTypeOrNull())
-            val name: RequestBody =
-                data.name.toString().toRequestBody("text/plain".toMediaTypeOrNull())
-            val price: RequestBody =
-                data.price.toString().toRequestBody("text/plain".toMediaTypeOrNull())
-            val priceType: RequestBody =
-                data.priceType.toString().toRequestBody("text/plain".toMediaTypeOrNull())
-            val productCode: RequestBody =
-                data.productCode.toString().toRequestBody("text/plain".toMediaTypeOrNull())
-            val quantity: RequestBody =
-                data.quantity.toString().toRequestBody("text/plain".toMediaTypeOrNull())
-            val sku: RequestBody =
-                data.sku.toString().toRequestBody("text/plain".toMediaTypeOrNull())
+            val createItemRequestMap = MethodUtils.generateItemRequest(data)
+
             val taxIds = HashMap<String, List<Int>>()
             data.taxIds?.let {
                 taxIds["tax_ids"] = it
@@ -219,6 +193,7 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
             data.modifierSetIds?.let {
                 modifierSetIds["modifier_set_ids"] = it
             }
+
             val variationAttributes = HashMap<String, List<VariationsAttribute>>()
             data.variationsAttributes?.let {
                 variationAttributes["variations_attributes"] = it
@@ -232,22 +207,9 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
                 filePart = MultipartBody.Part.createFormData("image", file.name, fileBody)
             }
 
-
-            apiService.createItemMultiPart(
-                filePart,
-                active = active,
-                category_id = categoryId,
-                cost = cost,
-                desc = desc,
-                id = id,
-                kitchen_name = kitchenName,
-                location_id = locationId,
-                name = name,
-                price = price,
-                priceType = priceType,
-                productCode = productCode,
-                quantity = quantity,
-                sku = sku,
+            apiService.createItemMultiPar(
+                file = filePart,
+                request = createItemRequestMap,
                 taxIds = taxIds,
                 modifierIds = modifierSetIds,
                 variationAttributes = variationAttributes

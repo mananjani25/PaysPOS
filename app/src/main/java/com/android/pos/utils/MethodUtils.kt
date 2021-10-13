@@ -9,6 +9,9 @@ import androidx.appcompat.widget.AppCompatTextView
 import com.android.pos.MainApplication
 import com.android.pos.R
 import com.android.pos.data.model.DineInModel
+import com.android.pos.data.model.requestModel.CreateItemRequestModel
+import com.android.pos.utils.extensions.toMultiPartRequestBody
+import okhttp3.RequestBody
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -99,6 +102,29 @@ class MethodUtils {
         fun getTextTextView(edtFirstName: AppCompatTextView): String {
 
             return edtFirstName.text.toString().trim()
+        }
+
+        fun generateItemRequest(data: CreateItemRequestModel) : HashMap<String, RequestBody>{
+            val createItemRequestMap = HashMap<String, RequestBody>()
+            createItemRequestMap["active"] = data.active.toString().toMultiPartRequestBody()
+            createItemRequestMap["category_id"] =
+                data.categoryId.toString().toMultiPartRequestBody()
+            createItemRequestMap["cost"] = data.cost.toString().toMultiPartRequestBody()
+            createItemRequestMap["desc"] = data.desc.toString().toMultiPartRequestBody()
+            createItemRequestMap["id"] = data.id.toString().toMultiPartRequestBody()
+            createItemRequestMap["kitchen_name"] =
+                data.locationId.toString().toMultiPartRequestBody()
+            createItemRequestMap["location_id"] =
+                data.locationId.toString().toMultiPartRequestBody()
+            createItemRequestMap["name"] = data.name.toString().toMultiPartRequestBody()
+            createItemRequestMap["price"] = data.price.toString().toMultiPartRequestBody()
+            createItemRequestMap["priceType"] = data.priceType.toString().toMultiPartRequestBody()
+            createItemRequestMap["productCode"] =
+                data.productCode.toString().toMultiPartRequestBody()
+            createItemRequestMap["quantity"] = data.quantity.toString().toMultiPartRequestBody()
+            createItemRequestMap["sku"] = data.sku.toString().toMultiPartRequestBody()
+
+            return createItemRequestMap
         }
     }
 

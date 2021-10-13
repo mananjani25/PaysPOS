@@ -7,7 +7,6 @@ import com.android.pos.data.model.responseModel.PrinterResponse
 import com.google.gson.Gson
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 object Constants {
     const val ARG_PARAM1 = "param1"
@@ -251,5 +250,17 @@ object Constants {
 
     }
 
+    /*file related constants*/
+    const val FILE_NAME_VIDEO = "VID_CAPTURE_"
+    const val FILE_NAME_IMG = "IMG_CAPTURE_"
+    const val FILE_CAPTURE = "CAPTURE_"
+    const val FOLDER_CAPTURE = "Android POS/CapturedFiles"
+    const val MEDIA_TYPE_IMAGE = 111
+    const val MEDIA_TYPE_VIDEO = 222
+    const val EXTENSION_CAMERA_IMAGE_TEMP_IMG = "jpg"
+    const val EXTENSION_CAMERA_VIDEO_TEMP_IMG = "mp4"
 
+    //request codes
+    var REQUEST_GET_IMAGE_GALLERY = 1
+    var REQUEST_GET_IMAGE_CAMERA = 2
 }

@@ -16,7 +16,6 @@ import android.widget.Toast
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -24,12 +23,13 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import com.android.pos.R
+import com.android.pos.data.entities.VariationsAttribute
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.Event
-import com.google.android.material.snackbar.Snackbar
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.IOException
-import android.util.DisplayMetrics
 
 
 /**
@@ -140,6 +140,8 @@ fun Int.toDp(): Int = (this / Resources.getSystem().displayMetrics.density).toIn
 
 fun Int.toPx(): Int = (this * Resources.getSystem().displayMetrics.density).toInt()
 
+fun String.toMultiPartRequestBody(): RequestBody =
+    this.toRequestBody("text/plain".toMediaTypeOrNull())
 
 class NoInternetException(message: String) : IOException(message)
 
