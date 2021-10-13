@@ -92,6 +92,8 @@ data class GetOrderDetailsResponse(
         val terminalId: Int,
         @SerializedName("total_amount")
         val totalAmount: Double,
+        @SerializedName("guest_attributes")
+        var guestAttributes : List<CreateOrderResponse.Data.Order.GuestAttributes>,
         @SerializedName("total_cash_discount_fee")
         val totalCashDiscountFee: Double,
         @SerializedName("total_discount")
@@ -214,7 +216,7 @@ data class GetOrderDetailsResponse(
             @SerializedName("discount_amount")
             val discountAmount: Double,
             @SerializedName("discount_id")
-            val discountId: String?,
+            val discountId: Int?,
             @SerializedName("discount_type")
             val discountType: String,
             @SerializedName("employee_id")

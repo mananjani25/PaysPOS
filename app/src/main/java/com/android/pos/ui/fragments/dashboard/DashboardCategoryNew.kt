@@ -30,6 +30,8 @@ import com.android.pos.data.entities.*
 import com.android.pos.data.model.CategorySearchData
 import com.android.pos.data.model.CategoryTabModel
 import com.android.pos.data.model.DineInModel
+import com.android.pos.data.model.DineInOrderDetailAttributes
+import com.android.pos.data.model.responseModel.GetFloorPlanResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ADD
 import com.android.pos.data.remote.Constants.CUSTOMER_ID
@@ -94,6 +96,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private var singleItem: TbItem? = null
     private var cartList: ArrayList<CartModel> = arrayListOf()
     private lateinit var binding: FragmentDashboardCategoryNewBinding
+    private var dineInFloorTableModel: GetFloorPlanResponse.Data.FloorPlanTable? = null
 
     private val TAG = "DashboardCategoryNew"
 
@@ -1756,6 +1759,19 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     }
 
     private fun createDineInRequest() {
+
+        val floorModel = DineInOrderDetailAttributes(
+            floorPlanId = dineInFloorTableModel?.floorPlanId,
+            floorPlanTableId = dineInFloorTableModel?.id,
+            tableType = dineInFloorTableModel?.tableType,
+            tableName = dineInFloorTableModel?.tableName,
+            tableNumber = dineInFloorTableModel?.tableNumber,
+            chairCount = dineInFloorTableModel?.chairCount,
+            floorPlanName = "Party Dining",
+            totalGuestCount = dineInCartAdapter.getList().size + 1
+
+
+        )
         val orderRequestModel = viewModel.createDineInOrderRequest(
             cartModel = cartList[0],
             subTotalPrice = viewModel.subTotalPrice,
@@ -1767,7 +1783,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             "",
             false,
             totalDiscount = viewModel.totalDiscount + cartList[0].discountPrice,
-            0.0
+            0.0,
+            floorPlanDetails = floorModel
         )
         Log.e(TAG, "orderRequestModel:  ${Gson().toJson(orderRequestModel)}")
         if (orderRequestModel != null) {
@@ -1935,6 +1952,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         val numOfGuest: Int by lazy {
             requireArguments().getInt("numberOfGuest")
         }
+
+        dineInFloorTableModel = arguments?.getParcelable("floorplan")
+
 
         val dineInList: ArrayList<DineInModel> = arrayListOf()
         dineInList.add(DineInModel(0, true, 0, "Whole Table"))
@@ -2343,7 +2363,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     var bundle = Bundle()
                     bundle.putDouble("totalPrice", baseResponse.order.totalAmount)
                     bundle.putParcelable("cartList", cartList[0])
-                    bundle.putParcelable("dineInList",baseResponse)
+                    bundle.putParcelable("dineInList", baseResponse)
 
 
                     prefProvider.setValue(Constants.ORDER_TYPE, "")

@@ -1,6 +1,7 @@
 package com.android.pos.data.model.requestModel
 
 
+import com.android.pos.data.model.DineInOrderDetailAttributes
 import com.google.gson.annotations.SerializedName
 
 class OrderAttributeRequestModel {
@@ -43,6 +44,9 @@ class OrderAttributeRequestModel {
 
     @SerializedName("guests_attributes")
     var guestsAttributes: List<GuestsAttributes> = emptyList()
+
+    @SerializedName("dine_in_order_detail_attributes")
+    var dineInOrderDetailsAttr: DineInOrderDetailAttributes? = null
 
     @SerializedName("order_service_charges_attributes")
     var orderServiceChargesAttributes: List<OrderServiceChargesAttribute> = emptyList()
@@ -172,7 +176,7 @@ class GuestsAttributes(
     @SerializedName("id") var id: Int? = null,
     @SerializedName("order_id") var orderId: Int? = null,
     @SerializedName("name") var name: String = "",
-    @SerializedName("is_paid") var isPaid: Boolean = true,
+    @SerializedName("is_paid") var isPaid: Boolean = false,
     @SerializedName("total_amount") var totalAmount: Double? = null,
     @SerializedName("cash_discount") var cashDiscount: Double? = null,
     @SerializedName("total_discount") var totalDiscount: Double? = null,
@@ -199,7 +203,7 @@ class GuestItemsAttributes(
     @SerializedName("guest_id") var guestId: Int? = null,
     @SerializedName("_destroy") var Destroy: Boolean = false,
     @SerializedName("percentage") var percentage: Int? = null,
-    @SerializedName("timestamp") var timestamp:String? = null
+    @SerializedName("timestamp") var timestamp: String? = null
 
 )
 

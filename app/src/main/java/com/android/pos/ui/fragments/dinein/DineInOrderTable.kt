@@ -16,21 +16,37 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.CartModel
+import com.android.pos.data.entities.Modifier
+import com.android.pos.data.entities.TaxData
+import com.android.pos.data.entities.TbItem
+import com.android.pos.data.model.DineInModel
+import com.android.pos.data.model.requestModel.GuestPaymentRequest
+import com.android.pos.data.model.requestModel.PaymentAttributes
 import com.android.pos.data.model.responseModel.CreateOrderResponse
+import com.android.pos.data.model.responseModel.GetFloorPlanResponse
+import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.EMPLOYEE_ID
+import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.databinding.FragmentDineInOrderTableBinding
+import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.DineInTableAdapter
+import com.android.pos.ui.fragments.inventory.Modifiers
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.*
+import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
-class DineInOrderTable : Fragment() {
+class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     private lateinit var binding: FragmentDineInOrderTableBinding
     private var cartList: CartModel? = null
     private var dineInData: CreateOrderResponse.Data? = null
+    private var orderId: Int? = null
     private val TAG = "DineInOrderTable"
     private lateinit var dineInTableAdapter: DineInTableAdapter
     private var totalPrice: Double = 0.0
@@ -42,6 +58,10 @@ class DineInOrderTable : Fragment() {
     private var future_delivery_date: String = ""
     private var future_delivery_time: String = ""
     private var popupWindow: PopupWindow? = null
+    private var floorPlanModel: GetFloorPlanResponse.Data.FloorPlanTable? = null
+
+    @Inject
+    lateinit var prefProvider: PrefProvider
     private val viewModel by viewModels<DineInOrderTableViewModel>()
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -57,6 +77,7 @@ class DineInOrderTable : Fragment() {
         binding.lifecycleOwner = this
         observeShowProgress()
         setupSnackbar()
+        navigateDineInOrder()
         return binding.root
     }
 
@@ -66,41 +87,71 @@ class DineInOrderTable : Fragment() {
 
         dineInTableAdapter = DineInTableAdapter()
         binding.rvItemList.adapter = dineInTableAdapter
+        dineInTableAdapter.setListner(this)
+
+        if (arguments?.getBoolean("isFromFloor") == true) {
+            floorPlanModel = arguments?.getParcelable("floorPlan")
+            Log.e(TAG, "GetOrderId   ${floorPlanModel?.currentOrderDetails?.orderId}")
+            orderId = floorPlanModel?.currentOrderDetails?.orderId
+            floorPlanModel?.currentOrderDetails?.orderId?.let { viewModel.apiCallOrderDetails(it) }
+
+        } else {
 
 
-        cartList = requireArguments().getParcelable("cartList")
+            cartList = arguments?.getParcelable("cartList")
 
-        dineInData = requireArguments().getParcelable("dineInList")
+            dineInData = arguments?.getParcelable("dineInList")
 
-        //totalPrice = requireArguments().getDouble("totalPrice")
+            //totalPrice = requireArguments().getDouble("totalPrice")
 
-        Log.e(TAG, "getDineIncartList:   ${Gson().toJson(cartList)}")
+            Log.e(TAG, "getDineIncartList:   ${Gson().toJson(cartList)}")
+            orderId = dineInData?.order!!.id
 
-        if (cartList?.dineInList != null) {
-            var list = cartList?.dineInList!!.toCollection(arrayListOf())
+            if (cartList?.dineInList != null) {
 
-            val guestAttributes = dineInData!!.order.guestAttributes
-            for (i in 0 until guestAttributes.size) {
+                var list = cartList?.dineInList!!.toCollection(arrayListOf())
 
-                guestAttributes[i].guestItemAttributes.forEach { it ->
+                val guestAttributes = dineInData!!.order.guestAttributes
+                for (i in 0 until guestAttributes.size) {
+
                     for (j in 0 until list.size) {
-                        list.get(j).items.forEach { tb ->
-                            if (it.timestamp == tb.timeStamp) {
-                                it.orderItemId = tb.orderItemId
+                        if (cartList?.dineInList!![j].title == guestAttributes.get(i).name) {
+                            list[j].id = guestAttributes.get(i).id
+                        }
+
+                        for (k in 0 until list.get(j).items.size) {
+                            guestAttributes.get(i).guestItemAttributes.forEach {
+                                if (list.get(j).items.get(k).timeStamp == it.timestamp) {
+                                    list.get(j).items.get(k).isPaid = it.isPaid
+                                }
                             }
                         }
 
 
                     }
 
+                    /*  guestAttributes[i].guestItemAttributes.forEach { it ->
+                      for (j in 0 until list.size) {
+                          list.get(j).items.forEach { tb ->
+                              if (it.timestamp == tb.timeStamp) {
+  //                                it.orderItemId = tb.orderItemId
+                              }
+
+
+                          }
+
+
+                      }
+
+                  }*/
                 }
+
+                dineInTableAdapter.setList(list)
+                binding.txtTotalAmount.setText("${MethodUtils.roundOffAmount(totalPrice)}")
+
             }
 
-            dineInTableAdapter.setList(list)
-            binding.txtTotalAmount.setText("${MethodUtils.roundOffAmount(totalPrice)}")
-
         }
-
         onClick()
 
 
@@ -122,17 +173,35 @@ class DineInOrderTable : Fragment() {
             var guestAttribute = dineInData?.order?.guestAttributes
             Log.e(TAG, "guestAttribute:  ${Gson().toJson(guestAttribute)}")
             if (guestAttribute != null) {
-                var ids: ArrayList<Int> = arrayListOf()
+
+                val ids: MutableList<Int> = ArrayList()
+
+
+                /*  for (i in 0 until guestAttribute.size) {
+                      if (guestAttribute[i].guestItemAttributes != null) {
+                          guestAttribute[i].guestItemAttributes.forEach {
+                              it.orderItemId?.let { it1 -> ids.add(it1) }
+                          }
+                      }
+                  }*/
+
+
+
                 for (i in 0 until guestAttribute.size) {
-                    if (guestAttribute[i].guestItemAttributes != null) {
-                        guestAttribute[i].guestItemAttributes.forEach {
-                            it.orderItemId?.let { it1 -> ids.add(it1) }
-                        }
+                    guestAttribute[i].guestItemAttributes.forEach { it ->
+                        Log.e(TAG, "OrderItemId ${it.orderItemId}")
+                        ids.add(it.orderItemId!!)
+                        //ids.toMutableList().add(it.orderItemId!!)
                     }
+
                 }
 
-                Log.e(TAG, "ids  ${ids.size}")
-                viewModel.fireItemToKitchen(dineInData?.order?.id!!, true, ids)
+
+                Log.e(TAG, "orderITemIDs;  ${Gson().toJson(ids)}")
+                var idStr = Gson().toJson(ids.toTypedArray())
+                Log.e(TAG, "idStr:   $idStr")
+
+                viewModel.fireItemToKitchen(dineInData?.order?.id!!, true, idStr)
 
             }
         }
@@ -233,4 +302,184 @@ class DineInOrderTable : Fragment() {
 
     }
 
+    override fun onGuestPay(dineInModel: DineInModel, position: Int) {
+        Log.e(TAG, "dineInModelPay:  ${Gson().toJson(dineInModel)}")
+        val total = dineInModel.items
+        var subTotal = 0.0
+        var totalTax = 0.0
+        if (total.isNotEmpty()) {
+            total.forEach {
+                subTotal += it.price
+                it.taxes?.forEach { tax ->
+                    totalTax += tax.rate
+                }
+            }
+
+            val total = subTotal + totalTax
+            var model = GuestPaymentRequest(
+                PaymentAttributes().apply {
+                    amount = total
+                    cardName = ""
+                    cardNumber = ""
+                    cardType = ""
+                    cashDiscount = 0.0
+                    cashDiscountFee = 0.0
+                    employeeId = prefProvider.getValueInt(EMPLOYEE_ID, 0)
+                    taxAmount = totalTax
+                    subTotalPrice = subTotal
+                    offlineId = randomOfflineId()
+                    payableType = "GuestTab"
+                    payableType = "Cash"
+                    transactionId = randomOfflineId()
+                    terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
+
+                }
+            )
+
+            dineInModel.id?.let { viewModel.payByGuest(it, model) }
+            val list = dineInTableAdapter.getList()
+            list[position].isPaid = true
+            dineInTableAdapter.setList(list.toCollection(arrayListOf()))
+
+        }
+
+    }
+
+    override fun onSendItemToKitchen(item: TbItem) {
+
+        val ids: MutableList<Int> = ArrayList()
+        item.orderItemId?.let { ids.add(it) }
+
+
+        /*  for (i in 0 until guestAttribute.size) {
+              if (guestAttribute[i].guestItemAttributes != null) {
+                  guestAttribute[i].guestItemAttributes.forEach {
+                      it.orderItemId?.let { it1 -> ids.add(it1) }
+                  }
+              }
+          }*/
+
+
+        var idStr = Gson().toJson(ids.toTypedArray())
+        Log.e(TAG, "orderITemIDs;  ${idStr}")
+
+        viewModel.fireItemToKitchen(orderId!!, true, idStr)
+
+    }
+
+    override fun onWholeTableToKitchen(ids: String) {
+        Log.e(TAG, "idsids:  ${ids}")
+        viewModel.fireItemToKitchen(orderId!!, true, ids)
+    }
+
+    private fun randomOfflineId(): String {
+
+        val locationId = prefProvider.getValueInt(Constants.LOCATION_ID, -1).toString()
+        val timestamp = System.currentTimeMillis().toString()
+        val ss = locationId + timestamp.takeLast(4)
+        val reqLent = 12 - ss.length
+        val Alphabet = getSaltString(reqLent)
+        val timeStampFinal = Alphabet + ss
+        Log.e("timeStampFinal", timeStampFinal)
+
+        return timeStampFinal
+    }
+
+    protected open fun getSaltString(reqLent: Int): String? {
+        val SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
+        val salt = StringBuilder()
+        val rnd = Random()
+        while (salt.length < reqLent) { // length of the random string.
+            val index = (rnd.nextFloat() * SALTCHARS.length).toInt()
+            salt.append(SALTCHARS[index])
+        }
+        return salt.toString()
+    }
+
+    private fun navigateDineInOrder() {
+        viewModel._Basedata.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let { baseResponse ->
+                if (baseResponse != null) {
+                    var list: ArrayList<DineInModel> = arrayListOf()
+
+                    for (i in 0 until baseResponse.guestAttributes.size) {
+                        val model = DineInModel()
+
+                        var listTbItem: ArrayList<TbItem> = arrayListOf()
+
+                        var guestItem = baseResponse.guestAttributes.get(i).guestItemAttributes
+                        for (j in 0 until guestItem.size) {
+
+                            baseResponse.orderItems.forEach {
+                                if (it.timestamp == guestItem[j].timestamp) {
+                                    val item = TbItem()
+                                    item.isPaid = it.isPaid
+                                    item.discountPrice = it.discountAmount
+                                    item.discountId = it.discountId
+                                    item.discountType = it.discountType
+                                    item.name = it.itemName
+
+                                    if (it.orderItemModifiers.isNotEmpty()) {
+                                        var modifiers: ArrayList<Modifier> = arrayListOf()
+                                        it.orderItemModifiers.forEach {
+                                            val model = Modifier()
+                                            model.id = it.id
+                                            model.itemQuantity = it.quantity
+                                            model.name = it.name
+                                            model.orderModifierId = it.orderItemId
+                                            model.price = it.price
+
+                                            modifiers.add(model)
+
+                                        }
+                                        item.modifiers = modifiers
+
+                                    }
+                                    item.price = it.price
+                                    item.itemQuantity = it.quantity
+                                    item.orderItemId = it.id
+                                    item.note = it.note
+
+                                    listTbItem.add(item)
+
+                                }
+                            }
+                        }
+
+                        model.items = listTbItem
+                        model.isPaid = baseResponse.guestAttributes.get(i).isPaid
+                        model.title = baseResponse.guestAttributes.get(i).name
+
+                        list.add(model)
+
+
+                        /*for (j in 0 until baseResponse.guestAttributes.get(i).guestItemAttributes.size) {
+                            var guestItem = baseResponse.guestAttributes.get(i).guestItemAttributes
+
+                            val item = TbItem()
+                            item.price = guestItem.get(j).amount.toDouble()
+                            item.orderItemId = guestItem.get(j).orderItemId
+                            item.isFired = guestItem.get(j).is_fired
+                            item.isPaid = guestItem.get(j).isPaid
+                            item
+
+
+                        }
+*/
+                    }
+
+                    if (list.isNotEmpty()) {
+                        Log.e(TAG, "listData:  ${Gson().toJson(list)}")
+                        dineInTableAdapter.setList(list)
+                    }
+
+
+
+                    Log.e(TAG, "GetbaseResponse:  ${Gson().toJson(baseResponse)}")
+
+
+                }
+            }
+        })
+    }
 }

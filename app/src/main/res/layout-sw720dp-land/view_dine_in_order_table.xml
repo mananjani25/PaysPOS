@@ -42,8 +42,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:checked="true"
-                        android:enabled="false"
+                        android:checked="false"
                         android:gravity="center" />
                 </LinearLayout>
 
@@ -86,8 +85,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:layout_marginEnd="@dimen/_5sdp"
-                android:layout_toStartOf="@+id/btnPay"
+                android:layout_marginEnd="@dimen/_10sdp"
+                android:layout_toStartOf="@+id/btnPaid"
                 android:text="Total: $15.00"
                 android:textColor="@color/txtColor" />
 
@@ -98,7 +97,8 @@
                 android:layout_centerVertical="true"
                 android:layout_toStartOf="@+id/llInfo"
                 android:background="@drawable/bg_button_border"
-                android:gravity="center">
+                android:gravity="center"
+                android:visibility="gone">
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtPay"
@@ -112,6 +112,33 @@
                     android:paddingEnd="@dimen/_4sdp"
                     android:paddingBottom="@dimen/_3sdp"
                     android:text="@string/pay_now"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_5mdpi" />
+
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/btnPaid"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toStartOf="@+id/llInfo"
+                android:background="@color/colorGreen"
+                android:gravity="center"
+                android:visibility="invisible">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:paddingStart="@dimen/_4sdp"
+                    android:paddingTop="@dimen/_3sdp"
+                    android:paddingEnd="@dimen/_4sdp"
+                    android:paddingBottom="@dimen/_3sdp"
+                    android:text=" Paid "
                     android:textColor="@color/white"
                     android:textSize="@dimen/_5mdpi" />
 

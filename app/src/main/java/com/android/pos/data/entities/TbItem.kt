@@ -57,7 +57,8 @@ class TbItem : Parcelable {
     var optionSets: List<OptionSet>? = null
 
     var orderItemId: Int? = null
-    var isFired: Boolean = true
-    var timeStamp : String?=null
+    var isFired: Boolean = false
+    var timeStamp: String? = null
+    var isPaid: Boolean = false
 
 }

@@ -5,6 +5,7 @@ import android.os.Parcel
 import android.os.Parcelable
 import com.android.pos.data.model.requestModel.GuestsAttributes
 import com.google.gson.annotations.SerializedName
+import kotlinx.parcelize.Parcelize
 
 
 data class CreateOrderResponse(
@@ -111,6 +112,7 @@ data class CreateOrderResponse(
             val venue_website: String
         ) {
 
+            @Parcelize
             data class GuestAttributes(
 
                 @SerializedName("id") var id: Int,
@@ -127,9 +129,9 @@ data class CreateOrderResponse(
                 @SerializedName("customer_id") var customerId: String,
                 @SerializedName("guest_item_attributes") var guestItemAttributes: List<GuestItemAttributes>
 
-            ) {
+            ) : Parcelable {
+                @Parcelize
                 data class GuestItemAttributes(
-
                     @SerializedName("id") var id: Int,
                     @SerializedName("order_id") var orderId: String,
                     @SerializedName("order_item_id") var orderItemId: Int?,
@@ -142,10 +144,10 @@ data class CreateOrderResponse(
                     @SerializedName("updated_at") var updatedAt: String,
                     @SerializedName("item_type") var itemType: String,
                     @SerializedName("timestamp") var timestamp: String,
-                    @SerializedName("is_fired") var is_fired: String,
+                    @SerializedName("is_fired") var is_fired: Boolean,
 
 
-                    )
+                    ) : Parcelable
             }
 
             data class Customer(
