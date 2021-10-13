@@ -93,7 +93,7 @@ data class GetOrderDetailsResponse(
         @SerializedName("total_amount")
         val totalAmount: Double,
         @SerializedName("guest_attributes")
-        var guestAttributes : List<CreateOrderResponse.Data.Order.GuestAttributes>,
+        var guestAttributes: List<CreateOrderResponse.Data.Order.GuestAttributes>,
         @SerializedName("total_cash_discount_fee")
         val totalCashDiscountFee: Double,
         @SerializedName("total_discount")
@@ -227,6 +227,8 @@ data class GetOrderDetailsResponse(
             val id: Int,
             @SerializedName("is_paid")
             val isPaid: Boolean,
+            @SerializedName("is_fired")
+            val isFired: Boolean,
             @SerializedName("is_printed")
             val isPrinted: Boolean,
             @SerializedName("item_id")
