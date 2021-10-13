@@ -206,7 +206,7 @@
                                     android:paddingStart="@dimen/_5sdp"
                                     android:paddingTop="@dimen/_5sdp"
                                     android:paddingBottom="@dimen/_5sdp"
-                                    android:text="@{String.format(@string/format,viewModel.createDiscountDetails.percentage)}"
+                                    android:text="@={``+viewModel.createDiscountDetails.percentage}"
                                     android:textColor="@color/black"
                                     android:textColorHint="@color/hintColor"
                                     android:textSize="@dimen/_5mdpi" />
