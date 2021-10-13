@@ -321,6 +321,9 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun orderDetailsById(orderId: Int) =
         getResult { apiService.orderDetailsById(orderId) }
 
+    suspend fun orderDetailsId(orderId: Int) =
+        getResult { apiService.orderDetailsId(orderId) }
+
     suspend fun getKitchenReceiptSettings() =
         getResult { apiService.getKitchenReceiptSettings() }
 
@@ -366,14 +369,20 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun orderUpdateTip(orderId: Int, customerId: Double) =
         getResult { apiService.orderUpdateTip(orderId, customerId) }
 
-    suspend fun updateKitchenFireStatus(id: Int, isFired: Boolean, items: ArrayList<Int>) =
+    suspend fun updateKitchenFireStatus(id: Int, isFired: Boolean, items: String) =
         getResult {
             apiService.updateKitchenFireStatus(id, isFired, items)
         }
+
+
 
     suspend fun orderCancel(id: Int, data: OrderCancelRequest) =
         getResult { apiService.cancelOrder(id, data) }
 
     suspend fun getFloorPlan(locationId: Int) =
         getResult { apiService.getFloorPlan(locationId) }
+
+    suspend fun payByGuest(id:Int,payAll:Boolean,model:GuestPaymentRequest) = getResult {
+        apiService.payByGuest(id,payAll,model)
+    }
 }

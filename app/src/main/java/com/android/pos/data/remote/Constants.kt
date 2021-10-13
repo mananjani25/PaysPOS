@@ -184,6 +184,7 @@ object Constants {
 
     const val UPDATE_TIP = "orders/{id}/update_tip"
     const val FIRE_ITEM_TO_KITCHEN = "orders/{id}/update_fire_status_of_items"
+    const val PAY_BY_GUEST = "payments/pay_by_guest"
 
     const val GET_FLOOR_PLAN = "floor_plans"
 
@@ -193,6 +194,8 @@ object Constants {
     const val BUSINESS_WEBSITE = "business_website"
 
     const val CUSTOMER_ID = "customer_id"
+
+    const val OCCUPIED = "Occupied"
 
     fun createRequestModelForUpdatePrinter(
         model: ArrayList<PrinterResponse.Data.OrderTypes>,

@@ -5,8 +5,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.data.db.AppDatabase
+import com.android.pos.data.model.DineInModel
+import com.android.pos.data.model.requestModel.GuestPaymentRequest
 import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.model.responseModel.CreateOrderResponse
+import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.TaxServiceChargeRepository
 import com.android.pos.data.repositories.TipDiscountRepository
@@ -34,8 +37,40 @@ class DineInOrderTableViewModel @Inject constructor(
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
 
+    val _Basedata = MutableLiveData<Event<GetOrderDetailsResponse.Data?>>()
 
-    fun fireItemToKitchen(id: Int, status: Boolean, itemIds: ArrayList<Int>) {
+    fun payByGuest(id: Int, model: GuestPaymentRequest) {
+        _showProgress.value = Event(true)
+        viewModelScope.launch {
+            val resource: Resource<BaseResponse> =
+                posRepository.payByGuest(id, true, model)
+
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+                    resource.data.let { response ->
+                        if (response?.status == 200) {
+                            _snackbarText.value = Event(resource.message)
+
+                        }
+                    }
+                }
+
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
+                }
+
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
+            }
+
+        }
+
+    }
+
+    fun fireItemToKitchen(id: Int, status: Boolean, itemIds: String) {
 
         _showProgress.value = Event(true)
 
@@ -47,11 +82,8 @@ class DineInOrderTableViewModel @Inject constructor(
                     _showProgress.value = Event(false)
                     resource.data.let { response ->
                         if (response?.status == 200) {
-
                             _snackbarText.value = Event(resource.message)
-
                         }
-
                     }
                 }
 
@@ -67,5 +99,38 @@ class DineInOrderTableViewModel @Inject constructor(
         }
     }
 
+    fun apiCallOrderDetails(orderId: Int) {
+        viewModelScope.launch {
+
+            val resource = posRepository.orderDetailsById(orderId)
+
+
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+                    resource.data.let { logInResponse ->
+                        if (logInResponse?.status == 200) {
+
+                            resource.data?.let { createTaxResponse ->
+                                _Basedata.value = Event(createTaxResponse.data)
+                                //_data.value = Event(createTaxResponse)
+                            }
+                        } else {
+                            _snackbarText.value = Event(resource.message)
+                        }
+                    }
+                }
+
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
+                }
+
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
+            }
+        }
+    }
 
 }

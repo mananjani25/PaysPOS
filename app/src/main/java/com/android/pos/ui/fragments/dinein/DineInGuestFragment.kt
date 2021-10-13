@@ -37,6 +37,7 @@ class DineInGuestFragment : Fragment(), GuestListAdapter.GuestListner {
 
         dineInFloorTableModel = arguments?.getParcelable("dineInFloorTableObject")!!
 
+
         return binding.root
     }
 
@@ -70,7 +71,11 @@ class DineInGuestFragment : Fragment(), GuestListAdapter.GuestListner {
         Log.e(TAG, "numberOfGuest:  $numberOfGuest")
         prefProvider.setValue(ORDER_TYPE, DINE_IN)
         prefProvider.setValue(ORDER_TYPE_NAME, DINE_IN)
-        val bundle = bundleOf("isFromDineIn" to true, "numberOfGuest" to numberOfGuest)
+        val bundle = bundleOf(
+            "isFromDineIn" to true,
+            "numberOfGuest" to numberOfGuest,
+            "floorplan" to dineInFloorTableModel
+        )
         findNavController().navigate(
             R.id.action_dineInGuestFragment_to_dashboardCategoryNew,
             bundle

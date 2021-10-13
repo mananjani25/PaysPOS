@@ -511,6 +511,9 @@ class PosRepository @Inject constructor(
         apiHelperNew.orderDetailsById(orderId)
 
 
+    suspend fun orderDetailsId(orderId: Int) =
+        apiHelperNew.orderDetailsId(orderId)
+
     suspend fun emailReceipt(data: HashMap<String, String>) = apiHelperNew.emailReceipt(data)
     suspend fun phoneReceipt(data: HashMap<String, String>) = apiHelperNew.phoneReceipt(data)
 
@@ -548,8 +551,11 @@ class PosRepository @Inject constructor(
     suspend fun orderUpdateTip(orderId: Int, customerId: Double) =
         apiHelperNew.orderUpdateTip(orderId, customerId)
 
-    suspend fun updateKitchenFireStatus(id: Int, isFired: Boolean, items: ArrayList<Int>) =
+    suspend fun updateKitchenFireStatus(id: Int, isFired: Boolean, items: String) =
         apiHelperNew.updateKitchenFireStatus(id, isFired, items)
+
+    suspend fun payByGuest(id: Int, isAllComplete: Boolean, model: GuestPaymentRequest) =
+        apiHelperNew.payByGuest(id, isAllComplete, model)
 
     suspend fun orderCancel(id: Int, data: OrderCancelRequest) =
         apiHelperNew.orderCancel(id, data)

@@ -15,9 +15,9 @@ class DineInTableItemAdapter : RecyclerView.Adapter<DineInTableItemAdapter.MyVie
     var cartList = ArrayList<TbItem>()
     private val TAG = "CartAdapter"
 
-    private lateinit var mCallback: MyCallback
+    private lateinit var mCallback: DineInItemListner
 
-    fun setCallback(callback: MyCallback) {
+    fun setCallback(callback: DineInItemListner) {
         mCallback = callback
     }
 
@@ -38,8 +38,7 @@ class DineInTableItemAdapter : RecyclerView.Adapter<DineInTableItemAdapter.MyVie
                 binding.tvDiscountRate.visibility = View.GONE
 
             }
-            binding.model = item
-            binding.executePendingBindings()
+
 
             MethodUtils.setPriceTextView(binding.tvRate, totalPrice(item))
 
@@ -57,6 +56,26 @@ class DineInTableItemAdapter : RecyclerView.Adapter<DineInTableItemAdapter.MyVie
             } else {
                 binding.txtNote.visibility = View.VISIBLE
             }
+
+            if (item.isFired) {
+                binding.chkIsFired.isChecked = true
+                binding.chkIsFired.isEnabled = false
+            } else {
+                binding.chkIsFired.isChecked = false
+                binding.chkIsFired.isEnabled = true
+
+            }
+
+            binding.chkIsFired.setOnCheckedChangeListener { buttonView, isChecked ->
+                if (isChecked) {
+                    mCallback.onSendOrderToKitchen(cartList[layoutPosition])
+                    binding.chkIsFired.isChecked = true
+                    binding.chkIsFired.isEnabled = false
+                }
+
+            }
+            binding.model = item
+            binding.executePendingBindings()
         }
 
         init {
@@ -114,6 +133,10 @@ class DineInTableItemAdapter : RecyclerView.Adapter<DineInTableItemAdapter.MyVie
             model.price * model.itemQuantity
 
         }
+    }
+
+    interface DineInItemListner {
+        fun onSendOrderToKitchen(item: TbItem)
     }
 
 }

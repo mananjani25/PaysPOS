@@ -820,6 +820,12 @@
         <action
             android:id="@+id/action_dineInFragment_to_dineInGuestFragment"
             app:destination="@id/dineInGuestFragment" />
+        <action
+            android:id="@+id/action_dineInFragment_to_dineInOrderTable"
+            app:destination="@id/dineInOrderTable"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:popUpTo="@id/dineInFragment"
+            app:popUpToInclusive="false" />
     </fragment>
     <fragment
         android:id="@+id/dineInGuestFragment"

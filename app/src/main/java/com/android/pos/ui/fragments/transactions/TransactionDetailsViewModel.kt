@@ -37,38 +37,38 @@ class TransactionDetailsViewModel @Inject constructor(
 
     val endDate = MutableLiveData<String>()
 
-    fun apiCallOrderDetails(orderId: Int) {
-        viewModelScope.launch {
+        fun apiCallOrderDetails(orderId: Int) {
+            viewModelScope.launch {
 
-            val resource = posRepository.orderDetailsById(orderId)
+                val resource = posRepository.orderDetailsById(orderId)
 
 
-            when (resource.status) {
-                Status.SUCCESS -> {
-                    _showProgress.value = Event(false)
-                    resource.data.let { logInResponse ->
-                        if (logInResponse?.status == 200) {
+                when (resource.status) {
+                    Status.SUCCESS -> {
+                        _showProgress.value = Event(false)
+                        resource.data.let { logInResponse ->
+                            if (logInResponse?.status == 200) {
 
-                            resource.data?.let { createTaxResponse ->
-                                _data.value = Event(createTaxResponse)
+                                resource.data?.let { createTaxResponse ->
+                                    _data.value = Event(createTaxResponse)
+                                }
+                            } else {
+                                _snackbarText.value = Event(resource.message)
                             }
-                        } else {
-                            _snackbarText.value = Event(resource.message)
                         }
                     }
-                }
 
-                Status.ERROR -> {
-                    _snackbarText.value = Event(resource.message)
-                    _showProgress.value = Event(false)
-                }
+                    Status.ERROR -> {
+                        _snackbarText.value = Event(resource.message)
+                        _showProgress.value = Event(false)
+                    }
 
-                Status.LOADING -> {
-                    _showProgress.value = Event(true)
+                    Status.LOADING -> {
+                        _showProgress.value = Event(true)
+                    }
                 }
             }
         }
-    }
 
 
     fun refundPaymentApiCall(

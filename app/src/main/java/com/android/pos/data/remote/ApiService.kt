@@ -50,6 +50,7 @@ import com.android.pos.data.remote.Constants.ORDER_DETAILS
 import com.android.pos.data.remote.Constants.ORDER_EMAIL_RECEIPT
 import com.android.pos.data.remote.Constants.ORDER_PHONE_RECEIPT
 import com.android.pos.data.remote.Constants.ORDER_TYPES
+import com.android.pos.data.remote.Constants.PAY_BY_GUEST
 import com.android.pos.data.remote.Constants.REFUND_PAYMENT
 import com.android.pos.data.remote.Constants.REORDER_CATEGORY
 import com.android.pos.data.remote.Constants.REORDER_ITEM
@@ -482,6 +483,10 @@ interface ApiService {
     @GET(ORDER_DETAILS)
     suspend fun orderDetailsById(@Path("id") orderId: Int): GetOrderDetailsResponse
 
+    @GET(ORDER_DETAILS)
+    suspend fun orderDetailsId(@Path("id") orderId: Int): CreateOrderResponse
+
+
     @GET(KITCHEN_RECEIPT_SETTINGS)
     suspend fun getKitchenReceiptSettings(): GetKitchenReceiptSettingsResponse
 
@@ -553,7 +558,15 @@ interface ApiService {
     suspend fun updateKitchenFireStatus(
         @Path("id") id: Int,
         @Query("is_fired") is_fired: Boolean,
-        @Query("order_item_ids") order_item_ids: ArrayList<Int>
+        @Query("order_item_ids") order_item_ids: String
+    ): BaseResponse
+
+
+    @POST(PAY_BY_GUEST)
+    suspend fun payByGuest(
+        @Query("id") id: Int,
+        @Query("completed_all_payments") completed_all_payments: Boolean,
+        @Body guestPaymentRequest: GuestPaymentRequest
     ): BaseResponse
 
 

@@ -7,6 +7,7 @@ import androidx.lifecycle.*
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.entities.*
 import com.android.pos.data.model.DineInModel
+import com.android.pos.data.model.DineInOrderDetailAttributes
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.model.responseModel.CreateOrderResponse
@@ -675,7 +676,8 @@ class DashBoardCategoryViewModel @Inject constructor(
         future_delivery_time: String,
         isPaid: Boolean,
         totalDiscount: Double,
-        tipAmount: Double
+        tipAmount: Double,
+        floorPlanDetails: DineInOrderDetailAttributes
     ): OrderRequestModel {
 
         val orderAttributeRequestModel = OrderAttributeRequestModel()
@@ -700,6 +702,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             MethodUtils.roundOffAmountDouble(totalPrice) - MethodUtils.roundOffAmountDouble(
                 tipAmount
             )
+        orderAttributeRequestModel.dineInOrderDetailsAttr = floorPlanDetails
         orderAttributeRequestModel.totalDiscount = totalDiscount
         orderAttributeRequestModel.totalServiceCharges =
             MethodUtils.roundOffAmountDouble(totalServiceCharge)

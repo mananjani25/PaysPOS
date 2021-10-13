@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.navigation.fragment.findNavController
 import com.android.pos.data.model.responseModel.GetFloorPlanResponse
+import com.android.pos.data.remote.Constants.OCCUPIED
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.extensions.toDp
@@ -220,10 +221,21 @@ class DineInFragment : Fragment() {
     private fun clickInInflatedLayout(): View.OnClickListener {
         return View.OnClickListener { v ->
             val dineInFloorTableModel = v.tag as GetFloorPlanResponse.Data.FloorPlanTable
-            val bundle = Bundle()
-            bundle.putParcelable("dineInFloorTableObject", dineInFloorTableModel)
-            findNavController().navigate(R.id.action_dineInFragment_to_dineInGuestFragment, bundle)
-            Log.d("Clickeditematposition", "::$dineInFloorTableModel")
+            if (dineInFloorTableModel.status == OCCUPIED) {
+                val bundle = Bundle()
+                bundle.putBoolean("isFromFloor", true)
+                bundle.putParcelable("floorPlan", dineInFloorTableModel)
+                findNavController().navigate(R.id.action_dineInFragment_to_dineInOrderTable,bundle)
+            } else {
+
+                val bundle = Bundle()
+                bundle.putParcelable("dineInFloorTableObject", dineInFloorTableModel)
+                findNavController().navigate(
+                    R.id.action_dineInFragment_to_dineInGuestFragment,
+                    bundle
+                )
+                Log.d("Clickeditematposition", "::$dineInFloorTableModel")
+            }
         }
     }
 
