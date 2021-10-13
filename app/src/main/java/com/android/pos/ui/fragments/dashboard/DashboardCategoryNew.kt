@@ -1033,7 +1033,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 }
                 if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
 
-                    cartList.get(0).orderType = DINE_IN
+                    //TODO bugsolve
+                    if (cartList.isNotEmpty()) {
+                        cartList[0].orderType = DINE_IN
+                    }
 
                     Log.e(TAG, "HeaderPosition:  ${dineInCartAdapter.getHeaderPosition()}")
                     /*cartList.get(0).dineInList?.get(dineInCartAdapter.getHeaderPosition())?.items?.add(
@@ -1115,7 +1118,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         val edtItemName: AppCompatEditText = dialog.findViewById(R.id.edtItemName)
 
         edtItemName.visibility = View.GONE
-        var discountPrice = data.discountPrice / data.itemQuantity
+        var discountPrice = data.discountPrice
 
 
         var adapter: ItemModifierSetAdapter? = null
@@ -1264,7 +1267,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 if (!isItemClick) {
 
 
-                    if (data.itemQuantity == txtQty.text.toString().toInt()) {
+                    if (discountPrice == 0.00) {
                         data.discountPrice = (discountPrice
                                 * txtQty.text.toString().toInt()
                                 )

@@ -1,6 +1,7 @@
 package com.android.pos.data.remote
 
 
+import com.android.pos.data.entities.VariationsAttribute
 import com.android.pos.data.model.CustomerListResponse
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.*
@@ -73,6 +74,7 @@ import com.android.pos.data.remote.Constants.UPDATE_PRINTER_STATUS
 import com.android.pos.data.remote.Constants.UPDATE_TIP
 import com.android.pos.data.remote.Constants.USERS_LOG_IN
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.http.*
 
 
@@ -335,6 +337,29 @@ interface ApiService {
 
     @POST(ITEMS)
     suspend fun createItem(@Body createItemRequestModel: CreateItemRequestModel): ItemsResponse
+
+    @Multipart
+    @POST(ITEMS)
+    suspend fun createItemMultiPart(
+        @Part file: MultipartBody.Part?,
+        /* @Part("image") image: RequestBody, */
+        @Part("active") active: RequestBody,
+        @Part("category_id") category_id: RequestBody,
+        @Part("cost") cost: RequestBody,
+        @Part("desc") desc: RequestBody,
+        @Part("id") id: RequestBody,
+        @Part("kitchen_name") kitchen_name: RequestBody,
+        @Part("location_id") location_id: RequestBody,
+        @Part("name") name: RequestBody,
+        @Part("price") price: RequestBody,
+        @Part("priceType") priceType: RequestBody,
+        @Part("productCode") productCode: RequestBody,
+        @Part("quantity") quantity: RequestBody,
+        @Part("sku") sku: RequestBody,
+        @PartMap() taxIds: @JvmSuppressWildcards Map<String,@JvmSuppressWildcards List<Int>>,
+        @PartMap() modifierIds:  @JvmSuppressWildcards Map<String,@JvmSuppressWildcards List<Int>>,
+        @PartMap() variationAttributes: @JvmSuppressWildcards  Map<String, @JvmSuppressWildcards List<VariationsAttribute>>
+    ): ItemsResponse
 
     @PUT(ITEM_UPDATE_DELETE)
     suspend fun updateItem(

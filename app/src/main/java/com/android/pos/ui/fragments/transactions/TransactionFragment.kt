@@ -708,6 +708,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
             event.getContentIfNotHandled()?.let {
                 val bundle = Bundle().apply {
                     putInt("orderId", it.orderDetails.id)
+                    putString("orderType", it.orderDetails.orderType)
                 }
                 findNavController().navigate(
                     R.id.action_transactionFragment_to_transactionDetailsFragment,

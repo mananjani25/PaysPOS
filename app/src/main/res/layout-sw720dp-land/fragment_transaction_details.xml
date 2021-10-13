@@ -115,7 +115,7 @@
                         style="@style/CustomFontMediumStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/_3sdp"
+                        android:layout_marginStart="@dimen/_3sdp"
                         android:text="@string/tv_date"
                         android:textColor="@color/viewTextColor"
                         android:textSize="@dimen/_5mdpi" />
@@ -125,7 +125,7 @@
                         style="@style/CustomFontSemiBold"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/_3sdp"
+                        android:layout_marginStart="@dimen/_3sdp"
                         android:gravity="end"
                         android:textColor="@color/viewTextColor"
                         android:textSize="@dimen/_5mdpi" />
@@ -142,7 +142,7 @@
                         style="@style/CustomFontMediumStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/_3sdp"
+                        android:layout_marginStart="@dimen/_3sdp"
                         android:text="@string/tv_order_id"
                         android:textColor="@color/viewTextColor"
                         android:textSize="@dimen/_5mdpi" />
@@ -151,7 +151,7 @@
                         style="@style/CustomFontSemiBold"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/_3sdp"
+                        android:layout_marginStart="@dimen/_3sdp"
                         android:gravity="end"
                         android:text="@{``+orderDetails.data.offlineId}"
                         android:textColor="@color/viewTextColor"
@@ -169,7 +169,7 @@
                         style="@style/CustomFontMediumStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/_3sdp"
+                        android:layout_marginStart="@dimen/_3sdp"
                         android:text="@string/tv_order_hash"
                         android:textColor="@color/viewTextColor"
                         android:textSize="@dimen/_5mdpi" />
@@ -178,7 +178,7 @@
                         style="@style/CustomFontSemiBold"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/_3sdp"
+                        android:layout_marginStart="@dimen/_3sdp"
                         android:gravity="end"
                         android:text="@{``+orderDetails.data.id}"
                         android:textColor="@color/viewTextColor"
@@ -196,7 +196,7 @@
                         style="@style/CustomFontMediumStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/_3sdp"
+                        android:layout_marginStart="@dimen/_3sdp"
                         android:text="@string/tv_status"
                         android:textColor="@color/viewTextColor"
                         android:textSize="@dimen/_5mdpi" />
@@ -205,7 +205,7 @@
                         style="@style/CustomFontSemiBold"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/_3sdp"
+                        android:layout_marginStart="@dimen/_3sdp"
                         android:gravity="end"
                         android:text="@{orderDetails.data.paymentStatus}"
                         android:textColor="@color/colorGreen"
@@ -224,7 +224,7 @@
                         style="@style/CustomFontMediumStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/_3sdp"
+                        android:layout_marginStart="@dimen/_3sdp"
                         android:text="@string/tv_note"
                         android:textColor="@color/viewTextColor"
                         android:textSize="@dimen/_5mdpi" />
@@ -233,7 +233,7 @@
                         style="@style/CustomFontSemiBold"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/_3sdp"
+                        android:layout_marginStart="@dimen/_3sdp"
                         android:gravity="end"
                         android:text="@{orderDetails.data.note}"
                         android:textColor="@color/viewTextColor"
@@ -251,7 +251,7 @@
                         style="@style/CustomFontMediumStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/_3sdp"
+                        android:layout_marginStart="@dimen/_3sdp"
                         android:text="@string/tv_order_type"
                         android:textColor="@color/viewTextColor"
                         android:textSize="@dimen/_5mdpi" />
@@ -260,7 +260,7 @@
                         style="@style/CustomFontSemiBold"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/_3sdp"
+                        android:layout_marginStart="@dimen/_3sdp"
                         android:gravity="end"
                         android:text="@{orderDetails.data.orderType}"
                         android:textColor="@color/viewTextColor"
@@ -278,7 +278,7 @@
                         style="@style/CustomFontMediumStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/_3sdp"
+                        android:layout_marginStart="@dimen/_3sdp"
                         android:text="Team Member Name"
                         android:textColor="@color/viewTextColor"
                         android:textSize="@dimen/_5mdpi" />
@@ -287,7 +287,7 @@
                         style="@style/CustomFontSemiBold"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/_3sdp"
+                        android:layout_marginStart="@dimen/_3sdp"
                         android:gravity="end"
                         android:text="@{orderDetails.data.employee.firstName+` `+orderDetails.data.employee.lastName}"
                         android:textColor="@color/viewTextColor"
@@ -305,7 +305,7 @@
                         style="@style/CustomFontMediumStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/_3sdp"
+                        android:layout_marginStart="@dimen/_3sdp"
                         android:text="Customer Name"
                         android:textColor="@color/viewTextColor"
                         android:textSize="@dimen/_5mdpi" />
@@ -315,7 +315,7 @@
                         style="@style/CustomFontSemiBold"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/_3sdp"
+                        android:layout_marginStart="@dimen/_3sdp"
                         android:gravity="end"
                         android:textColor="@color/viewTextColor"
                         android:textSize="@dimen/_5mdpi" />
@@ -336,7 +336,7 @@
                         style="@style/CustomFontSemiBold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/_3sdp"
+                        android:layout_marginStart="@dimen/_3sdp"
                         android:layout_marginTop="@dimen/_5sdp"
                         android:layout_marginBottom="@dimen/_5sdp"
                         android:text="@string/tv_transactions"
@@ -368,7 +368,7 @@
                         style="@style/CustomFontSemiBold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/_3sdp"
+                        android:layout_marginStart="@dimen/_3sdp"
                         android:textColor="@color/viewTextColor"
                         android:textSize="@dimen/_5mdpi" />
 
@@ -376,7 +376,7 @@
                         style="@style/CustomFontBold"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/_3sdp"
+                        android:layout_marginStart="@dimen/_3sdp"
                         android:gravity="end"
                         android:text="@{orderDetails.data.payments.get(0).paymentType}"
                         android:textColor="@color/viewTextColor"
@@ -404,7 +404,7 @@
                         style="@style/CustomFontSemiBold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/_3sdp"
+                        android:layout_marginStart="@dimen/_3sdp"
                         android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.payments.get(0).amount)}"
                         android:textColor="@color/viewTextColor"
                         android:textSize="@dimen/_5mdpi" />
@@ -419,236 +419,243 @@
                 android:layout_height="match_parent"
                 android:background="@color/view" />
 
-            <LinearLayout
+            <androidx.core.widget.NestedScrollView
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="@dimen/_5sdp"
                 android:layout_weight="2"
-                android:orientation="vertical">
+                android:layout_marginStart="@dimen/_5sdp"
+                android:layout_height="match_parent">
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    style="@style/CustomFontSemiBold"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="@dimen/_5sdp"
-                    android:text="@{`Order List ( `+orderDetails.data.orderItems.size()+` Items )`}"
-                    android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_6mdpi" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="0.5dp"
-                    android:background="@color/view" />
-
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvOrderItems"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_5sdp"
-                    android:layout_marginBottom="@dimen/_5sdp"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="0.5dp"
-                    android:background="@color/view" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_3sdp"
-                    android:orientation="horizontal"
-                    android:padding="@dimen/_2sdp">
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontMediumStyle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/_3sdp"
-                        android:text="@string/tv_order_subtotal"
-                        android:textColor="@color/viewTextColor"
-                        android:textSize="@dimen/_5mdpi" />
+                    android:orientation="vertical">
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontSemiBold"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginRight="@dimen/_5sdp"
-                        android:gravity="end"
-                        android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.subTotal)}"
-                        android:textColor="@color/viewTextColor"
-                        android:textSize="@dimen/_5mdpi" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_3sdp"
-                    android:orientation="horizontal"
-                    android:padding="@dimen/_2sdp">
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontMediumStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/_3sdp"
-                        android:text="@string/tv_tax"
+                        android:padding="@dimen/_5sdp"
+                        android:text="@{`Order List ( `+orderDetails.data.orderItems.size()+` Items )`}"
                         android:textColor="@color/viewTextColor"
-                        android:textSize="@dimen/_5mdpi" />
+                        android:textSize="@dimen/_6mdpi" />
 
-                    <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontSemiBold"
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.5dp"
+                        android:background="@color/view" />
+
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvOrderItems"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginRight="@dimen/_5sdp"
-                        android:gravity="end"
-                        android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.totalTaxAmount)}"
-                        android:textColor="@color/viewTextColor"
-                        android:textSize="@dimen/_5mdpi" />
-                </LinearLayout>
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:layout_marginBottom="@dimen/_5sdp"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_3sdp"
-                    android:orientation="horizontal"
-                    android:padding="@dimen/_2sdp">
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.5dp"
+                        android:background="@color/view" />
 
-                    <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontMediumStyle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/_3sdp"
-                        android:text="@string/tv_service_charge"
-                        android:textColor="@color/viewTextColor"
-                        android:textSize="@dimen/_5mdpi" />
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontSemiBold"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginRight="@dimen/_5sdp"
-                        android:gravity="end"
-                        android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.totalServiceCharges)}"
-                        android:textColor="@color/viewTextColor"
-                        android:textSize="@dimen/_5mdpi" />
-                </LinearLayout>
+                        android:layout_marginTop="@dimen/_3sdp"
+                        android:orientation="horizontal"
+                        android:padding="@dimen/_2sdp">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_3sdp"
-                    android:orientation="horizontal"
-                    android:padding="@dimen/_2sdp">
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/CustomFontMediumStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/_3sdp"
+                            android:text="@string/tv_order_subtotal"
+                            android:textColor="@color/viewTextColor"
+                            android:textSize="@dimen/_5mdpi" />
 
-                    <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontMediumStyle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/_3sdp"
-                        android:text="@string/tv_tips"
-                        android:textColor="@color/viewTextColor"
-                        android:textSize="@dimen/_5mdpi" />
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="@dimen/_5sdp"
+                            android:gravity="end"
+                            android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.subTotal)}"
+                            android:textColor="@color/viewTextColor"
+                            android:textSize="@dimen/_5mdpi" />
+                    </LinearLayout>
 
-                    <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontSemiBold"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginRight="@dimen/_5sdp"
-                        android:gravity="end"
-                        android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.totalTips)}"
-                        android:textColor="@color/viewTextColor"
-                        android:textSize="@dimen/_5mdpi" />
-                </LinearLayout>
+                        android:layout_marginTop="@dimen/_3sdp"
+                        android:orientation="horizontal"
+                        android:padding="@dimen/_2sdp">
 
-                <LinearLayout
-                    android:id="@+id/llDiscount"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_3sdp"
-                    android:orientation="horizontal"
-                    android:padding="@dimen/_2sdp"
-                    android:visibility="gone">
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/CustomFontMediumStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/_3sdp"
+                            android:text="@string/tv_tax"
+                            android:textColor="@color/viewTextColor"
+                            android:textSize="@dimen/_5mdpi" />
 
-                    <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontMediumStyle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/_3sdp"
-                        android:text="@string/tv_discount"
-                        android:textColor="@color/colorRed"
-                        android:textSize="@dimen/_5mdpi" />
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="@dimen/_5sdp"
+                            android:gravity="end"
+                            android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.totalTaxAmount)}"
+                            android:textColor="@color/viewTextColor"
+                            android:textSize="@dimen/_5mdpi" />
+                    </LinearLayout>
 
-                    <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontSemiBold"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginRight="@dimen/_5sdp"
-                        android:gravity="end"
-                        android:text="@{`- `+@string/symbole +``+String.format(@string/format,orderDetails.data.totalDiscount)}"
-                        android:textColor="@color/colorRed"
-                        android:textSize="@dimen/_5mdpi" />
-                </LinearLayout>
+                        android:layout_marginTop="@dimen/_3sdp"
+                        android:orientation="horizontal"
+                        android:padding="@dimen/_2sdp">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_3sdp"
-                    android:orientation="horizontal"
-                    android:padding="@dimen/_2sdp">
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/CustomFontMediumStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/_3sdp"
+                            android:text="@string/tv_service_charge"
+                            android:textColor="@color/viewTextColor"
+                            android:textSize="@dimen/_5mdpi" />
 
-                    <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontBold"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/_3sdp"
-                        android:text="@string/tv_total"
-                        android:textColor="@color/viewTextColor"
-                        android:textSize="@dimen/_5mdpi" />
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="@dimen/_5sdp"
+                            android:gravity="end"
+                            android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.totalServiceCharges)}"
+                            android:textColor="@color/viewTextColor"
+                            android:textSize="@dimen/_5mdpi" />
+                    </LinearLayout>
 
-                    <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontBold"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginRight="@dimen/_5sdp"
-                        android:gravity="end"
-                        android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.totalAmount)}"
-                        android:textColor="@color/viewTextColor"
-                        android:textSize="@dimen/_5mdpi" />
-                </LinearLayout>
+                        android:layout_marginTop="@dimen/_3sdp"
+                        android:orientation="horizontal"
+                        android:padding="@dimen/_2sdp">
 
-                <LinearLayout
-                    android:id="@+id/llRefundAmount"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_3sdp"
-                    android:orientation="horizontal"
-                    android:padding="@dimen/_2sdp"
-                    android:visibility="gone">
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/CustomFontMediumStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/_3sdp"
+                            android:text="@string/tv_tips"
+                            android:textColor="@color/viewTextColor"
+                            android:textSize="@dimen/_5mdpi" />
 
-                    <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontBold"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/_3sdp"
-                        android:text="@string/tv_refunded_amount"
-                        android:textColor="@color/colorRed"
-                        android:textSize="@dimen/_5mdpi" />
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="@dimen/_5sdp"
+                            android:gravity="end"
+                            android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.totalTips)}"
+                            android:textColor="@color/viewTextColor"
+                            android:textSize="@dimen/_5mdpi" />
+                    </LinearLayout>
 
-                    <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontBold"
+                    <LinearLayout
+                        android:id="@+id/llDiscount"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginRight="@dimen/_5sdp"
-                        android:gravity="end"
-                        android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.refundDetails.refundedAmount)}"
-                        android:textColor="@color/colorRed"
-                        android:textSize="@dimen/_5mdpi" />
+                        android:layout_marginTop="@dimen/_3sdp"
+                        android:orientation="horizontal"
+                        android:padding="@dimen/_2sdp"
+                        android:visibility="gone">
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/CustomFontMediumStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/_3sdp"
+                            android:text="@string/tv_discount"
+                            android:textColor="@color/colorRed"
+                            android:textSize="@dimen/_5mdpi" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="@dimen/_5sdp"
+                            android:gravity="end"
+                            android:text="@{`- `+@string/symbole +``+String.format(@string/format,orderDetails.data.totalDiscount)}"
+                            android:textColor="@color/colorRed"
+                            android:textSize="@dimen/_5mdpi" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_marginBottom="@dimen/_10sdp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_3sdp"
+                        android:orientation="horizontal"
+                        android:padding="@dimen/_2sdp">
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/CustomFontBold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/_3sdp"
+                            android:text="@string/tv_total"
+                            android:textColor="@color/viewTextColor"
+                            android:textSize="@dimen/_5mdpi" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/CustomFontBold"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="@dimen/_5sdp"
+                            android:gravity="end"
+                            android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.totalAmount)}"
+                            android:textColor="@color/viewTextColor"
+                            android:textSize="@dimen/_5mdpi" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/llRefundAmount"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_3sdp"
+                        android:orientation="horizontal"
+                        android:padding="@dimen/_2sdp"
+                        android:visibility="gone">
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/CustomFontBold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/_3sdp"
+                            android:text="@string/tv_refunded_amount"
+                            android:textColor="@color/colorRed"
+                            android:textSize="@dimen/_5mdpi" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/CustomFontBold"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="@dimen/_5sdp"
+                            android:gravity="end"
+                            android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.refundDetails.refundedAmount)}"
+                            android:textColor="@color/colorRed"
+                            android:textSize="@dimen/_5mdpi" />
+                    </LinearLayout>
+
+
                 </LinearLayout>
-
-
-            </LinearLayout>
+            </androidx.core.widget.NestedScrollView>
 
             <View
                 android:layout_width="0.5dp"
@@ -658,7 +665,7 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/_5sdp"
+                android:layout_marginStart="@dimen/_5sdp"
                 android:layout_marginTop="@dimen/_10sdp"
                 android:layout_marginRight="@dimen/_5sdp"
                 android:layout_marginBottom="@dimen/_5sdp"
@@ -670,7 +677,6 @@
                     style="@style/CustomFontBold"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_alignParentEnd="true"
                     android:layout_gravity="center"
                     android:background="@color/btnColor"
                     android:gravity="center"
@@ -686,7 +692,6 @@
                     style="@style/CustomFontBold"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_alignParentEnd="true"
                     android:layout_gravity="center"
                     android:layout_marginTop="@dimen/_10sdp"
                     android:background="@drawable/background_button_menu"

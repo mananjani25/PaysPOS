@@ -71,7 +71,7 @@ class ManualSaleViewModel @Inject constructor(
 
     fun saveManualSaleData(cartList: List<CartModel>) {
 
-        prefProvider.setValue(Constants.ORDER_TYPE, Constants.TAKEOUT)
+       // prefProvider.setValue(Constants.ORDER_TYPE, Constants.TAKEOUT)
         addCart(cartList[0])
     }
 
