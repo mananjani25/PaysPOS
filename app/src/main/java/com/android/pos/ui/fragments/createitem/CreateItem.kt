@@ -1,7 +1,6 @@
 package com.android.pos.ui.fragments.createitem
 
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.text.TextUtils
@@ -82,11 +81,11 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
         setAdapter()
         setupData()
         setupSnackbar()
-        observeShowProgress()
         getModifiers()
         navigate()
         navigateToEditVariation()
         callBackFromImage()
+        initObservers()
 
         binding.tvAddOptions.setOnClickListener {
 
@@ -107,16 +106,32 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
             findNavController().navigate(R.id.action_createItem_to_customVariationDialog)
         }
 
+        binding.txtSave.setOnClickListener {
+            saveItem()
+        }
 
-        val resultDialogOptionIds = getNavigationResultLiveData<ArrayList<OptionSet>>(DIALOG_KEY)
-        resultDialogOptionIds?.observe(viewLifecycleOwner) {
+        return binding.root
+    }
+
+    private fun initObservers() {
+
+        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    ProgressUtils.showProgressDialog(requireActivity())
+                } else {
+                    ProgressUtils.dismissProgressDialog()
+                }
+            }
+        })
+
+        getNavigationResultLiveData<ArrayList<OptionSet>>(DIALOG_KEY)?.observe(viewLifecycleOwner) {
             optionSetList = it
         }
 
-
-        val resultDialogVariations =
-            getNavigationResultLiveData<List<List<Option>>>(DIALOG_KEY_OPTIONS)
-        resultDialogVariations?.observe(viewLifecycleOwner) { variationList ->
+        getNavigationResultLiveData<List<List<Option>>>(DIALOG_KEY_OPTIONS)?.observe(
+            viewLifecycleOwner
+        ) { variationList ->
 
             binding.llVariationTitle.visibility = View.VISIBLE
             binding.llMainItemDetails.visibility = View.GONE
@@ -124,8 +139,6 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
             val builder = StringBuilder()
             variationList1 = ArrayList()
             customVariationList = ArrayList()
-
-
 
             variationList.forEach {
                 val variation = VariationsAttribute()
@@ -152,23 +165,20 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
 
             }
 
-            Log.d("variationList1", "::" + variationList1)
+            Log.d("variationList1", "::$variationList1")
 
             variationListAdapter.addAllVariations(variationList1!!)
         }
 
-
-        val resultVariationDetails =
-            getNavigationResultLiveData<VariationsAttribute>(DIALOG_KEY_VARIATION_DETAILS)
-        resultVariationDetails?.observe(viewLifecycleOwner) {
+        getNavigationResultLiveData<VariationsAttribute>(DIALOG_KEY_VARIATION_DETAILS)?.observe(
+            viewLifecycleOwner
+        ) {
             variationListAdapter.updateVariation(position1, it)
-
         }
 
-
-        val resultVariationDetailsRemove =
-            getNavigationResultLiveData<VariationsAttribute>(DIALOG_KEY_VARIATION_DETAILS_REMOVE)
-        resultVariationDetailsRemove?.observe(viewLifecycleOwner) {
+        getNavigationResultLiveData<VariationsAttribute>(DIALOG_KEY_VARIATION_DETAILS_REMOVE)?.observe(
+            viewLifecycleOwner
+        ) {
             val deleteVariation = variationListAdapter.deleteVariation(position1, it)
             customVariationList.remove(it)
 
@@ -176,13 +186,13 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
                 binding.llVariationTitle.visibility = View.GONE
                 binding.llMainItemDetails.visibility = View.VISIBLE
             }
-
         }
 
+        Log.d("variationListdelete", "::" + variationList1?.size)
 
-        val resultVariationAddDetails =
-            getNavigationResultLiveData<VariationsAttribute>(DIALOG_KEY_ADD_VARIATION_DETAILS)
-        resultVariationAddDetails?.observe(viewLifecycleOwner) {
+        getNavigationResultLiveData<VariationsAttribute>(DIALOG_KEY_ADD_VARIATION_DETAILS)?.observe(
+            viewLifecycleOwner
+        ) {
             variationList1 = ArrayList()
             customVariationList.add(it)
 
@@ -193,12 +203,14 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
             var customVariation: VariationsAttribute? = null
 
             if (!isPresent) {
-                if (!TextUtils.isEmpty(binding.etItemPrice.text.toString())) {
+                val itemPriceString = binding.etItemPrice.text.toString()
+                if (!TextUtils.isEmpty(itemPriceString)) {
 
                     customVariation = VariationsAttribute().apply {
                         isActive = true
                         isCustom = true
-                        price = binding.etItemPrice.text.toString().replace("$", "").toDouble()
+                        price =
+                            itemPriceString.replace("$", "").replace("\\s".toRegex(), "").toDouble()
                         name = "Regular"
                         priceType = "Fixed"
                         sku = binding.etSku.text.toString()
@@ -213,8 +225,6 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
                         name = "Regular"
                     }
                 }
-
-
             }
             if (customVariation != null) {
                 customVariationList.add(0, customVariation)
@@ -222,16 +232,6 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
             variationListAdapter.addAllVariations(customVariationList)
 
         }
-
-
-
-        Log.d("variationListdelete", "::" + variationList1?.size)
-
-        binding.txtSave.setOnClickListener {
-            saveItem()
-        }
-
-        return binding.root
     }
 
     private fun saveItem() {
@@ -316,16 +316,20 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
         //  }
 
 
-       /* val bitmap =
-            BitmapFactory.decodeFile(imagePath)
-        if (bitmap != null) {
-            base64 = convertBase64(bitmap)
-        }*/
-
+        /* val bitmap =
+             BitmapFactory.decodeFile(imagePath)
+         if (bitmap != null) {
+             base64 = convertBase64(bitmap)
+         }*/
+        var newImagePathToUpload = imagePath
+        if (isEdit && imagePath.equals(itemObject.imageUrl, true)) {
+            //send image if its altered.
+            newImagePathToUpload = ""
+        }
 
         if (variationListAdapter.selectedVariation().size > 0 && variationListAdapter.selectedVariation() != null) {
             viewModel.itemDetails(
-                imagePath,
+                newImagePathToUpload,
                 null,
                 binding.etDesc.text.toString(),
                 "",
@@ -333,28 +337,26 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
             )
         } else {
             val itemPrice: Double?
-            val stock: Int
-            if (TextUtils.isEmpty(binding.etItemPrice.text.toString())) {
-                itemPrice = null
+            val itemPriceString = binding.etItemPrice.text.toString()
+            itemPrice = if (TextUtils.isEmpty(itemPriceString)) {
+                null
             } else {
-                itemPrice = binding.etItemPrice.text.toString().replace("$", "").toDouble()
+                itemPriceString.replace("$", "").replace("\\s".toRegex(), "").toDouble()
             }
 
-            if (TextUtils.isEmpty(binding.etStock.text.toString())) {
-                stock = 0
+            val stock = if (TextUtils.isEmpty(binding.etStock.text.toString())) {
+                0
             } else {
-                stock = binding.etStock.text.toString().toInt()
+                binding.etStock.text.toString().toInt()
             }
             viewModel.itemDetails(
-                imagePath,
+                newImagePathToUpload,
                 itemPrice,
                 binding.etDesc.text.toString(),
                 binding.etSku.text.toString(),
                 stock
             )
         }
-
-
 
         viewModel.submit()
     }
@@ -444,6 +446,9 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
             binding.etSku.setText(itemObject.sku)
             binding.etStock.setText("" + itemObject.quantity)
 
+            //profile image
+            viewProfile(itemObject.imageUrl)
+
         }
 
         binding.etItemPrice.addTextChangedListener(
@@ -485,15 +490,6 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
 
     private fun observeShowProgress() {
 
-        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
-            event.getContentIfNotHandled()?.let {
-                if (it) {
-                    ProgressUtils.showProgressDialog(requireActivity())
-                } else {
-                    ProgressUtils.dismissProgressDialog()
-                }
-            }
-        })
 
     }
 
@@ -515,7 +511,14 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
             }
 
             R.id.imgEdit -> {
-                findNavController().navigate(R.id.action_createItem_to_itemEditTitleDialog)
+                var profileImg = ""
+                if (::itemObject.isInitialized && !itemObject.imageUrl.isNullOrEmpty()) {
+                    profileImg = itemObject.imageUrl ?: ""
+
+                }
+                val bundle = Bundle()
+                bundle.putString("imgUrl", profileImg)
+                findNavController().navigate(R.id.action_createItem_to_itemEditTitleDialog, bundle)
             }
         }
     }
@@ -552,8 +555,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
         )?.observe(viewLifecycleOwner) { result ->
             // Do something with the result.
             Log.e("!_@_ image path", result)
-            imagePath = result
-            viewProfile(imagePath)
+            viewProfile(result)
         }
     }
 
@@ -571,6 +573,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
     private fun viewProfile(profileImage: String?) {
 
         Log.d("!_@_ profileImage", "::$profileImage")
+        imagePath = profileImage
 
         Glide.with(requireActivity()).load(profileImage)
             .apply(RequestOptions().override(100, 100))

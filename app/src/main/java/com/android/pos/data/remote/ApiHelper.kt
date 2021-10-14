@@ -207,7 +207,7 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
                 filePart = MultipartBody.Part.createFormData("image", file.name, fileBody)
             }
 
-            apiService.createItemMultiPar(
+            apiService.createItem(
                 file = filePart,
                 request = createItemRequestMap,
                 taxIds = taxIds,

@@ -335,35 +335,9 @@ interface ApiService {
     @POST(CLOCK_OUT)
     suspend fun hideItem(@FieldMap options: HashMap<String, String>): BaseResponse
 
-    @POST(ITEMS)
-    suspend fun createItem(@Body createItemRequestModel: CreateItemRequestModel): ItemsResponse
-
     @Multipart
     @POST(ITEMS)
-    suspend fun createItemMultiPart(
-        @Part file: MultipartBody.Part?,
-        /* @Part("image") image: RequestBody, */
-        @Part("active") active: RequestBody,
-        @Part("category_id") category_id: RequestBody,
-        @Part("cost") cost: RequestBody,
-        @Part("desc") desc: RequestBody,
-        @Part("id") id: RequestBody,
-        @Part("kitchen_name") kitchen_name: RequestBody,
-        @Part("location_id") location_id: RequestBody,
-        @Part("name") name: RequestBody,
-        @Part("price") price: RequestBody,
-        @Part("priceType") priceType: RequestBody,
-        @Part("productCode") productCode: RequestBody,
-        @Part("quantity") quantity: RequestBody,
-        @Part("sku") sku: RequestBody,
-        @PartMap() taxIds: @JvmSuppressWildcards Map<String, @JvmSuppressWildcards List<Int>>,
-        @PartMap() modifierIds: @JvmSuppressWildcards Map<String, @JvmSuppressWildcards List<Int>>,
-        @PartMap() variationAttributes: @JvmSuppressWildcards Map<String, @JvmSuppressWildcards List<VariationsAttribute>>
-    ): ItemsResponse
-
-    @Multipart
-    @POST(ITEMS)
-    suspend fun createItemMultiPar(
+    suspend fun createItem(
         @Part file: MultipartBody.Part?,
         @PartMap() request: @JvmSuppressWildcards Map<String, RequestBody>,
         @PartMap() taxIds: @JvmSuppressWildcards Map<String, List<Int>>,
