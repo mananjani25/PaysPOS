@@ -14,7 +14,7 @@
             android:id="@+id/linearHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_5sdp"
+
             android:background="@drawable/background_printer_labels"
             android:orientation="horizontal"
             app:layout_constraintTop_toTopOf="parent">
@@ -32,8 +32,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_weight="0.658"
-
+                    android:layout_marginVertical="@dimen/_5sdp"
+                    android:layout_weight="0.66"
                     android:gravity="center">
 
 
@@ -57,7 +57,6 @@
                     style="@style/CustomFontBold"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-
                     android:layout_gravity="center"
                     android:layout_weight="4"
                     android:gravity="start"
@@ -86,10 +85,11 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="@dimen/_5sdp"
-                android:layout_toStartOf="@+id/btnPaid"
+                android:layout_toStartOf="@+id/btnView"
                 android:paddingEnd="@dimen/_10sdp"
                 android:text="Total: $15.00"
-                android:textColor="@color/txtColor" />
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_6mdpi" />
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:id="@+id/btnPay"
@@ -104,6 +104,36 @@
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtPay"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:paddingStart="@dimen/_4sdp"
+                    android:paddingTop="@dimen/_3sdp"
+                    android:paddingEnd="@dimen/_4sdp"
+                    android:paddingBottom="@dimen/_3sdp"
+                    android:text="@string/pay_now"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_5mdpi" />
+
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/btnView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toStartOf="@+id/llInfo"
+                android:background="@drawable/bg_button_border"
+                android:clickable="false"
+                android:gravity="center"
+
+                android:visibility="invisible">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtView"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -141,7 +171,7 @@
                     android:paddingTop="@dimen/_3sdp"
                     android:paddingEnd="@dimen/_4sdp"
                     android:paddingBottom="@dimen/_3sdp"
-                    android:text="  Paid "
+                    android:text="Paid"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_5mdpi" />
 
@@ -186,7 +216,8 @@
             android:background="@drawable/background_square_border_grey"
             android:orientation="vertical"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintTop_toBottomOf="@+id/linearHeader" />
+            app:layout_constraintTop_toBottomOf="@+id/linearHeader"
+            tools:listitem="@layout/view_dine_in_table_items" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

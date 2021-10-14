@@ -39,6 +39,7 @@ import com.android.pos.data.remote.Constants.CUSTOMER_NAME
 import com.android.pos.data.remote.Constants.DELETE
 import com.android.pos.data.remote.Constants.DIALOG_KEY_VARIATION_DETAILS
 import com.android.pos.data.remote.Constants.DINE_IN
+import com.android.pos.data.remote.Constants.DINE_IN_STATUS
 
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
 import com.android.pos.data.remote.Constants.HORIZONTAL
@@ -136,7 +137,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             orderOfflineId = requireArguments().getString("orderOfflineId").toString()
         }
 
-        hideOrderType()
+
         navigateDineInOrder()
 
         binding.footer.imgClock.setOnClickListener {
@@ -163,6 +164,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        hideOrderType()
         setupAdapter()
         setVenueData()
         configureDrawer()
@@ -451,12 +453,31 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     }
 
     private fun hideOrderType() {
-
+        Log.e(TAG, "HideOrderType  ${prefProvider.getValue(ORDER_TYPE, "")}")
+        Log.e(TAG, "DineInSt: ${prefProvider.getValueboolean(DINE_IN_STATUS, true)}")
         if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
             binding.layoutCart.llCart.visibility = View.VISIBLE
             binding.lltakeout.visibility = View.GONE
-            if (prefProvider.getValue(ORDER_TYPE_NAME, TAKEOUT).toString() == DINE_IN) {
-                binding.layoutCart.txtOrderType.setText("Dine In")
+            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT).toString() == DINE_IN) {
+                Log.e(TAG, "getDineInStatus  ${prefProvider.getValueboolean(DINE_IN_STATUS, true)}")
+                if ((prefProvider.getValueboolean(DINE_IN_STATUS, true)) == false) {
+                    binding.layoutCart.llShowMenu.visibility = View.GONE
+                    binding.layoutCart.viewDineIn.visibility = View.GONE
+                    binding.layoutCart.rvCart.visibility = View.GONE
+                    binding.layoutCart.rvCartDineIn.visibility = View.GONE
+
+                    //viewModel.deleteCart()
+                    //isOrderUpdate = false
+
+                    if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
+                        prefProvider.setValue(ORDER_TYPE, "")
+                    }
+                    hideOrderType()
+
+                } else {
+
+                    binding.layoutCart.txtOrderType.setText("Dine In")
+                }
             } else {
                 binding.layoutCart.txtOrderType.text =
                     prefProvider.getValue(ORDER_TYPE_NAME, TAKEOUT).toString()
@@ -484,6 +505,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             binding.layoutCart.txtOrderType.text = ""
             binding.lltakeout.visibility = View.VISIBLE
             binding.layoutCart.llCart.visibility = View.GONE
+
+
         }
     }
 
@@ -1987,7 +2010,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
          prefProvider.setValueInt(ORDER_TYPE_ID, orderType!!.id)
          prefProvider.setValue(ORDER_TYPE_NAME, orderType!!.name)
          prefProvider.setValue(ORDER_TYPE, orderType!!.orderType)
- */
+    */
         cartList.get(0).orderType = DINE_IN
         viewModel.cartLogic(cartList, null, ADD, dineInList = dineInList)
 

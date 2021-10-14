@@ -250,7 +250,6 @@
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
                     android:background="?attr/selectableItemBackground"
-
                     android:paddingStart="@dimen/_5sdp"
                     android:paddingEnd="@dimen/_5sdp"
                     app:srcCompat="@drawable/ic_info" />

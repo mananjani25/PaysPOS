@@ -48,6 +48,7 @@ object Constants {
     const val DINE_IN = "DineIn"
     const val DINE_IN_ITEM = "DineInItem"
     const val OPEN_ORDER = "OpenOrder"
+    const val DINE_IN_STATUS = "DineInStatus"
 
     //Api End Points
     const val USERS_LOG_IN = "users/log_in"
