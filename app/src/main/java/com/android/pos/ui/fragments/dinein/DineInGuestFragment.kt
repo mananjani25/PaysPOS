@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.model.responseModel.GetFloorPlanResponse
+import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.ORDER_TYPE_NAME
@@ -76,6 +77,7 @@ class DineInGuestFragment : Fragment(), GuestListAdapter.GuestListner {
             "numberOfGuest" to numberOfGuest,
             "floorplan" to dineInFloorTableModel
         )
+        prefProvider.setValueboolean(Constants.DINE_IN_STATUS, true)
         findNavController().navigate(
             R.id.action_dineInGuestFragment_to_dashboardCategoryNew,
             bundle

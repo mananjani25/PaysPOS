@@ -18,11 +18,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.navigation.fragment.findNavController
 import com.android.pos.data.model.responseModel.GetFloorPlanResponse
+import com.android.pos.data.remote.Constants.DINE_IN_STATUS
 import com.android.pos.data.remote.Constants.OCCUPIED
+import com.android.pos.di.PrefProvider
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.extensions.toDp
 import com.android.pos.utils.statusUtils.Status
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class DineInFragment : Fragment() {
@@ -33,6 +36,8 @@ class DineInFragment : Fragment() {
     private var dineInFloorNameList = ArrayList<GetFloorPlanResponse.Data>()
     private var dineInFloorTablesList = ArrayList<GetFloorPlanResponse.Data.FloorPlanTable>()
 
+    @Inject
+    lateinit var prefProvider: PrefProvider
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -55,6 +60,7 @@ class DineInFragment : Fragment() {
 
         loadFloorPlan()
         setUpRecyclerView()
+        prefProvider.setValueboolean(DINE_IN_STATUS, false)
 
 
         binding.tvTransaction.setOnClickListener {
@@ -225,7 +231,9 @@ class DineInFragment : Fragment() {
                 val bundle = Bundle()
                 bundle.putBoolean("isFromFloor", true)
                 bundle.putParcelable("floorPlan", dineInFloorTableModel)
-                findNavController().navigate(R.id.action_dineInFragment_to_dineInOrderTable,bundle)
+
+
+                findNavController().navigate(R.id.action_dineInFragment_to_dineInOrderTable, bundle)
             } else {
 
                 val bundle = Bundle()

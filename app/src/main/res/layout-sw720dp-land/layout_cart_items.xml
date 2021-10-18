@@ -105,6 +105,7 @@
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/llShowMenu"
             android:layout_width="match_parent"
+
             android:layout_height="wrap_content"
             android:background="@drawable/background_button_menu"
             android:orientation="horizontal"
