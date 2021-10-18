@@ -8,12 +8,17 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.Typeface;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.android.pos.MainApplication;
+import com.android.pos.R;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -22,12 +27,14 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Queue;
 
 public abstract class SwipeHelper extends ItemTouchHelper.SimpleCallback {
 
     public static final int BUTTON_WIDTH = 100;
     private final RecyclerView recyclerView;
+    public final Context context;
     private List<UnderlayButton> buttons;
     private final GestureDetector gestureDetector;
     private int swipedPos = -1;
@@ -77,6 +84,7 @@ public abstract class SwipeHelper extends ItemTouchHelper.SimpleCallback {
     @SuppressLint("ClickableViewAccessibility")
     public SwipeHelper(Context context, RecyclerView recyclerView) {
         super(0, ItemTouchHelper.LEFT);
+        this.context = context;
         this.recyclerView = recyclerView;
         this.buttons = new ArrayList<>();
         this.gestureDetector = new GestureDetector(context, gestureListener);
@@ -241,6 +249,13 @@ public abstract class SwipeHelper extends ItemTouchHelper.SimpleCallback {
 
             // Draw Text
             p.setColor(Color.WHITE);
+//            ResourcesCompat.getFont(context, R.font.sf_pro_display_regular)
+
+            Typeface currentTypeFace = p.getTypeface();
+            Typeface bold = Typeface.create(currentTypeFace, Typeface.BOLD);
+
+//            p.setTypeface(ResourcesCompat.getFont(Objects.requireNonNull(MainApplication.Companion.getInstance()), R.font.sf_pro_display_regular));
+            p.setTypeface(bold);
             p.setTextSize(16f);
 
             Rect r = new Rect();
