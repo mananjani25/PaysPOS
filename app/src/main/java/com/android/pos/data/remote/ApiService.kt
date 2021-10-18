@@ -5,6 +5,10 @@ import com.android.pos.data.entities.VariationsAttribute
 import com.android.pos.data.model.CustomerListResponse
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.*
+import com.android.pos.data.model.responseModel.category.CategoriesResponse
+import com.android.pos.data.model.responseModel.category.CreateCategoryResponse
+import com.android.pos.data.model.responseModel.item.ItemResponseNew
+import com.android.pos.data.model.responseModel.item.ItemsResponse
 import com.android.pos.data.remote.Constants.CASH_EVENTS
 import com.android.pos.data.remote.Constants.CATEGORY
 import com.android.pos.data.remote.Constants.CATEGORY_UPDATE_DELETE
@@ -345,11 +349,22 @@ interface ApiService {
         @PartMap() variationAttributes: @JvmSuppressWildcards Map<String, List<VariationsAttribute>>
     ): ItemResponseNew
 
+    @Multipart
     @PUT(ITEM_UPDATE_DELETE)
     suspend fun updateItem(
         @Path("id") id: Int,
-        @Body updateItem: CreateItemRequestModel
+        @Part file: MultipartBody.Part?,
+        @PartMap() request: @JvmSuppressWildcards Map<String, RequestBody>,
+        @PartMap() taxIds: @JvmSuppressWildcards Map<String, List<Int>>,
+        @PartMap() modifierIds: @JvmSuppressWildcards Map<String, List<Int>>,
+        @PartMap() variationAttributes: @JvmSuppressWildcards Map<String, List<VariationsAttribute>>
     ): ItemResponseNew
+
+    /*@PUT(ITEM_UPDATE_DELETE)
+    suspend fun updateItem(
+        @Path("id") id: Int,
+        @Body updateItem: CreateItemRequestModel
+    ): ItemResponseNew*/
 
     @PUT(CUSTOMER_UPDATE)
     suspend fun updateCustomer(
@@ -368,14 +383,31 @@ interface ApiService {
         @Query("is_active") is_active: Boolean,
     ): BaseResponse
 
+    @Multipart
     @POST(CATEGORY)
-    suspend fun createCategory(@Body createItemRequestModel: CreateCategoryRequestModel): CreateCategoryResponse
+    suspend fun createCategory(
+        @Part file: MultipartBody.Part?,
+        @PartMap() request: @JvmSuppressWildcards Map<String, RequestBody>,
+        @PartMap() itemIds: @JvmSuppressWildcards Map<String, List<Int>>,
+    ): CreateCategoryResponse
 
+   /* @POST(CATEGORY)
+    suspend fun createCategory(@Body createItemRequestModel: CreateCategoryRequestModel): CreateCategoryResponse*/
+
+    @Multipart
     @PUT(CATEGORY_UPDATE_DELETE)
     suspend fun updateCategory(
         @Path("id") id: Int,
-        @Body updateItem: CreateCategoryRequestModel
+        @Part file: MultipartBody.Part?,
+        @PartMap() request: @JvmSuppressWildcards Map<String, RequestBody>,
+        @PartMap() itemIds: @JvmSuppressWildcards Map<String, List<Int>>,
     ): CreateCategoryResponse
+
+    /*@PUT(CATEGORY_UPDATE_DELETE)
+    suspend fun updateCategory(
+        @Path("id") id: Int,
+        @Body updateItem: CreateCategoryRequestModel
+    ): CreateCategoryResponse*/
 
     @GET(CATEGORY)
     suspend fun getCategories(): CategoriesResponse

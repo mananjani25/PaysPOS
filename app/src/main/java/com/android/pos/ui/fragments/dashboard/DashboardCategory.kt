@@ -1,25 +1,15 @@
 package com.android.pos.ui.fragments.dashboard
 
-import android.annotation.SuppressLint
-import android.app.Activity
 import android.os.Bundle
-import android.util.Log
 import android.view.*
-import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.viewpager2.widget.ViewPager2
 import com.android.pos.R
-import com.android.pos.data.model.responseModel.VenueDataResponse
+import com.android.pos.data.model.responseModel.category.Category
+import com.android.pos.data.model.responseModel.item.Item
 import com.android.pos.databinding.FragmentDashboardCategoryBinding
 import com.android.pos.ui.activities.MainActivity
-import com.android.pos.ui.adapter.CategoryViewPagerAdapter
-import com.android.pos.utils.ProgressUtils
-import com.android.pos.utils.statusUtils.Status
-import com.google.android.material.internal.ViewUtils.dpToPx
-import com.google.android.material.tabs.TabLayout
-import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -27,8 +17,8 @@ class DashboardCategory : Fragment() {
 
     private lateinit var binding: FragmentDashboardCategoryBinding
     private val viewModel by viewModels<DashBoardCategoryViewModel>()
-    private var categoryList: MutableList<VenueDataResponse.Data.Category> = arrayListOf()
-    private var itemList: ArrayList<VenueDataResponse.Data.Category.Item> = arrayListOf()
+    private var categoryList: MutableList<Category> = arrayListOf()
+    private var itemList: ArrayList<Item> = arrayListOf()
     private var categoryTabsList: ArrayList<String> = arrayListOf()
     private var isFlag = false
     override fun onPause() {
@@ -72,7 +62,6 @@ class DashboardCategory : Fragment() {
             (requireActivity() as MainActivity).enableDrawer()
         }
     }
-
 
 
 }

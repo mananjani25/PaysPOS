@@ -217,7 +217,41 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
         }
 
     suspend fun updateItem(id: Int, data: CreateItemRequestModel) =
-        getResult { apiService.updateItem(id, data) }
+        getResult {
+
+            val createItemRequestMap = MethodUtils.generateItemRequest(data)
+
+            val taxIds = HashMap<String, List<Int>>()
+            data.taxIds?.let {
+                taxIds["tax_ids"] = it
+            }
+            val modifierSetIds = HashMap<String, List<Int>>()
+            data.modifierSetIds?.let {
+                modifierSetIds["modifier_set_ids"] = it
+            }
+
+            val variationAttributes = HashMap<String, List<VariationsAttribute>>()
+            data.variationsAttributes?.let {
+                variationAttributes["variations_attributes"] = it
+            }
+
+            //file multipart
+            var filePart: MultipartBody.Part? = null
+            if (data.image?.isNotEmpty() == true) {
+                val file = File(data.image!!)
+                val fileBody = ProgressRequestBody(File(data.image!!), "*/*", null)
+                filePart = MultipartBody.Part.createFormData("image", file.name, fileBody)
+            }
+
+            apiService.updateItem(
+                id,
+                file = filePart,
+                request = createItemRequestMap,
+                taxIds = taxIds,
+                modifierIds = modifierSetIds,
+                variationAttributes = variationAttributes
+            )
+        }
 
     suspend fun deleteCategoryCall(data: Int) =
         getResult { apiService.deleteCategoryCall(data) }
@@ -226,10 +260,55 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
         getResult { apiService.hideCategory(id, active) }
 
     suspend fun createCategoryCall(data: CreateCategoryRequestModel) =
-        getResult { apiService.createCategory(data) }
+        getResult {
+
+            val createCategoryRequestMap = MethodUtils.generateCategoryRequest(data)
+
+            val itemIds = HashMap<String, List<Int>>()
+            data.item_ids?.let {
+                itemIds["item_ids"] = it
+            }
+
+            //file multipart
+            var filePart: MultipartBody.Part? = null
+            if (data.image?.isNotEmpty() == true) {
+                val file = File(data.image!!)
+                val fileBody = ProgressRequestBody(File(data.image!!), "*/*", null)
+                filePart = MultipartBody.Part.createFormData("image", file.name, fileBody)
+            }
+
+            apiService.createCategory(
+                file = filePart,
+                request = createCategoryRequestMap,
+                itemIds = itemIds
+            )
+        }
 
     suspend fun updateCategoryCall(id: Int, data: CreateCategoryRequestModel) =
-        getResult { apiService.updateCategory(id, data) }
+        getResult {
+
+            val createCategoryRequestMap = MethodUtils.generateCategoryRequest(data)
+
+            val itemIds = HashMap<String, List<Int>>()
+            data.item_ids?.let {
+                itemIds["item_ids"] = it
+            }
+
+            //file multipart
+            var filePart: MultipartBody.Part? = null
+            if (data.image?.isNotEmpty() == true) {
+                val file = File(data.image!!)
+                val fileBody = ProgressRequestBody(File(data.image!!), "*/*", null)
+                filePart = MultipartBody.Part.createFormData("image", file.name, fileBody)
+            }
+
+            apiService.updateCategory(
+                id = id,
+                file = filePart,
+                request = createCategoryRequestMap,
+                itemIds = itemIds
+            )
+        }
 
     suspend fun getCategories() =
         getResult { apiService.getCategories() }
@@ -337,14 +416,13 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
         }
 
 
-
     suspend fun orderCancel(id: Int, data: OrderCancelRequest) =
         getResult { apiService.cancelOrder(id, data) }
 
     suspend fun getFloorPlan(locationId: Int) =
         getResult { apiService.getFloorPlan(locationId) }
 
-    suspend fun payByGuest(id:Int,payAll:Boolean,model:GuestPaymentRequest) = getResult {
-        apiService.payByGuest(id,payAll,model)
+    suspend fun payByGuest(id: Int, payAll: Boolean, model: GuestPaymentRequest) = getResult {
+        apiService.payByGuest(id, payAll, model)
     }
 }

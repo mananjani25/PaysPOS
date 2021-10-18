@@ -5,8 +5,7 @@ data class CreateCategoryRequestModel(
     var name: String = "",
     var active: Boolean = true,
     var location_id: Int = -1,
-    var item_ids: ArrayList<Int>? = null
-
-
+    var item_ids: ArrayList<Int>? = null,
+    var image: String?= null
 )
 

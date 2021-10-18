@@ -123,6 +123,9 @@
         <action
             android:id="@+id/action_createCategory_to_createIModifierSet"
             app:destination="@id/createIModifierSet" />
+        <action
+            android:id="@+id/action_createCategory_to_itemEditTitleDialog"
+            app:destination="@id/itemEditTitleDialog" />
         <argument
             android:name="isEdit"
             android:defaultValue="false"

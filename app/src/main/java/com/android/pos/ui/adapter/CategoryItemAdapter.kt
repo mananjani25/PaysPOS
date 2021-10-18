@@ -4,13 +4,13 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.android.pos.data.model.responseModel.VenueDataResponse
+import com.android.pos.data.model.responseModel.item.Item
 import com.android.pos.databinding.ViewCreateItemBinding
 import com.android.pos.databinding.ViewDashboardItemBinding
 
 class CategoryItemAdapter(
     val context: Context,
-    var list: ArrayList<VenueDataResponse.Data.Category.Item>,
+    var list: ArrayList<Item>,
     val listner: CategoryItemList
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     inner class MyViewHolder(private val binding: ViewDashboardItemBinding) :
@@ -34,7 +34,6 @@ class CategoryItemAdapter(
             binding.root.setOnClickListener {
                 listner.onClickedCreateItem()
             }
-
 
 
         }

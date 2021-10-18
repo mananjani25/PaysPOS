@@ -17,8 +17,10 @@ class TbCategory : Parcelable {
     var active: Boolean = false
     var name: String = ""
     var sort: Int = 0
-    var createdAt: String = ""
-    var updatedAt: String = ""
+    var createdAt: String? = ""
+    var updatedAt: String? = ""
     var isSelect: Boolean = false
     var item_ids: List<Int> = emptyList()
+    var thumbImgUrl: String? = ""
+    var originalImgUrl: String? = ""
 }

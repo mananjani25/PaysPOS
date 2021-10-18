@@ -81,7 +81,7 @@
                 android:background="@color/white"
                 android:orientation="vertical">
 
-                <include layout="@layout/label_box" />
+                <include android:id="@+id/ilImage" layout="@layout/label_box" />
 
                 <androidx.appcompat.widget.AppCompatEditText
                     style="@style/CustomFontSemiBold"
