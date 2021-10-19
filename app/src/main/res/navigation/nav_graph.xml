@@ -123,6 +123,9 @@
         <action
             android:id="@+id/action_createCategory_to_createIModifierSet"
             app:destination="@id/createIModifierSet" />
+        <action
+            android:id="@+id/action_createCategory_to_itemEditTitleDialog"
+            app:destination="@id/itemEditTitleDialog" />
         <argument
             android:name="isEdit"
             android:defaultValue="false"
@@ -470,7 +473,12 @@
     <dialog
         android:id="@+id/itemEditTitleDialog"
         android:name="com.android.pos.ui.dialog.ItemEditTitleDialog"
-        android:label="ItemEditTitleDialog" />
+        android:label="ItemEditTitleDialog">
+        <argument
+            android:name="imgUrl"
+            android:defaultValue=""
+            app:argType="string" />
+    </dialog>
     <dialog
         android:id="@+id/itemDialog"
         android:name="com.android.pos.ui.dialog.ItemDialog"

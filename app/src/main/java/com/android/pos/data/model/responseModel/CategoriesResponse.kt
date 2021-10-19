@@ -1,5 +1,3 @@
-package com.android.pos.data.model.responseModel
-
 
 import com.google.gson.annotations.SerializedName
 

@@ -16,7 +16,6 @@ import com.android.pos.utils.performGetOperationDatabase
 import com.android.pos.utils.performGetOperationNew
 import com.android.pos.utils.statusUtils.Resource
 import com.google.gson.Gson
-import okhttp3.MultipartBody
 import javax.inject.Inject
 
 
@@ -117,6 +116,8 @@ class PosRepository @Inject constructor(
                     updatedAt = ""
                     locationId = category.locationId
                     item_ids = category.itemIds
+                    thumbImgUrl = category.thumbImgUrl
+                    originalImgUrl = category.originalImgUrl
                 }
                 categoryModelList.add(model)
 
@@ -134,12 +135,12 @@ class PosRepository @Inject constructor(
                         sku = it.sku
                         isHide = it.active
                         sort = it.sort
-                        imageUrl = it.imgUrl
-                        thumbImageUrl = it.thumpImgUrl
+                        imageUrl = it.originalImageUrl
+                        thumbImageUrl = it.thumbImageUrl
                         categoryId = category.id
                         categoryName = category.name
                         taxes = it.taxes
-                        modifier_set_ids = it.modifierIds
+                        modifier_set_ids = it.modifierSetIds
                         variationsAttributes = it.variations
 
                     }
@@ -185,6 +186,8 @@ class PosRepository @Inject constructor(
                         updatedAt = category.updatedAt.toString()
                         locationId = category.locationId
                         item_ids = category.itemIds
+                        thumbImgUrl = category.thumbImgUrl
+                        originalImgUrl = category.originalImgUrl
                     }
                     categoryModelList.add(model)
                 }
@@ -237,15 +240,15 @@ class PosRepository @Inject constructor(
                         sku = it.sku
                         isHide = it.active
                         sort = it.sort
-                        imageUrl = it.imgUrl
-                        thumbImageUrl = it.thumpImgUrl
+                        imageUrl = it.originalImageUrl
+                        thumbImageUrl = it.thumbImageUrl
                         categoryId = it.categoryId
                         taxes = it.taxes
-                        modifier_set_ids = it.modifierIds
+                        modifier_set_ids = it.modifierSetIds
                         categoryName = it.categoryName ?: ""
                         variationsAttributes = it.variations
-                        option_set_ids = it.optionSetIds
-                        optionSets = it.optionSets
+                        option_set_ids = it.optionSets
+                        optionSets = it.selectedOptionSets
                     }
                     inventoryModelList.add(items)
                 }

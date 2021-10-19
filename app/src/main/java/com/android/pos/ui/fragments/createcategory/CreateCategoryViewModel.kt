@@ -56,7 +56,7 @@ class CreateCategoryViewModel @Inject constructor(
 
     //  val getInventory = catId.value?.let { posRepository.getInventory(it) }
 
-    fun submit(ids: ArrayList<Int>) {
+    fun submit(ids: ArrayList<Int>, imagePath: String?) {
 
         if (TextUtils.isEmpty(categoryDetails.value?.name?.trim())) {
             _snackbarText.value = Event(R.string.category_name_validate)
@@ -70,6 +70,7 @@ class CreateCategoryViewModel @Inject constructor(
                     active = true
                     location_id = prefProvider.getValueInt(Constants.LOCATION_ID, -1)
                     item_ids = ids
+                    image = imagePath
                 }
             } else {
                 createCategoryRequestModel = CreateCategoryRequestModel().apply {
@@ -77,6 +78,7 @@ class CreateCategoryViewModel @Inject constructor(
                     active = true
                     location_id = prefProvider.getValueInt(Constants.LOCATION_ID, -1)
                     item_ids = ids
+                    image = imagePath
                 }
             }
 
@@ -104,6 +106,8 @@ class CreateCategoryViewModel @Inject constructor(
                                         sort = it.data.sort
                                         createdAt = it.data.createdAt
                                         updatedAt = it.data.updatedAt
+                                        thumbImgUrl = it.data.thumbImgUrl
+                                        originalImgUrl = it.data.originalImgUrl
 
                                     }
                                     posRepository.createCategory(category)
