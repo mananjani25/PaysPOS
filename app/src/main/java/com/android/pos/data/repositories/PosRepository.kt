@@ -123,27 +123,7 @@ class PosRepository @Inject constructor(
 
                 category.items.forEach {
 
-                    val items = TbItem().apply {
-                        itemId = it.id
-                        name = it.name
-                        cost = it.cost
-                        price = it.price
-                        priceType = it.priceType ?: ""
-                        quantity = it.quantity
-                        kitchenName = it.kitchenName
-                        productCode = it.productCode
-                        sku = it.sku
-                        isHide = it.active
-                        sort = it.sort
-                        imageUrl = it.originalImageUrl
-                        thumbImageUrl = it.thumbImageUrl
-                        categoryId = category.id
-                        categoryName = category.name
-                        taxes = it.taxes
-                        modifier_set_ids = it.modifierSetIds
-                        variationsAttributes = it.variations
-
-                    }
+                    val items = TbItem().convertToItem(it, category)
 
                     it.modifierSets.forEach { modifierSets ->
 
@@ -228,28 +208,7 @@ class PosRepository @Inject constructor(
 
                 it.data.forEach {
 
-                    val items = TbItem().apply {
-                        itemId = it.id
-                        name = it.name
-                        cost = it.cost
-                        price = it.price
-                        priceType = it.priceType ?: ""
-                        quantity = it.quantity
-                        kitchenName = it.kitchenName
-                        productCode = it.productCode
-                        sku = it.sku
-                        isHide = it.active
-                        sort = it.sort
-                        imageUrl = it.originalImageUrl
-                        thumbImageUrl = it.thumbImageUrl
-                        categoryId = it.categoryId
-                        taxes = it.taxes
-                        modifier_set_ids = it.modifierSetIds
-                        categoryName = it.categoryName ?: ""
-                        variationsAttributes = it.variations
-                        option_set_ids = it.optionSets
-                        optionSets = it.selectedOptionSets
-                    }
+                    val items = TbItem().convertToItem(it,null)
                     inventoryModelList.add(items)
                 }
                 appDatabase.itemDao().addAllItem(inventoryModelList)
@@ -375,8 +334,11 @@ class PosRepository @Inject constructor(
     fun unhideItemList() =
         performGetOperationDatabase(databaseQuery = { appDatabase.itemDao().unhideItem!! })
 
-    suspend fun createItem(data: CreateItemRequestModel) = apiHelperNew.createItem(data)
-    suspend fun updateItem(id: Int, data: CreateItemRequestModel) =
+    suspend fun createItem(item: TbItem) =
+        appDatabase.itemDao().add(item)
+
+    suspend fun createItemApiCall(data: CreateItemRequestModel) = apiHelperNew.createItem(data)
+    suspend fun updateItemApiCall(id: Int, data: CreateItemRequestModel) =
         apiHelperNew.updateItem(id, data)
 
     suspend fun deleteCategoryCall(data: Int) = apiHelperNew.deleteCategoryCall(data)
