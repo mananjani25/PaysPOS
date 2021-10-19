@@ -511,7 +511,9 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
                 val bundle = Bundle().apply {
                     putInt("selectedId", selectedId)
                 }
-                findNavController().navigate(R.id.action_createItem_to_categoriesDialog, bundle)
+                if (findNavController().currentDestination?.id == R.id.createItem) {
+                    findNavController().navigate(R.id.action_createItem_to_categoriesDialog, bundle)
+                }
             }
 
             R.id.imgEdit -> {

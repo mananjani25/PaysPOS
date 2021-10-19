@@ -457,25 +457,6 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                         item.modifiers.forEach {
                             subTotalPrice += (it.price * it.itemQuantity)
-
-                            item.taxes?.forEach { tax ->
-                                if (tax.isActive) {
-                                    totalTax += if (tax.taxType == "Percentage") {
-                                        val itemTaxPrice =
-                                            (tax.rate * (it.price * it.itemQuantity)) / 100
-                                        Log.e("itemTaxPrice", "" + itemTaxPrice)
-                                        String.format("%.2f", itemTaxPrice)
-                                            .toDouble()
-                                    } else {
-
-                                        String.format(
-                                            "%.2f",
-                                            tax.rate * item.itemQuantity
-                                        )
-                                            .toDouble()
-                                    }
-                                }
-                            }
                         }
                     }
 
@@ -505,21 +486,6 @@ class DashBoardCategoryViewModel @Inject constructor(
                     item.modifiers.forEach {
                         subTotalPrice += (it.price * it.itemQuantity)
 
-                        item.taxes?.forEach { tax ->
-                            if (tax.isActive) {
-                                totalTax += if (tax.taxType == "Percentage") {
-                                    val itemTaxPrice =
-                                        (tax.rate * (it.price * it.itemQuantity)) / 100
-                                    Log.e("itemTaxPrice", "" + itemTaxPrice)
-                                    String.format("%.2f", itemTaxPrice)
-                                        .toDouble()
-                                } else {
-
-                                    String.format("%.2f", tax.rate * it.itemQuantity)
-                                        .toDouble()
-                                }
-                            }
-                        }
                     }
                 }
 
@@ -557,10 +523,18 @@ class DashBoardCategoryViewModel @Inject constructor(
             if (tax.isActive) {
                 totalTax += if (tax.taxType == "Percentage") {
 
+                    var modifierPrice = 0.0
                     val price =
                         (item.price * item.itemQuantity) - item.discountPrice
+
+                    item.modifiers.forEach {
+                        modifierPrice += (it.price * it.itemQuantity)
+                    }
+
+                    val totalPrice = price + modifierPrice
+
                     val itemTaxPrice =
-                        (tax.rate * price) / 100
+                        (tax.rate * totalPrice) / 100
                     Log.e("itemTaxPrice", "" + itemTaxPrice)
                     String.format("%.2f", itemTaxPrice)
                         .toDouble()

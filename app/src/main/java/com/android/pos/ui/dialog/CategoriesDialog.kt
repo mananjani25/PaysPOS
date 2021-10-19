@@ -119,15 +119,15 @@ class CategoriesDialog : DialogFragment(), View.OnClickListener {
             R.id.txtDone -> {
 
                 val chooseModel = adapter.getData()
-                selectedId = adapter.getPos()
                 if (chooseModel != null) {
+                    selectedId = adapter.getPos()
                     val result = Bundle().apply {
                         putParcelable("data", chooseModel)
                         putInt("selectedId", selectedId)
                     }
                     setFragmentResult("request_key", result)
+                    findNavController().navigateUp()
                 }
-                findNavController().navigateUp()
             }
 
         }

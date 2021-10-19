@@ -177,12 +177,12 @@ class PosRepository @Inject constructor(
                 val categoryModelList = ArrayList<TbCategory>()
                 it.data.forEach { category ->
                     val model = TbCategory().apply {
-                        createdAt = category.createdAt
+                        createdAt = category.createdAt.toString()
                         id = category.id
                         active = category.active
                         name = category.name
                         sort = category.sort
-                        updatedAt = category.updatedAt
+                        updatedAt = category.updatedAt.toString()
                         locationId = category.locationId
                         item_ids = category.itemIds
                     }
