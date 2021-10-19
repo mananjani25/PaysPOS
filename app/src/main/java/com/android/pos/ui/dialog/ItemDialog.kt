@@ -42,7 +42,6 @@ class ItemDialog : DialogFragment(), View.OnClickListener {
     }
 
     private fun setupUI() {
-        isEdit = arguments?.getBoolean("isEdit")!!
         where = arguments?.getString("where", "")!!
 
         if (where == "tax") {

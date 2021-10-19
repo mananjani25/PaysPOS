@@ -1,6 +1,5 @@
-package com.android.pos.data.model.responseModel
 
-
+import com.android.pos.data.model.responseModel.BaseResponse
 import com.google.gson.annotations.SerializedName
 
 data class CategoriesResponse(
@@ -11,7 +10,7 @@ data class CategoriesResponse(
         @SerializedName("active")
         val active: Boolean,
         @SerializedName("created_at")
-        val createdAt: String,
+        val createdAt: String?,
         @SerializedName("id")
         val id: Int,
         @SerializedName("item_ids")
@@ -23,6 +22,6 @@ data class CategoriesResponse(
         @SerializedName("sort")
         val sort: Int = -1,
         @SerializedName("updated_at")
-        val updatedAt: String
+        val updatedAt: String?
     )
 }

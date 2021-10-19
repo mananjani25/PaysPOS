@@ -1,6 +1,9 @@
 package com.android.pos.ui.fragments.createcategory
 
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +14,7 @@ import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.TbCategory
 import com.android.pos.data.model.CategoryListItemModel
+import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.CREATECATEGORY
 import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.databinding.CreateCategoryActivityBinding
@@ -18,11 +22,22 @@ import com.android.pos.ui.adapter.CategoryListItemAdapter
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.statusUtils.Status
+import com.bumptech.glide.Glide
+import com.bumptech.glide.Priority
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.DecodeFormat
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.Target
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class CreateCategory : Fragment() {
+
+    private var imagePath: String? = ""
     lateinit var binding: CreateCategoryActivityBinding
     private val viewModel by viewModels<CreateCategoryViewModel>()
     private var listCategory: ArrayList<CategoryListItemModel> = arrayListOf()
@@ -48,12 +63,16 @@ class CreateCategory : Fragment() {
             binding.txtTitle.text = getString(R.string.update_category)
             viewModel.categoryData(categoryData)
             viewModel.isEditData(isEdit, categoryData.id)
+
+            //load image from edit
+            viewProfile(categoryData.thumbImgUrl)
         }
 
         setupSnackbar()
         observeShowProgress()
         getInventoryListObserver()
         navigationObserver()
+        callBackFromImage()
 
         return binding.root
     }
@@ -70,13 +89,39 @@ class CreateCategory : Fragment() {
     private fun onClick() {
 
         binding.txtSave.setOnClickListener {
-
-            viewModel.submit(adapter.getIds())
-
-            //
+            var newImagePathToUpload = imagePath
+            if (isEdit && imagePath.equals(categoryData.thumbImgUrl, true)) {
+                //send image if its altered.
+                newImagePathToUpload = ""
+            }
+            viewModel.submit(adapter.getIds(), newImagePathToUpload)
         }
         binding.imgBack.setOnClickListener {
             onSubmitBack()
+        }
+        binding.ilImage.relImage.setOnClickListener {
+            openDialog()
+        }
+    }
+
+    private fun openDialog() {
+        var profileImg = ""
+        if (::categoryData.isInitialized && !categoryData.thumbImgUrl.isNullOrEmpty()) {
+            profileImg = categoryData.thumbImgUrl ?: ""
+
+        }
+        val bundle = Bundle()
+        bundle.putString("imgUrl", profileImg)
+        findNavController().navigate(R.id.action_createCategory_to_itemEditTitleDialog, bundle)
+    }
+
+    private fun callBackFromImage() {
+        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<String>(
+            Constants.DIALOG_IMAGE_PATH
+        )?.observe(viewLifecycleOwner) { result ->
+            // Do something with the result.
+            Log.e("!_@_ image path", result)
+            viewProfile(result)
         }
     }
 
@@ -121,7 +166,6 @@ class CreateCategory : Fragment() {
 
     private fun getInventoryListObserver() {
 
-
         viewModel.items.observe(viewLifecycleOwner, {
 
             it?.let { resource ->
@@ -151,7 +195,40 @@ class CreateCategory : Fragment() {
 
     private fun setAdapter() {
         binding.recyclerViewItemsList.adapter = adapter
+    }
 
+    private fun viewProfile(profileImage: String?) {
 
+        Log.d("!_@_ profileImage", "::$profileImage")
+        imagePath = profileImage
+
+        Glide.with(requireActivity()).load(profileImage)
+            //.apply(RequestOptions().override(100, 100))
+            .placeholder(R.drawable.ic_item_placeholder)
+
+            .listener(object : RequestListener<Drawable> {
+                override fun onLoadFailed(
+                    e: GlideException?,
+                    model: Any?,
+                    target: Target<Drawable>?,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    return false
+                }
+
+                override fun onResourceReady(
+                    resource: Drawable?,
+                    model: Any?,
+                    target: Target<Drawable>?,
+                    dataSource: DataSource?,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    return false
+                }
+
+            }).dontTransform().dontAnimate().diskCacheStrategy(DiskCacheStrategy.ALL)
+            .encodeFormat(Bitmap.CompressFormat.PNG).skipMemoryCache(true)
+            .format(DecodeFormat.DEFAULT).priority(Priority.IMMEDIATE).centerCrop()
+            .into(binding.ilImage.ivImage)
     }
 }

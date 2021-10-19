@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.model.responseModel.VenueDataResponse
+import com.android.pos.data.model.responseModel.item.Item
 import com.android.pos.databinding.FragmentCategoryItemListBinding
 import com.android.pos.ui.adapter.CategoryItemAdapter
 import dagger.hilt.android.AndroidEntryPoint
@@ -23,7 +24,7 @@ class CategoryList : Fragment() {
 
     companion object {
         private val ITEM_LIST = "item_list"
-        fun newInstance(list: List<VenueDataResponse.Data.Category.Item>): CategoryList {
+        fun newInstance(list: List<Item>): CategoryList {
             val args: Bundle = Bundle()
             args.putSerializable(ITEM_LIST, list as Serializable)
             val fragment = CategoryList()
@@ -45,8 +46,8 @@ class CategoryList : Fragment() {
         )
         binding.lifecycleOwner = this
 
-        val list: ArrayList<VenueDataResponse.Data.Category.Item> =
-            requireArguments().get(ITEM_LIST) as ArrayList<VenueDataResponse.Data.Category.Item>
+        val list: ArrayList<Item> =
+            requireArguments().get(ITEM_LIST) as ArrayList<Item>
         Log.e("CategoryList", "${list.size}")
 
         binding.recyclerViewItemsList.adapter = CategoryItemAdapter(

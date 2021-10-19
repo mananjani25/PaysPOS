@@ -8,14 +8,15 @@ import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatTextView
 import com.android.pos.MainApplication
 import com.android.pos.R
-import com.android.pos.data.model.DineInModel
+import com.android.pos.data.model.requestModel.CreateCategoryRequestModel
 import com.android.pos.data.model.requestModel.CreateItemRequestModel
 import com.android.pos.utils.extensions.toMultiPartRequestBody
+import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import java.io.File
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 class MethodUtils {
@@ -104,7 +105,7 @@ class MethodUtils {
             return edtFirstName.text.toString().trim()
         }
 
-        fun generateItemRequest(data: CreateItemRequestModel) : HashMap<String, RequestBody>{
+        fun generateItemRequest(data: CreateItemRequestModel): HashMap<String, RequestBody> {
             val createItemRequestMap = HashMap<String, RequestBody>()
             createItemRequestMap["active"] = data.active.toString().toMultiPartRequestBody()
             createItemRequestMap["category_id"] =
@@ -125,6 +126,30 @@ class MethodUtils {
             createItemRequestMap["sku"] = data.sku.toString().toMultiPartRequestBody()
 
             return createItemRequestMap
+        }
+
+        fun generateCategoryRequest(data: CreateCategoryRequestModel): HashMap<String, RequestBody> {
+            val createCategoryRequestMap = HashMap<String, RequestBody>()
+            createCategoryRequestMap["id"] = data.id.toString().toMultiPartRequestBody()
+            createCategoryRequestMap["name"] = data.name.toString().toMultiPartRequestBody()
+            createCategoryRequestMap["active"] = data.active.toString().toMultiPartRequestBody()
+            createCategoryRequestMap["location_id"] =
+                data.location_id.toString().toMultiPartRequestBody()
+            return createCategoryRequestMap
+        }
+
+        fun makeMultiPartBody(
+            fileUrl: String?,
+            contentType: String,
+            fileKeyName: String
+        ): MultipartBody.Part? {
+            var filePart: MultipartBody.Part? = null
+            if (fileUrl?.isNotEmpty() == true) {
+                val file = File(fileUrl)
+                val fileBody = ProgressRequestBody(File(fileUrl), contentType, null)
+                filePart = MultipartBody.Part.createFormData(fileKeyName, file.name, fileBody)
+            }
+            return filePart
         }
     }
 

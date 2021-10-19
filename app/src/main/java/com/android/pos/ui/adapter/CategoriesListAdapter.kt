@@ -161,7 +161,7 @@ class CategoriesListAdapter(private val isChoose: Boolean) :
     }
 
     fun getData(): TbCategory? {
-        if (mpos == -2) {
+        if (mpos < 0) {
             return null
         }
         return filterList[mpos]

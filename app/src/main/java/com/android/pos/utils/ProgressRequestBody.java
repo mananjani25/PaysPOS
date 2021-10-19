@@ -31,7 +31,7 @@ public class ProgressRequestBody extends RequestBody {
     @Override
     public MediaType contentType() {
         //return MediaType.parse(content_type + "/*");
-        return MediaType.parse("*/*");
+        return MediaType.parse(content_type);
     }
 
     @Override

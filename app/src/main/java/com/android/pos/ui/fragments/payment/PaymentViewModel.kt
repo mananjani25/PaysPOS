@@ -639,7 +639,7 @@ class PaymentViewModel @Inject constructor(
                 totalPrice = MethodUtils.roundOffAmountDouble(it.price * it.itemQuantity)
                 modifier_set_id = it.modifierSetId!!
                 quantity = it.itemQuantity
-                order_item_taxes_attributes = orderModifierTaxesAttributes(item, it, terminalId)
+                order_item_taxes_attributes = arrayListOf()
             }
             orderItemModifierAttributeList.add(orderItemModifierAttribute)
         }
@@ -656,47 +656,47 @@ class PaymentViewModel @Inject constructor(
         val orderItemTaxesAttributeList: ArrayList<OrderModifierTaxesAttribute> =
             arrayListOf()
 
-        items.taxes?.forEach { tax ->
-            if (tax.isActive) {
-                val orderModifierTaxesAttribute = OrderModifierTaxesAttribute()
-                if (isUpdateOrder && tax.orderTaxId != null)
-                    orderModifierTaxesAttribute.id = tax.orderTaxId
-
-
-                orderModifierTaxesAttribute.order_item_modifier_id = modifier.id
-                orderModifierTaxesAttribute.tax_id = tax.id
-                orderModifierTaxesAttribute.isDefault = tax.isDefault
-                orderModifierTaxesAttribute.is_tax_removed = false
-                orderModifierTaxesAttribute.is_modifier = true
-                orderModifierTaxesAttribute.category_id = items.categoryId
-                orderModifierTaxesAttribute.terminal_id = terminalId
-                orderModifierTaxesAttribute.modifier_id = modifier.id!!
-                orderModifierTaxesAttribute.timestamp = System.currentTimeMillis().toString()
-                orderModifierTaxesAttribute.name = tax.name.toString()
-                orderModifierTaxesAttribute.amount = tax.rate
-
-                if (isUpdateOrder) {
-                    orderModifierTaxesAttribute.order_id = orderId
-                    orderModifierTaxesAttribute.order_item_id = items.orderItemId
-                }
-
-                if (tax.taxType == "Percentage") {
-                    val itemTaxPrice =
-                        (tax.rate * (modifier.price * modifier.itemQuantity)) / 100
-                    orderModifierTaxesAttribute.taxTotalAmount =
-                        MethodUtils.roundOffAmountDouble(itemTaxPrice)
-                } else {
-
-                    val ss = tax.rate * modifier.itemQuantity
-
-                    orderModifierTaxesAttribute.taxTotalAmount =
-                        MethodUtils.roundOffAmountDouble((ss))
-                }
-
-
-                orderItemTaxesAttributeList.add(orderModifierTaxesAttribute)
-            }
-        }
+//        items.taxes?.forEach { tax ->
+//            if (tax.isActive) {
+//                val orderModifierTaxesAttribute = OrderModifierTaxesAttribute()
+//                if (isUpdateOrder && tax.orderTaxId != null)
+//                    orderModifierTaxesAttribute.id = tax.orderTaxId
+//
+//
+//                orderModifierTaxesAttribute.order_item_modifier_id = modifier.id
+//                orderModifierTaxesAttribute.tax_id = tax.id
+//                orderModifierTaxesAttribute.isDefault = tax.isDefault
+//                orderModifierTaxesAttribute.is_tax_removed = false
+//                orderModifierTaxesAttribute.is_modifier = true
+//                orderModifierTaxesAttribute.category_id = items.categoryId
+//                orderModifierTaxesAttribute.terminal_id = terminalId
+//                orderModifierTaxesAttribute.modifier_id = modifier.id!!
+//                orderModifierTaxesAttribute.timestamp = System.currentTimeMillis().toString()
+//                orderModifierTaxesAttribute.name = tax.name.toString()
+//                orderModifierTaxesAttribute.amount = tax.rate
+//
+//                if (isUpdateOrder) {
+//                    orderModifierTaxesAttribute.order_id = orderId
+//                    orderModifierTaxesAttribute.order_item_id = items.orderItemId
+//                }
+//
+//                if (tax.taxType == "Percentage") {
+//                    val itemTaxPrice =
+//                        (tax.rate * (modifier.price * modifier.itemQuantity)) / 100
+//                    orderModifierTaxesAttribute.taxTotalAmount =
+//                        MethodUtils.roundOffAmountDouble(itemTaxPrice)
+//                } else {
+//
+//                    val ss = tax.rate * modifier.itemQuantity
+//
+//                    orderModifierTaxesAttribute.taxTotalAmount =
+//                        MethodUtils.roundOffAmountDouble((ss))
+//                }
+//
+//
+//                orderItemTaxesAttributeList.add(orderModifierTaxesAttribute)
+//            }
+//        }
 
 
         return orderItemTaxesAttributeList
@@ -729,8 +729,22 @@ class PaymentViewModel @Inject constructor(
                 }
 
                 if (tax.taxType == "Percentage") {
+
+
+                    var modifierPrice = 0.0
+
+                    val price =
+                        (items.price * items.itemQuantity) - items.discountPrice
+
+                    items.modifiers.forEach {
+                        modifierPrice += (it.price * it.itemQuantity)
+                    }
+
+                    val totalPrice = price + modifierPrice
+
                     val itemTaxPrice =
-                        (tax.rate * ((items.price - items.discountPrice) * items.itemQuantity)) / 100
+                        (tax.rate * totalPrice) / 100
+
                     orderItemTaxesAttribute.taxTotalAmount =
                         MethodUtils.roundOffAmountDouble(itemTaxPrice)
                 } else {

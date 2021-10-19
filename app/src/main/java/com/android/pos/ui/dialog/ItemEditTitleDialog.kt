@@ -42,6 +42,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class ItemEditTitleDialog : DialogFragment() {
 
+    private var imgUrl: String? = ""
     private lateinit var adapter: ChooseColorsAdapter
     private lateinit var binding: DialogEditItemTitleBinding
     private var mUri: Uri? = null
@@ -59,6 +60,12 @@ class ItemEditTitleDialog : DialogFragment() {
         binding =
             DataBindingUtil.inflate(inflater, R.layout.dialog_edit_item_title, container, false)
         binding.lifecycleOwner = this
+
+        imgUrl = arguments?.getString("imgUrl") ?: ""
+        if(imgUrl?.isNotEmpty() == true){
+            imagePath = imgUrl
+            showImage()
+        }
 
         setAdapter()
         initListeners()
@@ -190,10 +197,8 @@ class ItemEditTitleDialog : DialogFragment() {
 
             }
             OPERATION_CHOOSE_PHOTO -> if (resultCode == RESULT_OK) {
-                if (Build.VERSION.SDK_INT >= 19) {
-                    imagePath = handleImageOnKitkat(data, requireActivity())
-                    showImage()
-                }
+                imagePath = handleImageOnKitkat(data, requireActivity())
+                showImage()
             }
         }
     }
@@ -216,7 +221,7 @@ class ItemEditTitleDialog : DialogFragment() {
         binding.includeLayout.progressBar.visibility = View.VISIBLE
 
         Glide.with(requireActivity()).load(profileImage)
-            .apply(RequestOptions().override(100, 100))
+            //.apply(RequestOptions().override(100, 100))
             .placeholder(R.drawable.ic_item_placeholder)
 
             .listener(object : RequestListener<Drawable> {
