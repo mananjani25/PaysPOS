@@ -39,6 +39,11 @@ class DineInOrderTableViewModel @Inject constructor(
 
     val _Basedata = MutableLiveData<Event<GetOrderDetailsResponse.Data?>>()
 
+
+    private val _msgText = MutableLiveData<Event<String>>()
+    val msgText: LiveData<Event<String>> = _msgText
+
+
     fun payByGuest(id: Int, model: GuestPaymentRequest) {
         _showProgress.value = Event(true)
         viewModelScope.launch {
@@ -83,6 +88,7 @@ class DineInOrderTableViewModel @Inject constructor(
                     resource.data.let { response ->
                         if (response?.status == 200) {
                             _snackbarText.value = Event(resource.message)
+                            _msgText.value = Event(response.message)
                         }
                     }
                 }
