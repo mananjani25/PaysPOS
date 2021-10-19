@@ -3,9 +3,6 @@ package com.android.pos.data.remote
 import com.android.pos.data.entities.VariationsAttribute
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.utils.MethodUtils
-import com.android.pos.utils.ProgressRequestBody
-import okhttp3.MultipartBody
-import java.io.File
 import javax.inject.Inject
 
 class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDataSource() {
@@ -200,12 +197,7 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
             }
 
             //file multipart
-            var filePart: MultipartBody.Part? = null
-            if (data.image?.isNotEmpty() == true) {
-                val file = File(data.image!!)
-                val fileBody = ProgressRequestBody(File(data.image!!), "*/*", null)
-                filePart = MultipartBody.Part.createFormData("image", file.name, fileBody)
-            }
+            val filePart= MethodUtils.makeMultiPartBody(data.image,"*/*","image")
 
             apiService.createItem(
                 file = filePart,
@@ -236,12 +228,7 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
             }
 
             //file multipart
-            var filePart: MultipartBody.Part? = null
-            if (data.image?.isNotEmpty() == true) {
-                val file = File(data.image!!)
-                val fileBody = ProgressRequestBody(File(data.image!!), "*/*", null)
-                filePart = MultipartBody.Part.createFormData("image", file.name, fileBody)
-            }
+            val filePart= MethodUtils.makeMultiPartBody(data.image,"*/*","image")
 
             apiService.updateItem(
                 id,
@@ -270,12 +257,7 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
             }
 
             //file multipart
-            var filePart: MultipartBody.Part? = null
-            if (data.image?.isNotEmpty() == true) {
-                val file = File(data.image!!)
-                val fileBody = ProgressRequestBody(File(data.image!!), "*/*", null)
-                filePart = MultipartBody.Part.createFormData("image", file.name, fileBody)
-            }
+            val filePart= MethodUtils.makeMultiPartBody(data.image,"*/*","image")
 
             apiService.createCategory(
                 file = filePart,
@@ -295,12 +277,7 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
             }
 
             //file multipart
-            var filePart: MultipartBody.Part? = null
-            if (data.image?.isNotEmpty() == true) {
-                val file = File(data.image!!)
-                val fileBody = ProgressRequestBody(File(data.image!!), "*/*", null)
-                filePart = MultipartBody.Part.createFormData("image", file.name, fileBody)
-            }
+            val filePart= MethodUtils.makeMultiPartBody(data.image,"*/*","image")
 
             apiService.updateCategory(
                 id = id,

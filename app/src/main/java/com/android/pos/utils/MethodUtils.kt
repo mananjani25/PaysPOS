@@ -11,7 +11,9 @@ import com.android.pos.R
 import com.android.pos.data.model.requestModel.CreateCategoryRequestModel
 import com.android.pos.data.model.requestModel.CreateItemRequestModel
 import com.android.pos.utils.extensions.toMultiPartRequestBody
+import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import java.io.File
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -134,6 +136,20 @@ class MethodUtils {
             createCategoryRequestMap["location_id"] =
                 data.location_id.toString().toMultiPartRequestBody()
             return createCategoryRequestMap
+        }
+
+        fun makeMultiPartBody(
+            fileUrl: String?,
+            contentType: String,
+            fileKeyName: String
+        ): MultipartBody.Part? {
+            var filePart: MultipartBody.Part? = null
+            if (fileUrl?.isNotEmpty() == true) {
+                val file = File(fileUrl)
+                val fileBody = ProgressRequestBody(File(fileUrl), contentType, null)
+                filePart = MultipartBody.Part.createFormData(fileKeyName, file.name, fileBody)
+            }
+            return filePart
         }
     }
 
