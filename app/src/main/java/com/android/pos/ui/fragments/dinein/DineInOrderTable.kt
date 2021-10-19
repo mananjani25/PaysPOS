@@ -31,6 +31,7 @@ import com.android.pos.databinding.FragmentDineInOrderTableBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.DineInTableAdapter
 import com.android.pos.ui.fragments.inventory.Modifiers
+import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
@@ -316,6 +317,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 } else {
                     ProgressUtils.dismissProgressDialog()
                 }
+            }
+        })
+
+        viewModel.msgText.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+                AlertUtils.showCustomAlert(requireContext(), it)
             }
         })
 
