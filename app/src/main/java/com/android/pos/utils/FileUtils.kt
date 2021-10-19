@@ -141,6 +141,55 @@ object FileUtils {
     }
 
     /**
+     * @return The MIME type for the file url.
+     */
+    fun getContentType(fileString: String?): String {
+        var type: String? = ""
+        var contentType: String? = ""
+        fileString?.let{
+            contentType = getFileExtensionFromUrl(fileString)
+            if (TextUtils.isEmpty(contentType)) {
+                val i = fileString.lastIndexOf('.')
+                if (i > 0) {
+                    contentType = fileString.substring(i + 1)
+                }
+            }
+            if (contentType != null) {
+                type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(contentType)
+            }
+        }
+        Log.e("!_@_", "content type:  $type")
+        return type?:""
+    }
+
+    fun getFileExtensionFromUrl(url: String): String? {
+        var url = url
+        if (!TextUtils.isEmpty(url)) {
+            val fragment = url.lastIndexOf('#')
+            if (fragment > 0) {
+                url = url.substring(0, fragment)
+            }
+            val query = url.lastIndexOf('?')
+            if (query > 0) {
+                url = url.substring(0, query)
+            }
+            val filenamePos = url.lastIndexOf('/')
+            val filename = if (0 <= filenamePos) url.substring(filenamePos + 1) else url
+
+            // if the filename contains special characters, we don't
+            // consider it valid for our matching purposes:
+            if (!filename.isEmpty() /*&&
+                    Pattern.matches("[a-zA-Z_ \\[\\]\\(\\)\\'0-9\\.\\-\\(\\)\\%]+", filename)*/) {
+                val dotPos = filename.lastIndexOf('.')
+                if (0 <= dotPos) {
+                    return filename.substring(dotPos + 1)
+                }
+            }
+        }
+        return ""
+    }
+
+    /**
      * @param uri The Uri to check.
      * @return Whether the Uri authority is [LocalStorageProvider].
      * @author paulburke

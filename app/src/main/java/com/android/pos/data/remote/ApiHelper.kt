@@ -1,7 +1,9 @@
 package com.android.pos.data.remote
 
+import android.util.Log
 import com.android.pos.data.entities.VariationsAttribute
 import com.android.pos.data.model.requestModel.*
+import com.android.pos.utils.FileUtils.getContentType
 import com.android.pos.utils.MethodUtils
 import javax.inject.Inject
 
@@ -197,7 +199,13 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
             }
 
             //file multipart
-            val filePart= MethodUtils.makeMultiPartBody(data.image,"*/*","image")
+            Log.e("!_@_", "data.image:  ${data.image}")
+            val filePart =
+                MethodUtils.makeMultiPartBody(
+                    fileUrl = data.image,
+                    contentType = getContentType(data.image),
+                    fileKeyName = "image"
+                )
 
             apiService.createItem(
                 file = filePart,
@@ -228,10 +236,16 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
             }
 
             //file multipart
-            val filePart= MethodUtils.makeMultiPartBody(data.image,"*/*","image")
+            Log.e("!_@_", "data.image:  ${data.image}")
+            val filePart =
+                MethodUtils.makeMultiPartBody(
+                    fileUrl = data.image,
+                    contentType = getContentType(data.image),
+                    fileKeyName = "image"
+                )
 
             apiService.updateItem(
-                id,
+                id = id,
                 file = filePart,
                 request = createItemRequestMap,
                 taxIds = taxIds,
@@ -257,7 +271,13 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
             }
 
             //file multipart
-            val filePart= MethodUtils.makeMultiPartBody(data.image,"*/*","image")
+            Log.e("!_@_", "data.image:  ${data.image}")
+            val filePart =
+                MethodUtils.makeMultiPartBody(
+                    fileUrl = data.image,
+                    contentType = getContentType(data.image),
+                    fileKeyName = "image"
+                )
 
             apiService.createCategory(
                 file = filePart,
@@ -277,7 +297,13 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
             }
 
             //file multipart
-            val filePart= MethodUtils.makeMultiPartBody(data.image,"*/*","image")
+            Log.e("!_@_", "data.image:  ${data.image}")
+            val filePart =
+                MethodUtils.makeMultiPartBody(
+                    fileUrl = data.image,
+                    contentType = getContentType(data.image),
+                    fileKeyName = "image"
+                )
 
             apiService.updateCategory(
                 id = id,

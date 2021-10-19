@@ -19,8 +19,7 @@
             android:layout_width="@dimen/_40sdp"
             android:layout_height="@dimen/_30sdp"
             android:layout_gravity="center"
-            android:background="@color/boxColor"
-            android:padding="@dimen/_5sdp" />
+            android:background="@color/boxColor" />
 
         <ProgressBar
             android:id="@+id/progressBar"

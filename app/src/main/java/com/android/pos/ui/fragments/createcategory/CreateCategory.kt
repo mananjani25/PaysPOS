@@ -203,7 +203,7 @@ class CreateCategory : Fragment() {
         imagePath = profileImage
 
         Glide.with(requireActivity()).load(profileImage)
-            .apply(RequestOptions().override(100, 100))
+            //.apply(RequestOptions().override(100, 100))
             .placeholder(R.drawable.ic_item_placeholder)
 
             .listener(object : RequestListener<Drawable> {
