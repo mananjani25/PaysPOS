@@ -565,6 +565,11 @@ object FileUtils {
         //DocumentsContract defines the contract between a documents provider and the platform.
         if (DocumentsContract.isDocumentUri(activity, uri)) {
             val docId = DocumentsContract.getDocumentId(uri)
+
+            if (docId.startsWith("raw:")) {
+                return docId.replaceFirst("raw:", "");
+            }
+
             if ("com.android.providers.media.documents" == uri?.authority) {
                 val id = docId.split(":")[1]
                 val selsetion = MediaStore.Images.Media._ID + "=" + id

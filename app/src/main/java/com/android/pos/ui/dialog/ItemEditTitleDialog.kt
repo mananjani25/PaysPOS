@@ -197,10 +197,8 @@ class ItemEditTitleDialog : DialogFragment() {
 
             }
             OPERATION_CHOOSE_PHOTO -> if (resultCode == RESULT_OK) {
-                if (Build.VERSION.SDK_INT >= 19) {
-                    imagePath = handleImageOnKitkat(data, requireActivity())
-                    showImage()
-                }
+                imagePath = handleImageOnKitkat(data, requireActivity())
+                showImage()
             }
         }
     }

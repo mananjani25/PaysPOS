@@ -1,4 +1,5 @@
 
+import com.android.pos.data.model.responseModel.BaseResponse
 import com.google.gson.annotations.SerializedName
 
 data class CategoriesResponse(
