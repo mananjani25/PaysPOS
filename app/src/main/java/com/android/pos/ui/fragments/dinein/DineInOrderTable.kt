@@ -26,6 +26,7 @@ import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.model.responseModel.GetFloorPlanResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
+import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.databinding.FragmentDineInOrderTableBinding
 import com.android.pos.di.PrefProvider
@@ -208,8 +209,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 viewModel.fireItemToKitchen(dineInData?.order?.id!!, true, idStr)
 
             } else {
-                Log.e(TAG,"Else")
-               var  guestAttribute = dineInTableAdapter.getList()
+                Log.e(TAG, "Else")
+                var guestAttribute = dineInTableAdapter.getList()
                 val ids: MutableList<Int> = ArrayList()
 
                 for (i in 0 until guestAttribute.size) {
@@ -329,6 +330,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
     override fun onGuestPay(dineInModel: DineInModel, position: Int) {
         Log.e(TAG, "dineInModelPay:  ${Gson().toJson(dineInModel)}")
+
+
         val total = dineInModel.items
         var subTotal = 0.0
         var totalTax = 0.0
@@ -361,11 +364,20 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 }
             )
 
-            dineInModel.id?.let { viewModel.payByGuest(it, model) }
-            val list = dineInTableAdapter.getList()
-            list[position].isPaid = true
-            dineInTableAdapter.setList(list.toCollection(arrayListOf()))
+            // dineInModel.id?.let { viewModel.payByGuest(it, model) }
 
+            val bundle = Bundle()
+            bundle.putInt("id", dineInModel.id!!)
+            bundle.putParcelable("cartList", cartList)
+            bundle.putDouble("totalPrice", totalPrice)
+
+
+
+            findNavController().navigate(R.id.action_dineInOrderTable_to_payByGuestDialog, bundle)
+            /* val list = dineInTableAdapter.getList()
+             list[position].isPaid = true
+             dineInTableAdapter.setList(list.toCollection(arrayListOf()))
+ */
 
         }
 
@@ -498,17 +510,21 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
                         }
-*/
+    */
                     }
 
                     if (list.isNotEmpty()) {
                         Log.e(TAG, "listData:  ${Gson().toJson(list)}")
                         dineInTableAdapter.setList(list)
+                        cartList = getCartModel(list)
+
                     }
 
 
 
+
                     binding.txtTotalAmount.setText("${MethodUtils.roundOffAmount(totalAmount)}")
+                    totalPrice = MethodUtils.roundOffAmountDouble(totalAmount)
 
 
 
@@ -519,4 +535,27 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             }
         })
     }
+
+    fun getCartModel(list: ArrayList<DineInModel>): CartModel {
+        var model = CartModel()
+        var listItem: ArrayList<TbItem> = arrayListOf()
+        for (i in 0 until list.size) {
+            listItem.addAll(list.get(i).items)
+
+
+        }
+        model.orderType = "DineIn"
+        model.dineInList = list
+        model.employeeID = prefProvider.getValueInt(EMPLOYEE_ID, 0)
+        model.locationId = prefProvider.getValueInt(LOCATION_ID, 0)
+        model.terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
+
+
+
+        Log.e(TAG, "listItem:  ${Gson().toJson(listItem)}")
+
+        Log.e(TAG, "CartModel:  ${Gson().toJson(model)}")
+        return model
+    }
+
 }
