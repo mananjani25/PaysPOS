@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.DineInModel
-import com.android.pos.databinding.ViewDineInItemBinding
 import com.android.pos.databinding.ViewDineInOrderTableBinding
 import com.android.pos.utils.MethodUtils
 import com.google.gson.Gson
@@ -51,7 +50,7 @@ class DineInTableAdapter : RecyclerView.Adapter<DineInTableAdapter.MyViewHolder>
             binding.rvItems.adapter = itemAdapter
             itemAdapter.addCart(list[layoutPosition].items)
             itemAdapter.setCallback(this)
-            var isTablePaid: Boolean = true
+            var isItemFired: Boolean = true
 
             if (list[layoutPosition].items.isNotEmpty()) {
                 binding.txtTotal.visibility = View.VISIBLE
@@ -62,18 +61,19 @@ class DineInTableAdapter : RecyclerView.Adapter<DineInTableAdapter.MyViewHolder>
                         sum += it.price
                     }
 
+                    sum += list.get(0).guestDividedAmt
                     binding.txtTotal.setText("Total : ${MethodUtils.roundOffAmount(sum)}")
                 }
                 itemAdapter.cartList.forEach {
                     if (it.isFired) {
-                        isTablePaid = true
+                        isItemFired = true
                     } else {
-                        isTablePaid = false
+                        isItemFired = false
                         return@forEach
                     }
                 }
 
-                if (isTablePaid) {
+                if (isItemFired) {
                     binding.chkIsFired.isChecked = true
                     binding.chkIsFired.isEnabled = false
                 } else {
@@ -130,7 +130,7 @@ class DineInTableAdapter : RecyclerView.Adapter<DineInTableAdapter.MyViewHolder>
                             itemsNew.get(i).isFired = true
 
                         }
-                        Log.e(TAG, "WholeOrderIds:  ${ids.size}")
+
                         var idStr = Gson().toJson(ids.toTypedArray())
                         Log.e(TAG, "idStr:  $idStr")
                         listner.onWholeTableToKitchen(idStr)
@@ -144,14 +144,20 @@ class DineInTableAdapter : RecyclerView.Adapter<DineInTableAdapter.MyViewHolder>
                     }
 
                 }
+            }
 
 
+            if (layoutPosition == 0) {
+                binding.btnPay.visibility = View.GONE
+                binding.btnPaid.visibility = View.INVISIBLE
+                binding.txtTotal.visibility = View.INVISIBLE
+            } else {
+                binding.txtTotal.visibility = View.VISIBLE
             }
 
         }
 
         init {
-
             binding.btnPay.setOnClickListener {
                 listner.onGuestPay(list[layoutPosition], layoutPosition)
             }

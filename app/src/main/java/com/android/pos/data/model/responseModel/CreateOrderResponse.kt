@@ -137,7 +137,7 @@ data class CreateOrderResponse(
                     @SerializedName("order_item_id") var orderItemId: Int?,
                     @SerializedName("quantity") var quantity: Int,
                     @SerializedName("item_id") var itemId: Int,
-                    @SerializedName("amount") var amount: Int,
+                    @SerializedName("amount") var amount: Double,
                     @SerializedName("is_paid") var isPaid: Boolean,
                     @SerializedName("guest_id") var guestId: Int,
                     @SerializedName("created_at") var createdAt: String,

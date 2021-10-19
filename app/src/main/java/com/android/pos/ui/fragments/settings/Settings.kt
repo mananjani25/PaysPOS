@@ -151,7 +151,7 @@ class Settings : Fragment() {
 
 
                     }
-                    PRINTER ->{
+                    PRINTER -> {
 
                         binding.txtBusiness.styleNormal()
                         binding.txtHardware.styleBold()

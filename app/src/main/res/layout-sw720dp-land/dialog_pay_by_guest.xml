@@ -4,12 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingDefaultResource">
 
-    <data>
-
-        <variable
-            name="model"
-            type="com.android.pos.ui.fragments.payment.PaymentViewModel" />
-    </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
@@ -168,7 +162,7 @@
                             android:layout_gravity="center"
                             android:layout_weight="1"
                             android:background="?attr/selectableItemBackground"
-                            android:gravity="start"
+                            android:gravity="center"
                             android:padding="@dimen/_10sdp"
                             android:textColor="@color/btnColorDark_"
                             android:textSize="@dimen/_6mdpi" />

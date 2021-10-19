@@ -52,6 +52,46 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/view1" />
 
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/llOtherMenus"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="@dimen/_2sdp"
+            android:layout_marginBottom="@dimen/_2sdp">
+
+            <View
+                android:layout_width="@dimen/_9sdp"
+                android:layout_height="@dimen/_9sdp"
+                android:background="@drawable/bg_table_available" />
+
+            <TextView
+                style="@style/CustomFontMediumStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="@dimen/_2sdp"
+                android:text="Available"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_5mdpi" />
+
+            <View
+                android:layout_width="@dimen/_9sdp"
+                android:layout_height="@dimen/_9sdp"
+                android:layout_marginStart="@dimen/_6sdp"
+                android:background="@drawable/bg_table_occupied" />
+
+            <TextView
+                style="@style/CustomFontMediumStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="@dimen/_2sdp"
+                android:text="Occupied"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_5mdpi" />
+        </LinearLayout>
+
         <View
             android:id="@+id/view2"
             android:layout_width="match_parent"

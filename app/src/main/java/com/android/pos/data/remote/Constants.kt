@@ -128,6 +128,7 @@ object Constants {
     const val CREATEOPTION = "create_option"
     const val CREATEITEM = "create_item"
     const val PRINTER = "printer"
+    const val GUESTPAID ="guest_paid"
 
     const val SETTING_KEY = "setting_key"
     const val CREATE_TAX = "create_tax"

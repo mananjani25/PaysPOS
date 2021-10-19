@@ -1,5 +1,6 @@
 package com.android.pos.ui.fragments.dinein
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -29,7 +30,7 @@ class DineInOrderTableViewModel @Inject constructor(
     private val taxServiceChargeRepository: TaxServiceChargeRepository,
     private val tipDiscountRepository: TipDiscountRepository
 ) : ViewModel() {
-    private val TAG = "DineInOrderTableViewModel"
+    private val TAG = "DineInOrderTableViewM"
 
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
@@ -38,6 +39,10 @@ class DineInOrderTableViewModel @Inject constructor(
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
 
     val _Basedata = MutableLiveData<Event<GetOrderDetailsResponse.Data?>>()
+
+
+    val _guestPayment = MutableLiveData<Event<String>>()
+    val onPayment: LiveData<Event<String>> = _guestPayment
 
 
     private val _msgText = MutableLiveData<Event<String>>()
@@ -54,15 +59,13 @@ class DineInOrderTableViewModel @Inject constructor(
                 Status.SUCCESS -> {
                     _showProgress.value = Event(false)
                     resource.data.let { response ->
-                        if (response?.status == 200) {
-                            _snackbarText.value = Event(resource.message)
-
-                        }
+                        Log.e(TAG, "GuestisPaid")
+                        _guestPayment.value = Event(response?.message.toString())
                     }
                 }
 
                 Status.ERROR -> {
-                    _snackbarText.value = Event(resource.message)
+                    _guestPayment.value = Event(resource.message.toString())
                     _showProgress.value = Event(false)
                 }
 
@@ -108,6 +111,7 @@ class DineInOrderTableViewModel @Inject constructor(
     fun apiCallOrderDetails(orderId: Int) {
         viewModelScope.launch {
 
+            _showProgress.value = Event(true)
             val resource = posRepository.orderDetailsById(orderId)
 
 

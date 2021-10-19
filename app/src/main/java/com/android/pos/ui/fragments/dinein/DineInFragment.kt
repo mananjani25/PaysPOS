@@ -168,6 +168,15 @@ class DineInFragment : Fragment() {
 
                         paramsSquare.leftMargin = dineInFloorTablesList[i].xPosition.toInt().toDp()
                         paramsSquare.topMargin = dineInFloorTablesList[i].yPosition.toInt().toDp()
+                        if (dineInFloorTablesList[i].currentOrderDetails != null) {
+                            llMainParentSquare.background =
+                                resources.getDrawable(R.drawable.background_drawer_button_green)
+                        } else {
+                            llMainParentSquare.background =
+                                resources.getDrawable(R.drawable.background_drawer_button)
+                        }
+
+
                         binding.flFloorPlan.addView(llMainParentSquare, paramsSquare)
 
                         inflatedViewSquare.setOnClickListener(clickInInflatedLayout()) //setting click to each item_content
@@ -212,9 +221,19 @@ class DineInFragment : Fragment() {
                         paramsRound.leftMargin = dineInFloorTablesList[i].xPosition.toInt().toDp()
                         paramsRound.topMargin = dineInFloorTablesList[i].yPosition.toInt().toDp()
                         // binding.flFloorPlan.removeAllViews()
+                        if (dineInFloorTablesList[i].currentOrderDetails != null) {
+                            llMainParentRound.background =
+                                resources.getDrawable(R.drawable.bg_circle_name_green)
+
+                        } else {
+                            llMainParentRound.background =
+                                resources.getDrawable(R.drawable.bg_circle_name)
+                        }
                         binding.flFloorPlan.addView(llMainParentRound, paramsRound)
 
                         inflatedViewRound.setOnClickListener(clickInInflatedLayout()) //setting click to each item_content
+
+
                     }
 
                 }

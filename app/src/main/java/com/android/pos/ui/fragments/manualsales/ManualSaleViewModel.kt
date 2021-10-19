@@ -71,7 +71,7 @@ class ManualSaleViewModel @Inject constructor(
 
     fun saveManualSaleData(cartList: List<CartModel>) {
 
-       // prefProvider.setValue(Constants.ORDER_TYPE, Constants.TAKEOUT)
+        // prefProvider.setValue(Constants.ORDER_TYPE, Constants.TAKEOUT)
         addCart(cartList[0])
     }
 
@@ -120,12 +120,21 @@ class ManualSaleViewModel @Inject constructor(
 
                 } else if (type == DELETE) {
                     list.remove(item)
+                    Log.e(TAG, "InsideListSize:  ${list.size}")
+
+
                 }
 
-                val cartModel = cartList[0]
-                cartModel.items = list
-                cartModel.isMaual = true
-                addCart(cartModel)
+                if (list.size == 0 && type == DELETE) {
+                    deleteCart()
+                } else {
+
+
+                    val cartModel = cartList[0]
+                    cartModel.items = list
+                    cartModel.isMaual = true
+                    addCart(cartModel)
+
 
 //                val cartModel = CartModel().apply {
 //                    cartId = cartList[0].cartId
@@ -134,9 +143,10 @@ class ManualSaleViewModel @Inject constructor(
 //
 //                }
 
-                Log.e(TAG, "cartModel:  ${Gson().toJson(cartModel)}")
+                    Log.e(TAG, "cartModel:  ${Gson().toJson(cartModel)}")
 
-                addCart(cartModel)
+                    addCart(cartModel)
+                }
                 /*if (list.isEmpty()) {
                     deleteCart()
                 }

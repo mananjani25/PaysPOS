@@ -13,5 +13,6 @@ data class DineInModel(
     var items: ArrayList<TbItem> = arrayListOf(),
     var customer: TbCustomer? = null,
     var isFired: Boolean = true,
-    var isPaid: Boolean = false
+    var isPaid: Boolean = false,
+    var guestDividedAmt: Double = 0.0
 )

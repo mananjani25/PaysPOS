@@ -99,7 +99,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
         binding.layoutMenu.imgSearch.visibility = View.GONE
         binding.layoutMenu.autoSearch.visibility = View.GONE
 
-    //    prefProvider.setValue(CUSTOMER_NAME, "")
+        //    prefProvider.setValue(CUSTOMER_NAME, "")
 
 
         getManualCategoryId()
@@ -440,10 +440,19 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
             if (cartList?.size != 0) {
 
 
-                count =
-                    cartList?.get(0)?.items?.get(cartList?.get(0)?.items!!.size - 1)?.customItemCount!!
+                cartList?.get(0)?.items?.let {
+
+                    if (it.isNotEmpty()) {
+                        count =
+                            it.get(cartList?.get(0)?.items!!.size - 1).customItemCount
+                    } else {
+                        count = -1
+                    }
+                }
 
             }
+
+
 
             count++
 
@@ -476,6 +485,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
 
             model.itemId = manualItemId
             model.categoryId = manualCategoryId
+            Log.e(TAG, "AddedCartSize  ${cartList?.size}")
 
             Log.e(TAG, "Parsemodel  ${Gson().toJson(model)}")
             viewModel.cartLogic(cartList, model, ADD)

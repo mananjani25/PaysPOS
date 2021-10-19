@@ -877,7 +877,13 @@
     <dialog
         android:id="@+id/payByGuestDialog"
         android:name="com.android.pos.ui.dialog.PayByGuestDialog"
-        android:label="PayByGuestDialog" />
+        android:label="PayByGuestDialog" >
+        <action
+            android:id="@+id/action_payByGuestDialog_to_dineInOrderTable"
+            app:destination="@id/dineInOrderTable"
+            app:popUpTo="@id/payByGuestDialog"
+            app:popUpToInclusive="true" />
+    </dialog>
 
 
 </navigation>

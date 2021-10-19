@@ -1,8 +1,10 @@
 package com.android.pos.data.model.requestModel
 
 
+import android.os.Parcelable
 import com.android.pos.data.model.DineInOrderDetailAttributes
 import com.google.gson.annotations.SerializedName
+import kotlinx.parcelize.Parcelize
 
 class OrderAttributeRequestModel {
 
@@ -439,7 +441,8 @@ data class OrderServiceChargesAttribute(
     var serviceChargeId: Int = 0
 )
 
-class PaymentAttributes {
+@Parcelize
+class PaymentAttributes : Parcelable {
     @SerializedName("amount")
     var amount: Double = 0.0
 

@@ -79,6 +79,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         binding.lifecycleOwner = this
         observeShowProgress()
         setupSnackbar()
+
         navigateDineInOrder()
         return binding.root
     }
@@ -91,7 +92,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         binding.rvItemList.adapter = dineInTableAdapter
         dineInTableAdapter.setListner(this)
 
-        if (arguments?.getBoolean("isFromFloor") == true) {
+        if (arguments?.getBoolean("isFromFloor") == true || arguments?.getBoolean("isGuestPaid") == true) {
             floorPlanModel = arguments?.getParcelable("floorPlan")
             Log.e(TAG, "GetOrderId   ${floorPlanModel?.currentOrderDetails?.orderId}")
             orderId = floorPlanModel?.currentOrderDetails?.orderId
@@ -99,10 +100,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
         } else {
-
-
             cartList = arguments?.getParcelable("cartList")
-
             dineInData = arguments?.getParcelable("dineInList")
 
             //totalPrice = requireArguments().getDouble("totalPrice")
@@ -115,6 +113,18 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 var list = cartList?.dineInList!!.toCollection(arrayListOf())
 
                 val guestAttributes = dineInData!!.order.guestAttributes
+
+                var wholeTableAmt = 0.0
+                guestAttributes.get(0).guestItemAttributes.forEach {
+                    wholeTableAmt += it.amount
+                }
+
+                Log.e(TAG, "wholeTableAmt:  ${wholeTableAmt}")
+
+                var dividedAmt: Double = wholeTableAmt / (guestAttributes.size - 1)
+
+                Log.e(TAG, "dividedAmt:   ${dividedAmt}")
+                list.get(0).guestDividedAmt = MethodUtils.roundOffAmountDouble(dividedAmt)
                 for (i in 0 until guestAttributes.size) {
 
                     for (j in 0 until list.size) {
@@ -134,20 +144,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                     }
 
-                    /*  guestAttributes[i].guestItemAttributes.forEach { it ->
-                      for (j in 0 until list.size) {
-                          list.get(j).items.forEach { tb ->
-                              if (it.timestamp == tb.timeStamp) {
-  //                                it.orderItemId = tb.orderItemId
-                              }
-
-
-                          }
-
-
-                      }
-
-                  }*/
                 }
 
                 dineInTableAdapter.setList(list)
@@ -373,10 +369,18 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             // dineInModel.id?.let { viewModel.payByGuest(it, model) }
 
+            Log.e(TAG, "DineTablecartList:  ${Gson().toJson(cartList)}")
+            Log.e(TAG, "DineTabletotalPrice:   ${totalPrice}")
+            Log.e(TAG, "DineTabletotalTax: ${totalTax}")
+
             val bundle = Bundle()
             bundle.putInt("id", dineInModel.id!!)
             bundle.putParcelable("cartList", cartList)
-            bundle.putDouble("totalPrice", totalPrice)
+            bundle.putDouble("totalPrice", total)
+            bundle.putDouble("subTotalPrice", subTotal)
+            bundle.putDouble("totalTax", totalTax)
+            bundle.putParcelable("model", model)
+            bundle.putParcelable("floorPlan", floorPlanModel)
 
 
 
@@ -447,6 +451,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 if (baseResponse != null) {
                     var list: ArrayList<DineInModel> = arrayListOf()
                     var totalAmount = 0.0
+                    var wholeTableAmt = 0.0
+
+
 
                     for (i in 0 until baseResponse.guestAttributes.size) {
                         val model = DineInModel()
@@ -521,6 +528,21 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     }
 
                     if (list.isNotEmpty()) {
+
+                        baseResponse.guestAttributes.get(0).guestItemAttributes.forEach {
+                            wholeTableAmt += it.amount
+                        }
+
+                        Log.e(TAG, "wholeTableAmt:  ${wholeTableAmt}")
+
+                        Log.e(TAG, "Repon: ${baseResponse.guestAttributes.size - 1}")
+                        var dividedAmt: Double =
+                            wholeTableAmt / (baseResponse.guestAttributes.size - 1)
+
+                        Log.e(TAG, "dividedAmt:   ${dividedAmt}")
+                        list.get(0).guestDividedAmt = dividedAmt
+
+
                         Log.e(TAG, "listData:  ${Gson().toJson(list)}")
                         dineInTableAdapter.setList(list)
                         cartList = getCartModel(list)
@@ -564,5 +586,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         Log.e(TAG, "CartModel:  ${Gson().toJson(model)}")
         return model
     }
+
 
 }

@@ -129,7 +129,6 @@
                 android:background="@drawable/bg_button_border"
                 android:clickable="false"
                 android:gravity="center"
-
                 android:visibility="invisible">
 
                 <androidx.appcompat.widget.AppCompatTextView
