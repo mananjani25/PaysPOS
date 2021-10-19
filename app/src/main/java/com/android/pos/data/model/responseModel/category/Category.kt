@@ -18,9 +18,9 @@ data class Category(
     @SerializedName("original_image_url")
     val originalImgUrl: String? = "",
     @SerializedName("created_at")
-    val createdAt: String,
+    val createdAt: String?,
     @SerializedName("updated_at")
-    val updatedAt: String,
+    val updatedAt: String?,
     @SerializedName("active")
     val active: Boolean,
     @SerializedName("items")
