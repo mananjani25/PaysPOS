@@ -399,6 +399,7 @@
                             android:hint="6548"
                             android:inputType="number"
                             android:maxLength="4"
+
                             android:padding="@dimen/_5sdp"
                             android:text="@={viewModel.createTaxDetails.passcode}"
                             android:textColor="@color/txtColor"

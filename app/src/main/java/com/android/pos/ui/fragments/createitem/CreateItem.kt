@@ -316,11 +316,11 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
         //  }
 
 
-       /* val bitmap =
-            BitmapFactory.decodeFile(imagePath)
-        if (bitmap != null) {
-            base64 = convertBase64(bitmap)
-        }*/
+        /* val bitmap =
+             BitmapFactory.decodeFile(imagePath)
+         if (bitmap != null) {
+             base64 = convertBase64(bitmap)
+         }*/
 
 
         if (variationListAdapter.selectedVariation().size > 0 && variationListAdapter.selectedVariation() != null) {
@@ -511,7 +511,6 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
                 val bundle = Bundle().apply {
                     putInt("selectedId", selectedId)
                 }
-                findNavController().navigate(R.id.action_createItem_to_categoriesDialog, bundle)
             }
 
             R.id.imgEdit -> {

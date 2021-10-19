@@ -140,4 +140,8 @@ class PayByGuestDialog : DialogFragment(), View.OnClickListener {
 
     }
 
+    override fun getTheme(): Int {
+        return R.style.DialogTheme
+    }
+
 }

@@ -59,7 +59,7 @@ fun <T, A> performGetOperation(
 
         val responseStatus = networkCall.invoke()
         if (responseStatus.status == Status.SUCCESS) {
-            saveCallResult(responseStatus.data!!)
+            responseStatus.data?.let { saveCallResult(it) }
 
         } else if (responseStatus.status == Status.ERROR) {
             emit(Resource.error(responseStatus.message!!))
