@@ -38,6 +38,7 @@ import android.view.*
 
 
 import androidx.core.content.ContextCompat.getSystemService
+import androidx.fragment.app.setFragmentResult
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.Constants.BLUETOOTH
 import com.android.pos.data.remote.Constants.CUSTOMER
@@ -54,6 +55,8 @@ import java.time.format.DateTimeFormatter
 @AndroidEntryPoint
 class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEventListener,
     BatteryStatusChangeEventListener {
+    private var splitValue: Int = -1
+    private var isSpilt: Boolean = false
     private var kitchenPrinterList: List<PrinterResponse.Data.KitchenReceiptPrinters> = listOf()
     private var orderID: Int = 0
     private var type: String = ""
@@ -130,7 +133,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         totalPrice = requireArguments().getDouble("totalPrice")
         paymentAmount = requireArguments().getDouble("paymentAmount")
         orderID = requireArguments().getInt("orderID")
+        isSpilt = requireArguments().getBoolean("isSpilt")
         receiptModel = requireArguments().getParcelable("receiptData")
+
+        if (isSpilt) {
+            splitValue = requireArguments().getInt("splitValue")
+        }
 
         Log.e(TAG, "receiptModel:   ${Gson().toJson(receiptModel)}")
         binding.txtTitle.text =
@@ -206,8 +214,20 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 MethodUtils.hideKeyboard(requireActivity())
             }
             R.id.llNoReceipt -> {
-                removeCustomer()
-                findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
+
+                if (isSpilt) {
+                    val result = Bundle().apply {
+                        putInt("split", splitValue)
+                        putDouble("remainingAmount", totalPrice)
+                    }
+                    setFragmentResult("request_key_split", result)
+                    findNavController().navigateUp()
+                } else {
+
+                    removeCustomer()
+                    findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
+
+                }
             }
             R.id.llPrint -> {
                 removeCustomer()
