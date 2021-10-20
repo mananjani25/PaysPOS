@@ -91,6 +91,14 @@ class SplitAmountFragment : DialogFragment(), View.OnClickListener, TextWatcher 
 
         when (v?.id) {
             R.id.txtContinue -> {
+
+                if (isCustom) {
+                    val noSpit = binding.txtNoSplit.text.toString()
+                    if (noSpit.isNotEmpty()) {
+                        splitValue = noSpit.toInt()
+                    }
+                }
+
                 gotoBack()
             }
             R.id.txtCustom -> {

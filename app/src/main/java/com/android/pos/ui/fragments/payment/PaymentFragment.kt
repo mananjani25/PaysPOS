@@ -92,10 +92,14 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             MethodUtils.setPriceTextView(binding.txtTotalAmount, splitAfterAmount)
             val totalAmountFormat = MethodUtils.roundOffAmount(totalPrice)
 
-            binding.txtSplitAmount.text = getString(R.string.edit_split_amount)
+//            binding.txtSplitAmount.text = getString(R.string.edit_split_amount)
 
             binding.txtSplitValue.text =
                 "Out of $totalAmountFormat Total, Payment 1 of $splitValue"
+
+            getCashPaymentOptionList(splitAfterAmount)
+
+            totalPrice = splitAfterAmount
 
         }
 
