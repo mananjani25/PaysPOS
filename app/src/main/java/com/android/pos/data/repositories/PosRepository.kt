@@ -208,7 +208,7 @@ class PosRepository @Inject constructor(
 
                 it.data.forEach {
 
-                    val items = TbItem().convertToItem(it,null)
+                    val items = TbItem().convertToItem(it, null)
                     inventoryModelList.add(items)
                 }
                 appDatabase.itemDao().addAllItem(inventoryModelList)
@@ -531,6 +531,9 @@ class PosRepository @Inject constructor(
 
     suspend fun employeeClockOut(data: HashMap<String, String>) =
         apiHelperNew.employeeClockOut(data)
+
+    suspend fun getReportSummary(startDate: String, endDate: String) =
+        apiHelperNew.getReportSummary(startDate, endDate)
 
     suspend fun clearTable() {
 

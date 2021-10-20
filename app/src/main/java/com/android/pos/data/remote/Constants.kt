@@ -188,6 +188,8 @@ object Constants {
 
     const val GET_FLOOR_PLAN = "floor_plans"
 
+    const val REPORT_SUMMARY = "reports/report_summary"
+
     const val BUSINESS_NAME = "business_name"
     const val BUSINESS_ADDRESS = "business_address"
     const val BUSINESS_PHONE_NO = "business_phone_no"
