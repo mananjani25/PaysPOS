@@ -402,7 +402,20 @@
                     style="@style/ReportRecyclerViewstyle"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:itemCount="2"
-                    tools:listitem="@layout/view_sales_report" />
+                    tools:listitem="@layout/view_employee_data" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtPaymentDetails"
+                    style="@style/ReportTitleStyle"
+                    android:text="@string/payment_details" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvPaymentDetails"
+                    style="@style/ReportRecyclerViewstyle"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:itemCount="2"
+                    tools:listitem="@layout/view_payment_details" />
+
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
 

@@ -31,13 +31,13 @@
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txtItems"
             style="@style/ReportItemText"
-            android:text="@{emp.items}"
+            android:text="@{emp.items.toString()}"
             tools:text="Items" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txtOrders"
             style="@style/ReportItemText"
-            android:text="@{emp.paidOrders}"
+            android:text="@{emp.paidOrders.toString()}"
             tools:text="Orders" />
 
         <androidx.appcompat.widget.AppCompatTextView

@@ -27,4 +27,6 @@ data class Data(
     val totalPayments: List<KeyValue>?,
     @SerializedName("cash_payments")
     val cashPayments: List<KeyValue>?,
+    @SerializedName("payment_details")
+    val paymentDetails: ArrayList<ArrayList<KeyValue>>?,
 )
