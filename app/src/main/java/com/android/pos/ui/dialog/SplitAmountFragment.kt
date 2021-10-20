@@ -18,6 +18,7 @@ import java.util.*
 @AndroidEntryPoint
 class SplitAmountFragment : DialogFragment(), View.OnClickListener, TextWatcher {
 
+    private var isCustom: Boolean = false
     private var totalPrice: Double = 0.0
     private var splitValue: Int = 0
     private lateinit var binding: DailogSplitAmountBinding
@@ -49,6 +50,7 @@ class SplitAmountFragment : DialogFragment(), View.OnClickListener, TextWatcher 
         binding.txtSplit2.setOnClickListener(this)
         binding.txtSplit3.setOnClickListener(this)
         binding.txtSplit4.setOnClickListener(this)
+        binding.imgBack.setOnClickListener(this)
 
         (getString(R.string.symbole) + String.format(
             "%.2f",
@@ -59,14 +61,14 @@ class SplitAmountFragment : DialogFragment(), View.OnClickListener, TextWatcher 
             totalPrice
         )).also { binding.edtAmount.setText(it) }
 
-        if (splitValue != -1) {
-
-            val splitAfterAmount = totalPrice / splitValue
-            (getString(R.string.symbole) + String.format(
-                "%.2f",
-                splitAfterAmount
-            )).also { binding.edtAmount.setText(it) }
-        }
+//        if (splitValue != -1) {
+//
+//            val splitAfterAmount = totalPrice / splitValue
+//            (getString(R.string.symbole) + String.format(
+//                "%.2f",
+//                splitAfterAmount
+//            )).also { binding.edtAmount.setText(it) }
+//        }
 
         //   binding.txtValue.text = "\$24.00 of \$24.00 will remain after this payment."
 
@@ -89,13 +91,21 @@ class SplitAmountFragment : DialogFragment(), View.OnClickListener, TextWatcher 
 
         when (v?.id) {
             R.id.txtContinue -> {
-
+                gotoBack()
             }
             R.id.txtCustom -> {
+                isCustom = true
+                binding.llCustom.visibility = View.VISIBLE
+                binding.llSplit.visibility = View.GONE
 
             }
             R.id.imgBack -> {
-                dismiss()
+                if (isCustom) {
+                    isCustom = false
+                    binding.llCustom.visibility = View.GONE
+                    binding.llSplit.visibility = View.VISIBLE
+                } else
+                    dismiss()
             }
             R.id.txtSplit2 -> {
 
@@ -103,9 +113,11 @@ class SplitAmountFragment : DialogFragment(), View.OnClickListener, TextWatcher 
                 gotoBack()
             }
             R.id.txtSplit3 -> {
+                splitValue = 3
                 gotoBack()
             }
             R.id.txtSplit4 -> {
+                splitValue = 4
                 gotoBack()
             }
         }
@@ -115,6 +127,7 @@ class SplitAmountFragment : DialogFragment(), View.OnClickListener, TextWatcher 
     private fun gotoBack() {
         val result = Bundle().apply {
             putInt("split", splitValue)
+            putDouble("remainingAmount", totalPrice / splitValue)
         }
         setFragmentResult("request_key_split", result)
         findNavController().navigateUp()
@@ -129,7 +142,7 @@ class SplitAmountFragment : DialogFragment(), View.OnClickListener, TextWatcher 
 
             val cleanString: String = s!!.replace("""[$,.]""".toRegex(), "")
 
-            val parsed = cleanString.toDouble()
+            val parsed = cleanString.trim().toDouble()
             val formatted = NumberFormat.getCurrencyInstance(Locale.US).format((parsed / 100))
 
             current = formatted

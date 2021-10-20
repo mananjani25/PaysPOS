@@ -586,8 +586,7 @@
         <action
             android:id="@+id/action_paymentFragment_to_orderCompleteFragment"
             app:destination="@id/orderCompleteFragment"
-            app:popUpTo="@id/paymentFragment"
-            app:popUpToInclusive="true" />
+             />
         <action
             android:id="@+id/action_paymentFragment_to_addTipsDialog"
             app:destination="@id/addTipsDialog" />

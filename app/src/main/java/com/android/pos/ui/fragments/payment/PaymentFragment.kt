@@ -27,6 +27,7 @@ import kotlin.math.floor
 
 @AndroidEntryPoint
 open class PaymentFragment : Fragment(), View.OnClickListener {
+    private var splitAfterAmount: Double = 0.0
     private var orderOfflineId: String = ""
     private var paymentOfflineId: String = ""
     private var orderId: Int? = null
@@ -70,8 +71,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
         cartList = requireArguments().getParcelable("cartList")
         Log.e(TAG, "cartListPayment:   ${Gson().toJson(cartList)}")
-        setupData()
         callbackSetup()
+        setupData()
         observeShowProgress()
         observeData()
 
@@ -161,7 +162,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         }
 
 
-        // binding.txtSplitAmount.setOnClickListener(this)
+        binding.txtSplitAmount.setOnClickListener(this)
         binding.txtCustom.setOnClickListener(this)
         binding.imgBack.setOnClickListener(this)
         binding.llCash.setOnClickListener(this)
@@ -341,25 +342,49 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 orderOfflineId
             )
 
-        val myRequest = cartList?.let {
+        if (splitValue == -1) {
+            val myRequest = cartList?.let {
 
-            viewModel.createOrderRequest(
-                it,
-                subTotalPrice,
-                totalPrice + tipAmount,
-                totalServiceCharge,
-                totalTax,
-                prefProvider.getValue(Constants.ORDER_TYPE, "").toString(),
-                future_delivery_date,
-                future_delivery_date,
-                true,
-                totalDiscount,
-                tipAmount
-            )
-        }
-        if (myRequest != null) {
-            viewModel.totalPayAmount(paymentAmount)
-            viewModel.submit(myRequest)
+                viewModel.createOrderRequest(
+                    it,
+                    subTotalPrice,
+                    totalPrice + tipAmount,
+                    totalServiceCharge,
+                    totalTax,
+                    prefProvider.getValue(Constants.ORDER_TYPE, "").toString(),
+                    future_delivery_date,
+                    future_delivery_date,
+                    true,
+                    totalDiscount,
+                    tipAmount
+                )
+            }
+            if (myRequest != null) {
+                viewModel.totalPayAmount(paymentAmount)
+                viewModel.submit(myRequest)
+            }
+        } else {
+
+            val myRequest = cartList?.let {
+
+                viewModel.createOrderRequest(
+                    it,
+                    subTotalPrice / splitValue,
+                    (totalPrice + tipAmount) / splitValue,
+                    totalServiceCharge / splitValue,
+                    totalTax / splitValue,
+                    prefProvider.getValue(Constants.ORDER_TYPE, "").toString(),
+                    future_delivery_date,
+                    future_delivery_date,
+                    false,
+                    totalDiscount / splitValue,
+                    tipAmount / splitValue
+                )
+            }
+            if (myRequest != null) {
+                viewModel.totalPayAmount(paymentAmount)
+                viewModel.submit(myRequest)
+            }
         }
     }
 
@@ -389,6 +414,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 bundle.putDouble("paymentAmount", paymentAmount)
                 bundle.putInt("orderID", it.data.order.id)
                 bundle.putParcelable("receiptData", it.data)
+                bundle.putBoolean("isSpilt", splitValue != -1)
+                bundle.putInt("splitValue", splitValue)
                 findNavController().navigate(
                     R.id.action_paymentFragment_to_orderCompleteFragment,
                     bundle
