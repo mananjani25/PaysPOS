@@ -4,9 +4,9 @@ import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
-import com.android.pos.data.model.responseModel.GetTaxResponse
+import com.android.pos.data.model.responseModel.category.Category
+import com.android.pos.data.model.responseModel.item.Item
 import com.android.pos.data.typeconvert.TypeConvertersTax
-import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
 
@@ -61,4 +61,25 @@ class TbItem : Parcelable {
     var timeStamp: String? = null
     var isPaid: Boolean = false
 
+    fun convertToItem(item: Item, category: Category?): TbItem {
+        itemId = item.id
+        name = item.name ?: ""
+        cost = item.cost
+        price = item.price
+        priceType = item.priceType ?: ""
+        quantity = item.quantity
+        kitchenName = item.kitchenName ?: ""
+        productCode = item.productCode ?: ""
+        sku = item.sku ?: ""
+        isHide = item.active
+        sort = item.sort
+        imageUrl = item.originalImageUrl
+        thumbImageUrl = item.thumbImageUrl
+        categoryId = category?.id ?: item.categoryId ?: 0
+        categoryName = category?.name ?: item.categoryName ?: ""
+        taxes = item.taxes
+        modifier_set_ids = item.modifierSetIds
+        variationsAttributes = item.variations
+        return this
+    }
 }

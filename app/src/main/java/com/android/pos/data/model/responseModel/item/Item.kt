@@ -12,25 +12,25 @@ data class Item(
     @SerializedName("category_id")
     val categoryId: Int,
     @SerializedName("category_name")
-    val categoryName: String,
+    val categoryName: String?,
     @SerializedName("cost")
     val cost: Double,
     @SerializedName("id")
     val id: Int,
     @SerializedName("kitchen_name")
-    val kitchenName: String,
+    val kitchenName: String?,
     @SerializedName("name")
-    val name: String,
+    val name: String?,
     @SerializedName("price")
     val price: Double,
     @SerializedName("price_type")
-    val priceType: String,
+    val priceType: String?,
     @SerializedName("product_code")
-    val productCode: String,
+    val productCode: String?,
     @SerializedName("quantity")
     val quantity: Int,
     @SerializedName("sku")
-    val sku: String,
+    val sku: String?,
     @SerializedName("sort")
     val sort: Int,
     @SerializedName("original_image_url")

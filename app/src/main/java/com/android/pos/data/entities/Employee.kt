@@ -10,31 +10,35 @@ import kotlinx.parcelize.Parcelize
 @Entity(tableName = "TbEmployee")
 data class Employee(
     @SerializedName("email")
-    val email: String,
+    val email: String?,
     @SerializedName("first_name")
-    val firstName: String,
+    val firstName: String?,
     @PrimaryKey
     @SerializedName("id")
     val id: Int,
     @SerializedName("is_active")
     val isActive: Boolean,
     @SerializedName("last_name")
-    val lastName: String,
+    val lastName: String?,
     @SerializedName("location_id")
     val locationId: Int,
     @SerializedName("name")
-    val name: String,
+    val name: String?,
     @SerializedName("passcode")
-    val passcode: String,
+    val passcode: String?,
     @SerializedName("phone_number")
-    val phoneNumber: String,
+    val phoneNumber: String?,
     @SerializedName("created_at")
-    val createdAt: String,
+    val createdAt: String?,
     @SerializedName("is_clocked_in")
     val isClockedIn: Boolean,
     @SerializedName("loggedin_terminal_id")
     val loggedinTerminalId: Int,
     @SerializedName("updated_at")
-    val updatedAt: String,
+    val updatedAt: String?,
+    @SerializedName("team_role_id")
+    val teamRoleId: String?,
+    @SerializedName("hourly_wages")
+    val hourlyWages: Int?,
     var isChecked: Boolean = false
 ) : Parcelable

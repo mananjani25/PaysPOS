@@ -892,6 +892,11 @@
             app:popUpTo="@id/payByGuestDialog"
             app:popUpToInclusive="true" />
     </dialog>
-
+    <fragment
+        android:id="@+id/reportSummaryFragment"
+        android:name="com.android.pos.ui.fragments.report.ReportSummaryFragment"
+        android:label="Report Summary"
+        tools:layout="@layout/fragment_report_summary">
+    </fragment>
 
 </navigation>

@@ -53,11 +53,11 @@ class CreateTeamViewModel @Inject constructor(
 
         createTaxDetails.value?.firstName = employeeModel.firstName
         createTaxDetails.value?.lastName = employeeModel.lastName
-        createTaxDetails.value?.email = employeeModel.email
+        createTaxDetails.value?.email = employeeModel.email?:""
         createTaxDetails.value?.phoneNumber =
             employeeModel.phoneNumber.toString()
         createTaxDetails.value?.locationId = employeeModel.locationId
-        createTaxDetails.value?.passcode = employeeModel.passcode
+        createTaxDetails.value?.passcode = employeeModel.passcode?:""
         createTaxDetails.value?.isActive = employeeModel.isActive
 
     }
@@ -136,6 +136,8 @@ class CreateTeamViewModel @Inject constructor(
                                         name = createEmployeeResponse.data.employee.firstName + " " + createEmployeeResponse.data.employee.lastName,
                                         passcode = createEmployeeResponse.data.employee.passcode,
                                         phoneNumber = createEmployeeResponse.data.employee.phoneNumber,
+                                        teamRoleId = createEmployeeResponse.data.employee.teamRoleId,
+                                        hourlyWages = createEmployeeResponse.data.employee.hourlyWages,
                                         createdAt = "",
                                         updatedAt = ""
                                     )

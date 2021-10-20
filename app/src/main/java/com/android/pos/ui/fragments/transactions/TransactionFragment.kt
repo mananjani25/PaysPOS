@@ -543,6 +543,8 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                                         false,
                                         -1,
                                         "",
+                                        "",
+                                        null
                                     )
                                 )
                             }

@@ -134,7 +134,7 @@ class AssignRoleTeamMemberListAdapter() :
                     val fList = ArrayList<Employee>()
 
                     itemsList.filter {
-                        it.name.lowercase(Locale.getDefault()).contains(charSequence)
+                        it.name?.lowercase(Locale.getDefault())?.contains(charSequence) == true
                     }.forEach { fList.add(it) }
 
                     fList

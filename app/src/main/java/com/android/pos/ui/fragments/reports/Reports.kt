@@ -10,6 +10,7 @@ import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.databinding.FragmentReportsBinding
 import com.android.pos.ui.activities.MainActivity
+import com.android.pos.ui.fragments.report.ReportSummaryFragment
 
 class Reports : Fragment() {
     private lateinit var binding: FragmentReportsBinding
@@ -42,7 +43,7 @@ class Reports : Fragment() {
             selectedPosition(0)
         }
         binding.txtSales.setOnClickListener {
-            val frag:Fragment = Sales()
+            val frag:Fragment = ReportSummaryFragment()
             loadFragment(frag)
             selectedPosition(1)
         }

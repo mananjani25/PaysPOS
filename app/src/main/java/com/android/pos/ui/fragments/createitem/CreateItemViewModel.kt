@@ -136,9 +136,9 @@ class CreateItemViewModel @Inject constructor(
 
             viewModelScope.launch {
                 val resource: Resource<ItemResponseNew> = if (isEdit) {
-                    posRepository.updateItem(itemId!!, itemData)
+                    posRepository.updateItemApiCall(itemId!!, itemData)
                 } else {
-                    posRepository.createItem(itemData)
+                    posRepository.createItemApiCall(itemData)
                 }
                 when (resource.status) {
                     Status.SUCCESS -> {
@@ -147,6 +147,10 @@ class CreateItemViewModel @Inject constructor(
                         resource.data.let {
                             if (it?.status == 200) {
                                 resource.data?.let { createItemResponse ->
+
+                                    //save data in db
+                                    val item = TbItem().convertToItem(createItemResponse.data, null)
+                                    posRepository.createItem(item)
 
                                     _data.value = Event(createItemResponse)
                                 }
@@ -191,7 +195,7 @@ class CreateItemViewModel @Inject constructor(
         sku: String,
         stock: Int
     ) {
-        this.imageViewModel= filePath
+        this.imageViewModel = filePath
         this.itemPriceViewModel = itemPrice
         this.descViewModel = desc
         this.skuViewModel = sku

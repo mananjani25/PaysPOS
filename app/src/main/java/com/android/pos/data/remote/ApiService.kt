@@ -9,6 +9,7 @@ import com.android.pos.data.model.responseModel.category.CategoriesResponse
 import com.android.pos.data.model.responseModel.category.CreateCategoryResponse
 import com.android.pos.data.model.responseModel.item.ItemResponseNew
 import com.android.pos.data.model.responseModel.item.ItemsResponse
+import com.android.pos.data.model.responseModel.report.ReportSummaryResponse
 import com.android.pos.data.remote.Constants.CASH_EVENTS
 import com.android.pos.data.remote.Constants.CATEGORY
 import com.android.pos.data.remote.Constants.CATEGORY_UPDATE_DELETE
@@ -61,6 +62,7 @@ import com.android.pos.data.remote.Constants.REORDER_CATEGORY
 import com.android.pos.data.remote.Constants.REORDER_ITEM
 import com.android.pos.data.remote.Constants.REORDER_MODIFIER
 import com.android.pos.data.remote.Constants.REORDER_OPTION_SET
+import com.android.pos.data.remote.Constants.REPORT_SUMMARY
 import com.android.pos.data.remote.Constants.SERVICE_CHARGE
 import com.android.pos.data.remote.Constants.SERVICE_CHARGE_ACTIVE
 import com.android.pos.data.remote.Constants.SERVICE_CHARGE_UPDATE_DELETE
@@ -603,4 +605,10 @@ interface ApiService {
 
     @GET(GET_FLOOR_PLAN)
     suspend fun getFloorPlan(@Query("location_id") location_id: Int): GetFloorPlanResponse
+
+    @GET(REPORT_SUMMARY)
+    suspend fun getReportSummary(
+        @Query("start_date") startDate: String,
+        @Query("end_date") endDate: String
+    ): ReportSummaryResponse
 }
