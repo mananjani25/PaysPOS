@@ -176,6 +176,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         getBackstack()
         swipeListener()
         observeSaveOrder()
+        tableStatusCheck()
+        tableStatusSucess()
         binding.layoutCart.llShowMenu.setOnClickListener(this)
         binding.layoutCart.txtCrtNewCustomer.setOnClickListener(this)
         binding.layoutCart.txtClearItems.setOnClickListener(this)
@@ -1672,16 +1674,27 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 ) {
                     positiveButton(getString(R.string.tv_delete)) {
                         // Do positive stuff here
-                        viewModel.deleteCart()
-                        isOrderUpdate = false
 
-                        if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
-                            prefProvider.setValue(ORDER_TYPE, "")
+                        if (prefProvider.getValue(ORDER_TYPE, "").toString() == DINE_IN) {
+                            viewModel.getTableStatus(
+                                prefProvider.getValueInt(
+                                    Constants.DINE_IN_TABLE_ID,
+                                    0
+                                ), "Available"
+                            )
+
+                        } else {
+                            viewModel.deleteCart()
+                            isOrderUpdate = false
+
+                            if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
+                                prefProvider.setValue(ORDER_TYPE, "")
+                            }
+                            binding.layoutCart.txtSave.text = getString(R.string.save)
+                            clearCustomer()
+                            hideOrderType()
+                            hideOrderMenu()
                         }
-                        binding.layoutCart.txtSave.text = getString(R.string.save)
-                        clearCustomer()
-                        hideOrderType()
-                        hideOrderMenu()
                     }
                     negativeButton(R.string.tv_cancel) {
                         // Do negative stuff here
@@ -1980,13 +1993,25 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         }
 
         dineInFloorTableModel = arguments?.getParcelable("floorplan")
+        Log.e(TAG, "dineInFloorTableModel  ${Gson().toJson(dineInFloorTableModel)}")
 
 
         val dineInList: ArrayList<DineInModel> = arrayListOf()
         dineInList.add(DineInModel(0, true, 0, "Whole Table"))
         for (i in 1..numOfGuest) {
-            dineInList.add(DineInModel(0, false, 0, "Guest $i"))
+            dineInList.add(
+                DineInModel(
+                    0,
+                    false,
+                    0,
+                    "Guest $i"
+
+                )
+            )
         }
+
+
+
         dineInCartAdapter.setList(dineInList)
 
         if (cartList.isEmpty()) {
@@ -2403,5 +2428,44 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 }
             }
         })
+    }
+
+    private fun tableStatusCheck() {
+        viewModel.tableCheck.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let { status ->
+                Log.e(TAG, "getstr:   $status")
+
+                AlertUtils.showCustomAlertWithListenerWithOK(
+                    requireContext(),
+                    status
+                ) { _, _ ->
+
+
+                }
+
+            }
+        })
+    }
+
+    private fun tableStatusSucess() {
+        viewModel.tableCheckSuccess.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let { status ->
+                Log.e(TAG, "getstr:   $status")
+
+                viewModel.deleteCart()
+                isOrderUpdate = false
+
+                if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
+                    prefProvider.setValue(ORDER_TYPE, "")
+                }
+                binding.layoutCart.txtSave.text = getString(R.string.save)
+                clearCustomer()
+                hideOrderType()
+                hideOrderMenu()
+
+
+            }
+        })
+
     }
 }

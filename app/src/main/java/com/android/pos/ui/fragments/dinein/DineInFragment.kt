@@ -19,6 +19,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import androidx.navigation.fragment.findNavController
 import com.android.pos.data.model.responseModel.GetFloorPlanResponse
 import com.android.pos.data.remote.Constants.DINE_IN_STATUS
+import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.OCCUPIED
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.ProgressUtils
@@ -162,8 +163,8 @@ class DineInFragment : Fragment() {
                         inflatedViewSquare.tag = dineInFloorTablesList[i]
 
                         val paramsSquare = FrameLayout.LayoutParams(
-                            dineInFloorTablesList[i].width.toInt().toDp(),
-                            dineInFloorTablesList[i].height.toInt().toDp()
+                            dineInFloorTablesList[i].width.toInt().toDp() + 100,
+                            dineInFloorTablesList[i].height.toInt().toDp() + 100
                         )
 
                         paramsSquare.leftMargin = dineInFloorTablesList[i].xPosition.toInt().toDp()
@@ -215,8 +216,8 @@ class DineInFragment : Fragment() {
                         inflatedViewRound.tag = dineInFloorTablesList[i]
 
                         val paramsRound = FrameLayout.LayoutParams(
-                            dineInFloorTablesList[i].width.toInt().toDp(),
-                            dineInFloorTablesList[i].height.toInt().toDp()
+                            dineInFloorTablesList[i].width.toInt().toDp() + 100,
+                            dineInFloorTablesList[i].height.toInt().toDp() + 100
                         )
                         paramsRound.leftMargin = dineInFloorTablesList[i].xPosition.toInt().toDp()
                         paramsRound.topMargin = dineInFloorTablesList[i].yPosition.toInt().toDp()
@@ -247,12 +248,20 @@ class DineInFragment : Fragment() {
         return View.OnClickListener { v ->
             val dineInFloorTableModel = v.tag as GetFloorPlanResponse.Data.FloorPlanTable
             if (dineInFloorTableModel.currentOrderDetails != null) {
-                val bundle = Bundle()
-                bundle.putBoolean("isFromFloor", true)
-                bundle.putParcelable("floorPlan", dineInFloorTableModel)
+                if (dineInFloorTableModel.currentOrderDetails.employeeId == prefProvider.getValueInt(
+                        EMPLOYEE_ID, 0
+                    )
+                ) {
+                    val bundle = Bundle()
+                    bundle.putBoolean("isFromFloor", true)
+                    bundle.putParcelable("floorPlan", dineInFloorTableModel)
 
 
-                findNavController().navigate(R.id.action_dineInFragment_to_dineInOrderTable, bundle)
+                    findNavController().navigate(
+                        R.id.action_dineInFragment_to_dineInOrderTable,
+                        bundle
+                    )
+                }
             } else {
 
                 val bundle = Bundle()

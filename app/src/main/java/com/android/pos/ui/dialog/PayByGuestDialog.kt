@@ -168,6 +168,16 @@ class PayByGuestDialog : DialogFragment(), View.OnClickListener {
                 guestRequestModel?.let { viewModel.payByGuest(guestId, it) }
 
             }
+            R.id.txtSecondAmount -> {
+                guestRequestModel?.let { viewModel.payByGuest(guestId, it) }
+            }
+
+            R.id.txtThirdAmount -> {
+                guestRequestModel?.let { viewModel.payByGuest(guestId, it) }
+            }
+            R.id.txtFourthAmount -> {
+                guestRequestModel?.let { viewModel.payByGuest(guestId, it) }
+            }
 
 
         }

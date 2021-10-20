@@ -557,6 +557,9 @@ class PosRepository @Inject constructor(
     suspend fun updateKitchenFireStatus(id: Int, isFired: Boolean, items: String) =
         apiHelperNew.updateKitchenFireStatus(id, isFired, items)
 
+    suspend fun getTableStatus(tableId: Int, empId: Int, terminalId: Int, status: String) =
+        apiHelperNew.getTableStatus(tableId, empId, terminalId, status)
+
     suspend fun payByGuest(id: Int, isAllComplete: Boolean, model: GuestPaymentRequest) =
         apiHelperNew.payByGuest(id, isAllComplete, model)
 

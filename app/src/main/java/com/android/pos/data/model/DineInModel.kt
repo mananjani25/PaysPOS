@@ -14,5 +14,6 @@ data class DineInModel(
     var customer: TbCustomer? = null,
     var isFired: Boolean = true,
     var isPaid: Boolean = false,
-    var guestDividedAmt: Double = 0.0
+    var guestDividedAmt: Double = 0.0,
+
 )

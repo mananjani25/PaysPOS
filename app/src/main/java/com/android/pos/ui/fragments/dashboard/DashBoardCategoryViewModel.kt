@@ -81,6 +81,13 @@ class DashBoardCategoryViewModel @Inject constructor(
     private val _logout = MutableLiveData<Event<Boolean>>()
     val logout: LiveData<Event<Boolean>> = _logout
 
+    val _tableStatusSuccess = MutableLiveData<Event<Int>>()
+    val tableCheckSuccess: LiveData<Event<Int>> = _tableStatusSuccess
+
+    val _tableStatus = MutableLiveData<Event<String>>()
+    val tableCheck: LiveData<Event<String>> = _tableStatus
+
+
     val _Basedata = MutableLiveData<Event<CreateOrderResponse.Data?>>()
 
     fun modifierSet(intArray: IntArray) = posRepository.modifierSetList(intArray)
@@ -170,7 +177,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         cartModel?.orderType = DINE_IN
         cartModel?.let {
             addCart(it)
-            Log.e(TAG, "CustomerAdded")
+
         }
 
     }
@@ -1153,5 +1160,44 @@ class DashBoardCategoryViewModel @Inject constructor(
             }
         }
     }
+
+    fun getTableStatus(tableId: Int, status: String) {
+        _showProgress.value = Event(true)
+        viewModelScope.launch {
+            val resource = posRepository.getTableStatus(
+                tableId, prefProvider.getValueInt(
+                    Constants.EMPLOYEE_ID, 0
+                ), prefProvider.getValueInt(Constants.TERMINAL_ID, 0), status
+            )
+
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+                    resource.data.let { response ->
+                        Log.e(TAG, "getTableStatusResponse:  ${Gson().toJson(response)}")
+                        if (response?.status == 200) {
+                            _tableStatusSuccess.value = Event(response.status)
+
+                        } else {
+                            _tableStatus.value = response?.let { Event(it.message) }
+                        }
+
+                    }
+                }
+
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message.toString())
+                    _showProgress.value = Event(false)
+                }
+
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
+            }
+
+        }
+
+    }
+
 
 }

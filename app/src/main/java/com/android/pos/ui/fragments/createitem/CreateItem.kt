@@ -558,7 +558,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
             DIALOG_IMAGE_PATH
         )?.observe(viewLifecycleOwner) { result ->
             // Do something with the result.
-            Log.e("!_@_ image path", result)
+            //  Log.e("!_@_ image path", result)
             viewProfile(result)
         }
     }

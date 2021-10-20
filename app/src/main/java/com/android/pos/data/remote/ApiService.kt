@@ -28,6 +28,7 @@ import com.android.pos.data.remote.Constants.EMPLOYEES_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.EMPLOYEE_CLOCK_IN
 import com.android.pos.data.remote.Constants.EMPLOYEE_LOG_IN
 import com.android.pos.data.remote.Constants.FIRE_ITEM_TO_KITCHEN
+import com.android.pos.data.remote.Constants.FLOOR_PLAN_STATUS
 import com.android.pos.data.remote.Constants.FORGOT_PASSWORD
 import com.android.pos.data.remote.Constants.GET_FLOOR_PLAN
 import com.android.pos.data.remote.Constants.GET_PRINTERS
@@ -391,8 +392,8 @@ interface ApiService {
         @PartMap() itemIds: @JvmSuppressWildcards Map<String, List<Int>>,
     ): CreateCategoryResponse
 
-   /* @POST(CATEGORY)
-    suspend fun createCategory(@Body createItemRequestModel: CreateCategoryRequestModel): CreateCategoryResponse*/
+    /* @POST(CATEGORY)
+     suspend fun createCategory(@Body createItemRequestModel: CreateCategoryRequestModel): CreateCategoryResponse*/
 
     @Multipart
     @PUT(CATEGORY_UPDATE_DELETE)
@@ -577,6 +578,14 @@ interface ApiService {
         @Query("order_item_ids") order_item_ids: String
     ): BaseResponse
 
+
+    @PUT(FLOOR_PLAN_STATUS)
+    suspend fun getTableStatus(
+        @Path("id") tableId: Int,
+        @Query("employee_id") employee_id: Int,
+        @Query("terminal_id") terminal_id: Int,
+        @Query("status") status: String
+    ):BaseResponse
 
     @POST(PAY_BY_GUEST)
     suspend fun payByGuest(

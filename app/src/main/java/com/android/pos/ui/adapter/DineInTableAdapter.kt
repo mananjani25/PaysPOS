@@ -58,7 +58,7 @@ class DineInTableAdapter : RecyclerView.Adapter<DineInTableAdapter.MyViewHolder>
                 var sum = 0.0
                 if (total.isNotEmpty()) {
                     total.forEach {
-                        sum += it.price
+                        sum += it.price * it.itemQuantity
                     }
 
                     sum += list.get(0).guestDividedAmt
@@ -137,7 +137,7 @@ class DineInTableAdapter : RecyclerView.Adapter<DineInTableAdapter.MyViewHolder>
                         binding.chkIsFired.isChecked = true
                         binding.chkIsFired.isEnabled = false
                         list[bindingAdapterPosition].items = itemsNew
-                        notifyDataSetChanged()
+
                         //itemAdapter.updateCart(list[bindingAdapterPosition].items)
 
 

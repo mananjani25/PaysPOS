@@ -116,7 +116,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                 var wholeTableAmt = 0.0
                 guestAttributes.get(0).guestItemAttributes.forEach {
-                    wholeTableAmt += it.amount
+                    wholeTableAmt += it.amount * it.quantity
                 }
 
                 Log.e(TAG, "wholeTableAmt:  ${wholeTableAmt}")
@@ -148,7 +148,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                 dineInTableAdapter.setList(list)
 
-
                 binding.txtTotalAmount.setText("${MethodUtils.roundOffAmount(totalPrice)}")
 
             }
@@ -174,6 +173,16 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         binding.btnSendOrder.setOnClickListener {
             var guestAttribute = dineInData?.order?.guestAttributes
             Log.e(TAG, "guestAttribute:  ${Gson().toJson(guestAttribute)}")
+            var guestList = dineInTableAdapter.getList()
+            for (i in 0 until guestList.size) {
+                guestList.get(i).isFired = true
+                guestList.get(i).items.forEach {
+                    it.isFired = true
+                }
+            }
+
+            dineInTableAdapter.setList(guestList.toCollection(arrayListOf()))
+
             if (guestAttribute != null) {
 
                 val ids: MutableList<Int> = ArrayList()
@@ -230,9 +239,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         }
 
         binding.btnPay.setOnClickListener {
+
+
             val bundle = Bundle()
             bundle.putDouble("totalPrice", totalPrice)
-            bundle.putDouble("subTotalPrice", subTotalPrice)
+            bundle.putDouble("subTotalPrice", totalPrice)
             bundle.putDouble("totalTax", totalTax)
             bundle.putDouble("totalDiscount", totalDiscount)
             bundle.putDouble("totalServiceCharge", totalServiceCharge)
@@ -340,11 +351,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         var totalTax = 0.0
         if (total.isNotEmpty()) {
             total.forEach {
-                subTotal += it.price
+                subTotal += it.price * it.itemQuantity
                 it.taxes?.forEach { tax ->
                     totalTax += tax.rate
                 }
             }
+            subTotal += dineInTableAdapter.getList().get(0).guestDividedAmt
 
             val total = subTotal + totalTax
             var model = GuestPaymentRequest(
@@ -496,7 +508,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                     item.isFired = it.isFired
                                     Log.e(TAG, "isFired  ${it.isFired}")
 
-                                    totalAmount += it.price
+
+
                                     listTbItem.add(item)
 
                                 }
@@ -527,10 +540,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     */
                     }
 
+                    var paidAmt = 0.0
                     if (list.isNotEmpty()) {
 
                         baseResponse.guestAttributes.get(0).guestItemAttributes.forEach {
-                            wholeTableAmt += it.amount
+                            wholeTableAmt += it.amount * it.quantity
                         }
 
                         Log.e(TAG, "wholeTableAmt:  ${wholeTableAmt}")
@@ -547,7 +561,32 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         dineInTableAdapter.setList(list)
                         cartList = getCartModel(list)
 
+
+                        for (i in 0 until list.size) {
+
+
+                            list.get(i).items.forEach {
+                                if (list.get(i).isPaid) {
+                                    paidAmt += (it.itemQuantity * it.price)
+                                }
+                                totalAmount += it.itemQuantity * it.price
+
+
+                            }
+
+                            if (list.get(i).items.get(0).isPaid) {
+                                paidAmt += dividedAmt
+                            }
+
+
+                        }
+
                     }
+
+                    Log.e(TAG, "totalAmount  ${totalAmount}")
+                    Log.e(TAG, "totalAmountpaidAmt  ${paidAmt}")
+
+                    totalAmount = totalAmount - paidAmt
 
 
 

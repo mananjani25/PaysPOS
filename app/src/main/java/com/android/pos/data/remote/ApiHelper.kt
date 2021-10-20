@@ -418,6 +418,11 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
             apiService.updateKitchenFireStatus(id, isFired, items)
         }
 
+    suspend fun getTableStatus(tableId: Int, empId: Int, terminalId: Int, status: String) =
+        getResult {
+            apiService.getTableStatus(tableId, empId, terminalId, status)
+        }
+
 
     suspend fun orderCancel(id: Int, data: OrderCancelRequest) =
         getResult { apiService.cancelOrder(id, data) }

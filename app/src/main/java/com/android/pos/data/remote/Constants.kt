@@ -49,6 +49,7 @@ object Constants {
     const val DINE_IN_ITEM = "DineInItem"
     const val OPEN_ORDER = "OpenOrder"
     const val DINE_IN_STATUS = "DineInStatus"
+    const val DINE_IN_TABLE_ID = "DineInTableId"
 
     //Api End Points
     const val USERS_LOG_IN = "users/log_in"
@@ -128,7 +129,7 @@ object Constants {
     const val CREATEOPTION = "create_option"
     const val CREATEITEM = "create_item"
     const val PRINTER = "printer"
-    const val GUESTPAID ="guest_paid"
+    const val GUESTPAID = "guest_paid"
 
     const val SETTING_KEY = "setting_key"
     const val CREATE_TAX = "create_tax"
@@ -188,6 +189,7 @@ object Constants {
     const val PAY_BY_GUEST = "payments/pay_by_guest"
 
     const val GET_FLOOR_PLAN = "floor_plans"
+    const val FLOOR_PLAN_STATUS = "floor_plan_tables/{id}/check_employee_table_lock"
 
     const val BUSINESS_NAME = "business_name"
     const val BUSINESS_ADDRESS = "business_address"
