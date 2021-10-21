@@ -418,6 +418,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             Log.e(TAG, "totalPaid  ${totalPaid}")
             Log.e(TAG, "wholeTableAmtGetD  ${wholeTableAmt}")
+
             Log.e(TAG, "itemPayment:  ${total}")
 
 
@@ -570,6 +571,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                     var paidAmt = 0.0
                     if (list.isNotEmpty()) {
+
 
                         baseResponse.guestAttributes.get(0).guestItemAttributes.forEach {
                             wholeTableAmt += it.amount * it.quantity
