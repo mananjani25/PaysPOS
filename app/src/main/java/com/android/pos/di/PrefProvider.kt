@@ -21,13 +21,13 @@ class PrefProvider @Inject constructor(@ApplicationContext context: Context) {
     }
 
     fun getValue(
-        key: String?,
-        defaultValue: String?
-    ): String? {
+        key: String,
+        defaultValue: String
+    ): String {
         openPref()
         val result = sharedPreferences?.getString(key, defaultValue)
         sharedPreferences = null
-        return result
+        return result!!
     }
 
     fun getValueInt(
@@ -41,8 +41,8 @@ class PrefProvider @Inject constructor(@ApplicationContext context: Context) {
     }
 
     fun setValue(
-        key: String?,
-        value: String?
+        key: String,
+        value: String
     ) {
         openPref()
         val prefsPrivateEditor = sharedPreferences!!.edit()
@@ -60,6 +60,28 @@ class PrefProvider @Inject constructor(@ApplicationContext context: Context) {
         prefsPrivateEditor!!.putInt(key, value)
         prefsPrivateEditor.apply()
         sharedPreferences = null
+    }
+
+
+    fun setValueDouble(
+        key: String?,
+        value: Double
+    ) {
+        openPref()
+        val prefsPrivateEditor = sharedPreferences!!.edit()
+        prefsPrivateEditor!!.putLong(key, value.toLong())
+        prefsPrivateEditor.apply()
+        sharedPreferences = null
+    }
+
+    fun getValueDouble(
+        key: String,
+        defaultValue: Double
+    ): Double {
+        openPref()
+        val result = sharedPreferences!!.getFloat(key, defaultValue.toFloat())
+        sharedPreferences = null
+        return result.toDouble()
     }
 
     fun getValueboolean(

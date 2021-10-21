@@ -1,25 +1,35 @@
 package com.android.pos.ui.fragments.payment
 
+
+import android.content.Context.WINDOW_SERVICE
 import android.graphics.Bitmap
+import android.graphics.Point
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.TbCustomer
+import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.BLUETOOTH
 import com.android.pos.data.remote.Constants.BUSINESS_ADDRESS
 import com.android.pos.data.remote.Constants.BUSINESS_NAME
 import com.android.pos.data.remote.Constants.BUSINESS_PHONE_NO
-import com.android.pos.data.remote.Constants.BUSINESS_WEBSITE
+import com.android.pos.data.remote.Constants.CUSTOMER
+import com.android.pos.data.remote.Constants.KITCHEN
+import com.android.pos.data.remote.Constants.LARGE
 import com.android.pos.data.remote.Constants.getReceiptFormatDateFromUTCServer
 import com.android.pos.databinding.FragmentOrderCompletBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.*
 import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.printer.PrinterClass
+import com.android.pos.utils.printer.PrinterClass.BLUETOOTH_TIMEOUT
 import com.android.pos.utils.statusUtils.Status
 import com.epson.eposprint.BatteryStatusChangeEventListener
 import com.epson.eposprint.Builder
@@ -28,33 +38,15 @@ import com.epson.eposprint.StatusChangeEventListener
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
-import java.lang.Exception
-import javax.inject.Inject
-import android.content.Context.WINDOW_SERVICE
-import android.graphics.Point
-import android.os.Build
-import android.util.Printer
-import android.view.*
-
-
-import androidx.core.content.ContextCompat.getSystemService
-import androidx.fragment.app.setFragmentResult
-import com.android.pos.data.model.responseModel.*
-import com.android.pos.data.remote.Constants.BLUETOOTH
-import com.android.pos.data.remote.Constants.CUSTOMER
-import com.android.pos.data.remote.Constants.KITCHEN
-import com.android.pos.data.remote.Constants.LARGE
-import com.android.pos.data.remote.Constants.WIFI
-import com.android.pos.utils.printer.PrinterClass.BLUETOOTH_TIMEOUT
-import com.android.pos.utils.printer.PrinterClass.TEST_PRINT_LAN_TIME
-import com.google.zxing.qrcode.encoder.QRCode
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
 class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEventListener,
     BatteryStatusChangeEventListener {
+    private var remainingAmount: Double = 0.0
     private var splitValue: Int = -1
     private var isSpilt: Boolean = false
     private var kitchenPrinterList: List<PrinterResponse.Data.KitchenReceiptPrinters> = listOf()
@@ -138,6 +130,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         if (isSpilt) {
             splitValue = requireArguments().getInt("splitValue")
+            remainingAmount = requireArguments().getDouble("remainingAmount")
+
+            Log.e("remainingAmount", remainingAmount.toString())
         }
 
         Log.e(TAG, "receiptModel:   ${Gson().toJson(receiptModel)}")
@@ -216,11 +211,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             R.id.llNoReceipt -> {
 
                 if (isSpilt) {
-                    val result = Bundle().apply {
-                        putInt("split", splitValue)
-                        putDouble("remainingAmount", totalPrice)
-                    }
-                    setFragmentResult("request_key_split", result)
                     findNavController().navigateUp()
                 } else {
 
@@ -295,7 +285,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             Log.e(TAG, "PrinterModelName:  ${it.modalName}")
                             Log.e(TAG, "PrinterType:  ${it.printer_type}")
 
-                                initPrinter(it, CUSTOMER)
+                            initPrinter(it, CUSTOMER)
 
 
                         }
@@ -337,8 +327,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             val enabled = Print.FALSE
 
             try {
-                var interval :Int = 1000
-                if (customerReceiptPrinters.printer_type == BLUETOOTH){
+                var interval: Int = 1000
+                if (customerReceiptPrinters.printer_type == BLUETOOTH) {
                     interval = BLUETOOTH_TIMEOUT
                 }
                 printer?.openPrinter(

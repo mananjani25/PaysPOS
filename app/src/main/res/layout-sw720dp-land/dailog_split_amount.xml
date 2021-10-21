@@ -239,13 +239,16 @@
 
             <androidx.appcompat.widget.AppCompatEditText
                 style="@style/CustomFontSemiBold"
+                android:id="@+id/edtSplitNo"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:layout_weight="0.1"
                 android:background="@null"
                 android:gravity="end"
-                android:hint="5"
+                android:hint="0"
+                android:inputType="number"
+                android:imeOptions="actionDone"
                 android:padding="@dimen/_5sdp"
                 android:textColor="@color/txtColor"
                 android:textColorHint="@color/hintColor"

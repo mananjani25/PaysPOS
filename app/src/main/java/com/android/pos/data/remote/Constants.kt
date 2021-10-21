@@ -267,4 +267,9 @@ object Constants {
     //request codes
     var REQUEST_GET_IMAGE_GALLERY = 1
     var REQUEST_GET_IMAGE_CAMERA = 2
+
+
+    var SPLIT_PAY_TYPE = "split_pay_type"
+    var SPLIT_PAY_AMOUNT = "split_pay_amount"
+    var SPLIT_NO = "split_no"
 }
