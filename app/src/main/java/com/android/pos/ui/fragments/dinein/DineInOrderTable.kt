@@ -59,6 +59,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     private var paymentAmount: Double = 0.0
     private var future_delivery_date: String = ""
     private var future_delivery_time: String = ""
+    var totalAmount = 0.0
     private var popupWindow: PopupWindow? = null
     private var floorPlanModel: GetFloorPlanResponse.Data.FloorPlanTable? = null
 
@@ -359,6 +360,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             subTotal += dineInTableAdapter.getList().get(0).guestDividedAmt
 
             val total = subTotal + totalTax
+            Log.e(TAG, "total:  ${total}")
+
             var model = GuestPaymentRequest(
                 PaymentAttributes().apply {
                     amount = total
@@ -393,6 +396,31 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             bundle.putDouble("totalTax", totalTax)
             bundle.putParcelable("model", model)
             bundle.putParcelable("floorPlan", floorPlanModel)
+            val list = dineInTableAdapter.getList()
+            var wholeTableAmt = 0.0
+            for (i in 0 until list.size) {
+                list.get(i).items.forEach {
+                    wholeTableAmt += it.price * it.quantity
+                }
+
+            }
+
+            var totalPaid = 0.0
+            for (i in 0 until list.size) {
+                list.get(i).items.forEach {
+
+                    if (it.isPaid) {
+                        totalPaid += it.price * it.itemQuantity
+                    }
+
+                }
+            }
+
+            Log.e(TAG, "totalPaid  ${totalPaid}")
+            Log.e(TAG, "wholeTableAmtGetD  ${wholeTableAmt}")
+            Log.e(TAG, "itemPayment:  ${total}")
+
+
 
 
 
@@ -462,7 +490,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             event.getContentIfNotHandled()?.let { baseResponse ->
                 if (baseResponse != null) {
                     var list: ArrayList<DineInModel> = arrayListOf()
-                    var totalAmount = 0.0
+
                     var wholeTableAmt = 0.0
 
 
