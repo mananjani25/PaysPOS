@@ -59,6 +59,12 @@ class DineInTableAdapter : RecyclerView.Adapter<DineInTableAdapter.MyViewHolder>
                 if (total.isNotEmpty()) {
                     total.forEach {
                         sum += it.price * it.itemQuantity
+                        if (it.modifiers.isNotEmpty()) {
+                            it.modifiers.forEach {
+                                sum += it.price * it.itemQuantity
+                            }
+                        }
+
                     }
 
                     sum += list.get(0).guestDividedAmt
@@ -184,4 +190,10 @@ class DineInTableAdapter : RecyclerView.Adapter<DineInTableAdapter.MyViewHolder>
     fun getList(): List<DineInModel> {
         return list
     }
+
+    override fun getItemViewType(position: Int): Int {
+        return position
+    }
+
+
 }

@@ -14,6 +14,8 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.Modifier
@@ -62,6 +64,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     var totalAmount = 0.0
     private var popupWindow: PopupWindow? = null
     private var floorPlanModel: GetFloorPlanResponse.Data.FloorPlanTable? = null
+    var dragFrom = -1
+    var dragTo = -1
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -98,6 +102,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             Log.e(TAG, "GetOrderId   ${floorPlanModel?.currentOrderDetails?.orderId}")
             orderId = floorPlanModel?.currentOrderDetails?.orderId
             floorPlanModel?.currentOrderDetails?.orderId?.let { viewModel.apiCallOrderDetails(it) }
+            binding.txtTitle.setText("" + floorPlanModel?.tableName)
 
 
         } else {
@@ -359,7 +364,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             }
             subTotal += dineInTableAdapter.getList().get(0).guestDividedAmt
 
-            val total = subTotal + totalTax
+            var total = subTotal + totalTax
             Log.e(TAG, "total:  ${total}")
 
             var model = GuestPaymentRequest(
@@ -396,36 +401,84 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             bundle.putDouble("totalTax", totalTax)
             bundle.putParcelable("model", model)
             bundle.putParcelable("floorPlan", floorPlanModel)
+
             val list = dineInTableAdapter.getList()
+
             var wholeTableAmt = 0.0
             for (i in 0 until list.size) {
                 list.get(i).items.forEach {
-                    wholeTableAmt += it.price * it.quantity
-                }
-
-            }
-
-            var totalPaid = 0.0
-            for (i in 0 until list.size) {
-                list.get(i).items.forEach {
-
-                    if (it.isPaid) {
-                        totalPaid += it.price * it.itemQuantity
+                    wholeTableAmt += it.price * it.itemQuantity
+                    if (it.modifiers.isNotEmpty()) {
+                        it.modifiers.forEach {
+                            wholeTableAmt += it.price * it.itemQuantity
+                        }
                     }
 
                 }
+
             }
+
+
+            var totalPaid = 0.0
+
+            var wtAmt: Double = 0.0
+            list.get(0).items.forEach {
+                wtAmt += it.price * it.itemQuantity
+                if (it.modifiers.isNotEmpty()) {
+                    it.modifiers.forEach {
+                        wtAmt += it.price * it.itemQuantity
+                    }
+                }
+            }
+
+
+            Log.e(TAG, " ComplexResponse  ${Gson().toJson(list)}")
+
+            var dividedAmt: Double =
+                wtAmt / (list.size - 1)
+            Log.e(TAG, "NEwdividedAmt ${dividedAmt}")
+            for (i in 0 until list.size) {
+                list.get(i).items.forEach {
+                    if (it.isPaid) {
+                        totalPaid += it.price * it.itemQuantity
+                        if (it.modifiers.isNotEmpty()) {
+                            it.modifiers.forEach {
+
+                                totalPaid += it.price * it.itemQuantity
+                            }
+                        }
+
+                        Log.e(TAG, "totalPaidNew:  ${totalPaid}")
+                    }
+
+                    Log.e(TAG, "isPaidAmt ${list.get(i).isPaid}")
+
+
+                }
+                if (list.get(i).isPaid) {
+                    totalPaid += dividedAmt
+                }
+            }
+
+            totalPaid = MethodUtils.roundOffAmountDouble(totalPaid)
+            wholeTableAmt = MethodUtils.roundOffAmountDouble(wholeTableAmt)
+            total = MethodUtils.roundOffAmountDouble(total)
 
             Log.e(TAG, "totalPaid  ${totalPaid}")
             Log.e(TAG, "wholeTableAmtGetD  ${wholeTableAmt}")
 
             Log.e(TAG, "itemPayment:  ${total}")
 
+            if ((wholeTableAmt - totalPaid) == total) {
+                bundle.putBoolean("isLastPayment", true)
+            } else {
+                bundle.putBoolean("isLastPayment", false)
+            }
 
-
-
-
-            findNavController().navigate(R.id.action_dineInOrderTable_to_payByGuestDialog, bundle)
+            findNavController().navigate(
+                R.id.action_dineInOrderTable_to_payByGuestDialog,
+                bundle
+            )
             /* val list = dineInTableAdapter.getList()
              list[position].isPaid = true
              dineInTableAdapter.setList(list.toCollection(arrayListOf()))
@@ -592,14 +645,28 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         cartList = getCartModel(list)
 
 
+                        totalAmount = 0.0
                         for (i in 0 until list.size) {
 
 
-                            list.get(i).items.forEach {
+                            list.get(i).items.forEach { it ->
                                 if (list.get(i).isPaid) {
-                                    paidAmt += (it.itemQuantity * it.price)
+                                    paidAmt += it.itemQuantity * it.price
+
+                                    if (it.modifiers.isNotEmpty()) {
+                                        it.modifiers.forEach {
+                                            paidAmt += it.price * it.itemQuantity
+                                        }
+                                    }
+
                                 }
                                 totalAmount += it.itemQuantity * it.price
+
+                                if (it.modifiers.isNotEmpty()) {
+                                    it.modifiers.forEach {
+                                        totalAmount += it.itemQuantity * it.price
+                                    }
+                                }
 
 
                             }
@@ -608,7 +675,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                 paidAmt += dividedAmt
                             }
 
-
                         }
 
                     }
@@ -616,9 +682,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     Log.e(TAG, "totalAmount  ${totalAmount}")
                     Log.e(TAG, "totalAmountpaidAmt  ${paidAmt}")
 
-                    totalAmount = totalAmount - paidAmt
+                    totalAmount -= paidAmt
 
-
+                    if (totalAmount < 0) {
+                        totalAmount = 0.0
+                    }
 
 
                     binding.txtTotalAmount.setText("${MethodUtils.roundOffAmount(totalAmount)}")
@@ -654,6 +722,26 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         Log.e(TAG, "CartModel:  ${Gson().toJson(model)}")
         return model
+    }
+
+
+    private fun totalPrice(model: TbItem): Double {
+
+        return if (model.modifiers.isNotEmpty()) {
+
+            var totalPrice = 0.0
+
+            val mList = model.modifiers
+            mList.forEach { items ->
+                totalPrice += items.price * items.itemQuantity
+            }
+
+            (model.price * model.itemQuantity) + totalPrice
+        } else {
+
+            model.price * model.itemQuantity
+
+        }
     }
 
 
