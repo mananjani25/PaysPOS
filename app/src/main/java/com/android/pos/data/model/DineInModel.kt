@@ -17,6 +17,7 @@ data class DineInModel(
     var guestDividedAmt: Double = 0.0,
     var isHeader: Int = 0,
     var item: TbItem? = null,
-    var totalGuestPrice: Double = 0.0
+    var totalGuestPrice: Double = 0.0,
+    var sort: Int = 0
 
 )

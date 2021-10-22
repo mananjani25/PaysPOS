@@ -97,7 +97,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         binding.rvItemList.adapter = dineInTableAdapter
         dineInTableAdapter.setListner(this)
         val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
-        itemTouchHelper.attachToRecyclerView(binding.rvItemList)
+        touchHelper.attachToRecyclerView(binding.rvItemList)
+        //itemTouchHelper.attachToRecyclerView(binding.rvItemList)
 
 
         if (arguments?.getBoolean("isFromFloor") == true || arguments?.getBoolean("isGuestPaid") == true) {
@@ -1152,4 +1153,62 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         binding.rvItemList.adapter?.notifyItemMoved(fromPosition, toPosition)
 
     }
+
+    val touchHelper =
+        ItemTouchHelper(object :
+            ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP + ItemTouchHelper.DOWN, 0) {
+
+
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                val oldPos = viewHolder.layoutPosition
+                val newPos = target.layoutPosition
+                Log.e(
+                    "reorder after",
+                    viewHolder.layoutPosition.toString() + " :::  " + target.layoutPosition.toString()
+                )
+
+                if (dragFrom == -1) {
+                    dragFrom = oldPos
+                }
+                dragTo = newPos
+
+                dineInTableAdapter.onItemMove(
+                    viewHolder.layoutPosition,
+                    target.layoutPosition
+                )
+
+                return true
+            }
+
+            override fun isLongPressDragEnabled(): Boolean {
+                return true
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+
+            }
+
+            override fun clearView(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder
+            ) {
+
+                if (dragFrom != -1 && dragTo != -1 && dragFrom != dragTo) {
+                    /* reallyMoved(
+                         adapter.getItem(dragFrom).sort,
+                         adapter.getItem(dragTo).sort,
+                         adapter.getItem(viewHolder.layoutPosition).id
+                     )*/
+                }
+
+                dragFrom = -1
+                dragTo = -1
+            }
+
+        })
+
 }
