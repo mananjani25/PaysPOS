@@ -196,7 +196,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
 
             if (splitPayAmount.isNotEmpty()) {
-                totalPrice -= splitPayAmount.toDouble()
+
 
 
                 val tipAmount1 = (splitPayAmount.toDouble() * tipAmount) / (totalPrice + tipAmount)
@@ -210,7 +210,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 val totalDiscount1 = (splitPayAmount.toDouble() * totalDiscount) / total
 
 
-
+                totalPrice -= splitPayAmount.toDouble()
                 subTotalPrice -= subTotalPrice1
                 totalTax -= totalTax1
                 totalServiceCharge -= totalServiceCharge1
@@ -567,7 +567,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                         }
 
 
-                        prefProvider.setValue(Constants.SPLIT_PAY_TYPE, SPLIT_NO)
+                        prefProvider.setValue(SPLIT_PAY_TYPE, SPLIT_NO)
                         prefProvider.setValue(SPLIT_PAY_AMOUNT, payAmount.toString())
                         prefProvider.setValueInt(SPLIT_NO, splitValue)
 
@@ -581,6 +581,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                         bundle.putInt("orderID", it.data.order.id)
                         bundle.putParcelable("receiptData", it.data)
                         bundle.putBoolean("isSpilt", true)
+                        bundle.putDouble("remainingAmount", totalPrice - payAmount)
                         findNavController().navigate(
                             R.id.action_paymentFragment_to_orderCompleteFragment,
                             bundle
@@ -595,7 +596,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                         prefProvider.setValue(SPLIT_PAY_AMOUNT, payAmount.toString())
                         prefProvider.setValueInt(SPLIT_NO, splitValue)
 
-                        prefProvider.setValue(Constants.SPLIT_PAY_TYPE, SPLIT_PAY_AMOUNT)
+                        prefProvider.setValue(SPLIT_PAY_TYPE, SPLIT_PAY_AMOUNT)
 
                     }
                     else -> {
@@ -612,6 +613,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
                         prefProvider.setValue(SPLIT_PAY_AMOUNT, "")
                         prefProvider.setValueInt(SPLIT_NO, -1)
+                        prefProvider.setValue(SPLIT_PAY_TYPE, "")
                     }
                 }
             }

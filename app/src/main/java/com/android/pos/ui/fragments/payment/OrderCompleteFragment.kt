@@ -133,6 +133,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             remainingAmount = requireArguments().getDouble("remainingAmount")
 
             Log.e("remainingAmount", remainingAmount.toString())
+
+            binding.txtRemainingAmount.text =
+                "Remaining Amount " + MethodUtils.roundOffAmount(remainingAmount)
+
+            binding.txtRemainingAmount.visibility = View.VISIBLE
+        } else {
+            binding.txtRemainingAmount.visibility = View.GONE
         }
 
         Log.e(TAG, "receiptModel:   ${Gson().toJson(receiptModel)}")
