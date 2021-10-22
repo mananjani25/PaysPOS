@@ -239,7 +239,7 @@
 
             <androidx.appcompat.widget.AppCompatEditText
                 style="@style/CustomFontSemiBold"
-                android:id="@+id/txtNoSplit"
+                android:id="@+id/edtSplitNo"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
