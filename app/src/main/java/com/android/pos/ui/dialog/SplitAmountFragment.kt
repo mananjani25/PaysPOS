@@ -18,9 +18,10 @@ import java.util.*
 @AndroidEntryPoint
 class SplitAmountFragment : DialogFragment(), View.OnClickListener, TextWatcher {
 
+    private var splitAmount: Double = 0.0
     private var isCustom: Boolean = false
     private var totalPrice: Double = 0.0
-    private var splitValue: Int = 0
+    private var splitValue: Int = -1
     private lateinit var binding: DailogSplitAmountBinding
     var current = ""
 
@@ -93,9 +94,16 @@ class SplitAmountFragment : DialogFragment(), View.OnClickListener, TextWatcher 
             R.id.txtContinue -> {
 
                 if (isCustom) {
-                    val noSpit = binding.txtNoSplit.text.toString()
-                    if (noSpit.isNotEmpty()) {
-                        splitValue = noSpit.toInt()
+                    val ss = binding.edtSplitNo.text.toString().trim()
+                    if (ss.isNotEmpty()) {
+                        splitValue = ss.toInt()
+                    }
+                } else {
+
+                    val stSplitAmount = binding.edtAmount.text.toString().trim()
+                    if (stSplitAmount.isNotEmpty()) {
+                        val cleanString: String = stSplitAmount.replace("""[$]""".toRegex(), "")
+                        splitAmount = cleanString.trim().toDouble()
                     }
                 }
 
@@ -135,7 +143,7 @@ class SplitAmountFragment : DialogFragment(), View.OnClickListener, TextWatcher 
     private fun gotoBack() {
         val result = Bundle().apply {
             putInt("split", splitValue)
-            putDouble("remainingAmount", totalPrice / splitValue)
+            putDouble("splitByAmount", splitAmount)
         }
         setFragmentResult("request_key_split", result)
         findNavController().navigateUp()

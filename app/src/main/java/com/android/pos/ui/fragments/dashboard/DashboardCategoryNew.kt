@@ -1751,6 +1751,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
             R.id.btnPay -> {
 
+                prefProvider.setValue(Constants.SPLIT_PAY_AMOUNT, "")
+                prefProvider.setValueInt(Constants.SPLIT_NO, -1)
+                prefProvider.setValue(Constants.SPLIT_PAY_TYPE, "")
 
                 if (cartList.isNotEmpty()) {
 
