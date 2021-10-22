@@ -138,8 +138,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 "Remaining Amount " + MethodUtils.roundOffAmount(remainingAmount)
 
             binding.txtRemainingAmount.visibility = View.VISIBLE
+            binding.llNoReceipt.text = "Next Payment"
+            binding.txtHome.text = "Next Payment"
         } else {
             binding.txtRemainingAmount.visibility = View.GONE
+            binding.llNoReceipt.text = getString(R.string.no_receipt)
+            binding.txtHome.text = getString(R.string.tv_home)
         }
 
         Log.e(TAG, "receiptModel:   ${Gson().toJson(receiptModel)}")
@@ -182,9 +186,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         when (v?.id) {
             R.id.txtHome -> {
-                removeCustomer()
-                findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
-
+                moveToDashboard()
             }
             R.id.txtAddCustomer -> {
                 findNavController().navigate(R.id.action_orderCompleteFragment_to_assignCustomerOrderFragment)
@@ -217,14 +219,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
             R.id.llNoReceipt -> {
 
-                if (isSpilt) {
-                    findNavController().navigateUp()
-                } else {
-
-                    removeCustomer()
-                    findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
-
-                }
+                moveToDashboard()
             }
             R.id.llPrint -> {
                 removeCustomer()
@@ -247,6 +242,17 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             R.id.imgBack -> {
                 backpress()
             }
+        }
+    }
+
+    private fun moveToDashboard() {
+        if (isSpilt) {
+            findNavController().navigateUp()
+        } else {
+
+            removeCustomer()
+            findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
+
         }
     }
 

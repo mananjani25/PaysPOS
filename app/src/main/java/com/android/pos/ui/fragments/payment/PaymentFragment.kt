@@ -20,6 +20,7 @@ import com.android.pos.data.remote.Constants.SPLIT_PAY_AMOUNT
 import com.android.pos.data.remote.Constants.SPLIT_PAY_TYPE
 import com.android.pos.databinding.PaymentFragmentBinding
 import com.android.pos.di.PrefProvider
+import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
 import dagger.hilt.android.AndroidEntryPoint
@@ -356,14 +357,22 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.imgBack -> {
-                prefProvider.setValue(SPLIT_PAY_AMOUNT, "")
-                prefProvider.setValueInt(SPLIT_NO, -1)
-                findNavController().navigateUp()
+
+                if (prefProvider.getValue(SPLIT_PAY_AMOUNT, "") == "") {
+                    prefProvider.setValue(SPLIT_PAY_AMOUNT, "")
+                    prefProvider.setValueInt(SPLIT_NO, -1)
+                    findNavController().navigateUp()
+                } else {
+                    AlertUtils.showCustomAlert(requireContext(), "Please complete all payment.")
+                }
+
+
             }
 
             R.id.txtOriginalAmount -> {
 
                 paymentAmount = when {
+
                     isSplitByNo -> {
                         (totalPrice + tipAmount) / splitValue
                     }
@@ -435,6 +444,14 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 paymentOfflineId,
                 orderOfflineId
             )
+
+        if (MethodUtils.roundOffAmountDouble(splitAfterAmount) == MethodUtils.roundOffAmountDouble(
+                totalPrice
+            )
+        ) {
+            isSplitByNo = false
+            isSplitByAmount = false
+        }
 
         if (isSplitByNo) {
 
@@ -580,23 +597,37 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                         bundle.putDouble("paymentAmount", paymentAmount)
                         bundle.putInt("orderID", it.data.order.id)
                         bundle.putParcelable("receiptData", it.data)
-                        bundle.putBoolean("isSpilt", true)
-                        bundle.putDouble("remainingAmount", totalPrice - payAmount)
+
+
+                        if (MethodUtils.roundOffAmountDouble(payAmount) != MethodUtils.roundOffAmountDouble(
+                                totalPrice
+                            )
+                        ) {
+
+                            bundle.putBoolean("isSpilt", true)
+                            bundle.putDouble("remainingAmount", totalPrice - payAmount)
+
+
+                            val splitPayAmount = prefProvider.getValue(SPLIT_PAY_AMOUNT, "")
+                            if (splitPayAmount.isNotEmpty()) {
+                                payAmount += splitPayAmount.toDouble()
+                            }
+                            prefProvider.setValue(SPLIT_PAY_AMOUNT, payAmount.toString())
+                            prefProvider.setValueInt(SPLIT_NO, splitValue)
+                            prefProvider.setValue(SPLIT_PAY_TYPE, SPLIT_PAY_AMOUNT)
+                        } else {
+                            bundle.putBoolean("isSpilt", false)
+                            bundle.putDouble("remainingAmount", totalPrice - payAmount)
+
+                            prefProvider.setValue(SPLIT_PAY_AMOUNT, "")
+                            prefProvider.setValueInt(SPLIT_NO, -1)
+                            prefProvider.setValue(SPLIT_PAY_TYPE, "")
+                        }
+
                         findNavController().navigate(
                             R.id.action_paymentFragment_to_orderCompleteFragment,
                             bundle
                         )
-
-                        val splitPayAmount = prefProvider.getValue(SPLIT_PAY_AMOUNT, "")
-                        if (splitPayAmount.isNotEmpty()) {
-                            payAmount += splitPayAmount.toDouble()
-                        }
-
-
-                        prefProvider.setValue(SPLIT_PAY_AMOUNT, payAmount.toString())
-                        prefProvider.setValueInt(SPLIT_NO, splitValue)
-
-                        prefProvider.setValue(SPLIT_PAY_TYPE, SPLIT_PAY_AMOUNT)
 
                     }
                     else -> {
