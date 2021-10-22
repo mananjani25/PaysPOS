@@ -16,6 +16,7 @@ import com.android.pos.R
 import com.android.pos.data.model.responseModel.VenueDetailsResponse
 import com.android.pos.databinding.FragmentReportSummaryBinding
 import com.android.pos.ui.adapter.EmployeeAdapter
+import com.android.pos.ui.adapter.PaymentDetailsAdapter
 import com.android.pos.ui.adapter.SalesReportAdapter
 import com.android.pos.ui.adapter.TerminalAdapter
 import com.android.pos.utils.EventObserver
@@ -49,6 +50,7 @@ class ReportSummaryFragment : Fragment(), AdapterView.OnItemSelectedListener {
     private val totalPaymentsAdapter by lazy { SalesReportAdapter() }
     private val cashPaymentsAdapter by lazy { SalesReportAdapter() }
     private val employeeAdapter by lazy { EmployeeAdapter() }
+    private val paymentDetailsAdapter by lazy { PaymentDetailsAdapter() }
 
     val myCalendar = Calendar.getInstance()
     val myCalendar1 = Calendar.getInstance()
@@ -134,6 +136,7 @@ class ReportSummaryFragment : Fragment(), AdapterView.OnItemSelectedListener {
         binding.rvTotalPayments.adapter = totalPaymentsAdapter
         binding.rvCashPayments.adapter = cashPaymentsAdapter
         binding.rvEmployeeData.adapter = employeeAdapter
+        binding.rvPaymentDetails.adapter = paymentDetailsAdapter
     }
 
     private fun initObservers() {
@@ -182,6 +185,7 @@ class ReportSummaryFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 totalPaymentsAdapter.add(it.totalPayments)
                 cashPaymentsAdapter.add(it.cashPayments)
                 employeeAdapter.add(it.employeeData)
+                paymentDetailsAdapter.add(it.paymentDetails)
 
                 /*if (it.employeeData?.isNotEmpty() == true) {
                     binding.rvEmployeeData.visible()

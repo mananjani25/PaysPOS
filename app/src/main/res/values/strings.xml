@@ -586,5 +586,6 @@
     <string name="total_payments">Total Payments</string>
     <string name="cash_payments">Cash Payments</string>
     <string name="employee_data">Employee Data</string>
+    <string name="payment_details">Payment Details</string>
 
 </resources>
