@@ -23,10 +23,9 @@ class CategoryTabAdapter(
         fun bind(item: CategoryTabModel) {
             binding.model = item
             binding.executePendingBindings()
-            if (layoutPosition == 0){
+            if (layoutPosition == 0) {
                 binding.viewTop.visibility = View.VISIBLE
-            }
-            else{
+            } else {
                 binding.viewTop.visibility = View.GONE
             }
 
@@ -52,7 +51,7 @@ class CategoryTabAdapter(
         fun bind(item: CategoryTabModel) {
             binding.model = item
             binding.executePendingBindings()
-          }
+        }
 
         init {
             binding.root.setOnClickListener {
@@ -73,13 +72,13 @@ class CategoryTabAdapter(
 
         if (viewType == 0) {
 
-            return MyTabVerticalHolder(
-                ViewTabVerticalBinding.inflate(
-                    LayoutInflater.from(context),
-                    parent,
-                    false
+                return MyTabVerticalHolder(
+                    ViewTabVerticalBinding.inflate(
+                        LayoutInflater.from(context),
+                        parent,
+                        false
+                    )
                 )
-            )
 
         } else {
 

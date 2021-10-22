@@ -71,7 +71,6 @@ data class CreateOrderResponse(
             val openOrderTypeId: Any,
             @SerializedName("order_items")
             val orderItems: List<OrderItem>,
-
             @SerializedName("order_service_charges")
             val orderServiceCharges: List<OrderServiceCharge>,
             @SerializedName("order_type")
@@ -114,12 +113,11 @@ data class CreateOrderResponse(
 
             @Parcelize
             data class GuestAttributes(
-
                 @SerializedName("id") var id: Int,
                 @SerializedName("order_id") var orderId: Int,
                 @SerializedName("name") var name: String,
                 @SerializedName("is_paid") var isPaid: Boolean,
-                @SerializedName("total_amount") var totalAmount: Int,
+                @SerializedName("total_amount") var totalAmount: Double,
                 @SerializedName("cash_discount") var cashDiscount: String,
                 @SerializedName("total_discount") var totalDiscount: String,
                 @SerializedName("total_service_charge") var totalServiceCharge: String,

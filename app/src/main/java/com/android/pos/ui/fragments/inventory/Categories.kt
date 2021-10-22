@@ -246,7 +246,7 @@ class Categories : Fragment() {
                         reallyMoved(
                             adapter.getItem(dragFrom).sort,
                             adapter.getItem(dragTo).sort,
-                            adapter.getItem(viewHolder.layoutPosition)?.id
+                            adapter.getItem(viewHolder.layoutPosition).id
                         )
                     }
 
@@ -289,4 +289,5 @@ class Categories : Fragment() {
         }
 
     }
+
 }

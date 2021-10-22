@@ -49,11 +49,11 @@ class DineInOrderTableViewModel @Inject constructor(
     val msgText: LiveData<Event<String>> = _msgText
 
 
-    fun payByGuest(id: Int, model: GuestPaymentRequest) {
+    fun payByGuest(id: Int, model: GuestPaymentRequest,isAllPaymentComplete:Boolean) {
         _showProgress.value = Event(true)
         viewModelScope.launch {
             val resource: Resource<BaseResponse> =
-                posRepository.payByGuest(id, false, model)
+                posRepository.payByGuest(id, isAllPaymentComplete, model)
 
             when (resource.status) {
                 Status.SUCCESS -> {

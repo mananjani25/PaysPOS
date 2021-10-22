@@ -60,6 +60,7 @@ class PayByGuestDialog : DialogFragment(), View.OnClickListener {
     private var guestId: Int = 0
     private var guestRequestModel: GuestPaymentRequest? = null
     private var floorPlanModel: GetFloorPlanResponse.Data.FloorPlanTable? = null
+    private var isLastPayment: Boolean = false
 
     private val TAG = "PayByGuestDialog"
 
@@ -92,7 +93,10 @@ class PayByGuestDialog : DialogFragment(), View.OnClickListener {
         cartList = requireArguments().getParcelable("cartList")
         guestId = requireArguments().getInt("id")
         guestRequestModel = requireArguments().getParcelable("model")
+        isLastPayment = requireArguments().getBoolean("isLastPayment")
         setupData()
+
+        Log.e(TAG, "isLastPayment:  ${isLastPayment}")
 
 
     }
@@ -165,18 +169,18 @@ class PayByGuestDialog : DialogFragment(), View.OnClickListener {
             }
 
             R.id.txtOriginalAmount -> {
-                guestRequestModel?.let { viewModel.payByGuest(guestId, it) }
+                guestRequestModel?.let { viewModel.payByGuest(guestId, it, isLastPayment) }
 
             }
             R.id.txtSecondAmount -> {
-                guestRequestModel?.let { viewModel.payByGuest(guestId, it) }
+                guestRequestModel?.let { viewModel.payByGuest(guestId, it, isLastPayment) }
             }
 
             R.id.txtThirdAmount -> {
-                guestRequestModel?.let { viewModel.payByGuest(guestId, it) }
+                guestRequestModel?.let { viewModel.payByGuest(guestId, it, isLastPayment) }
             }
             R.id.txtFourthAmount -> {
-                guestRequestModel?.let { viewModel.payByGuest(guestId, it) }
+                guestRequestModel?.let { viewModel.payByGuest(guestId, it, isLastPayment) }
             }
 
 
