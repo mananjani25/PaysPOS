@@ -19,7 +19,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.Modifier
-import com.android.pos.data.entities.TaxData
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.DineInModel
 import com.android.pos.data.model.requestModel.GuestPaymentRequest
@@ -33,7 +32,6 @@ import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.databinding.FragmentDineInOrderTableBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.DineInTableAdapter
-import com.android.pos.ui.fragments.inventory.Modifiers
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
@@ -158,7 +156,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                 dineInTableAdapter.setList(list)
 
-                binding.txtTotalAmount.setText("${MethodUtils.roundOffAmount(totalPrice)}")
+                binding.txtTotalAmountNew.setText("${MethodUtils.roundOffAmount(totalPrice)}")
 
             }
 
@@ -267,9 +265,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         }
 
-        binding.imgClose.setOnClickListener {
-            findNavController().popBackStack()
-        }
+        /*  binding.imgClose.setOnClickListener {
+              findNavController().popBackStack()
+          }*/
 
         binding.llInfo.setOnClickListener {
             showPopupWindow(it)
@@ -299,7 +297,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             "%.2f",
             totalDiscount
         )
-        txtTotalAmount.text = binding.txtTotalAmount.text.toString()
+        txtTotalAmount.text = binding.txtTotalAmountNew.text.toString()
         txtTotalTax.text = "$" + String.format(
             "%.2f",
             totalTax
@@ -837,7 +835,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         }
 
                         model.items = listTbItem
-                        model.isPaid = listTbItem.get(0).isPaid
+                        if (listTbItem.isNotEmpty()) {
+                            model.isPaid = listTbItem.get(0).isPaid
+                        }
 
                         model.title = baseResponse.guestAttributes.get(i).name
                         model.id = baseResponse.guestAttributes[i].id
@@ -1032,9 +1032,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
                             }
+                            if (list.get(i).items.isNotEmpty()) {
 
-                            if (list.get(i).items.get(0).isPaid) {
-                                paidAmt += dividedAmt
+                                if (list.get(i).items.get(0).isPaid) {
+                                    paidAmt += dividedAmt
+                                }
                             }
 
                         }
@@ -1051,7 +1053,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     }
 
 
-                    binding.txtTotalAmount.setText("${MethodUtils.roundOffAmount(totalAmount)}")
+                    binding.txtTotalAmountNew.setText("${MethodUtils.roundOffAmount(totalAmount)}")
                     totalPrice = MethodUtils.roundOffAmountDouble(totalAmount)
 
 
@@ -1123,6 +1125,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         ): Boolean {
             // Notify your adapter that an item is moved from x position to y position
             dineInTableAdapter.notifyItemMoved(viewHolder.adapterPosition, target.adapterPosition)
+            Log.e("Get", "Get")
+            updateAdapterData()
             return true
         }
 
@@ -1138,6 +1142,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
             super.onSelectedChanged(viewHolder, actionState)
+            Log.e(TAG, "OnDataChanged")
             // Hanlde action state changes
         }
 
@@ -1148,9 +1153,144 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         }
     }
 
+    private fun updateAdapterData() {
+        Log.e(TAG, "DineInData:  ${Gson().toJson(dineInTableAdapter.getList())}")
+
+        var oldList = dineInTableAdapter.getList()
+        var newList: ArrayList<DineInModel> = arrayListOf()
+        var wholeTableAmt = 0.0
+        var totalPaid = 0.0
+        var guestShare = 0.0
+        var totalTablePrice = 0.0
+        var guestCount = -1
+
+        for (i in 0 until oldList.size) {
+            if (oldList.get(i).isHeader == 1) {
+                if (oldList.get(i).item?.isPaid == true) {
+                    oldList.get(i).item?.let {
+                        totalPaid += (it.price * it.itemQuantity) - it.discountPrice
+                        if (it.modifiers.isNotEmpty()) {
+                            it.modifiers.forEach {
+                                totalPaid += it.price * it.itemQuantity
+                            }
+                        }
+                    }
+
+                } else {
+
+                    oldList.get(i).item?.let {
+                        totalTablePrice += (it.price * it.itemQuantity) - it.discountPrice
+                        if (it.modifiers.isNotEmpty()) {
+                            it.modifiers.forEach {
+                                totalTablePrice += it.price * it.itemQuantity
+                            }
+                        }
+                    }
+
+                }
+            } else {
+                guestCount++
+            }
+
+
+        }
+
+
+
+        for (i in 1 until oldList.size) {
+            if (oldList.get(i).isHeader == 1) {
+
+                oldList.get(i).item?.let { it ->
+                    wholeTableAmt += (it.price * it.itemQuantity) - it.discountPrice
+
+                    if (it.modifiers.isNotEmpty()) {
+                        it.modifiers.forEach {
+                            wholeTableAmt += it.price * it.itemQuantity
+
+                        }
+                    }
+                }
+
+            } else {
+
+                break
+            }
+        }
+        guestShare += wholeTableAmt / (guestCount - 1)
+        Log.e(TAG, "MDinewholeTableAmt  ${wholeTableAmt}")
+        Log.e(TAG, "MDinetotalPaid ${totalPaid}")
+        Log.e(TAG, "MDinetotalTablePrice ${totalTablePrice}")
+        Log.e(TAG, "MDineguestShare ${guestShare}")
+        Log.e(TAG, "MDineguestCount  ${guestCount}")
+
+        for (i in 0 until oldList.size) {
+            var model = DineInModel()
+            if (oldList.get(i).isHeader == 1) {
+                model.item = oldList.get(i).item
+                model.totalTableAmt = totalTablePrice
+                model.guestDividedAmt = guestShare
+
+
+            } else {
+                model.title = oldList.get(i).title
+
+            }
+            model.isHeader = oldList.get(i).isHeader
+            newList.add(model)
+
+        }
+        var guestAmt = 0.0
+        newList.forEach {
+
+        }
+        for (i in 0 until newList.size) {
+            if (newList.get(i).isHeader == 1) {
+                newList.get(i).item?.let { it ->
+                    guestAmt += (it.price * it.itemQuantity) - it.discountPrice
+                    if (it.modifiers.isNotEmpty()) {
+                        it.modifiers.forEach {
+                            guestAmt += it.itemQuantity * it.price
+                        }
+                    }
+
+                }
+            } else {
+                newList.get(i).totalGuestPrice = guestAmt + guestShare
+                guestAmt = 0.0
+            }
+        }
+
+        dineInTableAdapter.setList(newList)
+
+
+        /*for (i in 0 until oldList.size) {
+            var model: DineInModel = DineInModel()
+            if (oldList.get(i).isHeader == 1) {
+                var listTbItem: ArrayList<TbItem> = arrayListOf()
+                oldList.get(i).item?.let {
+                    listTbItem.add(it)
+                    model.item = it
+                    model.isHeader = 1
+                    if (it.isPaid) {
+
+                    }
+
+
+                }
+
+
+            } else {
+
+
+            }
+
+        }*/
+    }
+
     private fun onItemMoved(fromPosition: Int, toPosition: Int) {
 
         binding.rvItemList.adapter?.notifyItemMoved(fromPosition, toPosition)
+
 
     }
 
@@ -1189,6 +1329,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                //updateAdapterData()
+                Log.e(TAG, "RecyclerViewonSwipe")
 
             }
 
@@ -1196,6 +1338,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 recyclerView: RecyclerView,
                 viewHolder: RecyclerView.ViewHolder
             ) {
+                Log.e(TAG, "RecyclerViewOnClearView")
 
                 if (dragFrom != -1 && dragTo != -1 && dragFrom != dragTo) {
                     /* reallyMoved(
@@ -1207,6 +1350,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                 dragFrom = -1
                 dragTo = -1
+                updateAdapterData()
             }
 
         })

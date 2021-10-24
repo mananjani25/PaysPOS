@@ -62,7 +62,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         if (getItemViewType(position) == 1) {
             (holder as MyViewHolder).bind(list.get(position))
         } else {
-            (holder as HeaderViewHolder).bind(list.get(position))
+            (holder as HeaderViewHolder).bind(list.get(position), position)
         }
     }
 
@@ -74,7 +74,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     inner class HeaderViewHolder(private val binding: ViewDineInHeaderBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(model: DineInModel) {
+        fun bind(model: DineInModel, position: Int) {
 
             if (list.get(layoutPosition).customer != null) {
                 binding.txtTableName.setText(
@@ -98,12 +98,13 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             if (layoutPosition == 0) {
                 binding.btnPay.visibility = View.GONE
                 binding.btnPaid.visibility = View.INVISIBLE
-                binding.txtTotal.visibility = View.INVISIBLE
+                //  binding.txtTotal.visibility = View.INVISIBLE
             } else {
-                binding.txtTotal.visibility = View.VISIBLE
+                // binding.txtTotal.visibility = View.VISIBLE
             }
 
-            binding.txtTotal.setText("" + MethodUtils.roundOffAmountDouble(list[layoutPosition].totalGuestPrice))
+            binding.txtPay.setText("Pay " + MethodUtils.roundOffAmount(list[position].totalGuestPrice))
+            // binding.txtTotal.setText("" + MethodUtils.roundOffAmountDouble(list[layoutPosition].totalGuestPrice))
 
         }
 

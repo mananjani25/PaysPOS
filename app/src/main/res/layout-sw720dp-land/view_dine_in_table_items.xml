@@ -14,8 +14,8 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:background="@drawable/background_square_border_grey"
         android:layout_height="wrap_content"
+        android:background="@drawable/background_square_border_grey"
         android:orientation="vertical">
 
 
@@ -27,37 +27,40 @@
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:paddingVertical="@dimen/_2sdp"
                 android:weightSum="5">
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_weight="0.5"
+                    android:layout_weight="0.6"
 
-                    android:gravity="center">
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="@dimen/_12sdp"
+                        android:layout_height="@dimen/_8sdp"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="@dimen/_4sdp"
+                        android:padding="@dimen/_2sdp"
+                        android:src="@drawable/hamburger" />
 
                     <CheckBox
                         android:id="@+id/chkIsFired"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_marginStart="@dimen/_4sdp"
+                        android:layout_marginStart="@dimen/_10sdp"
+                        android:button="@drawable/dine_in_fire_selector"
                         android:gravity="center" />
                 </LinearLayout>
-
-                <View
-                    android:id="@+id/viewLine"
-                    android:layout_width="1dp"
-                    android:layout_height="match_parent"
-                    android:background="@color/view" />
 
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_weight="2"
+                    android:layout_weight="1.9"
                     android:gravity="center"
                     android:orientation="vertical">
 
@@ -67,7 +70,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="start"
                         android:gravity="start"
-                        android:paddingStart="@dimen/_10sdp"
+                        android:paddingStart="@dimen/_14sdp"
                         android:text="@{model.name}"
                         android:textColor="@color/drawerBack"
                         android:textSize="@dimen/_5mdpi"
@@ -83,7 +86,7 @@
                         android:gravity="start"
                         android:lines="1"
                         android:maxLines="1"
-                        android:paddingStart="@dimen/_10sdp"
+                        android:paddingStart="@dimen/_14sdp"
                         android:singleLine="true"
                         android:text="@{@string/add_note_cart +``+model.note}"
 
@@ -96,6 +99,7 @@
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
                     android:background="@color/view"
+                    android:visibility="invisible"
                     app:layout_constraintTop_toBottomOf="@+id/linearHeader" />
 
                 <LinearLayout
@@ -111,7 +115,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:gravity="center"
-                        android:text="@{`x `+model.itemQuantity}"
+                        android:text="@{``+model.itemQuantity}"
                         android:textColor="@color/color88"
                         android:textSize="@dimen/_5mdpi"
                         tools:text="x 10" />
@@ -122,6 +126,7 @@
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
                     android:background="@color/view"
+                    android:visibility="invisible"
                     app:layout_constraintTop_toBottomOf="@+id/linearHeader" />
 
                 <LinearLayout
@@ -148,6 +153,7 @@
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
                     android:background="@color/view"
+                    android:visibility="invisible"
                     app:layout_constraintTop_toBottomOf="@+id/linearHeader" />
 
                 <androidx.appcompat.widget.LinearLayoutCompat
@@ -156,6 +162,7 @@
                     android:layout_gravity="center"
                     android:layout_weight="1"
                     android:gravity="center"
+
                     android:orientation="vertical">
 
                     <androidx.appcompat.widget.AppCompatTextView
@@ -163,7 +170,8 @@
                         style="@style/CustomFontBold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
+                        android:layout_gravity="end"
+                        android:layout_marginEnd="@dimen/_15sdp"
                         android:gravity="start"
                         android:textColor="@color/drawerBack"
                         android:textSize="@dimen/_5mdpi"
@@ -174,8 +182,9 @@
                         style="@style/CustomFontBold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
+                        android:layout_gravity="end"
                         android:layout_marginTop="@dimen/_2sdp"
+                        android:layout_marginEnd="@dimen/_15sdp"
                         android:gravity="start"
                         android:textColor="@color/colorRed"
                         android:textSize="@dimen/_5mdpi"
@@ -201,6 +210,7 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/view"
+            android:visibility="invisible"
             app:layout_constraintTop_toBottomOf="@+id/linearHeader" />
 
     </LinearLayout>
