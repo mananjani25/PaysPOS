@@ -28,5 +28,13 @@ data class Data(
     @SerializedName("cash_payments")
     val cashPayments: List<KeyValue>?,
     @SerializedName("payment_details")
-    val paymentDetails: ArrayList<ArrayList<KeyValue>>?,
+    val paymentDetails: ArrayList<ArrayList<KeyValue>>?, // check
+    @SerializedName("employee_report")
+    val employeeReports: ArrayList<ArrayList<KeyValueWithString>>?,
+    @SerializedName("other_details")
+    val otherDetails: ArrayList<ArrayList<KeyValueWithString>>?,
+    @SerializedName("service_charge_details")
+    val serviceChargeDetails: ArrayList<ArrayList<KeyValue>>?,
+    @SerializedName("tips_details")
+    val tipsDetails: ArrayList<ArrayList<KeyValue>>?,// check
 )

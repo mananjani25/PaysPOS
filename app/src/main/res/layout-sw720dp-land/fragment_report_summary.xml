@@ -397,6 +397,8 @@
                     style="@style/ReportTitleStyle"
                     android:text="@string/employee_data" />
 
+                <include layout="@layout/view_employee_header" />
+
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvEmployeeData"
                     style="@style/ReportRecyclerViewstyle"
@@ -411,6 +413,58 @@
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvPaymentDetails"
+                    style="@style/ReportRecyclerViewstyle"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:itemCount="2"
+                    tools:listitem="@layout/view_payment_details" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtEmpReport"
+                    style="@style/ReportTitleStyle"
+                    android:text="@string/employee_report"
+                    android:visibility="gone" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvEmpReport"
+                    style="@style/ReportRecyclerViewstyle"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:itemCount="2"
+                    tools:listitem="@layout/view_employee_report" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtOtherDetails"
+                    style="@style/ReportTitleStyle"
+                    android:text="@string/other_details"
+                    android:visibility="gone" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvOtherDetails"
+                    style="@style/ReportRecyclerViewstyle"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:itemCount="2"
+                    tools:listitem="@layout/view_employee_report" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtServiceChargeDetails"
+                    style="@style/ReportTitleStyle"
+                    android:text="@string/service_charge_details" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvServiceChargeDetails"
+                    style="@style/ReportRecyclerViewstyle"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:itemCount="2"
+                    tools:listitem="@layout/view_sales_report" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtTipsDetails"
+                    style="@style/ReportTitleStyle"
+                    android:text="@string/tips_details" />
+
+                <include layout="@layout/view_payment_details_header" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvTipsDetails"
                     style="@style/ReportRecyclerViewstyle"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:itemCount="2"

@@ -269,4 +269,14 @@ object Constants {
     //request codes
     var REQUEST_GET_IMAGE_GALLERY = 1
     var REQUEST_GET_IMAGE_CAMERA = 2
+
+    //api constants
+    const val EMP_NAME = "Employee Name"
+    const val AMT_BY_CASH = "Amount by Cash"
+    const val SERVICE_CHARGE_BY_CASH = "Service Charge by Cash"
+    const val TIP_BY_CASH = "Tip by Cash"
+    const val REFUND = "Refund"
+    const val TIP = "Tips"
+    const val DISCOUNT = "Discounts"
+    const val AMT_COLLECTED = "Amount Collected"
 }
