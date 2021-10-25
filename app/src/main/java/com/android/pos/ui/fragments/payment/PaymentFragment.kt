@@ -403,6 +403,20 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
             R.id.llCash -> {
 
+                paymentAmount = when {
+
+                    isSplitByNo -> {
+                        (totalPrice + tipAmount) / splitValue
+                    }
+                    isSplitByAmount -> {
+                        splitAfterAmount
+                    }
+                    else -> {
+                        (totalPrice + tipAmount)
+                    }
+                }
+
+
                 makePayment()
 
 

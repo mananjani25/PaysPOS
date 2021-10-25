@@ -313,6 +313,33 @@
                                 android:textSize="@dimen/_7mdpi" />
 
                         </androidx.appcompat.widget.LinearLayoutCompat>
+
+                        <androidx.appcompat.widget.LinearLayoutCompat
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="@dimen/_10sdp"
+                            android:orientation="horizontal">
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/llHome"
+                                style="@style/CustomFontBold"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="@dimen/_3sdp"
+                                android:layout_weight="1"
+                                android:background="@color/btnColorDark_"
+                                android:gravity="center"
+
+                                android:minWidth="@dimen/_245sdp"
+                                android:padding="@dimen/_5sdp"
+                                android:text="@string/tv_home"
+                                android:textColor="@color/white"
+                                android:textSize="@dimen/_7mdpi" />
+
+
+                        </androidx.appcompat.widget.LinearLayoutCompat>
+
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
                 </androidx.appcompat.widget.LinearLayoutCompat>

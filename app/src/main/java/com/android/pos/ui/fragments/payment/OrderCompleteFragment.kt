@@ -138,10 +138,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 "Remaining Amount " + MethodUtils.roundOffAmount(remainingAmount)
 
             binding.txtRemainingAmount.visibility = View.VISIBLE
+            binding.llHome.visibility = View.GONE
             binding.llNoReceipt.text = "Next Payment"
             binding.txtHome.text = "Next Payment"
         } else {
             binding.txtRemainingAmount.visibility = View.GONE
+            binding.llHome.visibility = View.VISIBLE
             binding.llNoReceipt.text = getString(R.string.no_receipt)
             binding.txtHome.text = getString(R.string.tv_home)
         }
@@ -171,6 +173,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         binding.llPrint.setOnClickListener(this)
         binding.txtSend.setOnClickListener(this)
         binding.imgBack.setOnClickListener(this)
+        binding.llHome.setOnClickListener(this)
 
         setFragmentResultListener("request_key_customer") { requestKey: String, bundle: Bundle ->
             val result = bundle.getParcelable<TbCustomer>("data")
@@ -186,6 +189,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         when (v?.id) {
             R.id.txtHome -> {
+                moveToDashboard()
+            }
+            R.id.llHome -> {
                 moveToDashboard()
             }
             R.id.txtAddCustomer -> {
