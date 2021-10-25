@@ -108,7 +108,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
         } else {
-            cartList = arguments?.getParcelable("cartList")
+
+            orderId = arguments?.getInt("orderId")
+            orderId?.let { viewModel.apiCallOrderDetails(it) }
+            binding.txtTitle.setText("Order Details")
+
+
+            /*cartList = arguments?.getParcelable("cartList")
             dineInData = arguments?.getParcelable("dineInList")
 
             //totalPrice = requireArguments().getDouble("totalPrice")
@@ -158,7 +164,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                 binding.txtTotalAmountNew.setText("${MethodUtils.roundOffAmount(totalPrice)}")
 
-            }
+            }*/
 
         }
         onClick()
@@ -178,6 +184,32 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     }
 
     private fun onClick() {
+
+
+        binding.txtHome.setOnClickListener {
+            findNavController().navigate(R.id.action_dineInOrderTable_to_dashboardCategoryNew)
+        }
+        binding.txtHomeBottom.setOnClickListener {
+            findNavController().navigate(R.id.action_dineInOrderTable_to_dashboardCategoryNew)
+        }
+
+        binding.txtEditOrder.setOnClickListener {
+            val bundle = Bundle()
+            bundle.putBoolean("is_dine_in_edit", true)
+            bundle.putParcelableArrayList(
+                "dine_in_list",
+                dineInTableAdapter.getList().toCollection(arrayListOf())
+            )
+
+
+            findNavController().navigate(
+                R.id.action_dineInOrderTable_to_dashboardCategoryNew,
+                bundle
+            )
+
+
+        }
+
         binding.btnSendOrder.setOnClickListener {
             var guestAttribute = dineInData?.order?.guestAttributes
             Log.e(TAG, "guestAttribute:  ${Gson().toJson(guestAttribute)}")
@@ -1126,7 +1158,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             // Notify your adapter that an item is moved from x position to y position
             dineInTableAdapter.notifyItemMoved(viewHolder.adapterPosition, target.adapterPosition)
             Log.e("Get", "Get")
-            updateAdapterData()
+            // updateAdapterData()
             return true
         }
 
@@ -1154,7 +1186,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     }
 
     private fun updateAdapterData() {
-        Log.e(TAG, "DineInData:  ${Gson().toJson(dineInTableAdapter.getList())}")
+
 
         var oldList = dineInTableAdapter.getList()
         var newList: ArrayList<DineInModel> = arrayListOf()
@@ -1346,7 +1378,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                          adapter.getItem(dragTo).sort,
                          adapter.getItem(viewHolder.layoutPosition).id
                      )*/
+
+
                 }
+
 
                 dragFrom = -1
                 dragTo = -1
