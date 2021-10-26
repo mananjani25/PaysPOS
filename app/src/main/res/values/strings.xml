@@ -600,5 +600,6 @@
     <string name="title">Title</string>
     <string name="details">Details</string>
     <string name="amount">Amount</string>
+    <string name="edit_order">Edit Order</string>
 
 </resources>

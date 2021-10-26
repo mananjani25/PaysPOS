@@ -851,7 +851,7 @@
         android:id="@+id/orderTypeDialog"
         android:name="com.android.pos.ui.dialog.OrderTypeDialog">
         <action
-            android:id="@+id/action_orderTypeDialog_to_dashboardCategoryNew"
+                android:id="@+id/action_orderTypeDialog_to_dashboardCategoryNew"
             app:destination="@id/dashboardCategoryNew" />
         <action
             android:id="@+id/action_orderTypeDialog_to_openOrderCustomerFragment"
@@ -895,6 +895,11 @@
         <action
             android:id="@+id/action_payByGuestDialog_to_dineInOrderTable"
             app:destination="@id/dineInOrderTable"
+            app:popUpTo="@id/payByGuestDialog"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_payByGuestDialog_to_dashboardCategoryNew"
+            app:destination="@id/dashboardCategoryNew"
             app:popUpTo="@id/payByGuestDialog"
             app:popUpToInclusive="true" />
     </dialog>

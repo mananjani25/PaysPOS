@@ -1,5 +1,6 @@
 package com.android.pos.ui.adapter
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.PorterDuff
@@ -71,10 +72,49 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     }
 
 
+    @SuppressLint("NotifyDataSetChanged")
     inner class HeaderViewHolder(private val binding: ViewDineInHeaderBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(model: DineInModel, position: Int) {
+            var tbList: ArrayList<TbItem> = arrayListOf()
+            var guestAmt = 0.0
+            var isPaid = true
+            var isAllFired = true
+
+            for (i in position + 1 until list.size) {
+
+                if (list.get(i).isHeader == 1) {
+
+                    list.get(i).item?.let {
+                        if (!it.isPaid) {
+                            guestAmt += (it.itemQuantity * it.price) - it.discountPrice
+                            if (it.modifiers.isNotEmpty()) {
+                                it.modifiers.forEach { it ->
+
+                                    guestAmt += it.itemQuantity * it.price
+
+                                }
+                            }
+                        }
+                        if (!it.isPaid) {
+                            isPaid = it.isPaid
+                        }
+
+                        if (!it.isFired) {
+                            isAllFired = false
+
+                        }
+
+
+                    }
+
+
+                } else {
+                    break
+                }
+            }
+            guestAmt += list.get(0).guestDividedAmt
 
             if (list.get(layoutPosition).customer != null) {
                 binding.txtTableName.setText(
@@ -87,7 +127,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
             }
 
-            if (list[layoutPosition].isPaid) {
+            if (isPaid) {
                 binding.btnPay.visibility = View.GONE
                 binding.btnPaid.visibility = View.VISIBLE
 
@@ -103,52 +143,51 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 // binding.txtTotal.visibility = View.VISIBLE
             }
 
-            binding.txtPay.setText("Pay " + MethodUtils.roundOffAmount(list[position].totalGuestPrice))
-            // binding.txtTotal.setText("" + MethodUtils.roundOffAmountDouble(list[layoutPosition].totalGuestPrice))
+            if (isAllFired) {
+                binding.chkIsFired.isChecked = true
+                binding.chkIsFired.isPressed = true
+                binding.chkIsFired.isEnabled = false
+            }
+
+
+
+            binding.txtPay.setText("Pay " + MethodUtils.roundOffAmount(guestAmt))
+
 
         }
 
         init {
             binding.chkIsFired.setOnCheckedChangeListener { buttonView, isChecked ->
-                Log.e(TAG, "NextITemIndax  ${layoutPosition + 1}")
 
-                if (isChecked) {
-                    val ids: MutableList<Int> = ArrayList()
-                    for (i in layoutPosition + 1 until list.size) {
-
-                        if (list.get(i).isHeader == 1) {
-                            list.get(i).item?.orderItemId?.let { ids.add(it) }
-
-                        } else {
-                            break
-                        }
-
-
-                    }
-                    var idStr = Gson().toJson(ids.toTypedArray())
-                    Log.e(TAG, "idStr:  ${Gson().toJson(idStr)}")
-                    listner.onWholeTableToKitchen(idStr)
-                    binding.chkIsFired.isChecked = true
-                    binding.chkIsFired.isEnabled = false
-                    // list[bindingAdapterPosition].item =
-
-
-                    if (list.get(layoutPosition).item != null) {
-                        var itemsNew = list[bindingAdapterPosition].item
+                if (buttonView.isPressed) {
+                    if (isChecked) {
                         val ids: MutableList<Int> = ArrayList()
-                        itemsNew?.orderItemId?.let { ids.add(it) }
-                        itemsNew?.isFired = true
+
+                        val builder = java.lang.StringBuilder()
 
 
-                        var idStr = Gson().toJson(ids.toTypedArray())
-                        Log.e(TAG, "idStr:  $idStr")
-                        listner.onWholeTableToKitchen(idStr)
+                        for (i in layoutPosition + 1 until list.size) {
+
+                            if (list.get(i).isHeader == 1) {
+
+                                list.get(i).item?.orderItemId?.let {
+                                    builder.append(it)
+                                    if (i + 1 != list.size) {
+                                        builder.append(",")
+                                    }
+                                }
+                                list.get(i).item?.isFired = true
+
+                            } else {
+                                break
+                            }
+
+
+                        }
+                        Log.e(TAG, "builderbuilder:  ${builder}")
+                        listner.onWholeTableToKitchen(builder.toString())
                         binding.chkIsFired.isChecked = true
                         binding.chkIsFired.isEnabled = false
-                        list[bindingAdapterPosition].item = itemsNew
-
-                        //itemAdapter.updateCart(list[bindingAdapterPosition].items)
-
 
                     }
                 }
@@ -173,8 +212,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 binding.tvDiscountRate.visibility = View.VISIBLE
                 binding.tvRate.paintFlags =
                     binding.tvRate.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
-                Log.e(TAG, "PriceOriginalTotal  ${model.item?.let { totalPrice(it) }}")
-                Log.e(TAG, "PriceDiscounted  ${model.item?.discountPrice}")
+
                 val dPrice = model.item?.let { totalPrice(it) - it.discountPrice }
                 dPrice?.let { MethodUtils.setPriceTextView(binding.tvDiscountRate, it) }
             } else {
@@ -207,8 +245,10 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 binding.txtNote.visibility = View.VISIBLE
             }
 
+            Log.e(TAG, "isItemFired  ${model.item?.isFired}")
             if (model.item?.isFired == true) {
                 binding.chkIsFired.isChecked = true
+                binding.chkIsFired.isPressed = true
                 binding.chkIsFired.isEnabled = false
             } else {
                 binding.chkIsFired.isChecked = false
@@ -221,26 +261,29 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             binding.executePendingBindings()
 
             binding.chkIsFired.setOnCheckedChangeListener { buttonView, isChecked ->
-                if (isChecked) {
-                    if (list.get(layoutPosition).item != null) {
-                        var itemsNew = list[bindingAdapterPosition].item
-                        val ids: MutableList<Int> = ArrayList()
-                        itemsNew?.orderItemId?.let { ids.add(it) }
-                        itemsNew?.isFired = true
+
+                if (buttonView.isPressed) {
+                    Log.e("chkIsFired", isChecked.toString())
+                    if (isChecked) {
+                        if (list.get(layoutPosition).item != null) {
+                            var itemsNew = list[bindingAdapterPosition].item
+                            var ids: String? = null
+                            itemsNew?.orderItemId?.let { ids = it.toString() }
+                            itemsNew?.isFired = true
 
 
-                        var idStr = Gson().toJson(ids.toTypedArray())
-                        Log.e(TAG, "idStr:  $idStr")
-                        listner.onWholeTableToKitchen(idStr)
-                        binding.chkIsFired.isChecked = true
-                        binding.chkIsFired.isEnabled = false
-                        list[bindingAdapterPosition].item = itemsNew
 
-                        //itemAdapter.updateCart(list[bindingAdapterPosition].items)
+                            Log.e(TAG, "idStr:  $ids")
+                            ids?.let { listner.singleItemFired(it, layoutPosition) }
+                            binding.chkIsFired.isEnabled = false
+                            list[bindingAdapterPosition].item = itemsNew
 
+                            //itemAdapter.updateCart(list[bindingAdapterPosition].items)
+
+
+                        }
 
                     }
-
                 }
             }
 
@@ -384,6 +427,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         fun onGuestPay(dineInModel: DineInModel, position: Int)
         fun onSendItemToKitchen(item: TbItem)
         fun onWholeTableToKitchen(ids: String)
+        fun singleItemFired(id: String, position: Int)
     }
 
     fun getList(): List<DineInModel> {
@@ -441,6 +485,23 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             }
         }
         return false
+    }
+
+    fun updateStatus(clickedPos: Int, isFireAll: Boolean) {
+        if (isFireAll) {
+            list.forEach {
+                if (it.isHeader == 1) {
+                    it.item?.isFired = true
+
+                } else {
+                    it.isFired = true
+                }
+            }
+        } else {
+
+            list[clickedPos].item?.isFired = true
+        }
+        notifyDataSetChanged()
     }
 
 }

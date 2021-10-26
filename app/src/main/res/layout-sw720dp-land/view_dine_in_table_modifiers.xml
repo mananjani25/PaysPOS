@@ -14,7 +14,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/_2sdp">
 
 
         <androidx.appcompat.widget.LinearLayoutCompat
@@ -31,24 +32,18 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_weight="0.5"
+                    android:layout_weight="0.6"
 
                     android:gravity="center">
 
                 </LinearLayout>
-
-                <View
-                    android:id="@+id/viewLine"
-                    android:layout_width="1dp"
-                    android:layout_height="match_parent"
-                    android:background="@color/view" />
 
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_weight="2"
+                    android:layout_weight="1.9"
                     android:gravity="center"
                     android:orientation="vertical">
 
@@ -58,7 +53,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="start"
                         android:gravity="start"
-                        android:paddingStart="@dimen/_10sdp"
+                        android:paddingStart="@dimen/_14sdp"
                         android:text="@{model.name}"
                         android:textColor="@color/drawerBack"
                         android:textSize="@dimen/_5mdpi"
@@ -72,6 +67,7 @@
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
                     android:background="@color/view"
+                    android:visibility="invisible"
                     app:layout_constraintTop_toBottomOf="@+id/linearHeader" />
 
                 <LinearLayout
@@ -79,14 +75,15 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_weight="0.5"
-                    android:gravity="center">
+                    android:gravity="start">
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontSemiBold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:text="@{`x `+model.itemQuantity}"
+                        android:layout_gravity="start"
+                        android:gravity="start"
+                        android:text="@{``+model.itemQuantity}"
                         android:textColor="@color/color88"
                         android:textSize="@dimen/_5mdpi"
                         tools:text="x 10" />
@@ -97,6 +94,7 @@
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
                     android:background="@color/view"
+                    android:visibility="invisible"
                     app:layout_constraintTop_toBottomOf="@+id/linearHeader" />
 
                 <LinearLayout
@@ -123,6 +121,7 @@
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
                     android:background="@color/view"
+                    android:visibility="invisible"
                     app:layout_constraintTop_toBottomOf="@+id/linearHeader" />
 
                 <androidx.appcompat.widget.LinearLayoutCompat
@@ -138,7 +137,8 @@
                         style="@style/CustomFontSemiBold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
+                        android:layout_gravity="end"
+                        android:layout_marginEnd="@dimen/_15sdp"
                         android:gravity="start"
                         android:text="@{@string/symbole +``+String.format(@string/format,(model.price * model.itemQuantity))}"
                         android:textColor="@color/drawerBack"

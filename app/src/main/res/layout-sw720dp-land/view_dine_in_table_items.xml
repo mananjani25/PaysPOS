@@ -43,7 +43,8 @@
                         android:layout_gravity="center"
                         android:layout_marginStart="@dimen/_4sdp"
                         android:padding="@dimen/_2sdp"
-                        android:src="@drawable/hamburger" />
+                        android:src="@drawable/hamburger"
+                        android:visibility="invisible" />
 
                     <androidx.appcompat.widget.AppCompatCheckBox
                         android:id="@+id/chkIsFired"

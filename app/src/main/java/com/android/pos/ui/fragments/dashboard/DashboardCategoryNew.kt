@@ -7,6 +7,7 @@ import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.*
 import android.view.ViewGroup
@@ -127,6 +128,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         // prefProvider.setValueboolean(IS_CLOCKOUT, false)
         binding = FragmentDashboardCategoryNewBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
+        getDeviceId()
 
         isOrderUpdate = requireArguments().getBoolean("update")
         if (isOrderUpdate) {
@@ -255,6 +257,30 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         if (arguments?.getBoolean("is_dine_in_edit") == true) {
             var dineInList = arguments?.getParcelableArrayList<DineInModel>("dine_in_list")
             Log.e(TAG, "dineInListEditOrder:  ${Gson().toJson(dineInList)}")
+            if (dineInList?.isNotEmpty() == true) {
+                binding.layoutCart.txtOrderType.setText("Dine In")
+
+                binding.layoutCart.llCart.visibility = View.VISIBLE
+                binding.lltakeout.visibility = View.GONE
+                binding.layoutCart.llShowMenu.visibility = View.GONE
+
+                binding.layoutCart.viewDineIn.visibility = View.VISIBLE
+                binding.layoutCart.rvCart.visibility = View.GONE
+                binding.layoutCart.rvCartDineIn.visibility = View.VISIBLE
+
+                /*  prefProvider.setValue(ORDER_TYPE, DINE_IN)
+                  prefProvider.setValue(ORDER_TYPE_NAME, DINE_IN)
+  */
+
+                /*dineInCartAdapter = DineInAdapter()
+                dineInCartAdapter.setListner(this)
+
+                dineInCartAdapter.setList(dineInList)*/
+                Log.e(TAG, "DineNotEmpty")
+
+
+            }
+
 
         }
     }
@@ -2504,6 +2530,15 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             }
         })
 
+    }
+
+    private fun getDeviceId() {
+
+        val androidId: String = Settings.Secure.getString(
+            requireActivity().contentResolver,
+            Settings.Secure.ANDROID_ID
+        )
+        Log.e(TAG, "androidId:  ${androidId}")
     }
 
 }

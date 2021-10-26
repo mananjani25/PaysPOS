@@ -222,7 +222,7 @@
                 android:gravity="center"
                 android:minWidth="@dimen/_120sdp"
                 android:padding="@dimen/_6sdp"
-                android:text="Edit Order"
+                android:text="@string/edit_order"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_5mdpi" />
 
@@ -233,7 +233,6 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@color/green_pay_total"
-
                 android:gravity="center">
 
                 <androidx.appcompat.widget.AppCompatTextView
