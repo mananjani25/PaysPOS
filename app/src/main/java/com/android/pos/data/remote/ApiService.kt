@@ -338,9 +338,6 @@ interface ApiService {
         @Path("id") noteId: Int,
     ): BaseResponse
 
-    @FormUrlEncoded
-    @POST(CLOCK_OUT)
-    suspend fun hideItem(@FieldMap options: HashMap<String, String>): BaseResponse
 
     @Multipart
     @POST(ITEMS)

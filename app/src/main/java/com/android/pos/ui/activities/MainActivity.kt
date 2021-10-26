@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ParentActivityBinding
     private var navController: NavController? = null
     private lateinit var listner: NavController.OnDestinationChangedListener
-    private val viewModel by viewModels<DashBoardCategoryViewModel>()
+    private val viewModel by viewModels<MainViewModel>()
     var activityResultCallBack: ActivityResultCallBack? = null
 
     @Inject

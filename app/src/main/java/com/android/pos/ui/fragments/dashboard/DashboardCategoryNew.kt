@@ -651,7 +651,17 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
 
         txtSignOut.setOnClickListener {
-            (activity as MainActivity).alertLogout()
+
+
+            alert("", "Are you sure you want to Logout?") {
+                this.positiveButton("Logout") {
+                    viewModel.logoutAPI()
+                }
+                this.negativeButton("Cancel") {
+                }
+
+            }
+
             closeDialog(dialog)
         }
 
@@ -1555,6 +1565,19 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     ProgressUtils.showProgressDialog(requireActivity())
                 } else {
                     ProgressUtils.dismissProgressDialog()
+                }
+            }
+        })
+
+        viewModel.logout.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    prefProvider.setClear()
+                    viewModel.clearTable()
+                    prefProvider.setValue(Constants.AUTH_TOKEN, "")
+                    findNavController().navigate(R.id.action_global_login)
+
+
                 }
             }
         })
@@ -2471,4 +2494,5 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         })
 
     }
+
 }
