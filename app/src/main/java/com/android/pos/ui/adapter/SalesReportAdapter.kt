@@ -32,7 +32,7 @@ class SalesReportAdapter :
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.bind(arrayList.get(position))
+        holder.bind(arrayList[position])
     }
 
     override fun getItemCount(): Int {

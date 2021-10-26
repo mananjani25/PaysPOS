@@ -338,9 +338,6 @@ interface ApiService {
         @Path("id") noteId: Int,
     ): BaseResponse
 
-    @FormUrlEncoded
-    @POST(CLOCK_OUT)
-    suspend fun hideItem(@FieldMap options: HashMap<String, String>): BaseResponse
 
     @Multipart
     @POST(ITEMS)
@@ -609,6 +606,7 @@ interface ApiService {
     @GET(REPORT_SUMMARY)
     suspend fun getReportSummary(
         @Query("start_date") startDate: String,
-        @Query("end_date") endDate: String
+        @Query("end_date") endDate: String,
+        @Query("terminal_id ") terminalId: String
     ): ReportSummaryResponse
 }

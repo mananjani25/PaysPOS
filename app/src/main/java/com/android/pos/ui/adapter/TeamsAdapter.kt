@@ -176,10 +176,14 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
 
         ivh.personNumberTextView.text = person.phoneNumber?.let { AlertUtils.usNumberFormat(it) }
 
-        if (person.firstName != null && person.lastName != null) {
+        if (person.lastName != null && person.lastName.isNotEmpty() && !person.lastName.equals(
+                "null",
+                ignoreCase = true
+            )
+        ) {
             ivh.personNameTextView.text = person.firstName + " " + person.lastName
             ivh.tvInitialName.text =
-                person.firstName.first().toString() + person.lastName.first().toString()
+                person.firstName?.first().toString() + person.lastName.first().toString()
         } else {
             ivh.personNameTextView.text = person.firstName
             ivh.tvInitialName.text =

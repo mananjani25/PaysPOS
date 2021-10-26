@@ -49,7 +49,8 @@ class ReportViewModel @Inject constructor(
     val startDate = MutableLiveData<String>()
 
     val endDate = MutableLiveData<String>()
-    val terminalTitle = Terminal("Terminal",-9.9)
+    var selectedTerminalId = ""
+    val terminalTitle = Terminal("Terminal", -9.9)
 
     fun setCurrentDate(myCalendar: Calendar) {
         val myFormat = "MM/dd/yyyy" //In which you need put here
@@ -86,7 +87,11 @@ class ReportViewModel @Inject constructor(
         viewModelScope.launch {
 
             val resourceReport =
-                posRepository.getReportSummary(startDate.value ?: "", endDate.value ?: "")
+                posRepository.getReportSummary(
+                    startDate = startDate.value ?: "",
+                    endDate = endDate.value ?: "",
+                    terminalId = selectedTerminalId
+                )
             when (resourceReport.status) {
                 Status.SUCCESS -> {
                     _showProgress.value = Event(false)

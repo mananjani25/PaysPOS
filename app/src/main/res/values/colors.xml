@@ -97,4 +97,7 @@
     <color name="colorM5">#FDFDFD</color>
     <color name="colorE90">#E9090E</color>
     <color name="color0A">#0AB833</color>
+    <color name="fire_all">#EE5847</color>
+    <color name="yellow_edit_order">#FAA81C</color>
+    <color name="green_pay_total">#12BC4B</color>
 </resources>

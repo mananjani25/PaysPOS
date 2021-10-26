@@ -178,6 +178,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         observeSaveOrder()
         tableStatusCheck()
         tableStatusSucess()
+        checkDineInEditOrder()
         binding.layoutCart.llShowMenu.setOnClickListener(this)
         binding.layoutCart.txtCrtNewCustomer.setOnClickListener(this)
         binding.layoutCart.txtClearItems.setOnClickListener(this)
@@ -248,6 +249,14 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         }
 
 
+    }
+
+    private fun checkDineInEditOrder() {
+        if (arguments?.getBoolean("is_dine_in_edit") == true) {
+            var dineInList = arguments?.getParcelableArrayList<DineInModel>("dine_in_list")
+            Log.e(TAG, "dineInListEditOrder:  ${Gson().toJson(dineInList)}")
+
+        }
     }
 
     private fun setupAdapter() {
@@ -651,7 +660,17 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
 
         txtSignOut.setOnClickListener {
-            (activity as MainActivity).alertLogout()
+
+
+            alert("", "Are you sure you want to Logout?") {
+                this.positiveButton("Logout") {
+                    viewModel.logoutAPI()
+                }
+                this.negativeButton("Cancel") {
+                }
+
+            }
+
             closeDialog(dialog)
         }
 
@@ -1558,6 +1577,19 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 }
             }
         })
+
+        viewModel.logout.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    prefProvider.setClear()
+                    viewModel.clearTable()
+                    prefProvider.setValue(Constants.AUTH_TOKEN, "")
+                    findNavController().navigate(R.id.action_global_login)
+
+
+                }
+            }
+        })
     }
 
     private fun observeSaveOrder() {
@@ -2418,6 +2450,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     bundle.putDouble("totalPrice", baseResponse.order.totalAmount)
                     bundle.putParcelable("cartList", cartList[0])
                     bundle.putParcelable("dineInList", baseResponse)
+                    bundle.putInt("orderId", baseResponse.order.id)
 
 
                     prefProvider.setValue(Constants.ORDER_TYPE, "")
@@ -2471,4 +2504,5 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         })
 
     }
+
 }

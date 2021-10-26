@@ -4,21 +4,22 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.android.pos.data.model.responseModel.report.Employee
-import com.android.pos.databinding.ViewEmployeeDataBinding
+import com.android.pos.data.model.responseModel.report.KeyValue
+import com.android.pos.databinding.ViewSalesReportBinding
 
-class EmployeeAdapter :
-    RecyclerView.Adapter<EmployeeAdapter.MyViewHolder>() {
+class ServiceChargeDetailsAdapter :
+    RecyclerView.Adapter<ServiceChargeDetailsAdapter.MyViewHolder>() {
 
-    private var arrayList = ArrayList<Employee>()
+    private var arrayList = ArrayList<ArrayList<KeyValue>>()
 
-    inner class MyViewHolder(private val binding: ViewEmployeeDataBinding) :
+    inner class MyViewHolder(private val binding: ViewSalesReportBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         @SuppressLint("SetTextI18n")
-        fun bind(employee: Employee) {
-            binding.emp = employee
-            binding.executePendingBindings()
+        fun bind(keyValueList: ArrayList<KeyValue>) {
+            if (keyValueList.size > 0) {
+                binding.keyValue = keyValueList[0]
+            }
         }
     }
 
@@ -27,7 +28,7 @@ class EmployeeAdapter :
         viewType: Int
     ): MyViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val binding = ViewEmployeeDataBinding.inflate(inflater, parent, false)
+        val binding = ViewSalesReportBinding.inflate(inflater, parent, false)
         return MyViewHolder(binding)
     }
 
@@ -39,7 +40,7 @@ class EmployeeAdapter :
         return arrayList.size
     }
 
-    fun add(arrayList: List<Employee>?) {
+    fun add(arrayList: ArrayList<ArrayList<KeyValue>>?) {
         this.arrayList.clear()
         if (arrayList?.isNotEmpty() == true) {
             this.arrayList.addAll(arrayList)

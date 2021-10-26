@@ -1,8 +1,11 @@
 package com.android.pos.data.model
 
+import android.os.Parcelable
 import com.android.pos.data.entities.TbCustomer
 import com.android.pos.data.entities.TbItem
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class DineInModel(
     var id: Int? = null,
     val isTypeHeader: Boolean = true,
@@ -17,6 +20,9 @@ data class DineInModel(
     var guestDividedAmt: Double = 0.0,
     var isHeader: Int = 0,
     var item: TbItem? = null,
-    var totalGuestPrice: Double = 0.0
+    var totalGuestPrice: Double = 0.0,
+    var sort: Int = 0,
+    var totalTableAmt: Double = 0.0,
+    var guestDividerAmt: Double = 0.0
 
-)
+):Parcelable

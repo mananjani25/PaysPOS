@@ -585,8 +585,7 @@
             app:destination="@id/customAmountFragment" />
         <action
             android:id="@+id/action_paymentFragment_to_orderCompleteFragment"
-            app:destination="@id/orderCompleteFragment"
-             />
+            app:destination="@id/orderCompleteFragment" />
         <action
             android:id="@+id/action_paymentFragment_to_addTipsDialog"
             app:destination="@id/addTipsDialog" />
@@ -883,11 +882,16 @@
             android:id="@+id/action_dineInOrderTable_to_payByGuestDialog"
             app:destination="@id/payByGuestDialog"
             app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_dineInOrderTable_to_dashboardCategoryNew"
+            app:destination="@id/dashboardCategoryNew"
+            app:popUpTo="@id/dashboardCategoryNew"
+            app:popUpToInclusive="true" />
     </fragment>
     <dialog
         android:id="@+id/payByGuestDialog"
         android:name="com.android.pos.ui.dialog.PayByGuestDialog"
-        android:label="PayByGuestDialog" >
+        android:label="PayByGuestDialog">
         <action
             android:id="@+id/action_payByGuestDialog_to_dineInOrderTable"
             app:destination="@id/dineInOrderTable"
@@ -898,7 +902,6 @@
         android:id="@+id/reportSummaryFragment"
         android:name="com.android.pos.ui.fragments.report.ReportSummaryFragment"
         android:label="Report Summary"
-        tools:layout="@layout/fragment_report_summary">
-    </fragment>
+        tools:layout="@layout/fragment_report_summary"></fragment>
 
 </navigation>

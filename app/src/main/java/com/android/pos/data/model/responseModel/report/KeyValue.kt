@@ -9,6 +9,6 @@ data class KeyValue(
     val value: Double?
 ) {
     fun showFormattedValue() = "$" + String.format(
-        "%.2f", value
+        "%.2f", value ?: 0.0
     )
 }

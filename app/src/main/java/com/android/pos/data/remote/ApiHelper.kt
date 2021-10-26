@@ -434,7 +434,7 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
         apiService.payByGuest(id, payAll, model)
     }
 
-    suspend fun getReportSummary(startDate: String, endDate: String) = getResult {
-        apiService.getReportSummary(startDate,endDate)
+    suspend fun getReportSummary(startDate: String, endDate: String,terminalId : String) = getResult {
+        apiService.getReportSummary(startDate,endDate, terminalId)
     }
 }
