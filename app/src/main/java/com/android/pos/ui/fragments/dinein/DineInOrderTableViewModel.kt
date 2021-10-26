@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.model.DineInModel
 import com.android.pos.data.model.requestModel.GuestPaymentRequest
+import com.android.pos.data.model.requestModel.OrderRequestModel
 import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
@@ -49,7 +50,7 @@ class DineInOrderTableViewModel @Inject constructor(
     val msgText: LiveData<Event<String>> = _msgText
 
 
-    fun payByGuest(id: Int, model: GuestPaymentRequest,isAllPaymentComplete:Boolean) {
+    fun payByGuest(id: Int, model: GuestPaymentRequest, isAllPaymentComplete: Boolean) {
         _showProgress.value = Event(true)
         viewModelScope.launch {
             val resource: Resource<BaseResponse> =
@@ -141,6 +142,33 @@ class DineInOrderTableViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun updateOrder(orderId: Int, orderRequestModel: OrderRequestModel) {
+        _showProgress.value = Event(true)
+
+        viewModelScope.launch {
+            val resource = posRepository.updateOrder(orderId, orderRequestModel)
+
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+
+                }
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
+                }
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+
+                }
+
+            }
+
+
+        }
+
     }
 
 }

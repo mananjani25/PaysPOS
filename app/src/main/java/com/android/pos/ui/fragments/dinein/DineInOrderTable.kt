@@ -21,10 +21,10 @@ import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.Modifier
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.DineInModel
-import com.android.pos.data.model.requestModel.GuestPaymentRequest
-import com.android.pos.data.model.requestModel.PaymentAttributes
+import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.model.responseModel.GetFloorPlanResponse
+import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.LOCATION_ID
@@ -35,6 +35,7 @@ import com.android.pos.ui.adapter.DineInTableAdapter
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.TimeFormatUtils
 import com.android.pos.utils.extensions.liveSnackBar
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
@@ -49,6 +50,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     private var cartList: CartModel? = null
     private var dineInData: CreateOrderResponse.Data? = null
     private var orderId: Int? = null
+    private var getOrderDetailsResponse: GetOrderDetailsResponse.Data? = null
     private val TAG = "DineInOrderTable"
     private lateinit var dineInTableAdapter: DineInTableAdapter
     private var totalPrice: Double = 0.0
@@ -60,10 +62,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     private var future_delivery_date: String = ""
     private var future_delivery_time: String = ""
     var totalAmount = 0.0
+    var totalAmtnew: Double = 0.0
     private var popupWindow: PopupWindow? = null
     private var floorPlanModel: GetFloorPlanResponse.Data.FloorPlanTable? = null
     var dragFrom = -1
     var dragTo = -1
+    var notPayAnyAmount: Boolean = false
+
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -94,9 +99,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         dineInTableAdapter = DineInTableAdapter()
         binding.rvItemList.adapter = dineInTableAdapter
         dineInTableAdapter.setListner(this)
-        val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
-        touchHelper.attachToRecyclerView(binding.rvItemList)
-        //itemTouchHelper.attachToRecyclerView(binding.rvItemList)
+
+
+
+
 
 
         if (arguments?.getBoolean("isFromFloor") == true || arguments?.getBoolean("isGuestPaid") == true) {
@@ -185,6 +191,115 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
     private fun onClick() {
 
+        binding.txtFireAll.setOnClickListener {
+            val list = dineInTableAdapter.getList()
+            val ids: MutableList<Int> = ArrayList()
+            list.forEach {
+                if (it.isHeader == 1) {
+                    it.item?.orderItemId?.let { it1 -> ids.add(it1) }
+                }
+            }
+
+            // var idStr = Gson().toJson(ids.toTypedArray())
+            val builder = java.lang.StringBuilder()
+            for (i in 0 until ids.size) {
+                builder.append(ids.get(i))
+                if (i + 1 != ids.size) {
+                    builder.append(",")
+                }
+
+            }
+            val idStr = builder.toString()
+            Log.e(TAG, "idStrJson:  ${idStr.toString()}")
+            Log.e(TAG, "orderIdorderId:  ${orderId}")
+            orderId?.let { it1 -> viewModel.fireItemToKitchen(it1, true, idStr) }
+        }
+
+        binding.btnPayNew.setOnClickListener {
+
+            val adapterList = dineInTableAdapter.getList()
+            Log.e(TAG, "adapterList:  ${Gson().toJson(adapterList)}")
+
+            var subTotal = 0.0
+            var amtToPay = 0.0
+            val totalItem: ArrayList<TbItem> = arrayListOf()
+            for (i in 0 until adapterList.size) {
+                if (adapterList.get(i).isHeader == 1) {
+                    adapterList.get(i).item?.let {
+                        totalItem.add(it)
+                    }
+                }
+            }
+            if (totalItem.isNotEmpty()) {
+                totalItem.forEach {
+                    if (!it.isPaid) {
+                        subTotal += (it.price * it.itemQuantity) - it.discountPrice
+                        if (it.modifiers.isNotEmpty()) {
+                            it.modifiers.forEach {
+
+
+                                subTotal += it.itemQuantity * it.price
+                            }
+                        }
+
+                        it.taxes?.forEach { tax ->
+                            totalTax += tax.rate
+                        }
+                    }
+                }
+            }
+            // subTotal += dineInTableAdapter.getList().get(0).guestDividedAmt
+
+            var total = subTotal + totalTax
+            Log.e(TAG, "totalTotal:  ${total}")
+            Log.e(TAG, "totalSub: ${subTotal}")
+            Log.e(TAG, "totalTotalTax: ${totalTax}")
+
+            var model = GuestPaymentRequest(
+                PaymentAttributes().apply {
+                    amount = total
+                    cardName = ""
+                    cardNumber = ""
+                    cardType = ""
+                    cashDiscount = 0.0
+                    cashDiscountFee = 0.0
+                    employeeId = prefProvider.getValueInt(EMPLOYEE_ID, 0)
+                    taxAmount = totalTax
+                    subTotalPrice = subTotal
+                    offlineId = randomOfflineId()
+                    payableType = "GuestTab"
+                    paymentType = "Cash"
+                    transactionId = randomOfflineId()
+                    terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
+
+                }
+            )
+
+
+            val bundle = Bundle()
+            bundle.putDouble("totalPrice", total)
+            bundle.putDouble("subTotalPrice", subTotal)
+            bundle.putDouble("totalTax", totalTax)
+            bundle.putParcelable("model", model)
+            bundle.putParcelable("floorPlan", floorPlanModel)
+            bundle.putBoolean("isTotalPayment", true)
+            bundle.putDouble("totalServiceCharge", 0.0)
+            bundle.putDouble("totalDiscount", 0.0)
+            bundle.putBoolean("isTotalPayment", true)
+            bundle.putBoolean("isLastPayment", true)
+            orderId?.let { it1 -> bundle.putInt("orderId", it1) }
+
+
+
+
+            findNavController().navigate(
+                R.id.action_dineInOrderTable_to_payByGuestDialog,
+                bundle
+            )
+
+
+        }
+
 
         binding.txtHome.setOnClickListener {
             findNavController().navigate(R.id.action_dineInOrderTable_to_dashboardCategoryNew)
@@ -249,10 +364,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
                 Log.e(TAG, "orderITemIDs;  ${Gson().toJson(ids)}")
-                var idStr = Gson().toJson(ids.toTypedArray())
+                var idStr = ids.toString()
                 Log.e(TAG, "idStr:   $idStr")
 
-                viewModel.fireItemToKitchen(dineInData?.order?.id!!, true, idStr)
+                // viewModel.fireItemToKitchen(dineInData?.order?.id!!, true, idStr)
 
             } else {
                 Log.e(TAG, "Else")
@@ -283,7 +398,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             val bundle = Bundle()
             bundle.putDouble("totalPrice", totalPrice)
-            bundle.putDouble("subTotalPrice", totalPrice)
+            bundle.putDouble("subTotalPrice", subTotalPrice)
             bundle.putDouble("totalTax", totalTax)
             bundle.putDouble("totalDiscount", totalDiscount)
             bundle.putDouble("totalServiceCharge", totalServiceCharge)
@@ -371,6 +486,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         viewModel.msgText.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
                 AlertUtils.showCustomAlert(requireContext(), it)
+                orderId?.let { it1 -> viewModel.apiCallOrderDetails(it1) }
             }
         })
 
@@ -576,7 +692,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         )
 
         val bundle = Bundle()
-        bundle.putInt("id", dineInModel.id!!)
+        dineInModel.id?.let { bundle.putInt("id", it) }
         bundle.putParcelable("cartList", cartList)
         bundle.putDouble("totalPrice", total)
         bundle.putDouble("subTotalPrice", subTotal)
@@ -771,7 +887,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
           }*/
 
 
-        var idStr = Gson().toJson(ids.toTypedArray())
+        var idStr = Gson().toJson(ids.toString())
         Log.e(TAG, "orderITemIDs;  ${idStr}")
 
         viewModel.fireItemToKitchen(orderId!!, true, idStr)
@@ -811,11 +927,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         viewModel._Basedata.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let { baseResponse ->
                 if (baseResponse != null) {
+                    getOrderDetailsResponse = baseResponse
                     var list: ArrayList<DineInModel> = arrayListOf()
 
                     var wholeTableAmt = 0.0
-
-
 
                     for (i in 0 until baseResponse.guestAttributes.size) {
                         val model = DineInModel()
@@ -896,6 +1011,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                     //New Drag and drop Code
                     val dineInList: ArrayList<DineInModel> = arrayListOf()
+
                     for (i in 0 until baseResponse.guestAttributes.size) {
                         val model = DineInModel()
                         var totalGuestPrice = 0.0
@@ -908,6 +1024,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         Log.e(TAG, "GuestItemName  ${baseResponse.guestAttributes.get(i).name}")
                         model.id = baseResponse.guestAttributes[i].id
                         model.isHeader = 0
+
 
                         for (j in 0 until guestItem.size) {
                             if (baseResponse.orderItems.isNotEmpty()) {
@@ -927,6 +1044,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                                 totalGuestPrice += it.price * it.quantity
                                             }
                                         }
+                                    }
+
+                                    if (it.isPaid) {
+                                        notPayAnyAmount = true
+                                    } else {
+
+
                                     }
                                 }
 
@@ -970,6 +1094,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                     item.name = it.itemName
 
 
+
+
+
+
                                     if (it.orderItemModifiers.isNotEmpty()) {
                                         var modifiers: ArrayList<Modifier> = arrayListOf()
                                         it.orderItemModifiers.forEach {
@@ -991,7 +1119,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                     item.itemQuantity = it.quantity
                                     item.orderItemId = it.id
                                     item.note = it.note
-                                    item.isFired = it.isFired
+                                    item.isFired = guestItem.get(j).is_fired
                                     Log.e(TAG, "isFired  ${it.isFired}")
 
 
@@ -1007,34 +1135,51 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
                         }
-
-
                     }
 
+                    var fisrtTime: Boolean = false
+                    for (i in 1 until dineInList.size) {
+                        if (dineInList.get(i).isHeader == 1 && fisrtTime) {
+
+                            if (dineInList.get(i).item?.isPaid == false) {
+                                dineInList.get(i).item?.let {
+                                    totalAmtnew += (it.price * it.itemQuantity) - it.discountPrice
+                                    if (it.modifiers.isNotEmpty()) {
+                                        it.modifiers.forEach {
+                                            totalAmtnew += it.price * it.itemQuantity
+                                        }
+
+                                    }
+
+                                    totalAmtnew += dineInList.get(0).guestDividedAmt
+
+                                }
+                            }
+
+                        } else if (dineInList.get(i).isHeader == 0) {
+                            fisrtTime = true
+                        }
+
+                    }
                     if (dineInList.isNotEmpty()) {
                         dineInTableAdapter.setList(dineInList)
+                        Log.e(TAG, "totalAmtnew  ${totalAmtnew}")
+                        binding.txtTotalAmountNew.setText("${MethodUtils.roundOffAmount(totalAmtnew)}")
+
+                        if (!notPayAnyAmount) {
+                            touchHelper.attachToRecyclerView(binding.rvItemList)
+                        }
                     }
-
-                    Log.e(TAG, "dineInList:  ${Gson().toJson(dineInList)}")
-
                     if (list.isNotEmpty()) {
-
-
                         baseResponse.guestAttributes.get(0).guestItemAttributes.forEach {
                             wholeTableAmt += it.amount * it.quantity
                         }
 
-                        Log.e(TAG, "wholeTableAmt:  ${wholeTableAmt}")
-
-                        Log.e(TAG, "Repon: ${baseResponse.guestAttributes.size - 1}")
                         var dividedAmt: Double =
                             wholeTableAmt / (baseResponse.guestAttributes.size - 1)
 
-                        Log.e(TAG, "dividedAmt:   ${dividedAmt}")
                         list.get(0).guestDividedAmt = dividedAmt
 
-
-                        Log.e(TAG, "listData:  ${Gson().toJson(list)}")
                         //  dineInTableAdapter.setList(list)
                         cartList = getCartModel(list)
 
@@ -1045,7 +1190,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                             list.get(i).items.forEach { it ->
                                 if (list.get(i).isPaid) {
-                                    paidAmt += it.itemQuantity * it.price
+                                    paidAmt += (it.itemQuantity * it.price) - it.discountPrice
 
                                     if (it.modifiers.isNotEmpty()) {
                                         it.modifiers.forEach {
@@ -1085,7 +1230,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     }
 
 
-                    binding.txtTotalAmountNew.setText("${MethodUtils.roundOffAmount(totalAmount)}")
+                    //     binding.txtTotalAmountNew.setText("${MethodUtils.roundOffAmount(totalAmount)}")
                     totalPrice = MethodUtils.roundOffAmountDouble(totalAmount)
 
 
@@ -1140,51 +1285,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         }
     }
 
-    private val itemTouchHelperCallback = object : ItemTouchHelper.Callback() {
-        override fun getMovementFlags(
-            recyclerView: RecyclerView,
-            viewHolder: RecyclerView.ViewHolder
-        ): Int {
-            // Specify the directions of movement
-            val dragFlags = ItemTouchHelper.UP or ItemTouchHelper.DOWN
-            return makeMovementFlags(dragFlags, 0)
-        }
-
-        override fun onMove(
-            recyclerView: RecyclerView,
-            viewHolder: RecyclerView.ViewHolder,
-            target: RecyclerView.ViewHolder
-        ): Boolean {
-            // Notify your adapter that an item is moved from x position to y position
-            dineInTableAdapter.notifyItemMoved(viewHolder.adapterPosition, target.adapterPosition)
-            Log.e("Get", "Get")
-            // updateAdapterData()
-            return true
-        }
-
-        override fun isLongPressDragEnabled(): Boolean {
-            // true: if you want to start dragging on long press
-            // false: if you want to handle it yourself
-            return true
-        }
-
-        override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-            Log.e(TAG, "direction:    ${direction}")
-        }
-
-        override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
-            super.onSelectedChanged(viewHolder, actionState)
-            Log.e(TAG, "OnDataChanged")
-            // Hanlde action state changes
-        }
-
-        override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
-            super.clearView(recyclerView, viewHolder)
-            // Called by the ItemTouchHelper when the user interaction with an element is over and it also completed its animation
-            // This is a good place to send update to your backend about changes
-        }
-    }
-
     private fun updateAdapterData() {
 
 
@@ -1194,7 +1294,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         var totalPaid = 0.0
         var guestShare = 0.0
         var totalTablePrice = 0.0
-        var guestCount = -1
+        var guestCount = 0
 
         for (i in 0 until oldList.size) {
             if (oldList.get(i).isHeader == 1) {
@@ -1260,21 +1360,19 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             if (oldList.get(i).isHeader == 1) {
                 model.item = oldList.get(i).item
                 model.totalTableAmt = totalTablePrice
-                model.guestDividedAmt = guestShare
 
 
             } else {
                 model.title = oldList.get(i).title
 
+                model.guestDividedAmt = guestShare
             }
             model.isHeader = oldList.get(i).isHeader
             newList.add(model)
 
         }
         var guestAmt = 0.0
-        newList.forEach {
 
-        }
         for (i in 0 until newList.size) {
             if (newList.get(i).isHeader == 1) {
                 newList.get(i).item?.let { it ->
@@ -1291,40 +1389,127 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 guestAmt = 0.0
             }
         }
+        Log.e(TAG, "newList:   ${Gson().toJson(newList)}")
 
         dineInTableAdapter.setList(newList)
 
+        updateOrderCall()
 
-        /*for (i in 0 until oldList.size) {
-            var model: DineInModel = DineInModel()
-            if (oldList.get(i).isHeader == 1) {
-                var listTbItem: ArrayList<TbItem> = arrayListOf()
-                oldList.get(i).item?.let {
-                    listTbItem.add(it)
-                    model.item = it
-                    model.isHeader = 1
-                    if (it.isPaid) {
+    }
 
-                    }
+    private fun updateOrderCall() {
+        val list = dineInTableAdapter.getList()
+        Log.e(TAG, "orderId:  ${orderId}")
+        val orderModel = OrderAttributeRequestModel()
 
+        orderModel.apply {
+            id = orderId
+            date = TimeFormatUtils.getCurrentDate()
+            deliveryType = "DineIn"
+            employeeId = prefProvider.getValueInt(EMPLOYEE_ID, 0)
+            locationId = prefProvider.getValueInt(LOCATION_ID, 1)
+            terminalId = prefProvider.getValueInt(TERMINAL_ID, 1)
+            offlineId = getOrderDetailsResponse?.offlineId.toString()
+            openOrderType = "DineIn"
+            orderTypeId = 2
+            paymentStatus = 0
+            getOrderDetailsResponse?.subTotal?.let {
+                subTotal = it
+            }
+            getOrderDetailsResponse?.totalAmount?.let {
+                totalAmount = it
+            }
+            getOrderDetailsResponse?.totalServiceCharges?.let {
+                totalServiceCharges = it
+            }
+
+            val listOrderAttribute: ArrayList<OrderItemsAttribute> = arrayListOf()
+
+            /* getOrderDetailsResponse?.orderItems?.let {
+                 for (i in 0 until it.size) {
+                     val model = OrderItemsAttribute()
+                     model.category_id = it.get(i).categoryId
+                     model.discountAmount = it.get(i).discountAmount
+                     model.discountType = it.get(i).discountType
+                     model.editTimestamp = it.get(i).timestamp
+                     model.employeeId = it.get(i).employeeId
+                     model.id = it.get(i).id
+                     model.isEdited = true
+                     model.itemId = it.get(i).itemId
+                     model.orderId = it.get(i).orderId
+                     model.price = it.get(i).price
+                     model.quantity = it.get(i).quantity
+                     model.terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
+                     model.timestamp = System.currentTimeMillis().toString()
+                     model.totalPrice = it.get(i).totalPrice
+                     if (it.get(i).orderItemModifiers.isNotEmpty()) {
+                         var listModifiers: ArrayList<OrderItemModifierAttribute> =
+                             arrayListOf()
+                         it.get(i).orderItemModifiers.forEach {
+                             val model = OrderItemModifierAttribute()
+                             model.id = it.id
+                             model.order_item_id = it.orderItemId
+                             model.name = it.name
+                             model.orderId = it.orderId
+                             model.price = it.price
+                             model.totalPrice = it.price
+                             model.quantity = it.quantity
+                             it.modifierId?.let {
+                                 model.modifier_set_id = it.toInt()
+                             }
+                             var listTaxAttributes: ArrayList<OrderModifierTaxesAttribute> =
+                                 arrayListOf()
+
+                             if (it.orderItemTaxes.isNotEmpty()) {
+
+                                 it.orderItemTaxes.forEach {
+                                     val model = OrderModifierTaxesAttribute()
+                                     model.id = it.id
+                                     model.amount = it.amount
+                                     model.isDefault = it.isDefault
+                                     model.name = it.name
+
+                                     listTaxAttributes.add(model)
+                                 }
+
+
+                             }
+                             model.order_item_taxes_attributes = listTaxAttributes
+
+                             listModifiers.add(model)
+
+                         }
+                         model.orderItemModifiersAttributes = listModifiers
+                     }
+
+
+                     listOrderAttribute.add(
+                         model
+                     )
+
+
+                 }
+             }*/
+
+            val guestAttributes: ArrayList<GuestsAttributes> = arrayListOf()
+            for (i in 0 until list.size) {
+
+                val model = GuestsAttributes()
+                if (list.get(i).isHeader == 1) {
+
+                } else {
 
                 }
 
 
-            } else {
-
-
             }
 
-        }*/
-    }
 
-    private fun onItemMoved(fromPosition: Int, toPosition: Int) {
-
-        binding.rvItemList.adapter?.notifyItemMoved(fromPosition, toPosition)
+        }
 
 
     }
+
 
     val touchHelper =
         ItemTouchHelper(object :
@@ -1338,10 +1523,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             ): Boolean {
                 val oldPos = viewHolder.layoutPosition
                 val newPos = target.layoutPosition
-                Log.e(
-                    "reorder after",
-                    viewHolder.layoutPosition.toString() + " :::  " + target.layoutPosition.toString()
-                )
 
                 if (dragFrom == -1) {
                     dragFrom = oldPos
@@ -1386,6 +1567,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 dragFrom = -1
                 dragTo = -1
                 updateAdapterData()
+
             }
 
         })

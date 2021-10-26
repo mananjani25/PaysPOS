@@ -44,6 +44,9 @@ class PaymentViewModel @Inject constructor(
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
 
+    private val _msgText = MutableLiveData<Event<String>>()
+    val msgText: LiveData<Event<String>> = _msgText
+
     private val _data = MutableLiveData<Event<CreateOrderResponse?>>()
     val data: LiveData<Event<CreateOrderResponse?>> = _data
 
@@ -82,8 +85,12 @@ class PaymentViewModel @Inject constructor(
                                 if (onlySave) {
                                     _data.value = Event(createOrderResponse)
                                 } else {
-                                    cashLogApi(createOrderResponse, "in")
+                                    if (createOrderResponse.data.order.orderType != "Dine In") {
+                                        cashLogApi(createOrderResponse, "in")
+                                    }
                                 }
+
+                                _msgText.value = Event(response.message)
 
 
 //
@@ -106,6 +113,64 @@ class PaymentViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun dineInWholePayment(orderRequestModel: OrderRequestModel, orderId: Int) {
+        _showProgress.value = Event(true)
+
+        viewModelScope.launch {
+
+            val resource: Resource<CreateOrderResponse> =
+                posRepository.updateOrder(
+                    orderId,
+                    orderRequestModel
+                ) as Resource<CreateOrderResponse>
+
+
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+                    resource.data.let { response ->
+                        if (response?.status == 200) {
+
+                            prefProvider.setValue(Constants.ORDER_TYPE, "")
+                            prefProvider.setValue(Constants.CUSTOMER_NAME, "")
+                            prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
+                            posRepository.deleteCart()
+                            resource.data?.let { createOrderResponse ->
+
+                                if (onlySave) {
+                                    _data.value = Event(createOrderResponse)
+                                } else {
+                                    if (createOrderResponse.data.order.orderType != "Dine In") {
+                                        cashLogApi(createOrderResponse, "in")
+                                    }
+                                }
+
+                                _msgText.value = Event(response.message)
+
+
+//
+                            }
+
+                        } else {
+                            _snackbarText.value = Event(resource.message)
+                        }
+                    }
+
+                }
+
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
+                }
+
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
+            }
+        }
+
     }
 
     private suspend fun cashLogApi(createOrderResponse: CreateOrderResponse, event: String) {

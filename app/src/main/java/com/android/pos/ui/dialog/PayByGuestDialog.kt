@@ -8,31 +8,33 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.MainApplication
 import com.android.pos.R
 import com.android.pos.data.entities.CartModel
-import com.android.pos.data.entities.Modifier
-import com.android.pos.data.entities.TbItem
-import com.android.pos.data.model.DineInModel
 import com.android.pos.data.model.requestModel.GuestPaymentRequest
+import com.android.pos.data.model.requestModel.OrderAttributeRequestModel
+import com.android.pos.data.model.requestModel.OrderRequestModel
 import com.android.pos.data.model.responseModel.GetFloorPlanResponse
 import com.android.pos.data.remote.Constants
-import com.android.pos.databinding.DailogAddDiscountBinding
+import com.android.pos.data.remote.Constants.EMPLOYEE_ID
+import com.android.pos.data.remote.Constants.LOCATION_ID
+import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.databinding.DialogPayByGuestBinding
-import com.android.pos.databinding.PaymentFragmentBinding
 import com.android.pos.di.PrefProvider
-import com.android.pos.ui.adapter.DialogDiscountListAdapter
-import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
+import com.android.pos.ui.fragments.payment.PaymentViewModel
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
-import com.google.gson.Gson
+import com.android.pos.utils.TimeFormatUtils
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlin.math.ceil
 import kotlin.math.floor
 
+@AndroidEntryPoint
 class PayByGuestDialog : DialogFragment(), View.OnClickListener {
 
     private lateinit var binding: DialogPayByGuestBinding
@@ -52,15 +54,18 @@ class PayByGuestDialog : DialogFragment(), View.OnClickListener {
     private var cartList: CartModel? = null
     private var splitValue: Int = -1
     private var totalPrice: Double = 0.0
-    private var totalDiscount: Double = 0.0
+    private var totaldiscount: Double = 0.0
+    private val paymentViewModel by viewModels<PaymentViewModel>()
     private var subTotalPrice: Double = 0.0
     private var totalTax: Double = 0.0
     private var totalServiceCharge: Double = 0.0
+    private var isTotalPayment: Boolean = false
     private var paymentAmount: Double = 0.0
     private var guestId: Int = 0
     private var guestRequestModel: GuestPaymentRequest? = null
     private var floorPlanModel: GetFloorPlanResponse.Data.FloorPlanTable? = null
     private var isLastPayment: Boolean = false
+
 
     private val TAG = "PayByGuestDialog"
 
@@ -88,15 +93,80 @@ class PayByGuestDialog : DialogFragment(), View.OnClickListener {
         super.onViewCreated(view, savedInstanceState)
         observeShowProgress()
         navigateOnPaymentSuccess()
-        floorPlanModel = arguments?.getParcelable("floorPlan")
+        wholePaymentObservor()
+        if (arguments?.getBoolean("isTotalPayment") == true) {
+            isTotalPayment = true
+            orderId = arguments?.getInt("orderId")
+            setTotalPaymentData()
+            binding.txtCustom.setOnClickListener(this)
+            binding.imgBack.setOnClickListener(this)
+            binding.llCash.setOnClickListener(this)
+            binding.txtOriginalAmount.setOnClickListener(this)
+            binding.txtSecondAmount.setOnClickListener(this)
+            binding.txtThirdAmount.setOnClickListener(this)
+            binding.txtFourthAmount.setOnClickListener(this)
+            binding.txtAddTips.setOnClickListener(this)
 
-        cartList = requireArguments().getParcelable("cartList")
-        guestId = requireArguments().getInt("id")
-        guestRequestModel = requireArguments().getParcelable("model")
-        isLastPayment = requireArguments().getBoolean("isLastPayment")
-        setupData()
+        } else {
+            floorPlanModel = arguments?.getParcelable("floorPlan")
+
+            cartList = requireArguments().getParcelable("cartList")
+            guestId = requireArguments().getInt("id")
+            guestRequestModel = requireArguments().getParcelable("model")
+            isLastPayment = requireArguments().getBoolean("isLastPayment")
+            setupData()
+        }
 
         Log.e(TAG, "isLastPayment:  ${isLastPayment}")
+
+
+    }
+
+    private fun wholePaymentObservor() {
+        paymentViewModel.msgText.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+                AlertUtils.showCustomAlertWithListenerWithOK(requireContext(), it) { _, _ ->
+                    if (isTotalPayment) {
+                        findNavController().navigate(R.id.action_payByGuestDialog_to_dashboardCategoryNew)
+
+                    } else {
+                        findNavController().navigate(R.id.action_payByGuestDialog_to_dineInOrderTable)
+                    }
+
+                }
+
+            }
+        })
+
+    }
+
+    private fun setTotalPaymentData() {
+
+        totalPrice = requireArguments().getDouble("totalPrice")
+        subTotalPrice = requireArguments().getDouble("subTotalPrice")
+        totalTax = requireArguments().getDouble("totalTax")
+        totalServiceCharge = requireArguments().getDouble("totalServiceCharge")
+        totaldiscount = requireArguments().getDouble("totalDiscount")
+        future_delivery_time = requireArguments().getString("future_delivery_time").toString()
+        future_delivery_date = requireArguments().getString("future_delivery_date").toString()
+        getCashPaymentOptionList(totalPrice)
+        MethodUtils.setPriceTextView(binding.txtTotalAmount, totalPrice)
+        MethodUtils.setPriceTextView(binding.txtSubTotal, subTotalPrice)
+        MethodUtils.setPriceTextView(binding.txtTax, totalTax)
+        MethodUtils.setPriceTextView(binding.txtTotal, totalPrice)
+        MethodUtils.setPriceTextView(binding.txtTipAmt, tipAmount)
+        //MethodUtils.setPriceTextView(binding.txtDiscount, totalDiscount)
+        MethodUtils.setPriceTextView(binding.txtServiceCharge, totalServiceCharge)
+        if (totaldiscount == 0.0) {
+            binding.linearDiscount.visibility = View.GONE
+        } else {
+            binding.linearDiscount.visibility = View.VISIBLE
+            binding.txtDiscount.text = "- " +
+                    MainApplication.getInstance()!!.getText(R.string.symbole)
+                        .toString() + String.format(
+                "%.2f", totaldiscount
+            )
+        }
 
 
     }
@@ -107,7 +177,7 @@ class PayByGuestDialog : DialogFragment(), View.OnClickListener {
         subTotalPrice = requireArguments().getDouble("subTotalPrice")
         totalTax = requireArguments().getDouble("totalTax")
         totalServiceCharge = requireArguments().getDouble("totalServiceCharge")
-        totalDiscount = requireArguments().getDouble("totalDiscount")
+        totaldiscount = requireArguments().getDouble("totalDiscount")
         future_delivery_time = requireArguments().getString("future_delivery_time").toString()
         future_delivery_date = requireArguments().getString("future_delivery_date").toString()
 
@@ -129,14 +199,14 @@ class PayByGuestDialog : DialogFragment(), View.OnClickListener {
         MethodUtils.setPriceTextView(binding.txtTipAmt, tipAmount)
         //MethodUtils.setPriceTextView(binding.txtDiscount, totalDiscount)
         MethodUtils.setPriceTextView(binding.txtServiceCharge, totalServiceCharge)
-        if (totalDiscount == 0.0) {
+        if (totaldiscount == 0.0) {
             binding.linearDiscount.visibility = View.GONE
         } else {
             binding.linearDiscount.visibility = View.VISIBLE
             binding.txtDiscount.text = "- " +
                     MainApplication.getInstance()!!.getText(R.string.symbole)
                         .toString() + String.format(
-                "%.2f", totalDiscount
+                "%.2f", totaldiscount
             )
         }
 
@@ -165,26 +235,55 @@ class PayByGuestDialog : DialogFragment(), View.OnClickListener {
         when (v?.id) {
             R.id.imgBack -> {
                 dialog?.dismiss()
-                findNavController().navigateUp()
+                findNavController().popBackStack()
             }
 
             R.id.txtOriginalAmount -> {
-                guestRequestModel?.let { viewModel.payByGuest(guestId, it, isLastPayment) }
+                if (isTotalPayment) {
+                    makePayment(0.0)
+
+                } else {
+
+                    guestRequestModel?.let { viewModel.payByGuest(guestId, it, isLastPayment) }
+                }
 
             }
             R.id.txtSecondAmount -> {
-                guestRequestModel?.let { viewModel.payByGuest(guestId, it, isLastPayment) }
+                if (isTotalPayment) {
+                    makePayment(0.0)
+
+                } else {
+                    guestRequestModel?.let { viewModel.payByGuest(guestId, it, isLastPayment) }
+                }
             }
 
             R.id.txtThirdAmount -> {
-                guestRequestModel?.let { viewModel.payByGuest(guestId, it, isLastPayment) }
+                if (isTotalPayment) {
+                    makePayment(0.0)
+
+                } else {
+                    guestRequestModel?.let { viewModel.payByGuest(guestId, it, isLastPayment) }
+                }
             }
             R.id.txtFourthAmount -> {
-                guestRequestModel?.let { viewModel.payByGuest(guestId, it, isLastPayment) }
+                if (isTotalPayment) {
+                    makePayment(0.0)
+
+                } else {
+                    guestRequestModel?.let { viewModel.payByGuest(guestId, it, isLastPayment) }
+                }
             }
 
 
         }
+
+    }
+
+    private fun makePayment(amount: Double) {
+        Log.e(TAG, "amountForPayment   ${amount}")
+        var requestModel = createRequestForTotalAmount()
+
+        orderId?.let { paymentViewModel.dineInWholePayment(requestModel, it) }
 
     }
 
@@ -316,14 +415,21 @@ class PayByGuestDialog : DialogFragment(), View.OnClickListener {
 
                     dismiss()
 
-                    val bundle = Bundle()
-                    bundle.putBoolean("isGuestPaid", true)
-                    bundle.putParcelable("floorPlan", floorPlanModel)
 
-                    findNavController().navigate(
-                        R.id.action_payByGuestDialog_to_dineInOrderTable,
-                        bundle
-                    )
+
+                    if (isTotalPayment) {
+                        findNavController().navigate(R.id.action_payByGuestDialog_to_dashboardCategoryNew)
+                    } else {
+                        val bundle = Bundle()
+                        bundle.putBoolean("isGuestPaid", true)
+                        bundle.putParcelable("floorPlan", floorPlanModel)
+
+                        findNavController().navigate(
+                            R.id.action_payByGuestDialog_to_dineInOrderTable,
+                            bundle
+                        )
+
+                    }
                     /* val navController = findNavController()
                      navController.previousBackStackEntry?.savedStateHandle?.set(
                          com.android.pos.data.remote.Constants.KEY,
@@ -336,6 +442,41 @@ class PayByGuestDialog : DialogFragment(), View.OnClickListener {
 
             }
         })
+    }
+
+    private fun createRequestForTotalAmount(): OrderRequestModel {
+        val orderModel = OrderAttributeRequestModel()
+
+        orderModel.apply {
+            date = TimeFormatUtils.getCurrentDate()
+
+            employeeId = prefProvider.getValueInt(EMPLOYEE_ID, 0)
+            locationId = prefProvider.getValueInt(LOCATION_ID, 1)
+            terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
+            note = ""
+            openOrderType = "DineIn"
+            orderTypeId = 2
+            paymentStatus = 1
+            subTotal = MethodUtils.roundOffAmountDouble(subTotalPrice)
+            totalAmount =
+                MethodUtils.roundOffAmountDouble(totalPrice) - MethodUtils.roundOffAmountDouble(
+                    tipAmount
+                )
+            totalDiscount = totaldiscount
+            totalServiceCharges = totalServiceCharge
+            totalTaxAmount = totalTax
+            totalTips = tipAmount
+
+        }
+
+        val model = OrderRequestModel(
+            completed_all_payments = true,
+            order = orderModel
+        )
+
+        return model
+
+
     }
 
 }

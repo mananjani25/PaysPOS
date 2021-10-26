@@ -37,18 +37,12 @@
 
                 </LinearLayout>
 
-                <View
-                    android:id="@+id/viewLine"
-                    android:layout_width="1dp"
-                    android:layout_height="match_parent"
-                    android:background="@color/view" />
-
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_weight="2"
+                    android:layout_weight="1.9"
                     android:gravity="center"
                     android:orientation="vertical">
 
@@ -58,7 +52,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="start"
                         android:gravity="start"
-                        android:paddingStart="@dimen/_10sdp"
+                        android:paddingStart="@dimen/_14sdp"
                         android:text="@{model.name}"
                         android:textColor="@color/drawerBack"
                         android:textSize="@dimen/_5mdpi"
@@ -72,6 +66,7 @@
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
                     android:background="@color/view"
+                    android:visibility="invisible"
                     app:layout_constraintTop_toBottomOf="@+id/linearHeader" />
 
                 <LinearLayout
@@ -97,6 +92,7 @@
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
                     android:background="@color/view"
+                    android:visibility="invisible"
                     app:layout_constraintTop_toBottomOf="@+id/linearHeader" />
 
                 <LinearLayout
@@ -123,6 +119,7 @@
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
                     android:background="@color/view"
+                    android:visibility="invisible"
                     app:layout_constraintTop_toBottomOf="@+id/linearHeader" />
 
                 <androidx.appcompat.widget.LinearLayoutCompat

@@ -123,12 +123,15 @@
                 android:id="@+id/btnPaid"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:layout_toStartOf="@+id/llInfo"
+                android:layout_marginEnd="@dimen/_7sdp"
+                android:paddingStart="@dimen/_5sdp"
+                android:paddingEnd="@dimen/_5sdp"
                 android:background="@color/colorGreen"
                 android:clickable="false"
                 android:gravity="center"
-                android:visibility="invisible">
+                android:visibility="visible">
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontSemiBold"
