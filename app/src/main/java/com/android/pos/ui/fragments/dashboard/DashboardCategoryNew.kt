@@ -1267,7 +1267,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 isItemClick
             )*/
 
-            if (data.price == 0.0) {
+            if (data.price == 0.0 && data.variationsAttributes.isNotEmpty()) {
                 AlertUtils.showCustomAlert(
                     requireActivity(),
                     "Please enter atleast one price of item"

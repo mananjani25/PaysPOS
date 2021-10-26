@@ -104,7 +104,7 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
 
     private fun totalPrice(model: TbItem): Double {
 
-        return if (model.modifiers.isNotEmpty()) {
+        return   model.price * model.itemQuantity/*if (model.modifiers.isNotEmpty()) {
 
             var totalPrice = 0.0
 
@@ -118,7 +118,7 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
 
             model.price * model.itemQuantity
 
-        }
+        }*/
     }
 
 
