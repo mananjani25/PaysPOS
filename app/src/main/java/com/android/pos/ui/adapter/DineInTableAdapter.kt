@@ -15,6 +15,8 @@ import com.android.pos.data.model.DineInModel
 import com.android.pos.databinding.*
 import com.android.pos.utils.MethodUtils
 import com.google.gson.Gson
+import java.util.*
+import kotlin.collections.ArrayList
 
 class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private var list: ArrayList<DineInModel> = arrayListOf()
@@ -60,7 +62,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         if (getItemViewType(position) == 1) {
             (holder as MyViewHolder).bind(list.get(position))
         } else {
-            (holder as HeaderViewHolder).bind(list.get(position))
+            (holder as HeaderViewHolder).bind(list.get(position), position)
         }
     }
 
@@ -72,7 +74,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     inner class HeaderViewHolder(private val binding: ViewDineInHeaderBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(model: DineInModel) {
+        fun bind(model: DineInModel, position: Int) {
 
             if (list.get(layoutPosition).customer != null) {
                 binding.txtTableName.setText(
@@ -96,12 +98,13 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             if (layoutPosition == 0) {
                 binding.btnPay.visibility = View.GONE
                 binding.btnPaid.visibility = View.INVISIBLE
-                binding.txtTotal.visibility = View.INVISIBLE
+                //  binding.txtTotal.visibility = View.INVISIBLE
             } else {
-                binding.txtTotal.visibility = View.VISIBLE
+                // binding.txtTotal.visibility = View.VISIBLE
             }
 
-            binding.txtTotal.setText("" + MethodUtils.roundOffAmountDouble(list[layoutPosition].totalGuestPrice))
+            binding.txtPay.setText("Pay " + MethodUtils.roundOffAmount(list[position].totalGuestPrice))
+            // binding.txtTotal.setText("" + MethodUtils.roundOffAmountDouble(list[layoutPosition].totalGuestPrice))
 
         }
 
@@ -408,6 +411,36 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             model.price * model.itemQuantity
 
         }
+    }
+
+    fun onItemMove(fromPosition: Int?, toPosition: Int?): Boolean {
+        fromPosition?.let {
+            toPosition?.let {
+                if (fromPosition < toPosition) {
+                    for (i in fromPosition until toPosition) {
+                        Collections.swap(list, i, i + 1)
+
+
+                        val order1: Int = list[i].sort
+                        val order2: Int = list[i + 1].sort
+                        list[i].sort = order2
+                        list[i + 1].sort = order1
+                    }
+                } else {
+                    for (i in fromPosition downTo toPosition + 1) {
+                        Collections.swap(list, i, i - 1)
+
+                        val order1: Int = list[i].sort
+                        val order2: Int = list[i - 1].sort
+                        list[i].sort = (order2)
+                        list[i - 1].sort = (order1)
+                    }
+                }
+                notifyItemMoved(fromPosition, toPosition)
+                return true
+            }
+        }
+        return false
     }
 
 }

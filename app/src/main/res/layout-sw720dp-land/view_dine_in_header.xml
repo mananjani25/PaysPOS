@@ -6,14 +6,13 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@color/btnColor">
 
         <RelativeLayout
             android:id="@+id/linearHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-
-            android:background="@drawable/background_printer_labels"
             android:orientation="horizontal"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -22,7 +21,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
-                android:layout_toStartOf="@+id/txtTotal"
+                android:layout_toStartOf="@+id/imgPrint"
                 android:orientation="horizontal"
                 android:weightSum="5">
 
@@ -31,25 +30,20 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginVertical="@dimen/_5sdp"
-                    android:layout_weight="0.62"
+                    android:layout_weight="0.6"
                     android:gravity="center">
 
 
-                    <CheckBox
+                    <androidx.appcompat.widget.AppCompatCheckBox
                         android:id="@+id/chkIsFired"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_marginStart="@dimen/_4sdp"
+                        android:layout_marginStart="@dimen/_9sdp"
+                        android:button="@drawable/dine_in_fire_selector"
                         android:checked="false"
                         android:gravity="center" />
                 </LinearLayout>
-
-                <View
-                    android:id="@+id/viewLine"
-                    android:layout_width="1dp"
-                    android:layout_height="match_parent"
-                    android:background="@color/view" />
 
                 <TextView
                     android:id="@+id/txtTableName"
@@ -57,10 +51,11 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_weight="4"
+                    android:layout_weight="4.4"
                     android:gravity="start"
-                    android:paddingStart="@dimen/_10sdp"
-                    android:textColor="@color/txtColor"
+                    android:paddingStart="@dimen/_22sdp"
+                    android:text="Whole Table"
+                    android:textColor="@color/white"
                     android:textSize="19sp" />
 
 
@@ -77,29 +72,17 @@
                 android:visibility="gone" />
 
 
-            <TextView
-                android:id="@+id/txtTotal"
-                style="@style/CustomFontMediumStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginEnd="@dimen/_5sdp"
-                android:layout_toStartOf="@+id/btnView"
-                android:paddingEnd="@dimen/_10sdp"
-                android:text="Total: $15.00"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_6mdpi" />
-
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:id="@+id/btnPay"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:layout_toStartOf="@+id/llInfo"
-                android:background="@drawable/bg_button_border"
+                android:layout_marginEnd="@dimen/_7sdp"
+                android:background="@drawable/bg_white"
                 android:clickable="true"
                 android:gravity="center"
-                android:visibility="gone">
+                android:visibility="visible">
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtPay"
@@ -108,45 +91,33 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:gravity="center"
-                    android:paddingStart="@dimen/_4sdp"
+                    android:paddingStart="@dimen/_7sdp"
                     android:paddingTop="@dimen/_3sdp"
-                    android:paddingEnd="@dimen/_4sdp"
+                    android:paddingEnd="@dimen/_7sdp"
                     android:paddingBottom="@dimen/_3sdp"
                     android:text="@string/pay_now"
-                    android:textColor="@color/white"
+                    android:textColor="@color/btnColor"
                     android:textSize="@dimen/_5mdpi" />
 
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
-            <androidx.appcompat.widget.LinearLayoutCompat
-                android:id="@+id/btnView"
+            <ImageView
+                android:id="@+id/imgPrint"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:layout_toStartOf="@+id/llInfo"
-                android:background="@drawable/bg_button_border"
-                android:clickable="false"
-                android:gravity="center"
-                android:visibility="invisible">
+                android:layout_marginEnd="@dimen/_12sdp"
+                android:layout_toStartOf="@+id/refViewLine"
+                android:src="@drawable/print" />
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/txtView"
-                    style="@style/CustomFontSemiBold"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:paddingStart="@dimen/_4sdp"
-                    android:paddingTop="@dimen/_3sdp"
-                    android:paddingEnd="@dimen/_4sdp"
-                    android:paddingBottom="@dimen/_3sdp"
-                    android:text="@string/pay_now"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/_5mdpi" />
+            <View
+                android:id="@+id/refViewLine"
+                android:layout_width="1dp"
+                android:layout_height="1dp"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="@dimen/_45sdp" />
 
-
-            </androidx.appcompat.widget.LinearLayoutCompat>
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:id="@+id/btnPaid"
@@ -193,7 +164,7 @@
                 android:paddingTop="@dimen/_2sdp"
                 android:paddingEnd="@dimen/_4sdp"
                 android:paddingBottom="@dimen/_2sdp"
-                android:visibility="invisible">
+                android:visibility="gone">
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:layout_width="wrap_content"
