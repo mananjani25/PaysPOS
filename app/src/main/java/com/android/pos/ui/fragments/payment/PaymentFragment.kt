@@ -13,8 +13,9 @@ import androidx.navigation.fragment.findNavController
 import com.android.pos.MainApplication
 import com.android.pos.R
 import com.android.pos.data.entities.CartModel
+import com.android.pos.data.model.requestModel.SpitByOrderPaymentModel
+import com.android.pos.data.model.requestModel.SpitByOrderRequestModel
 import com.android.pos.data.remote.Constants
-import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.SPLIT_NO
 import com.android.pos.data.remote.Constants.SPLIT_PAY_AMOUNT
 import com.android.pos.data.remote.Constants.SPLIT_PAY_TYPE
@@ -156,6 +157,25 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         future_delivery_time = requireArguments().getString("future_delivery_time").toString()
         future_delivery_date = requireArguments().getString("future_delivery_date").toString()
 
+
+
+        MethodUtils.setPriceTextView(binding.txtSubTotal, subTotalPrice)
+        MethodUtils.setPriceTextView(binding.txtTax, totalTax)
+        MethodUtils.setPriceTextView(binding.txtTotal, totalPrice)
+        MethodUtils.setPriceTextView(binding.txtTipAmt, tipAmount)
+        //MethodUtils.setPriceTextView(binding.txtDiscount, totalDiscount)
+        MethodUtils.setPriceTextView(binding.txtServiceCharge, totalServiceCharge)
+        if (totalDiscount == 0.0) {
+            binding.linearDiscount.visibility = View.GONE
+        } else {
+            binding.linearDiscount.visibility = View.VISIBLE
+            binding.txtDiscount.text = "- " +
+                    MainApplication.getInstance()!!.getText(R.string.symbole)
+                        .toString() + String.format(
+                "%.2f", totalDiscount
+            )
+        }
+
         isUpdate = requireArguments().getBoolean("update")
         if (isUpdate) {
 
@@ -199,7 +219,6 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             if (splitPayAmount.isNotEmpty()) {
 
 
-
                 val tipAmount1 = (splitPayAmount.toDouble() * tipAmount) / (totalPrice + tipAmount)
 
                 val total = (totalPrice + tipAmount1)
@@ -222,25 +241,10 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             }
         }
 
+        MethodUtils.setPriceTextView(binding.txtTotalAmount, totalPrice)
         getCashPaymentOptionList(totalPrice)
 
-        MethodUtils.setPriceTextView(binding.txtTotalAmount, totalPrice)
-        MethodUtils.setPriceTextView(binding.txtSubTotal, subTotalPrice)
-        MethodUtils.setPriceTextView(binding.txtTax, totalTax)
-        MethodUtils.setPriceTextView(binding.txtTotal, totalPrice)
-        MethodUtils.setPriceTextView(binding.txtTipAmt, tipAmount)
-        //MethodUtils.setPriceTextView(binding.txtDiscount, totalDiscount)
-        MethodUtils.setPriceTextView(binding.txtServiceCharge, totalServiceCharge)
-        if (totalDiscount == 0.0) {
-            binding.linearDiscount.visibility = View.GONE
-        } else {
-            binding.linearDiscount.visibility = View.VISIBLE
-            binding.txtDiscount.text = "- " +
-                    MainApplication.getInstance()!!.getText(R.string.symbole)
-                        .toString() + String.format(
-                "%.2f", totalDiscount
-            )
-        }
+
 
 
         binding.txtSplitAmount.setOnClickListener(this)
@@ -253,10 +257,6 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         binding.txtFourthAmount.setOnClickListener(this)
         binding.txtAddTips.setOnClickListener(this)
 
-
-        if (cartList?.orderType == DINE_IN) {
-
-        }
 
     }
 
@@ -487,7 +487,31 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             }
             if (myRequest != null) {
                 viewModel.totalPayAmount(paymentAmount)
-                viewModel.submit(myRequest)
+
+                val orderId = prefProvider.getValueInt("ORDER_ID", -1)
+
+                if (orderId == -1) {
+                    viewModel.submit(myRequest)
+                } else {
+
+                    val paymentReq = myRequest.order.paymentAttributes
+                    if (paymentReq != null) {
+                        paymentReq.order_id = orderId
+                    }
+
+                    val aa = SpitByOrderRequestModel(
+                        orderId,
+                        true,
+                        paymentReq!!,
+                        SpitByOrderPaymentModel(paymentReq)
+                    )
+
+
+                    viewModel.splitByOrder(aa!!)
+
+                }
+
+
             }
 
 
@@ -523,7 +547,27 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             }
             if (myRequest != null) {
                 viewModel.totalPayAmount(paymentAmount)
-                viewModel.submit(myRequest)
+                val orderId = prefProvider.getValueInt("ORDER_ID", -1)
+                if (orderId == -1) {
+                    viewModel.submit(myRequest)
+                } else {
+
+                    val paymentReq = myRequest.order.paymentAttributes
+                    if (paymentReq != null) {
+                        paymentReq.order_id = orderId
+                    }
+
+                    val aa = SpitByOrderRequestModel(
+                        orderId,
+                        false,
+                        paymentReq!!,
+                        SpitByOrderPaymentModel(paymentReq)
+                    )
+
+
+                    viewModel.splitByOrder(aa!!)
+
+                }
             }
 
 
@@ -547,7 +591,26 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             }
             if (myRequest != null) {
                 viewModel.totalPayAmount(paymentAmount)
-                viewModel.submit(myRequest)
+                val orderId = prefProvider.getValueInt("ORDER_ID", -1)
+                if (orderId == -1) {
+                    viewModel.submit(myRequest)
+                } else {
+
+                    val paymentReq = myRequest.order.paymentAttributes
+                    if (paymentReq != null) {
+                        paymentReq.order_id = orderId
+                    }
+
+                    val aa = SpitByOrderRequestModel(
+                        orderId,
+                        true,
+                        paymentReq!!,
+                        SpitByOrderPaymentModel(paymentReq)
+                    )
+
+                    viewModel.splitByOrder(aa)
+
+                }
             }
         }
     }
@@ -574,6 +637,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             event.getContentIfNotHandled()?.let {
 
                 Log.e("observe : splitValue", splitValue.toString())
+
+                prefProvider.setValueInt("ORDER_ID", it.data.order.id)
 
                 when {
                     isSplitByNo -> {
@@ -659,6 +724,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                         prefProvider.setValue(SPLIT_PAY_AMOUNT, "")
                         prefProvider.setValueInt(SPLIT_NO, -1)
                         prefProvider.setValue(SPLIT_PAY_TYPE, "")
+                        prefProvider.setValueInt("ORDER_ID", -1)
                     }
                 }
             }

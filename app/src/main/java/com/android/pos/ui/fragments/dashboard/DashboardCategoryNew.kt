@@ -1786,6 +1786,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 prefProvider.setValue(Constants.SPLIT_PAY_AMOUNT, "")
                 prefProvider.setValueInt(Constants.SPLIT_NO, -1)
                 prefProvider.setValue(Constants.SPLIT_PAY_TYPE, "")
+                prefProvider.setValueInt("ORDER_ID", -1)
 
                 if (cartList.isNotEmpty()) {
 

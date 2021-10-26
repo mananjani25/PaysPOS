@@ -8,10 +8,10 @@ import androidx.lifecycle.viewModelScope
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.entities.*
 import com.android.pos.data.model.requestModel.*
+import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
-import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
@@ -24,7 +24,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 @HiltViewModel
 class PaymentViewModel @Inject constructor(
@@ -50,6 +49,8 @@ class PaymentViewModel @Inject constructor(
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
+    private val _data1 = MutableLiveData<Event<BaseResponse?>>()
+    val data1: LiveData<Event<BaseResponse?>> = _data1
 
     fun submit(orderRequestModel: OrderRequestModel) {
 
@@ -884,5 +885,51 @@ class PaymentViewModel @Inject constructor(
         this.paymentOfflineId = paymentOfflineId
         this.orderOfflineId = orderOfflineId
 
+    }
+
+    fun splitByOrder(myRequest: SpitByOrderRequestModel) {
+
+        _showProgress.value = Event(true)
+
+        viewModelScope.launch {
+
+
+            val resource = posRepository.splitByOrder(myRequest)
+
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+                    resource.data.let { response ->
+                        if (response?.status == 200) {
+
+                            resource.data?.let { createOrderResponse ->
+
+                                if (onlySave) {
+                                    _data.value = Event(createOrderResponse)
+                                } else {
+                                    cashLogApi(createOrderResponse, "in")
+                                }
+
+
+//
+                            }
+
+                        } else {
+                            _snackbarText.value = Event(resource.message)
+                        }
+                    }
+
+                }
+
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
+                }
+
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
+            }
+        }
     }
 }

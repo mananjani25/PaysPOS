@@ -469,6 +469,8 @@ class PosRepository @Inject constructor(
 
     suspend fun createOrder(data: OrderRequestModel) = apiHelperNew.createOrder(data)
 
+    suspend fun splitByOrder(data: SpitByOrderRequestModel) = apiHelperNew.splitByOrder(data)
+
     suspend fun updateOrder(orderId: Int?, data: OrderRequestModel) =
         apiHelperNew.updateOrder(orderId, data)
 
