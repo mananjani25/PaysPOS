@@ -268,8 +268,10 @@
             android:layout_height="wrap_content">
 
             <LinearLayout
+                android:id="@+id/linReports"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 android:orientation="vertical">
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -397,7 +399,7 @@
                     style="@style/ReportTitleStyle"
                     android:text="@string/employee_data" />
 
-                <include layout="@layout/view_employee_header" />
+                <include android:id="@+id/ilEmployeeData" layout="@layout/view_employee_header" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvEmployeeData"
@@ -410,6 +412,8 @@
                     android:id="@+id/txtPaymentDetails"
                     style="@style/ReportTitleStyle"
                     android:text="@string/payment_details" />
+
+                <include android:id="@+id/ilPaymentDetails" layout="@layout/view_payment_details_header" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvPaymentDetails"
@@ -461,7 +465,7 @@
                     style="@style/ReportTitleStyle"
                     android:text="@string/tips_details" />
 
-                <include layout="@layout/view_payment_details_header" />
+                <include android:id="@+id/ilTipsDetails" layout="@layout/view_payment_details_header" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvTipsDetails"

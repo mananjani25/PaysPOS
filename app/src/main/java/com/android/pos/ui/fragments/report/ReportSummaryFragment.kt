@@ -14,6 +14,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewbinding.ViewBinding
 import com.android.pos.R
 import com.android.pos.data.model.responseModel.VenueDetailsResponse
 import com.android.pos.databinding.FragmentReportSummaryBinding
@@ -86,6 +87,9 @@ class ReportSummaryFragment : Fragment(), AdapterView.OnItemSelectedListener {
         binding.txtSearch.setOnClickListener {
             viewModel.getReportSummary()
         }
+
+        //call initial api
+        viewModel.getReportSummary()
     }
 
     private fun initControls() {
@@ -94,9 +98,6 @@ class ReportSummaryFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
         setupAdapter()
         setupCalender()
-
-        //call initial api
-        viewModel.getReportSummary()
     }
 
     private fun setupCalender() {
@@ -267,7 +268,7 @@ class ReportSummaryFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 showHide(
                     rvMedia = binding.rvEmployeeData,
                     textView = binding.txtEmployeeData,
-                    headerView = null,
+                    headerView = binding.ilEmployeeData,
                     visible = it.employeeData?.isNotEmpty() == true
                 )
                 employeeAdapter.add(it.employeeData)
@@ -275,7 +276,7 @@ class ReportSummaryFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 showHide(
                     rvMedia = binding.rvPaymentDetails,
                     textView = binding.txtPaymentDetails,
-                    headerView = null,
+                    headerView = binding.ilPaymentDetails,
                     visible = it.paymentDetails?.isNotEmpty() == true
                 )
                 paymentDetailsAdapter.add(it.paymentDetails)
@@ -309,10 +310,13 @@ class ReportSummaryFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 showHide(
                     rvMedia = binding.rvTipsDetails,
                     textView = binding.txtTipsDetails,
-                    headerView = null,
+                    headerView = binding.ilTipsDetails,
                     visible = it.tipsDetails?.isNotEmpty() == true
                 )
                 tipDetailsAdapter.add(it.tipsDetails)
+
+                //visible the parent view
+                binding.linReports.visible()
             }
         })
     }
@@ -320,17 +324,17 @@ class ReportSummaryFragment : Fragment(), AdapterView.OnItemSelectedListener {
     private fun showHide(
         rvMedia: RecyclerView,
         textView: TextView?,
-        headerView: View?,
+        headerView: ViewBinding?,
         visible: Boolean
     ) {
         if (visible) {
             rvMedia.visible()
             textView?.visible()
-            headerView?.visible()
+            headerView?.root?.visible()
         } else {
             rvMedia.gone()
             textView?.gone()
-            headerView?.gone()
+            headerView?.root?.gone()
         }
     }
 

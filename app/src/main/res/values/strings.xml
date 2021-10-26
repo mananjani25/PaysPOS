@@ -596,5 +596,7 @@
     <string name="refunds">Refunds</string>
     <string name="refund">Refund</string>
     <string name="title">Title</string>
+    <string name="details">Details</string>
+    <string name="amount">Amount</string>
 
 </resources>
