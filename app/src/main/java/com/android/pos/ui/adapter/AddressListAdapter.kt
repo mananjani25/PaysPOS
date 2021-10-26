@@ -14,19 +14,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
-import com.android.pos.data.model.CustomerListResponse
 import com.android.pos.data.model.requestModel.CreateCustomerRequestModel
 import com.android.pos.databinding.ViewCustomerAddressBinding
 import com.google.gson.Gson
-import okhttp3.internal.notify
 import java.util.*
-import kotlin.collections.ArrayList
 
 
-class AddressListAdapter() : RecyclerView.Adapter<AddressListAdapter.MyViewHolder>() {
+class AddressListAdapter(val refreshCallBack: (Int) -> Unit) :
+    RecyclerView.Adapter<AddressListAdapter.MyViewHolder>() {
     private val TAG = "AddressListAdapter"
     private lateinit var placesApi: PlaceAPI
     private var list: ArrayList<CreateCustomerRequestModel.Customer.Addresses> = arrayListOf()
@@ -122,18 +119,22 @@ class AddressListAdapter() : RecyclerView.Adapter<AddressListAdapter.MyViewHolde
                         if (address.isNotEmpty()) {
 
 
-                            list[layoutPosition].address1 = placeDetails.name
-                            list[layoutPosition].address2 = placeDetails.name
-                            list[layoutPosition].city = address[0].locality
-                            list[layoutPosition].country = "United States"
+                            try {
+                                list[layoutPosition].address1 = placeDetails.name
+                                list[layoutPosition].address2 = placeDetails.name ?: ""
+                                list[layoutPosition].city = address[0].locality ?: ""
+                                list[layoutPosition].country = "United States"
 
-                            list[layoutPosition].state = address[0].adminArea
-                            list[layoutPosition].postcode = address[0].postalCode
-                            notifyItemChanged(layoutPosition)
+                                list[layoutPosition].state = address[0].adminArea ?: ""
+                                list[layoutPosition].postcode = address[0].postalCode ?: ""
 
-                            Log.e(TAG, "Updatelist:  ${Gson().toJson(list)}")
-
-
+                                Log.e(TAG, "Updatelist:  ${Gson().toJson(list)}")
+                            } catch (e: Exception) {
+                                Log.e(TAG, "exception in pplaces api")
+                            } finally {
+                                Log.e(TAG, "notify callback")
+                                refreshCallBack.invoke(layoutPosition)
+                            }
                         }
 
                         Log.e(TAG, "placeDetails:  ${Gson().toJson(placeDetails.name)}")
@@ -141,7 +142,6 @@ class AddressListAdapter() : RecyclerView.Adapter<AddressListAdapter.MyViewHolde
                     }
 
                 })
-
             }
 
 
