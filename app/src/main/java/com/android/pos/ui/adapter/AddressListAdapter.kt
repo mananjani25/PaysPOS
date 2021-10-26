@@ -108,6 +108,7 @@ class AddressListAdapter() : RecyclerView.Adapter<AddressListAdapter.MyViewHolde
                 placesApi.fetchPlaceDetails(place.id, object : OnPlacesDetailsListener {
                     override fun onError(errorMessage: String) {
 
+                        Log.e("onError", errorMessage)
                     }
 
                     override fun onPlaceDetailsFetched(placeDetails: PlaceDetails) {

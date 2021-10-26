@@ -40,6 +40,8 @@ class ClockInOwner : Fragment() {
         navigate()
 
         binding.txtTitle.text = prefProvider.getValue(USERNAME, "")
+        binding.txtClockInLabel.text =
+            "Clocked in as " + prefProvider.getValue(Constants.EMPLOYEE_ROLE, "")
         binding.txtTime.text = TimeFormatUtils.showCurrentTime()
 
         return binding.root

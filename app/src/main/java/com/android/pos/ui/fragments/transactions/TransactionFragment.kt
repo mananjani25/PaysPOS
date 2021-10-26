@@ -155,7 +155,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
         binding.includeView.txtTitle.text = getString(R.string.transactions)
 
         binding.includeView.txtHome.setOnClickListener {
-            findNavController().navigate(R.id.action_settings_to_dashboardCategory)
+            findNavController().navigate(R.id.action_transactionFragment_to_dashboardCategoryNew)
         }
 
 

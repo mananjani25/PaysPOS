@@ -190,18 +190,35 @@
                     tools:text="2021-08-10" />
             </LinearLayout>
 
-            <Spinner
-                android:id="@+id/spTerminals"
+            <RelativeLayout
                 android:layout_width="@dimen/_80sdp"
-                android:layout_height="@dimen/_14sdp"
-                android:layout_gravity="center"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_5sdp"
-                android:background="@drawable/bg_spinner"
-                android:imeOptions="actionNext"
-                android:inputType="text"
-                android:overlapAnchor="false"
-                android:spinnerMode="dropdown"
-                android:textSize="@dimen/_5mdpi" />
+                android:background="@drawable/bg_border"
+                android:orientation="horizontal">
+
+                <Spinner
+                    android:id="@+id/spTerminals"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_14sdp"
+                    android:layout_gravity="center"
+                    android:background="@null"
+                    android:imeOptions="actionNext"
+                    android:inputType="text"
+                    android:overlapAnchor="false"
+                    android:spinnerMode="dropdown"
+                    android:textSize="@dimen/_5mdpi"
+                    tools:ignore="NestedWeights" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentEnd="true"
+                    app:srcCompat="@drawable/ic_arrow_drop_down" />
+            </RelativeLayout>
+
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="wrap_content"

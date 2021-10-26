@@ -732,6 +732,9 @@
         <action
             android:id="@+id/action_transactionFragment_to_addTipsDialog"
             app:destination="@id/addTipsDialog" />
+        <action
+            android:id="@+id/action_transactionFragment_to_dashboardCategoryNew"
+            app:destination="@id/dashboardCategoryNew" />
     </fragment>
     <action
         android:id="@+id/action_global_transactionFragment"

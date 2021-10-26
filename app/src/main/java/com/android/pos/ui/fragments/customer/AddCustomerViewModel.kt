@@ -1,18 +1,13 @@
 package com.android.pos.ui.fragments.customer
 
 import android.text.TextUtils
-import android.text.TextUtils.replace
 import android.util.Log
-import android.util.Patterns
-import androidx.databinding.BaseObservable
-import androidx.databinding.Bindable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.R
 import com.android.pos.data.entities.TbCustomer
-import com.android.pos.data.model.CustomerListResponse
 import com.android.pos.data.model.requestModel.CreateCustomerRequestModel
 import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.model.responseModel.CreateCustomerReponse
@@ -25,9 +20,6 @@ import com.android.pos.utils.statusUtils.Status
 import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import okhttp3.internal.notify
-import org.w3c.dom.Text
-import java.util.regex.Pattern
 import javax.inject.Inject
 
 @HiltViewModel
@@ -150,28 +142,31 @@ class AddCustomerViewModel @Inject constructor(
  */
         if (TextUtils.isEmpty(value?.data?.first_name?.trim())) {
             _snackbarText.value = Event(R.string.first_name_validate)
-        } else if (TextUtils.isEmpty(value?.data?.last_name?.trim())) {
+        }
+        /*else if (TextUtils.isEmpty(value?.data?.last_name?.trim())) {
             _snackbarText.value = Event(R.string.last_name_validate)
-        } else if (value?.data?.phones_attributes?.size == 0) {
+        }*/
+        else if (value?.data?.phones_attributes?.size == 0) {
 
             _snackbarText.value = Event(R.string.phone_no_validate)
         } else if (value?.data?.phones_attributes?.get(0)?.phone_number?.length!! < 10) {
             _snackbarText.value = Event(R.string.valid_phone_no_validate)
-        } else if (TextUtils.isEmpty(value?.data?.email)) {
-            _snackbarText.value = Event(R.string.email_validate)
-        } else if (!Patterns.EMAIL_ADDRESS.matcher(value?.data?.email).matches()) {
-            _snackbarText.value = Event(R.string.valid_email_validate)
         }
+        /* else if (TextUtils.isEmpty(value?.data?.email)) {
+             _snackbarText.value = Event(R.string.email_validate)
+         } else if (!Patterns.EMAIL_ADDRESS.matcher(value?.data?.email).matches()) {
+             _snackbarText.value = Event(R.string.valid_email_validate)
+         }*/
 
         /*else if (TextUtils.isEmpty(value?.data?.company?.trim())) {
             _snackbarText.value = Event(R.string.company_name_validate)
         }*/
-        else if (TextUtils.isEmpty(value?.data?.birth_day) || TextUtils.isEmpty(value?.data?.birth_month) || TextUtils.isEmpty(
+        /*else if (TextUtils.isEmpty(value?.data?.birth_day) || TextUtils.isEmpty(value?.data?.birth_month) || TextUtils.isEmpty(
                 value?.data?.birthday_year
             )
         ) {
             _snackbarText.value = Event(R.string.birth_date_validation)
-        } else {
+        }*/ else {
             _showProgress.value = Event(true)
             addCustomerData = CreateCustomerRequestModel().apply {
 

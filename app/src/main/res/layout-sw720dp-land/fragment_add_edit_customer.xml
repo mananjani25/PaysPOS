@@ -122,7 +122,7 @@
                             style="@style/CustomFontSemiBold"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/last_name"
+                            android:text="@string/last_name_"
                             android:textColor="@color/color65"
                             android:textSize="@dimen/_5mdpi" />
 
@@ -205,7 +205,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/_15sdp"
                     android:layout_marginTop="@dimen/_10sdp"
-                    android:text="@string/tv_email_address"
+                    android:text="@string/tv_email_address_"
                     android:textColor="@color/color65"
                     android:textSize="@dimen/_5mdpi" />
 
@@ -486,7 +486,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/_15sdp"
                     android:layout_marginTop="@dimen/_10sdp"
-                    android:text="@string/tv_birthday"
+                    android:text="@string/tv_birthday_"
                     android:textColor="@color/color65"
                     android:textSize="@dimen/_5mdpi" />
 

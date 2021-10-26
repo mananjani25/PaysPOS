@@ -31,7 +31,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/sf_pro_display_bold"
-            android:text="Rohan Patange"
             android:textColor="#292E32"
             android:textSize="@dimen/_6mdpi"
             app:layout_constraintBottom_toBottomOf="@+id/imgCacncel"

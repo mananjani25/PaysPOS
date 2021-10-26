@@ -40,70 +40,73 @@ class CustomerListAdapter(
 
             val mModel = filterList[pos]
 
-            try {
-                if (mModel.first_name != null && mModel.last_name != null) {
-                    binding.tvInitialName.text =
-                        mModel.first_name.first() + "" + filterList[pos].last_name!!.first()
 
-                } else {
-                    binding.tvInitialName.text = "${
-                        mModel.first_name?.subSequence(
-                            0,
-                            2
-                        )
-                    }"
-                }
+            if (mModel.last_name != null && mModel.last_name.isNotEmpty() && !mModel.last_name.equals(
+                    "null",
+                    ignoreCase = true
+                )
+            ) {
+                binding.tvInitialName.text =
+                    (mModel.first_name?.first() ?: "").toString() + "" + (mModel.last_name.first()
+                        ?: "").toString()
 
-
-                if (mModel.last_name != null && !mModel.last_name.equals(
-                        "null",
-                        ignoreCase = true
+            } else {
+                binding.tvInitialName.text = "${
+                    mModel.first_name?.subSequence(
+                        0,
+                        2
                     )
-                ) {
-                    binding.txtName.text =
-                        mModel.first_name + "" + mModel.last_name
-
-                } else {
-                    binding.txtName.text =
-                        mModel.first_name
-                }
-
-
-                if (filterList.get(
-                        pos
-                    ).phones.isNotEmpty()
-                ) {
-
-                    binding.txtNumber.text = "" + AlertUtils.usNumberFormat(
-                        mModel.phones[0].phone_number
-                    ) + " | " + mModel.email
-                } else if (mModel.phones.isNotEmpty()) {
-                    binding.txtNumber.text = "" + AlertUtils.usNumberFormat(
-                        filterList[pos].phones.get(
-                            0
-                        ).phone_number
-                    )
-
-                }
-
-
-                if (isSelectedPos == pos) {
-                    binding.layout.background =
-                        binding.root.context.getDrawable(R.color.txt_color_blue)
-                    binding.txtName.setTextColor(binding.root.context.getColorCompat(R.color.white))
-                    binding.txtNumber.setTextColor(binding.root.context.getColorCompat(R.color.white))
-                } else {
-                    binding.layout.background = binding.root.context.getDrawable(R.color.white)
-                    binding.txtName.setTextColor(binding.root.context.getColorCompat(R.color.txtColor))
-                    binding.txtNumber.setTextColor(binding.root.context.getColorCompat(R.color.colorB9))
-                }
-
-                binding.model = model
-                binding.executePendingBindings()
-
-            } catch (e: Exception) {
-                e.printStackTrace()
+                }"
             }
+
+
+            if (mModel.last_name != null && !mModel.last_name.equals(
+                    "null",
+                    ignoreCase = true
+                )
+            ) {
+                binding.txtName.text =
+                    mModel.first_name + "" + mModel.last_name
+
+            } else {
+                binding.txtName.text =
+                    mModel.first_name
+            }
+
+
+            if (filterList.get(
+                    pos
+                ).phones.isNotEmpty()
+            ) {
+
+                binding.txtNumber.text = "" + AlertUtils.usNumberFormat(
+                    mModel.phones[0].phone_number
+                ) + " | " + mModel.email
+            } else if (mModel.phones.isNotEmpty()) {
+                binding.txtNumber.text = "" + AlertUtils.usNumberFormat(
+                    filterList[pos].phones.get(
+                        0
+                    ).phone_number
+                )
+
+            }
+
+
+            if (isSelectedPos == pos) {
+                binding.layout.background =
+                    binding.root.context.getDrawable(R.color.txt_color_blue)
+                binding.txtName.setTextColor(binding.root.context.getColorCompat(R.color.white))
+                binding.txtNumber.setTextColor(binding.root.context.getColorCompat(R.color.white))
+            } else {
+                binding.layout.background = binding.root.context.getDrawable(R.color.white)
+                binding.txtName.setTextColor(binding.root.context.getColorCompat(R.color.txtColor))
+                binding.txtNumber.setTextColor(binding.root.context.getColorCompat(R.color.colorB9))
+            }
+
+            binding.model = model
+            binding.executePendingBindings()
+
+
         }
 
         init {
