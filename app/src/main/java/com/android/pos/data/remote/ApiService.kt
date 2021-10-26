@@ -52,6 +52,7 @@ import com.android.pos.data.remote.Constants.ORDERS
 import com.android.pos.data.remote.Constants.ORDER_ASSIGN_CUSTOMER
 import com.android.pos.data.remote.Constants.ORDER_DETAILS
 import com.android.pos.data.remote.Constants.ORDER_EMAIL_RECEIPT
+import com.android.pos.data.remote.Constants.ORDER_PAY_AMOUNT_WISE
 import com.android.pos.data.remote.Constants.ORDER_PHONE_RECEIPT
 import com.android.pos.data.remote.Constants.ORDER_TYPES
 import com.android.pos.data.remote.Constants.PAY_BY_GUEST
@@ -488,6 +489,9 @@ interface ApiService {
 
     @POST(ORDERS)
     suspend fun createOrder(@Body orderRequestModel: OrderRequestModel): CreateOrderResponse
+
+    @POST(ORDER_PAY_AMOUNT_WISE)
+    suspend fun splitByOrder(@Body orderRequestModel: SpitByOrderRequestModel): CreateOrderResponse
 
 
     @PUT(ORDER_DETAILS)

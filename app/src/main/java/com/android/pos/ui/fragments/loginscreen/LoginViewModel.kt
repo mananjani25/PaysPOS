@@ -75,7 +75,12 @@ class LoginViewModel @Inject constructor(
                                     prefProvider.setValue(BASE_URL_NEW, it.data.baseUrl + "/")
                                     prefProvider.setValueInt(LOCATION_ID, it.data.locationId)
                                     prefProvider.setValue(EMAIL, it.data.email)
-                                    prefProvider.setValue(USERNAME, it.data.userName)
+                                    it.data.userName?.let { it1 ->
+                                        prefProvider.setValue(
+                                            USERNAME,
+                                            it1
+                                        )
+                                    }
                                 }
 
                                 defaultTerminalCall()

@@ -359,6 +359,9 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun createOrder(data: OrderRequestModel) =
         getResult { apiService.createOrder(data) }
 
+    suspend fun splitByOrder(data: SpitByOrderRequestModel) =
+        getResult { apiService.splitByOrder(data) }
+
     suspend fun updateOrder(orderId: Int?, data: OrderRequestModel) =
         getResult { orderId?.let { apiService.updateOrder(it, data) } }
 

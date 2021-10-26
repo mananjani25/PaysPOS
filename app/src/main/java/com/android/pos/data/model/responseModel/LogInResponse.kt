@@ -25,6 +25,6 @@ data class LogInResponse(
         @SerializedName("updated_at")
         val updatedAt: String,
         @SerializedName("user_name")
-        val userName: String
+        val userName: String?
     )
 }
