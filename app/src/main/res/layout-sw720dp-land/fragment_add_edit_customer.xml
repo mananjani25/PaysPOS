@@ -104,9 +104,9 @@
                             android:imeOptions="actionNext"
                             android:inputType="textNoSuggestions"
                             android:padding="@dimen/_5sdp"
-                            android:textColorHint="@color/hintColor"
                             android:text="@={viewModel.addCustomerDetails.data.first_name}"
                             android:textColor="@color/txtColor"
+                            android:textColorHint="@color/hintColor"
                             android:textSize="@dimen/_5mdpi" />
                     </LinearLayout>
 
@@ -136,9 +136,9 @@
                             android:imeOptions="actionNext"
                             android:inputType="text"
                             android:padding="@dimen/_5sdp"
-                            android:textColorHint="@color/hintColor"
                             android:text="@={viewModel.addCustomerDetails.data.last_name}"
                             android:textColor="@color/txtColor"
+                            android:textColorHint="@color/hintColor"
                             android:textSize="@dimen/_5mdpi" />
                     </LinearLayout>
 
@@ -172,9 +172,9 @@
                         android:background="@null"
                         android:enabled="false"
                         android:padding="@dimen/_5sdp"
-                        android:theme="@style/SpinnerTheme"
                         android:textColor="@color/txt_color_blue"
-                        android:textSize="@dimen/_5mdpi" />
+                        android:textSize="@dimen/_5mdpi"
+                        android:theme="@style/SpinnerTheme" />
 
                     <View
                         android:layout_width="match_parent"

@@ -4,8 +4,6 @@ import `in`.madapps.placesautocomplete.PlaceAPI
 import android.R
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
-import android.location.Address
-import android.location.Geocoder
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -29,10 +27,8 @@ import com.android.pos.utils.extensions.liveSnackBar
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
-import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 @AndroidEntryPoint
@@ -91,7 +87,6 @@ class AddEditCustomer : Fragment() {
                     (parent?.getChildAt(0) as TextView).setTextAppearance(com.android.pos.R.style.SpinnerTheme); }
 
 
-
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -103,7 +98,15 @@ class AddEditCustomer : Fragment() {
 
     private fun setAddress() {
 
-        adapter = AddressListAdapter()
+        adapter = AddressListAdapter(refreshCallBack = { adapterPos ->
+            Log.e(TAG, "callback")
+            if (::adapter.isInitialized) {
+                Log.e(TAG, "notify list")
+                activity?.runOnUiThread {
+                    adapter.notifyItemChanged(adapterPos)
+                }
+            }
+        })
         binding.rvAddresses.adapter = adapter
 
     }
