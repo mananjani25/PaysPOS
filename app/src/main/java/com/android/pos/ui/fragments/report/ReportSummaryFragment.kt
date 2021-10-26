@@ -348,6 +348,12 @@ class ReportSummaryFragment : Fragment(), AdapterView.OnItemSelectedListener {
                         resource.data?.let { terminalList ->
                             terminalListGlobal =
                                 terminalList as ArrayList<VenueDetailsResponse.Data.Terminal>
+                            terminalListGlobal.add(
+                                0, VenueDetailsResponse.Data.Terminal(
+                                    createdAt = "", id = 0, locationId = 0, masterTerminal = false,
+                                    name = "All Terminal", uniqId = "", updatedAt = ""
+                                )
+                            )
 
                             val roleName = terminalListGlobal.map { it.name }
 
@@ -378,10 +384,17 @@ class ReportSummaryFragment : Fragment(), AdapterView.OnItemSelectedListener {
         spinnerAdapter.setDropDownViewResource(R.layout.row_spinner)
         binding.spTerminals.adapter = spinnerAdapter
 
+        binding.spTerminals.setSelection(0)
+
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
 
+        if (terminalListGlobal.size > 0 && position > 0 && position < terminalListGlobal.size) {
+            viewModel.selectedTerminalId = terminalListGlobal[position].id.toString()
+        } else {
+            viewModel.selectedTerminalId = ""
+        }
         /*viewModel.apiCallTimeSheet(
             getTerminalId(binding.spTerminals.selectedItemPosition).toString()
         )*/

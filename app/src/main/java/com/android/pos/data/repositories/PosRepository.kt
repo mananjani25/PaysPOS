@@ -532,8 +532,8 @@ class PosRepository @Inject constructor(
     suspend fun employeeClockOut(data: HashMap<String, String>) =
         apiHelperNew.employeeClockOut(data)
 
-    suspend fun getReportSummary(startDate: String, endDate: String) =
-        apiHelperNew.getReportSummary(startDate, endDate)
+    suspend fun getReportSummary(startDate: String, endDate: String, terminalId: String) =
+        apiHelperNew.getReportSummary(startDate, endDate, terminalId)
 
     suspend fun clearTable() {
 
