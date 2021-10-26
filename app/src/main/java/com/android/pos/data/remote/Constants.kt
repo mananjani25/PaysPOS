@@ -277,4 +277,14 @@ object Constants {
     var SPLIT_PAY_TYPE = "split_pay_type"
     var SPLIT_PAY_AMOUNT = "split_pay_amount"
     var SPLIT_NO = "split_no"
+
+    //api constants
+    const val EMP_NAME = "Employee Name"
+    const val AMT_BY_CASH = "Amount by Cash"
+    const val SERVICE_CHARGE_BY_CASH = "Service Charge by Cash"
+    const val TIP_BY_CASH = "Tip by Cash"
+    const val REFUND = "Refund"
+    const val TIP = "Tips"
+    const val DISCOUNT = "Discounts"
+    const val AMT_COLLECTED = "Amount Collected"
 }

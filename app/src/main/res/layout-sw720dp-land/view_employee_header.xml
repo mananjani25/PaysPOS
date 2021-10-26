@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingDefaultResource">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/_5sdp">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txtName"
+            style="@style/ReportItemHeaderText"
+            android:text="@string/employee_name" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txtAmtAllocated"
+            style="@style/ReportItemHeaderText"
+            android:text="@string/amount_allocated" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txtItems"
+            style="@style/ReportItemHeaderText"
+            android:text="@string/items_"
+            tools:text="Items" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txtOrders"
+            style="@style/ReportItemHeaderText"
+            android:text="@string/orders" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txtRefunds"
+            style="@style/ReportItemHeaderText"
+            android:text="@string/refunds" />
+
+    </LinearLayout>
+</layout>
