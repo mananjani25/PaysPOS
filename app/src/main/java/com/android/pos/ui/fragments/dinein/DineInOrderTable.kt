@@ -46,6 +46,8 @@ import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
 class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
+    private var isFireAll: Boolean = false
+    private var clickedPos: Int = 0
     private lateinit var binding: FragmentDineInOrderTableBinding
     private var cartList: CartModel? = null
     private var dineInData: CreateOrderResponse.Data? = null
@@ -204,15 +206,19 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             val builder = java.lang.StringBuilder()
             for (i in 0 until ids.size) {
                 builder.append(ids.get(i))
-                if (i + 1 != ids.size) {
-                    builder.append(",")
-                }
+                builder.append(",")
+
 
             }
-            val idStr = builder.toString()
-            Log.e(TAG, "idStrJson:  ${idStr.toString()}")
-            Log.e(TAG, "orderIdorderId:  ${orderId}")
-            orderId?.let { it1 -> viewModel.fireItemToKitchen(it1, true, idStr) }
+            Log.e(TAG, "builderSubStr:  ${builder.substring(0, builder.length - 1).toString()}")
+            orderId?.let { it1 ->
+                isFireAll = true
+                viewModel.fireItemToKitchen(
+                    it1,
+                    true,
+                    builder.substring(0, builder.length - 1).toString()
+                )
+            }
         }
 
         binding.btnPayNew.setOnClickListener {
@@ -486,7 +492,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         viewModel.msgText.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
                 AlertUtils.showCustomAlert(requireContext(), it)
-                orderId?.let { it1 -> viewModel.apiCallOrderDetails(it1) }
+
+
+                dineInTableAdapter.updateStatus(clickedPos, isFireAll)
+
+
+                // orderId?.let { it1 -> viewModel.apiCallOrderDetails(it1) }
             }
         })
 
@@ -639,6 +650,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     }*/
 
     override fun onGuestPay(dineInModel: DineInModel, position: Int) {
+
         //New Drag and Drop
 
         Log.e(TAG, "dineInModelPay:  ${Gson().toJson(dineInModel)}")
@@ -899,6 +911,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         viewModel.fireItemToKitchen(orderId!!, true, ids)
     }
 
+    override fun singleItemFired(id: String, position: Int) {
+        Log.e(TAG, "singleItemFiredid:   ${id}")
+        clickedPos = position
+        viewModel.fireItemToKitchen(orderId!!, true, id)
+
+    }
+
     private fun randomOfflineId(): String {
 
         val locationId = prefProvider.getValueInt(Constants.LOCATION_ID, -1).toString()
@@ -1021,8 +1040,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                         model.title = baseResponse.guestAttributes.get(i).name
 
-                        Log.e(TAG, "GuestItemName  ${baseResponse.guestAttributes.get(i).name}")
-                        model.id = baseResponse.guestAttributes[i].id
+                        Log.e(TAG, "GuestItemName  ${baseResponse.guestAttributes.get(i).id}")
+
                         model.isHeader = 0
 
 
@@ -1072,6 +1091,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             fullAmt / (baseResponse.guestAttributes.size - 1)
                         Log.e(TAG, "totalGuestPrice:  ${totalGuestPrice}")
                         model.totalGuestPrice = totalGuestPrice
+                        model.id = baseResponse.guestAttributes[i].id
                         Log.e(TAG, "ModelisPaid  ${model.isPaid}")
 
 

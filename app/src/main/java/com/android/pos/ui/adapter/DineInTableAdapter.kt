@@ -80,6 +80,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             var tbList: ArrayList<TbItem> = arrayListOf()
             var guestAmt = 0.0
             var isPaid = true
+            var isAllFired = true
 
             for (i in position + 1 until list.size) {
 
@@ -99,6 +100,12 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                         if (!it.isPaid) {
                             isPaid = it.isPaid
                         }
+
+                        if (!it.isFired) {
+                            isAllFired = false
+
+                        }
+
 
                     }
 
@@ -136,6 +143,14 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 // binding.txtTotal.visibility = View.VISIBLE
             }
 
+            if (isAllFired) {
+                binding.chkIsFired.isChecked = true
+                binding.chkIsFired.isPressed = true
+                binding.chkIsFired.isEnabled = false
+            }
+
+
+
             binding.txtPay.setText("Pay " + MethodUtils.roundOffAmount(guestAmt))
 
 
@@ -144,27 +159,37 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         init {
             binding.chkIsFired.setOnCheckedChangeListener { buttonView, isChecked ->
 
+                if (buttonView.isPressed) {
+                    if (isChecked) {
+                        val ids: MutableList<Int> = ArrayList()
 
-                if (isChecked) {
-                    val ids: MutableList<Int> = ArrayList()
-                    for (i in layoutPosition + 1 until list.size) {
+                        val builder = java.lang.StringBuilder()
 
-                        if (list.get(i).isHeader == 1) {
 
-                            list.get(i).item?.orderItemId?.let { ids.add(it) }
-                            list.get(i).item?.isFired = true
+                        for (i in layoutPosition + 1 until list.size) {
 
-                        } else {
-                            break
+                            if (list.get(i).isHeader == 1) {
+
+                                list.get(i).item?.orderItemId?.let {
+                                    builder.append(it)
+                                    if (i + 1 != list.size) {
+                                        builder.append(",")
+                                    }
+                                }
+                                list.get(i).item?.isFired = true
+
+                            } else {
+                                break
+                            }
+
+
                         }
-
+                        Log.e(TAG, "builderbuilder:  ${builder}")
+                        listner.onWholeTableToKitchen(builder.toString())
+                        binding.chkIsFired.isChecked = true
+                        binding.chkIsFired.isEnabled = false
 
                     }
-                    var idStr = Gson().toJson(ids.toTypedArray())
-                    listner.onWholeTableToKitchen(idStr)
-                    binding.chkIsFired.isChecked = true
-                    binding.chkIsFired.isEnabled = false
-
                 }
 
 
@@ -236,26 +261,29 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             binding.executePendingBindings()
 
             binding.chkIsFired.setOnCheckedChangeListener { buttonView, isChecked ->
-                if (isChecked) {
-                    if (list.get(layoutPosition).item != null) {
-                        var itemsNew = list[bindingAdapterPosition].item
-                        val ids: MutableList<Int> = ArrayList()
-                        itemsNew?.orderItemId?.let { ids.add(it) }
-                        itemsNew?.isFired = true
+
+                if (buttonView.isPressed) {
+                    Log.e("chkIsFired", isChecked.toString())
+                    if (isChecked) {
+                        if (list.get(layoutPosition).item != null) {
+                            var itemsNew = list[bindingAdapterPosition].item
+                            var ids: String? = null
+                            itemsNew?.orderItemId?.let { ids = it.toString() }
+                            itemsNew?.isFired = true
 
 
-                        var idStr = Gson().toJson(ids.toTypedArray())
-                        Log.e(TAG, "idStr:  $idStr")
-                        listner.onWholeTableToKitchen(idStr)
-                        binding.chkIsFired.isChecked = true
-                        binding.chkIsFired.isEnabled = false
-                        list[bindingAdapterPosition].item = itemsNew
 
-                        //itemAdapter.updateCart(list[bindingAdapterPosition].items)
+                            Log.e(TAG, "idStr:  $ids")
+                            ids?.let { listner.singleItemFired(it, layoutPosition) }
+                            binding.chkIsFired.isEnabled = false
+                            list[bindingAdapterPosition].item = itemsNew
 
+                            //itemAdapter.updateCart(list[bindingAdapterPosition].items)
+
+
+                        }
 
                     }
-
                 }
             }
 
@@ -399,6 +427,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         fun onGuestPay(dineInModel: DineInModel, position: Int)
         fun onSendItemToKitchen(item: TbItem)
         fun onWholeTableToKitchen(ids: String)
+        fun singleItemFired(id: String, position: Int)
     }
 
     fun getList(): List<DineInModel> {
@@ -456,6 +485,23 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             }
         }
         return false
+    }
+
+    fun updateStatus(clickedPos: Int, isFireAll: Boolean) {
+        if (isFireAll) {
+            list.forEach {
+                if (it.isHeader == 1) {
+                    it.item?.isFired = true
+
+                } else {
+                    it.isFired = true
+                }
+            }
+        } else {
+
+            list[clickedPos].item?.isFired = true
+        }
+        notifyDataSetChanged()
     }
 
 }
