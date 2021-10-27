@@ -93,7 +93,7 @@
             app:layout_constraintTop_toBottomOf="@+id/viewLine">
 
             <androidx.appcompat.widget.AppCompatTextView
-                style="@style/CustomFontMediumStyle"
+                style="@style/CustomFontSemiBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -107,7 +107,7 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtGuestItemName"
-                style="@style/CustomFontMediumStyle"
+                style="@style/CustomFontSemiBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -121,7 +121,7 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtQuantity"
-                style="@style/CustomFontMediumStyle"
+                style="@style/CustomFontSemiBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -134,7 +134,7 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtStaffName"
-                style="@style/CustomFontMediumStyle"
+                style="@style/CustomFontSemiBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -147,7 +147,7 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtPriceLabel"
-                style="@style/CustomFontMediumStyle"
+                style="@style/CustomFontSemiBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"

@@ -117,9 +117,6 @@ class PayByGuestDialog : DialogFragment(), View.OnClickListener {
             setupData()
         }
 
-        Log.e(TAG, "isLastPayment:  ${isLastPayment}")
-
-
     }
 
     private fun wholePaymentObservor() {

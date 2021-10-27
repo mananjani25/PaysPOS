@@ -41,6 +41,7 @@ import com.android.pos.data.remote.Constants.DELETE
 import com.android.pos.data.remote.Constants.DIALOG_KEY_VARIATION_DETAILS
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.DINE_IN_STATUS
+import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
 import com.android.pos.data.remote.Constants.HORIZONTAL
@@ -51,6 +52,7 @@ import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
 import com.android.pos.data.remote.Constants.ORDER_TYPE_NAME
 import com.android.pos.data.remote.Constants.PERCENTAGE
 import com.android.pos.data.remote.Constants.TAKEOUT
+import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.data.remote.Constants.UPDATE
 import com.android.pos.data.remote.Constants.VERTICAL
 import com.android.pos.databinding.FragmentDashboardCategoryNewBinding
@@ -138,6 +140,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             paymentOfflineId = requireArguments().getString("paymentOfflineId").toString()
             orderOfflineId = requireArguments().getString("orderOfflineId").toString()
         }
+//        checkDineInEditOrder()
 
 
         navigateDineInOrder()
@@ -166,6 +169,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
         hideOrderType()
         setupAdapter()
         setVenueData()
@@ -180,7 +184,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         observeSaveOrder()
         tableStatusCheck()
         tableStatusSucess()
-        checkDineInEditOrder()
+
         binding.layoutCart.llShowMenu.setOnClickListener(this)
         binding.layoutCart.txtCrtNewCustomer.setOnClickListener(this)
         binding.layoutCart.txtClearItems.setOnClickListener(this)
@@ -259,25 +263,40 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             Log.e(TAG, "dineInListEditOrder:  ${Gson().toJson(dineInList)}")
             if (dineInList?.isNotEmpty() == true) {
                 binding.layoutCart.txtOrderType.setText("Dine In")
+                val listDineInNew: ArrayList<DineInModel> = arrayListOf()
 
-                binding.layoutCart.llCart.visibility = View.VISIBLE
-                binding.lltakeout.visibility = View.GONE
-                binding.layoutCart.llShowMenu.visibility = View.GONE
 
-                binding.layoutCart.viewDineIn.visibility = View.VISIBLE
-                binding.layoutCart.rvCart.visibility = View.GONE
-                binding.layoutCart.rvCartDineIn.visibility = View.VISIBLE
+                var listTbItems: ArrayList<TbItem> = arrayListOf()
+                for (i in 0 until dineInList.size) {
 
-                /*  prefProvider.setValue(ORDER_TYPE, DINE_IN)
-                  prefProvider.setValue(ORDER_TYPE_NAME, DINE_IN)
-  */
+                    if (dineInList.get(i).isHeader == 1) {
+                        dineInList.get(i).item?.let { listTbItems.add(it) }
 
-                /*dineInCartAdapter = DineInAdapter()
+
+                    } else {
+                        listTbItems.clear()
+                        listTbItems = arrayListOf()
+                    }
+
+                }
+
+
+                dineInCartAdapter = DineInAdapter()
+                binding.layoutCart.rvCartDineIn.adapter = dineInCartAdapter
                 dineInCartAdapter.setListner(this)
+                dineInCartAdapter.setList(dineInList)
+                val cartModel = CartModel()
+                cartModel.terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
+                cartModel.employeeID = prefProvider.getValueInt(EMPLOYEE_ID, 0)
+                cartModel.orderTypeId = 2
+                cartModel.orderTypeName = DINE_IN
+                cartModel.orderType = DINE_IN
 
-                dineInCartAdapter.setList(dineInList)*/
-                Log.e(TAG, "DineNotEmpty")
 
+
+                cartList.add(cartModel)
+
+                viewModel.cartLogic(cartList, null, ADD, dineInList = dineInList)
 
             }
 
@@ -527,6 +546,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 binding.layoutCart.rvCartDineIn.visibility = View.VISIBLE
                 if (requireArguments().getBoolean("isFromDineIn")) {
                     getDineInCartList()
+                } else if (arguments?.getBoolean("is_dine_in_edit") == true) {
+                    checkDineInEditOrder()
                 }
 
             } else {
@@ -2445,7 +2466,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 if (baseResponse != null) {
 
 
-                    Log.e(TAG, "BaseResponseInDash ${Gson().toJson(baseResponse)}")
                     var bundle = Bundle()
                     bundle.putDouble("totalPrice", baseResponse.order.totalAmount)
                     bundle.putParcelable("cartList", cartList[0])

@@ -27,7 +27,7 @@
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingVertical="@dimen/_2sdp"
+
                 android:weightSum="5">
 
                 <LinearLayout
@@ -51,7 +51,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_marginStart="@dimen/_10sdp"
+                        android:layout_marginStart="@dimen/_7sdp"
                         android:button="@drawable/dine_in_fire_selector"
                         android:gravity="center" />
                 </LinearLayout>
@@ -66,7 +66,7 @@
                     android:orientation="vertical">
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontBold"
+                        style="@style/CustomFontMediumStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="start"
@@ -79,7 +79,7 @@
 
                     <TextView
                         android:id="@+id/txtNote"
-                        style="@style/CustomFontRegularStyle"
+                        style="@style/CustomFontMediumStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="start"
@@ -111,13 +111,14 @@
                     android:gravity="start">
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontSemiBold"
+                        style="@style/CustomFontMediumStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
+
                         android:gravity="center"
                         android:text="@{``+model.itemQuantity}"
-                        android:textColor="@color/color88"
+                        android:textColor="@color/btnColor"
                         android:textSize="@dimen/_5mdpi"
                         tools:text="x 10" />
                 </LinearLayout>
@@ -138,7 +139,7 @@
                     android:gravity="center">
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontBold"
+                        style="@style/CustomFontMediumStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="start"
