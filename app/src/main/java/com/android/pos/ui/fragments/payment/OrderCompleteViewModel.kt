@@ -153,5 +153,11 @@ class OrderCompleteViewModel @Inject constructor(
         }
     }
 
+    fun deleteCart() {
+        viewModelScope.launch {
+            posRepository.deleteCart()
+        }
+    }
+
 
 }

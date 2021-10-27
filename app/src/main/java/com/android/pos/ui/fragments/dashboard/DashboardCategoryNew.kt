@@ -21,6 +21,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -475,6 +476,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             } else {
                                 binding.layoutCart.txtDineInProceed.visibility = View.GONE
                             }
+                        }
+
+                        if (prefProvider.getValueInt("ORDER_ID", -1) != -1) {
+                            gotoPayment()
                         }
                     } else {
                         viewModel.itemCalculation(
@@ -1809,53 +1814,62 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
             R.id.btnPay -> {
 
-                prefProvider.setValue(Constants.SPLIT_PAY_AMOUNT, "")
-                prefProvider.setValueInt(Constants.SPLIT_NO, -1)
-                prefProvider.setValue(Constants.SPLIT_PAY_TYPE, "")
-                prefProvider.setValueInt("ORDER_ID", -1)
+//                prefProvider.setValue(Constants.SPLIT_PAY_AMOUNT, "")
+//                prefProvider.setValueInt(Constants.SPLIT_NO, -1)
+//                prefProvider.setValue(Constants.SPLIT_PAY_TYPE, "")
+//                prefProvider.setValueInt("ORDER_ID", -1)
 
-                if (cartList.isNotEmpty()) {
+                gotoPayment()
+            }
+            R.id.llCartMenu -> {
 
-                    val bundle = Bundle()
-                    bundle.putDouble("totalPrice", viewModel.totalPrice - cartList[0].discountPrice)
-                    bundle.putDouble("subTotalPrice", viewModel.subTotalPrice)
-                    bundle.putDouble("totalTax", viewModel.totalTax)
-                    bundle.putDouble(
-                        "totalDiscount",
-                        viewModel.totalDiscount + cartList[0].discountPrice
-                    )
-                    bundle.putDouble("totalServiceCharge", viewModel.totalServiceCharge)
-                    bundle.putString("future_delivery_date", future_delivery_date)
-                    bundle.putString("future_delivery_time", future_delivery_time)
-                    cartList[0].customer = assignCustomer
-                    bundle.putParcelable("cartList", cartList[0])
+            }
+        }
+    }
 
-                    if (isOrderUpdate) {
-                        bundle.putBoolean("update", true)
-                        orderId?.let { bundle.putInt("orderId", it) }
-                        paymentId?.let { bundle.putInt("paymentId", it) }
-                        bundle.putString("paymentOfflineId", paymentOfflineId)
-                        bundle.putString("orderOfflineId", orderOfflineId)
-                    }
+    private fun gotoPayment() {
+        if (cartList.isNotEmpty()) {
 
-                    if (prefProvider.getValue(ORDER_TYPE, "").toString() == DINE_IN) {
+            val bundle = Bundle()
+            bundle.putDouble("totalPrice", viewModel.totalPrice - cartList[0].discountPrice)
+            bundle.putDouble("subTotalPrice", viewModel.subTotalPrice)
+            bundle.putDouble("totalTax", viewModel.totalTax)
+            bundle.putDouble(
+                "totalDiscount",
+                viewModel.totalDiscount + cartList[0].discountPrice
+            )
+            bundle.putDouble("totalServiceCharge", viewModel.totalServiceCharge)
+            bundle.putString("future_delivery_date", future_delivery_date)
+            bundle.putString("future_delivery_time", future_delivery_time)
+            cartList[0].customer = assignCustomer
+            bundle.putParcelable("cartList", cartList[0])
 
-                        createDineInRequest()
+            if (isOrderUpdate) {
+                bundle.putBoolean("update", true)
+                orderId?.let { bundle.putInt("orderId", it) }
+                paymentId?.let { bundle.putInt("paymentId", it) }
+                bundle.putString("paymentOfflineId", paymentOfflineId)
+                bundle.putString("orderOfflineId", orderOfflineId)
+            }
+
+            if (prefProvider.getValue(ORDER_TYPE, "").toString() == DINE_IN) {
+
+                createDineInRequest()
 
 
-                    } else {
+            } else {
+
+                lifecycleScope.launchWhenStarted {
+                    if (findNavController().currentDestination?.id == R.id.dashboardCategoryNew) {
 
                         findNavController().navigate(
                             R.id.action_dashboardCategoryNew_to_paymentFragment,
                             bundle
                         )
                     }
-
                 }
             }
-            R.id.llCartMenu -> {
 
-            }
         }
     }
 

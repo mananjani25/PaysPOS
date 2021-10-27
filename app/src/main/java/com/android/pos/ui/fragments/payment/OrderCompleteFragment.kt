@@ -183,6 +183,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 result.id?.let { viewModel.assignCustomer(orderID, it) }
             }
         }
+
+        if (!isSpilt) {
+
+            prefProvider.setValue(Constants.ORDER_TYPE, "")
+            prefProvider.setValue(Constants.CUSTOMER_NAME, "")
+            prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
+            viewModel.deleteCart()
+        }
     }
 
     override fun onClick(v: View?) {
@@ -1684,6 +1692,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     fun removeCustomer() {
         prefProvider.setValue(Constants.CUSTOMER_NAME, "")
+
+
     }
 
     private fun observeShowProgress() {

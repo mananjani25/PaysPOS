@@ -568,7 +568,6 @@
             app:destination="@id/assignTeamMemberListDialog" />
     </fragment>
     <fragment
-
         android:id="@+id/paymentFragment"
         android:name="com.android.pos.ui.fragments.payment.PaymentFragment"
         android:label="PaymentFragment">

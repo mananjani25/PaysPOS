@@ -725,6 +725,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                         prefProvider.setValueInt(SPLIT_NO, -1)
                         prefProvider.setValue(SPLIT_PAY_TYPE, "")
                         prefProvider.setValueInt("ORDER_ID", -1)
+
+
                     }
                 }
             }
