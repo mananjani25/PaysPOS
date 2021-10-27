@@ -12,6 +12,7 @@ import android.util.Log
 import android.view.*
 import android.view.ViewGroup
 import android.widget.*
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
@@ -42,7 +43,6 @@ import com.android.pos.data.remote.Constants.DELETE
 import com.android.pos.data.remote.Constants.DIALOG_KEY_VARIATION_DETAILS
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.DINE_IN_STATUS
-
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
 import com.android.pos.data.remote.Constants.HORIZONTAL
 import com.android.pos.data.remote.Constants.MANUALSALE
@@ -56,7 +56,6 @@ import com.android.pos.data.remote.Constants.UPDATE
 import com.android.pos.data.remote.Constants.VERTICAL
 import com.android.pos.databinding.FragmentDashboardCategoryNewBinding
 import com.android.pos.di.PrefProvider
-import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.activities.SwipeHelper
 import com.android.pos.ui.adapter.*
 import com.android.pos.ui.fragments.payment.PaymentViewModel
@@ -161,6 +160,16 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 }
             }
         }
+        val callback: OnBackPressedCallback =
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    requireActivity().finish()
+
+                }
+
+            }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+
         return binding.root
     }
 
@@ -271,7 +280,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                 /*  prefProvider.setValue(ORDER_TYPE, DINE_IN)
                   prefProvider.setValue(ORDER_TYPE_NAME, DINE_IN)
-  */
+    */
 
                 /*dineInCartAdapter = DineInAdapter()
                 dineInCartAdapter.setListner(this)
