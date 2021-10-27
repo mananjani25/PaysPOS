@@ -413,6 +413,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     cartList = it as ArrayList<CartModel>
                     Log.e(TAG, "cartSize:  ${cartList.size}")
                     Log.e(TAG, "OrderType:  ${prefProvider.getValue(ORDER_TYPE, "").toString()}")
+                    Log.e(TAG, "cartList:  ${Gson().toJson(cartList)}")
                     if (cartList.isNotEmpty()) {
 
                         if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
@@ -1249,6 +1250,11 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                                 rvVariationList.visibility = View.VISIBLE
                                 txtItemName.text = it.name + ":-  Choose One"
                                 variationAdapter.addVariations(it.variationsAttributes)
+                                if (data.variationsAttributes.isNotEmpty() && data.variationsAttributes[0].id != null) {
+                                    variationAdapter.selectItem(
+                                        data.variationsAttributes[0].id ?: 0
+                                    )
+                                }
                                 showPriceTitle(
                                     variationsAttribute = null,
                                     variationAdapter,
@@ -1305,12 +1311,14 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         }
 
-        val resultVariationDetails =
-            getNavigationResultLiveData<VariationsAttribute>(DIALOG_KEY_VARIATION_DETAILS)
-        resultVariationDetails?.observe(viewLifecycleOwner) {
-            variationAdapter?.updateVariation(it)
-            showPriceTitle(it, variationAdapter = null, data, txtTitle, isItemClick)
-
+        //allow to update price only if variation exists
+        if (data.variationsAttributes.isNotEmpty()) {
+            val resultVariationDetails =
+                getNavigationResultLiveData<VariationsAttribute>(DIALOG_KEY_VARIATION_DETAILS)
+            resultVariationDetails?.observe(viewLifecycleOwner) {
+                variationAdapter?.updateVariation(it)
+                showPriceTitle(it, variationAdapter = null, data, txtTitle, isItemClick)
+            }
         }
 
         imgClose.setOnClickListener {
@@ -1542,6 +1550,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     totalPrice(data)
                 )
         }
+        Log.e(TAG, "txtTitle text >> ${txtTitle.text}")
     }
 
 

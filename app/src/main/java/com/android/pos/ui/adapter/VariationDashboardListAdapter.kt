@@ -4,12 +4,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
-import com.android.pos.data.entities.TaxData
 import com.android.pos.data.entities.VariationsAttribute
-import com.android.pos.data.model.responseModel.GetTaxResponse
-import com.android.pos.databinding.ViewTaxItemBinding
 import com.android.pos.databinding.ViewVariationDashboardListBinding
-import com.android.pos.ui.fragments.settings.tax.TaxListViewModel
 
 
 class VariationDashboardListAdapter :
@@ -110,6 +106,18 @@ class VariationDashboardListAdapter :
         }
 
         notifyDataSetChanged()
+    }
 
+    fun selectItem(id: Int) {
+        if (variationList.isNotEmpty()) {
+            for (i in 0 until variationList.size) {
+                val variation = variationList[i]
+                if (variation.id == id) {
+                    mpos = i
+                    notifyItemChanged(mpos)
+                    break
+                }
+            }
+        }
     }
 }

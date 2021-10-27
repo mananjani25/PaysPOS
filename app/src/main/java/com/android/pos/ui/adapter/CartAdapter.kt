@@ -91,7 +91,13 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
         init {
 
             binding.root.setOnClickListener {
-                mCallback.onItemClickListener(it, cartList[bindingAdapterPosition], layoutPosition)
+                if (bindingAdapterPosition >= 0 && cartList.size > 0 && bindingAdapterPosition < cartList.size) {
+                    mCallback.onItemClickListener(
+                        it,
+                        cartList[bindingAdapterPosition],
+                        layoutPosition
+                    )
+                }
             }
         }
     }

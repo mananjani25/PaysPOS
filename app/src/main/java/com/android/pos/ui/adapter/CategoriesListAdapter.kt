@@ -147,12 +147,12 @@ class CategoriesListAdapter(private val isChoose: Boolean) :
         categoryList.clear()
         filterList.clear()
         if (isChoose) {
-            categoryList.add(0, TbCategory().apply {
+            /*categoryList.add(0, TbCategory().apply {
                 name = "None"
             })
             filterList.add(0, TbCategory().apply {
                 name = "None"
-            })
+            })*/
         }
 
         categoryList.addAll(categoryModel)
