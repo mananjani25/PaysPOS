@@ -26,8 +26,10 @@ import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.model.responseModel.GetFloorPlanResponse
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.LOCATION_ID
+import com.android.pos.data.remote.Constants.ORDER_TYPE_NAME
 import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.databinding.FragmentDineInOrderTableBinding
 import com.android.pos.di.PrefProvider
@@ -101,9 +103,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         dineInTableAdapter = DineInTableAdapter()
         binding.rvItemList.adapter = dineInTableAdapter
         dineInTableAdapter.setListner(this)
-
-
-
 
 
 
@@ -322,6 +321,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 dineInTableAdapter.getList().toCollection(arrayListOf())
             )
 
+            prefProvider.setValue(Constants.ORDER_TYPE, DINE_IN)
+            prefProvider.setValue(ORDER_TYPE_NAME, DINE_IN)
 
             findNavController().navigate(
                 R.id.action_dineInOrderTable_to_dashboardCategoryNew,
