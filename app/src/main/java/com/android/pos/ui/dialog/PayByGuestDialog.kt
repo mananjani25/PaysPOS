@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -61,6 +62,7 @@ class PayByGuestDialog : DialogFragment(), View.OnClickListener {
     private var totalServiceCharge: Double = 0.0
     private var isTotalPayment: Boolean = false
     private var paymentAmount: Double = 0.0
+
     private var guestId: Int = 0
     private var guestRequestModel: GuestPaymentRequest? = null
     private var floorPlanModel: GetFloorPlanResponse.Data.FloorPlanTable? = null
@@ -109,6 +111,7 @@ class PayByGuestDialog : DialogFragment(), View.OnClickListener {
 
         } else {
             floorPlanModel = arguments?.getParcelable("floorPlan")
+            orderId = arguments?.getInt("orderId")
 
             cartList = requireArguments().getParcelable("cartList")
             guestId = requireArguments().getInt("id")
@@ -127,7 +130,9 @@ class PayByGuestDialog : DialogFragment(), View.OnClickListener {
                         findNavController().navigate(R.id.action_payByGuestDialog_to_dashboardCategoryNew)
 
                     } else {
-                        findNavController().navigate(R.id.action_payByGuestDialog_to_dineInOrderTable)
+                        val bundle = bundleOf("orderId" to orderId, "isGuestPaid" to true)
+
+                        findNavController().navigate(R.id.action_payByGuestDialog_to_dineInOrderTable,bundle)
                     }
 
                 }
@@ -410,7 +415,7 @@ class PayByGuestDialog : DialogFragment(), View.OnClickListener {
 
                 AlertUtils.showCustomAlertWithListenerWithOK(requireContext(), str) { _, _ ->
 
-                    dismiss()
+
 
 
 
@@ -420,6 +425,7 @@ class PayByGuestDialog : DialogFragment(), View.OnClickListener {
                         val bundle = Bundle()
                         bundle.putBoolean("isGuestPaid", true)
                         bundle.putParcelable("floorPlan", floorPlanModel)
+                        orderId?.let { bundle.putInt("orderId", it) }
 
                         findNavController().navigate(
                             R.id.action_payByGuestDialog_to_dineInOrderTable,

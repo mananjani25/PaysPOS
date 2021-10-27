@@ -81,11 +81,13 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             var guestAmt = 0.0
             var isPaid = true
             var isAllFired = true
+            var noItem = true
 
             for (i in position + 1 until list.size) {
 
                 if (list.get(i).isHeader == 1) {
 
+                    noItem = false
                     list.get(i).item?.let {
                         if (!it.isPaid) {
                             guestAmt += (it.itemQuantity * it.price) - it.discountPrice
@@ -105,8 +107,6 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                             isAllFired = false
 
                         }
-
-
                     }
 
 
@@ -127,13 +127,21 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
             }
 
-            if (isPaid) {
+            if (isPaid && !noItem) {
+
                 binding.btnPay.visibility = View.GONE
                 binding.btnPaid.visibility = View.VISIBLE
 
+            } else if (noItem) {
+                binding.btnPaid.visibility = View.GONE
+                binding.btnPay.visibility = View.GONE
+
+
             } else {
                 binding.btnPay.visibility = View.VISIBLE
+
                 binding.btnPaid.visibility = View.INVISIBLE
+
             }
             if (layoutPosition == 0) {
                 binding.btnPay.visibility = View.GONE
@@ -143,7 +151,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 // binding.txtTotal.visibility = View.VISIBLE
             }
 
-            if (isAllFired) {
+            if (isAllFired && !noItem) {
                 binding.chkIsFired.isChecked = true
                 binding.chkIsFired.isPressed = true
                 binding.chkIsFired.isEnabled = false

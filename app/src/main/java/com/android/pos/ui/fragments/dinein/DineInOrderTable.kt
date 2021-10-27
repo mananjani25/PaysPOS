@@ -109,9 +109,17 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         if (arguments?.getBoolean("isFromFloor") == true || arguments?.getBoolean("isGuestPaid") == true) {
             floorPlanModel = arguments?.getParcelable("floorPlan")
             Log.e(TAG, "GetOrderId   ${floorPlanModel?.currentOrderDetails?.orderId}")
-            orderId = floorPlanModel?.currentOrderDetails?.orderId
-            floorPlanModel?.currentOrderDetails?.orderId?.let { viewModel.apiCallOrderDetails(it) }
-            binding.txtTitle.setText("" + floorPlanModel?.tableName)
+
+            if (floorPlanModel == null) {
+                orderId = arguments?.getInt("orderId")
+                Log.e(TAG, "getFinalorderId:  ${orderId}")
+                orderId?.let { viewModel.apiCallOrderDetails(it) }
+
+            } else {
+                orderId = floorPlanModel?.currentOrderDetails?.orderId
+                floorPlanModel?.currentOrderDetails?.orderId?.let { viewModel.apiCallOrderDetails(it) }
+                binding.txtTitle.setText("" + floorPlanModel?.tableName)
+            }
 
 
         } else {
@@ -256,9 +264,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             // subTotal += dineInTableAdapter.getList().get(0).guestDividedAmt
 
             var total = subTotal + totalTax
-            Log.e(TAG, "totalTotal:  ${total}")
-            Log.e(TAG, "totalSub: ${subTotal}")
-            Log.e(TAG, "totalTotalTax: ${totalTax}")
+
 
             var model = GuestPaymentRequest(
                 PaymentAttributes().apply {
@@ -292,6 +298,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             bundle.putDouble("totalDiscount", 0.0)
             bundle.putBoolean("isTotalPayment", true)
             bundle.putBoolean("isLastPayment", true)
+
             orderId?.let { it1 -> bundle.putInt("orderId", it1) }
 
 
@@ -712,6 +719,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         bundle.putDouble("totalTax", totalTax)
         bundle.putParcelable("model", model)
         bundle.putParcelable("floorPlan", floorPlanModel)
+        orderId?.let { bundle.putInt("orderId", it) }
 
         var wholeTableAmt = 0.0
         var paidAmount = 0.0
