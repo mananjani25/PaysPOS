@@ -79,6 +79,13 @@ class PaymentViewModel @Inject constructor(
 
                             resource.data?.let { createOrderResponse ->
 
+                                if (orderRequestModel.order.openOrderType == Constants.OPEN_ORDER) {
+                                    prefProvider.setValue(Constants.ORDER_TYPE, "")
+                                    prefProvider.setValue(Constants.CUSTOMER_NAME, "")
+                                    prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
+                                    posRepository.deleteCart()
+                                }
+
                                 if (onlySave) {
                                     _data.value = Event(createOrderResponse)
                                 } else {
