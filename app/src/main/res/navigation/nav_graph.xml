@@ -568,7 +568,6 @@
             app:destination="@id/assignTeamMemberListDialog" />
     </fragment>
     <fragment
-
         android:id="@+id/paymentFragment"
         android:name="com.android.pos.ui.fragments.payment.PaymentFragment"
         android:label="PaymentFragment">
@@ -585,8 +584,7 @@
             app:destination="@id/customAmountFragment" />
         <action
             android:id="@+id/action_paymentFragment_to_orderCompleteFragment"
-            app:destination="@id/orderCompleteFragment"
-             />
+            app:destination="@id/orderCompleteFragment" />
         <action
             android:id="@+id/action_paymentFragment_to_addTipsDialog"
             app:destination="@id/addTipsDialog" />
