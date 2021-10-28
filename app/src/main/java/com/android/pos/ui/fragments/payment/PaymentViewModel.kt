@@ -573,7 +573,7 @@ class PaymentViewModel @Inject constructor(
                     orderItemsAttribute.discountId = item.discountId
                 orderItemsAttribute.employeeId = cartModel.employeeID
                 orderItemsAttribute.isCount = 0
-                orderItemsAttribute.isEdited = false
+                orderItemsAttribute.isEdited = item.isEdited
                 orderItemsAttribute.isPaid = false
                 orderItemsAttribute.isPrinted = true
                 orderItemsAttribute.isTaxRemoved = false
@@ -627,7 +627,7 @@ class PaymentViewModel @Inject constructor(
                 orderItemsAttribute.discountId = item.discountId
             orderItemsAttribute.employeeId = cartModel.employeeID
             orderItemsAttribute.isCount = 0
-            orderItemsAttribute.isEdited = false
+            orderItemsAttribute.isEdited = item.isEdited
             orderItemsAttribute.isPaid = false
             orderItemsAttribute.isPrinted = true
             orderItemsAttribute.isTaxRemoved = false

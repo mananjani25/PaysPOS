@@ -60,6 +60,7 @@ class TbItem : Parcelable {
     var isFired: Boolean = false
     var timeStamp: String? = null
     var isPaid: Boolean = false
+    var isEdited: Boolean = false
 
     fun convertToItem(item: Item, category: Category?): TbItem {
         itemId = item.id

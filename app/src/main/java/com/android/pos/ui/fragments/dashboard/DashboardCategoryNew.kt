@@ -1367,7 +1367,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         data.discountPrice = discountPrice
                     }
 
-
                 }
 
 
@@ -1396,17 +1395,26 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         viewModel.cartLogic(cartList, data, ADD)
                     }
                 } else
-                    if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
-                        cartList.get(0).orderType = DINE_IN
-                        val dineInList = dineInCartAdapter.getList()
-                        dineInList.get(0).selectedPosition = dineInCartAdapter.getHeaderPosition()
-                        // dineInList.get(dineInCartAdapter.getHeaderPosition()).items.add(data)
-                        viewModel.cartLogic(cartList, data, UPDATE, dineInList = dineInList)
 
-                    } else {
-
-                        viewModel.cartLogic(cartList, data, UPDATE)
+                    Log.e(TAG,"isOrderUpdate $isOrderUpdate")
+                    Log.e(TAG,"data.isEdited ${data.isEdited}")
+                    if (isOrderUpdate) {
+                        //for open order and edit item
+                        //only if item is edited
+                        data.isEdited = true
                     }
+
+                if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
+                    cartList.get(0).orderType = DINE_IN
+                    val dineInList = dineInCartAdapter.getList()
+                    dineInList.get(0).selectedPosition = dineInCartAdapter.getHeaderPosition()
+                    // dineInList.get(dineInCartAdapter.getHeaderPosition()).items.add(data)
+                    viewModel.cartLogic(cartList, data, UPDATE, dineInList = dineInList)
+
+                } else {
+
+                    viewModel.cartLogic(cartList, data, UPDATE)
+                }
             } else {
                 AlertUtils.showCustomAlert(
                     binding.root.context,
@@ -1766,6 +1774,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                         } else {
                             viewModel.deleteCart()
+                            Log.e(TAG,"isOrderUpdate 1777 $isOrderUpdate")
                             isOrderUpdate = false
 
                             if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
@@ -2509,7 +2518,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     bundle.putDouble("totalPrice", baseResponse.order.totalAmount)
                     bundle.putParcelable("cartList", cartList[0])
                     bundle.putParcelable("dineInList", baseResponse)
-                    bundle.putBoolean("isGuestPaid",false)
+                    bundle.putBoolean("isGuestPaid", false)
                     bundle.putInt("orderId", baseResponse.order.id)
 
 
@@ -2549,6 +2558,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 Log.e(TAG, "getstr:   $status")
 
                 viewModel.deleteCart()
+                Log.e(TAG,"isOrderUpdate 2560 $isOrderUpdate")
                 isOrderUpdate = false
 
                 if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {

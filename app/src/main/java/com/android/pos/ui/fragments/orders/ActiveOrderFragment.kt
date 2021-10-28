@@ -164,7 +164,6 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
                     )
                 }
 
-
                 dashboardViewModel.addCart(
                     cartModel(order)
                 )
@@ -275,7 +274,6 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
                     discountId = it.discountId
                 if (it.order_item_variation != null)
                     variationsAttributes = variationAtt(it.order_item_variation)
-
             }
 
             inventoryModelList.add(items)
