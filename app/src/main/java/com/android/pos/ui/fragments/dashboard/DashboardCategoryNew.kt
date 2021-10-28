@@ -293,10 +293,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 cartModel.orderType = DINE_IN
 
 
+                 cartList.add(cartModel)
 
-                cartList.add(cartModel)
-
-                viewModel.cartLogic(cartList, null, ADD, dineInList = dineInList)
+                 viewModel.cartLogic(cartList, null, ADD, dineInList = dineInList)
 
             }
 
@@ -2470,7 +2469,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     bundle.putDouble("totalPrice", baseResponse.order.totalAmount)
                     bundle.putParcelable("cartList", cartList[0])
                     bundle.putParcelable("dineInList", baseResponse)
-                    bundle.putBoolean("isGuestPaid",false)
+                    bundle.putBoolean("isGuestPaid", false)
                     bundle.putInt("orderId", baseResponse.order.id)
 
 
