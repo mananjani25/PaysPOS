@@ -35,6 +35,7 @@ class CartModel : Parcelable {
 
     var discountPrice: Double = 0.0
     var discountType: String = ""
+    var discountId: Int? = null
     var isFired: Boolean = true
 
 }

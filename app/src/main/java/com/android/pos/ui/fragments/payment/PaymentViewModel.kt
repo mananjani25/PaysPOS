@@ -324,7 +324,8 @@ class PaymentViewModel @Inject constructor(
             MethodUtils.roundOffAmountDouble(totalPrice) - MethodUtils.roundOffAmountDouble(
                 tipAmount
             )
-        // orderAttributeRequestModel.totalCashDiscount = 0.0
+        if (cartModel.discountId != null && cartModel.discountId != -1)
+            orderAttributeRequestModel.discount_id = cartModel.discountId
         orderAttributeRequestModel.totalDiscount = totalDiscount
         orderAttributeRequestModel.totalServiceCharges =
             MethodUtils.roundOffAmountDouble(totalServiceCharge)

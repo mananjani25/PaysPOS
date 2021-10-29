@@ -255,6 +255,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 if (cartList.isNotEmpty()) {
                     cartList[0].discountPrice = orderDiscount
                     cartList[0].discountType = result.discountType
+                    if (result.id != -1) {
+                        cartList[0].discountId = result.id
+                    }
                     viewModel.addCart(cartList[0])
                 }
             }
@@ -302,6 +305,11 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         categoryItemAdapter1 = CategoryItemAdapter1(requireContext(), itemList1, this)
         binding.rvPagerCategory.adapter = categoryItemAdapter1
 
+    }
+
+    override fun onPause() {
+        super.onPause()
+        ProgressUtils.dismissProgressDialog()
     }
 
     private fun removeCustomerViewSet() {
