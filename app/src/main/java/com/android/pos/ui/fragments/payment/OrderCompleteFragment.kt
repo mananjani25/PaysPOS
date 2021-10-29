@@ -8,6 +8,7 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
@@ -188,6 +189,19 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
             viewModel.deleteCart()
         }
+
+        val callback: OnBackPressedCallback =
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    if (!isSpilt) {
+                        moveToDashboard()
+                    }
+
+                }
+
+            }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+
     }
 
     override fun onClick(v: View?) {
