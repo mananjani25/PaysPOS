@@ -27,6 +27,7 @@ import com.android.pos.data.model.responseModel.GetFloorPlanResponse
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
+import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
@@ -356,7 +357,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 }
 
 
-
             }
 
             Log.e(TAG, "DineInnewList:   ${Gson().toJson(newList)}")
@@ -368,14 +368,16 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 "dine_in_list",
                 newList
             )
+            orderId?.let { it1 -> bundle.putInt("orderId", it1) }
 
+            prefProvider.setValueboolean(DINE_IN_UPDATE, true)
             prefProvider.setValue(Constants.ORDER_TYPE, DINE_IN)
             prefProvider.setValue(ORDER_TYPE_NAME, DINE_IN)
             prefProvider.setValueInt(Constants.DINE_IN_TABLE_ID, 2)
             prefProvider.setValueboolean(Constants.DINE_IN_STATUS, true)
-         /*   prefProvider.setValue(Constants.ORDER_TYPE, DINE_IN)
-            prefProvider.setValue(ORDER_TYPE_NAME, DINE_IN)
-            prefProvider.setValueInt(ORDER_TYPE_ID, 2)*/
+            /*   prefProvider.setValue(Constants.ORDER_TYPE, DINE_IN)
+               prefProvider.setValue(ORDER_TYPE_NAME, DINE_IN)
+               prefProvider.setValueInt(ORDER_TYPE_ID, 2)*/
 
             findNavController().navigate(
                 R.id.action_dineInOrderTable_to_dashboardCategoryNew,
@@ -1023,6 +1025,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                     item.discountType = it.discountType
 
                                     item.name = it.itemName
+                                    item.categoryId = it.categoryId
+                                    item.itemId = it.itemId
+
 
                                     if (it.orderItemModifiers.isNotEmpty()) {
                                         var modifiers: ArrayList<Modifier> = arrayListOf()
@@ -1094,9 +1099,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         //model.isPaid = listTbItem.get(0).isPaid
 
                         model.title = baseResponse.guestAttributes.get(i).name
-
-                        Log.e(TAG, "GuestItemName  ${baseResponse.guestAttributes.get(i).id}")
-
                         model.isHeader = 0
 
 
@@ -1111,6 +1113,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                     if (it.timestamp == guestItem[j].timestamp) {
                                         totalGuestPrice += it.price * it.quantity
                                         model.isPaid = it.isPaid
+
 
 
                                         if (it.orderItemModifiers.isNotEmpty()) {
@@ -1167,6 +1170,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                     item.discountType = it.discountType
 
                                     item.name = it.itemName
+                                    item.itemId = it.itemId
+                                    item.categoryId = it.categoryId
 
 
 
