@@ -40,6 +40,7 @@ import com.android.pos.data.remote.Constants.CUSTOMER_NAME
 import com.android.pos.data.remote.Constants.DELETE
 import com.android.pos.data.remote.Constants.DIALOG_KEY_VARIATION_DETAILS
 import com.android.pos.data.remote.Constants.DINE_IN
+import com.android.pos.data.remote.Constants.DINE_IN_LIST_EDIT
 import com.android.pos.data.remote.Constants.DINE_IN_STATUS
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 
@@ -263,39 +264,33 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             Log.e(TAG, "dineInListEditOrder:  ${Gson().toJson(dineInList)}")
             if (dineInList?.isNotEmpty() == true) {
                 binding.layoutCart.txtOrderType.setText("Dine In")
-                val listDineInNew: ArrayList<DineInModel> = arrayListOf()
-
-
-                var listTbItems: ArrayList<TbItem> = arrayListOf()
-                for (i in 0 until dineInList.size) {
-
-                    if (dineInList.get(i).isHeader == 1) {
-                        dineInList.get(i).item?.let { listTbItems.add(it) }
-
-
-                    } else {
-                        listTbItems.clear()
-                        listTbItems = arrayListOf()
-                    }
-
-                }
-
 
                 dineInCartAdapter = DineInAdapter()
-                binding.layoutCart.rvCartDineIn.adapter = dineInCartAdapter
                 dineInCartAdapter.setListner(this)
-                dineInCartAdapter.setList(dineInList)
-                val cartModel = CartModel()
-                cartModel.terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
-                cartModel.employeeID = prefProvider.getValueInt(EMPLOYEE_ID, 0)
-                cartModel.orderTypeId = 2
-                cartModel.orderTypeName = DINE_IN
-                cartModel.orderType = DINE_IN
+                //dineInCartAdapter.setList(dineInList)
 
 
-                 cartList.add(cartModel)
+                if (cartList.isEmpty()) {
+                    val cartModel = CartModel().apply {
+                        terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
+                        employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
+                        locationId = prefProvider.getValueInt(Constants.LOCATION_ID, -1)
+                        orderTypeId = 2
+                        orderType = DINE_IN
+                        orderTypeName = DINE_IN
 
-                 viewModel.cartLogic(cartList, null, ADD, dineInList = dineInList)
+                        serviceCharge = serviceChargesList
+
+                    }
+                    cartList.add(cartModel)
+                }
+
+                prefProvider.setValue(ORDER_TYPE, DINE_IN)
+                prefProvider.setValue(ORDER_TYPE_NAME, DINE_IN)
+                prefProvider.setValueInt(ORDER_TYPE_ID, 2)
+
+                Log.e(TAG,"PassedDineInListSize  ${dineInList.size}")
+                viewModel.cartLogic(cartList, null, ADD, dineInList = dineInList)
 
             }
 
@@ -430,6 +425,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             binding.layoutCart.rvCart.visibility = View.GONE
                             binding.layoutCart.rvCartDineIn.visibility = View.VISIBLE
                             binding.layoutCart.llPayment.visibility = View.VISIBLE
+                            Log.e(TAG, "GotAddedDineIn ${cartList[0].dineInList?.size}")
 
                             cartList.get(0).dineInList?.toCollection(
                                 arrayListOf()
@@ -546,6 +542,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 if (requireArguments().getBoolean("isFromDineIn")) {
                     getDineInCartList()
                 } else if (arguments?.getBoolean("is_dine_in_edit") == true) {
+                    Log.e(TAG, "is_dine_in_edit_true")
                     checkDineInEditOrder()
                 }
 
@@ -1020,6 +1017,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         val txtDiscount: AppCompatTextView = popupView.findViewById(R.id.txtDiscount)
         val txtTotalAmount: AppCompatTextView = popupView.findViewById(R.id.txtTotalAmount)
         val txtTotalTax: AppCompatTextView = popupView.findViewById(R.id.txtTotalTax)
+        Log.e(TAG, "subTotalPrice:   ${viewModel.subTotalPrice - (cartList[0].discountPrice)}")
 
         txtSubTotal.text = "$" + String.format(
             "%.2f",
@@ -1737,6 +1735,16 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                                     0
                                 ), "Available"
                             )
+                            viewModel.deleteCart()
+                            isOrderUpdate = false
+
+                            if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
+                                prefProvider.setValue(ORDER_TYPE, "")
+                            }
+                            binding.layoutCart.txtSave.text = getString(R.string.save)
+                            clearCustomer()
+                            hideOrderType()
+                            hideOrderMenu()
 
                         } else {
                             viewModel.deleteCart()

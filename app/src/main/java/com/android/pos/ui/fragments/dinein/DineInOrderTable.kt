@@ -29,6 +29,7 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.LOCATION_ID
+import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
 import com.android.pos.data.remote.Constants.ORDER_TYPE_NAME
 import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.databinding.FragmentDineInOrderTableBinding
@@ -200,6 +201,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
     private fun onClick() {
 
+        binding.txtFloorPlan.setOnClickListener {
+            findNavController().navigate(R.id.action_dineInOrderTable_to_dineInFragment)
+
+        }
+
         binding.txtFireAll.setOnClickListener {
             val list = dineInTableAdapter.getList()
             val ids: MutableList<Int> = ArrayList()
@@ -301,9 +307,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             orderId?.let { it1 -> bundle.putInt("orderId", it1) }
 
-
-
-
             findNavController().navigate(
                 R.id.action_dineInOrderTable_to_payByGuestDialog,
                 bundle
@@ -321,15 +324,58 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         }
 
         binding.txtEditOrder.setOnClickListener {
+            val list = dineInTableAdapter.getList()
+            val newList: ArrayList<DineInModel> = arrayListOf()
+
+
+            for (i in 0 until list.size) {
+                val model = DineInModel()
+                if (list[i].isHeader == 0) {
+                    val listTbItem: ArrayList<TbItem> = arrayListOf()
+                    model.id = list[i].id
+                    model.isPaid = list[i].isPaid
+                    model.title = list[i].title
+                    model.isFired = list[i].isFired
+                    model.guestDividerAmt = list[i].guestDividerAmt
+                    model.guestDividedAmt = list[i].guestDividedAmt
+
+
+                    for (j in i + 1 until list.size) {
+                        if (list[j].isHeader == 1) {
+                            list[j].item?.let { it1 -> listTbItem.add(it1) }
+
+                        } else {
+                            break
+                        }
+
+                    }
+                    model.items = listTbItem
+                    newList.add(model)
+
+
+                }
+
+
+
+            }
+
+            Log.e(TAG, "DineInnewList:   ${Gson().toJson(newList)}")
+
+
             val bundle = Bundle()
             bundle.putBoolean("is_dine_in_edit", true)
             bundle.putParcelableArrayList(
                 "dine_in_list",
-                dineInTableAdapter.getList().toCollection(arrayListOf())
+                newList
             )
 
             prefProvider.setValue(Constants.ORDER_TYPE, DINE_IN)
             prefProvider.setValue(ORDER_TYPE_NAME, DINE_IN)
+            prefProvider.setValueInt(Constants.DINE_IN_TABLE_ID, 2)
+            prefProvider.setValueboolean(Constants.DINE_IN_STATUS, true)
+         /*   prefProvider.setValue(Constants.ORDER_TYPE, DINE_IN)
+            prefProvider.setValue(ORDER_TYPE_NAME, DINE_IN)
+            prefProvider.setValueInt(ORDER_TYPE_ID, 2)*/
 
             findNavController().navigate(
                 R.id.action_dineInOrderTable_to_dashboardCategoryNew,

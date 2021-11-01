@@ -19,6 +19,7 @@ import com.android.pos.data.remote.Constants.BUSINESS_PHONE_NO
 import com.android.pos.data.remote.Constants.BUSINESS_WEBSITE
 import com.android.pos.data.remote.Constants.DELETE
 import com.android.pos.data.remote.Constants.DINE_IN
+import com.android.pos.data.remote.Constants.DINE_IN_LIST_EDIT
 import com.android.pos.data.remote.Constants.UPDATE
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.TaxServiceChargeRepository
@@ -294,6 +295,12 @@ class DashBoardCategoryViewModel @Inject constructor(
                             dineInList.get(0).selectedPosition
                         )
                     )*/
+                } else if (type == DINE_IN_LIST_EDIT) {
+                    cartModel.orderTypeName = DINE_IN
+                    cartModel.orderType = DINE_IN
+                    cartModel.dineInList = dineInList
+                    addCart(cartModel)
+
                 }
 
 
