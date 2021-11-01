@@ -2,5 +2,5 @@ package com.android.pos.data.model.requestModel
 
 data class SpitByOrderPaymentModel(
 
-    var payments_attributes: PaymentAttributes
+    var payments_attributes: List<PaymentAttributes> = emptyList()
 )

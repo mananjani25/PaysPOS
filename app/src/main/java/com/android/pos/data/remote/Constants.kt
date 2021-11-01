@@ -289,4 +289,5 @@ object Constants {
     const val TIP = "Tips"
     const val DISCOUNT = "Discounts"
     const val AMT_COLLECTED = "Amount Collected"
+    const val SYNC_DATA = "SyncData"
 }

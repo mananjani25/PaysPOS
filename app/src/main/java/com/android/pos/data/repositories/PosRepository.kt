@@ -11,9 +11,7 @@ import com.android.pos.data.entities.ModifierSet
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.ApiHelper
-import com.android.pos.utils.performGetOperation
-import com.android.pos.utils.performGetOperationDatabase
-import com.android.pos.utils.performGetOperationNew
+import com.android.pos.utils.*
 import com.android.pos.utils.statusUtils.Resource
 import com.google.gson.Gson
 import javax.inject.Inject
@@ -96,60 +94,63 @@ class PosRepository @Inject constructor(
     suspend fun syncVenueDetails() = apiHelperNew.syncVenueDetails()
 
 
-    fun venueDataLocal() = performGetOperation(
+    suspend fun syncInventory() = apiHelperNew.syncVenueData()
+
+
+    fun venueDataLocal() = performGetOperationDatabase(
         databaseQuery = { appDatabase.categoryDao().categoryWithInventory()!! },
-        networkCall = { apiHelperNew.syncVenueData() },
-        saveCallResult = { response ->
-            val mData = response.data
-            val mCategory = mData.categories
-            val categoryModelList = ArrayList<TbCategory>()
-            val inventoryModelList = ArrayList<TbItem>()
-            val modifierSetList = ArrayList<ModifierSet>()
-            val itemModifierSetList = ArrayList<ItemModifierSets>()
-            mCategory.forEach { category ->
-                val model = TbCategory().apply {
-                    createdAt = ""
-                    id = category.id
-                    active = category.active
-                    name = category.name
-                    sort = category.sort
-                    updatedAt = ""
-                    locationId = category.locationId
-                    item_ids = category.itemIds
-                    thumbImgUrl = category.thumbImgUrl
-                    originalImgUrl = category.originalImgUrl
-                }
-                categoryModelList.add(model)
+    )
 
-                category.items.forEach {
+    suspend fun saveDatabase(response: VenueDataResponse) {
+        val mData = response.data
+        val mCategory = mData.categories
+        val categoryModelList = ArrayList<TbCategory>()
+        val inventoryModelList = ArrayList<TbItem>()
+        val modifierSetList = ArrayList<ModifierSet>()
+        val itemModifierSetList = ArrayList<ItemModifierSets>()
+        mCategory.forEach { category ->
+            val model = TbCategory().apply {
+                createdAt = ""
+                id = category.id
+                active = category.active
+                name = category.name
+                sort = category.sort
+                updatedAt = ""
+                locationId = category.locationId
+                item_ids = category.itemIds
+                thumbImgUrl = category.thumbImgUrl
+                originalImgUrl = category.originalImgUrl
+            }
+            categoryModelList.add(model)
 
-                    val items = TbItem().convertToItem(it, category)
+            category.items.forEach {
 
-                    it.modifierSets.forEach { modifierSets ->
+                val items = TbItem().convertToItem(it, category)
 
-                        val itemModifierSets = ItemModifierSets().apply {
-                            itemId = it.id
-                            modifierSetId = modifierSets.id!!
-                            minRequired = modifierSets.min_required
-                            maxAllowed = modifierSets.max_allowed
-                        }
+                it.modifierSets.forEach { modifierSets ->
 
-                        itemModifierSetList.add(itemModifierSets)
+                    val itemModifierSets = ItemModifierSets().apply {
+                        itemId = it.id
+                        modifierSetId = modifierSets.id!!
+                        minRequired = modifierSets.min_required
+                        maxAllowed = modifierSets.max_allowed
                     }
 
-                    modifierSetList.addAll(it.modifierSets)
-
-                    inventoryModelList.add(items)
+                    itemModifierSetList.add(itemModifierSets)
                 }
-            }
 
-            appDatabase.categoryDao().addAll(categoryModelList)
-            appDatabase.itemDao().addAllItem(inventoryModelList)
-            appDatabase.modifierSetDao().addAll(modifierSetList)
-            appDatabase.itemModifierSetsDao().addAll(itemModifierSetList)
-            appDatabase.optionSetDao().addAll(mData.optionSets)
+                modifierSetList.addAll(it.modifierSets)
+
+                inventoryModelList.add(items)
+            }
         }
-    )
+
+        appDatabase.categoryDao().addAll(categoryModelList)
+        appDatabase.itemDao().addAllItem(inventoryModelList)
+        appDatabase.modifierSetDao().addAll(modifierSetList)
+        appDatabase.itemModifierSetsDao().addAll(itemModifierSetList)
+        appDatabase.optionSetDao().addAll(mData.optionSets)
+    }
 
     fun getCategoryList() =
         performGetOperation(databaseQuery = { appDatabase.categoryDao().all() },

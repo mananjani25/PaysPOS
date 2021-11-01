@@ -42,7 +42,6 @@ import com.android.pos.data.remote.Constants.CUSTOMER_NAME
 import com.android.pos.data.remote.Constants.DELETE
 import com.android.pos.data.remote.Constants.DIALOG_KEY_VARIATION_DETAILS
 import com.android.pos.data.remote.Constants.DINE_IN
-import com.android.pos.data.remote.Constants.DINE_IN_LIST_EDIT
 import com.android.pos.data.remote.Constants.DINE_IN_STATUS
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
 import com.android.pos.data.remote.Constants.HORIZONTAL
@@ -177,6 +176,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        observeShowProgress()
+        syncData()
         hideOrderType()
         setupAdapter()
         setVenueData()
@@ -184,7 +185,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         onClick()
         getOrderTypes()
         getServiceCharges()
-        observeShowProgress()
         setupSnackbar()
         getBackstack()
         swipeListener()
@@ -267,6 +267,13 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     }
 
+    private fun syncData() {
+
+        val sync = prefProvider.getValueboolean(Constants.SYNC_DATA, false)
+        if (!sync)
+            viewModel.syncInventoryModule()
+    }
+
     private fun checkDineInEditOrder() {
         if (arguments?.getBoolean("is_dine_in_edit") == true) {
             var dineInList = arguments?.getParcelableArrayList<DineInModel>("dine_in_list")
@@ -298,7 +305,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 prefProvider.setValue(ORDER_TYPE_NAME, DINE_IN)
                 prefProvider.setValueInt(ORDER_TYPE_ID, 2)
 
-                Log.e(TAG,"PassedDineInListSize  ${dineInList.size}")
+                Log.e(TAG, "PassedDineInListSize  ${dineInList.size}")
                 viewModel.cartLogic(cartList, null, ADD, dineInList = dineInList)
 
             }
@@ -624,6 +631,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private fun onClick() {
         binding.layoutMenu.imgOptionMenu.setOnClickListener {
             showPopup(binding.layoutMenu.imgOptionMenu)
+        }
+
+        binding.layoutMenu.imgSync.setOnClickListener {
+            viewModel.syncInventoryModule()
         }
 
         binding.footer.linearMore.setOnClickListener {
@@ -1418,13 +1429,13 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     }
                 } else
 
-                    Log.e(TAG,"isOrderUpdate $isOrderUpdate")
-                    Log.e(TAG,"data.isEdited ${data.isEdited}")
-                    if (isOrderUpdate) {
-                        //for open order and edit item
-                        //only if item is edited
-                        data.isEdited = true
-                    }
+                    Log.e(TAG, "isOrderUpdate $isOrderUpdate")
+                Log.e(TAG, "data.isEdited ${data.isEdited}")
+                if (isOrderUpdate) {
+                    //for open order and edit item
+                    //only if item is edited
+                    data.isEdited = true
+                }
 
                 if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
                     cartList.get(0).orderType = DINE_IN
@@ -1806,7 +1817,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                         } else {
                             viewModel.deleteCart()
-                            Log.e(TAG,"isOrderUpdate 1777 $isOrderUpdate")
+                            Log.e(TAG, "isOrderUpdate 1777 $isOrderUpdate")
                             isOrderUpdate = false
 
                             if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
@@ -2590,7 +2601,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 Log.e(TAG, "getstr:   $status")
 
                 viewModel.deleteCart()
-                Log.e(TAG,"isOrderUpdate 2560 $isOrderUpdate")
+                Log.e(TAG, "isOrderUpdate 2560 $isOrderUpdate")
                 isOrderUpdate = false
 
                 if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
