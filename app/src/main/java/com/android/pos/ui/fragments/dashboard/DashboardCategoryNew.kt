@@ -2589,7 +2589,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     var bundle = Bundle()
                     bundle.putParcelable("cartList", cartList[0])
                     bundle.putBoolean("isGuestPaid", false)
-                    orderId?.let { it1 -> bundle.putInt("orderId", it1) }
+
+                    cartList[0].orderId?.let { it1 -> bundle.putInt("orderId", it1) }
 
 
                     findNavController().navigate(
