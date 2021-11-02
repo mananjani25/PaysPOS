@@ -1954,10 +1954,15 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                 } else {
 
-                    findNavController().navigate(
-                        R.id.action_dashboardCategoryNew_to_paymentFragment,
-                        bundle
-                    )
+                    lifecycleScope.launchWhenStarted {
+                        if (findNavController().currentDestination?.id == R.id.dashboardCategoryNew) {
+
+                            findNavController().navigate(
+                                R.id.action_dashboardCategoryNew_to_paymentFragment,
+                                bundle
+                            )
+                        }
+                    }
                 }
 
             }
