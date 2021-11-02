@@ -27,7 +27,7 @@
             tools:text="Haka Nudal * 1, Dry Manchurian * 1" />
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/txtPartType"
+            android:id="@+id/txtPayType"
             style="@style/HistoryItemText"
             tools:text="Cash" />
 
@@ -36,11 +36,11 @@
             style="@style/HistoryItemText"
             tools:text="$48.75\n48" />
 
-        <androidx.appcompat.widget.AppCompatTextView
+       <!-- <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txtReorder"
             style="@style/HistoryItemText"
             android:textColor="@color/txt_color_blue"
-            tools:text="Reorder" />
+            tools:text="Reorder" />-->
 
     </LinearLayout>
 </layout>

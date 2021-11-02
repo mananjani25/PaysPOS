@@ -12,7 +12,7 @@ import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.TbCustomer
 import com.android.pos.databinding.FragmentCustomerDetailsBinding
-import com.android.pos.ui.adapter.SalesReportAdapter
+import com.android.pos.ui.adapter.OrderHistoryAdapter
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.EventObserver
 import com.android.pos.utils.ProgressUtils
@@ -21,14 +21,16 @@ import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.extensions.visible
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class CustomerDetails : Fragment() {
 
     private lateinit var binding: FragmentCustomerDetailsBinding
     lateinit var customerModel: TbCustomer
     val TAG = "CustomerDetails"
     private val viewModel by viewModels<CustomerListViewModel>()
-    private val salesReportAdapter by lazy { SalesReportAdapter() }
+    private val orderHistoryAdapter by lazy { OrderHistoryAdapter() }
 
     companion object {
         private val CUSTOMER_MODEL = "customer_model"
@@ -63,12 +65,16 @@ class CustomerDetails : Fragment() {
     }
 
     private fun initControls() {
+        binding.nestedScrollView.isNestedScrollingEnabled = false
+
         customerModel =
             requireArguments().getParcelable<TbCustomer>(
                 CUSTOMER_MODEL
             )!!
         binding.model = customerModel
         binding.executePendingBindings()
+
+        viewModel.customerId = customerModel.id.toString()
 
         Log.e(TAG, "CustomerDetails:  ${Gson().toJson(customerModel)}")
         binding.txtEdit.setOnClickListener {
@@ -86,7 +92,7 @@ class CustomerDetails : Fragment() {
             }
         }
 
-        binding.rvOrderHistory.adapter = salesReportAdapter
+        binding.rvOrderHistory.adapter = orderHistoryAdapter
     }
 
     private fun initObservers() {
@@ -101,13 +107,11 @@ class CustomerDetails : Fragment() {
             }
         })
         viewModel.orderHistory.observe(viewLifecycleOwner, EventObserver { data ->
-            data?.let {
-                if (it.salesSummary?.isNotEmpty() == true) {
-                    binding.llOrderHistory.visible()
-                    salesReportAdapter.add(it.salesSummary)
-                } else {
-                    binding.llOrderHistory.gone()
-                }
+            if (data?.isNotEmpty() == true) {
+                binding.llOrderHistory.visible()
+                orderHistoryAdapter.add(data)
+            } else {
+                binding.llOrderHistory.gone()
             }
         })
     }
