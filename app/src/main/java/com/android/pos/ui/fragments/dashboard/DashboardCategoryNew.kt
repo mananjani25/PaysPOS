@@ -370,8 +370,18 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         result.id?.let { prefProvider.setValueInt(CUSTOMER_ID, it) }
 
         if (isOrderUpdate) {
-            cartList[0].customer = assignCustomer
-            viewModel.addCart(cartList[0])
+            if (cartList.isEmpty()) {
+                val model = CartModel()
+                model.serviceCharge = viewModel.serviceChargesList
+
+                cartList.add(model)
+                cartList[0].customer = assignCustomer
+                viewModel.addCart(cartList[0])
+            }
+            else{
+                cartList[0].customer = assignCustomer
+                viewModel.addCart(cartList[0])
+            }
         }
         val openOrder = bundle.getBoolean("OPEN_ORDER")
         if (openOrder) {
