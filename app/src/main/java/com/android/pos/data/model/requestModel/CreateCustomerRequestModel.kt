@@ -17,13 +17,13 @@ data class CreateCustomerRequestModel(
         @SerializedName("company")
         var company: String = "",
         @SerializedName("birth_day")
-        var birth_day: String = "",
+        var birth_day: String? = "",
         @SerializedName("birth_month")
         var birth_month: String = "",
         @SerializedName("birthday_year")
         var birthday_year: String = "",
         @SerializedName("email")
-        var email: String = "",
+        var email: String? = "",
         @SerializedName("phones_attributes")
         var phones_attributes: ArrayList<Phone>? = arrayListOf(),
         @SerializedName("addresses_attributes")
