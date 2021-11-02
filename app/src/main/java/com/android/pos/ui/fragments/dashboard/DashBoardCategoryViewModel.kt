@@ -792,13 +792,18 @@ class DashBoardCategoryViewModel @Inject constructor(
                 var totalDiscount = 0.0
                 var totalAmount = 0.0
                 it.items.forEach { tb ->
+
+
                     listItems.add(
                         GuestItemsAttributes(
+
+                            id = if (tb.guestItemId != null && tb.guestItemId != 0){tb.guestItemId}else{null},
                             orderItemId = tb.orderItemId,
                             quantity = tb.itemQuantity,
                             itemId = tb.itemId,
                             amount = tb.price,
-                            timestamp = tb.timeStamp
+                            timestamp = tb.timeStamp,
+                            guestId = if (it.id != null && it.id != 0){it.id}else{null}
 
                         )
 
@@ -817,6 +822,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                 model.totalAmount = totalAmount
                 model.totalTax = totalTax
                 model.totalTips = totalTips
+                if (it.id != null && it.id != 0) {
+                    model.id = it.id
+                }
+
 
 
                 model.guestItemsAttributes = listItems
@@ -1196,7 +1205,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             orderServiceChargesAttributes =
                 orderServiceChargesAttributes(cartModel, subTotalPrice)
 
-            //  guestsAttributes = getGuestsAttributes(cartModel)
+            guestsAttributes = getGuestsAttributes(cartModel)
 
 
             /*var listTbItem: ArrayList<TbItem> = arrayListOf()
