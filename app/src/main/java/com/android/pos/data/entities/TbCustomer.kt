@@ -18,7 +18,7 @@ data class TbCustomer(
     @SerializedName("first_name") val first_name: String?,
     @SerializedName("last_name") val last_name: String?,
     @SerializedName("birth_date") val birth_date: String?,
-    @SerializedName("email") val email: String,
+    @SerializedName("email") val email: String?,
     @SerializedName("company") val company: String? = null,
     @TypeConverters(TypeConvertorPhone::class)
     @SerializedName("phones") val phones: List<TbPhones> = listOf(),

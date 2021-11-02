@@ -167,11 +167,18 @@ class AddEditCustomer : Fragment() {
             /*Log.e(TAG, "Date  ${getDay(editModel?.birth_date!!)}")
             Log.e(TAG, "Month  ${getMonth(editModel?.birth_date!!)}")
             Log.e(TAG, "Year  ${getYear(editModel?.birth_date!!)}")*/
-            viewModel.addCustomerDetails.value?.data?.birth_day = getDay(editModel?.birth_date!!)
-            viewModel.addCustomerDetails.value?.data?.birthday_year =
-                getYear(editModel?.birth_date!!)
-            viewModel.addCustomerDetails.value?.data?.birth_month =
-                getMonth(editModel?.birth_date!!)
+            viewModel.addCustomerDetails.value?.data?.birth_day = editModel?.birth_date?.let {
+                getDay(
+                    it
+                )
+            }
+            if (editModel?.birth_date != null)
+                viewModel.addCustomerDetails.value?.data?.birthday_year =
+                    getYear(editModel.birth_date)
+
+            if (editModel?.birth_date != null)
+                viewModel.addCustomerDetails.value?.data?.birth_month =
+                    getMonth(editModel.birth_date)
 
 
 
@@ -179,9 +186,7 @@ class AddEditCustomer : Fragment() {
                 viewModel.phoneNo.value =
                     AlertUtils.usNumberFormat(editModel?.phones?.get(0)?.phone_number!!).toString()
             }
-            if (editModel.email != null) {
-                viewModel.addCustomerDetails.value?.data?.email = editModel?.email
-            }
+            viewModel.addCustomerDetails.value?.data?.email = editModel.email
 
             if (editModel.addresses.isNotEmpty()) {
                 var list: ArrayList<CreateCustomerRequestModel.Customer.Addresses> = arrayListOf()

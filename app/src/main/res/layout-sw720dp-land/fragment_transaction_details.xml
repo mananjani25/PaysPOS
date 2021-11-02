@@ -405,7 +405,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/_3sdp"
-                        android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.payments.get(0).amount)}"
+                        android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.totalAmount)}"
                         android:textColor="@color/viewTextColor"
                         android:textSize="@dimen/_5mdpi" />
 
