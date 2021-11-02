@@ -37,6 +37,10 @@ import com.android.pos.data.model.DineInOrderDetailAttributes
 import com.android.pos.data.model.responseModel.GetFloorPlanResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ADD
+import com.android.pos.data.remote.Constants.BUNDLE_ORDER_ID
+import com.android.pos.data.remote.Constants.BUNDLE_ORDER_OFFLINE_ID
+import com.android.pos.data.remote.Constants.BUNDLE_PAYMENT_ID
+import com.android.pos.data.remote.Constants.BUNDLE_PAYMENT_OFFLINE_ID
 import com.android.pos.data.remote.Constants.CUSTOMER_ID
 import com.android.pos.data.remote.Constants.CUSTOMER_NAME
 import com.android.pos.data.remote.Constants.DELETE
@@ -47,6 +51,7 @@ import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
 
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
 import com.android.pos.data.remote.Constants.HORIZONTAL
+import com.android.pos.data.remote.Constants.IS_ORDER_UPDATE
 import com.android.pos.data.remote.Constants.MANUALSALE
 import com.android.pos.data.remote.Constants.OPEN_ORDER
 import com.android.pos.data.remote.Constants.ORDER_TYPE
@@ -134,13 +139,32 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         isOrderUpdate = requireArguments().getBoolean("update")
         if (isOrderUpdate) {
-            binding.layoutCart.txtSave.text = getString(R.string.update)
             orderId = requireArguments().getInt("orderId")
             paymentId = requireArguments().getInt("paymentId")
             paymentOfflineId = requireArguments().getString("paymentOfflineId").toString()
             orderOfflineId = requireArguments().getString("orderOfflineId").toString()
+
+            //save pref
+            prefProvider.setValueboolean(IS_ORDER_UPDATE, value = true)
+            prefProvider.setValueInt(BUNDLE_ORDER_ID, value = orderId ?: 0)
+            prefProvider.setValueInt(BUNDLE_PAYMENT_ID, value = paymentId ?: 0)
+            prefProvider.setValue(BUNDLE_PAYMENT_OFFLINE_ID, value = paymentOfflineId)
+            prefProvider.setValue(BUNDLE_ORDER_OFFLINE_ID, value = orderOfflineId)
+        } else {
+            //check pref
+            if (prefProvider.getValueboolean(IS_ORDER_UPDATE, defaultValue = false)) {
+                isOrderUpdate = true
+                orderId = prefProvider.getValueInt(BUNDLE_ORDER_ID, defaultValue = 0)
+                paymentId = prefProvider.getValueInt(BUNDLE_PAYMENT_ID, defaultValue = 0)
+                paymentOfflineId =
+                    prefProvider.getValue(BUNDLE_PAYMENT_OFFLINE_ID, defaultValue = "")
+                orderOfflineId = prefProvider.getValue(BUNDLE_ORDER_OFFLINE_ID, defaultValue = "")
+            }
         }
 
+        if (isOrderUpdate) {
+            binding.layoutCart.txtSave.text = getString(R.string.update)
+        }
 
         navigateDineInOrder()
         dineInUpdateOrder()
@@ -167,9 +191,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
                     requireActivity().finish()
-
                 }
-
             }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 
@@ -1177,6 +1199,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
 
                 } else {
+                    //check is_edited flag
+                    makeItemEdited(item)
 
                     viewModel.cartLogic(cartList, item, ADD)
                 }
@@ -1202,6 +1226,15 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         } else {
             orderTypeDialog()
         }
+    }
+
+    private fun makeItemEdited(item: TbItem) {
+        if (isOrderUpdate) {
+            //for open order and edit cart
+            item.isEdited = true
+        }
+        Log.e(TAG, "isOrderUpdate $isOrderUpdate")
+        Log.e(TAG, "data.isEdited ${item.isEdited}")
     }
 
     private fun orderTypeDialog() {
@@ -1424,6 +1457,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     viewModel.setServiceCharges(serviceChargesList)
                 }
 
+                //check is_edited flag
+                makeItemEdited(data)
+
                 if (isItemClick) {
 
                     if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
@@ -1436,26 +1472,18 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     } else {
                         viewModel.cartLogic(cartList, data, ADD)
                     }
-                } else
-
-                    Log.e(TAG, "isOrderUpdate $isOrderUpdate")
-                Log.e(TAG, "data.isEdited ${data.isEdited}")
-                if (isOrderUpdate) {
-                    //for open order and edit item
-                    //only if item is edited
-                    data.isEdited = true
-                }
-
-                if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
-                    cartList.get(0).orderType = DINE_IN
-                    val dineInList = dineInCartAdapter.getList()
-                    dineInList.get(0).selectedPosition = dineInCartAdapter.getHeaderPosition()
-                    // dineInList.get(dineInCartAdapter.getHeaderPosition()).items.add(data)
-                    viewModel.cartLogic(cartList, data, UPDATE, dineInList = dineInList)
-
                 } else {
+                    if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
+                        cartList.get(0).orderType = DINE_IN
+                        val dineInList = dineInCartAdapter.getList()
+                        dineInList.get(0).selectedPosition = dineInCartAdapter.getHeaderPosition()
+                        // dineInList.get(dineInCartAdapter.getHeaderPosition()).items.add(data)
+                        viewModel.cartLogic(cartList, data, UPDATE, dineInList = dineInList)
 
-                    viewModel.cartLogic(cartList, data, UPDATE)
+                    } else {
+
+                        viewModel.cartLogic(cartList, data, UPDATE)
+                    }
                 }
             } else {
                 AlertUtils.showCustomAlert(
@@ -1828,6 +1856,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             viewModel.deleteCart()
                             Log.e(TAG, "isOrderUpdate 1777 $isOrderUpdate")
                             isOrderUpdate = false
+                            prefProvider.setValueboolean(IS_ORDER_UPDATE, false)
 
                             if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
                                 prefProvider.setValue(ORDER_TYPE, "")
@@ -2631,6 +2660,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 viewModel.deleteCart()
                 Log.e(TAG, "isOrderUpdate 2560 $isOrderUpdate")
                 isOrderUpdate = false
+                prefProvider.setValueboolean(IS_ORDER_UPDATE, false)
 
                 if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
                     prefProvider.setValue(ORDER_TYPE, "")

@@ -44,6 +44,11 @@ object Constants {
     const val LARGE = "large"
     const val PERCENTAGE = "Percentage"
     const val AMOUNT = "Amount"
+    const val IS_ORDER_UPDATE = "isOrderUpdate"
+    const val BUNDLE_ORDER_ID = "BUNDLE_ORDER_ID"
+    const val BUNDLE_PAYMENT_ID = "BUNDLE_PAYMENT_ID"
+    const val BUNDLE_PAYMENT_OFFLINE_ID = "BUNDLE_PAYMENT_OFFLINE_ID"
+    const val BUNDLE_ORDER_OFFLINE_ID = "BUNDLE_ORDER_OFFLINE_ID"
 
     const val TAKEOUT = "TakeOut"
     const val DINE_IN = "DineIn"

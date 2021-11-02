@@ -27,7 +27,7 @@ class PrefProvider @Inject constructor(@ApplicationContext context: Context) {
         openPref()
         val result = sharedPreferences?.getString(key, defaultValue)
         sharedPreferences = null
-        return result!!
+        return result?:""
     }
 
     fun getValueInt(
