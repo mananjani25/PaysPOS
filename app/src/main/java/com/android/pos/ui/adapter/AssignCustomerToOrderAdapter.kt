@@ -126,7 +126,8 @@ class AssignCustomerToOrderAdapter :
                         it.first_name?.lowercase(Locale.getDefault())!!.contains(charSequence) or
                                 it.last_name?.lowercase(Locale.getDefault())!!
                                     .contains(charSequence) or
-                                it.email.lowercase(Locale.getDefault()).contains(charSequence) or
+                                (it.email?.lowercase(Locale.getDefault())?.contains(charSequence)
+                                    ?: false) or
                                 phone.contains(charSequence) or
                                 company.lowercase(Locale.getDefault()).contains(charSequence)
                     }.forEach { fList.add(it) }

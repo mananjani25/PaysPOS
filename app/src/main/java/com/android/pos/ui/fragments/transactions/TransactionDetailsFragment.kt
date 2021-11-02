@@ -149,8 +149,6 @@ class TransactionDetailsFragment : Fragment() {
                     orderDetailsResponse.data.paymentStatus.equals("unpaid", ignoreCase = true)
                 ) {
                     binding.tvIssueRefund.visibility = View.GONE
-                } else {
-                    binding.tvIssueRefund.visibility = View.VISIBLE
                 }
 
                 ProgressUtils.dismissProgressDialog()
