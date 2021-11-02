@@ -200,6 +200,7 @@ object Constants {
     const val FLOOR_PLAN_STATUS = "floor_plan_tables/{id}/check_employee_table_lock"
 
     const val REPORT_SUMMARY = "reports/report_summary"
+    const val ORDER_HISTORY = "customers/{id}/customer_order_history"
 
     const val BUSINESS_NAME = "business_name"
     const val BUSINESS_ADDRESS = "business_address"

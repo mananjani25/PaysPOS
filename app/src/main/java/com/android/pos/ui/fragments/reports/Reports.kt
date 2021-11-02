@@ -41,14 +41,16 @@ class Reports : Fragment() {
     private fun onClick() {
         binding.txtCurrentDrawer.setOnClickListener {
             selectedPosition(0)
+            val frag: Fragment = CurrentDrawer()
+            loadFragment(frag)
         }
         binding.txtSales.setOnClickListener {
-            val frag:Fragment = ReportSummaryFragment()
-            loadFragment(frag)
             selectedPosition(1)
+            val frag: Fragment = ReportSummaryFragment()
+            loadFragment(frag)
         }
         binding.txtShiftReport.setOnClickListener {
-            selectedPosition(2)
+            //selectedPosition(2)
         }
     }
 

@@ -301,6 +301,41 @@
                         android:background="@color/txtColorGray" />
 
                 </LinearLayout>
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/llOrderHistory"
+                    android:visibility="gone"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:layout_marginBottom="@dimen/_10sdp"
+                    android:orientation="vertical">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtTitle"
+                        style="@style/CustomFontBold"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:background="@drawable/background_gray_with_border"
+                        android:gravity="center"
+                        android:padding="@dimen/_5sdp"
+                        android:text="@string/customer_order_history"
+                        android:textColor="@color/viewTextColor"
+                        android:textSize="@dimen/_6mdpi" />
+
+                    <include layout="@layout/view_order_history_header" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvOrderHistory"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                        tools:itemCount="9"
+                        tools:listitem="@layout/view_order_history" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
 

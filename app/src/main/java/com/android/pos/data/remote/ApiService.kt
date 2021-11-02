@@ -9,6 +9,7 @@ import com.android.pos.data.model.responseModel.category.CategoriesResponse
 import com.android.pos.data.model.responseModel.category.CreateCategoryResponse
 import com.android.pos.data.model.responseModel.item.ItemResponseNew
 import com.android.pos.data.model.responseModel.item.ItemsResponse
+import com.android.pos.data.model.responseModel.orderhistory.OrderHistoryResponse
 import com.android.pos.data.model.responseModel.report.ReportSummaryResponse
 import com.android.pos.data.remote.Constants.CASH_EVENTS
 import com.android.pos.data.remote.Constants.CATEGORY
@@ -54,6 +55,7 @@ import com.android.pos.data.remote.Constants.ORDERS
 import com.android.pos.data.remote.Constants.ORDER_ASSIGN_CUSTOMER
 import com.android.pos.data.remote.Constants.ORDER_DETAILS
 import com.android.pos.data.remote.Constants.ORDER_EMAIL_RECEIPT
+import com.android.pos.data.remote.Constants.ORDER_HISTORY
 import com.android.pos.data.remote.Constants.ORDER_PAY_AMOUNT_WISE
 import com.android.pos.data.remote.Constants.ORDER_PHONE_RECEIPT
 import com.android.pos.data.remote.Constants.ORDER_TYPES
@@ -588,7 +590,7 @@ interface ApiService {
         @Query("employee_id") employee_id: Int,
         @Query("terminal_id") terminal_id: Int,
         @Query("status") status: String
-    ):BaseResponse
+    ): BaseResponse
 
     @POST(PAY_BY_GUEST)
     suspend fun payByGuest(
@@ -613,4 +615,9 @@ interface ApiService {
         @Query("end_date") endDate: String,
         @Query("terminal_id ") terminalId: String
     ): ReportSummaryResponse
+
+    @GET(ORDER_HISTORY)
+    suspend fun getCustomerOrderHistory(
+        @Path("id") id: String
+    ): OrderHistoryResponse
 }
