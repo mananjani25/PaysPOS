@@ -280,8 +280,30 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         binding.txtSave.setOnClickListener {
 
             if (selectedListPos != -1) {
+
+                val model = discountAdapter.getItem(selectedListPos)
+
+
+                var a = binding.edtAmount.text.toString().toDouble()
+
+                if (isOrderDiscount) {
+
+                    a = totalOrderPrice * a / 100
+                }
+
+                val discount = TbDiscount(
+                    "",
+                    model.discountType,
+                    model.id,
+                    0,
+                    model.name,
+                    a,
+                    ""
+                )
+
+
                 val result = Bundle().apply {
-                    putParcelable("data", discountAdapter.getItem(selectedListPos))
+                    putParcelable("data", discount)
                 }
 
 
@@ -317,7 +339,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                         TbDiscount(
                             "",
                             getString(R.string.disc_percentage),
-                            0,
+                            -1,
                             0,
                             "",
                             a,
@@ -327,7 +349,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                         TbDiscount(
                             "",
                             "",
-                            0,
+                            -1,
                             0,
                             "",
                             binding.edtAmount.text.toString().toDouble(),
@@ -361,7 +383,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
     }
 
     private fun removeDiscount() {
-        val discount = TbDiscount("", "", 0, 0, "", 0.0, "")
+        val discount = TbDiscount("", "", -1, 0, "", 0.0, "")
         val result = Bundle().apply {
             putParcelable("data", discount)
         }

@@ -4,14 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingDefaultResource">
 
-    <RelativeLayout
+    <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/relParent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white">
+        android:background="@color/white"
+        android:orientation="horizontal">
 
         <androidx.appcompat.widget.LinearLayoutCompat
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
@@ -20,6 +21,7 @@
                 style="@style/CustomFontSemiBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_marginStart="@dimen/_5sdp"
                 android:background="?attr/selectableItemBackground"
                 android:padding="@dimen/_5sdp"
@@ -32,6 +34,7 @@
                 style="@style/CustomFontSemiBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:background="?attr/selectableItemBackground"
                 android:padding="@dimen/_5sdp"
                 android:text="@string/products"
@@ -43,6 +46,7 @@
                 style="@style/CustomFontSemiBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:padding="@dimen/_5sdp"
                 android:text="@string/services"
                 android:textColor="@color/txtColor"
@@ -52,47 +56,76 @@
         </androidx.appcompat.widget.LinearLayoutCompat>
 
 
-        <ImageView
-            android:id="@+id/imgOptionMenu"
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_weight="1"
+            android:layout_gravity="end"
+            android:gravity="end"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:padding="@dimen/_4sdp"
-            android:background="?attr/selectableItemBackground"
-            android:layout_marginEnd="@dimen/_5sdp"
-            android:contentDescription="@string/menu"
-            android:src="@drawable/ic_dot_menu"
-            app:tint="@color/txtColor" />
-
-        <AutoCompleteTextView
-            android:id="@+id/autoSearch"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginEnd="@dimen/_5sdp"
-            android:layout_toStartOf="@+id/imgOptionMenu"
-            android:background="@null"
-            android:ems="10"
-            android:fontFamily="@font/sf_pro_display_regular"
-            android:hint="@string/scan_barcode_or_search"
-            android:imeOptions="actionDone"
-            android:inputType="text"
-            android:textColor="@color/black"
-            android:textColorHint="@color/colorC4"
-            android:textSize="@dimen/_5mdpi" />
-
-        <ImageView
-            android:id="@+id/imgSearch"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginEnd="@dimen/_10sdp"
-            android:layout_toStartOf="@+id/autoSearch"
-            android:contentDescription="@string/search"
-            android:src="@drawable/ic_search"
-            app:tint="@color/txtColor" />
+            android:orientation="horizontal">
 
 
-    </RelativeLayout>
+            <ImageView
+                android:id="@+id/imgSearch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center"
+                android:layout_marginEnd="@dimen/_5sdp"
+                android:layout_toStartOf="@+id/autoSearch"
+                android:contentDescription="@string/search"
+                android:src="@drawable/ic_search"
+                app:tint="@color/txtColor" />
+
+            <AutoCompleteTextView
+                android:id="@+id/autoSearch"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center"
+                android:layout_marginEnd="@dimen/_5sdp"
+                android:layout_toStartOf="@+id/imgOptionMenu"
+                android:background="@null"
+                android:ems="10"
+                android:fontFamily="@font/sf_pro_display_regular"
+                android:hint="@string/scan_barcode_or_search"
+                android:imeOptions="actionDone"
+                android:inputType="text"
+                android:textColor="@color/black"
+                android:textColorHint="@color/colorC4"
+                android:textSize="@dimen/_5mdpi" />
+
+
+            <ImageView
+                android:id="@+id/imgSync"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_toStartOf="@+id/imgSearch"
+                android:contentDescription="@string/search"
+                android:padding="@dimen/_4sdp"
+                android:background="?attr/selectableItemBackground"
+                android:src="@drawable/ic_sync"
+                app:tint="@color/txtColor" />
+
+
+            <ImageView
+                android:id="@+id/imgOptionMenu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center"
+                android:background="?attr/selectableItemBackground"
+                android:contentDescription="@string/menu"
+                android:padding="@dimen/_4sdp"
+                android:src="@drawable/ic_dot_menu"
+                app:tint="@color/txtColor" />
+
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
 </layout>

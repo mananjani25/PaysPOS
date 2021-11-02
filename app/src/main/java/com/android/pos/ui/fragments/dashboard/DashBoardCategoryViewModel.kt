@@ -9,16 +9,15 @@ import com.android.pos.data.entities.*
 import com.android.pos.data.model.DineInModel
 import com.android.pos.data.model.DineInOrderDetailAttributes
 import com.android.pos.data.model.requestModel.*
-import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ADD
-import com.android.pos.data.remote.Constants.AUTH_TOKEN
 import com.android.pos.data.remote.Constants.BUSINESS_NAME
 import com.android.pos.data.remote.Constants.BUSINESS_PHONE_NO
 import com.android.pos.data.remote.Constants.BUSINESS_WEBSITE
 import com.android.pos.data.remote.Constants.DELETE
 import com.android.pos.data.remote.Constants.DINE_IN
+import com.android.pos.data.remote.Constants.DINE_IN_LIST_EDIT
 import com.android.pos.data.remote.Constants.UPDATE
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.TaxServiceChargeRepository
@@ -55,7 +54,6 @@ class DashBoardCategoryViewModel @Inject constructor(
     var totalServiceCharge = 0.0
     var totalDiscount = 0.0
     var assignCustomer: TbCustomer? = null
-
 
     fun venueDataLocal(): LiveData<Resource<List<CategoryWithInventory?>>> {
         return posRepository.venueDataLocal()
@@ -101,58 +99,6 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     var serviceChargesList: List<TbServiceCharge> = emptyList()
 
-    init {
-        viewModelScope.launch {
-
-            if (prefProvider.getValue(AUTH_TOKEN, "").toString().isNotEmpty()) {
-
-                val resource = posRepository.syncVenueDetails()
-
-                when (resource.status) {
-                    Status.SUCCESS -> {
-                        _showProgress.value = Event(false)
-                        resource.data.let { venueDetailsResponse ->
-                            if (venueDetailsResponse?.status == 200) {
-
-                                resource.data?.let {
-                                    Log.e(TAG, "FullData  ${Gson().toJson(it)}")
-
-                                    prefProvider.setValue(BUSINESS_NAME, it.data.businessName)
-                                    prefProvider.setValue(BUSINESS_PHONE_NO, it.data.phoneNumber)
-                                    prefProvider.setValue(
-                                        BUSINESS_WEBSITE,
-                                        it.data.businessWebsite.toString()
-                                    )
-
-                                    taxServiceChargeRepository.addAllTaxDatabase(it.data.taxes)
-
-                                    posRepository.addAllNotesDatabase(it.data.notes)
-                                    tipDiscountRepository.addDiscount(it.data.discounts)
-                                    taxServiceChargeRepository.addServiceCharges(it.data.service_charges)
-                                    posRepository.addTerminalsDatabase(it.data.terminals)
-                                    tipDiscountRepository.addTips(it.data.tip_settings)
-                                    posRepository.addCustomerReceiptSettings(it.data.customerReceipt)
-                                    posRepository.addKitchenReceiptSettings(it.data.kitchenReceipt)
-
-                                }
-                            } else {
-                                _snackbarText.value = Event(resource.message)
-                            }
-                        }
-                    }
-
-                    Status.ERROR -> {
-                        _snackbarText.value = Event(resource.message)
-                        _showProgress.value = Event(false)
-                    }
-
-                    Status.LOADING -> {
-                        _showProgress.value = Event(true)
-                    }
-                }
-            }
-        }
-    }
 
     fun addCart(cartModel: CartModel) {
 
@@ -294,6 +240,12 @@ class DashBoardCategoryViewModel @Inject constructor(
                             dineInList.get(0).selectedPosition
                         )
                     )*/
+                } else if (type == DINE_IN_LIST_EDIT) {
+                    cartModel.orderTypeName = DINE_IN
+                    cartModel.orderType = DINE_IN
+                    cartModel.dineInList = dineInList
+                    addCart(cartModel)
+
                 }
 
 
@@ -1200,4 +1152,91 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
 
+    fun syncInventoryModule() {
+        _showProgress.value = Event(true)
+        viewModelScope.launch {
+            val resource = posRepository.syncInventory()
+            when (resource.status) {
+                Status.SUCCESS -> {
+
+                    resource.data.let { response ->
+                        if (response?.status == 200) {
+                            posRepository.saveDatabase(response)
+
+
+                        } else {
+                            _tableStatus.value = response?.let { Event(it.message) }
+                        }
+
+                        syncSettingModule()
+
+                    }
+                }
+
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message.toString())
+                    _showProgress.value = Event(false)
+                }
+
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
+            }
+
+        }
+
+    }
+
+    private fun syncSettingModule() {
+        viewModelScope.launch {
+            val resource = posRepository.syncVenueDetails()
+
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+                    resource.data.let { venueDetailsResponse ->
+                        if (venueDetailsResponse?.status == 200) {
+
+                            resource.data?.let {
+                                Log.e(TAG, "FullData  ${Gson().toJson(it)}")
+
+                                prefProvider.setValue(BUSINESS_NAME, it.data.businessName)
+                                prefProvider.setValue(BUSINESS_PHONE_NO, it.data.phoneNumber)
+                                prefProvider.setValue(
+                                    BUSINESS_WEBSITE,
+                                    it.data.businessWebsite.toString()
+                                )
+
+                                taxServiceChargeRepository.addAllTaxDatabase(it.data.taxes)
+
+                                posRepository.addAllNotesDatabase(it.data.notes)
+                                tipDiscountRepository.addDiscount(it.data.discounts)
+                                taxServiceChargeRepository.addServiceCharges(it.data.service_charges)
+                                posRepository.addTerminalsDatabase(it.data.terminals)
+                                tipDiscountRepository.addTips(it.data.tip_settings)
+                                posRepository.addCustomerReceiptSettings(it.data.customerReceipt)
+                                posRepository.addKitchenReceiptSettings(it.data.kitchenReceipt)
+
+                            }
+
+                            prefProvider.setValueboolean(Constants.SYNC_DATA, true)
+                        } else {
+                            _snackbarText.value = Event(resource.message)
+                        }
+                    }
+                }
+
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
+                }
+
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
+            }
+
+        }
+
+    }
 }

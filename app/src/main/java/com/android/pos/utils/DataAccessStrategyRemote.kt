@@ -6,9 +6,7 @@ import androidx.lifecycle.liveData
 import androidx.lifecycle.map
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
-
 import kotlinx.coroutines.Dispatchers
-import java.lang.Exception
 
 fun <T> performGetOperationNew(
 /*databaseQuery: () -> LiveData<T>,*/
@@ -68,3 +66,37 @@ fun <T, A> performGetOperation(
     }
 
 
+fun <A> performGetOperationNetwork(
+    networkCall: suspend () -> Resource<A>,
+    saveCallResult: suspend (A) -> Unit
+): LiveData<Resource<A>> =
+    liveData(Dispatchers.IO) {
+        emit(Resource.loading())
+        val responseStatus = networkCall.invoke()
+        if (responseStatus.status == Status.SUCCESS) {
+            saveCallResult(responseStatus.data!!)
+
+        } else if (responseStatus.status == Status.ERROR) {
+            emit(Resource.error(responseStatus.message!!))
+        }
+    }
+
+fun <T> performGetOperationNew1(
+    networkCall: suspend () -> Resource<T>,
+    saveCallResult: suspend (T) -> Unit
+): LiveData<Resource<T>> =
+    liveData(Dispatchers.IO) {
+        emit(Resource.loading())
+        try {
+            val responseStatus = networkCall.invoke()
+            if (responseStatus.status == Status.SUCCESS) {
+                saveCallResult(responseStatus.data!!)
+                emit(Resource.success(responseStatus.data!!))
+
+            } else if (responseStatus.status == Status.ERROR) {
+                emit(Resource.error(responseStatus.message!!))
+            }
+        } catch (e: Exception) {
+            Log.d("exception123", "::" + e.message)
+        }
+    }

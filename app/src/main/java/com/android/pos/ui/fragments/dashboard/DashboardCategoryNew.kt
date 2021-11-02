@@ -198,6 +198,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        observeShowProgress()
+        syncData()
         hideOrderType()
         setupAdapter()
         setVenueData()
@@ -205,7 +207,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         onClick()
         getOrderTypes()
         getServiceCharges()
-        observeShowProgress()
         setupSnackbar()
         getBackstack()
         swipeListener()
@@ -277,12 +278,22 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 if (cartList.isNotEmpty()) {
                     cartList[0].discountPrice = orderDiscount
                     cartList[0].discountType = result.discountType
+                    if (result.id != -1) {
+                        cartList[0].discountId = result.id
+                    }
                     viewModel.addCart(cartList[0])
                 }
             }
         }
 
 
+    }
+
+    private fun syncData() {
+
+        val sync = prefProvider.getValueboolean(Constants.SYNC_DATA, false)
+        if (!sync)
+            viewModel.syncInventoryModule()
     }
 
     private fun checkDineInEditOrder() {
@@ -292,24 +303,32 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             if (dineInList?.isNotEmpty() == true) {
                 binding.layoutCart.txtOrderType.setText("Dine In")
 
-                binding.layoutCart.llCart.visibility = View.VISIBLE
-                binding.lltakeout.visibility = View.GONE
-                binding.layoutCart.llShowMenu.visibility = View.GONE
-
-                binding.layoutCart.viewDineIn.visibility = View.VISIBLE
-                binding.layoutCart.rvCart.visibility = View.GONE
-                binding.layoutCart.rvCartDineIn.visibility = View.VISIBLE
-
-                /*  prefProvider.setValue(ORDER_TYPE, DINE_IN)
-                  prefProvider.setValue(ORDER_TYPE_NAME, DINE_IN)
-    */
-
-                /*dineInCartAdapter = DineInAdapter()
+                dineInCartAdapter = DineInAdapter()
                 dineInCartAdapter.setListner(this)
+                //dineInCartAdapter.setList(dineInList)
 
-                dineInCartAdapter.setList(dineInList)*/
-                Log.e(TAG, "DineNotEmpty")
 
+                if (cartList.isEmpty()) {
+                    val cartModel = CartModel().apply {
+                        terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
+                        employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
+                        locationId = prefProvider.getValueInt(Constants.LOCATION_ID, -1)
+                        orderTypeId = 2
+                        orderType = DINE_IN
+                        orderTypeName = DINE_IN
+
+                        serviceCharge = serviceChargesList
+
+                    }
+                    cartList.add(cartModel)
+                }
+
+                prefProvider.setValue(ORDER_TYPE, DINE_IN)
+                prefProvider.setValue(ORDER_TYPE_NAME, DINE_IN)
+                prefProvider.setValueInt(ORDER_TYPE_ID, 2)
+
+                Log.e(TAG, "PassedDineInListSize  ${dineInList.size}")
+                viewModel.cartLogic(cartList, null, ADD, dineInList = dineInList)
 
             }
 
@@ -324,6 +343,11 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         categoryItemAdapter1 = CategoryItemAdapter1(requireContext(), itemList1, this)
         binding.rvPagerCategory.adapter = categoryItemAdapter1
 
+    }
+
+    override fun onPause() {
+        super.onPause()
+        ProgressUtils.dismissProgressDialog()
     }
 
     private fun removeCustomerViewSet() {
@@ -445,6 +469,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             binding.layoutCart.rvCart.visibility = View.GONE
                             binding.layoutCart.rvCartDineIn.visibility = View.VISIBLE
                             binding.layoutCart.llPayment.visibility = View.VISIBLE
+                            Log.e(TAG, "GotAddedDineIn ${cartList[0].dineInList?.size}")
 
                             cartList.get(0).dineInList?.toCollection(
                                 arrayListOf()
@@ -564,6 +589,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 binding.layoutCart.rvCartDineIn.visibility = View.VISIBLE
                 if (requireArguments().getBoolean("isFromDineIn")) {
                     getDineInCartList()
+                } else if (arguments?.getBoolean("is_dine_in_edit") == true) {
+                    Log.e(TAG, "is_dine_in_edit_true")
+                    checkDineInEditOrder()
                 }
 
             } else {
@@ -625,6 +653,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private fun onClick() {
         binding.layoutMenu.imgOptionMenu.setOnClickListener {
             showPopup(binding.layoutMenu.imgOptionMenu)
+        }
+
+        binding.layoutMenu.imgSync.setOnClickListener {
+            viewModel.syncInventoryModule()
         }
 
         binding.footer.linearMore.setOnClickListener {
@@ -1047,6 +1079,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         val txtDiscount: AppCompatTextView = popupView.findViewById(R.id.txtDiscount)
         val txtTotalAmount: AppCompatTextView = popupView.findViewById(R.id.txtTotalAmount)
         val txtTotalTax: AppCompatTextView = popupView.findViewById(R.id.txtTotalTax)
+        Log.e(TAG, "subTotalPrice:   ${viewModel.subTotalPrice - (cartList[0].discountPrice)}")
 
         txtSubTotal.text = "$" + String.format(
             "%.2f",
@@ -1799,6 +1832,16 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                                     0
                                 ), "Available"
                             )
+                            viewModel.deleteCart()
+                            isOrderUpdate = false
+
+                            if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
+                                prefProvider.setValue(ORDER_TYPE, "")
+                            }
+                            binding.layoutCart.txtSave.text = getString(R.string.save)
+                            clearCustomer()
+                            hideOrderType()
+                            hideOrderMenu()
 
                         } else {
                             viewModel.deleteCart()

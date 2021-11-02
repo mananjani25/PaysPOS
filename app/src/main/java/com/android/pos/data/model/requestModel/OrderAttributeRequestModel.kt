@@ -94,6 +94,9 @@ class OrderAttributeRequestModel {
 
     @SerializedName("customer_id")
     var customer_id: Int? = null
+
+    @SerializedName("discount_id")
+    var discount_id: Int? = null
 }
 
 

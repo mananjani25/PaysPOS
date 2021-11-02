@@ -34,6 +34,7 @@ object Constants {
     const val EMPLOYEE_ROLE = "employee_role"
     const val UPDATE = "UPDATE"
     const val DELETE = "DELETE"
+    const val DINE_IN_LIST_EDIT = "DineInListEdit"
     const val ADD = "ADD"
     const val ORDER_TYPE_ID = "order_type_id"
     const val ORDER_TYPE_NAME = "order_type_name"
@@ -293,4 +294,5 @@ object Constants {
     const val TIP = "Tips"
     const val DISCOUNT = "Discounts"
     const val AMT_COLLECTED = "Amount Collected"
+    const val SYNC_DATA = "SyncData"
 }

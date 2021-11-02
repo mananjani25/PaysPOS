@@ -886,6 +886,11 @@
             app:destination="@id/dashboardCategoryNew"
             app:popUpTo="@id/dashboardCategoryNew"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_dineInOrderTable_to_dineInFragment"
+            app:popUpTo="@id/dineInFragment"
+            app:destination="@id/dineInFragment"
+            app:enterAnim="@anim/nav_default_enter_anim" />
     </fragment>
     <dialog
         android:id="@+id/payByGuestDialog"

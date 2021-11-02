@@ -503,7 +503,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                         orderId,
                         true,
                         paymentReq!!,
-                        SpitByOrderPaymentModel(paymentReq)
+                        SpitByOrderPaymentModel(listOf(paymentReq))
                     )
 
 
@@ -561,7 +561,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                         orderId,
                         false,
                         paymentReq!!,
-                        SpitByOrderPaymentModel(paymentReq)
+                        SpitByOrderPaymentModel(listOf(paymentReq))
                     )
 
 
@@ -605,7 +605,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                         orderId,
                         true,
                         paymentReq!!,
-                        SpitByOrderPaymentModel(paymentReq)
+                        SpitByOrderPaymentModel(listOf(paymentReq))
                     )
 
                     viewModel.splitByOrder(aa)

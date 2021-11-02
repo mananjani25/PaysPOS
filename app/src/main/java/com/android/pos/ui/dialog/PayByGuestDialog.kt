@@ -132,7 +132,10 @@ class PayByGuestDialog : DialogFragment(), View.OnClickListener {
                     } else {
                         val bundle = bundleOf("orderId" to orderId, "isGuestPaid" to true)
 
-                        findNavController().navigate(R.id.action_payByGuestDialog_to_dineInOrderTable,bundle)
+                        findNavController().navigate(
+                            R.id.action_payByGuestDialog_to_dineInOrderTable,
+                            bundle
+                        )
                     }
 
                 }
@@ -414,9 +417,6 @@ class PayByGuestDialog : DialogFragment(), View.OnClickListener {
                 Log.e(TAG, "getstr:   $str")
 
                 AlertUtils.showCustomAlertWithListenerWithOK(requireContext(), str) { _, _ ->
-
-
-
 
 
                     if (isTotalPayment) {
