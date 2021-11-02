@@ -850,7 +850,7 @@
         android:id="@+id/orderTypeDialog"
         android:name="com.android.pos.ui.dialog.OrderTypeDialog">
         <action
-                android:id="@+id/action_orderTypeDialog_to_dashboardCategoryNew"
+            android:id="@+id/action_orderTypeDialog_to_dashboardCategoryNew"
             app:destination="@id/dashboardCategoryNew" />
         <action
             android:id="@+id/action_orderTypeDialog_to_openOrderCustomerFragment"
@@ -888,9 +888,9 @@
             app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_dineInOrderTable_to_dineInFragment"
-            app:popUpTo="@id/dineInFragment"
             app:destination="@id/dineInFragment"
-            app:enterAnim="@anim/nav_default_enter_anim" />
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:popUpTo="@id/dineInFragment" />
     </fragment>
     <dialog
         android:id="@+id/payByGuestDialog"

@@ -47,6 +47,8 @@ import com.android.pos.data.remote.Constants.DELETE
 import com.android.pos.data.remote.Constants.DIALOG_KEY_VARIATION_DETAILS
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.DINE_IN_STATUS
+import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
+
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
 import com.android.pos.data.remote.Constants.HORIZONTAL
 import com.android.pos.data.remote.Constants.IS_ORDER_UPDATE
@@ -165,6 +167,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         }
 
         navigateDineInOrder()
+        dineInUpdateOrder()
 
         binding.footer.imgClock.setOnClickListener {
             alert(
@@ -318,6 +321,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         orderTypeName = DINE_IN
 
                         serviceCharge = serviceChargesList
+                        orderId = arguments?.getInt("orderId")
 
                     }
                     cartList.add(cartModel)
@@ -327,7 +331,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 prefProvider.setValue(ORDER_TYPE_NAME, DINE_IN)
                 prefProvider.setValueInt(ORDER_TYPE_ID, 2)
 
-                Log.e(TAG, "PassedDineInListSize  ${dineInList.size}")
+                Log.e(TAG, "PassedDineInListSize  ${Gson().toJson(dineInList)}")
                 viewModel.cartLogic(cartList, null, ADD, dineInList = dineInList)
 
             }
@@ -529,7 +533,12 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                                 binding.layoutCart.txtTotalAmount.visibility = View.GONE
                                 binding.layoutCart.txtPay.visibility = View.GONE
                                 binding.layoutCart.txtDineInProceed.visibility = View.VISIBLE
-                                binding.layoutCart.txtDineInProceed.setText("Proceed To Fire")
+                                if (prefProvider.getValueboolean(DINE_IN_UPDATE, false)) {
+
+                                    binding.layoutCart.txtDineInProceed.setText("Update and Proceed")
+                                } else {
+                                    binding.layoutCart.txtDineInProceed.setText("Proceed To Fire")
+                                }
                             } else {
                                 binding.layoutCart.txtDineInProceed.visibility = View.GONE
                             }
@@ -1928,48 +1937,67 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     private fun gotoPayment() {
         if (cartList.isNotEmpty()) {
+            if (prefProvider.getValueboolean(DINE_IN_UPDATE, false)) {
 
-            val bundle = Bundle()
-            bundle.putDouble("totalPrice", viewModel.totalPrice - cartList[0].discountPrice)
-            bundle.putDouble("subTotalPrice", viewModel.subTotalPrice)
-            bundle.putDouble("totalTax", viewModel.totalTax)
-            bundle.putDouble(
-                "totalDiscount",
-                viewModel.totalDiscount + cartList[0].discountPrice
-            )
-            bundle.putDouble("totalServiceCharge", viewModel.totalServiceCharge)
-            bundle.putString("future_delivery_date", future_delivery_date)
-            bundle.putString("future_delivery_time", future_delivery_time)
-            cartList[0].customer = assignCustomer
-            bundle.putParcelable("cartList", cartList[0])
+                if (cartList.isNotEmpty()) {
+                    var request = viewModel.updateOrder(cartList[0])
 
-            if (isOrderUpdate) {
-                bundle.putBoolean("update", true)
-                orderId?.let { bundle.putInt("orderId", it) }
-                paymentId?.let { bundle.putInt("paymentId", it) }
-                bundle.putString("paymentOfflineId", paymentOfflineId)
-                bundle.putString("orderOfflineId", orderOfflineId)
-            }
+                    Log.e(TAG, "DineinSenOrder  ${cartList[0].orderId}")
+                    cartList[0].orderId?.let { viewModel.updateOrderCall(it, request) }
 
-            if (prefProvider.getValue(ORDER_TYPE, "").toString() == DINE_IN) {
+                    prefProvider.setValueboolean(DINE_IN_UPDATE,false)
 
-                createDineInRequest()
-
-
+                }
             } else {
 
-                lifecycleScope.launchWhenStarted {
-                    if (findNavController().currentDestination?.id == R.id.dashboardCategoryNew) {
 
-                        findNavController().navigate(
-                            R.id.action_dashboardCategoryNew_to_paymentFragment,
-                            bundle
-                        )
+                val bundle = Bundle()
+                bundle.putDouble(
+                    "totalPrice",
+                    viewModel.totalPrice - cartList[0].discountPrice
+                )
+                bundle.putDouble("subTotalPrice", viewModel.subTotalPrice)
+                bundle.putDouble("totalTax", viewModel.totalTax)
+                bundle.putDouble(
+                    "totalDiscount",
+                    viewModel.totalDiscount + cartList[0].discountPrice
+                )
+                bundle.putDouble("totalServiceCharge", viewModel.totalServiceCharge)
+                bundle.putString("future_delivery_date", future_delivery_date)
+                bundle.putString("future_delivery_time", future_delivery_time)
+                cartList[0].customer = assignCustomer
+                bundle.putParcelable("cartList", cartList[0])
+
+                if (isOrderUpdate) {
+                    bundle.putBoolean("update", true)
+                    orderId?.let { bundle.putInt("orderId", it) }
+                    paymentId?.let { bundle.putInt("paymentId", it) }
+                    bundle.putString("paymentOfflineId", paymentOfflineId)
+                    bundle.putString("orderOfflineId", orderOfflineId)
+                }
+
+                if (prefProvider.getValue(ORDER_TYPE, "").toString() == DINE_IN) {
+
+                    createDineInRequest()
+
+
+                } else {
+
+                    lifecycleScope.launchWhenStarted {
+                        if (findNavController().currentDestination?.id == R.id.dashboardCategoryNew) {
+
+                            findNavController().navigate(
+                                R.id.action_dashboardCategoryNew_to_paymentFragment,
+                                bundle
+                            )
+                        }
                     }
                 }
-            }
 
+            }
         }
+
+
     }
 
     private fun createDineInRequest() {
@@ -2643,6 +2671,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 hideOrderMenu()
 
 
+
             }
         })
 
@@ -2656,5 +2685,53 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         )
         Log.e(TAG, "androidId:  ${androidId}")
     }
+
+
+    private fun dineInUpdateOrder() {
+
+
+        viewModel.updateOrder.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+                AlertUtils.showCustomAlertWithListenerWithOK(
+                    requireContext(),
+                    it.toString()
+                ) { _, _ ->
+
+                    viewModel.deleteCart()
+                    isOrderUpdate = false
+
+                    if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
+                        prefProvider.setValue(ORDER_TYPE, "")
+                    }
+                    binding.layoutCart.txtSave.text = getString(R.string.save)
+                    clearCustomer()
+                    hideOrderType()
+                    hideOrderMenu()
+                    var bundle = Bundle()
+                    bundle.putParcelable("cartList", cartList[0])
+                    bundle.putBoolean("isGuestPaid", false)
+
+                    cartList[0].orderId?.let { it1 -> bundle.putInt("orderId", it1) }
+
+
+                    findNavController().navigate(
+                        R.id.action_dashboardCategoryNew_to_dineInOrderTable,
+                        bundle
+                    )
+
+
+                }
+
+
+                //  dineInTableAdapter.updateStatus(clickedPos, isFireAll)
+
+
+                // orderId?.let { it1 -> viewModel.apiCallOrderDetails(it1) }
+            }
+        })
+
+    }
+
+
 
 }
