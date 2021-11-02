@@ -282,6 +282,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 if (type == "UPDATE") {
                                     if (item != null) {
                                         model.itemQuantity = item.itemQuantity
+                                        if (item.isEdited) {
+                                            model.isEdited = item.isEdited
+                                        }
                                     }
                                     list[index] = model
                                 } else {
@@ -293,12 +296,18 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                 it.itemQuantity = model.itemQuantity
                                             }
                                             model.modifiers = item.modifiers
+                                            if (item.isEdited) {
+                                                model.isEdited = item.isEdited
+                                            }
                                         }
 
                                         list[index] = model
                                     } else {
                                         if (item != null) {
                                             model.itemQuantity = item.itemQuantity
+                                            if (item.isEdited) {
+                                                model.isEdited = item.isEdited
+                                            }
                                         }
                                         list[index] = model
                                     }
