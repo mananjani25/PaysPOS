@@ -37,6 +37,8 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class CreateCategory : Fragment() {
 
+
+
     private var imagePath: String? = ""
     lateinit var binding: CreateCategoryActivityBinding
     private val viewModel by viewModels<CreateCategoryViewModel>()
