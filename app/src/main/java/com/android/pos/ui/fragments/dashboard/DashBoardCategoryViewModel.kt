@@ -55,6 +55,10 @@ class DashBoardCategoryViewModel @Inject constructor(
     var totalDiscount = 0.0
     var assignCustomer: TbCustomer? = null
 
+    private val _updateOrder = MutableLiveData<Event<Any?>>()
+    val updateOrder: LiveData<Event<Any?>> = _updateOrder
+
+
     fun venueDataLocal(): LiveData<Resource<List<CategoryWithInventory?>>> {
         return posRepository.venueDataLocal()
     }
@@ -87,6 +91,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
     val _Basedata = MutableLiveData<Event<CreateOrderResponse.Data?>>()
+
 
     fun modifierSet(intArray: IntArray) = posRepository.modifierSetList(intArray)
 
@@ -875,7 +880,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 orderItemsAttribute.employeeId = cartModel.employeeID
                 orderItemsAttribute.isCount = 0
                 orderItemsAttribute.isEdited = item.isEdited
-                orderItemsAttribute.isPaid = false
+                orderItemsAttribute.isPaid = item.isPaid
                 orderItemsAttribute.isPrinted = true
                 orderItemsAttribute.isTaxRemoved = false
                 orderItemsAttribute.itemId = if (item.isManualSales) 30 else item.itemId
@@ -1146,6 +1151,83 @@ class DashBoardCategoryViewModel @Inject constructor(
                     _showProgress.value = Event(true)
                 }
             }
+
+        }
+
+    }
+
+    fun updateOrder(cartModel: CartModel): OrderRequestModel {
+        val orderModel: OrderAttributeRequestModel = OrderAttributeRequestModel()
+        var ttotalDiscount = totalDiscount
+        orderModel.apply {
+            date = TimeFormatUtils.getCurrentDate()
+
+            employeeId = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+            locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1)
+            terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
+            note = ""
+            openOrderType = "DineIn"
+            orderTypeId = 2
+            subTotal = MethodUtils.roundOffAmountDouble(subTotalPrice)
+            totalAmount = MethodUtils.roundOffAmountDouble(totalPrice)
+            totalDiscount = MethodUtils.roundOffAmountDouble(ttotalDiscount)
+            totalServiceCharges = totalServiceCharge
+            totalTaxAmount = totalTax
+            orderItemsAttributes = dineInOrderItemAttributed(cartModel)
+            paymentAttributes =
+                paymentAttributes(
+                    cartModel,
+                    totalPrice,
+                    subTotalPrice,
+                    totalServiceCharge,
+                    totalTax,
+                    totalDiscount, 0.0
+                )
+
+            orderServiceChargesAttributes =
+                orderServiceChargesAttributes(cartModel, subTotalPrice)
+
+            //  guestsAttributes = getGuestsAttributes(cartModel)
+
+
+            /*var listTbItem: ArrayList<TbItem> = arrayListOf()
+            for (i in 0 until cartModel.dineInList?.size!!) {
+                listTbItem.addAll(cartModel.dineInList!!.get(i).items)
+            }
+            */
+
+
+        }
+
+
+        return OrderRequestModel(false, orderModel)
+
+
+    }
+
+    fun updateOrderCall(orderId: Int, orderRequestModel: OrderRequestModel) {
+        _showProgress.value = Event(true)
+
+        viewModelScope.launch {
+            val resource = posRepository.updateOrder(orderId, orderRequestModel)
+
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+                    _updateOrder.value = Event(resource.data?.message)
+
+                }
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
+                }
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+
+                }
+
+            }
+
 
         }
 

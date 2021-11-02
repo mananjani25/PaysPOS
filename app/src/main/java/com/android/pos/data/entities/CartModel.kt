@@ -38,5 +38,6 @@ class CartModel : Parcelable {
     var discountId: Int? = null
     var isFired: Boolean = true
     var isEdited: Boolean = false
+    var orderId: Int? = null
 
 }
