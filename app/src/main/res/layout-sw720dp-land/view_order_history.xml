@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingDefaultResource">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txtOrderId"
+            style="@style/HistoryItemText"
+            tools:text="4708\n(Paid)" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txtDateTime"
+            style="@style/HistoryItemText"
+            android:layout_weight="1.5"
+            tools:text="11/01/2021\n03:00 PM" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txtOrderDetails"
+            style="@style/HistoryItemText"
+            android:layout_weight="5"
+            tools:text="Haka Nudal * 1, Dry Manchurian * 1" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txtPartType"
+            style="@style/HistoryItemText"
+            tools:text="Cash" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txtTotalEearned"
+            style="@style/HistoryItemText"
+            tools:text="$48.75\n48" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txtReorder"
+            style="@style/HistoryItemText"
+            android:textColor="@color/txt_color_blue"
+            tools:text="Reorder" />
+
+    </LinearLayout>
+</layout>

@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.data.model.responseModel.BaseResponse
+import com.android.pos.data.model.responseModel.report.Data
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
@@ -30,7 +31,8 @@ class CustomerListViewModel @Inject constructor(
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
-
+    private val _orderHistory = MutableLiveData<Event<Data?>>()
+    val orderHistory: LiveData<Event<Data?>> = _orderHistory
 
     fun customerList() = posRepository.customerList()
 
@@ -77,5 +79,37 @@ class CustomerListViewModel @Inject constructor(
 
     }
 
+    fun getReportSummary() {
+
+        _showProgress.value = Event(true)
+        viewModelScope.launch {
+
+            val resourceReport =
+                posRepository.getReportSummary(
+                    startDate =  "",
+                    endDate =  "",
+                    terminalId = ""
+                )
+            when (resourceReport.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+                    resourceReport.data.let {
+                        if (it?.status == 200) {
+                            _orderHistory.postValue(Event(resourceReport.data?.data))
+                        }
+                    }
+                }
+
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resourceReport.message)
+                    _showProgress.value = Event(false)
+                }
+
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
+            }
+        }
+    }
 
 }

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingDefaultResource">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txtOrderId"
+            style="@style/HistoryItemHeaderText"
+            android:text="@string/order_id_nstatus" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txtDateTime"
+            style="@style/HistoryItemHeaderText"
+            android:layout_weight="1.5"
+            android:text="@string/date_time" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txtOrderDetails"
+            style="@style/HistoryItemHeaderText"
+            android:layout_weight="5"
+            android:text="@string/order_details" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txtPartType"
+            style="@style/HistoryItemHeaderText"
+            android:text="@string/order_details" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txtTotalEearned"
+            style="@style/HistoryItemHeaderText"
+            android:text="@string/total_nearned_nloyality_points" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txtReorder"
+            style="@style/HistoryItemHeaderText"
+            android:text="@string/reorder" />
+
+    </LinearLayout>
+</layout>

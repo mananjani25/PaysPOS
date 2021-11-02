@@ -5,20 +5,20 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.model.responseModel.report.KeyValue
-import com.android.pos.databinding.ViewSalesReportBinding
+import com.android.pos.databinding.ViewOrderHistoryBinding
 
 class SalesReportAdapter :
     RecyclerView.Adapter<SalesReportAdapter.MyViewHolder>() {
 
     private var arrayList = ArrayList<KeyValue>()
 
-    inner class MyViewHolder(private val binding: ViewSalesReportBinding) :
+    inner class MyViewHolder(private val binding: ViewOrderHistoryBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         @SuppressLint("SetTextI18n")
         fun bind(keyValue: KeyValue) {
-            binding.keyValue = keyValue
-            binding.executePendingBindings()
+            //binding.keyValue = keyValue
+            //binding.executePendingBindings()
         }
     }
 
@@ -27,7 +27,7 @@ class SalesReportAdapter :
         viewType: Int
     ): MyViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val binding = ViewSalesReportBinding.inflate(inflater, parent, false)
+        val binding = ViewOrderHistoryBinding.inflate(inflater, parent, false)
         return MyViewHolder(binding)
     }
 

@@ -601,5 +601,12 @@
     <string name="details">Details</string>
     <string name="amount">Amount</string>
     <string name="edit_order">Edit Order</string>
+    <string name="customer_order_history">Customer Order History</string>
+    <string name="order_id_nstatus">Order ID\nStatus</string>
+    <string name="date_time">Date/ Time</string>
+    <string name="order_details">Order Details</string>
+    <string name="order_details">Order Details</string>
+    <string name="total_nearned_nloyality_points">Total\nEarned\nLoyality Points</string>
+    <string name="reorder">Reorder</string>
 
 </resources>
