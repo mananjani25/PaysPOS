@@ -61,6 +61,7 @@ class TbItem : Parcelable {
     var timeStamp: String? = null
     var isPaid: Boolean = false
     var isEdited: Boolean = false
+    var guestItemId: Int? = null
 
     fun convertToItem(item: Item, category: Category?): TbItem {
         itemId = item.id

@@ -1150,7 +1150,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         Log.e(TAG, "totalGuestPrice:  ${totalGuestPrice}")
                         model.totalGuestPrice = totalGuestPrice
                         model.id = baseResponse.guestAttributes[i].id
-                        Log.e(TAG, "ModelisPaid  ${model.isPaid}")
+
 
 
 
@@ -1172,6 +1172,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                     item.name = it.itemName
                                     item.itemId = it.itemId
                                     item.categoryId = it.categoryId
+                                    item.guestItemId = guestItem[j].id
+
 
 
 
