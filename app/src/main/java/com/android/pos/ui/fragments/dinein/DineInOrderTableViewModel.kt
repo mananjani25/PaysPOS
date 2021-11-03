@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.data.db.AppDatabase
+import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.DineInModel
 import com.android.pos.data.model.requestModel.GuestPaymentRequest
 import com.android.pos.data.model.requestModel.OrderRequestModel
@@ -45,9 +46,16 @@ class DineInOrderTableViewModel @Inject constructor(
     val _guestPayment = MutableLiveData<Event<String>>()
     val onPayment: LiveData<Event<String>> = _guestPayment
 
+    val getServiceChargeList = appDatabase.serviceChargeDao().allServiceCharge
+
 
     private val _msgText = MutableLiveData<Event<String>>()
     val msgText: LiveData<Event<String>> = _msgText
+
+    var totalTaxAmount = 0.0
+    var totalAmount = 0.0
+    var subTotalAmount = 0.0
+    var totalServiceChargeAmount = 0.0
 
 
     fun payByGuest(id: Int, model: GuestPaymentRequest, isAllPaymentComplete: Boolean) {
@@ -171,4 +179,32 @@ class DineInOrderTableViewModel @Inject constructor(
 
     }
 
+    public fun taxCalculation(item: TbItem) {
+        item.taxes?.forEach { tax ->
+            if (tax.isActive) {
+                totalTaxAmount += if (tax.taxType == "Percentage") {
+
+                    var modifierPrice = 0.0
+                    val price =
+                        (item.price * item.itemQuantity) - item.discountPrice
+
+                    item.modifiers.forEach {
+                        modifierPrice += (it.price * it.itemQuantity)
+                    }
+
+                    val totalPrice = price + modifierPrice
+
+                    val itemTaxPrice =
+                        (tax.rate * totalPrice) / 100
+                    Log.e("itemTaxPrice", "" + itemTaxPrice)
+                    String.format("%.2f", itemTaxPrice)
+                        .toDouble()
+                } else {
+
+                    String.format("%.2f", tax.rate * item.itemQuantity)
+                        .toDouble()
+                }
+            }
+        }
+    }
 }

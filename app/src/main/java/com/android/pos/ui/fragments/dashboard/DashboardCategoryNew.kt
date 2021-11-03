@@ -2028,7 +2028,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             0.0,
             floorPlanDetails = floorModel
         )
-        Log.e(TAG, "orderRequestModel:  ${Gson().toJson(orderRequestModel)}")
+
         if (orderRequestModel != null) {
             viewModel.submit(orderRequestModel)
         }
@@ -2196,8 +2196,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         }
 
         dineInFloorTableModel = arguments?.getParcelable("floorplan")
-        Log.e(TAG, "dineInFloorTableModel  ${Gson().toJson(dineInFloorTableModel)}")
-
 
         val dineInList: ArrayList<DineInModel> = arrayListOf()
         dineInList.add(DineInModel(0, true, 0, "Whole Table"))

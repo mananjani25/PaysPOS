@@ -342,7 +342,10 @@ data class GetOrderDetailsResponse(
                 @SerializedName("tax_total_amount")
                 val taxTotalAmount: Double,
                 @SerializedName("updated_at")
-                val updatedAt: String
+                val updatedAt: String,
+                @SerializedName("tax_type")
+                val taxType:String
+
             ) : Parcelable
         }
 
