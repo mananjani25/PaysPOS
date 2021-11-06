@@ -1945,7 +1945,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     Log.e(TAG, "DineinSenOrder  ${cartList[0].orderId}")
                     cartList[0].orderId?.let { viewModel.updateOrderCall(it, request) }
 
-                    prefProvider.setValueboolean(DINE_IN_UPDATE,false)
+                    prefProvider.setValueboolean(DINE_IN_UPDATE, false)
 
                 }
             } else {
@@ -2669,7 +2669,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 hideOrderMenu()
 
 
-
             }
         })
 
@@ -2729,7 +2728,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         })
 
     }
-
 
 
 }

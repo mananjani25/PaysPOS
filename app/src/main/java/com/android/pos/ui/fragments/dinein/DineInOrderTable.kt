@@ -115,6 +115,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         getData()
 
         dineInTableAdapter = DineInTableAdapter()
+
         binding.rvItemList.adapter = dineInTableAdapter
         dineInTableAdapter.setListner(this)
 
@@ -213,6 +214,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     }
 
     private fun onClick() {
+
+        binding.llInfo1.setOnClickListener {
+            showPopupWindow(it)
+
+        }
 
         binding.txtFloorPlan.setOnClickListener {
             findNavController().navigate(R.id.action_dineInOrderTable_to_dineInFragment)
@@ -1682,4 +1688,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         })
 
+
 }
+
+
