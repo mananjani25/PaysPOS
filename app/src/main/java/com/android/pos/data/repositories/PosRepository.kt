@@ -11,7 +11,9 @@ import com.android.pos.data.entities.ModifierSet
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.ApiHelper
-import com.android.pos.utils.*
+import com.android.pos.utils.performGetOperation
+import com.android.pos.utils.performGetOperationDatabase
+import com.android.pos.utils.performGetOperationNew
 import com.android.pos.utils.statusUtils.Resource
 import com.google.gson.Gson
 import javax.inject.Inject
@@ -540,6 +542,9 @@ class PosRepository @Inject constructor(
 
     suspend fun getReportSummary(startDate: String, endDate: String, terminalId: String) =
         apiHelperNew.getReportSummary(startDate, endDate, terminalId)
+
+    suspend fun getOrderHistory(id: String) =
+        apiHelperNew.getOrderHistory(id)
 
     suspend fun clearTable() {
 
