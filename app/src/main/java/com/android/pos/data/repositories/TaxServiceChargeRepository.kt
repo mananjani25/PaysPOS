@@ -110,14 +110,16 @@ class TaxServiceChargeRepository @Inject constructor(
     fun getKitchenReceiptSettings() =
         performGetOperation(databaseQuery = { appDatabase.kitchenSettingsDao().getKitchenSettings },
             networkCall = { apiHelperNew.getKitchenReceiptSettings() },
-            saveCallResult = { appDatabase.kitchenSettingsDao().add(
-                if (it.data != null) {
-                    it.data
-                } else {
-                    val model = GetKitchenReceiptSettingsResponse.Data()
-                    model
-                }
-            ) })
+            saveCallResult = {
+                appDatabase.kitchenSettingsDao().add(
+                    if (it.data != null) {
+                        it.data
+                    } else {
+                        val model = GetKitchenReceiptSettingsResponse.Data()
+                        model
+                    }
+                )
+            })
 
 
     fun getCustomerReceiptSettings() =

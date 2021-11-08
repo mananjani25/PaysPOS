@@ -1945,7 +1945,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     Log.e(TAG, "DineinSenOrder  ${cartList[0].orderId}")
                     cartList[0].orderId?.let { viewModel.updateOrderCall(it, request) }
 
-                    prefProvider.setValueboolean(DINE_IN_UPDATE,false)
+                    prefProvider.setValueboolean(DINE_IN_UPDATE, false)
 
                 }
             } else {
@@ -2028,7 +2028,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             0.0,
             floorPlanDetails = floorModel
         )
-        Log.e(TAG, "orderRequestModel:  ${Gson().toJson(orderRequestModel)}")
+
         if (orderRequestModel != null) {
             viewModel.submit(orderRequestModel)
         }
@@ -2196,8 +2196,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         }
 
         dineInFloorTableModel = arguments?.getParcelable("floorplan")
-        Log.e(TAG, "dineInFloorTableModel  ${Gson().toJson(dineInFloorTableModel)}")
-
 
         val dineInList: ArrayList<DineInModel> = arrayListOf()
         dineInList.add(DineInModel(0, true, 0, "Whole Table"))
@@ -2671,7 +2669,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 hideOrderMenu()
 
 
-
             }
         })
 
@@ -2731,7 +2728,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         })
 
     }
-
 
 
 }
