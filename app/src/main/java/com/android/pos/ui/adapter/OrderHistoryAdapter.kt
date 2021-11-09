@@ -30,15 +30,16 @@ class OrderHistoryAdapter :
             if (order.paymentDetails?.isNotEmpty() == true) {
                 payType = order.paymentDetails[0].paymentType ?: ""
             }
+            binding.txtPayType.text = payType
 
             //earned points
-            binding.txtPayType.text = payType
-            (String.format(
+            /*(String.format(
                 "%.2f",
                 order.total
             )).also {
                 binding.txtTotalEearned.text = it
-            }
+            }*/
+            binding.txtTotalEearned.text = "-"
 
             //Id and status
             val orderId = SpannableStringBuilder("${order.id}")
