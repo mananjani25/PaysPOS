@@ -30,18 +30,21 @@
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txtPayType"
             style="@style/HistoryItemText"
+            android:gravity="center"
             tools:text="Cash" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txtLoyalityPoints"
             style="@style/HistoryItemText"
+            android:gravity="center"
             tools:text="$48.75\n48" />
 
-         <androidx.appcompat.widget.AppCompatTextView
-             android:id="@+id/txtReorder"
-             style="@style/HistoryItemText"
-             android:textColor="@color/txt_color_blue"
-             android:text="@string/reorder" />
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txtReorder"
+            style="@style/HistoryItemText"
+            android:gravity="center"
+            android:text="@string/reorder"
+            android:textColor="@color/txt_color_blue" />
 
     </LinearLayout>
 </layout>
