@@ -98,7 +98,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
                 isSplitByNo = true
                 isSplitByAmount = false
-                splitAfterAmount = totalPrice / splitValue
+                splitAfterAmount = (totalPrice + tipAmount) / splitValue
 
                 MethodUtils.setPriceTextView(binding.txtTotalAmount, splitAfterAmount)
                 val totalAmountFormat = MethodUtils.roundOffAmount(totalPrice)
@@ -427,7 +427,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             R.id.txtSplitAmount -> {
 
                 val bundle = Bundle()
-                bundle.putDouble("totalPrice", totalPrice)
+                bundle.putDouble("totalPrice", (totalPrice + tipAmount))
                 bundle.putInt("splitValue", splitValue)
                 findNavController().navigate(
                     R.id.action_paymentFragment_to_splitAmountFragment,

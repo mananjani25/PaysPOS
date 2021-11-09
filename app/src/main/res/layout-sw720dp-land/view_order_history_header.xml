@@ -31,12 +31,12 @@
             style="@style/HistoryItemHeaderText"
             android:text="@string/pay_type" />
 
-        <androidx.appcompat.widget.AppCompatTextView
+        <!--<androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txtTotalEearned"
             style="@style/HistoryItemHeaderText"
-            android:text="@string/total_nearned_nloyality_points" />
+            android:text="@string/total_nearned_nloyality_points" />-->
 
-        <!--<androidx.appcompat.widget.AppCompatTextView
+       <!-- <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txtReorder"
             style="@style/HistoryItemHeaderText"
             android:text="@string/reorder" />-->

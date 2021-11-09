@@ -80,7 +80,7 @@ class Reports : Fragment() {
             }
             1 -> {
 
-                binding.commonToolbar.txtSubTitle.setText("Sales")
+                binding.commonToolbar.txtSubTitle.setText("Sales Report")
                 binding.txtCurrentDrawer.setTextColor(requireContext().resources.getColor(R.color.txtColor))
                 binding.txtCurrentDrawer.setBackgroundColor(requireContext().resources.getColor(R.color.white))
 

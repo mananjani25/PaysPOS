@@ -10,7 +10,7 @@ data class Terminal(
 ) {
     fun showFormattedValue(): String {
         return if (total == -9.9) {
-            "Amount Allocated"
+            "Amount Collected"
         } else {
             "$" + String.format(
 

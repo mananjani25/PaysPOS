@@ -3,6 +3,7 @@ package com.android.pos.utils
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
+import android.text.TextUtils
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatTextView
@@ -150,6 +151,68 @@ class MethodUtils {
                 filePart = MultipartBody.Part.createFormData(fileKeyName, file.name, fileBody)
             }
             return filePart
+        }
+
+        private fun changeDateFormat(
+            inputFormat: String,
+            inputDate: String,
+            outputFormat: String
+        ): String {
+
+            try {
+                val inputDateFormat = SimpleDateFormat(inputFormat, Locale.getDefault())
+                inputDateFormat.timeZone = TimeZone.getTimeZone("GMT")
+                val date: Date? = inputDateFormat.parse(inputDate)
+                date ?: return inputDate
+                val outputDateFormat = SimpleDateFormat(outputFormat, Locale.getDefault())
+                return outputDateFormat.format(date)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                return inputDate
+            }
+        }
+
+        private fun changeDateFormatWithoutTimeZone(
+            inputFormat: String,
+            inputDate: String,
+            outputFormat: String
+        ): String {
+
+            try {
+                val inputDateFormat = SimpleDateFormat(inputFormat, Locale.getDefault())
+                val date: Date? = inputDateFormat.parse(inputDate)
+                date ?: return inputDate
+                val outputDateFormat = SimpleDateFormat(outputFormat, Locale.getDefault())
+                return outputDateFormat.format(date)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                return inputDate
+            }
+        }
+
+        fun getFormattedDateTime(
+            inputFormat: String,
+            date: String,
+            outputFormat: String,
+            timeZoneApplied: Boolean
+        ): String {
+            return if (!TextUtils.isEmpty(date)) {
+                if (timeZoneApplied) {
+                    changeDateFormat(
+                        inputFormat,
+                        date,
+                        outputFormat
+                    )
+                } else {
+                    changeDateFormatWithoutTimeZone(
+                        inputFormat,
+                        date,
+                        outputFormat
+                    )
+                }
+            } else {
+                ""
+            }
         }
     }
 

@@ -123,12 +123,12 @@ class ReportSummaryFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     private fun setupAdapter() {
 
-        binding.rvTerminal.addItemDecoration(
+        /*binding.rvTerminal.addItemDecoration(
             DividerItemDecoration(
                 context,
                 LinearLayoutManager.HORIZONTAL
             )
-        )
+        )*/
         binding.rvTerminal.adapter = terminalAdapter
 
         binding.rvSalesSummary.adapter = salesReportAdapter
