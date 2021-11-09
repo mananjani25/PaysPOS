@@ -32,16 +32,16 @@
             style="@style/HistoryItemText"
             tools:text="Cash" />
 
-        <!--<androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/txtTotalEearned"
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txtLoyalityPoints"
             style="@style/HistoryItemText"
-            tools:text="$48.75\n48" />-->
+            tools:text="$48.75\n48" />
 
-         <!--<androidx.appcompat.widget.AppCompatTextView
+         <androidx.appcompat.widget.AppCompatTextView
              android:id="@+id/txtReorder"
              style="@style/HistoryItemText"
              android:textColor="@color/txt_color_blue"
-             tools:text="Reorder" />-->
+             android:text="@string/reorder" />
 
     </LinearLayout>
 </layout>

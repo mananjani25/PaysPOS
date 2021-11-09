@@ -42,6 +42,9 @@ class OrderHistoryAdapter :
             }
             setupAmountPayType(order.total, order.paymentDetails)
 
+            //loyality points
+            binding.txtLoyalityPoints.text = "-"
+
         }
 
         private fun setupAmountPayType(total: Double?, paymentDetails: List<PaymentDetail>?) {
