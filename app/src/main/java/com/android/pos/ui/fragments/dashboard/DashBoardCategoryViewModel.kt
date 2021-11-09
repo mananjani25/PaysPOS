@@ -28,6 +28,7 @@ import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.TimeFormatUtils
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
+import com.google.common.collect.ForwardingSortedMap
 import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -174,7 +175,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
                         }
-                        Log.e(TAG, "DineInIndax: ${index}")
+
 
                         if (index != -1) {
                             val model =
@@ -184,7 +185,18 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     if (item != null) {
                                         model.itemQuantity = item.itemQuantity
                                     }
+                                    if (prefProvider.getValueboolean(
+                                            Constants.DINE_IN_UPDATE,
+                                            false
+                                        )
+                                    ) {
+                                        model.isEdited = true
+                                    }
+
                                     dineIn.get(selectedHeader).items[index] = model
+                                    dineIn.get(selectedHeader).floorPlanTable =
+                                        dineInList.get(0).floorPlanTable
+
                                     cartModel.dineInList = dineIn
                                     addCart(cartModel)
                                 } else {
@@ -198,7 +210,18 @@ class DashBoardCategoryViewModel @Inject constructor(
                                             model.modifiers = item.modifiers
                                         }
 
+                                        if (prefProvider.getValueboolean(
+                                                Constants.DINE_IN_UPDATE,
+                                                false
+                                            )
+                                        ) {
+                                            model.isEdited = true
+                                        }
+
                                         dineIn.get(selectedHeader).items[index] = model
+
+                                        dineIn.get(0).floorPlanTable =
+                                            dineInList.get(0).floorPlanTable
                                         cartModel.dineInList = dineIn
                                         addCart(cartModel)
                                     } else {
@@ -214,6 +237,14 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                             if (item != null) {
                                 item.timeStamp = randomOfflineId()
+                                if (prefProvider.getValueboolean(
+                                        Constants.DINE_IN_UPDATE,
+                                        false
+                                    )
+                                ) {
+                                    item.isEdited = true
+                                }
+
                                 dineInList.get(dineInList.get(0).selectedPosition).items.add(item)
                             }
                             cartModel.dineInList = dineInList
@@ -474,8 +505,8 @@ class DashBoardCategoryViewModel @Inject constructor(
         if (serviceChargesList != null && serviceChargesList.isNotEmpty()) {
             serviceChargesList.forEach {
                 if (it.isEnabled) {
-                    totalServiceCharge = (subTotalPrice * it.percentage) / 100
-                    Log.e("totalServiceCharge", totalServiceCharge.toString())
+                    totalServiceCharge += (subTotalPrice * it.percentage) / 100
+
                 }
             }
 
@@ -646,6 +677,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             MethodUtils.roundOffAmountDouble(totalServiceCharge)
         orderAttributeRequestModel.totalTaxAmount = MethodUtils.roundOffAmountDouble(totalTax)
         orderAttributeRequestModel.totalTips = MethodUtils.roundOffAmountDouble(tipAmount)
+
 
         val customerId = prefProvider.getValueInt(Constants.CUSTOMER_ID, -1)
         if (customerId != -1) {
@@ -869,8 +901,6 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 val orderItemsAttribute = OrderItemsAttribute()
 
-
-
                 orderItemsAttribute.category_id = item.categoryId
 
                 orderItemsAttribute.discountAmount = item.discountPrice
@@ -894,12 +924,17 @@ class DashBoardCategoryViewModel @Inject constructor(
                 orderItemsAttribute.totalPrice =
                     MethodUtils.roundOffAmountDouble(item.price * item.itemQuantity)
                 orderItemsAttribute.orderItemTaxesAttributes = orderItemTaxesAttributes(item)
+                Log.e(
+                    TAG,
+                    "orderItemTaxesAttributes:  ${Gson().toJson(orderItemsAttribute.orderItemTaxesAttributes)}"
+                )
                 orderItemsAttribute.orderItemModifiersAttributes =
                     orderItemModifierAttributes(item, cartModel.terminalId)
 
                 orderItemsAttribute.orderItemVariationAttributes =
                     orderItemVariationAttributes(item)
                 orderItemsAttribute.timestamp = item.timeStamp.toString()
+
 
                 if (item.variationsAttributes.isNotEmpty()) {
                     orderItemsAttribute.variationId = item.variationsAttributes[0].id
@@ -981,7 +1016,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 price = it.price
                 order_item_id = item.orderItemId
                 totalPrice = MethodUtils.roundOffAmountDouble(it.price * it.itemQuantity)
-                modifier_set_id = it.modifierSetId!!
+                it.modifierSetId?.let { modifier_set_id = it }
                 quantity = it.itemQuantity
                 order_item_taxes_attributes = orderModifierTaxesAttributes(item, it, terminalId)
             }
@@ -1187,7 +1222,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             orderServiceChargesAttributes =
                 orderServiceChargesAttributes(cartModel, subTotalPrice)
 
-            //  guestsAttributes = getGuestsAttributes(cartModel)
+            guestsAttributes = getGuestsAttributes(cartModel)
 
 
             /*var listTbItem: ArrayList<TbItem> = arrayListOf()

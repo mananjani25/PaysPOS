@@ -1,6 +1,7 @@
 package com.android.pos.data.entities
 
 import android.os.Parcelable
+import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
@@ -32,4 +33,7 @@ class Modifier : Parcelable {
     var itemQuantity: Int = 0
 
     var orderModifierId: Int? = null
+
+    var orderItemTaxes: List<GetOrderDetailsResponse.Data.OrderItem.OrderItemModifier.OrderItemTaxe?> =
+        emptyList()
 }

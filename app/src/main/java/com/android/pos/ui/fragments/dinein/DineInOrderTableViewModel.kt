@@ -46,7 +46,7 @@ class DineInOrderTableViewModel @Inject constructor(
     val _guestPayment = MutableLiveData<Event<String>>()
     val onPayment: LiveData<Event<String>> = _guestPayment
 
-    val getServiceChargeList = appDatabase.serviceChargeDao().allServiceCharge
+    val getServiceChargeList = posRepository.serviceChargeList()
 
 
     private val _msgText = MutableLiveData<Event<String>>()
