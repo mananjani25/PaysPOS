@@ -89,7 +89,7 @@ class ReportSummaryFragment : Fragment(), AdapterView.OnItemSelectedListener {
         }
 
         //call initial api
-        viewModel.getReportSummary()
+        //viewModel.getReportSummary()
     }
 
     private fun initControls() {
@@ -107,8 +107,7 @@ class ReportSummaryFragment : Fragment(), AdapterView.OnItemSelectedListener {
             myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
 
             viewModel.updateLabel(myCalendar)
-            //viewModel.apiCallTimeSheet(getTerminalId(binding.spTerminals.selectedItemPosition).toString())
-
+            viewModel.getReportSummary()
         }
 
         endDate = DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
@@ -117,6 +116,7 @@ class ReportSummaryFragment : Fragment(), AdapterView.OnItemSelectedListener {
             myCalendar1.set(Calendar.DAY_OF_MONTH, dayOfMonth)
 
             viewModel.updateLabel(myCalendar1)
+            viewModel.getReportSummary()
         }
         viewModel.setCurrentDate(myCalendar)
     }
@@ -398,6 +398,7 @@ class ReportSummaryFragment : Fragment(), AdapterView.OnItemSelectedListener {
         /*viewModel.apiCallTimeSheet(
             getTerminalId(binding.spTerminals.selectedItemPosition).toString()
         )*/
+        viewModel.getReportSummary()
 
     }
 

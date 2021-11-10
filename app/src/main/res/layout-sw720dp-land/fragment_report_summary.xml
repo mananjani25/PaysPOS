@@ -206,6 +206,7 @@
                 android:layout_marginEnd="@dimen/_5sdp"
                 android:padding="@dimen/_4sdp"
                 android:text="@string/search"
+                android:visibility="gone"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_5mdpi" />
 
