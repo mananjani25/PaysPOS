@@ -28,6 +28,7 @@ import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.TimeFormatUtils
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
+import com.google.common.collect.ForwardingSortedMap
 import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -174,7 +175,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
                         }
-                        Log.e(TAG, "DineInIndax: ${index}")
+
 
                         if (index != -1) {
                             val model =
@@ -184,7 +185,18 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     if (item != null) {
                                         model.itemQuantity = item.itemQuantity
                                     }
+                                    if (prefProvider.getValueboolean(
+                                            Constants.DINE_IN_UPDATE,
+                                            false
+                                        )
+                                    ) {
+                                        model.isEdited = true
+                                    }
+
                                     dineIn.get(selectedHeader).items[index] = model
+                                    dineIn.get(selectedHeader).floorPlanTable =
+                                        dineInList.get(0).floorPlanTable
+
                                     cartModel.dineInList = dineIn
                                     addCart(cartModel)
                                 } else {
@@ -198,7 +210,18 @@ class DashBoardCategoryViewModel @Inject constructor(
                                             model.modifiers = item.modifiers
                                         }
 
+                                        if (prefProvider.getValueboolean(
+                                                Constants.DINE_IN_UPDATE,
+                                                false
+                                            )
+                                        ) {
+                                            model.isEdited = true
+                                        }
+
                                         dineIn.get(selectedHeader).items[index] = model
+
+                                        dineIn.get(0).floorPlanTable =
+                                            dineInList.get(0).floorPlanTable
                                         cartModel.dineInList = dineIn
                                         addCart(cartModel)
                                     } else {
@@ -214,6 +237,14 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                             if (item != null) {
                                 item.timeStamp = randomOfflineId()
+                                if (prefProvider.getValueboolean(
+                                        Constants.DINE_IN_UPDATE,
+                                        false
+                                    )
+                                ) {
+                                    item.isEdited = true
+                                }
+
                                 dineInList.get(dineInList.get(0).selectedPosition).items.add(item)
                             }
                             cartModel.dineInList = dineInList
@@ -483,8 +514,8 @@ class DashBoardCategoryViewModel @Inject constructor(
         if (serviceChargesList != null && serviceChargesList.isNotEmpty()) {
             serviceChargesList.forEach {
                 if (it.isEnabled) {
-                    totalServiceCharge = (subTotalPrice * it.percentage) / 100
-                    Log.e("totalServiceCharge", totalServiceCharge.toString())
+                    totalServiceCharge += (subTotalPrice * it.percentage) / 100
+
                 }
             }
 
@@ -656,6 +687,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         orderAttributeRequestModel.totalTaxAmount = MethodUtils.roundOffAmountDouble(totalTax)
         orderAttributeRequestModel.totalTips = MethodUtils.roundOffAmountDouble(tipAmount)
 
+
         val customerId = prefProvider.getValueInt(Constants.CUSTOMER_ID, -1)
         if (customerId != -1) {
             orderAttributeRequestModel.customer_id = customerId
@@ -784,6 +816,9 @@ class DashBoardCategoryViewModel @Inject constructor(
         cartModel.dineInList?.forEach { it ->
             val model = GuestsAttributes()
             model.name = it.title.toString()
+            if (it.id != 0) {
+                model.id = it.id
+            }
             if (it.items.isNotEmpty()) {
                 var listItems: ArrayList<GuestItemsAttributes> = arrayListOf()
                 var subTotal = 0.0
@@ -796,14 +831,13 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                     listItems.add(
                         GuestItemsAttributes(
-
-                            id = if (tb.guestItemId != null && tb.guestItemId != 0){tb.guestItemId}else{null},
+                            id=tb.guestItemId,
                             orderItemId = tb.orderItemId,
                             quantity = tb.itemQuantity,
                             itemId = tb.itemId,
                             amount = tb.price,
                             timestamp = tb.timeStamp,
-                            guestId = if (it.id != null && it.id != 0){it.id}else{null}
+                            guestId = it.id?.let { it }
 
                         )
 
@@ -830,6 +864,8 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 model.guestItemsAttributes = listItems
             }
+
+
             if (it.customer != null) {
                 model.customerId = it.customer?.id
                 var addressList: ArrayList<CustomerAttributes.AddressesAttribute> = arrayListOf()
@@ -887,9 +923,9 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 val orderItemsAttribute = OrderItemsAttribute()
 
-
-
                 orderItemsAttribute.category_id = item.categoryId
+
+                orderItemsAttribute.id = item.orderItemId
 
                 orderItemsAttribute.discountAmount = item.discountPrice
                 orderItemsAttribute.discountType = item.discountType
@@ -908,16 +944,23 @@ class DashBoardCategoryViewModel @Inject constructor(
                 orderItemsAttribute.price = item.price
                 orderItemsAttribute.quantity = item.itemQuantity
                 orderItemsAttribute.terminalId = cartModel.terminalId
-                orderItemsAttribute.timestamp = System.currentTimeMillis().toString()
+
+                if (item.timeStamp == null || item.timeStamp?.lowercase() == "null".lowercase()) {
+                    orderItemsAttribute.timestamp = System.currentTimeMillis().toString()
+                } else {
+                    orderItemsAttribute.timestamp = item.timeStamp!!
+                }
                 orderItemsAttribute.totalPrice =
                     MethodUtils.roundOffAmountDouble(item.price * item.itemQuantity)
                 orderItemsAttribute.orderItemTaxesAttributes = orderItemTaxesAttributes(item)
+
                 orderItemsAttribute.orderItemModifiersAttributes =
                     orderItemModifierAttributes(item, cartModel.terminalId)
 
                 orderItemsAttribute.orderItemVariationAttributes =
                     orderItemVariationAttributes(item)
                 orderItemsAttribute.timestamp = item.timeStamp.toString()
+
 
                 if (item.variationsAttributes.isNotEmpty()) {
                     orderItemsAttribute.variationId = item.variationsAttributes[0].id
@@ -999,7 +1042,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 price = it.price
                 order_item_id = item.orderItemId
                 totalPrice = MethodUtils.roundOffAmountDouble(it.price * it.itemQuantity)
-                modifier_set_id = it.modifierSetId!!
+                it.modifierSetId?.let { modifier_set_id = it }
                 quantity = it.itemQuantity
                 order_item_taxes_attributes = orderModifierTaxesAttributes(item, it, terminalId)
             }

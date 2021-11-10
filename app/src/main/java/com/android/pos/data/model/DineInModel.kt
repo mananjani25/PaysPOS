@@ -3,6 +3,9 @@ package com.android.pos.data.model
 import android.os.Parcelable
 import com.android.pos.data.entities.TbCustomer
 import com.android.pos.data.entities.TbItem
+import com.android.pos.data.entities.TbServiceCharge
+import com.android.pos.data.model.responseModel.GetFloorPlanResponse
+import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -23,6 +26,8 @@ data class DineInModel(
     var totalGuestPrice: Double = 0.0,
     var sort: Int = 0,
     var totalTableAmt: Double = 0.0,
-    var guestDividerAmt: Double = 0.0
+    var guestDividerAmt: Double = 0.0,
+    var serviceChargeList: ArrayList<TbServiceCharge>? = null,
+    var floorPlanTable: GetOrderDetailsResponse.Data.FloorPlanTable? = null
 
-):Parcelable
+) : Parcelable

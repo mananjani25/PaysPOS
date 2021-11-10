@@ -416,7 +416,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         try {
             builder =
                 Builder(
-                    if (customerReceiptPrinters.name == "TM-m30_030295") {
+                    if (customerReceiptPrinters.name.substring(0, 6).toString()
+                            .lowercase() == "TM-m30".lowercase()
+                    ) {
                         "TM-m30"
                     } else {
                         customerReceiptPrinters.name
@@ -1305,7 +1307,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 printer.setBatteryStatusChangeEventCallback(this)
             }
 
-            val enabled = Print.FALSE
+            val enabled = Print.TRUE
 
             try {
 
@@ -1347,7 +1349,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         var builder: Builder? = null
         try {
             Log.e(TAG, "KitchenPrinterName ${customerReceiptPrinters.name}")
-            val pname = if (customerReceiptPrinters.name == "TM-m30_030295") {
+            val pname = if (customerReceiptPrinters.name.substring(0, 6).toString()
+                    .lowercase() == "TM-m30".lowercase()
+            ) {
                 "TM-m30"
             } else {
                 customerReceiptPrinters.name

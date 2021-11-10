@@ -99,6 +99,9 @@
             android:id="@+id/action_createItem_to_categoriesDialog"
             app:destination="@id/categoriesDialog" />
         <action
+            android:id="@+id/action_createItem_to_taxesDialog"
+            app:destination="@id/taxesDialog" />
+        <action
             android:id="@+id/action_createItem_to_itemEditTitleDialog"
             app:destination="@id/itemEditTitleDialog" />
         <action
@@ -440,6 +443,9 @@
             android:id="@+id/action_dashboardCategoryNew_to_dineInOrderTable"
             app:destination="@id/dineInOrderTable"
             app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_dashboardCategoryNew_to_openOrderCustomerFragmentNew"
+            app:destination="@id/openOrderCustomerFragmentNew" />
 
     </fragment>
     <action
@@ -860,6 +866,9 @@
             android:id="@+id/action_orderTypeDialog_to_dineInFragment"
             app:destination="@id/dineInFragment"
             app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_orderTypeDialog_to_openOrderCustomerFragmentNew"
+            app:destination="@id/openOrderCustomerFragmentNew" />
 
 
     </dialog>
@@ -911,6 +920,18 @@
         android:id="@+id/reportSummaryFragment"
         android:name="com.android.pos.ui.fragments.report.ReportSummaryFragment"
         android:label="Report Summary"
-        tools:layout="@layout/fragment_report_summary"></fragment>
+        tools:layout="@layout/fragment_report_summary"/>
+    <dialog
+        android:id="@+id/taxesDialog"
+        android:name="com.android.pos.ui.dialog.TaxesDialog"
+        android:label="Taxes" />
+    <fragment
+        android:id="@+id/openOrderCustomerFragmentNew"
+        android:name="com.android.pos.ui.fragments.openorder.OpenOrderCustomerFragmentNew"
+        android:label="OpenOrderCustomerFragmentNew">
+        <action
+            android:id="@+id/action_openOrderCustomerFragmentNew_to_assignCustomerOrderFragment"
+            app:destination="@id/assignCustomerOrderFragment" />
+    </fragment>
 
 </navigation>

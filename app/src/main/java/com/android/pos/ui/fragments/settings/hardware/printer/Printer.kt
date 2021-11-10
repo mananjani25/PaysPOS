@@ -1588,8 +1588,9 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
 
         try {
+            Log.e(TAG,"SUBSTR:  ${printerListModel.printerName?.substring(0,6)}")
             builder = Builder(
-                if (printerListModel.printerName == "TM-m30_030295") {
+                if (printerListModel.printerName?.substring(0,6).toString().lowercase() == "TM-m30".lowercase()) {
                     "TM-m30"
                 } else {
                     printerListModel.printerName

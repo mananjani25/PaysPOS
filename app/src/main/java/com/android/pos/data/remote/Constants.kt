@@ -297,4 +297,10 @@ object Constants {
     const val DISCOUNT = "Discounts"
     const val AMT_COLLECTED = "Amount Collected"
     const val SYNC_DATA = "SyncData"
+
+    //date format
+    const val DateFormat_yyyy_MM_dd_T_HH_mm_ss_SSSZ = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+    const val DateFormat_hh_mm_a_MM_dd_yyyy = "hh:mm a | MM/dd/yyyy"
+    const val DateFormat_MMM_dd_yyyy = "MMM-dd-yyyy"
+    const val DateFormat_hh_mm_a = "hh:mm a"
 }

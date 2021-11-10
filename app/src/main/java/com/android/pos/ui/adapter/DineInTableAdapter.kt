@@ -76,12 +76,15 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     inner class HeaderViewHolder(private val binding: ViewDineInHeaderBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
+
         fun bind(model: DineInModel, position: Int) {
             var tbList: ArrayList<TbItem> = arrayListOf()
             var guestAmt = 0.0
             var isPaid = true
             var isAllFired = true
             var noItem = true
+            var guestSubTotal = 0.0
+            var totalTaxAmt: Double = 0.0
 
             for (i in position + 1 until list.size) {
 
@@ -91,13 +94,49 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                     list.get(i).item?.let {
                         if (!it.isPaid) {
                             guestAmt += (it.itemQuantity * it.price) - it.discountPrice
+                            guestSubTotal += (it.itemQuantity * it.price) - it.discountPrice
                             if (it.modifiers.isNotEmpty()) {
                                 it.modifiers.forEach { it ->
 
                                     guestAmt += it.itemQuantity * it.price
+                                    guestSubTotal += it.itemQuantity * it.price
 
                                 }
                             }
+
+                            if (it.taxes?.isNotEmpty() == true) {
+                                it.taxes?.forEach {tax ->
+                                     if (tax.isActive) {
+                                         totalTaxAmt  += if (tax.taxType == "Percentage") {
+
+                                            var modifierPrice = 0.0
+                                            val price =
+                                                (it.price * it.itemQuantity) - it.discountPrice
+
+                                            it.modifiers.forEach {
+                                                modifierPrice += (it.price * it.itemQuantity)
+                                            }
+
+                                            val totalPrice = price + modifierPrice
+
+                                            val itemTaxPrice =
+                                                (tax.rate * totalPrice) / 100
+                                            Log.e("itemTaxPrice", "" + itemTaxPrice)
+                                            String.format("%.2f", itemTaxPrice)
+                                                .toDouble()
+                                        } else {
+
+                                            String.format("%.2f", tax.rate * it.itemQuantity)
+                                                .toDouble()
+                                        }
+                                    }
+                                    guestAmt += tax.rate
+                                }
+
+
+                            }
+
+
                         }
                         if (!it.isPaid) {
                             isPaid = it.isPaid
@@ -105,7 +144,6 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
                         if (!it.isFired) {
                             isAllFired = false
-
                         }
                     }
 
@@ -157,9 +195,26 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 binding.chkIsFired.isEnabled = false
             }
 
+            var totalServiceCharge = 0.0
+
+            if (list[0].serviceChargeList?.isNotEmpty() == true) {
+                list[0].serviceChargeList?.forEach {
+                    if (it.isEnabled) {
+                        Log.e(TAG, "guestSubTotal:  ${guestSubTotal}")
+                        totalServiceCharge += (guestSubTotal * it.percentage) / 100
+                    }
+                }
 
 
-            binding.txtPay.setText("Pay " + MethodUtils.roundOffAmount(guestAmt))
+            }
+            Log.e(TAG, "MyTtotalServiceCharge  ${totalServiceCharge}")
+            Log.e(TAG, "MYTtotalTaxAmt ${totalTaxAmt}")
+            Log.e(TAG, "MYTguestAmt  ${guestAmt}")
+            Log.e(TAG, "DividedAmtGuest  ${list.get(0).guestDividedAmt}")
+            var finalAmt =
+                guestSubTotal + totalServiceCharge + totalTaxAmt + list.get(0).guestDividedAmt
+            Log.e(TAG, "finalAmt:  ${finalAmt}")
+            binding.txtPay.setText("Pay " + MethodUtils.roundOffAmount(finalAmt))
 
 
         }
@@ -253,7 +308,6 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 binding.txtNote.visibility = View.VISIBLE
             }
 
-            Log.e(TAG, "isItemFired  ${model.item?.isFired}")
             if (model.item?.isFired == true) {
                 binding.chkIsFired.isChecked = true
                 binding.chkIsFired.isPressed = true

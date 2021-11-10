@@ -347,7 +347,7 @@ interface ApiService {
     suspend fun createItem(
         @Part file: MultipartBody.Part?,
         @PartMap() request: @JvmSuppressWildcards Map<String, RequestBody>,
-        @PartMap() taxIds: @JvmSuppressWildcards Map<String, List<Int>>,
+        @PartMap() taxIds: @JvmSuppressWildcards Map<String, List<String>>,
         @PartMap() modifierIds: @JvmSuppressWildcards Map<String, List<Int>>,
         @PartMap() variationAttributes: @JvmSuppressWildcards Map<String, List<VariationsAttribute>>
     ): ItemResponseNew
@@ -358,7 +358,7 @@ interface ApiService {
         @Path("id") id: Int,
         @Part file: MultipartBody.Part?,
         @PartMap() request: @JvmSuppressWildcards Map<String, RequestBody>,
-        @PartMap() taxIds: @JvmSuppressWildcards Map<String, List<Int>>,
+        @PartMap() taxIds: @JvmSuppressWildcards Map<String, List<String>>,
         @PartMap() modifierIds: @JvmSuppressWildcards Map<String, List<Int>>,
         @PartMap() variationAttributes: @JvmSuppressWildcards Map<String, List<VariationsAttribute>>
     ): ItemResponseNew

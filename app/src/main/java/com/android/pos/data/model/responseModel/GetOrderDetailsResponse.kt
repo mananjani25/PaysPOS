@@ -94,6 +94,8 @@ data class GetOrderDetailsResponse(
         val totalAmount: Double,
         @SerializedName("guest_attributes")
         var guestAttributes: List<CreateOrderResponse.Data.Order.GuestAttributes>,
+        @SerializedName("floor_plan_table")
+        var floorPlanTable: FloorPlanTable,
         @SerializedName("total_cash_discount_fee")
         val totalCashDiscountFee: Double,
         @SerializedName("total_discount")
@@ -197,6 +199,29 @@ data class GetOrderDetailsResponse(
             val teamRoleId: Int,
             @SerializedName("updated_at")
             val updatedAt: String
+        ) : Parcelable
+
+        @Parcelize
+        data class FloorPlanTable(
+            @SerializedName("id") var id: Int?=null,
+            @SerializedName("x_position") var xPosition: Double?=null,
+            @SerializedName("y_position") var yPosition: Double?=null,
+            @SerializedName("table_name") var tableName: String?=null,
+            @SerializedName("table_number") var tableNumber: Int?=null,
+            @SerializedName("chair_count") var chairCount: Int?=null,
+            @SerializedName("floor_plan_id") var floorPlanId: Int?=null,
+            @SerializedName("table_type") var tableType: String?=null,
+            @SerializedName("status") var status: String?=null,
+            @SerializedName("height") var height: Int?=null,
+            @SerializedName("width") var width: Int?=null,
+            @SerializedName("style") var style: String?=null,
+            @SerializedName("created_at") var createdAt: String?=null,
+            @SerializedName("updated_at") var updatedAt: String?=null,
+            @SerializedName("merged_floor_plan_table_id") var mergedFloorPlanTableId: String?=null,
+            @SerializedName("lock_by_id") var lockById: Int?=null,
+            @SerializedName("lock_by_name") var lockByName: String?=null,
+            @SerializedName("terminal_id") var terminalId: Int?=null
+
         ) : Parcelable
 
         @Parcelize
@@ -342,7 +367,10 @@ data class GetOrderDetailsResponse(
                 @SerializedName("tax_total_amount")
                 val taxTotalAmount: Double,
                 @SerializedName("updated_at")
-                val updatedAt: String
+                val updatedAt: String,
+                @SerializedName("tax_type")
+                val taxType: String
+
             ) : Parcelable
         }
 

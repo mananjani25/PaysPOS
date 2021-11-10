@@ -15,6 +15,11 @@
 
     </style>
 
+    <style name="DialogWidthTheme" parent="Base.Theme.AppCompat.Dialog">
+        <item name="android:windowMinWidthMajor">50%</item>
+        <item name="android:windowMinWidthMinor">50%</item>
+    </style>
+
     <style name="SpinnerTheme">
         <item name="android:textColor">@color/txt_color_blue</item>
         <item name="android:textSize">@dimen/_6mdpi</item>
