@@ -816,6 +816,9 @@ class DashBoardCategoryViewModel @Inject constructor(
         cartModel.dineInList?.forEach { it ->
             val model = GuestsAttributes()
             model.name = it.title.toString()
+            if (it.id != 0) {
+                model.id = it.id
+            }
             if (it.items.isNotEmpty()) {
                 var listItems: ArrayList<GuestItemsAttributes> = arrayListOf()
                 var subTotal = 0.0
@@ -828,14 +831,13 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                     listItems.add(
                         GuestItemsAttributes(
-
-                            id = if (tb.guestItemId != null && tb.guestItemId != 0){tb.guestItemId}else{null},
+                            id=tb.guestItemId,
                             orderItemId = tb.orderItemId,
                             quantity = tb.itemQuantity,
                             itemId = tb.itemId,
                             amount = tb.price,
                             timestamp = tb.timeStamp,
-                            guestId = if (it.id != null && it.id != 0){it.id}else{null}
+                            guestId = it.id?.let { it }
 
                         )
 
@@ -862,6 +864,8 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 model.guestItemsAttributes = listItems
             }
+
+
             if (it.customer != null) {
                 model.customerId = it.customer?.id
                 var addressList: ArrayList<CustomerAttributes.AddressesAttribute> = arrayListOf()
@@ -921,6 +925,8 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 orderItemsAttribute.category_id = item.categoryId
 
+                orderItemsAttribute.id = item.orderItemId
+
                 orderItemsAttribute.discountAmount = item.discountPrice
                 orderItemsAttribute.discountType = item.discountType
                 if (item.discountId != -1)
@@ -938,14 +944,16 @@ class DashBoardCategoryViewModel @Inject constructor(
                 orderItemsAttribute.price = item.price
                 orderItemsAttribute.quantity = item.itemQuantity
                 orderItemsAttribute.terminalId = cartModel.terminalId
-                orderItemsAttribute.timestamp = System.currentTimeMillis().toString()
+
+                if (item.timeStamp == null || item.timeStamp?.lowercase() == "null".lowercase()) {
+                    orderItemsAttribute.timestamp = System.currentTimeMillis().toString()
+                } else {
+                    orderItemsAttribute.timestamp = item.timeStamp!!
+                }
                 orderItemsAttribute.totalPrice =
                     MethodUtils.roundOffAmountDouble(item.price * item.itemQuantity)
                 orderItemsAttribute.orderItemTaxesAttributes = orderItemTaxesAttributes(item)
-                Log.e(
-                    TAG,
-                    "orderItemTaxesAttributes:  ${Gson().toJson(orderItemsAttribute.orderItemTaxesAttributes)}"
-                )
+
                 orderItemsAttribute.orderItemModifiersAttributes =
                     orderItemModifierAttributes(item, cartModel.terminalId)
 

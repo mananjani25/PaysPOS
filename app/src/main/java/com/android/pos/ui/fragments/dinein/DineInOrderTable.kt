@@ -1130,7 +1130,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                         listTaxes.add(
                                             TaxData(
                                                 createdAt = it.createdAt,
-                                                id = it.id,
+                                                id = it.taxId,
                                                 locationId = prefProvider.getValueInt(
                                                     LOCATION_ID,
                                                     0
@@ -1181,6 +1181,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                     item.orderItemId = it.id
                                     item.note = it.note
                                     item.isFired = guestItem.get(j).is_fired
+                                    item.timeStamp = it.timestamp
 
 
 
