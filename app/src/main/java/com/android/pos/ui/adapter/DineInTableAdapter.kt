@@ -105,9 +105,10 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                             }
 
                             if (it.taxes?.isNotEmpty() == true) {
-                                it.taxes?.forEach {tax ->
-                                     if (tax.isActive) {
-                                         totalTaxAmt  += if (tax.taxType == "Percentage") {
+                                Log.e(TAG,"taxesList:  ${Gson().toJson(it.taxes)}")
+                                it.taxes?.forEach { tax ->
+                                    if (tax.isActive) {
+                                        totalTaxAmt += if (tax.taxType == "Percentage") {
 
                                             var modifierPrice = 0.0
                                             val price =
@@ -181,7 +182,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 binding.btnPaid.visibility = View.INVISIBLE
 
             }
-            if (layoutPosition == 0) {
+            if (list[layoutPosition].title?.lowercase() == "Whole Table".lowercase()) {
                 binding.btnPay.visibility = View.GONE
                 binding.btnPaid.visibility = View.INVISIBLE
                 //  binding.txtTotal.visibility = View.INVISIBLE
