@@ -184,7 +184,7 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
         getResult {
             val createItemRequestMap = MethodUtils.generateItemRequest(data)
 
-            val taxIds = HashMap<String, List<Int>>()
+            val taxIds = HashMap<String, List<String>>()
             data.taxIds?.let {
                 taxIds["tax_ids"] = it
             }
@@ -221,7 +221,7 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
 
             val createItemRequestMap = MethodUtils.generateItemRequest(data)
 
-            val taxIds = HashMap<String, List<Int>>()
+            val taxIds = HashMap<String, List<String>>()
             data.taxIds?.let {
                 taxIds["tax_ids"] = it
             }

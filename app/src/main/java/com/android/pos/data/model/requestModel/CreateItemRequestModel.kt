@@ -36,7 +36,7 @@ data class CreateItemRequestModel(
     @SerializedName("sku")
     var sku: String = "",
     @SerializedName("tax_ids")
-    var taxIds: List<Int>? = null,
+    var taxIds: List<String>? = null,
     @SerializedName("variations_attributes")
     var variationsAttributes: List<VariationsAttribute>? = null
 )

@@ -99,6 +99,9 @@
             android:id="@+id/action_createItem_to_categoriesDialog"
             app:destination="@id/categoriesDialog" />
         <action
+            android:id="@+id/action_createItem_to_taxesDialog"
+            app:destination="@id/taxesDialog" />
+        <action
             android:id="@+id/action_createItem_to_itemEditTitleDialog"
             app:destination="@id/itemEditTitleDialog" />
         <action
@@ -917,7 +920,11 @@
         android:id="@+id/reportSummaryFragment"
         android:name="com.android.pos.ui.fragments.report.ReportSummaryFragment"
         android:label="Report Summary"
-        tools:layout="@layout/fragment_report_summary" />
+        tools:layout="@layout/fragment_report_summary"/>
+    <dialog
+        android:id="@+id/taxesDialog"
+        android:name="com.android.pos.ui.dialog.TaxesDialog"
+        android:label="Taxes" />
     <fragment
         android:id="@+id/openOrderCustomerFragmentNew"
         android:name="com.android.pos.ui.fragments.openorder.OpenOrderCustomerFragmentNew"
