@@ -1775,11 +1775,11 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 if (findNavController().currentDestination?.id == R.id.orderTypeDialog) {
 
                     findNavController().navigate(
-                        R.id.action_orderTypeDialog_to_openOrderCustomerFragment
+                        R.id.action_orderTypeDialog_to_openOrderCustomerFragmentNew
                     )
                 } else {
                     findNavController().navigate(
-                        R.id.action_dashboardCategoryNew_to_openOrderCustomerFragment
+                        R.id.action_dashboardCategoryNew_to_openOrderCustomerFragmentNew
                     )
                 }
             }
