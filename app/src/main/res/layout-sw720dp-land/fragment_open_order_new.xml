@@ -107,12 +107,11 @@
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
-                android:orientation="vertical"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
-
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/_30sdp"
                     android:layout_marginTop="@dimen/_10sdp"
@@ -120,10 +119,52 @@
                     android:orientation="vertical">
 
 
-                    <LinearLayout
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:background="@drawable/edt_border_light_gray"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
+                        android:gravity="center"
+                        android:padding="1dp"
+                        android:orientation="horizontal">
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/txtPickup"
+                            style="@style/CustomFontBold"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="@color/btnColor"
+                            android:gravity="center"
+                            android:padding="@dimen/_5sdp"
+                            android:text="@string/pick_up"
+                            android:textAllCaps="true"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/_5mdpi" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/txtDelivery"
+                            style="@style/CustomFontBold"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="@color/white"
+                            android:gravity="center"
+                            android:padding="@dimen/_5sdp"
+                            android:text="@string/delivery"
+                            android:textAllCaps="true"
+                            android:textColor="@color/drawerBack50"
+                            android:textSize="@dimen/_5mdpi" />
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:background="@drawable/edt_border_light_gray"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:padding="1dp"
+                        android:layout_marginTop="@dimen/_10sdp"
                         android:gravity="center"
                         android:orientation="horizontal">
 
@@ -135,8 +176,8 @@
                             android:layout_weight="1"
                             android:background="@color/btnColor"
                             android:gravity="center"
-                            android:padding="@dimen/_8sdp"
-                            android:text="@string/pick_up"
+                            android:padding="@dimen/_5sdp"
+                            android:text="@string/customer_details"
                             android:textAllCaps="true"
                             android:textColor="@color/white"
                             android:textSize="@dimen/_5mdpi" />
@@ -147,211 +188,147 @@
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
                             android:layout_weight="1"
-                            android:background="@color/btnColor"
+                            android:background="@color/white"
                             android:gravity="center"
-                            android:padding="@dimen/_8sdp"
-                            android:text="@string/delivery"
+                            android:padding="@dimen/_5sdp"
+                            android:text="@string/delivery_address"
                             android:textAllCaps="true"
-                            android:textColor="@color/white"
+                            android:textColor="@color/drawerBack50"
                             android:textSize="@dimen/_5mdpi" />
 
-                    </LinearLayout>
-
-
-                </androidx.appcompat.widget.LinearLayoutCompat>
-
-
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/_25sdp"
-                    android:layout_marginEnd="@dimen/_25sdp"
-                    android:orientation="vertical">
+                    </androidx.appcompat.widget.LinearLayoutCompat>
 
 
                     <androidx.appcompat.widget.LinearLayoutCompat
+                        android:id="@+id/llCustomerDetails"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/_5sdp"
-                        android:layout_marginEnd="@dimen/_5sdp"
-                        android:orientation="vertical">
+                        android:background="@drawable/edt_border_light_gray"
+                        android:orientation="vertical"
+                        android:visibility="visible">
 
-                        <LinearLayout
+                        <androidx.appcompat.widget.AppCompatEditText
+                            android:id="@+id/edtFirstName"
+                            style="@style/CustomFontSemiBold"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:layout_marginTop="@dimen/_10sdp"
-                            android:gravity="center"
-                            android:orientation="horizontal">
+                            android:background="@null"
+                            android:hint="@string/first_name"
+                            android:imeOptions="actionNext"
+                            android:inputType="textCapWords"
+                            android:padding="@dimen/_5sdp"
+                            android:textColor="@color/black"
+                            android:textColorHint="@color/hint_color_"
+                            android:textSize="@dimen/_5mdpi" />
 
-                            <androidx.appcompat.widget.AppCompatTextView
-                                style="@style/CustomFontBold"
-                                android:layout_width="0dp"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1"
-                                android:background="@color/btnColor"
-                                android:gravity="center"
-                                android:padding="@dimen/_8sdp"
-                                android:text="@string/customer_details"
-                                android:textAllCaps="true"
-                                android:textColor="@color/white"
-                                android:textSize="@dimen/_5mdpi" />
-
-                            <androidx.appcompat.widget.AppCompatTextView
-                                style="@style/CustomFontBold"
-                                android:layout_width="0dp"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1"
-                                android:background="@color/btnColor"
-                                android:gravity="center"
-                                android:padding="@dimen/_8sdp"
-                                android:text="@string/delivery_address"
-                                android:textAllCaps="true"
-                                android:textColor="@color/white"
-                                android:textSize="@dimen/_5mdpi" />
-
-                        </LinearLayout>
+                        <include layout="@layout/divider" />
 
 
-                        <androidx.appcompat.widget.LinearLayoutCompat
+                        <androidx.appcompat.widget.AppCompatEditText
+                            android:id="@+id/edtLastName"
+                            style="@style/CustomFontSemiBold"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/edt_border_light_gray"
-                            android:orientation="vertical">
+                            android:layout_gravity="center"
+                            android:background="@null"
+                            android:hint="@string/last_name_"
+                            android:imeOptions="actionNext"
+                            android:inputType="textCapWords"
+                            android:padding="@dimen/_5sdp"
+                            android:textColor="@color/black"
+                            android:textColorHint="@color/hint_color_"
+                            android:textSize="@dimen/_5mdpi" />
 
-                            <androidx.appcompat.widget.AppCompatEditText
-                                android:id="@+id/edtFirstName"
-                                style="@style/CustomFontSemiBold"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:background="@null"
-                                android:hint="@string/first_name"
-                                android:imeOptions="actionNext"
-                                android:inputType="textCapWords"
-                                android:padding="@dimen/_5sdp"
-                                android:textColor="@color/black"
-                                android:textColorHint="@color/hint_color_"
-                                android:textSize="@dimen/_5mdpi" />
+                        <include layout="@layout/divider" />
 
-                            <include layout="@layout/divider" />
+                        <com.santalu.maskedittext.MaskEditText
+                            android:id="@+id/edtPhoneNo"
+                            style="@style/CustomFontMediumStyle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@null"
+                            android:hint="@string/_201_555_0123"
+                            android:inputType="number"
+                            android:maxLength="20"
+                            android:padding="@dimen/_5sdp"
+                            android:textColor="@color/txtColor"
+                            android:textColorHint="@color/hint_color_"
+                            android:textSize="@dimen/_5mdpi"
+                            app:met_mask="(###) ###-####" />
 
-
-                            <androidx.appcompat.widget.AppCompatEditText
-                                android:id="@+id/edtLastName"
-                                style="@style/CustomFontSemiBold"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:background="@null"
-                                android:hint="@string/last_name_"
-                                android:imeOptions="actionNext"
-                                android:inputType="textCapWords"
-                                android:padding="@dimen/_5sdp"
-                                android:textColor="@color/black"
-                                android:textColorHint="@color/hint_color_"
-                                android:textSize="@dimen/_5mdpi" />
-
-                            <include layout="@layout/divider" />
-
-                            <com.santalu.maskedittext.MaskEditText
-                                android:id="@+id/edtPhoneNo"
-                                style="@style/CustomFontMediumStyle"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:background="@null"
-                                android:hint="@string/_201_555_0123"
-                                android:inputType="number"
-                                android:maxLength="20"
-                                android:padding="@dimen/_5sdp"
-                                android:textColor="@color/txtColor"
-                                android:textColorHint="@color/hint_color_"
-                                android:textSize="@dimen/_5mdpi"
-                                app:met_mask="(###) ###-####" />
-
-                            <include layout="@layout/divider" />
+                        <include layout="@layout/divider" />
 
 
-                            <androidx.appcompat.widget.AppCompatEditText
-                                android:id="@+id/edtEmail"
-                                style="@style/CustomFontSemiBold"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:background="@null"
-                                android:hint="@string/tv_hint_email_"
-                                android:imeOptions="actionDone"
-                                android:inputType="textEmailAddress"
-                                android:padding="@dimen/_5sdp"
-                                android:textColor="@color/black"
-                                android:textColorHint="@color/hint_color_"
-                                android:textSize="@dimen/_5mdpi" />
+                        <androidx.appcompat.widget.AppCompatEditText
+                            android:id="@+id/edtEmail"
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:background="@null"
+                            android:hint="@string/tv_hint_email_"
+                            android:imeOptions="actionDone"
+                            android:inputType="textEmailAddress"
+                            android:padding="@dimen/_5sdp"
+                            android:textColor="@color/black"
+                            android:textColorHint="@color/hint_color_"
+                            android:textSize="@dimen/_5mdpi" />
 
-                            <include layout="@layout/divider" />
+                        <include layout="@layout/divider" />
 
-                            <androidx.appcompat.widget.AppCompatEditText
-                                android:id="@+id/edtCompany"
-                                style="@style/CustomFontSemiBold"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:background="@null"
-                                android:hint="@string/company"
-                                android:imeOptions="actionDone"
-                                android:inputType="textEmailAddress"
-                                android:padding="@dimen/_5sdp"
-                                android:textColor="@color/black"
-                                android:textColorHint="@color/hint_color_"
-                                android:textSize="@dimen/_5mdpi" />
+                        <androidx.appcompat.widget.AppCompatEditText
+                            android:id="@+id/edtCompany"
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:background="@null"
+                            android:hint="@string/company"
+                            android:imeOptions="actionDone"
+                            android:inputType="textEmailAddress"
+                            android:padding="@dimen/_5sdp"
+                            android:textColor="@color/black"
+                            android:textColorHint="@color/hint_color_"
+                            android:textSize="@dimen/_5mdpi" />
 
-                            <include layout="@layout/divider" />
+                        <include layout="@layout/divider" />
 
-
-                            <androidx.appcompat.widget.AppCompatTextView
-                                android:id="@+id/edtDate"
-                                style="@style/CustomFontSemiBold"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:background="@null"
-                                android:hint="@string/date"
-                                android:imeOptions="actionDone"
-                                android:inputType="text"
-                                android:padding="@dimen/_5sdp"
-                                android:textColor="@color/black"
-                                android:textColorHint="@color/hint_color_"
-                                android:textSize="@dimen/_5mdpi" />
-
-                            <include layout="@layout/divider" />
-
-
-                            <androidx.appcompat.widget.AppCompatTextView
-                                android:id="@+id/edtTime"
-                                style="@style/CustomFontSemiBold"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:background="@null"
-                                android:hint="@string/time"
-                                android:imeOptions="actionDone"
-                                android:inputType="text"
-                                android:padding="@dimen/_5sdp"
-                                android:textColor="@color/black"
-                                android:textColorHint="@color/hint_color_"
-                                android:textSize="@dimen/_5mdpi" />
-
-
-                        </androidx.appcompat.widget.LinearLayoutCompat>
 
                         <androidx.appcompat.widget.AppCompatTextView
-                            style="@style/CustomFontBold"
+                            android:id="@+id/edtDate"
+                            style="@style/CustomFontSemiBold"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
+                            android:background="@null"
+                            android:hint="@string/date"
+                            android:imeOptions="actionDone"
+                            android:inputType="text"
                             android:padding="@dimen/_5sdp"
-                            android:text="@string/note"
-                            android:textColor="@color/viewTextColor"
-                            android:textSize="@dimen/_6mdpi" />
+                            android:textColor="@color/black"
+                            android:textColorHint="@color/hint_color_"
+                            android:textSize="@dimen/_5mdpi" />
+
+                        <include layout="@layout/divider" />
+
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/edtTime"
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:background="@null"
+                            android:hint="@string/time"
+                            android:imeOptions="actionDone"
+                            android:inputType="text"
+                            android:padding="@dimen/_5sdp"
+                            android:textColor="@color/black"
+                            android:textColorHint="@color/hint_color_"
+                            android:textSize="@dimen/_5mdpi" />
+
+                        <include layout="@layout/divider" />
 
                         <androidx.appcompat.widget.AppCompatEditText
                             android:id="@+id/edtNote"
@@ -359,31 +336,195 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="top"
-                            android:layout_marginBottom="@dimen/_5sdp"
-                            android:background="@drawable/edt_border_light_gray"
+                            android:background="@null"
                             android:gravity="top"
                             android:hint="@string/add_note"
                             android:inputType="textMultiLine"
-                            android:minLines="3"
                             android:padding="@dimen/_5sdp"
                             android:textColor="@color/black"
                             android:textColorHint="@color/hintColor"
                             android:textSize="@dimen/_5mdpi" />
+
+                        <include layout="@layout/divider" />
+
+
+                        <androidx.appcompat.widget.LinearLayoutCompat
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/_10sdp"
+                            android:layout_marginTop="@dimen/_10sdp"
+                            android:layout_marginEnd="@dimen/_10sdp"
+                            android:layout_marginBottom="@dimen/_20sdp"
+                            android:orientation="horizontal"
+                            android:weightSum="2">
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/btnClearCustomer"
+                                style="@style/CustomFontBold"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_marginEnd="@dimen/_5sdp"
+                                android:layout_weight="1"
+                                android:background="@drawable/bg_button_border_gray"
+                                android:gravity="center"
+                                android:padding="@dimen/_5sdp"
+                                android:text="@string/clear"
+                                android:textColor="@color/btnColor"
+                                android:textSize="@dimen/_5mdpi"
+                                app:textAllCaps="false" />
+
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/btnCancelCustomer"
+                                style="@style/CustomFontBold"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_marginStart="@dimen/_5sdp"
+                                android:layout_weight="1"
+                                android:background="@drawable/bg_button_border_gray"
+                                android:gravity="center"
+                                android:padding="@dimen/_5sdp"
+                                android:text="@string/tv_cancel"
+                                android:textColor="@color/btnColor"
+                                android:textSize="@dimen/_5mdpi"
+                                android:visibility="visible"
+                                app:textAllCaps="false" />
+
+                        </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/llDeliveryAddress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_30sdp"
+                    android:layout_marginEnd="@dimen/_30sdp"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+
+                        <androidx.appcompat.widget.LinearLayoutCompat
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_3sdp"
+                            android:orientation="vertical">
+
+                            <Spinner
+                                android:id="@+id/spDelivery"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/background_square_border_grey"
+                                android:theme="@style/SpinnerTheme" />
+
+                            <AutoCompleteTextView
+                                android:id="@+id/edtStreet"
+                                style="@style/CustomFontSemiBold"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/background_square_border_grey"
+                                android:hint="@string/street"
+                                android:imeOptions="actionNext"
+                                android:inputType="textNoSuggestions"
+                                android:padding="@dimen/_5sdp"
+                                android:textColor="@color/txtColor"
+                                android:textColorHint="@color/hint_color_"
+                                android:textSize="@dimen/_5mdpi" />
+
+                            <androidx.appcompat.widget.AppCompatEditText
+                                android:id="@+id/edtSuite"
+                                style="@style/CustomFontMediumStyle"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/background_square_border_grey"
+                                android:hint="@string/apt_suite"
+                                android:inputType="textNoSuggestions"
+                                android:padding="@dimen/_5sdp"
+                                android:textColor="@color/txtColor"
+                                android:textColorHint="@color/hint_color_"
+                                android:textSize="@dimen/_5mdpi" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:weightSum="3">
+
+
+                                <androidx.appcompat.widget.AppCompatEditText
+                                    android:id="@+id/edtCity"
+                                    style="@style/CustomFontSemiBold"
+                                    android:layout_width="0sp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:background="@drawable/background_square_border_grey"
+                                    android:hint="@string/city"
+                                    android:inputType="textNoSuggestions"
+                                    android:padding="@dimen/_5sdp"
+                                    android:textColor="@color/txtColor"
+                                    android:textColorHint="@color/hint_color_"
+                                    android:textSize="@dimen/_5mdpi" />
+
+                                <androidx.appcompat.widget.AppCompatEditText
+                                    android:id="@+id/edtState"
+                                    style="@style/CustomFontSemiBold"
+                                    android:layout_width="0sp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:background="@drawable/background_square_border_grey"
+                                    android:hint="@string/state"
+                                    android:inputType="textNoSuggestions"
+                                    android:padding="@dimen/_5sdp"
+                                    android:textColor="@color/txtColor"
+                                    android:textColorHint="@color/hint_color_"
+                                    android:textSize="@dimen/_5mdpi" />
+
+                                <androidx.appcompat.widget.AppCompatEditText
+                                    android:id="@+id/edtZip"
+                                    style="@style/CustomFontSemiBold"
+                                    android:layout_width="0sp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:background="@drawable/background_square_border_grey"
+                                    android:hint="@string/zip"
+                                    android:inputType="textNoSuggestions"
+                                    android:padding="@dimen/_5sdp"
+                                    android:textColor="@color/txtColor"
+                                    android:textColorHint="@color/hint_color_"
+                                    android:textSize="@dimen/_5mdpi" />
+
+
+                            </LinearLayout>
+
+
+                        </androidx.appcompat.widget.LinearLayoutCompat>
+
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
                     <androidx.appcompat.widget.LinearLayoutCompat
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/_10sdp"
                         android:layout_marginTop="@dimen/_10sdp"
-                        android:layout_marginEnd="@dimen/_10sdp"
-                        android:layout_marginBottom="@dimen/_20sdp"
+                        android:layout_marginBottom="@dimen/_5sdp"
                         android:orientation="horizontal"
                         android:weightSum="2">
 
                         <androidx.appcompat.widget.AppCompatTextView
-                            android:id="@+id/btnClearCustomer"
+                            android:id="@+id/btnClearDelivery"
                             style="@style/CustomFontBold"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -400,7 +541,7 @@
 
 
                         <androidx.appcompat.widget.AppCompatTextView
-                            android:id="@+id/btnCancelCustomer"
+                            android:id="@+id/btnCancelDelivery"
                             style="@style/CustomFontBold"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -418,225 +559,12 @@
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
-
                 </androidx.appcompat.widget.LinearLayoutCompat>
-
             </androidx.appcompat.widget.LinearLayoutCompat>
 
 
         </ScrollView>
 
-        <androidx.appcompat.widget.LinearLayoutCompat
-            android:id="@+id/llDeliveryAddress"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/_35sdp"
-            android:layout_marginEnd="@dimen/_35sdp"
-            android:orientation="vertical"
-            android:visibility="gone">
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="@dimen/_10sdp"
-                android:background="@color/view" />
-
-            <androidx.appcompat.widget.LinearLayoutCompat
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    style="@style/CustomFontSemiBold"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_weight="1"
-                    android:gravity="start"
-                    android:padding="@dimen/_5sdp"
-                    android:text="@string/same_as_billing_address"
-                    android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_5mdpi" />
-
-                <androidx.appcompat.widget.SwitchCompat
-                    android:id="@+id/swtOrderId"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_gravity="center"
-                    android:checked="true"
-                    android:padding="@dimen/_5sdp"
-                    app:srcCompat="@drawable/ic_arrow_forward"
-                    app:theme="@style/AppTheme" />
-            </androidx.appcompat.widget.LinearLayoutCompat>
-
-            <include layout="@layout/divider" />
-
-            <androidx.appcompat.widget.LinearLayoutCompat
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_10sdp"
-                android:orientation="vertical">
-
-                <TextView
-                    style="@style/CustomFontSemiBold"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_weight="1"
-                    android:gravity="start"
-                    android:padding="@dimen/_5sdp"
-                    android:text="@string/customer_address"
-                    android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_6mdpi" />
-
-                <include layout="@layout/divider" />
-
-
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_3sdp"
-                    android:orientation="vertical">
-
-                    <Spinner
-                        android:id="@+id/spDelivery"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/_5sdp"
-                        android:background="@drawable/background_square_border_grey"
-                        android:theme="@style/SpinnerTheme" />
-
-                    <AutoCompleteTextView
-                        android:id="@+id/edtStreet"
-                        style="@style/CustomFontSemiBold"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/background_square_border_grey"
-                        android:hint="@string/street"
-                        android:imeOptions="actionNext"
-                        android:inputType="textNoSuggestions"
-                        android:padding="@dimen/_5sdp"
-                        android:textColor="@color/txtColor"
-                        android:textColorHint="@color/hint_color_"
-                        android:textSize="@dimen/_5mdpi" />
-
-                    <androidx.appcompat.widget.AppCompatEditText
-                        android:id="@+id/edtSuite"
-                        style="@style/CustomFontMediumStyle"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/background_square_border_grey"
-                        android:hint="@string/apt_suite"
-                        android:inputType="textNoSuggestions"
-                        android:padding="@dimen/_5sdp"
-                        android:textColor="@color/txtColor"
-                        android:textColorHint="@color/hint_color_"
-                        android:textSize="@dimen/_5mdpi" />
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:weightSum="3">
-
-
-                        <androidx.appcompat.widget.AppCompatEditText
-                            android:id="@+id/edtCity"
-                            style="@style/CustomFontSemiBold"
-                            android:layout_width="0sp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:background="@drawable/background_square_border_grey"
-                            android:hint="@string/city"
-                            android:inputType="textNoSuggestions"
-                            android:padding="@dimen/_5sdp"
-                            android:textColor="@color/txtColor"
-                            android:textColorHint="@color/hint_color_"
-                            android:textSize="@dimen/_5mdpi" />
-
-                        <androidx.appcompat.widget.AppCompatEditText
-                            android:id="@+id/edtState"
-                            style="@style/CustomFontSemiBold"
-                            android:layout_width="0sp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:background="@drawable/background_square_border_grey"
-                            android:hint="@string/state"
-                            android:inputType="textNoSuggestions"
-                            android:padding="@dimen/_5sdp"
-                            android:textColor="@color/txtColor"
-                            android:textColorHint="@color/hint_color_"
-                            android:textSize="@dimen/_5mdpi" />
-
-                        <androidx.appcompat.widget.AppCompatEditText
-                            android:id="@+id/edtZip"
-                            style="@style/CustomFontSemiBold"
-                            android:layout_width="0sp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:background="@drawable/background_square_border_grey"
-                            android:hint="@string/zip"
-                            android:inputType="textNoSuggestions"
-                            android:padding="@dimen/_5sdp"
-                            android:textColor="@color/txtColor"
-                            android:textColorHint="@color/hint_color_"
-                            android:textSize="@dimen/_5mdpi" />
-
-
-                    </LinearLayout>
-
-
-                </androidx.appcompat.widget.LinearLayoutCompat>
-
-
-            </androidx.appcompat.widget.LinearLayoutCompat>
-
-            <androidx.appcompat.widget.LinearLayoutCompat
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_10sdp"
-                android:layout_marginBottom="@dimen/_5sdp"
-                android:orientation="horizontal"
-                android:weightSum="2">
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/btnClearDelivery"
-                    style="@style/CustomFontBold"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginEnd="@dimen/_5sdp"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_button_border_gray"
-                    android:gravity="center"
-                    android:padding="@dimen/_5sdp"
-                    android:text="@string/clear"
-                    android:textColor="@color/btnColor"
-                    android:textSize="@dimen/_5mdpi"
-                    app:textAllCaps="false" />
-
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/btnCancelDelivery"
-                    style="@style/CustomFontBold"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginStart="@dimen/_5sdp"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_button_border_gray"
-                    android:gravity="center"
-                    android:padding="@dimen/_5sdp"
-                    android:text="@string/tv_cancel"
-                    android:textColor="@color/btnColor"
-                    android:textSize="@dimen/_5mdpi"
-                    android:visibility="visible"
-                    app:textAllCaps="false" />
-
-            </androidx.appcompat.widget.LinearLayoutCompat>
-
-        </androidx.appcompat.widget.LinearLayoutCompat>
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/llBillingAddress"
