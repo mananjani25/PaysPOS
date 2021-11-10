@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.entities.Employee
-import com.android.pos.data.model.responseModel.EmployeeListResponse
 import com.android.pos.databinding.FragmentTeamListBinding
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.TeamsAdapter
@@ -33,6 +32,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class TeamList : Fragment(), CustomCallback, OperationCallback {
+    private var deteleempObject: Employee? = null
     private var selectedPos: Int = -1
     private lateinit var binding: FragmentTeamListBinding
     private val viewModel by viewModels<TeamListViewModel>()
@@ -98,6 +98,10 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
                 empObject?.let { it1 -> adapter.removeItem(it1, requireActivity()) }
 
 
+                if (deteleempObject == empObject) {
+                    loadTeamDetails(null)
+                }
+
             }
         })
     }
@@ -142,6 +146,9 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
                         getString(R.string.delete_employee_message)
                     ) {
                         positiveButton(getString(R.string.tv_delete)) {
+
+                            deteleempObject =
+                                viewHolder?.itemView?.getTag(R.string.tv_order_id) as Employee
                             // Do positive stuff here
                             empObject =
                                 viewHolder?.itemView?.getTag(R.string.tv_order_id) as Employee
