@@ -215,6 +215,7 @@
     <string name="tv_paid_unpaid">PAID/UNPAID</string>
     <string name="tv_printer_kitchen">PRINTER : KITCHEN</string>
     <string name="select_category">Select Category <font color='#E90C0C'>*</font></string>
+    <string name="taxes">Taxes</string>
     <string name="tv_show_order_id_at_the_top">SHOW ORDER ID AT THE TOP</string>
     <string name="tv_order_id">Order ID</string>
     <string name="tv_show_addons_modifiers"><![CDATA[SHOW ADDONS & MODIFIERS]]></string>

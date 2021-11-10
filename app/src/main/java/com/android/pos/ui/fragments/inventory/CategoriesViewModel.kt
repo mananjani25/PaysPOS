@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.android.pos.data.entities.TbCategory
 import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.repositories.PosRepository
+import com.android.pos.data.repositories.TaxServiceChargeRepository
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
@@ -18,10 +19,12 @@ import javax.inject.Inject
 @HiltViewModel
 class CategoriesViewModel @Inject constructor(
     private val posRepository: PosRepository,
+    private val taxServiceChargeRepository: TaxServiceChargeRepository
 ) : ViewModel() {
 
     val categories = posRepository.getCategoryList()
     val unhideCategories = posRepository.unhideCategoryList()
+    val taxList = taxServiceChargeRepository.getTaxList()
 
     fun _getCategories(): LiveData<Resource<List<TbCategory>>> {
         return posRepository.getCategoryList()

@@ -34,6 +34,8 @@ class CreateItemViewModel @Inject constructor(
     var itemDetails = MutableLiveData(CreateItemRequestModel())
     private lateinit var itemData: CreateItemRequestModel
     private lateinit var modifierSetIdsViewModel: ArrayList<Int>
+    private var selectedTaxList: ArrayList<String> = ArrayList()
+    var taxNameToDisplay: String = ""
     private var itemPriceViewModel: Double? = 0.0
     private var descViewModel: String = ""
     private var skuViewModel: String = ""
@@ -131,6 +133,7 @@ class CreateItemViewModel @Inject constructor(
                 modifierSetIds = modifierSetIdsViewModel
                 variationsAttributes = variationAttributeModel
                 locationId = prefProvider.getValueInt(LOCATION_ID, -1)
+                taxIds = selectedTaxList
 
             }
 
@@ -178,6 +181,15 @@ class CreateItemViewModel @Inject constructor(
 
     fun setCategoryId(categoryId: Int) {
         this.categoryIdViewModel = categoryId
+    }
+
+    fun selectedTaxList(taxIds: ArrayList<String>) {
+        this.selectedTaxList.clear()
+        this.selectedTaxList.addAll(taxIds)
+    }
+
+    fun getSelectedTaxList(): ArrayList<String> {
+        return selectedTaxList
     }
 
     fun selectedModifierList(modifierSetIds: ArrayList<Int>) {

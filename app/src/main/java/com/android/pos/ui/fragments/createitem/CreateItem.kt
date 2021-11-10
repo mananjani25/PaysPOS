@@ -423,6 +423,20 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
             selectedId = itemObject.categoryId
             viewModel.setCategoryId(selectedId)
 
+            //taxes
+            val taxIds = ArrayList<String>()
+            var taxNameToDisplay = ""
+            itemObject.taxes?.forEach {
+                taxIds.add("${it.id}")
+                taxNameToDisplay += "${it.name}, "
+            }
+            if (taxNameToDisplay.isNotEmpty()) {
+                taxNameToDisplay = taxNameToDisplay.dropLast(2)
+                viewModel.taxNameToDisplay = taxNameToDisplay
+            }
+            viewModel.selectedTaxList(taxIds)
+            binding.txtTaxName.text = viewModel.taxNameToDisplay
+
             if (itemObject.variationsAttributes != null && itemObject.variationsAttributes?.size!! > 0) {
                 binding.llVariationTitle.visibility = View.VISIBLE
                 binding.llMainItemDetails.visibility = View.GONE
@@ -461,6 +475,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
 
 
         binding.chooseCategory.setOnClickListener(this)
+        binding.chooseTax.setOnClickListener(this)
         binding.imgEdit.setOnClickListener(this)
 
         setFragmentResultListener("request_key") { requestKey: String, bundle: Bundle ->
@@ -473,6 +488,13 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
                 } else
                     binding.txtCategoryName.text = result.name
             }
+        }
+        setFragmentResultListener("tax_request_key") { requestKey: String, bundle: Bundle ->
+            val selectedIds = bundle.getStringArrayList("selectedId")
+            val nameToDisplay = bundle.getString("nameToDisplay", "")
+            viewModel.taxNameToDisplay = nameToDisplay
+            binding.txtTaxName.text = viewModel.taxNameToDisplay
+            selectedIds?.let { viewModel.selectedTaxList(it) }
         }
     }
 
@@ -512,7 +534,14 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
                     findNavController().navigate(R.id.action_createItem_to_categoriesDialog, bundle)
                 }
             }
-
+            R.id.chooseTax -> {
+                val bundle = Bundle().apply {
+                    putStringArrayList("selectedId", viewModel.getSelectedTaxList())
+                }
+                if (findNavController().currentDestination?.id == R.id.createItem) {
+                    findNavController().navigate(R.id.action_createItem_to_taxesDialog, bundle)
+                }
+            }
             R.id.imgEdit -> {
                 var profileImg = ""
                 if (::itemObject.isInitialized && !itemObject.imageUrl.isNullOrEmpty()) {
