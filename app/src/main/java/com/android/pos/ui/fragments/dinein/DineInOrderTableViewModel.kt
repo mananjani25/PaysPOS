@@ -20,6 +20,7 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
+import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -182,6 +183,7 @@ class DineInOrderTableViewModel @Inject constructor(
     public fun taxCalculation(item: TbItem) {
         item.taxes?.forEach { tax ->
             if (tax.isActive) {
+                Log.e(TAG, "tbitem:  ${Gson().toJson(item)}")
                 totalTaxAmount += if (tax.taxType == "Percentage") {
 
                     var modifierPrice = 0.0
