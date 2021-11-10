@@ -105,9 +105,32 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                             }
 
                             if (it.taxes?.isNotEmpty() == true) {
-                                it.taxes?.forEach {
-                                    totalTaxAmt += it.rate
-                                    guestAmt += it.rate
+                                it.taxes?.forEach {tax ->
+                                     if (tax.isActive) {
+                                         totalTaxAmt  += if (tax.taxType == "Percentage") {
+
+                                            var modifierPrice = 0.0
+                                            val price =
+                                                (it.price * it.itemQuantity) - it.discountPrice
+
+                                            it.modifiers.forEach {
+                                                modifierPrice += (it.price * it.itemQuantity)
+                                            }
+
+                                            val totalPrice = price + modifierPrice
+
+                                            val itemTaxPrice =
+                                                (tax.rate * totalPrice) / 100
+                                            Log.e("itemTaxPrice", "" + itemTaxPrice)
+                                            String.format("%.2f", itemTaxPrice)
+                                                .toDouble()
+                                        } else {
+
+                                            String.format("%.2f", tax.rate * it.itemQuantity)
+                                                .toDouble()
+                                        }
+                                    }
+                                    guestAmt += tax.rate
                                 }
 
 
@@ -129,7 +152,6 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                     break
                 }
             }
-            Log.e(TAG, "guestDividedAmt:  ${list.get(0).guestDividedAmt}")
             guestAmt += list.get(0).guestDividedAmt
 
             if (list.get(layoutPosition).customer != null) {
@@ -188,8 +210,11 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             Log.e(TAG, "MyTtotalServiceCharge  ${totalServiceCharge}")
             Log.e(TAG, "MYTtotalTaxAmt ${totalTaxAmt}")
             Log.e(TAG, "MYTguestAmt  ${guestAmt}")
-
-            binding.txtPay.setText("Pay " + MethodUtils.roundOffAmount(guestAmt + totalServiceCharge ))
+            Log.e(TAG, "DividedAmtGuest  ${list.get(0).guestDividedAmt}")
+            var finalAmt =
+                guestSubTotal + totalServiceCharge + totalTaxAmt + list.get(0).guestDividedAmt
+            Log.e(TAG, "finalAmt:  ${finalAmt}")
+            binding.txtPay.setText("Pay " + MethodUtils.roundOffAmount(finalAmt))
 
 
         }

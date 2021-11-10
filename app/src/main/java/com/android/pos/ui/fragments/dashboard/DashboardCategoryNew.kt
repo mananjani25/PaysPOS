@@ -35,6 +35,7 @@ import com.android.pos.data.model.CategoryTabModel
 import com.android.pos.data.model.DineInModel
 import com.android.pos.data.model.DineInOrderDetailAttributes
 import com.android.pos.data.model.responseModel.GetFloorPlanResponse
+import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ADD
 import com.android.pos.data.remote.Constants.BUNDLE_ORDER_ID
@@ -46,6 +47,7 @@ import com.android.pos.data.remote.Constants.CUSTOMER_NAME
 import com.android.pos.data.remote.Constants.DELETE
 import com.android.pos.data.remote.Constants.DIALOG_KEY_VARIATION_DETAILS
 import com.android.pos.data.remote.Constants.DINE_IN
+import com.android.pos.data.remote.Constants.DINE_IN_LIST_EDIT
 import com.android.pos.data.remote.Constants.DINE_IN_STATUS
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
 
@@ -106,6 +108,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private var cartList: ArrayList<CartModel> = arrayListOf()
     private lateinit var binding: FragmentDashboardCategoryNewBinding
     private var dineInFloorTableModel: GetFloorPlanResponse.Data.FloorPlanTable? = null
+    private var orderFloorDetails: GetOrderDetailsResponse.Data.FloorPlanTable =
+        GetOrderDetailsResponse.Data.FloorPlanTable()
 
     private val TAG = "DashboardCategoryNew"
 
@@ -327,6 +331,13 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     cartList.add(cartModel)
                 }
 
+                var orderTableData: GetOrderDetailsResponse.Data.FloorPlanTable? =
+                    arguments?.getParcelable("tableDetails")
+
+                dineInList.forEach {
+                    it.floorPlanTable = orderTableData
+                }
+
                 prefProvider.setValue(ORDER_TYPE, DINE_IN)
                 prefProvider.setValue(ORDER_TYPE_NAME, DINE_IN)
                 prefProvider.setValueInt(ORDER_TYPE_ID, 2)
@@ -533,7 +544,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                                 binding.layoutCart.txtTotalAmount.visibility = View.GONE
                                 binding.layoutCart.txtPay.visibility = View.GONE
                                 binding.layoutCart.txtDineInProceed.visibility = View.VISIBLE
-                                if (prefProvider.getValueboolean(DINE_IN_UPDATE, false)) {
+                                if (prefProvider.getValueboolean(DINE_IN_UPDATE, false) == true) {
 
                                     binding.layoutCart.txtDineInProceed.setText("Update and Proceed")
                                 } else {
@@ -1835,12 +1846,18 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         // Do positive stuff here
 
                         if (prefProvider.getValue(ORDER_TYPE, "").toString() == DINE_IN) {
-                            viewModel.getTableStatus(
-                                prefProvider.getValueInt(
-                                    Constants.DINE_IN_TABLE_ID,
-                                    0
-                                ), "Available"
+
+                            Log.e(
+                                TAG,
+                                "TableIdDineIn ${
+                                    dineInCartAdapter.getList().get(1).floorPlanTable?.id
+                                }"
                             )
+                            dineInCartAdapter.getList().get(1).floorPlanTable?.id?.let {
+                                viewModel.getTableStatus(
+                                    it, "Available"
+                                )
+                            }
                             viewModel.deleteCart()
                             isOrderUpdate = false
 
@@ -1851,6 +1868,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             clearCustomer()
                             hideOrderType()
                             hideOrderMenu()
+                            prefProvider.setValueboolean(DINE_IN_UPDATE, false)
 
                         } else {
                             viewModel.deleteCart()
@@ -1943,9 +1961,11 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     var request = viewModel.updateOrder(cartList[0])
 
                     Log.e(TAG, "DineinSenOrder  ${cartList[0].orderId}")
+                    prefProvider.setValueboolean(DINE_IN_UPDATE, false)
+                    prefProvider.setValueboolean(DINE_IN_LIST_EDIT, false)
+                    prefProvider.setValueboolean(DINE_IN_UPDATE, false)
                     cartList[0].orderId?.let { viewModel.updateOrderCall(it, request) }
 
-                    prefProvider.setValueboolean(DINE_IN_UPDATE, false)
 
                 }
             } else {
@@ -2002,7 +2022,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     private fun createDineInRequest() {
 
-        val floorModel = DineInOrderDetailAttributes(
+        var floorModel = DineInOrderDetailAttributes(
             floorPlanId = dineInFloorTableModel?.floorPlanId,
             floorPlanTableId = dineInFloorTableModel?.id,
             tableType = dineInFloorTableModel?.tableType,
@@ -2014,6 +2034,16 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
 
         )
+
+        if (floorModel.floorPlanId == null) {
+            floorModel.floorPlanId = cartList.get(0).dineInList?.get(1)?.floorPlanTable?.floorPlanId
+            floorModel.floorPlanTableId = cartList.get(0).dineInList?.get(1)?.floorPlanTable?.id
+            floorModel.tableType = cartList.get(0).dineInList?.get(1)?.floorPlanTable?.tableType
+            floorModel.tableNumber = cartList.get(0).dineInList?.get(1)?.floorPlanTable?.tableNumber
+            floorModel.chairCount = cartList.get(0).dineInList?.get(1)?.floorPlanTable?.chairCount
+
+
+        }
         val orderRequestModel = viewModel.createDineInOrderRequest(
             cartModel = cartList[0],
             subTotalPrice = viewModel.subTotalPrice,
@@ -2197,6 +2227,26 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         dineInFloorTableModel = arguments?.getParcelable("floorplan")
 
+
+        var orderDEtails: GetOrderDetailsResponse.Data.FloorPlanTable? =
+            arguments?.getParcelable("tableDetails")
+        if (orderDEtails != null) {
+            orderFloorDetails = orderDEtails
+        }
+        if (orderFloorDetails.id == null) {
+            orderFloorDetails.apply {
+                id = dineInFloorTableModel?.id
+                chairCount = dineInFloorTableModel?.chairCount
+                floorPlanId = dineInFloorTableModel?.floorPlanId
+                tableName = dineInFloorTableModel?.tableName.toString()
+                status = dineInFloorTableModel?.status.toString()
+
+
+            }
+
+        }
+        Log.e(TAG, "orderFloorDetailsAdd  ${Gson().toJson(orderFloorDetails)}")
+
         val dineInList: ArrayList<DineInModel> = arrayListOf()
         dineInList.add(DineInModel(0, true, 0, "Whole Table"))
         for (i in 1..numOfGuest) {
@@ -2205,7 +2255,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     0,
                     false,
                     0,
-                    "Guest $i"
+                    "Guest $i",
+                    floorPlanTable = orderFloorDetails
 
                 )
             )
