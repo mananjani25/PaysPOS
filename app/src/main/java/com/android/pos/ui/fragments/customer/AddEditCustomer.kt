@@ -185,6 +185,7 @@ class AddEditCustomer : Fragment() {
             if (editModel?.phones?.size != 0) {
                 viewModel.phoneNo.value =
                     AlertUtils.usNumberFormat(editModel?.phones?.get(0)?.phone_number!!).toString()
+                viewModel.phoneId = editModel.phones[0].id
             }
             viewModel.addCustomerDetails.value?.data?.email = editModel.email
 
@@ -214,7 +215,8 @@ class AddEditCustomer : Fragment() {
             }
 
 
-            binding.edtCompany.setText("company")
+            viewModel.addCustomerDetails.value?.data?.company = editModel.company ?: ""
+            //binding.edtCompany.setText(editModel.company)
             if (editModel.birth_date != null) {
                 binding.edtBirthDay.setText("${editModel.birth_date}")
             }

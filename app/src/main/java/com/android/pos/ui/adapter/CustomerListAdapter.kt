@@ -66,7 +66,7 @@ class CustomerListAdapter(
                 )
             ) {
                 binding.txtName.text =
-                    mModel.first_name + "" + mModel.last_name
+                    mModel.first_name + " " + mModel.last_name
 
             } else {
                 binding.txtName.text =
