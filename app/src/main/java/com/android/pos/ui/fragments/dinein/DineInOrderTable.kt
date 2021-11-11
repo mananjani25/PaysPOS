@@ -1136,7 +1136,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                         listTaxes.add(
                                             TaxData(
                                                 createdAt = it.createdAt,
-                                                id = it.taxId,
+                                                id = it.id,
                                                 locationId = prefProvider.getValueInt(
                                                     LOCATION_ID,
                                                     0
@@ -1149,7 +1149,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                                 isDefault = it.isDefault,
                                                 isCustomAmount = false,
                                                 itemPricing = "",
-                                                itemIds = arrayListOf()
+                                                itemIds = arrayListOf(),
+                                                orderTaxId = it.taxId
                                             )
                                         )
                                     }
@@ -1162,17 +1163,17 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                                     if (it.orderItemModifiers.isNotEmpty()) {
                                         var modifiers: ArrayList<Modifier> = arrayListOf()
-                                        it.orderItemModifiers.forEach {
+                                        it.orderItemModifiers.forEach { mod ->
                                             val model = Modifier()
-                                            model.id = it.id
-                                            model.itemQuantity = it.quantity
-                                            model.name = it.name
-                                            model.orderModifierId = it.orderItemId
-                                            model.price = it.price
+                                            model.id = mod.id
+                                            model.itemQuantity = mod.quantity
+                                            model.name = mod.name
+                                            model.orderModifierId = mod.orderItemId
+                                            model.price = mod.price
 
 
-                                            if (it.orderItemTaxes.isNotEmpty()) {
-                                                model.orderItemTaxes = it.orderItemTaxes
+                                            if (mod.orderItemTaxes.isNotEmpty()) {
+                                                model.orderItemTaxes = mod.orderItemTaxes
                                             }
 
                                             modifiers.add(model)
