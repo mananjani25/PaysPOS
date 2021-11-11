@@ -388,8 +388,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 cartList.add(model)
                 cartList[0].customer = assignCustomer
                 viewModel.addCart(cartList[0])
-            }
-            else{
+            } else {
                 cartList[0].customer = assignCustomer
                 viewModel.addCart(cartList[0])
             }
@@ -499,13 +498,21 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                             cartList.get(0).dineInList?.toCollection(
                                 arrayListOf()
-                            )?.let { it1 -> dineInCartAdapter.setList(it1) }
+                            )?.let { it1 ->
+
+                                dineInCartAdapter.setList(it1)
+                            }
 
                             if (cartList[0].items?.isNotEmpty() == true) {
 
                                 var dineList = dineInCartAdapter.getList()
                                 cartList[0].items?.forEach {
+
                                     if (it.isManualSales && dineList.isNotEmpty()) {
+                                        Log.e(TAG, "ManualtimeStamp:  ${it.timeStamp}")
+                                        if (it?.timeStamp == null || it?.timeStamp?.lowercase() == "null".lowercase()) {
+                                            it.timeStamp = viewModel.randomOfflineId()
+                                        }
                                         dineList[0].items.add(it)
 
                                     }

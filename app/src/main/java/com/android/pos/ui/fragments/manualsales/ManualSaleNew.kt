@@ -28,6 +28,8 @@ import com.android.pos.data.entities.*
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ADD
 import com.android.pos.data.remote.Constants.CUSTOMER_NAME
+import com.android.pos.data.remote.Constants.MANUAL_SALE_CATEGORY_ID
+import com.android.pos.data.remote.Constants.MANUAL_SALE_ITEM_ID
 import com.android.pos.databinding.FragmentManualSaleNewBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.ManualSaleCartAdapter
@@ -72,6 +74,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
         binding.footer.imgInfo.visibility = View.GONE
         binding.footer.imgDelete.visibility = View.GONE
         getServiceCharge()
+        Log.e(TAG, "CategoryId: ${prefProvider.getValueInt(MANUAL_SALE_CATEGORY_ID, 1)}")
+        Log.e(TAG, "CategoryItemId: ${prefProvider.getValueInt(MANUAL_SALE_ITEM_ID, 1)}")
 
         getDiscountList()
 
