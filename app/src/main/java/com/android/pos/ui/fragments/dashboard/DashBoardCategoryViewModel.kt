@@ -820,7 +820,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 it.items.forEach { tb ->
                     listItems.add(
                         GuestItemsAttributes(
-                            id=tb.guestItemId,
+                            id = tb.guestItemId,
                             orderItemId = tb.orderItemId,
                             quantity = tb.itemQuantity,
                             itemId = tb.itemId,
@@ -963,7 +963,6 @@ class DashBoardCategoryViewModel @Inject constructor(
 
         val orderItemTaxesAttributeList: ArrayList<OrderItemTaxesAttribute> =
             arrayListOf()
-
         items.taxes?.forEach { tax ->
 
             if (tax.isActive) {
@@ -977,6 +976,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 orderItemTaxesAttribute.name = tax.name.toString()
                 orderItemTaxesAttribute.rate = tax.rate
                 orderItemTaxesAttribute.taxId = tax.id
+                //orderItemTaxesAttribute.orderId = tax.orde
 
                 /*if (isUpdateOrder) {
                     orderItemTaxesAttribute.orderId = orderId
