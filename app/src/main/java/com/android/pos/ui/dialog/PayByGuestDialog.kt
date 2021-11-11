@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.MainApplication
@@ -68,6 +69,9 @@ class PayByGuestDialog : DialogFragment(), View.OnClickListener {
     private var floorPlanModel: GetFloorPlanResponse.Data.FloorPlanTable? = null
     private var isLastPayment: Boolean = false
 
+    private var isSplitByNo: Boolean = false
+    private var isSplitByAmount: Boolean = false
+    private var splitAfterAmount: Double = 0.0
 
     private val TAG = "PayByGuestDialog"
 
@@ -118,6 +122,39 @@ class PayByGuestDialog : DialogFragment(), View.OnClickListener {
             guestRequestModel = requireArguments().getParcelable("model")
             isLastPayment = requireArguments().getBoolean("isLastPayment")
             setupData()
+        }
+
+        setFragmentResultListener("request_key_split") { requestKey: String, bundle: Bundle ->
+            splitValue = bundle.getInt("split")
+
+            if (splitValue != -1) {
+
+                isSplitByNo = true
+                isSplitByAmount = false
+                splitAfterAmount = (totalPrice + tipAmount) / splitValue
+
+                MethodUtils.setPriceTextView(binding.txtTotalAmount, splitAfterAmount)
+                val totalAmountFormat = MethodUtils.roundOffAmount(totalPrice)
+
+                binding.txtSplitValue.text =
+                    "Out of $totalAmountFormat Total, Payment 1 of $splitValue"
+
+                getCashPaymentOptionList(splitAfterAmount)
+            } else {
+                isSplitByAmount = true
+                isSplitByNo = false
+                val splitValue = bundle.getDouble("splitByAmount")
+
+                splitAfterAmount = splitValue
+
+                MethodUtils.setPriceTextView(binding.txtTotalAmount, splitAfterAmount)
+                val totalAmountFormat = MethodUtils.roundOffAmount(totalPrice)
+
+                binding.txtSplitValue.text =
+                    "Out of $totalAmountFormat Total, Payment 1 of $splitValue"
+
+                getCashPaymentOptionList(splitAfterAmount)
+            }
         }
 
     }
@@ -225,6 +262,7 @@ class PayByGuestDialog : DialogFragment(), View.OnClickListener {
         binding.txtThirdAmount.setOnClickListener(this)
         binding.txtFourthAmount.setOnClickListener(this)
         binding.txtAddTips.setOnClickListener(this)
+        binding.txtSplitAmount.setOnClickListener(this)
 
 
         if (cartList?.orderType == Constants.DINE_IN) {
@@ -241,6 +279,16 @@ class PayByGuestDialog : DialogFragment(), View.OnClickListener {
             R.id.imgBack -> {
                 dialog?.dismiss()
                 findNavController().popBackStack()
+            }
+            R.id.txtSplitAmount -> {
+
+                val bundle = Bundle()
+                bundle.putDouble("totalPrice", (totalPrice + tipAmount))
+                bundle.putInt("splitValue", splitValue)
+                findNavController().navigate(
+                    R.id.action_payByGuestDialog_to_splitAmountFragment,
+                    bundle
+                )
             }
 
             R.id.txtOriginalAmount -> {

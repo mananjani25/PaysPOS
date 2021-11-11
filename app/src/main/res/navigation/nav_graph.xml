@@ -915,6 +915,9 @@
             app:destination="@id/dashboardCategoryNew"
             app:popUpTo="@id/payByGuestDialog"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_payByGuestDialog_to_splitAmountFragment"
+            app:destination="@id/splitAmountFragment" />
     </dialog>
     <fragment
         android:id="@+id/reportSummaryFragment"

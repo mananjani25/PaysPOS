@@ -9,17 +9,16 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/white"
-        android:orientation="horizontal"
-        android:weightSum="1">
+        android:orientation="horizontal">
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="0.5"
+            android:layout_weight="1"
             android:orientation="vertical">
 
             <androidx.appcompat.widget.LinearLayoutCompat
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
@@ -61,7 +60,7 @@
                     android:text="@string/split_amount"
                     android:textColor="@color/btnColor"
                     android:textSize="@dimen/_6mdpi"
-                    android:visibility="gone" />
+                    android:visibility="visible" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtAddTips"
@@ -90,7 +89,7 @@
                 android:layout_height="1dp" />
 
             <androidx.appcompat.widget.LinearLayoutCompat
-                android:layout_width="@dimen/_250sdp"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:padding="@dimen/_10sdp">
