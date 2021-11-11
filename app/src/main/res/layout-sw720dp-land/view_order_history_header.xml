@@ -33,16 +33,16 @@
             android:text="@string/pay_type" />
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/txtTotalEearned"
+            android:id="@+id/txtLoyaltyPoints"
             style="@style/HistoryItemHeaderText"
             android:gravity="center"
-            android:text="@string/loyality_points" />
+            android:text="@string/loyalty_points" />
 
-        <androidx.appcompat.widget.AppCompatTextView
+        <!--<androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txtReorder"
             style="@style/HistoryItemHeaderText"
             android:gravity="center"
-            android:text="@string/reorder" />
+            android:text="@string/reorder" />-->
 
     </LinearLayout>
 </layout>

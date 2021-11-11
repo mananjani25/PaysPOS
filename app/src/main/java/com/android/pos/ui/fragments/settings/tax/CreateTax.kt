@@ -19,6 +19,7 @@ import com.android.pos.data.remote.Constants.CREATE_TAX
 import com.android.pos.data.remote.Constants.DIALOG_KEY
 import com.android.pos.data.remote.Constants.DIALOG_KEY_TAX
 import com.android.pos.data.remote.Constants.INCLUDE_TAX
+import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.data.remote.Constants.SETTING_KEY
 import com.android.pos.databinding.DialogCreateNewTaxBinding
 import com.android.pos.utils.AlertUtils
@@ -171,7 +172,7 @@ class CreateTax : Fragment() {
     private fun backPressManage() {
         val navController = findNavController()
         navController.previousBackStackEntry?.savedStateHandle?.set(
-            SETTING_KEY,
+            KEY,
             CREATE_TAX
         )
         navController.popBackStack()
@@ -228,7 +229,7 @@ class CreateTax : Fragment() {
                     AlertUtils.showCustomAlertWithListenerWithOK(
                         it, createTaxResponse.message
                     ) { _, _ ->
-                        findNavController().navigateUp()
+                        backPressManage()
                     }
                 }
 
