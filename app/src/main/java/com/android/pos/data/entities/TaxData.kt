@@ -41,3 +41,5 @@ data class TaxData(
         "%.2f", rate ?: 0.0
     ) + "%"
 }
+    var orderTaxId: Int = 0
+) : Parcelable

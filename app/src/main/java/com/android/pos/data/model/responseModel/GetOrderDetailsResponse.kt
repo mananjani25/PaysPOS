@@ -212,8 +212,8 @@ data class GetOrderDetailsResponse(
             @SerializedName("floor_plan_id") var floorPlanId: Int?=null,
             @SerializedName("table_type") var tableType: String?=null,
             @SerializedName("status") var status: String?=null,
-            @SerializedName("height") var height: Int?=null,
-            @SerializedName("width") var width: Int?=null,
+            @SerializedName("height") var height: Double?=null,
+            @SerializedName("width") var width: Double?=null,
             @SerializedName("style") var style: String?=null,
             @SerializedName("created_at") var createdAt: String?=null,
             @SerializedName("updated_at") var updatedAt: String?=null,
@@ -336,7 +336,9 @@ data class GetOrderDetailsResponse(
                     @SerializedName("tax_total_amount")
                     val taxTotalAmount: Double,
                     @SerializedName("updated_at")
-                    val updatedAt: String
+                    val updatedAt: String,
+                    @SerializedName("tax_type")
+                    val taxType: String
                 ) : Parcelable
             }
 

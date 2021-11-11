@@ -18,6 +18,7 @@ import com.android.pos.data.remote.Constants.BUSINESS_WEBSITE
 import com.android.pos.data.remote.Constants.DELETE
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.DINE_IN_LIST_EDIT
+import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
 import com.android.pos.data.remote.Constants.UPDATE
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.TaxServiceChargeRepository
@@ -831,7 +832,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                     listItems.add(
                         GuestItemsAttributes(
-                            id=tb.guestItemId,
+                            id = tb.guestItemId,
                             orderItemId = tb.orderItemId,
                             quantity = tb.itemQuantity,
                             itemId = tb.itemId,
@@ -952,7 +953,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                 }
                 orderItemsAttribute.totalPrice =
                     MethodUtils.roundOffAmountDouble(item.price * item.itemQuantity)
-                orderItemsAttribute.orderItemTaxesAttributes = orderItemTaxesAttributes(item)
+                Log.e(TAG, "orderId:  ${cartModel.orderId}")
+                orderItemsAttribute.orderItemTaxesAttributes =
+                    orderItemTaxesAttributes(item, orderId = cartModel.orderId)
 
                 orderItemsAttribute.orderItemModifiersAttributes =
                     orderItemModifierAttributes(item, cartModel.terminalId)
@@ -974,11 +977,14 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     }
 
-    private fun orderItemTaxesAttributes(items: TbItem): List<OrderItemTaxesAttribute> {
+    private fun orderItemTaxesAttributes(
+        items: TbItem,
+        orderId: Int? = null
+    ): List<OrderItemTaxesAttribute> {
+
 
         val orderItemTaxesAttributeList: ArrayList<OrderItemTaxesAttribute> =
             arrayListOf()
-
         items.taxes?.forEach { tax ->
 
             if (tax.isActive) {
@@ -991,7 +997,23 @@ class DashBoardCategoryViewModel @Inject constructor(
                 orderItemTaxesAttribute.isTaxRemoved = true
                 orderItemTaxesAttribute.name = tax.name.toString()
                 orderItemTaxesAttribute.rate = tax.rate
-                orderItemTaxesAttribute.taxId = tax.id
+
+                if (prefProvider.getValueboolean(DINE_IN_UPDATE, false)) {
+                    if (items.isEdited && items.orderItemId == null) {
+                        orderItemTaxesAttribute.taxId = tax.id
+                    } else {
+                        orderItemTaxesAttribute.taxId = tax.orderTaxId
+                        orderItemTaxesAttribute.id = tax.id
+                        orderItemTaxesAttribute.orderItemId = items.orderItemId
+                        orderItemTaxesAttribute.orderId = orderId
+                        Log.e(TAG, "IDTax:  ${tax.id}")
+                    }
+                } else {
+                    orderItemTaxesAttribute.taxId = tax.id
+                }
+
+
+                //orderItemTaxesAttribute.orderId = tax.orde
 
                 /*if (isUpdateOrder) {
                     orderItemTaxesAttribute.orderId = orderId
@@ -1038,6 +1060,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                 /*if (isUpdateOrder && it.orderModifierId != null)
                     id = it.orderModifierId
 */
+                if (item.orderItemId != null) {
+                    id = it.id
+                }
                 name = it.name
                 price = it.price
                 order_item_id = item.orderItemId
@@ -1061,325 +1086,340 @@ class DashBoardCategoryViewModel @Inject constructor(
         val orderItemTaxesAttributeList: ArrayList<OrderModifierTaxesAttribute> =
             arrayListOf()
 
-        items.taxes?.forEach { tax ->
-            if (tax.isActive) {
-                val orderModifierTaxesAttribute = OrderModifierTaxesAttribute()
-                /*  if (isUpdateOrder && tax.orderTaxId != null)
-                      orderModifierTaxesAttribute.id = tax.orderTaxId
-  */
-
-                orderModifierTaxesAttribute.order_item_modifier_id = modifier.id
-                orderModifierTaxesAttribute.tax_id = tax.id
-                orderModifierTaxesAttribute.isDefault = tax.isDefault
-                orderModifierTaxesAttribute.is_tax_removed = false
-                orderModifierTaxesAttribute.is_modifier = true
-                orderModifierTaxesAttribute.category_id = items.categoryId
-                orderModifierTaxesAttribute.terminal_id = terminalId
-                orderModifierTaxesAttribute.modifier_id = modifier.id!!
-                orderModifierTaxesAttribute.timestamp = System.currentTimeMillis().toString()
-                orderModifierTaxesAttribute.name = tax.name.toString()
-                orderModifierTaxesAttribute.amount = tax.rate
-
-                /* if (isUpdateOrder) {
-                     orderModifierTaxesAttribute.order_id = orderId
-                     orderModifierTaxesAttribute.order_item_id = items.orderItemId
-                 }
- */
-                if (tax.taxType == "Percentage") {
-                    val itemTaxPrice =
-                        (tax.rate * (modifier.price * modifier.itemQuantity)) / 100
-                    orderModifierTaxesAttribute.taxTotalAmount =
-                        MethodUtils.roundOffAmountDouble(itemTaxPrice)
+        modifier.orderItemTaxes.forEach { tax ->
+            val orderModifierTaxesAttribute = OrderModifierTaxesAttribute()
+            /*  if (isUpdateOrder && tax.orderTaxId != null)
+                  orderModifierTaxesAttribute.id = tax.orderTaxId
+*/
+            if (prefProvider.getValueboolean(DINE_IN_UPDATE, false)) {
+                if (items.isEdited && items.orderItemId == null) {
+                    orderModifierTaxesAttribute.tax_id = tax?.taxId
                 } else {
+                    orderModifierTaxesAttribute.tax_id = tax?.taxId
+                    orderModifierTaxesAttribute.id = tax?.id
 
-                    val ss = tax.rate * modifier.itemQuantity
+                    Log.e(TAG, "IDTax:  ${tax?.id}")
+                }
+            } else {
+                orderModifierTaxesAttribute.tax_id = tax?.id
+            }
 
-                    orderModifierTaxesAttribute.taxTotalAmount =
-                        MethodUtils.roundOffAmountDouble((ss))
+
+
+            orderModifierTaxesAttribute.order_item_modifier_id = modifier.id
+            //orderModifierTaxesAttribute.tax_id = tax.id
+            orderModifierTaxesAttribute.isDefault = tax?.isDefault == true
+            orderModifierTaxesAttribute.is_tax_removed = false
+            orderModifierTaxesAttribute.is_modifier = true
+            orderModifierTaxesAttribute.category_id = items.categoryId
+            orderModifierTaxesAttribute.terminal_id = terminalId
+            orderModifierTaxesAttribute.modifier_id = modifier.id!!
+            orderModifierTaxesAttribute.timestamp = System.currentTimeMillis().toString()
+            orderModifierTaxesAttribute.name = tax?.name.toString()
+            if (tax?.rate != null) {
+                orderModifierTaxesAttribute.amount = tax?.rate
+            }
+
+            /* if (isUpdateOrder) {
+                 orderModifierTaxesAttribute.order_id = orderId
+                 orderModifierTaxesAttribute.order_item_id = items.orderItemId
+             }
+*/
+            if (tax?.taxType == "Percentage") {
+                val itemTaxPrice =
+                    (tax?.rate?.times((modifier.price * modifier.itemQuantity)))?.div(100)
+                orderModifierTaxesAttribute.taxTotalAmount =
+                    itemTaxPrice?.let { MethodUtils.roundOffAmountDouble(it) }!!
+            } else {
+
+                val ss = tax?.rate?.times(modifier.itemQuantity)
+
+                orderModifierTaxesAttribute.taxTotalAmount =
+                    MethodUtils.roundOffAmountDouble((ss!!))
+            }
+
+
+            orderItemTaxesAttributeList.add(orderModifierTaxesAttribute)
+        }
+
+
+
+    return orderItemTaxesAttributeList
+
+}
+
+private fun orderItemVariationAttributes(
+    item: TbItem
+): OrderItemVariationAttribute? {
+
+    if (item.variationsAttributes.isNotEmpty()) {
+
+        item.variationsAttributes.forEach {
+
+            val orderItemVariationAttribute = OrderItemVariationAttribute()
+            orderItemVariationAttribute.name = it.name
+            orderItemVariationAttribute.price = it.price!!
+            orderItemVariationAttribute.totalPrice = it.price!! * item.itemQuantity
+            orderItemVariationAttribute.variationId = it.id!!
+            orderItemVariationAttribute.quantity = item.itemQuantity
+
+            /*if (isUpdateOrder) {
+                orderItemVariationAttribute.orderId = orderId
+                orderItemVariationAttribute.order_item_id = item.orderItemId
+                orderItemVariationAttribute.id = it.orderVariationId
+            }*/
+
+            return orderItemVariationAttribute
+
+        }
+
+    }
+
+    return null
+}
+
+fun submit(orderRequestModel: OrderRequestModel) {
+
+    _showProgress.value = Event(true)
+
+    viewModelScope.launch {
+
+        val resource: Resource<CreateOrderResponse> =
+
+            posRepository.createOrder(orderRequestModel)
+
+
+        when (resource.status) {
+            Status.SUCCESS -> {
+                _showProgress.value = Event(false)
+                resource.data.let { response ->
+                    if (response?.status == 200) {
+
+                        resource.data?.let { createOrderResponse ->
+                            _Basedata.value = Event(createOrderResponse.data)
+
+                        }
+
+                    } else {
+                        _snackbarText.value = Event(resource.message)
+                    }
                 }
 
-
-                orderItemTaxesAttributeList.add(orderModifierTaxesAttribute)
-            }
-        }
-
-
-        return orderItemTaxesAttributeList
-
-    }
-
-    private fun orderItemVariationAttributes(
-        item: TbItem
-    ): OrderItemVariationAttribute? {
-
-        if (item.variationsAttributes.isNotEmpty()) {
-
-            item.variationsAttributes.forEach {
-
-                val orderItemVariationAttribute = OrderItemVariationAttribute()
-                orderItemVariationAttribute.name = it.name
-                orderItemVariationAttribute.price = it.price!!
-                orderItemVariationAttribute.totalPrice = it.price!! * item.itemQuantity
-                orderItemVariationAttribute.variationId = it.id!!
-                orderItemVariationAttribute.quantity = item.itemQuantity
-
-                /*if (isUpdateOrder) {
-                    orderItemVariationAttribute.orderId = orderId
-                    orderItemVariationAttribute.order_item_id = item.orderItemId
-                    orderItemVariationAttribute.id = it.orderVariationId
-                }*/
-
-                return orderItemVariationAttribute
-
             }
 
+            Status.ERROR -> {
+                _snackbarText.value = Event(resource.message)
+                _showProgress.value = Event(false)
+            }
+
+            Status.LOADING -> {
+                _showProgress.value = Event(true)
+            }
         }
-
-        return null
     }
+}
 
-    fun submit(orderRequestModel: OrderRequestModel) {
+fun getTableStatus(tableId: Int, status: String) {
+    _showProgress.value = Event(true)
+    viewModelScope.launch {
+        val resource = posRepository.getTableStatus(
+            tableId, prefProvider.getValueInt(
+                Constants.EMPLOYEE_ID, 0
+            ), prefProvider.getValueInt(Constants.TERMINAL_ID, 0), status
+        )
 
-        _showProgress.value = Event(true)
+        when (resource.status) {
+            Status.SUCCESS -> {
+                _showProgress.value = Event(false)
+                resource.data.let { response ->
+                    Log.e(TAG, "getTableStatusResponse:  ${Gson().toJson(response)}")
+                    if (response?.status == 200) {
+                        _tableStatusSuccess.value = Event(response.status)
 
-        viewModelScope.launch {
-
-            val resource: Resource<CreateOrderResponse> =
-
-                posRepository.createOrder(orderRequestModel)
-
-
-            when (resource.status) {
-                Status.SUCCESS -> {
-                    _showProgress.value = Event(false)
-                    resource.data.let { response ->
-                        if (response?.status == 200) {
-
-                            resource.data?.let { createOrderResponse ->
-                                _Basedata.value = Event(createOrderResponse.data)
-
-                            }
-
-                        } else {
-                            _snackbarText.value = Event(resource.message)
-                        }
+                    } else {
+                        _tableStatus.value = response?.let { Event(it.message) }
                     }
 
                 }
+            }
 
-                Status.ERROR -> {
-                    _snackbarText.value = Event(resource.message)
-                    _showProgress.value = Event(false)
-                }
+            Status.ERROR -> {
+                _snackbarText.value = Event(resource.message.toString())
+                _showProgress.value = Event(false)
+            }
 
-                Status.LOADING -> {
-                    _showProgress.value = Event(true)
-                }
+            Status.LOADING -> {
+                _showProgress.value = Event(true)
             }
         }
+
     }
 
-    fun getTableStatus(tableId: Int, status: String) {
-        _showProgress.value = Event(true)
-        viewModelScope.launch {
-            val resource = posRepository.getTableStatus(
-                tableId, prefProvider.getValueInt(
-                    Constants.EMPLOYEE_ID, 0
-                ), prefProvider.getValueInt(Constants.TERMINAL_ID, 0), status
+}
+
+fun updateOrder(cartModel: CartModel): OrderRequestModel {
+    val orderModel: OrderAttributeRequestModel = OrderAttributeRequestModel()
+    var ttotalDiscount = totalDiscount
+    orderModel.apply {
+        date = TimeFormatUtils.getCurrentDate()
+
+        employeeId = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+        locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1)
+        terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
+        note = ""
+        openOrderType = "DineIn"
+        orderTypeId = 2
+        subTotal = MethodUtils.roundOffAmountDouble(subTotalPrice)
+        totalAmount = MethodUtils.roundOffAmountDouble(totalPrice)
+        totalDiscount = MethodUtils.roundOffAmountDouble(ttotalDiscount)
+        totalServiceCharges = totalServiceCharge
+        totalTaxAmount = totalTax
+        orderItemsAttributes = dineInOrderItemAttributed(cartModel)
+        paymentAttributes =
+            paymentAttributes(
+                cartModel,
+                totalPrice,
+                subTotalPrice,
+                totalServiceCharge,
+                totalTax,
+                totalDiscount, 0.0
             )
 
-            when (resource.status) {
-                Status.SUCCESS -> {
-                    _showProgress.value = Event(false)
-                    resource.data.let { response ->
-                        Log.e(TAG, "getTableStatusResponse:  ${Gson().toJson(response)}")
-                        if (response?.status == 200) {
-                            _tableStatusSuccess.value = Event(response.status)
+        orderServiceChargesAttributes =
+            orderServiceChargesAttributes(cartModel, subTotalPrice)
 
-                        } else {
-                            _tableStatus.value = response?.let { Event(it.message) }
+        guestsAttributes = getGuestsAttributes(cartModel)
+
+
+        /*var listTbItem: ArrayList<TbItem> = arrayListOf()
+        for (i in 0 until cartModel.dineInList?.size!!) {
+            listTbItem.addAll(cartModel.dineInList!!.get(i).items)
+        }
+        */
+
+
+    }
+
+
+    return OrderRequestModel(false, orderModel)
+
+
+}
+
+fun updateOrderCall(orderId: Int, orderRequestModel: OrderRequestModel) {
+    _showProgress.value = Event(true)
+
+    viewModelScope.launch {
+        val resource = posRepository.updateOrder(orderId, orderRequestModel)
+
+        when (resource.status) {
+            Status.SUCCESS -> {
+                _showProgress.value = Event(false)
+                _updateOrder.value = Event(resource.data?.message)
+
+            }
+            Status.ERROR -> {
+                _snackbarText.value = Event(resource.message)
+                _showProgress.value = Event(false)
+            }
+            Status.LOADING -> {
+                _showProgress.value = Event(true)
+
+            }
+
+        }
+
+
+    }
+
+}
+
+
+fun syncInventoryModule() {
+    _showProgress.value = Event(true)
+    viewModelScope.launch {
+        val resource = posRepository.syncInventory()
+        when (resource.status) {
+            Status.SUCCESS -> {
+
+                resource.data.let { response ->
+                    if (response?.status == 200) {
+                        posRepository.saveDatabase(response)
+
+
+                    } else {
+                        _tableStatus.value = response?.let { Event(it.message) }
+                    }
+
+                    syncSettingModule()
+
+                }
+            }
+
+            Status.ERROR -> {
+                _snackbarText.value = Event(resource.message.toString())
+                _showProgress.value = Event(false)
+            }
+
+            Status.LOADING -> {
+                _showProgress.value = Event(true)
+            }
+        }
+
+    }
+
+}
+
+private fun syncSettingModule() {
+    viewModelScope.launch {
+        val resource = posRepository.syncVenueDetails()
+
+        when (resource.status) {
+            Status.SUCCESS -> {
+                _showProgress.value = Event(false)
+                resource.data.let { venueDetailsResponse ->
+                    if (venueDetailsResponse?.status == 200) {
+
+                        resource.data?.let {
+                            Log.e(TAG, "FullData  ${Gson().toJson(it)}")
+
+                            prefProvider.setValue(BUSINESS_NAME, it.data.businessName)
+                            prefProvider.setValue(BUSINESS_PHONE_NO, it.data.phoneNumber)
+                            prefProvider.setValue(
+                                BUSINESS_WEBSITE,
+                                it.data.businessWebsite.toString()
+                            )
+
+                            taxServiceChargeRepository.addAllTaxDatabase(it.data.taxes)
+
+                            posRepository.addAllNotesDatabase(it.data.notes)
+                            tipDiscountRepository.addDiscount(it.data.discounts)
+                            taxServiceChargeRepository.addServiceCharges(it.data.service_charges)
+                            posRepository.addTerminalsDatabase(it.data.terminals)
+                            tipDiscountRepository.addTips(it.data.tip_settings)
+                            posRepository.addCustomerReceiptSettings(it.data.customerReceipt)
+                            posRepository.addKitchenReceiptSettings(it.data.kitchenReceipt)
+
                         }
 
+                        prefProvider.setValueboolean(Constants.SYNC_DATA, true)
+                    } else {
+                        _snackbarText.value = Event(resource.message)
                     }
                 }
-
-                Status.ERROR -> {
-                    _snackbarText.value = Event(resource.message.toString())
-                    _showProgress.value = Event(false)
-                }
-
-                Status.LOADING -> {
-                    _showProgress.value = Event(true)
-                }
             }
 
+            Status.ERROR -> {
+                _snackbarText.value = Event(resource.message)
+                _showProgress.value = Event(false)
+            }
+
+            Status.LOADING -> {
+                _showProgress.value = Event(true)
+            }
         }
 
     }
 
-    fun updateOrder(cartModel: CartModel): OrderRequestModel {
-        val orderModel: OrderAttributeRequestModel = OrderAttributeRequestModel()
-        var ttotalDiscount = totalDiscount
-        orderModel.apply {
-            date = TimeFormatUtils.getCurrentDate()
-
-            employeeId = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
-            locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1)
-            terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
-            note = ""
-            openOrderType = "DineIn"
-            orderTypeId = 2
-            subTotal = MethodUtils.roundOffAmountDouble(subTotalPrice)
-            totalAmount = MethodUtils.roundOffAmountDouble(totalPrice)
-            totalDiscount = MethodUtils.roundOffAmountDouble(ttotalDiscount)
-            totalServiceCharges = totalServiceCharge
-            totalTaxAmount = totalTax
-            orderItemsAttributes = dineInOrderItemAttributed(cartModel)
-            paymentAttributes =
-                paymentAttributes(
-                    cartModel,
-                    totalPrice,
-                    subTotalPrice,
-                    totalServiceCharge,
-                    totalTax,
-                    totalDiscount, 0.0
-                )
-
-            orderServiceChargesAttributes =
-                orderServiceChargesAttributes(cartModel, subTotalPrice)
-
-            guestsAttributes = getGuestsAttributes(cartModel)
-
-
-            /*var listTbItem: ArrayList<TbItem> = arrayListOf()
-            for (i in 0 until cartModel.dineInList?.size!!) {
-                listTbItem.addAll(cartModel.dineInList!!.get(i).items)
-            }
-            */
-
-
-        }
-
-
-        return OrderRequestModel(false, orderModel)
-
-
-    }
-
-    fun updateOrderCall(orderId: Int, orderRequestModel: OrderRequestModel) {
-        _showProgress.value = Event(true)
-
-        viewModelScope.launch {
-            val resource = posRepository.updateOrder(orderId, orderRequestModel)
-
-            when (resource.status) {
-                Status.SUCCESS -> {
-                    _showProgress.value = Event(false)
-                    _updateOrder.value = Event(resource.data?.message)
-
-                }
-                Status.ERROR -> {
-                    _snackbarText.value = Event(resource.message)
-                    _showProgress.value = Event(false)
-                }
-                Status.LOADING -> {
-                    _showProgress.value = Event(true)
-
-                }
-
-            }
-
-
-        }
-
-    }
-
-
-    fun syncInventoryModule() {
-        _showProgress.value = Event(true)
-        viewModelScope.launch {
-            val resource = posRepository.syncInventory()
-            when (resource.status) {
-                Status.SUCCESS -> {
-
-                    resource.data.let { response ->
-                        if (response?.status == 200) {
-                            posRepository.saveDatabase(response)
-
-
-                        } else {
-                            _tableStatus.value = response?.let { Event(it.message) }
-                        }
-
-                        syncSettingModule()
-
-                    }
-                }
-
-                Status.ERROR -> {
-                    _snackbarText.value = Event(resource.message.toString())
-                    _showProgress.value = Event(false)
-                }
-
-                Status.LOADING -> {
-                    _showProgress.value = Event(true)
-                }
-            }
-
-        }
-
-    }
-
-    private fun syncSettingModule() {
-        viewModelScope.launch {
-            val resource = posRepository.syncVenueDetails()
-
-            when (resource.status) {
-                Status.SUCCESS -> {
-                    _showProgress.value = Event(false)
-                    resource.data.let { venueDetailsResponse ->
-                        if (venueDetailsResponse?.status == 200) {
-
-                            resource.data?.let {
-                                Log.e(TAG, "FullData  ${Gson().toJson(it)}")
-
-                                prefProvider.setValue(BUSINESS_NAME, it.data.businessName)
-                                prefProvider.setValue(BUSINESS_PHONE_NO, it.data.phoneNumber)
-                                prefProvider.setValue(
-                                    BUSINESS_WEBSITE,
-                                    it.data.businessWebsite.toString()
-                                )
-
-                                taxServiceChargeRepository.addAllTaxDatabase(it.data.taxes)
-
-                                posRepository.addAllNotesDatabase(it.data.notes)
-                                tipDiscountRepository.addDiscount(it.data.discounts)
-                                taxServiceChargeRepository.addServiceCharges(it.data.service_charges)
-                                posRepository.addTerminalsDatabase(it.data.terminals)
-                                tipDiscountRepository.addTips(it.data.tip_settings)
-                                posRepository.addCustomerReceiptSettings(it.data.customerReceipt)
-                                posRepository.addKitchenReceiptSettings(it.data.kitchenReceipt)
-
-                            }
-
-                            prefProvider.setValueboolean(Constants.SYNC_DATA, true)
-                        } else {
-                            _snackbarText.value = Event(resource.message)
-                        }
-                    }
-                }
-
-                Status.ERROR -> {
-                    _snackbarText.value = Event(resource.message)
-                    _showProgress.value = Event(false)
-                }
-
-                Status.LOADING -> {
-                    _showProgress.value = Event(true)
-                }
-            }
-
-        }
-
-    }
+}
 }
