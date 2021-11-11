@@ -793,9 +793,9 @@ class PaymentViewModel @Inject constructor(
                 orderItemTaxesAttribute.rate = tax.rate
                 orderItemTaxesAttribute.taxId = tax.id
 
+                orderItemTaxesAttribute.orderItemId = items.orderItemId
+                orderItemTaxesAttribute.orderId = orderId
                 if (isUpdateOrder) {
-                    orderItemTaxesAttribute.orderId = orderId
-                    orderItemTaxesAttribute.orderItemId = items.orderItemId
                 }
 
                 if (tax.taxType == "Percentage") {

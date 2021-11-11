@@ -2517,12 +2517,22 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
             cartList.get(0).orderType = DINE_IN
 
-            viewModel.cartLogic(
-                cartList,
-                data,
-                DELETE,
-                dineInList = dineInCartAdapter.getList()
-            )
+            if (prefProvider.getValueboolean(DINE_IN_UPDATE, false)) {
+
+
+                var list = dineInCartAdapter.getList()
+                /*list.get(headerPosition).*/
+
+
+            } else {
+
+                viewModel.cartLogic(
+                    cartList,
+                    data,
+                    DELETE,
+                    dineInList = dineInCartAdapter.getList()
+                )
+            }
             dialog.dismiss()
         }
         btnAddDiscount.setOnClickListener {
