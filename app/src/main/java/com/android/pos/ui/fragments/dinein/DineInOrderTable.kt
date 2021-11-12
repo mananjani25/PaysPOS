@@ -276,8 +276,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         subTotal += (it.price * it.itemQuantity) - it.discountPrice
                         if (it.modifiers.isNotEmpty()) {
                             it.modifiers.forEach {
-
-
                                 subTotal += it.itemQuantity * it.price
                             }
                         }
@@ -295,33 +293,34 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             var model = GuestPaymentRequest(
                 PaymentAttributes().apply {
-                    amount = total
+                    amount = MethodUtils.roundOffAmountDouble(subTotalWT + serviceCharge + viewModel.totalTaxAmount)
                     cardName = ""
                     cardNumber = ""
                     cardType = ""
                     cashDiscount = 0.0
                     cashDiscountFee = 0.0
                     employeeId = prefProvider.getValueInt(EMPLOYEE_ID, 0)
-                    taxAmount = totalTax
-                    subTotalPrice = subTotal
+                    taxAmount = MethodUtils.roundOffAmountDouble(viewModel.totalTaxAmount)
+                    subTotalPrice = MethodUtils.roundOffAmountDouble(subTotalWT)
                     offlineId = randomOfflineId()
                     payableType = "GuestTab"
                     paymentType = "Cash"
                     transactionId = randomOfflineId()
                     terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
+                    serviceChargeAmount = MethodUtils.roundOffAmountDouble(serviceCharge)
 
                 }
             )
 
 
             val bundle = Bundle()
-            bundle.putDouble("totalPrice", total)
-            bundle.putDouble("subTotalPrice", subTotal)
-            bundle.putDouble("totalTax", totalTax)
+            bundle.putDouble("totalPrice", MethodUtils.roundOffAmountDouble(subTotalWT + serviceCharge + viewModel.totalTaxAmount))
+            bundle.putDouble("subTotalPrice", MethodUtils.roundOffAmountDouble(subTotalWT))
+            bundle.putDouble("totalTax", MethodUtils.roundOffAmountDouble(viewModel.totalTaxAmount))
             bundle.putParcelable("model", model)
             bundle.putParcelable("floorPlan", floorPlanModel)
             bundle.putBoolean("isTotalPayment", true)
-            bundle.putDouble("totalServiceCharge", 0.0)
+            bundle.putDouble("totalServiceCharge", MethodUtils.roundOffAmountDouble(serviceCharge))
             bundle.putDouble("totalDiscount", 0.0)
             bundle.putBoolean("isTotalPayment", true)
             bundle.putBoolean("isLastPayment", true)

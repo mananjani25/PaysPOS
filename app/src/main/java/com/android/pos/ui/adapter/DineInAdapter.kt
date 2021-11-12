@@ -50,7 +50,7 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>(), MyCall
             binding.executePendingBindings()
             itemAdapter = CartAdapter()
             binding.rvCart.adapter = itemAdapter
-            swipeListener(binding.rvCart, layoutPosition, binding.root.context)
+            //swipeListener(binding.rvCart, layoutPosition, binding.root.context)
 
             itemAdapter.addCart(list.get(layoutPosition).items)
             Log.e(TAG, "Customer:  ${list.get(layoutPosition).customer}")
