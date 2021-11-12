@@ -946,10 +946,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                 orderItemsAttribute.quantity = item.itemQuantity
                 orderItemsAttribute.terminalId = cartModel.terminalId
 
-                Log.e(TAG,"TimeStampMo: ${item.timeStamp}")
+                Log.e(TAG, "TimeStampMo: ${item.timeStamp}")
                 if (item.timeStamp == null || item.timeStamp?.lowercase() == "null".lowercase()) {
                     orderItemsAttribute.timestamp = randomOfflineId()
-                    Log.e(TAG,"Timetimestamp  ${orderItemsAttribute.timestamp}")
+                    Log.e(TAG, "Timetimestamp  ${orderItemsAttribute.timestamp}")
                 } else {
                     orderItemsAttribute.timestamp = item.timeStamp.toString()
                 }
@@ -1133,8 +1133,11 @@ class DashBoardCategoryViewModel @Inject constructor(
             if (tax?.taxType == "Percentage") {
                 val itemTaxPrice =
                     (tax?.rate?.times((modifier.price * modifier.itemQuantity)))?.div(100)
-                orderModifierTaxesAttribute.taxTotalAmount =
-                    itemTaxPrice?.let { MethodUtils.roundOffAmountDouble(it) }!!
+
+                itemTaxPrice?.let {
+                    orderModifierTaxesAttribute.taxTotalAmount =
+                        MethodUtils.roundOffAmountDouble(it)
+                }
             } else {
 
                 val ss = tax?.rate?.times(modifier.itemQuantity)

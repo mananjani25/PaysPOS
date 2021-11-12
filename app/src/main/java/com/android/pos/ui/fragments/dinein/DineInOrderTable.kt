@@ -276,8 +276,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         subTotal += (it.price * it.itemQuantity) - it.discountPrice
                         if (it.modifiers.isNotEmpty()) {
                             it.modifiers.forEach {
-
-
                                 subTotal += it.itemQuantity * it.price
                             }
                         }
