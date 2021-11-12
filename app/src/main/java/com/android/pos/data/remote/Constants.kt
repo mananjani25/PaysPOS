@@ -290,9 +290,9 @@ object Constants {
     var SPLIT_NO = "split_no"
 
 
-    var SPLIT_PAY_TYPE_DINE_IN = "split_pay_type"
-    var SPLIT_PAY_AMOUNT_DINE_IN = "split_pay_amount"
-    var SPLIT_NO_DINE_IN = "split_no"
+    var SPLIT_PAY_TYPE_DINE_IN = "split_pay_type_dine_in"
+    var SPLIT_PAY_AMOUNT_DINE_IN = "split_pay_amount_dine_in"
+    var SPLIT_NO_DINE_IN = "split_no_dine_in"
 
     //api constants
     const val EMP_NAME = "Employee Name"

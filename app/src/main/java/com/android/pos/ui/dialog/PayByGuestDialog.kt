@@ -515,6 +515,33 @@ class PayByGuestDialog : DialogFragment(), View.OnClickListener {
                 )
             }
 
+            R.id.llCash -> {
+
+                paymentAmount = when {
+
+                    isSplitByNo -> {
+                        (totalPrice + tipAmount) / splitValue
+                    }
+                    isSplitByAmount -> {
+                        splitAfterAmount
+                    }
+                    else -> {
+                        (totalPrice + tipAmount)
+                    }
+                }
+
+
+                if (isTotalPayment) {
+                    makePayment(0.0)
+
+                } else {
+
+                    guestRequestModel?.let { viewModel.payByGuest(guestId, it, isLastPayment) }
+                }
+
+
+            }
+
             R.id.txtOriginalAmount -> {
                 if (isTotalPayment) {
                     makePayment(0.0)
@@ -527,6 +554,7 @@ class PayByGuestDialog : DialogFragment(), View.OnClickListener {
             }
             R.id.txtSecondAmount -> {
                 if (isTotalPayment) {
+                    paymentAmount = secondValue.toDouble()
                     makePayment(0.0)
 
                 } else {
@@ -536,6 +564,7 @@ class PayByGuestDialog : DialogFragment(), View.OnClickListener {
 
             R.id.txtThirdAmount -> {
                 if (isTotalPayment) {
+                    paymentAmount = thirdValue
                     makePayment(0.0)
 
                 } else {
@@ -544,6 +573,7 @@ class PayByGuestDialog : DialogFragment(), View.OnClickListener {
             }
             R.id.txtFourthAmount -> {
                 if (isTotalPayment) {
+                    paymentAmount = fourthValue
                     makePayment(0.0)
 
                 } else {
