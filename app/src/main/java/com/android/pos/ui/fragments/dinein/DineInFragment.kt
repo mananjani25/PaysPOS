@@ -137,8 +137,6 @@ class DineInFragment : Fragment() {
                         false
                     )
 
-                    Log.e(TAG, "TableHeight  ${dineInFloorTablesList[i].height.toInt().toDp()}")
-                    Log.e(TAG, "TableWidth  ${dineInFloorTablesList[i].width.toInt().toDp()}")
                     if (inflatedViewSquare != null) {
                         val llMainParentSquare: LinearLayout =
                             inflatedViewSquare.findViewById(R.id.llMainParentSquare)
@@ -222,8 +220,6 @@ class DineInFragment : Fragment() {
                             dineInFloorTablesList[i].width.toInt().toDp(),
                             dineInFloorTablesList[i].height.toInt().toDp()
                         )
-                        Log.e(TAG, "TableHeight  ${dineInFloorTablesList[i].height.toInt().toDp()}")
-                        Log.e(TAG, "TableWidth  ${dineInFloorTablesList[i].width.toInt().toDp()}")
                         paramsRound.leftMargin = dineInFloorTablesList[i].xPosition.toInt().toDp()
                         paramsRound.topMargin = dineInFloorTablesList[i].yPosition.toInt().toDp()
                         // binding.flFloorPlan.removeAllViews()
