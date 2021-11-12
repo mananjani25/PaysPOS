@@ -6,8 +6,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.model.responseModel.report.KeyValue
 import com.android.pos.databinding.ViewPaymentDetailsBinding
+import com.android.pos.utils.extensions.gone
+import com.android.pos.utils.extensions.visible
 
-class PaymentDetailsAdapter :
+class PaymentDetailsAdapter(val hideRefund: Boolean) :
     RecyclerView.Adapter<PaymentDetailsAdapter.MyViewHolder>() {
 
     private var arrayList = ArrayList<ArrayList<KeyValue>>()
@@ -26,8 +28,13 @@ class PaymentDetailsAdapter :
                 binding.txtTitle.text = obj.key
                 binding.txtPrice.text = obj.showFormattedValue()
 
-                val obj2 = keyValueList[1]
-                binding.txtRefund.text = obj2.showFormattedValue()
+                if (hideRefund) {
+                    binding.txtRefund.gone()
+                } else {
+                    binding.txtRefund.visible()
+                    val obj2 = keyValueList[1]
+                    binding.txtRefund.text = obj2.showFormattedValue()
+                }
             }
         }
     }

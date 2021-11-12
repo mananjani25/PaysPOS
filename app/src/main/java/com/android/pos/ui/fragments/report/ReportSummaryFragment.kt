@@ -11,8 +11,6 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.android.pos.R
@@ -52,11 +50,11 @@ class ReportSummaryFragment : Fragment(), AdapterView.OnItemSelectedListener {
     private val totalPaymentsAdapter by lazy { SalesReportAdapter() }
     private val cashPaymentsAdapter by lazy { SalesReportAdapter() }
     private val employeeAdapter by lazy { EmployeeAdapter() }
-    private val paymentDetailsAdapter by lazy { PaymentDetailsAdapter() }
+    private val paymentDetailsAdapter by lazy { PaymentDetailsAdapter(hideRefund = true) }
     private val employeeReportsAdapter by lazy { EmployeeReportAdapter() }
     private val otherDetailsAdapter by lazy { EmployeeReportAdapter() }
     private val serviceChargeDetailsAdapter by lazy { ServiceChargeDetailsAdapter() }
-    private val tipDetailsAdapter by lazy { PaymentDetailsAdapter() }
+    private val tipDetailsAdapter by lazy { PaymentDetailsAdapter(hideRefund = false) }
 
     val myCalendar = Calendar.getInstance()
     val myCalendar1 = Calendar.getInstance()
@@ -331,6 +329,10 @@ class ReportSummaryFragment : Fragment(), AdapterView.OnItemSelectedListener {
             rvMedia.visible()
             textView?.visible()
             headerView?.root?.visible()
+
+            if (headerView == binding.ilPaymentDetails) {
+                binding.ilPaymentDetails.txtRefund.gone()
+            }
         } else {
             rvMedia.gone()
             textView?.gone()
