@@ -36,6 +36,7 @@ class DineInFragment : Fragment() {
     private val viewModel by viewModels<DineInViewModel>()
     private var dineInFloorNameList = ArrayList<GetFloorPlanResponse.Data>()
     private var dineInFloorTablesList = ArrayList<GetFloorPlanResponse.Data.FloorPlanTable>()
+    private val TAG = this.javaClass.name.toString()
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -136,6 +137,8 @@ class DineInFragment : Fragment() {
                         false
                     )
 
+                    Log.e(TAG, "TableHeight  ${dineInFloorTablesList[i].height.toInt().toDp()}")
+                    Log.e(TAG, "TableWidth  ${dineInFloorTablesList[i].width.toInt().toDp()}")
                     if (inflatedViewSquare != null) {
                         val llMainParentSquare: LinearLayout =
                             inflatedViewSquare.findViewById(R.id.llMainParentSquare)
@@ -163,8 +166,8 @@ class DineInFragment : Fragment() {
                         inflatedViewSquare.tag = dineInFloorTablesList[i]
 
                         val paramsSquare = FrameLayout.LayoutParams(
-                            dineInFloorTablesList[i].width.toInt().toDp() + 100,
-                            dineInFloorTablesList[i].height.toInt().toDp() + 100
+                            dineInFloorTablesList[i].width.toInt().toDp(),
+                            dineInFloorTablesList[i].height.toInt().toDp()
                         )
 
                         paramsSquare.leftMargin = dineInFloorTablesList[i].xPosition.toInt().toDp()
@@ -216,9 +219,11 @@ class DineInFragment : Fragment() {
                         inflatedViewRound.tag = dineInFloorTablesList[i]
 
                         val paramsRound = FrameLayout.LayoutParams(
-                            dineInFloorTablesList[i].width.toInt().toDp() + 100,
-                            dineInFloorTablesList[i].height.toInt().toDp() + 100
+                            dineInFloorTablesList[i].width.toInt().toDp(),
+                            dineInFloorTablesList[i].height.toInt().toDp()
                         )
+                        Log.e(TAG, "TableHeight  ${dineInFloorTablesList[i].height.toInt().toDp()}")
+                        Log.e(TAG, "TableWidth  ${dineInFloorTablesList[i].width.toInt().toDp()}")
                         paramsRound.leftMargin = dineInFloorTablesList[i].xPosition.toInt().toDp()
                         paramsRound.topMargin = dineInFloorTablesList[i].yPosition.toInt().toDp()
                         // binding.flFloorPlan.removeAllViews()
