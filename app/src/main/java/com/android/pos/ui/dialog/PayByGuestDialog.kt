@@ -544,7 +544,16 @@ class PayByGuestDialog : DialogFragment(), View.OnClickListener {
 
                 } else {
 
-                    guestRequestModel?.let { viewModel.payByGuest(guestId, it, isLastPayment) }
+                    guestRequestModel?.let {
+                        guestId?.let { it1 ->
+                            isLastPayment?.let { it2 ->
+                                viewModel.payByGuest(
+                                    it1, it,
+                                    it2
+                                )
+                            }
+                        }
+                    }
                 }
 
 
