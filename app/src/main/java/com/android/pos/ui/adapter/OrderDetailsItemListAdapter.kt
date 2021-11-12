@@ -6,11 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
-import com.android.pos.data.entities.TaxData
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.databinding.ViewOrderItemListBinding
-import com.android.pos.databinding.ViewTaxItemBinding
-import com.android.pos.ui.fragments.settings.tax.TaxListViewModel
 
 
 class OrderDetailsItemListAdapter :
@@ -35,10 +32,12 @@ class OrderDetailsItemListAdapter :
         itemBinding.tvItemName.text = taxList[position].itemName
         itemBinding.tvQuantity.text = "x" + taxList[position].quantity
 
-        var totalPrice = taxList[position].price
+        var totalPrice = taxList[position].price * taxList[position].quantity
+        var modifierPrices = 0.0
         taxList[position].orderItemModifiers.forEach {
-            totalPrice = taxList[position].price + (it.price * it.quantity)
+            modifierPrices = (it.price * it.quantity)
         }
+        totalPrice += modifierPrices
 
         itemBinding.tvRate.text = context.getString(R.string.symbole) + " " + String.format(
             context.getString(R.string.format),

@@ -104,6 +104,12 @@ class PosRepository @Inject constructor(
     )
 
     suspend fun saveDatabase(response: VenueDataResponse) {
+        appDatabase.categoryDao().delete()
+        appDatabase.itemDao().delete()
+        appDatabase.modifierSetDao().delete()
+        appDatabase.itemModifierSetsDao().delete()
+        appDatabase.optionSetDao().delete()
+
         val mData = response.data
         val mCategory = mData.categories
         val categoryModelList = ArrayList<TbCategory>()
