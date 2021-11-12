@@ -702,6 +702,10 @@
         android:id="@+id/orderCompleteFragment"
         android:name="com.android.pos.ui.fragments.payment.OrderCompleteFragment"
         android:label="OrderCompleteFragment">
+        <argument
+            android:name="isDineIn"
+            android:defaultValue="false"
+            app:argType="boolean" />
         <action
             android:id="@+id/action_orderCompleteFragment_to_dashboardCategoryNew"
             app:destination="@id/dashboardCategoryNew"
@@ -918,6 +922,9 @@
         <action
             android:id="@+id/action_payByGuestDialog_to_splitAmountFragment"
             app:destination="@id/splitAmountFragment" />
+        <action
+            android:id="@+id/action_payByGuestDialog_to_orderCompleteFragment"
+            app:destination="@id/orderCompleteFragment" />
     </dialog>
     <fragment
         android:id="@+id/reportSummaryFragment"

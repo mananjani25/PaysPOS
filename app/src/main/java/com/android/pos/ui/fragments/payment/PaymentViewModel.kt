@@ -119,7 +119,7 @@ class PaymentViewModel @Inject constructor(
         }
     }
 
-    fun dineInWholePayment(orderRequestModel: OrderRequestModel, orderId: Int) {
+    fun dineInWholePayment(orderRequestModel: OrderRequestModel, orderId: Int, splitValue: Int) {
         _showProgress.value = Event(true)
 
         viewModelScope.launch {
@@ -137,10 +137,12 @@ class PaymentViewModel @Inject constructor(
                     resource.data.let { response ->
                         if (response?.status == 200) {
 
-                            prefProvider.setValue(Constants.ORDER_TYPE, "")
-                            prefProvider.setValue(Constants.CUSTOMER_NAME, "")
-                            prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
-                            posRepository.deleteCart()
+                            if (splitValue != -1) {
+                                prefProvider.setValue(Constants.ORDER_TYPE, "")
+                                prefProvider.setValue(Constants.CUSTOMER_NAME, "")
+                                prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
+                                posRepository.deleteCart()
+                            }
                             resource.data?.let { createOrderResponse ->
 
                                 if (onlySave) {
