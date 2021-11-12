@@ -91,7 +91,7 @@
     <string name="delete_discount_message">Are you sure want to Delete Discount?</string>
     <string name="delete_customer_message">Are you sure, you want to Delete the Customer?</string>
     <string name="delete_service_charge_message">Are you sure want to Delete Service Charge?</string>
-    <string name="delete_employee_message">Are you sure want to Delete Employee?</string>
+    <string name="delete_employee_message">Are you sure, you want to delete Employee?</string>
     <string name="clockout_message">Are you sure, you want to Clockout?</string>
     <string name="delete_item_message">Are you sure you want to delete this item?</string>
     <string name="delete_items_message">Are you sure you want to clear item?</string>
@@ -280,7 +280,7 @@
     <string name="time_tracking">Time Tracking</string>
     <string name="all_current_and_future_locations">All current and future locations</string>
     <string name="_4_team_members_that_you_manage_at_business_one">4 team members that you manage at Business One</string>
-    <string name="select_a_team_member_to_view_details">select a team member to view details</string>
+    <string name="select_a_team_member_to_view_details">Select a team member to view details</string>
     <string name="current_drawer">Current Drawer</string>
     <string name="sales">Sales</string>
     <string name="shift_report">Shift Report</string>
