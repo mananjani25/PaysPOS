@@ -278,7 +278,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     private fun moveToDashboard() {
         if (isSpilt) {
-            findNavController().navigateUp()
+            if (isDineIn) {
+                findNavController().navigate(R.id.action_orderCompleteFragment_to_payByGuestDialog)
+
+            } else {
+                findNavController().popBackStack()
+            }
         } else {
 
             removeCustomer()
