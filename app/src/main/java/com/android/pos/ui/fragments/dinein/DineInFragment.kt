@@ -36,6 +36,7 @@ class DineInFragment : Fragment() {
     private val viewModel by viewModels<DineInViewModel>()
     private var dineInFloorNameList = ArrayList<GetFloorPlanResponse.Data>()
     private var dineInFloorTablesList = ArrayList<GetFloorPlanResponse.Data.FloorPlanTable>()
+    private val TAG = this.javaClass.name.toString()
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -163,7 +164,7 @@ class DineInFragment : Fragment() {
                         inflatedViewSquare.tag = dineInFloorTablesList[i]
 
                         val paramsSquare = FrameLayout.LayoutParams(
-                            dineInFloorTablesList[i].width.toInt().toDp() ,
+                            dineInFloorTablesList[i].width.toInt().toDp(),
                             dineInFloorTablesList[i].height.toInt().toDp()
                         )
 
@@ -216,7 +217,7 @@ class DineInFragment : Fragment() {
                         inflatedViewRound.tag = dineInFloorTablesList[i]
 
                         val paramsRound = FrameLayout.LayoutParams(
-                            dineInFloorTablesList[i].width.toInt().toDp() ,
+                            dineInFloorTablesList[i].width.toInt().toDp(),
                             dineInFloorTablesList[i].height.toInt().toDp()
                         )
                         paramsRound.leftMargin = dineInFloorTablesList[i].xPosition.toInt().toDp()
