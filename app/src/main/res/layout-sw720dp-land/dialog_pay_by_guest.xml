@@ -584,7 +584,8 @@
                 android:paddingTop="@dimen/_3sdp"
                 android:visibility="gone"
                 android:paddingEnd="@dimen/_5sdp"
-                android:paddingBottom="@dimen/_3sdp">
+                android:paddingBottom="@dimen/_3sdp"
+                android:visibility="gone">
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontSemiBold"

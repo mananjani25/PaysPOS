@@ -272,6 +272,7 @@
                         android:background="?attr/selectableItemBackground"
                         android:paddingStart="@dimen/_5sdp"
                         android:paddingEnd="@dimen/_5sdp"
+                        android:tint="@color/white"
                         app:srcCompat="@drawable/ic_info" />
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
