@@ -1964,7 +1964,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         future_delivery_time,
                         false,
                         viewModel.totalDiscount + cartList.discountPrice,
-                        0.00
+                        0.00,
+                        -1
                     )
                     viewModelPayment.saveOrder(true)
                     viewModelPayment.submit(request)
