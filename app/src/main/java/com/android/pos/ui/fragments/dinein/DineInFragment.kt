@@ -163,8 +163,8 @@ class DineInFragment : Fragment() {
                         inflatedViewSquare.tag = dineInFloorTablesList[i]
 
                         val paramsSquare = FrameLayout.LayoutParams(
-                            dineInFloorTablesList[i].width.toInt().toDp() + 100,
-                            dineInFloorTablesList[i].height.toInt().toDp() + 100
+                            dineInFloorTablesList[i].width.toInt().toDp() ,
+                            dineInFloorTablesList[i].height.toInt().toDp()
                         )
 
                         paramsSquare.leftMargin = dineInFloorTablesList[i].xPosition.toInt().toDp()
@@ -216,8 +216,8 @@ class DineInFragment : Fragment() {
                         inflatedViewRound.tag = dineInFloorTablesList[i]
 
                         val paramsRound = FrameLayout.LayoutParams(
-                            dineInFloorTablesList[i].width.toInt().toDp() + 100,
-                            dineInFloorTablesList[i].height.toInt().toDp() + 100
+                            dineInFloorTablesList[i].width.toInt().toDp() ,
+                            dineInFloorTablesList[i].height.toInt().toDp()
                         )
                         paramsRound.leftMargin = dineInFloorTablesList[i].xPosition.toInt().toDp()
                         paramsRound.topMargin = dineInFloorTablesList[i].yPosition.toInt().toDp()
