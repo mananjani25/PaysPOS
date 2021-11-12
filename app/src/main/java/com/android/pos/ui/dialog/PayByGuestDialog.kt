@@ -1,6 +1,8 @@
 package com.android.pos.ui.dialog
 
 import android.annotation.SuppressLint
+import android.app.Dialog
+import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -64,10 +66,10 @@ class PayByGuestDialog : DialogFragment(), View.OnClickListener {
     private var isTotalPayment: Boolean = false
     private var paymentAmount: Double = 0.0
 
-    private var guestId: Int = 0
+    private var guestId: Int? = null
     private var guestRequestModel: GuestPaymentRequest? = null
     private var floorPlanModel: GetFloorPlanResponse.Data.FloorPlanTable? = null
-    private var isLastPayment: Boolean = false
+    private var isLastPayment: Boolean? = false
 
     private var isSplitByNo: Boolean = false
     private var isSplitByAmount: Boolean = false
@@ -117,10 +119,10 @@ class PayByGuestDialog : DialogFragment(), View.OnClickListener {
             floorPlanModel = arguments?.getParcelable("floorPlan")
             orderId = arguments?.getInt("orderId")
 
-            cartList = requireArguments().getParcelable("cartList")
-            guestId = requireArguments().getInt("id")
-            guestRequestModel = requireArguments().getParcelable("model")
-            isLastPayment = requireArguments().getBoolean("isLastPayment")
+            cartList = arguments?.getParcelable("cartList")
+            guestId = arguments?.getInt("id")
+            guestRequestModel = arguments?.getParcelable("model")
+            isLastPayment = arguments?.getBoolean("isLastPayment")
             setupData()
         }
 
@@ -385,9 +387,15 @@ class PayByGuestDialog : DialogFragment(), View.OnClickListener {
 
     private fun setupData() {
 
-        totalPrice = requireArguments().getDouble("totalPrice")
-        subTotalPrice = requireArguments().getDouble("subTotalPrice")
-        totalTax = requireArguments().getDouble("totalTax")
+        arguments?.getDouble("totalPrice")?.let {
+            totalPrice = it
+        }
+        arguments?.getDouble("subTotalPrice")?.let {
+            subTotalPrice = it
+        }
+        arguments?.getDouble("totalTax")?.let {
+            totalTax = it
+        }
         totalServiceCharge = requireArguments().getDouble("totalServiceCharge")
         totaldiscount = requireArguments().getDouble("totalDiscount")
         future_delivery_time = requireArguments().getString("future_delivery_time").toString()
@@ -521,7 +529,16 @@ class PayByGuestDialog : DialogFragment(), View.OnClickListener {
 
                 } else {
 
-                    guestRequestModel?.let { viewModel.payByGuest(guestId, it, isLastPayment) }
+                    guestRequestModel?.let {
+                        guestId?.let { it1 ->
+                            isLastPayment?.let { it2 ->
+                                viewModel.payByGuest(
+                                    it1, it,
+                                    it2
+                                )
+                            }
+                        }
+                    }
                 }
 
             }
@@ -530,7 +547,16 @@ class PayByGuestDialog : DialogFragment(), View.OnClickListener {
                     makePayment(0.0)
 
                 } else {
-                    guestRequestModel?.let { viewModel.payByGuest(guestId, it, isLastPayment) }
+                    guestRequestModel?.let {
+                        guestId?.let { it1 ->
+                            isLastPayment?.let { it2 ->
+                                viewModel.payByGuest(
+                                    it1, it,
+                                    it2
+                                )
+                            }
+                        }
+                    }
                 }
             }
 
@@ -539,7 +565,16 @@ class PayByGuestDialog : DialogFragment(), View.OnClickListener {
                     makePayment(0.0)
 
                 } else {
-                    guestRequestModel?.let { viewModel.payByGuest(guestId, it, isLastPayment) }
+                    guestRequestModel?.let {
+                        guestId?.let { it1 ->
+                            isLastPayment?.let { it2 ->
+                                viewModel.payByGuest(
+                                    it1, it,
+                                    it2
+                                )
+                            }
+                        }
+                    }
                 }
             }
             R.id.txtFourthAmount -> {
@@ -547,7 +582,16 @@ class PayByGuestDialog : DialogFragment(), View.OnClickListener {
                     makePayment(0.0)
 
                 } else {
-                    guestRequestModel?.let { viewModel.payByGuest(guestId, it, isLastPayment) }
+                    guestRequestModel?.let {
+                        guestId?.let { it1 ->
+                            isLastPayment?.let { it2 ->
+                                viewModel.payByGuest(
+                                    it1, it,
+                                    it2
+                                )
+                            }
+                        }
+                    }
                 }
             }
 
