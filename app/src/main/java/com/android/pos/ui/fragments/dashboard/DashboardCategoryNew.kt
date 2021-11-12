@@ -388,8 +388,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 cartList.add(model)
                 cartList[0].customer = assignCustomer
                 viewModel.addCart(cartList[0])
-            }
-            else{
+            } else {
                 cartList[0].customer = assignCustomer
                 viewModel.addCart(cartList[0])
             }
@@ -488,17 +487,43 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     if (cartList.isNotEmpty()) {
 
                         if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
+                            Log.e(TAG, "cartListItemMAnual:  ${Gson().toJson(cartList[0].items)}")
 
                             viewModel.setServiceCharges(serviceChargesList)
                             cartList.get(0).serviceCharge = serviceChargesList
                             binding.layoutCart.rvCart.visibility = View.GONE
                             binding.layoutCart.rvCartDineIn.visibility = View.VISIBLE
                             binding.layoutCart.llPayment.visibility = View.VISIBLE
-                            Log.e(TAG, "GotAddedDineIn ${cartList[0].dineInList?.size}")
+                            Log.e(TAG, "GotAddedDineIn ${cartList[0].items}")
 
                             cartList.get(0).dineInList?.toCollection(
                                 arrayListOf()
-                            )?.let { it1 -> dineInCartAdapter.setList(it1) }
+                            )?.let { it1 ->
+
+                                dineInCartAdapter.setList(it1)
+                            }
+
+                            if (cartList[0].items?.isNotEmpty() == true) {
+
+                                var dineList = dineInCartAdapter.getList()
+                                cartList[0].items?.forEach {
+
+                                    if (it.isManualSales && dineList.isNotEmpty()) {
+                                        Log.e(TAG, "ManualtimeStamp:  ${it.timeStamp}")
+                                        if (it?.timeStamp == null || it?.timeStamp?.lowercase() == "null".lowercase()) {
+                                            it.timeStamp = viewModel.randomOfflineId()
+                                        }
+                                        dineList[0].items.add(it)
+
+                                    }
+                                    cartList[0].items?.toCollection(arrayListOf())?.clear()
+                                    cartList[0].items = listOf()
+
+                                }
+
+                                viewModel.cartLogic(cartList, null, ADD, dineInList = dineList)
+
+                            }
 
                             val list1 = cartList.get(0).dineInList
                             if (isAdded) {
@@ -2527,12 +2552,22 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
             cartList.get(0).orderType = DINE_IN
 
-            viewModel.cartLogic(
-                cartList,
-                data,
-                DELETE,
-                dineInList = dineInCartAdapter.getList()
-            )
+            if (prefProvider.getValueboolean(DINE_IN_UPDATE, false)) {
+
+
+                var list = dineInCartAdapter.getList()
+                /*list.get(headerPosition).*/
+
+
+            } else {
+
+                viewModel.cartLogic(
+                    cartList,
+                    data,
+                    DELETE,
+                    dineInList = dineInCartAdapter.getList()
+                )
+            }
             dialog.dismiss()
         }
         btnAddDiscount.setOnClickListener {

@@ -18,6 +18,7 @@ import com.android.pos.data.remote.Constants.BUSINESS_WEBSITE
 import com.android.pos.data.remote.Constants.DELETE
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.DINE_IN_LIST_EDIT
+import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
 import com.android.pos.data.remote.Constants.UPDATE
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.TaxServiceChargeRepository
@@ -721,7 +722,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         return orderRequestModel
     }
 
-    private fun randomOfflineId(): String {
+    fun randomOfflineId(): String {
 
         val locationId = prefProvider.getValueInt(Constants.LOCATION_ID, -1).toString()
         val timestamp = System.currentTimeMillis().toString()
@@ -831,7 +832,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                     listItems.add(
                         GuestItemsAttributes(
-                            id=tb.guestItemId,
+                            id = tb.guestItemId,
                             orderItemId = tb.orderItemId,
                             quantity = tb.itemQuantity,
                             itemId = tb.itemId,
@@ -937,7 +938,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 orderItemsAttribute.isPaid = item.isPaid
                 orderItemsAttribute.isPrinted = true
                 orderItemsAttribute.isTaxRemoved = false
-                orderItemsAttribute.itemId = if (item.isManualSales) 30 else item.itemId
+                orderItemsAttribute.itemId = if (item.isManualSales) item.itemId else item.itemId
                 orderItemsAttribute.is_manual_sales = item.isManualSales
                 orderItemsAttribute.itemName = item.name
                 orderItemsAttribute.note = item.note
@@ -945,21 +946,25 @@ class DashBoardCategoryViewModel @Inject constructor(
                 orderItemsAttribute.quantity = item.itemQuantity
                 orderItemsAttribute.terminalId = cartModel.terminalId
 
+                Log.e(TAG,"TimeStampMo: ${item.timeStamp}")
                 if (item.timeStamp == null || item.timeStamp?.lowercase() == "null".lowercase()) {
-                    orderItemsAttribute.timestamp = System.currentTimeMillis().toString()
+                    orderItemsAttribute.timestamp = randomOfflineId()
+                    Log.e(TAG,"Timetimestamp  ${orderItemsAttribute.timestamp}")
                 } else {
-                    orderItemsAttribute.timestamp = item.timeStamp!!
+                    orderItemsAttribute.timestamp = item.timeStamp.toString()
                 }
                 orderItemsAttribute.totalPrice =
                     MethodUtils.roundOffAmountDouble(item.price * item.itemQuantity)
-                orderItemsAttribute.orderItemTaxesAttributes = orderItemTaxesAttributes(item)
+                Log.e(TAG, "orderId:  ${cartModel.orderId}")
+                orderItemsAttribute.orderItemTaxesAttributes =
+                    orderItemTaxesAttributes(item, orderId = cartModel.orderId)
 
                 orderItemsAttribute.orderItemModifiersAttributes =
                     orderItemModifierAttributes(item, cartModel.terminalId)
 
                 orderItemsAttribute.orderItemVariationAttributes =
                     orderItemVariationAttributes(item)
-                orderItemsAttribute.timestamp = item.timeStamp.toString()
+
 
 
                 if (item.variationsAttributes.isNotEmpty()) {
@@ -974,11 +979,14 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     }
 
-    private fun orderItemTaxesAttributes(items: TbItem): List<OrderItemTaxesAttribute> {
+    private fun orderItemTaxesAttributes(
+        items: TbItem,
+        orderId: Int? = null
+    ): List<OrderItemTaxesAttribute> {
+
 
         val orderItemTaxesAttributeList: ArrayList<OrderItemTaxesAttribute> =
             arrayListOf()
-
         items.taxes?.forEach { tax ->
 
             if (tax.isActive) {
@@ -991,7 +999,26 @@ class DashBoardCategoryViewModel @Inject constructor(
                 orderItemTaxesAttribute.isTaxRemoved = true
                 orderItemTaxesAttribute.name = tax.name.toString()
                 orderItemTaxesAttribute.rate = tax.rate
-                orderItemTaxesAttribute.taxId = tax.id
+
+                if (prefProvider.getValueboolean(DINE_IN_UPDATE, false)) {
+
+                    if (items.orderItemId == null) {
+
+                        orderItemTaxesAttribute.taxId = tax.id
+                    } else {
+                        tax?.orderTaxId?.let {
+                            orderItemTaxesAttribute.taxId = it
+                        }
+                        orderItemTaxesAttribute.id = tax.id
+                        orderItemTaxesAttribute.orderItemId = items.orderItemId
+                        orderItemTaxesAttribute.orderId = orderId
+                    }
+                } else {
+                    orderItemTaxesAttribute.taxId = tax.id
+                }
+
+
+                //orderItemTaxesAttribute.orderId = tax.orde
 
                 /*if (isUpdateOrder) {
                     orderItemTaxesAttribute.orderId = orderId
@@ -1038,6 +1065,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                 /*if (isUpdateOrder && it.orderModifierId != null)
                     id = it.orderModifierId
 */
+                if (item.orderItemId != null) {
+                    id = it.id
+                }
                 name = it.name
                 price = it.price
                 order_item_id = item.orderItemId
@@ -1061,47 +1091,62 @@ class DashBoardCategoryViewModel @Inject constructor(
         val orderItemTaxesAttributeList: ArrayList<OrderModifierTaxesAttribute> =
             arrayListOf()
 
-        items.taxes?.forEach { tax ->
-            if (tax.isActive) {
-                val orderModifierTaxesAttribute = OrderModifierTaxesAttribute()
-                /*  if (isUpdateOrder && tax.orderTaxId != null)
-                      orderModifierTaxesAttribute.id = tax.orderTaxId
-  */
-
-                orderModifierTaxesAttribute.order_item_modifier_id = modifier.id
-                orderModifierTaxesAttribute.tax_id = tax.id
-                orderModifierTaxesAttribute.isDefault = tax.isDefault
-                orderModifierTaxesAttribute.is_tax_removed = false
-                orderModifierTaxesAttribute.is_modifier = true
-                orderModifierTaxesAttribute.category_id = items.categoryId
-                orderModifierTaxesAttribute.terminal_id = terminalId
-                orderModifierTaxesAttribute.modifier_id = modifier.id!!
-                orderModifierTaxesAttribute.timestamp = System.currentTimeMillis().toString()
-                orderModifierTaxesAttribute.name = tax.name.toString()
-                orderModifierTaxesAttribute.amount = tax.rate
-
-                /* if (isUpdateOrder) {
-                     orderModifierTaxesAttribute.order_id = orderId
-                     orderModifierTaxesAttribute.order_item_id = items.orderItemId
-                 }
- */
-                if (tax.taxType == "Percentage") {
-                    val itemTaxPrice =
-                        (tax.rate * (modifier.price * modifier.itemQuantity)) / 100
-                    orderModifierTaxesAttribute.taxTotalAmount =
-                        MethodUtils.roundOffAmountDouble(itemTaxPrice)
+        modifier.orderItemTaxes.forEach { tax ->
+            val orderModifierTaxesAttribute = OrderModifierTaxesAttribute()
+            /*  if (isUpdateOrder && tax.orderTaxId != null)
+                  orderModifierTaxesAttribute.id = tax.orderTaxId
+*/
+            if (prefProvider.getValueboolean(DINE_IN_UPDATE, false)) {
+                if (items.isEdited && items.orderItemId == null) {
+                    orderModifierTaxesAttribute.tax_id = tax?.taxId
                 } else {
+                    orderModifierTaxesAttribute.tax_id = tax?.taxId
+                    orderModifierTaxesAttribute.id = tax?.id
 
-                    val ss = tax.rate * modifier.itemQuantity
-
-                    orderModifierTaxesAttribute.taxTotalAmount =
-                        MethodUtils.roundOffAmountDouble((ss))
+                    Log.e(TAG, "IDTax:  ${tax?.id}")
                 }
-
-
-                orderItemTaxesAttributeList.add(orderModifierTaxesAttribute)
+            } else {
+                orderModifierTaxesAttribute.tax_id = tax?.id
             }
+
+
+
+            orderModifierTaxesAttribute.order_item_modifier_id = modifier.id
+            //orderModifierTaxesAttribute.tax_id = tax.id
+            orderModifierTaxesAttribute.isDefault = tax?.isDefault == true
+            orderModifierTaxesAttribute.is_tax_removed = false
+            orderModifierTaxesAttribute.is_modifier = true
+            orderModifierTaxesAttribute.category_id = items.categoryId
+            orderModifierTaxesAttribute.terminal_id = terminalId
+            orderModifierTaxesAttribute.modifier_id = modifier.id!!
+            orderModifierTaxesAttribute.timestamp = System.currentTimeMillis().toString()
+            orderModifierTaxesAttribute.name = tax?.name.toString()
+            if (tax?.rate != null) {
+                orderModifierTaxesAttribute.amount = tax?.rate
+            }
+
+            /* if (isUpdateOrder) {
+                 orderModifierTaxesAttribute.order_id = orderId
+                 orderModifierTaxesAttribute.order_item_id = items.orderItemId
+             }
+*/
+            if (tax?.taxType == "Percentage") {
+                val itemTaxPrice =
+                    (tax?.rate?.times((modifier.price * modifier.itemQuantity)))?.div(100)
+                orderModifierTaxesAttribute.taxTotalAmount =
+                    itemTaxPrice?.let { MethodUtils.roundOffAmountDouble(it) }!!
+            } else {
+
+                val ss = tax?.rate?.times(modifier.itemQuantity)
+
+                orderModifierTaxesAttribute.taxTotalAmount =
+                    MethodUtils.roundOffAmountDouble((ss!!))
+            }
+
+
+            orderItemTaxesAttributeList.add(orderModifierTaxesAttribute)
         }
+
 
 
         return orderItemTaxesAttributeList

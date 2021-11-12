@@ -35,8 +35,9 @@ data class TaxData(
     @SerializedName("item_ids")
     val itemIds: List<Int>,
     var orderTaxId: Int? = null,
-    var isChecked: Boolean? = false
-) : Parcelable {
+    var isChecked: Boolean? = false,
+
+    ) : Parcelable {
     fun showFormattedTaxRate() = String.format(
         "%.2f", rate ?: 0.0
     ) + "%"

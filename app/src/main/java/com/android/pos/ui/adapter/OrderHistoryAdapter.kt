@@ -43,7 +43,7 @@ class OrderHistoryAdapter :
             setupAmountPayType(order.total, order.paymentDetails)
 
             //loyalty points
-            binding.txtLoyalityPoints.text = "-"
+            binding.txtLoyaltyPoints.text = "-"
 
         }
 

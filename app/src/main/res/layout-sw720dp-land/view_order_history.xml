@@ -34,17 +34,17 @@
             tools:text="Cash" />
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/txtLoyalityPoints"
+            android:id="@+id/txtLoyaltyPoints"
             style="@style/HistoryItemText"
             android:gravity="center"
             tools:text="$48.75\n48" />
 
-        <androidx.appcompat.widget.AppCompatTextView
+        <!--<androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txtReorder"
             style="@style/HistoryItemText"
             android:gravity="center"
             android:text="@string/reorder"
-            android:textColor="@color/txt_color_blue" />
+            android:textColor="@color/txt_color_blue" />-->
 
     </LinearLayout>
 </layout>

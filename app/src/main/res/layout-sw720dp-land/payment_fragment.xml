@@ -538,7 +538,8 @@
                 android:paddingStart="@dimen/_5sdp"
                 android:paddingTop="@dimen/_3sdp"
                 android:paddingEnd="@dimen/_5sdp"
-                android:paddingBottom="@dimen/_3sdp">
+                android:paddingBottom="@dimen/_3sdp"
+                android:visibility="gone">
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontBold"
@@ -571,7 +572,8 @@
                 android:paddingStart="@dimen/_5sdp"
                 android:paddingTop="@dimen/_3sdp"
                 android:paddingEnd="@dimen/_5sdp"
-                android:paddingBottom="@dimen/_3sdp">
+                android:paddingBottom="@dimen/_3sdp"
+                android:visibility="gone">
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontSemiBold"

@@ -112,6 +112,8 @@ class PosRepository @Inject constructor(
         val itemModifierSetList = ArrayList<ItemModifierSets>()
         mCategory.forEach { category ->
             val model = TbCategory().apply {
+
+
                 createdAt = ""
                 id = category.id
                 active = category.active

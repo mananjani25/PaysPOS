@@ -634,14 +634,14 @@ class PaymentViewModel @Inject constructor(
             orderItemsAttribute.isPaid = false
             orderItemsAttribute.isPrinted = true
             orderItemsAttribute.isTaxRemoved = false
-            orderItemsAttribute.itemId = if (item.isManualSales) 30 else item.itemId
+            orderItemsAttribute.itemId =  item.itemId
             orderItemsAttribute.is_manual_sales = item.isManualSales
             orderItemsAttribute.itemName = item.name
             orderItemsAttribute.note = item.note
             orderItemsAttribute.price = item.price
             orderItemsAttribute.quantity = item.itemQuantity
             orderItemsAttribute.terminalId = cartModel.terminalId
-            orderItemsAttribute.timestamp = System.currentTimeMillis().toString()
+            orderItemsAttribute.timestamp = randomOfflineId()
             orderItemsAttribute.totalPrice =
                 MethodUtils.roundOffAmountDouble(item.price * item.itemQuantity)
             orderItemsAttribute.orderItemTaxesAttributes = orderItemTaxesAttributes(item)
@@ -795,9 +795,9 @@ class PaymentViewModel @Inject constructor(
                 orderItemTaxesAttribute.rate = tax.rate
                 orderItemTaxesAttribute.taxId = tax.id
 
+                orderItemTaxesAttribute.orderItemId = items.orderItemId
+                orderItemTaxesAttribute.orderId = orderId
                 if (isUpdateOrder) {
-                    orderItemTaxesAttribute.orderId = orderId
-                    orderItemTaxesAttribute.orderItemId = items.orderItemId
                 }
 
                 if (tax.taxType == "Percentage") {

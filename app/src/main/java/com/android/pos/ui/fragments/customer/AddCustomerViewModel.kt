@@ -50,6 +50,8 @@ class AddCustomerViewModel @Inject constructor(
     val addCustomerDetails = MutableLiveData(CreateCustomerRequestModel())
     var listAddress: ArrayList<CreateCustomerRequestModel.Customer.Addresses> = arrayListOf()
 
+    var phoneId: Int? = null
+    val addressId = ""
     val phoneNo = MutableLiveData<String>()
     var address1 = MutableLiveData<String>()
     val address2 = MutableLiveData<String>()
@@ -175,15 +177,19 @@ class AddCustomerViewModel @Inject constructor(
                 data?.first_name = value?.data?.first_name!!
                 data?.last_name = value?.data?.last_name!!
 
-                data?.phones_attributes?.add(
-                    0, CreateCustomerRequestModel.Customer.Phone(
-                        phone_number = phoneNo.value.toString().replace(
-                            ("[\\D]").toRegex(),
-                            ""
-                        )
+                val phone = CreateCustomerRequestModel.Customer.Phone(
+                    id = phoneId,
+                    phone_number = phoneNo.value.toString().replace(
+                        ("[\\D]").toRegex(),
+                        ""
                     )
                 )
-
+                if (isEdit) {
+                    phone.id = phoneId
+                }
+                data?.phones_attributes?.add(
+                    0, phone
+                )
 
                 data?.email = value.data!!.email
                 data?.birth_day = value.data!!.birth_day
@@ -224,7 +230,8 @@ class AddCustomerViewModel @Inject constructor(
                                         birth_date = customerListReposne.data.birth_date,
                                         email = customerListReposne.data.email,
                                         phones = customerListReposne.data.phones,
-                                        addresses = customerListReposne.data.addresses
+                                        addresses = customerListReposne.data.addresses,
+                                        company = customerListReposne.data.company
                                     )
 
 

@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.android.pos.data.entities.TbAddress
+import com.android.pos.data.entities.TbCustomer
 import com.android.pos.data.entities.TbPhones
 import com.android.pos.data.model.CustomerListResponse
 import com.android.pos.data.typeconvert.TypeConvertorAddress
@@ -15,10 +16,10 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class CreateCustomerReponse(
     @SerializedName("data")
-    val data: Data,
+    val data: TbCustomer,
 ) : BaseResponse(), Parcelable {
 
-    @Parcelize
+    /*@Parcelize
     @Entity(tableName = "TbCustomer")
     data class Data(
         @PrimaryKey
@@ -33,7 +34,7 @@ data class CreateCustomerReponse(
         @SerializedName("addresses") val addresses: List<TbAddress> = listOf(),
         var isSelcted: Boolean = false
     ) : Parcelable {
-    }
+    }*/
 
 
 }
