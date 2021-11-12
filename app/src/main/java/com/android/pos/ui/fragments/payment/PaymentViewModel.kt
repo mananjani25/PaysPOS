@@ -295,7 +295,8 @@ class PaymentViewModel @Inject constructor(
         future_delivery_time: String,
         isPaid: Boolean,
         totalDiscount: Double,
-        tipAmount: Double
+        tipAmount: Double,
+        splitValue: Int
     ): OrderRequestModel {
 
         val orderAttributeRequestModel = OrderAttributeRequestModel()
@@ -348,7 +349,7 @@ class PaymentViewModel @Inject constructor(
                 subTotalPrice,
                 totalServiceCharge,
                 totalTax,
-                totalDiscount, tipAmount
+                totalDiscount, tipAmount, splitValue
             )
         orderAttributeRequestModel.orderServiceChargesAttributes =
             orderServiceChargesAttributes(cartModel, subTotalPrice)
@@ -632,7 +633,7 @@ class PaymentViewModel @Inject constructor(
             orderItemsAttribute.isPaid = false
             orderItemsAttribute.isPrinted = true
             orderItemsAttribute.isTaxRemoved = false
-            orderItemsAttribute.itemId =  item.itemId
+            orderItemsAttribute.itemId = item.itemId
             orderItemsAttribute.is_manual_sales = item.isManualSales
             orderItemsAttribute.itemName = item.name
             orderItemsAttribute.note = item.note
@@ -874,7 +875,8 @@ class PaymentViewModel @Inject constructor(
         totalServiceCharge: Double,
         totalTax: Double,
         totalDis: Double,
-        tipAmount: Double
+        tipAmount: Double,
+        splitValue: Int
     ): PaymentAttributes {
         return PaymentAttributes().apply {
 //            if (isUpdateOrder)
@@ -892,13 +894,22 @@ class PaymentViewModel @Inject constructor(
             offlineId = if (isUpdateOrder) paymentOfflineId.toString() else randomOfflineId()
             payableType = "Order"
             paymentType = "Cash"
-            serviceChargeAmount = MethodUtils.roundOffAmountDouble(totalServiceCharge)
+            serviceChargeAmount =
+                if (splitValue == -1) MethodUtils.roundOffAmountDouble(totalServiceCharge) else MethodUtils.roundOffAmountDouble(
+                    totalServiceCharge
+                ) / splitValue
             subTotal = MethodUtils.roundOffAmountDouble(subTotalPrice)
-            taxAmount = MethodUtils.roundOffAmountDouble(totalTax)
+            taxAmount =
+                if (splitValue == -1) MethodUtils.roundOffAmountDouble(totalTax) else MethodUtils.roundOffAmountDouble(
+                    totalTax
+                ) / splitValue
             terminalId = cartModel.terminalId
             tips = MethodUtils.roundOffAmountDouble(tipAmount)
             tipsAdjusted = false
-            totalDiscount = MethodUtils.roundOffAmountDouble(totalDis)
+            totalDiscount =
+                if (splitValue == -1) MethodUtils.roundOffAmountDouble(totalDis) else MethodUtils.roundOffAmountDouble(
+                    totalDis
+                ) / splitValue
 
             if (isUpdateOrder && orderId != null) {
                 order_id = orderId
