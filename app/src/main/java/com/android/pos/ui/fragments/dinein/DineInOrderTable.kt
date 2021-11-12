@@ -293,7 +293,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             var model = GuestPaymentRequest(
                 PaymentAttributes().apply {
-                    amount = MethodUtils.roundOffAmountDouble(subTotalWT + serviceCharge + viewModel.totalTaxAmount)
+                    amount =
+                        MethodUtils.roundOffAmountDouble(subTotalWT + serviceCharge + viewModel.totalTaxAmount)
                     cardName = ""
                     cardNumber = ""
                     cardType = ""
@@ -314,7 +315,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
             val bundle = Bundle()
-            bundle.putDouble("totalPrice", MethodUtils.roundOffAmountDouble(subTotalWT + serviceCharge + viewModel.totalTaxAmount))
+            bundle.putDouble(
+                "totalPrice",
+                MethodUtils.roundOffAmountDouble(subTotalWT + serviceCharge + viewModel.totalTaxAmount)
+            )
             bundle.putDouble("subTotalPrice", MethodUtils.roundOffAmountDouble(subTotalWT))
             bundle.putDouble("totalTax", MethodUtils.roundOffAmountDouble(viewModel.totalTaxAmount))
             bundle.putParcelable("model", model)
@@ -717,7 +721,14 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
     }*/
 
-    override fun onGuestPay(dineInModel: DineInModel, position: Int) {
+    override fun onGuestPay(
+        dineInModel: DineInModel,
+        position: Int,
+        subTotalGuest: Double,
+        totalGuest: Double,
+        taxGuest: Double,
+        serviceChargeGuest: Double
+    ) {
 
         //New Drag and Drop
 
@@ -748,24 +759,26 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         subTotal += dineInTableAdapter.getList().get(0).guestDividedAmt
 
         var total = subTotal + totalTax
+        Log.e(TAG,"orderIdGuest  ${orderId}")
 
 
         var model = GuestPaymentRequest(
             PaymentAttributes().apply {
-                amount = total
+                amount = totalGuest
                 cardName = ""
                 cardNumber = ""
                 cardType = ""
                 cashDiscount = 0.0
                 cashDiscountFee = 0.0
                 employeeId = prefProvider.getValueInt(EMPLOYEE_ID, 0)
-                taxAmount = totalTax
-                subTotalPrice = subTotal
+                taxAmount = taxGuest
+                subTotalPrice = subTotalGuest
                 offlineId = randomOfflineId()
                 payableType = "GuestTab"
                 paymentType = "Cash"
                 transactionId = randomOfflineId()
                 terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
+                order_id = orderId
 
             }
         )
@@ -773,11 +786,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         val bundle = Bundle()
         dineInModel.id?.let { bundle.putInt("id", it) }
         bundle.putParcelable("cartList", cartList)
-        bundle.putDouble("totalPrice", total)
-        bundle.putDouble("subTotalPrice", subTotal)
-        bundle.putDouble("totalTax", totalTax)
+        bundle.putDouble("totalPrice", totalGuest)
+        bundle.putDouble("subTotalPrice", subTotalGuest)
+        bundle.putDouble("totalTax", taxGuest)
         bundle.putParcelable("model", model)
         bundle.putParcelable("floorPlan", floorPlanModel)
+        bundle.putDouble("totalServiceCharge",serviceChargeGuest)
         orderId?.let { bundle.putInt("orderId", it) }
 
         var wholeTableAmt = 0.0
@@ -803,7 +817,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         } else {
             bundle.putBoolean("isLastPayment", false)
         }
-
         findNavController().navigate(
             R.id.action_dineInOrderTable_to_payByGuestDialog,
             bundle
