@@ -906,6 +906,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                 //  model.customerAttributes = customerModel
 
             }
+            else{
+                model.customerId = 0
+            }
             orderItemsAttributeList.add(model)
 
 

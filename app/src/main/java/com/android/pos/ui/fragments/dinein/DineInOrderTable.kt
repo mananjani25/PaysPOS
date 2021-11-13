@@ -13,6 +13,7 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -43,6 +44,9 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.common.collect.ArrayTable
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
 import kotlin.collections.ArrayList
@@ -71,6 +75,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     private var future_delivery_time: String = ""
     var totalAmount = 0.0
     var totalAmtnew: Double = 0.0
+    private var allCustomerList: ArrayList<TbCustomer> = arrayListOf()
     private var popupWindow: PopupWindow? = null
     private var floorPlanModel: GetFloorPlanResponse.Data.FloorPlanTable? = null
     var dragFrom = -1
@@ -96,10 +101,19 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         binding.lifecycleOwner = this
         observeShowProgress()
         setupSnackbar()
+        getCustomerList()
         observeServiceCharge()
 
         navigateDineInOrder()
         return binding.root
+    }
+
+    private fun getCustomerList() {
+        viewModel.customer().observe(viewLifecycleOwner, {
+            if (it.isNotEmpty()) {
+                allCustomerList = it.toCollection(arrayListOf())
+            }
+        })
     }
 
     private fun observeServiceCharge() {
@@ -359,6 +373,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     model.id = list[i].id
                     model.isPaid = list[i].isPaid
                     model.title = list[i].title
+                    model.customer = list[i].customer
                     model.isFired = list[i].isFired
                     model.guestDividerAmt = list[i].guestDividerAmt
                     model.guestDividedAmt = list[i].guestDividedAmt
@@ -759,7 +774,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         subTotal += dineInTableAdapter.getList().get(0).guestDividedAmt
 
         var total = subTotal + totalTax
-        Log.e(TAG,"orderIdGuest  ${orderId}")
+        Log.e(TAG, "orderIdGuest  ${orderId}")
 
 
         var model = GuestPaymentRequest(
@@ -791,7 +806,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         bundle.putDouble("totalTax", taxGuest)
         bundle.putParcelable("model", model)
         bundle.putParcelable("floorPlan", floorPlanModel)
-        bundle.putDouble("totalServiceCharge",serviceChargeGuest)
+        bundle.putDouble("totalServiceCharge", serviceChargeGuest)
         orderId?.let { bundle.putInt("orderId", it) }
 
         var wholeTableAmt = 0.0
@@ -1043,6 +1058,19 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                         model.title = baseResponse.guestAttributes.get(i).name
                         model.isHeader = 0
+
+                        if (baseResponse?.guestAttributes?.get(i)?.customerId != null && baseResponse.guestAttributes.get(
+                                i
+                            ).customerId != 0
+                        ) {
+                            allCustomerList.forEach {
+                                if (it.id == baseResponse.guestAttributes.get(i).customerId) {
+                                    model.customer = it
+                                }
+                            }
+
+                        }
+
 
                         var fullAmt = 0.0
 
@@ -1528,6 +1556,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             } else {
                 model.title = oldList.get(i).title
+                model.customer = oldList.get(i).customer
 
                 model.guestDividedAmt = guestShare
             }

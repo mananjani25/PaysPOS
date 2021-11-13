@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.data.db.AppDatabase
+import com.android.pos.data.entities.TbCustomer
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.DineInModel
 import com.android.pos.data.model.requestModel.GuestPaymentRequest
@@ -209,4 +210,10 @@ class DineInOrderTableViewModel @Inject constructor(
             }
         }
     }
+
+    fun customer(): LiveData<List<TbCustomer>>{
+       return appDatabase.customerDao().allCustomer
+    }
+
+
 }
