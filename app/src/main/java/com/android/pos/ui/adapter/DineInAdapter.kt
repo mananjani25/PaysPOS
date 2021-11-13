@@ -145,6 +145,31 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>(), MyCall
     }
 
     fun setList(list: ArrayList<DineInModel>) {
+        for (i in 0 until list.size) {
+            if (list[i].items.isNotEmpty()) {
+               /* list[i].items.forEachIndexed { index, it ->
+                    if (it.isDestroy) {
+                        list[i].items.removeAt(index)
+
+                    }
+                }*/
+
+                val it: MutableIterator<TbItem> = list.get(i).items.iterator()
+                while (it.hasNext()) {
+                    val s: TbItem = it.next()
+                    if (s.isDestroy) {
+                        it.remove()
+                    }
+                }
+            }
+
+
+        }
+
+        {
+
+        }
+
         this.list = list
         notifyDataSetChanged()
     }
