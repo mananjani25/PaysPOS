@@ -331,15 +331,15 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             val bundle = Bundle()
             bundle.putDouble(
                 "totalPrice",
-                MethodUtils.roundOffAmountDouble(subTotalWT + serviceCharge + viewModel.totalTaxAmount)
+                MethodUtils.roundOffAmountDouble(subTotalWT + serviceCharge + viewModel.totalTaxAmount - viewModel.totalDiscountAmount)
             )
-            bundle.putDouble("subTotalPrice", MethodUtils.roundOffAmountDouble(subTotalWT))
+            bundle.putDouble("subTotalPrice", MethodUtils.roundOffAmountDouble(subTotalWT - viewModel.totalDiscountAmount))
             bundle.putDouble("totalTax", MethodUtils.roundOffAmountDouble(viewModel.totalTaxAmount))
             bundle.putParcelable("model", model)
             bundle.putParcelable("floorPlan", floorPlanModel)
             bundle.putBoolean("isTotalPayment", true)
             bundle.putDouble("totalServiceCharge", MethodUtils.roundOffAmountDouble(serviceCharge))
-            bundle.putDouble("totalDiscount", 0.0)
+            bundle.putDouble("totalDiscount", viewModel.totalDiscountAmount)
             bundle.putBoolean("isTotalPayment", true)
             bundle.putBoolean("isLastPayment", true)
 
@@ -535,7 +535,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         )
         txtDiscount.text = "- $" + String.format(
             "%.2f",
-            totalDiscount
+            viewModel.totalDiscountAmount
         )
         txtTotalAmount.text = binding.txtTotalAmountNew.text.toString()
         txtTotalTax.text = "$" + String.format(
@@ -1047,6 +1047,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     var wholeTablePosition: Int = 0
                     //New Drag and drop Code
                     var totalPay = 0.0
+                    var itemsDiscount = 0.0
                     val dineInList: ArrayList<DineInModel> = arrayListOf()
 
                     for (i in 0 until baseResponse.guestAttributes.size) {
@@ -1079,11 +1080,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             if (baseResponse.orderItems.isNotEmpty()) {
                                 baseResponse.orderItems.forEach { it ->
                                     if (it.timestamp == guestItem[j].timestamp) {
-                                        totalGuestPrice += it.price * it.quantity
+
                                         model.isPaid = it.isPaid
                                         if (!it.isPaid) {
+                                            totalGuestPrice += (it.price * it.quantity)
                                             fullAmt += it.quantity * it.price
-                                            subTotalWT += it.quantity * it.price
+                                            subTotalWT += (it.quantity * it.price)
+                                            itemsDiscount += it.discountAmount
 
                                         }
 
@@ -1091,7 +1094,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                         if (it.orderItemModifiers.isNotEmpty()) {
                                             it.orderItemModifiers.forEach { it1 ->
                                                 if (!it.isPaid) {
-                                                    totalGuestPrice += it1.price * it1.quantity
+                                                    totalGuestPrice += (it1.price * it1.quantity)
                                                     fullAmt += it1.quantity * it1.price
                                                     subTotalWT += it1.quantity * it1.price
 
@@ -1124,9 +1127,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         }
 
                         serviceCharge = 0.0
+                        var tmpSubTotal = subTotalWT - itemsDiscount
                         serviceChargeList.forEach {
                             if (it.isEnabled) {
-                                serviceCharge += (subTotalWT * it.percentage) / 100
+                                serviceCharge += (tmpSubTotal * it.percentage) / 100
                             }
                         }
 
@@ -1317,24 +1321,34 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
                     var service: Double = 0.0
+                    var serviceSubTotal = subTotalWT - itemsDiscount
 
                     serviceChargeList.forEach {
-                        service += (subTotalWT * it.percentage) / 100
+                        service += (serviceSubTotal * it.percentage) / 100
                     }
+
+                    // subTotalWT -= baseResponse.totalDiscount
 
 
                     dineInList.forEach {
-                        Log.e(TAG, "isHeaderDineIn:  ${it.isHeader}")
                         if (it.isHeader == 1 && !it.isPaid) {
-                            it.item?.let { it1 -> viewModel.taxCalculation(it1) }
+                            it.item?.let { it1 ->
+                                viewModel.taxCalculation(it1)
+                                viewModel.discountCalculation(it1)
+                            }
+
                         }
                     }
+                    viewModel.totalDiscountAmount += baseResponse.totalDiscount
+
                     Log.e(TAG, "subTotalWTMy:  ${subTotalWT}")
                     Log.e(TAG, "sericeChar:  ${service}")
                     Log.e(TAG, "totalTaxAmt  ${viewModel.totalTaxAmount}")
+                    Log.e(TAG, "totalDiscount  ${viewModel.totalDiscountAmount}")
+                    Log.e(TAG, "OverAllDis  ${baseResponse.totalDiscount}")
 
                     val totalAmoountTxt =
-                        MethodUtils.roundOffAmount(subTotalWT + serviceCharge + viewModel.totalTaxAmount)
+                        MethodUtils.roundOffAmount(subTotalWT + serviceCharge + viewModel.totalTaxAmount - baseResponse.totalDiscount)
 
                     Log.e(TAG, "totalAmoountTxt:  ${totalAmoountTxt}")
 
