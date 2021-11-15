@@ -613,7 +613,7 @@ interface ApiService {
     suspend fun getReportSummary(
         @Query("start_date") startDate: String,
         @Query("end_date") endDate: String,
-        @Query("terminal_id ") terminalId: String
+        @Query("terminal_id") terminalId: String
     ): ReportSummaryResponse
 
     @GET(ORDER_HISTORY)
