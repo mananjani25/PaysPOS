@@ -42,6 +42,8 @@ class TaxServiceChargeRepository @Inject constructor(
 
     suspend fun deleteTax(data: Int) = apiHelperNew.deleteTax(data)
 
+    suspend fun deleteTaxFromDb() = appDatabase.taxDao().delete()
+
     suspend fun deleteTaxDatabase(taxId: Int) = appDatabase.taxDao().deleteTaxById(taxId)
 
 
@@ -50,6 +52,10 @@ class TaxServiceChargeRepository @Inject constructor(
             databaseQuery = { appDatabase.serviceChargeDao().allServiceCharge },
             networkCall = { apiHelperNew.getServiceChargeList() },
             saveCallResult = { appDatabase.serviceChargeDao().addAllServiceCharge(it.data) })
+
+    suspend fun deleteServiceChargesFromDb() {
+        appDatabase.serviceChargeDao().delete()
+    }
 
     suspend fun addServiceCharges(serviceChargeList: List<TbServiceCharge>) {
         appDatabase.serviceChargeDao().addServiceCharges(serviceChargeList)

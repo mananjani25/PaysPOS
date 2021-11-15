@@ -232,11 +232,22 @@ class PosRepository @Inject constructor(
         networkCall = { apiHelperNew.getNoteList() },
         saveCallResult = { appDatabase.notesDao().addAllNotes(it.data) })
 
+    suspend fun deleteNotesFromDb() =
+        appDatabase.notesDao().delete()
+
     suspend fun addAllNotesDatabase(data: List<NoteResponse.Data>) =
         appDatabase.notesDao().addAllNotesSuspend(data)
 
+    suspend fun deleteKitchenReceiptSettingsFromDb() {
+        appDatabase.kitchenSettingsDao().delete()
+    }
+
     suspend fun addKitchenReceiptSettings(data: GetKitchenReceiptSettingsResponse.Data) {
         appDatabase.kitchenSettingsDao().add(data)
+    }
+
+    suspend fun deleteCustomerReceiptSettingsFromDb() {
+        appDatabase.customerSettingsDao().delete()
     }
 
     suspend fun addCustomerReceiptSettings(data: GetCustomerReceiptSettingsResponse.Data) {
@@ -497,6 +508,9 @@ class PosRepository @Inject constructor(
 
     suspend fun assignCustomerOrder(orderId: Int, customerId: Int, newPos: Int) =
         apiHelperNew.assignCustomerOrder(orderId, customerId, newPos)
+
+    suspend fun deleteTerminalsFromDb() =
+        appDatabase.terminalDao().delete()
 
     suspend fun addTerminalsDatabase(data: List<VenueDetailsResponse.Data.Terminal>) =
         appDatabase.terminalDao().addAllTerminalSuspend(data)
