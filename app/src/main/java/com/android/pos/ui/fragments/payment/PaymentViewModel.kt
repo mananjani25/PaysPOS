@@ -881,10 +881,10 @@ class PaymentViewModel @Inject constructor(
         return PaymentAttributes().apply {
 //            if (isUpdateOrder)
 //                id = paymentId
-            amount =
-                MethodUtils.roundOffAmountDouble(totalPrice) - MethodUtils.roundOffAmountDouble(
-                    tipAmount
-                )
+            val totalPP = MethodUtils.roundOffAmountDouble(totalPrice)
+            val totalDC = MethodUtils.roundOffAmountDouble(tipAmount)
+            val totalAM = totalPP - totalDC
+            amount = if (splitValue == -1) totalAM else totalAM / splitValue
 //            cardName = ""
 //            cardNumber = ""
 //            cardType = 0
@@ -904,7 +904,10 @@ class PaymentViewModel @Inject constructor(
                     totalTax
                 ) / splitValue
             terminalId = cartModel.terminalId
-            tips = MethodUtils.roundOffAmountDouble(tipAmount)
+            tips =
+                if (splitValue == -1) MethodUtils.roundOffAmountDouble(tipAmount) else MethodUtils.roundOffAmountDouble(
+                    tipAmount
+                ) / splitValue
             tipsAdjusted = false
             totalDiscount =
                 if (splitValue == -1) MethodUtils.roundOffAmountDouble(totalDis) else MethodUtils.roundOffAmountDouble(
