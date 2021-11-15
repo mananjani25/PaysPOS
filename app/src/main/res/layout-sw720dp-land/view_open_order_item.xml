@@ -29,9 +29,9 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:orientation="horizontal"
                 android:layout_weight="1"
-                android:gravity="center">
+                android:gravity="center"
+                android:orientation="horizontal">
 
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -39,7 +39,6 @@
                     style="@style/CustomFontMediumStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-
                     android:gravity="center"
                     android:text="@{viewModel.offlineId}"
                     android:textColor="@color/txtColor"
@@ -47,8 +46,8 @@
                     tools:text="offlineId" />
 
                 <ImageView
-                    android:layout_width="wrap_content"
                     android:id="@+id/imgIndicator"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:srcCompat="@drawable/ic_arrow_down" />
             </androidx.appcompat.widget.LinearLayoutCompat>
@@ -165,10 +164,10 @@
                 tools:listitem="@layout/view_open_order_items" />
 
             <LinearLayout
-                android:padding="@dimen/_5sdp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:padding="@dimen/_5sdp">
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtCancelOrder"
