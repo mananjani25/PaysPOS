@@ -291,7 +291,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     ProgressUtils.dismissProgressDialog()
                     if (it.data != null) {
                         kitchenPrinterList = it.data
-                        Log.e(TAG, "kitchenPrinterList:   ${kitchenPrinterList.size}")
                         for (i in 0 until kitchenPrinterList.size) {
 
                             initKitchenPrinter(kitchenPrinterList.get(i), KITCHEN)
@@ -322,10 +321,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         val customerList = it.data
 
                         customerList.forEach {
-                            Log.e(TAG, "PrinterName:  ${it.name}")
-                            Log.e(TAG, "PrinterModelName:  ${it.modalName}")
-                            Log.e(TAG, "PrinterType:  ${it.printer_type}")
-
                             initPrinter(it, CUSTOMER)
 
 
@@ -1297,9 +1292,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         data: PrinterResponse.Data.KitchenReceiptPrinters,
         type: String
     ) {
-        Log.e(TAG, "getPrinter:  ${PrinterClass.getPrinter()}")
-        Log.e(TAG, "datadataKitchenPRinter  ${Gson().toJson(data)}")
-
         if (PrinterClass.getPrinter() == null) {
             var printer: Print? = Print(requireContext())
             if (printer != null) {
