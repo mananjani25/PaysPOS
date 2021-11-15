@@ -634,7 +634,7 @@ class PaymentViewModel @Inject constructor(
             orderItemsAttribute.isPaid = false
             orderItemsAttribute.isPrinted = true
             orderItemsAttribute.isTaxRemoved = false
-            orderItemsAttribute.itemId =  item.itemId
+            orderItemsAttribute.itemId = item.itemId
             orderItemsAttribute.is_manual_sales = item.isManualSales
             orderItemsAttribute.itemName = item.name
             orderItemsAttribute.note = item.note
@@ -958,7 +958,8 @@ class PaymentViewModel @Inject constructor(
 
     }
 
-    fun splitByOrder(myRequest: SpitByOrderRequestModel) {
+
+    fun splitByOrder(myRequest: SpitByOrderRequestModel, isDineIn: Boolean) {
 
         _showProgress.value = Event(true)
 
@@ -976,11 +977,14 @@ class PaymentViewModel @Inject constructor(
                             resource.data?.let { createOrderResponse ->
 
                                 if (onlySave) {
+
                                     _data.value = Event(createOrderResponse)
                                 } else {
                                     cashLogApi(createOrderResponse, "in")
                                 }
 
+                                if (isDineIn)
+                                    _msgText.value = Event(response.message)
 
 //
                             }

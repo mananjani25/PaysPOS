@@ -909,15 +909,17 @@
             app:enterAnim="@anim/nav_default_enter_anim"
             app:popUpTo="@id/dineInFragment" />
     </fragment>
-    <dialog
+    <fragment
         android:id="@+id/payByGuestDialog"
         android:name="com.android.pos.ui.dialog.PayByGuestDialog"
         android:label="PayByGuestDialog">
+        <argument
+            android:name="isTotalPayment"
+            android:defaultValue="false"
+            app:argType="boolean" />
         <action
             android:id="@+id/action_payByGuestDialog_to_dineInOrderTable"
-            app:destination="@id/dineInOrderTable"
-            app:popUpTo="@id/payByGuestDialog"
-            app:popUpToInclusive="true" />
+            app:destination="@id/dineInOrderTable" />
         <action
             android:id="@+id/action_payByGuestDialog_to_dashboardCategoryNew"
             app:destination="@id/dashboardCategoryNew"
@@ -928,10 +930,8 @@
             app:destination="@id/splitAmountFragment" />
         <action
             android:id="@+id/action_payByGuestDialog_to_orderCompleteFragment"
-            app:destination="@id/orderCompleteFragment"
-            app:popUpTo="@id/orderCompleteFragment"
-            app:popUpToInclusive="false" />
-    </dialog>
+            app:destination="@id/orderCompleteFragment" />
+    </fragment>
     <fragment
         android:id="@+id/reportSummaryFragment"
         android:name="com.android.pos.ui.fragments.report.ReportSummaryFragment"
