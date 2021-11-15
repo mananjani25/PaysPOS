@@ -1803,7 +1803,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 clearCustomer()
                 hideOrderType()
                 getKitchenPrinters(it)
-
+                clearUpdateFlag()
 
             }
         })
@@ -1957,13 +1957,12 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             hideOrderType()
                             hideOrderMenu()
                             prefProvider.setValueboolean(DINE_IN_UPDATE, false)
-                            requireArguments().remove("update")
+                            clearUpdateFlag()
 
                         } else {
                             viewModel.deleteCart()
                             Log.e(TAG, "isOrderUpdate 1777 $isOrderUpdate")
-                            isOrderUpdate = false
-                            prefProvider.setValueboolean(IS_ORDER_UPDATE, false)
+
 
                             if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
                                 prefProvider.setValue(ORDER_TYPE, "")
@@ -1973,8 +1972,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             clearCustomer()
                             hideOrderType()
                             hideOrderMenu()
-                            prefProvider.setValueboolean(DINE_IN_UPDATE, false)
-                            requireArguments().remove("update")
+                            clearUpdateFlag()
                         }
                     }
                     negativeButton(R.string.tv_cancel) {
@@ -2820,8 +2818,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                 viewModel.deleteCart()
                 Log.e(TAG, "isOrderUpdate 2560 $isOrderUpdate")
-                isOrderUpdate = false
-                prefProvider.setValueboolean(IS_ORDER_UPDATE, false)
 
                 if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
                     prefProvider.setValue(ORDER_TYPE, "")
@@ -2830,6 +2826,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 clearCustomer()
                 hideOrderType()
                 hideOrderMenu()
+                clearUpdateFlag()
 
 
             }
@@ -3277,6 +3274,13 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         } catch (e: Exception) {
             e.printStackTrace()
         }
+
+    }
+
+    private fun clearUpdateFlag(){
+        isOrderUpdate = false
+        prefProvider.setValueboolean(IS_ORDER_UPDATE, value = false)
+        requireArguments().remove("update")
 
     }
 }
