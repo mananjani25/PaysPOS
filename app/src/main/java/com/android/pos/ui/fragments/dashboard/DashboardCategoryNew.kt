@@ -1945,6 +1945,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
 
 
+
                     if (isOrderUpdate)
                         viewModelPayment.updateOrder(
                             true,
