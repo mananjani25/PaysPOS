@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.android.pos.data.model.requestModel.OrderCancelRequest
 import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.model.responseModel.OpenOrderResponse
+import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Resource
@@ -27,6 +28,14 @@ class ActiveOrderViewModel @Inject constructor(
 
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
+
+    fun getCustomerReceiptSettings() = posRepository.getCustomerReceiptSettings()
+
+    fun getCustomerPrinterList(): LiveData<Resource<List<PrinterResponse.Data.CustomerReceiptPrinters>>> {
+        return posRepository.getCustomerPrinters()
+    }
+
+    fun getTipsList() = posRepository.getTipsList()
 
     fun openOrders(param1: String): LiveData<Resource<OpenOrderResponse>> =
         posRepository.getOpenOrders(param1)

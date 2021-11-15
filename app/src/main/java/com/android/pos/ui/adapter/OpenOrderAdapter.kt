@@ -125,6 +125,10 @@ class OpenOrderAdapter :
                 mCallback?.onItemClickListener(it, bindingAdapterPosition, "")
             }
 
+            binding.txtPrintReceipt.setOnClickListener {
+                mCallback?.onItemClickListener(it, bindingAdapterPosition, "PRINT")
+            }
+
             binding.txtEditOrder.setOnClickListener {
                 mCallback?.onItemClickListener(it, bindingAdapterPosition, "UPDATE")
             }

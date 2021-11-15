@@ -1795,7 +1795,11 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         kitchenPrinterList = it.data
                         for (i in 0 until kitchenPrinterList.size) {
 
-                            initKitchenPrinter(kitchenPrinterList.get(i), Constants.KITCHEN,createOrderResponse)
+                            initKitchenPrinter(
+                                kitchenPrinterList.get(i),
+                                Constants.KITCHEN,
+                                createOrderResponse
+                            )
                         }
                     }
 
@@ -2913,7 +2917,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             if (printer != null) {
                 PrinterClass.setPrinter(printer)
 
-                generateKitchenReceipt(data, type,createOrderResponse.data)
+                generateKitchenReceipt(data, type, createOrderResponse.data)
 
             }
 
@@ -2926,7 +2930,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private fun generateKitchenReceipt(
         customerReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
         type: String,
-        receiptModel:CreateOrderResponse.Data
+        receiptModel: CreateOrderResponse.Data
     ) {
         var builder: Builder? = null
         try {
