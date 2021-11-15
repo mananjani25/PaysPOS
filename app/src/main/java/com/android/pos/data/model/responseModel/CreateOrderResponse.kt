@@ -124,7 +124,7 @@ data class CreateOrderResponse(
                 @SerializedName("sub_total") var subTotal: String,
                 @SerializedName("total_tax") var totalTax: Int,
                 @SerializedName("total_tips") var totalTips: Int,
-                @SerializedName("customer_id") var customerId: String,
+                @SerializedName("customer_id") var customerId: Int,
                 @SerializedName("guest_item_attributes") var guestItemAttributes: List<GuestItemAttributes>
 
             ) : Parcelable {

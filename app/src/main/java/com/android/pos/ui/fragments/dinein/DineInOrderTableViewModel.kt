@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.data.db.AppDatabase
+import com.android.pos.data.entities.TbCustomer
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.DineInModel
 import com.android.pos.data.model.requestModel.GuestPaymentRequest
@@ -54,6 +55,7 @@ class DineInOrderTableViewModel @Inject constructor(
     val msgText: LiveData<Event<String>> = _msgText
 
     var totalTaxAmount = 0.0
+    var totalDiscountAmount = 0.0
     var totalAmount = 0.0
     var subTotalAmount = 0.0
     var totalServiceChargeAmount = 0.0
@@ -69,7 +71,6 @@ class DineInOrderTableViewModel @Inject constructor(
                 Status.SUCCESS -> {
                     _showProgress.value = Event(false)
                     resource.data.let { response ->
-                        Log.e(TAG, "GuestisPaid")
                         _guestPayment.value = Event(response?.message.toString())
                     }
                 }
@@ -180,10 +181,14 @@ class DineInOrderTableViewModel @Inject constructor(
 
     }
 
+    public fun discountCalculation(item: TbItem) {
+        //totalDiscountAmount += item.discountPrice
+
+    }
+
     public fun taxCalculation(item: TbItem) {
         item.taxes?.forEach { tax ->
             if (tax.isActive) {
-                Log.e(TAG, "tbitem:  ${Gson().toJson(item)}")
                 totalTaxAmount += if (tax.taxType == "Percentage") {
 
                     var modifierPrice = 0.0
@@ -209,4 +214,10 @@ class DineInOrderTableViewModel @Inject constructor(
             }
         }
     }
+
+    fun customer(): LiveData<List<TbCustomer>> {
+        return appDatabase.customerDao().allCustomer
+    }
+
+
 }

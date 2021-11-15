@@ -29,5 +29,8 @@ interface CustomerDao {
     @Query("DELETE FROM TbCustomer")
     suspend fun deleteCustomerTb()
 
+    @Query("SELECT * from TbCustomer where TbCustomer.id = :id")
+    fun getCustomerDetailsByID(id: Int?): LiveData<TbCustomer>
+
 
 }

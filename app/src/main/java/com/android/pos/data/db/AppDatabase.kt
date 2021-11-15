@@ -20,7 +20,8 @@ import com.android.pos.data.typeconvert.*
         TbCustomer::class, ModifierSet::class, TeamRole::class,
         ModulePermission::class, TbOrderType::class, VenueDetailsResponse.Data.Terminal::class,
         ItemModifierSets::class, OptionSet::class, PrinterResponse.Data.CustomerReceiptPrinters::class,
-        PrinterResponse.Data.KitchenReceiptPrinters::class, GetKitchenReceiptSettingsResponse.Data::class, GetCustomerReceiptSettingsResponse.Data::class],
+        PrinterResponse.Data.KitchenReceiptPrinters::class, GetKitchenReceiptSettingsResponse.Data::class,
+        GetCustomerReceiptSettingsResponse.Data::class, LoyaltyProgramsModel::class],
     version = 1
 )
 @TypeConverters(
@@ -41,7 +42,8 @@ import com.android.pos.data.typeconvert.*
     TCOrderTypes::class,
     TCKitchenReceiptPrinters::class,
     TCPrinterCategories::class,
-    TCDineInList::class
+    TCDineInList::class,
+    TCLoyaltyPrograms::class,
 )
 
 
@@ -68,6 +70,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun printerDao(): PrinterDao
     abstract fun kitchenSettingsDao(): KitchenSettingsDao
     abstract fun customerSettingsDao(): CustomerSettingsDao
+    abstract fun loyaltyProgramsDao(): LoyaltyProgramsDao
 
     companion object {
         @Volatile

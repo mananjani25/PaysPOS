@@ -475,14 +475,15 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     it,
                     subTotalPrice / splitValue,
                     (totalPrice + tipAmount) / splitValue,
-                    totalServiceCharge / splitValue,
-                    totalTax / splitValue,
+                    totalServiceCharge,
+                    totalTax,
                     prefProvider.getValue(Constants.ORDER_TYPE, "").toString(),
                     future_delivery_date,
                     future_delivery_date,
                     false,
-                    totalDiscount / splitValue,
-                    tipAmount / splitValue
+                    totalDiscount,
+                    tipAmount / splitValue,
+                    splitValue
                 )
             }
             if (myRequest != null) {
@@ -542,7 +543,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     future_delivery_date,
                     false,
                     totalDiscount,
-                    tipAmount
+                    tipAmount,
+                    splitValue
                 )
             }
             if (myRequest != null) {
@@ -586,7 +588,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     future_delivery_date,
                     true,
                     totalDiscount,
-                    tipAmount
+                    tipAmount,
+                    splitValue
                 )
             }
             if (myRequest != null) {

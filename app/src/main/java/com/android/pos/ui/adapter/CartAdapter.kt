@@ -34,6 +34,15 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
 
     fun addCart(mList: List<TbItem>?) {
         cartList = mList as ArrayList<TbItem>
+        val it: MutableIterator<TbItem> = cartList.iterator()
+
+        while (it.hasNext()) {
+            val s: TbItem = it.next()
+            if (s.isDestroy) {
+                it.remove()
+            }
+        }
+
         notifyDataSetChanged()
     }
 
