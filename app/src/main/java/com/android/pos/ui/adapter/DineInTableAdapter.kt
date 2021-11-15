@@ -75,8 +75,6 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     @SuppressLint("NotifyDataSetChanged")
     inner class HeaderViewHolder(private val binding: ViewDineInHeaderBinding) :
         RecyclerView.ViewHolder(binding.root) {
-
-
         fun bind(model: DineInModel, position: Int) {
             var tbList: ArrayList<TbItem> = arrayListOf()
             var guestAmt = 0.0
@@ -105,7 +103,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                             }
 
                             if (it.taxes?.isNotEmpty() == true) {
-                                Log.e(TAG,"taxesList:  ${Gson().toJson(it.taxes)}")
+                                Log.e(TAG, "taxesList:  ${Gson().toJson(it.taxes)}")
                                 it.taxes?.forEach { tax ->
                                     if (tax.isActive) {
                                         totalTaxAmt += if (tax.taxType == "Percentage") {
@@ -122,7 +120,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
                                             val itemTaxPrice =
                                                 (tax.rate * totalPrice) / 100
-                                            Log.e("itemTaxPrice", "" + itemTaxPrice)
+
                                             String.format("%.2f", itemTaxPrice)
                                                 .toDouble()
                                         } else {
@@ -154,8 +152,9 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 }
             }
             guestAmt += list.get(0).guestDividedAmt
+            Log.e(TAG, "customerAdapter  ${list.get(position).customer}")
 
-            if (list.get(layoutPosition).customer != null) {
+            if (list.get(position).customer != null) {
                 binding.txtTableName.setText(
                     list.get(layoutPosition).customer?.first_name + " " + list.get(
                         layoutPosition
@@ -167,18 +166,14 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             }
 
             if (isPaid && !noItem) {
-
                 binding.btnPay.visibility = View.GONE
                 binding.btnPaid.visibility = View.VISIBLE
 
-            } else if (noItem) {
+            } else if (noItem && guestAmt == 0.0) {
                 binding.btnPaid.visibility = View.GONE
                 binding.btnPay.visibility = View.GONE
-
-
             } else {
                 binding.btnPay.visibility = View.VISIBLE
-
                 binding.btnPaid.visibility = View.INVISIBLE
 
             }
@@ -201,21 +196,29 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             if (list[0].serviceChargeList?.isNotEmpty() == true) {
                 list[0].serviceChargeList?.forEach {
                     if (it.isEnabled) {
-                        Log.e(TAG, "guestSubTotal:  ${guestSubTotal}")
                         totalServiceCharge += (guestSubTotal * it.percentage) / 100
                     }
                 }
 
 
             }
-            Log.e(TAG, "MyTtotalServiceCharge  ${totalServiceCharge}")
-            Log.e(TAG, "MYTtotalTaxAmt ${totalTaxAmt}")
-            Log.e(TAG, "MYTguestAmt  ${guestAmt}")
-            Log.e(TAG, "DividedAmtGuest  ${list.get(0).guestDividedAmt}")
+
             var finalAmt =
                 guestSubTotal + totalServiceCharge + totalTaxAmt + list.get(0).guestDividedAmt
-            Log.e(TAG, "finalAmt:  ${finalAmt}")
+
             binding.txtPay.setText("Pay " + MethodUtils.roundOffAmount(finalAmt))
+
+            binding.btnPay.setOnClickListener {
+                Log.e(TAG, "OnPayClicked")
+                listner.onGuestPay(
+                    list[position],
+                    position,
+                    MethodUtils.roundOffAmountDouble(guestSubTotal + list.get(0).guestDividedAmt),
+                    MethodUtils.roundOffAmountDouble(finalAmt),
+                    MethodUtils.roundOffAmountDouble(totalTaxAmt),
+                    MethodUtils.roundOffAmountDouble(totalServiceCharge)
+                )
+            }
 
 
         }
@@ -259,10 +262,6 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
             }
 
-            binding.btnPay.setOnClickListener {
-                Log.e(TAG, "OnPayClicked")
-                listner.onGuestPay(list[layoutPosition], layoutPosition)
-            }
 
         }
     }
@@ -487,7 +486,15 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     }
 
     interface DineInTableListner {
-        fun onGuestPay(dineInModel: DineInModel, position: Int)
+        fun onGuestPay(
+            dineInModel: DineInModel,
+            position: Int,
+            subTotal: Double,
+            total: Double,
+            tax: Double,
+            serviceCharge: Double
+        )
+
         fun onSendItemToKitchen(item: TbItem)
         fun onWholeTableToKitchen(ids: String)
         fun singleItemFired(id: String, position: Int)

@@ -905,6 +905,8 @@ class DashBoardCategoryViewModel @Inject constructor(
  */
                 //  model.customerAttributes = customerModel
 
+            } else {
+                model.customerId = 0
             }
             orderItemsAttributeList.add(model)
 
@@ -935,6 +937,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                 orderItemsAttribute.employeeId = cartModel.employeeID
                 orderItemsAttribute.isCount = 0
                 orderItemsAttribute.isEdited = item.isEdited
+                orderItemsAttribute.isDestroy = item.isDestroy
+                Log.e(TAG, "Passes: ${item.isDestroy}")
                 orderItemsAttribute.isPaid = item.isPaid
                 orderItemsAttribute.isPrinted = true
                 orderItemsAttribute.isTaxRemoved = false
@@ -945,6 +949,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 orderItemsAttribute.price = item.price
                 orderItemsAttribute.quantity = item.itemQuantity
                 orderItemsAttribute.terminalId = cartModel.terminalId
+
 
                 Log.e(TAG, "TimeStampMo: ${item.timeStamp}")
                 if (item.timeStamp == null || item.timeStamp?.lowercase() == "null".lowercase()) {

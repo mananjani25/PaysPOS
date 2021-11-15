@@ -72,7 +72,7 @@ class PosRepository @Inject constructor(
         //var list:LiveData<PrinterResponse.Data> = data
         data.customerReceiptPrinters = appDatabase.printerDao().customerPrintList.value
         data.kitchenReceiptPrinters = appDatabase.printerDao().kitchenPrintList.value
-        Log.e("PrinterDAta", "PrinterGetDAta  ${Gson().toJson(data)}")
+
 
         val liveData = MutableLiveData<PrinterResponse.Data>()
         liveData.postValue(data)
@@ -304,26 +304,38 @@ class PosRepository @Inject constructor(
     suspend fun addCustomer(data: TbCustomer) =
         appDatabase.customerDao().addCustomer(data)
 
+    fun getCustomerDetailsByID(id: Int?): LiveData<TbCustomer> {
 
-    suspend fun deleteCustomerDataBase(id: Int?) = appDatabase.customerDao().deleteCustomerByID(id)
+        return appDatabase.customerDao().getCustomerDetailsByID(id)
+    }
 
-    suspend fun createCustomer(data: CreateCustomerRequestModel) = apiHelperNew.createCustomer(data)
+
+    suspend fun deleteCustomerDataBase(id: Int?) =
+        appDatabase.customerDao().deleteCustomerByID(id)
+
+    suspend fun createCustomer(data: CreateCustomerRequestModel) =
+        apiHelperNew.createCustomer(data)
 
     suspend fun updateCustomer(id: Int, data: CreateCustomerRequestModel) =
         apiHelperNew.updateCustomer(id, data)
 
     suspend fun deleteCustomer(id: Int?) = apiHelperNew.deleteCustomer(id)
 
-    suspend fun updateEmployee(taxId: Int, data: CreateEmployeeRequestModel) =
+    suspend fun updateEmployee(
+        taxId: Int,
+        data: CreateEmployeeRequestModel
+    ) =
         apiHelperNew.updateEmployee(taxId, data)
 
-    suspend fun deleteEmployee(data: Int) = apiHelperNew.deleteEmployee(data)
+    suspend fun deleteEmployee(data: Int) =
+        apiHelperNew.deleteEmployee(data)
 
     suspend fun deleteEmployeeDatabase(employeeId: Int) =
         appDatabase.employeeDao().deleteEmployeeById(employeeId)
 
 
-    suspend fun logout(data: HashMap<String, String>) = apiHelperNew.logOut(data)
+    suspend fun logout(data: HashMap<String, String>) =
+        apiHelperNew.logOut(data)
 
 
     override suspend fun abs() {
@@ -342,11 +354,15 @@ class PosRepository @Inject constructor(
     suspend fun createItem(item: TbItem) =
         appDatabase.itemDao().add(item)
 
-    suspend fun createItemApiCall(data: CreateItemRequestModel) = apiHelperNew.createItem(data)
+    suspend fun createItemApiCall(data: CreateItemRequestModel) =
+        apiHelperNew.createItem(data)
+
     suspend fun updateItemApiCall(id: Int, data: CreateItemRequestModel) =
         apiHelperNew.updateItem(id, data)
 
-    suspend fun deleteCategoryCall(data: Int) = apiHelperNew.deleteCategoryCall(data)
+    suspend fun deleteCategoryCall(data: Int) =
+        apiHelperNew.deleteCategoryCall(data)
+
     suspend fun hideCategoryCall(id: Int, active: Boolean) =
         apiHelperNew.hideCategoryCall(id, active)
 
@@ -363,7 +379,11 @@ class PosRepository @Inject constructor(
     suspend fun createCategory(category: TbCategory) =
         appDatabase.categoryDao().add(category)
 
-    suspend fun updateItemCategory(catId: Int, catName: String, itemId: Int?) {
+    suspend fun updateItemCategory(
+        catId: Int,
+        catName: String,
+        itemId: Int?
+    ) {
 
         appDatabase.itemDao().updateItem(catId, catName, itemId)
     }
@@ -462,21 +482,33 @@ class PosRepository @Inject constructor(
     suspend fun updateOptionSet(mId: Int, data: CreateOptionRequestModel) =
         apiHelperNew.updateOptionSet(mId, data)
 
-    suspend fun deleteOptionSet(id: Int) = apiHelperNew.deleteOptionSet(id)
-    suspend fun deleteOptionSetDatabase(id: Int) = appDatabase.optionSetDao().delete(id)
+    suspend fun deleteOptionSet(id: Int) =
+        apiHelperNew.deleteOptionSet(id)
 
-    suspend fun reOrderOptionSet(id: Int, oldPos: Int, newPos: Int) =
+    suspend fun deleteOptionSetDatabase(id: Int) =
+        appDatabase.optionSetDao().delete(id)
+
+    suspend fun reOrderOptionSet(
+        id: Int,
+        oldPos: Int,
+        newPos: Int
+    ) =
         apiHelperNew.reOrderOptionSet(id, oldPos, newPos)
 
     suspend fun updateOptionSort(allCategories: ArrayList<OptionSet>) {
         appDatabase.optionSetDao().addAll(allCategories)
     }
 
-    suspend fun createOrder(data: OrderRequestModel) = apiHelperNew.createOrder(data)
+    suspend fun createOrder(data: OrderRequestModel) =
+        apiHelperNew.createOrder(data)
 
-    suspend fun splitByOrder(data: SpitByOrderRequestModel) = apiHelperNew.splitByOrder(data)
+    suspend fun splitByOrder(data: SpitByOrderRequestModel) =
+        apiHelperNew.splitByOrder(data)
 
-    suspend fun updateOrder(orderId: Int?, data: OrderRequestModel) =
+    suspend fun updateOrder(
+        orderId: Int?,
+        data: OrderRequestModel
+    ) =
         apiHelperNew.updateOrder(orderId, data)
 
     suspend fun orderDetailsById(orderId: Int) =
@@ -486,21 +518,38 @@ class PosRepository @Inject constructor(
     suspend fun orderDetailsId(orderId: Int) =
         apiHelperNew.orderDetailsId(orderId)
 
-    suspend fun emailReceipt(data: HashMap<String, String>) = apiHelperNew.emailReceipt(data)
-    suspend fun phoneReceipt(data: HashMap<String, String>) = apiHelperNew.phoneReceipt(data)
+    suspend fun emailReceipt(data: HashMap<String, String>) =
+        apiHelperNew.emailReceipt(data)
 
-    suspend fun assignCustomerOrder(orderId: Int, customerId: Int, newPos: Int) =
-        apiHelperNew.assignCustomerOrder(orderId, customerId, newPos)
+    suspend fun phoneReceipt(data: HashMap<String, String>) =
+        apiHelperNew.phoneReceipt(data)
 
-    suspend fun addTerminalsDatabase(data: List<VenueDetailsResponse.Data.Terminal>) =
-        appDatabase.terminalDao().addAllTerminalSuspend(data)
+    suspend fun assignCustomerOrder(
+        orderId: Int,
+        customerId: Int,
+        newPos: Int
+    ) =
+        apiHelperNew.assignCustomerOrder(
+            orderId,
+            customerId,
+            newPos
+        )
+
+    suspend fun addTerminalsDatabase(
+        data: List<VenueDetailsResponse.Data.Terminal>
+    ) =
+        appDatabase.terminalDao()
+            .addAllTerminalSuspend(
+                data
+            )
 
     fun getTerminalListDatabse() =
         performGetOperationDatabase(databaseQuery = { appDatabase.terminalDao().allTerminal })
 
     fun getMinMax(_itemId: Int, modifierSetId: Int?): LiveData<ItemModifierSets?>? {
         if (modifierSetId != null) {
-            return appDatabase.itemModifierSetsDao().minMaxByItemModifier(_itemId, modifierSetId)
+            return appDatabase.itemModifierSetsDao()
+                .minMaxByItemModifier(_itemId, modifierSetId)
         }
         return null
     }
@@ -523,13 +572,26 @@ class PosRepository @Inject constructor(
     suspend fun orderUpdateTip(orderId: Int, customerId: Double) =
         apiHelperNew.orderUpdateTip(orderId, customerId)
 
-    suspend fun updateKitchenFireStatus(id: Int, isFired: Boolean, items: String) =
+    suspend fun updateKitchenFireStatus(
+        id: Int,
+        isFired: Boolean,
+        items: String
+    ) =
         apiHelperNew.updateKitchenFireStatus(id, isFired, items)
 
-    suspend fun getTableStatus(tableId: Int, empId: Int, terminalId: Int, status: String) =
+    suspend fun getTableStatus(
+        tableId: Int,
+        empId: Int,
+        terminalId: Int,
+        status: String
+    ) =
         apiHelperNew.getTableStatus(tableId, empId, terminalId, status)
 
-    suspend fun payByGuest(id: Int, isAllComplete: Boolean, model: GuestPaymentRequest) =
+    suspend fun payByGuest(
+        id: Int,
+        isAllComplete: Boolean,
+        model: GuestPaymentRequest
+    ) =
         apiHelperNew.payByGuest(id, isAllComplete, model)
 
     suspend fun orderCancel(id: Int, data: OrderCancelRequest) =
@@ -542,7 +604,11 @@ class PosRepository @Inject constructor(
     suspend fun employeeClockOut(data: HashMap<String, String>) =
         apiHelperNew.employeeClockOut(data)
 
-    suspend fun getReportSummary(startDate: String, endDate: String, terminalId: String) =
+    suspend fun getReportSummary(
+        startDate: String,
+        endDate: String,
+        terminalId: String
+    ) =
         apiHelperNew.getReportSummary(startDate, endDate, terminalId)
 
     suspend fun getOrderHistory(id: String) =

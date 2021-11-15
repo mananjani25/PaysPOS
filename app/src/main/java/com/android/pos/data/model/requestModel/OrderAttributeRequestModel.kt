@@ -291,6 +291,9 @@ class OrderItemsAttribute {
 
     @SerializedName("variation_id")
     var variationId: Int? = null
+
+    @SerializedName("is_destroy")
+    var isDestroy: Boolean = false
 }
 
 class OrderItemTaxesAttribute {
@@ -373,7 +376,6 @@ class OrderModifierTaxesAttribute {
 
     @SerializedName("tax_type")
     var taxType: String = ""
-
 
 
 }

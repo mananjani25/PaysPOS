@@ -35,7 +35,7 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>(), MyCall
     }
 
     override fun onBindViewHolder(holder: DineInAdapter.MyViewHolder, position: Int) {
-        holder.bind(list.get(position))
+        holder.bind(list.get(position), position)
     }
 
     override fun getItemCount(): Int {
@@ -45,15 +45,14 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>(), MyCall
     inner class MyViewHolder(private val binding: ViewDineInItemBinding) :
         RecyclerView.ViewHolder(binding.root), MyCallback {
 
-        fun bind(model: DineInModel) {
+        fun bind(model: DineInModel, position: Int) {
             binding.model = model
             binding.executePendingBindings()
             itemAdapter = CartAdapter()
             binding.rvCart.adapter = itemAdapter
             //swipeListener(binding.rvCart, layoutPosition, binding.root.context)
+            itemAdapter.addCart(model.items)
 
-            itemAdapter.addCart(list.get(layoutPosition).items)
-            Log.e(TAG, "Customer:  ${list.get(layoutPosition).customer}")
             if (list.get(layoutPosition).customer != null) {
                 binding.txtTableName.setText(
                     list.get(layoutPosition).customer?.first_name + " " + list.get(
@@ -145,6 +144,28 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>(), MyCall
     }
 
     fun setList(list: ArrayList<DineInModel>) {
+        /*
+        for (i in 0 until list.size) {
+            if (list[i].items.isNotEmpty()) {
+               *//* list[i].items.forEachIndexed { index, it ->
+                    if (it.isDestroy) {
+                        list[i].items.removeAt(index)
+
+                    }
+                }*//*
+
+                val it: MutableIterator<TbItem> = list.get(i).items.iterator()
+                while (it.hasNext()) {
+                    val s: TbItem = it.next()
+                    if (s.isDestroy) {
+                        it.remove()
+                    }
+                }
+            }
+
+
+        }
+        */
         this.list = list
         notifyDataSetChanged()
     }
