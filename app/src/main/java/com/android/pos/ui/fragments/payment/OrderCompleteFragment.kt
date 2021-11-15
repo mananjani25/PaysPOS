@@ -50,6 +50,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private var remainingAmount: Double = 0.0
     private var splitValue: Int = -1
     private var isSpilt: Boolean = false
+    private var isDineIn: Boolean = false
     private var kitchenPrinterList: List<PrinterResponse.Data.KitchenReceiptPrinters> = listOf()
     private var orderID: Int = 0
     private var type: String = ""
@@ -127,7 +128,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         paymentAmount = requireArguments().getDouble("paymentAmount")
         orderID = requireArguments().getInt("orderID")
         isSpilt = requireArguments().getBoolean("isSpilt")
-        receiptModel = requireArguments().getParcelable("receiptData")
+        isDineIn = requireArguments().getBoolean("isDineIn")
+        if (!isDineIn)
+            receiptModel = requireArguments().getParcelable("receiptData")
 
         if (isSpilt) {
             splitValue = requireArguments().getInt("splitValue")
@@ -275,7 +278,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     private fun moveToDashboard() {
         if (isSpilt) {
-            findNavController().navigateUp()
+            if (isDineIn) {
+                // findNavController().navigate(R.id.action_orderCompleteFragment_to_payByGuestDialog)
+                findNavController().popBackStack()
+            } else {
+                findNavController().popBackStack()
+            }
         } else {
 
             removeCustomer()

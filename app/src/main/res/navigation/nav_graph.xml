@@ -702,6 +702,10 @@
         android:id="@+id/orderCompleteFragment"
         android:name="com.android.pos.ui.fragments.payment.OrderCompleteFragment"
         android:label="OrderCompleteFragment">
+        <argument
+            android:name="isDineIn"
+            android:defaultValue="false"
+            app:argType="boolean" />
         <action
             android:id="@+id/action_orderCompleteFragment_to_dashboardCategoryNew"
             app:destination="@id/dashboardCategoryNew"
@@ -710,6 +714,10 @@
         <action
             android:id="@+id/action_orderCompleteFragment_to_assignCustomerOrderFragment"
             app:destination="@id/assignCustomerOrderFragment" />
+        <action
+            android:id="@+id/action_orderCompleteFragment_to_payByGuestDialog"
+            app:destination="@id/payByGuestDialog"
+            app:enterAnim="@anim/nav_default_enter_anim" />
     </fragment>
     <fragment
         android:id="@+id/orders"
@@ -901,26 +909,34 @@
             app:enterAnim="@anim/nav_default_enter_anim"
             app:popUpTo="@id/dineInFragment" />
     </fragment>
-    <dialog
+    <fragment
         android:id="@+id/payByGuestDialog"
         android:name="com.android.pos.ui.dialog.PayByGuestDialog"
         android:label="PayByGuestDialog">
+        <argument
+            android:name="isTotalPayment"
+            android:defaultValue="false"
+            app:argType="boolean" />
         <action
             android:id="@+id/action_payByGuestDialog_to_dineInOrderTable"
-            app:destination="@id/dineInOrderTable"
-            app:popUpTo="@id/payByGuestDialog"
-            app:popUpToInclusive="true" />
+            app:destination="@id/dineInOrderTable" />
         <action
             android:id="@+id/action_payByGuestDialog_to_dashboardCategoryNew"
             app:destination="@id/dashboardCategoryNew"
             app:popUpTo="@id/payByGuestDialog"
             app:popUpToInclusive="true" />
-    </dialog>
+        <action
+            android:id="@+id/action_payByGuestDialog_to_splitAmountFragment"
+            app:destination="@id/splitAmountFragment" />
+        <action
+            android:id="@+id/action_payByGuestDialog_to_orderCompleteFragment"
+            app:destination="@id/orderCompleteFragment" />
+    </fragment>
     <fragment
         android:id="@+id/reportSummaryFragment"
         android:name="com.android.pos.ui.fragments.report.ReportSummaryFragment"
         android:label="Report Summary"
-        tools:layout="@layout/fragment_report_summary"/>
+        tools:layout="@layout/fragment_report_summary" />
     <dialog
         android:id="@+id/taxesDialog"
         android:name="com.android.pos.ui.dialog.TaxesDialog"
