@@ -9,6 +9,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.model.responseModel.OpenOrderResponse
+import com.android.pos.data.remote.Constants.PRINT_PAID
+import com.android.pos.data.remote.Constants.PRINT_UNPAID
 import com.android.pos.databinding.ViewOpenOrderItemBinding
 import com.android.pos.utils.TimeFormatUtils
 import com.android.pos.utils.callback.ItemCallback
@@ -126,7 +128,11 @@ class OpenOrderAdapter :
             }
 
             binding.txtPrintReceipt.setOnClickListener {
-                mCallback?.onItemClickListener(it, bindingAdapterPosition, "PRINT")
+                if (orderList[bindingAdapterPosition].paymentStatus == "Paid") {
+                    mCallback?.onItemClickListener(it, bindingAdapterPosition, PRINT_PAID)
+                } else {
+                    mCallback?.onItemClickListener(it, bindingAdapterPosition, PRINT_UNPAID)
+                }
             }
 
             binding.txtEditOrder.setOnClickListener {

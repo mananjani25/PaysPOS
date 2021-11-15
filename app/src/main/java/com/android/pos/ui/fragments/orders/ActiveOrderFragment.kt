@@ -22,6 +22,9 @@ import com.android.pos.data.model.responseModel.OpenOrderResponse
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ARG_PARAM1
+import com.android.pos.data.remote.Constants.BUSINESS_ADDRESS
+import com.android.pos.data.remote.Constants.PRINT_PAID
+import com.android.pos.data.remote.Constants.PRINT_UNPAID
 import com.android.pos.databinding.FragmentActiveOrdersBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.OpenOrderAdapter
@@ -34,7 +37,6 @@ import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.statusUtils.Status
 import com.epson.eposprint.Builder
 import com.epson.eposprint.Print
-import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -223,10 +225,14 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
                 )
 
             }
-            "PRINT" -> {
+            PRINT_UNPAID -> {
 
-                getCustomerPrinters(order)
+                getCustomerPrinters(order, status)
             }
+            PRINT_PAID -> {
+                getCustomerPrinters(order, status)
+            }
+
             else -> {
 
                 alert(
@@ -455,7 +461,7 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
 
     }
 
-    private fun getCustomerPrinters(order: OpenOrderResponse.Data.Order) {
+    private fun getCustomerPrinters(order: OpenOrderResponse.Data.Order, type: String) {
 
         viewModel.getCustomerPrinterList().observe(viewLifecycleOwner, {
             when (it.status) {
@@ -465,7 +471,7 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
                         val customerList = it.data
 
                         customerList.forEach {
-                            initPrinter(it, Constants.CUSTOMER, order)
+                            initPrinter(it, Constants.CUSTOMER, order, type)
 
 
                         }
@@ -494,7 +500,8 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
     private fun initPrinter(
         customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters,
         type: String,
-        order: OpenOrderResponse.Data.Order
+        order: OpenOrderResponse.Data.Order,
+        printType: String
     ) {
         PrinterClass.closePrinter()
         if (PrinterClass.getPrinter() == null) {
@@ -534,7 +541,7 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
                 if (printer != null) {
                     PrinterClass.setPrinter(printer)
 
-                    generatePrint(customerReceiptPrinters, type, order)
+                    generatePrint(customerReceiptPrinters, type, order, printType)
 
                 }
 
@@ -550,7 +557,8 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
     private fun generatePrint(
         customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters,
         type: String,
-        receiptModel: OpenOrderResponse.Data.Order
+        receiptModel: OpenOrderResponse.Data.Order,
+        printType: String
     ) {
         var builder: Builder? = null
         try {
@@ -564,12 +572,28 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
                         customerReceiptPrinters.name
                     }, PrinterClass.language, requireActivity()
                 )
-            builder.addFeedLine(1)
 
+            builder.addTextLang(Builder.LANG_EN)
 
             builder.addTextFont(Builder.FONT_E)
 
             builder.addTextLang(Builder.LANG_EN)
+            builder.addTextSize(2, 2)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.COLOR_1
+            )
+            builder.addTextAlign(Builder.ALIGN_CENTER)
+            if (printType == PRINT_PAID) {
+
+                builder.addText("Paid" + "\n")
+            } else {
+                builder.addText("Unpaid" + "\n")
+
+            }
+            builder.addFeedLine(1)
 
 
             builder.addTextSize(2, 2)
@@ -597,8 +621,11 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
 
             addBuilderText(
                 builder,
-                prefProvider.getValue(Constants.BUSINESS_ADDRESS, "7450 DW 51 FH,AT,Suite 503")
-                    .toString()
+                prefProvider.getValue(
+                    Constants.BUSINESS_ADDRESS, prefProvider.getValue(
+                        BUSINESS_ADDRESS, ""
+                    )
+                ).toString()
             )
             builder.addFeedLine(1)
 
@@ -619,19 +646,7 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
 
 
 
-            builder.addFeedLine(1)
 
-            builder.addTextFont(Builder.FONT_E)
-            builder.addTextAlign(Builder.ALIGN_CENTER)
-            builder.addTextLang(Builder.LANG_EN)
-            addCustomerTextSize(builder, customerSettingModel.fonts)
-            builder.addTextStyle(
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.COLOR_1
-            )
-            addBuilderText(builder, "7450 DW 51 FH,AT")
 
             builder.addFeedLine(1)
 
@@ -647,6 +662,8 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
             )
             builder.addTextAlign(Builder.ALIGN_CENTER)
             builder.addText(receiptModel?.orderType + "\n")
+
+
 
             if (customerSettingModel.fonts == Constants.LARGE) {
 
@@ -1115,11 +1132,11 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
                     Builder.COLOR_1
                 )
                 var totalAmt = MethodUtils.roundOffAmountDouble(receiptModel.totalAmount)
-                if (receiptModel.totalDiscount != 0.0) {
+                /*if (receiptModel.totalDiscount != 0.0) {
                     totalAmt =
                         (totalAmt - MethodUtils.roundOffAmountDouble(receiptModel.totalDiscount))
 
-                }
+                }*/
 
                 builder.addText(
                     padLine(
@@ -1135,71 +1152,71 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
 
             }
 
-//            if (customerSettingModel.showRefundAmount) {
-//                builder.addTextLineSpace(30)
-//                builder.addFeedUnit(30)
-//
-//                builder.addTextFont(Builder.FONT_E)
-//                // builder.addTextAlign(Builder.ALIGN_LEFT)
-//                builder.addTextLang(Builder.LANG_EN)
-//                addCustomerTextSize(builder, customerSettingModel.fonts)
-//                builder.addTextStyle(
-//                    Builder.FALSE,
-//                    Builder.FALSE,
-//                    Builder.TRUE,
-//                    Builder.COLOR_1
-//                )
-//
-//                builder.addText(
-//                    padLine(
-//                        "Change Amount",
-//                        "$" + MethodUtils.roundOffAmountString((receiptModel.payments.get(0).amount - receiptModel.totalAmount)),
-//                        if (customerSettingModel.fonts == Constants.LARGE) {
-//                            24
-//                        } else {
-//                            48
-//                        }
-//                    )
-//                )
-//            }
+            if (customerSettingModel.showRefundAmount && printType == PRINT_PAID) {
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
 
-//            if (receiptModel?.totalTips == 0.0) {
-//                builder.addFeedLine(1)
-//                builder.addTextLineSpace(30)
-//                builder.addFeedUnit(30)
-//
-//                builder.addTextFont(Builder.FONT_E)
-//                // builder.addTextAlign(Builder.ALIGN_LEFT)
-//                builder.addTextLang(Builder.LANG_EN)
-//                addCustomerTextSize(builder, customerSettingModel.fonts)
-//                builder.addTextStyle(
-//                    Builder.FALSE,
-//                    Builder.FALSE,
-//                    Builder.TRUE,
-//                    Builder.COLOR_1
-//                )
-//
-//                var tip = ""
-//
-//                if (receiptModel.totalTips != 0.0) {
-//                    tip = receiptModel.totalTips.toString()
-//                }
-//                builder.addText(
-//                    padLine(
-//                        "Tips",
-//                        if (customerSettingModel.showTipLineForCash) {
-//                            "_____________"
-//                        } else {
-//                            ""
-//                        },
-//                        if (customerSettingModel.fonts == Constants.LARGE) {
-//                            24
-//                        } else {
-//                            48
-//                        }
-//                    )
-//                )
-//            }
+                builder.addTextFont(Builder.FONT_E)
+                // builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+
+                builder.addText(
+                    padLine(
+                        "Change Amount",
+                        "$" + MethodUtils.roundOffAmountString((receiptModel.payments.get(0).amount - receiptModel.totalAmount)),
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            24
+                        } else {
+                            48
+                        }
+                    )
+                )
+            }
+
+            if (receiptModel?.totalTips == 0.0 && printType == PRINT_PAID) {
+                builder.addFeedLine(1)
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+
+                builder.addTextFont(Builder.FONT_E)
+                // builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+
+                var tip = ""
+
+                if (receiptModel.totalTips != 0.0) {
+                    tip = receiptModel.totalTips.toString()
+                }
+                builder.addText(
+                    padLine(
+                        "Tips",
+                        if (customerSettingModel.showTipLineForCash) {
+                            "_____________"
+                        } else {
+                            ""
+                        },
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            24
+                        } else {
+                            48
+                        }
+                    )
+                )
+            }
 
 
             if (customerSettingModel.showTipSuggestion) {
@@ -1249,34 +1266,37 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
                 }
             }
 
-           /* builder.addFeedLine(1)
-            builder.addTextLineSpace(30)
-            builder.addFeedUnit(30)
+            if (printType == PRINT_PAID) {
+                builder.addFeedLine(1)
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
 
-            builder.addTextFont(Builder.FONT_E)
-            // builder.addTextAlign(Builder.ALIGN_LEFT)
-            builder.addTextLang(Builder.LANG_EN)
-            addCustomerTextSize(builder, customerSettingModel.fonts)
-            builder.addTextStyle(
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.TRUE,
-                Builder.COLOR_1
-            )
-
-            builder.addText(
-                padLine(
-                    "Transaction ID",
-                    receiptModel.payments.get(0).transactionId,
-                    if (customerSettingModel.fonts == Constants.LARGE) {
-                        24
-                    } else {
-                        48
-                    }
+                builder.addTextFont(Builder.FONT_E)
+                // builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
                 )
-            )
-*/
-            /*builder.addTextLineSpace(30)
+
+                builder.addText(
+                    padLine(
+                        "Transaction ID",
+                        receiptModel.payments.get(0).transactionId,
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            24
+                        } else {
+                            48
+                        }
+                    )
+                )
+            }
+
+            if (printType == PRINT_PAID){
+            builder.addTextLineSpace(30)
             builder.addFeedUnit(30)
             builder.addTextFont(Builder.FONT_E)
             // builder.addTextAlign(Builder.ALIGN_LEFT)
@@ -1299,7 +1319,9 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
                         48
                     }
                 )
-            )*/
+            )
+
+        }
             if (customerSettingModel.showCustomerAddress != false or customerSettingModel.showCustomerPhone != false or customerSettingModel.showCustomerName) {
 
                 if (receiptModel.customer != null) {
