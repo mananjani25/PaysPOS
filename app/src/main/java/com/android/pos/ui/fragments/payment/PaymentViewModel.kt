@@ -79,7 +79,9 @@ class PaymentViewModel @Inject constructor(
 
                             resource.data?.let { createOrderResponse ->
 
-                                if (orderRequestModel.order.openOrderType == Constants.OPEN_ORDER) {
+                                if (orderRequestModel.order.openOrderType == Constants.OPEN_ORDER
+                                    || orderRequestModel.order.openOrderType == Constants.OPEN_ORDER_
+                                ) {
                                     prefProvider.setValue(Constants.ORDER_TYPE, "")
                                     prefProvider.setValue(Constants.CUSTOMER_NAME, "")
                                     prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
@@ -315,6 +317,7 @@ class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.note = cartModel.note
         orderAttributeRequestModel.offlineId =
             if (isUpdateOrder) orderOfflineId.toString() else randomOfflineId()
+        Log.e(TAG, "openOrderType: " + cartModel.orderType)
         orderAttributeRequestModel.openOrderType = cartModel.orderType
         orderAttributeRequestModel.orderTypeId = cartModel.orderTypeId
         orderAttributeRequestModel.paymentStatus = if (isPaid) 1 else 0

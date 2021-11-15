@@ -55,6 +55,7 @@ object Constants {
     const val DINE_IN_UPDATE = "DineInUpdate"
     const val DINE_IN_ITEM = "DineInItem"
     const val OPEN_ORDER = "OpenOrder"
+    const val OPEN_ORDER_ = "Open Order"
     const val DINE_IN_STATUS = "DineInStatus"
     const val DINE_IN_TABLE_ID = "DineInTableId"
 

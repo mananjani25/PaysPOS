@@ -239,6 +239,11 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
             customer = assignCustomer(order)
             items = inventoryList(order)
             note = order.note
+            var itemDiscount = 0.0
+            items?.forEach {
+                itemDiscount += it.discountPrice
+            }
+            discountPrice = (order.totalDiscount - itemDiscount)
         }
     }
 

@@ -50,7 +50,6 @@ import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.DINE_IN_LIST_EDIT
 import com.android.pos.data.remote.Constants.DINE_IN_STATUS
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
-
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
 import com.android.pos.data.remote.Constants.HORIZONTAL
 import com.android.pos.data.remote.Constants.IS_ORDER_UPDATE
@@ -80,7 +79,6 @@ import com.android.pos.utils.statusUtils.Status
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
-import okhttp3.internal.notify
 import javax.inject.Inject
 
 
@@ -144,6 +142,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         isOrderUpdate = requireArguments().getBoolean("update")
         if (isOrderUpdate) {
+            Log.e(TAG, "bundle isOrderUpdate : $isOrderUpdate")
             orderId = requireArguments().getInt("orderId")
             paymentId = requireArguments().getInt("paymentId")
             paymentOfflineId = requireArguments().getString("paymentOfflineId").toString()
@@ -167,8 +166,13 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             }
         }
 
+        Log.e(TAG, "isOrderUpdate : $isOrderUpdate")
         if (isOrderUpdate) {
             binding.layoutCart.txtSave.text = getString(R.string.update)
+            Log.e(TAG, "save 171")
+        } else {
+            binding.layoutCart.txtSave.text = getString(R.string.save)
+            Log.e(TAG, "save 173")
         }
 
         navigateDineInOrder()
@@ -280,9 +284,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                 val discountApplyPrice = viewModel.totalPrice
 
-                val discount = discountApplyPrice - orderDiscount
+                val price = discountApplyPrice - orderDiscount
 
-                MethodUtils.setPriceTextView(binding.layoutCart.txtTotalAmount, discount)
+                MethodUtils.setPriceTextView(binding.layoutCart.txtTotalAmount, price)
                 if (cartList.isNotEmpty()) {
                     cartList[0].discountPrice = orderDiscount
                     cartList[0].discountType = result.discountType
@@ -498,23 +502,23 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             var dineList: List<DineInModel>? =
                                 cartList.get(0).dineInList
 
-                           /* if (dineList != null) {
+                            /* if (dineList != null) {
 
-                                for (i in 0 until dineList.size) {
-                                    if (dineList.get(i).items != null && dineList.get(i).items.isNotEmpty()) {
-                                        var itr = dineList.get(i).items.iterator()
-                                        while (itr.hasNext()) {
-                                            if (itr.next().isDestroy && itr.next().isEdited) {
-                                                dineList.get(i).items.remove(itr.next())
-                                            }
-                                        }
-
-
+                                 for (i in 0 until dineList.size) {
+                                     if (dineList.get(i).items != null && dineList.get(i).items.isNotEmpty()) {
+                                         var itr = dineList.get(i).items.iterator()
+                                         while (itr.hasNext()) {
+                                             if (itr.next().isDestroy && itr.next().isEdited) {
+                                                 dineList.get(i).items.remove(itr.next())
+                                             }
+                                         }
 
 
-                                    }
-                                }
-                            }*/
+
+
+                                     }
+                                 }
+                             }*/
 
                             if (dineList != null) {
                                 Log.e(TAG, "PassesdineList: ${Gson().toJson(dineList)}")
@@ -1790,6 +1794,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             event.getContentIfNotHandled()?.let { it ->
                 AlertUtils.showCustomAlert(requireActivity(), it.message)
                 binding.layoutCart.txtSave.text = getString(R.string.save)
+                Log.e(TAG, "save 1794")
                 clearCustomer()
                 hideOrderType()
 
@@ -1919,10 +1924,12 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                                 prefProvider.setValue(ORDER_TYPE, "")
                             }
                             binding.layoutCart.txtSave.text = getString(R.string.save)
+                            Log.e(TAG, "save 1923")
                             clearCustomer()
                             hideOrderType()
                             hideOrderMenu()
                             prefProvider.setValueboolean(DINE_IN_UPDATE, false)
+                            requireArguments().remove("update")
 
                         } else {
                             viewModel.deleteCart()
@@ -1934,9 +1941,12 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                                 prefProvider.setValue(ORDER_TYPE, "")
                             }
                             binding.layoutCart.txtSave.text = getString(R.string.save)
+                            Log.e(TAG, "save 1939")
                             clearCustomer()
                             hideOrderType()
                             hideOrderMenu()
+                            prefProvider.setValueboolean(DINE_IN_UPDATE, false)
+                            requireArguments().remove("update")
                         }
                     }
                     negativeButton(R.string.tv_cancel) {
@@ -1963,15 +1973,15 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         cartList.customer = assignCustomer
 
 
+                    //set the latest parameter in viewmodel
+                    viewModelPayment.updateOrder(
+                        isOrderUpdate,
+                        orderId,
+                        paymentId,
+                        paymentOfflineId,
+                        orderOfflineId
+                    )
 
-                    if (isOrderUpdate)
-                        viewModelPayment.updateOrder(
-                            true,
-                            orderId,
-                            paymentId,
-                            paymentOfflineId,
-                            orderOfflineId
-                        )
                     val request = viewModelPayment.createOrderRequest(
                         cartList,
                         viewModel.subTotalPrice,
@@ -2826,6 +2836,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         prefProvider.setValue(ORDER_TYPE, "")
                     }
                     binding.layoutCart.txtSave.text = getString(R.string.save)
+                    Log.e(TAG, "save 2835")
                     clearCustomer()
                     hideOrderType()
                     hideOrderMenu()
