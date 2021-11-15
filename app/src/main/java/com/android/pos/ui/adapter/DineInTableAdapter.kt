@@ -152,8 +152,9 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 }
             }
             guestAmt += list.get(0).guestDividedAmt
+            Log.e(TAG, "customerAdapter  ${list.get(position).customer}")
 
-            if (list.get(layoutPosition).customer != null) {
+            if (list.get(position).customer != null) {
                 binding.txtTableName.setText(
                     list.get(layoutPosition).customer?.first_name + " " + list.get(
                         layoutPosition
@@ -165,18 +166,14 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             }
 
             if (isPaid && !noItem) {
-
                 binding.btnPay.visibility = View.GONE
                 binding.btnPaid.visibility = View.VISIBLE
 
             } else if (noItem && guestAmt == 0.0) {
                 binding.btnPaid.visibility = View.GONE
                 binding.btnPay.visibility = View.GONE
-
-
             } else {
                 binding.btnPay.visibility = View.VISIBLE
-
                 binding.btnPaid.visibility = View.INVISIBLE
 
             }
@@ -208,7 +205,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
             var finalAmt =
                 guestSubTotal + totalServiceCharge + totalTaxAmt + list.get(0).guestDividedAmt
-            Log.e(TAG, "finalAmt:  ${finalAmt}")
+
             binding.txtPay.setText("Pay " + MethodUtils.roundOffAmount(finalAmt))
 
             binding.btnPay.setOnClickListener {

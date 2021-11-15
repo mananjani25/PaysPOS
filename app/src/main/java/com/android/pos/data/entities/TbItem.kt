@@ -62,6 +62,7 @@ class TbItem : Parcelable {
     var isPaid: Boolean = false
     var isEdited: Boolean = false
     var guestItemId: Int? = null
+    var isDestroy:Boolean = false
 
 
     fun convertToItem(item: Item, category: Category?): TbItem {

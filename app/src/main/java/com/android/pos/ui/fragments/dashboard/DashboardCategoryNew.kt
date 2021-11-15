@@ -80,6 +80,7 @@ import com.android.pos.utils.statusUtils.Status
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
+import okhttp3.internal.notify
 import javax.inject.Inject
 
 
@@ -487,8 +488,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     if (cartList.isNotEmpty()) {
 
                         if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
-                            Log.e(TAG, "cartListItemMAnual:  ${Gson().toJson(cartList[0].items)}")
-
                             viewModel.setServiceCharges(serviceChargesList)
                             cartList.get(0).serviceCharge = serviceChargesList
                             binding.layoutCart.rvCart.visibility = View.GONE
@@ -496,11 +495,31 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             binding.layoutCart.llPayment.visibility = View.VISIBLE
                             Log.e(TAG, "GotAddedDineIn ${cartList[0].items}")
 
-                            cartList.get(0).dineInList?.toCollection(
-                                arrayListOf()
-                            )?.let { it1 ->
+                            var dineList: List<DineInModel>? =
+                                cartList.get(0).dineInList
 
-                                dineInCartAdapter.setList(it1)
+                           /* if (dineList != null) {
+
+                                for (i in 0 until dineList.size) {
+                                    if (dineList.get(i).items != null && dineList.get(i).items.isNotEmpty()) {
+                                        var itr = dineList.get(i).items.iterator()
+                                        while (itr.hasNext()) {
+                                            if (itr.next().isDestroy && itr.next().isEdited) {
+                                                dineList.get(i).items.remove(itr.next())
+                                            }
+                                        }
+
+
+
+
+                                    }
+                                }
+                            }*/
+
+                            if (dineList != null) {
+                                Log.e(TAG, "PassesdineList: ${Gson().toJson(dineList)}")
+                                dineInCartAdapter.setList(dineList.toCollection(arrayListOf()))
+
                             }
 
                             if (cartList[0].items?.isNotEmpty() == true) {
@@ -509,7 +528,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                                 cartList[0].items?.forEach {
 
                                     if (it.isManualSales && dineList.isNotEmpty()) {
-                                        Log.e(TAG, "ManualtimeStamp:  ${it.timeStamp}")
+
                                         if (it?.timeStamp == null || it?.timeStamp?.lowercase() == "null".lowercase()) {
                                             it.timeStamp = viewModel.randomOfflineId()
                                         }
@@ -2557,6 +2576,15 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
 
                 var list = dineInCartAdapter.getList()
+                Log.e(
+                    TAG,
+                    "DeleteItem  ${Gson().toJson(list.get(headerPosition).items.get(position))}"
+                )
+                var item: TbItem = list.get(headerPosition).items.get(position)
+                item.isEdited = true
+                item.isDestroy = true
+                list.get(headerPosition).items[position] = item
+                viewModel.dineInCartUpdate(cartList, list)
                 /*list.get(headerPosition).*/
 
 
