@@ -9,6 +9,7 @@ import com.android.pos.data.model.responseModel.GetCustomerReceiptSettingsRespon
 import com.android.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
 import com.android.pos.data.remote.ApiHelper
 import com.android.pos.utils.performGetOperation
+import com.android.pos.utils.performGetOperationDatabase
 import java.util.HashMap
 import javax.inject.Inject
 
@@ -80,6 +81,11 @@ class TaxServiceChargeRepository @Inject constructor(
             databaseQuery = { appDatabase.teamRoleDao().allRoles },
             networkCall = { apiHelperNew.getTeamRoleList() },
             saveCallResult = { appDatabase.teamRoleDao().addAllRoles(it.data.teamRoles) })
+
+
+    fun getTeamRoleListFromDatabase() =
+        performGetOperationDatabase(
+            databaseQuery = { appDatabase.teamRoleDao().allRoles })
 
     fun getTeamModules() =
         performGetOperation(

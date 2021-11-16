@@ -36,6 +36,7 @@
             android:id="@+id/txtLoyaltyPoints"
             style="@style/HistoryItemHeaderText"
             android:gravity="center"
+            android:visibility="gone"
             android:text="@string/loyalty_points" />
 
         <!--<androidx.appcompat.widget.AppCompatTextView

@@ -12,13 +12,14 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 @Entity(tableName = "TbCustomer")
 data class TbCustomer(
-
     @PrimaryKey
     @SerializedName("id") val id: Int?,
     @SerializedName("first_name") val first_name: String?,
     @SerializedName("last_name") val last_name: String?,
     @SerializedName("birth_date") val birth_date: String?,
     @SerializedName("email") val email: String?,
+    @SerializedName("enroll_to_loyalty") var enroll_to_loyalty: Boolean? = false,
+    @SerializedName("final_reward") var final_reward: Int? = 0,
     @SerializedName("company") val company: String? = null,
     @TypeConverters(TypeConvertorPhone::class)
     @SerializedName("phones") val phones: List<TbPhones> = listOf(),

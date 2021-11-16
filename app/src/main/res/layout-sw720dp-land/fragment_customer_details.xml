@@ -300,6 +300,40 @@
                         android:layout_marginBottom="@dimen/_5sdp"
                         android:background="@color/txtColorGray" />
 
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:id="@+id/linearRewardLayout"
+                        android:layout_width="match_parent"
+                        android:orientation="vertical"
+                        android:visibility="gone"
+                        android:layout_height="wrap_content">
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="@string/loyalty_points"
+                        android:textColor="@color/colorB9"
+                        android:textSize="@dimen/_6mdpi" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtrewardpoint"
+                        style="@style/CustomFontRegularStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text=""
+                        android:layout_marginTop="@dimen/_3sdp"
+                        android:layout_marginBottom="@dimen/_3sdp"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_6mdpi" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginBottom="@dimen/_5sdp"
+                        android:background="@color/txtColorGray" />
+                    </androidx.appcompat.widget.LinearLayoutCompat>
                 </LinearLayout>
 
                 <androidx.appcompat.widget.LinearLayoutCompat
@@ -324,7 +358,8 @@
                         android:textColor="@color/viewTextColor"
                         android:textSize="@dimen/_6mdpi" />
 
-                    <include layout="@layout/view_order_history_header" />
+                    <include android:id="@+id/layout_header"
+                        layout="@layout/view_order_history_header" />
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/rvOrderHistory"

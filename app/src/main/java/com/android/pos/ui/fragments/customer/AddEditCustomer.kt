@@ -148,6 +148,9 @@ class AddEditCustomer : Fragment() {
         isEdit = requireArguments().getBoolean("isEdit", false)
         Log.e(TAG, "isEdit  $isEdit")
 
+        binding.chkIsLoyalty.setOnClickListener {
+            viewModel.enroll_to_loyalty.value = binding.chkIsLoyalty.isChecked
+        }
         if (isEdit) {
             binding.txtCustomerType.setText("Edit Customer")
 
@@ -163,6 +166,13 @@ class AddEditCustomer : Fragment() {
             Log.e(TAG, "editModel  ${Gson().toJson(editModel)}")
             viewModel.addCustomerDetails.value?.data?.first_name = editModel?.first_name.toString()
             viewModel.addCustomerDetails.value?.data?.last_name = editModel?.last_name.toString()
+            viewModel.addCustomerDetails.value?.data?.enroll_to_loyalty =
+                editModel?.enroll_to_loyalty
+
+
+            binding.chkIsLoyalty.isChecked =
+                viewModel.addCustomerDetails.value?.data?.enroll_to_loyalty == true
+
 
             /*Log.e(TAG, "Date  ${getDay(editModel?.birth_date!!)}")
             Log.e(TAG, "Month  ${getMonth(editModel?.birth_date!!)}")
@@ -222,7 +232,7 @@ class AddEditCustomer : Fragment() {
             }
 
         } else {
-            binding.txtCustomerType.setText("New Customer")
+            binding.txtCustomerType.text = "New Customer"
             var list: ArrayList<CreateCustomerRequestModel.Customer.Addresses> = arrayListOf()
             var model = CreateCustomerRequestModel.Customer.Addresses()
             model.apply {
@@ -255,7 +265,7 @@ class AddEditCustomer : Fragment() {
                 TAG,
                 "getaddress1:  ${adapter.getList().get(adapter.getList().size - 1).address1}"
             )
-            if (adapter.getList().get(adapter.getList().size - 1).address1.isNotEmpty()) {
+            if (adapter.getList()[adapter.getList().size - 1].address1.isNotEmpty()) {
                 modelAddress = CreateCustomerRequestModel.Customer.Addresses()
                 modelAddress.apply {
                     latitude = 0.0

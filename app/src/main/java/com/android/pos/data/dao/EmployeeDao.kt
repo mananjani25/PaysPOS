@@ -18,6 +18,9 @@ interface EmployeeDao {
     @get:Query("select * from TbEmployee")
     val allEmployee: LiveData<List<Employee>>
 
+    @Query("select * from TbEmployee where TbEmployee.locationId  = :id")
+    fun allEmployeeLocationWise(id:Int?): LiveData<List<Employee>>
+
     @Query("select * from TbEmployee")
     fun allEmployeeList(): List<Employee>
 

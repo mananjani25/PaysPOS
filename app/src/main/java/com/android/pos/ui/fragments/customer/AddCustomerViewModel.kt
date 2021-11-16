@@ -57,6 +57,7 @@ class AddCustomerViewModel @Inject constructor(
     val address2 = MutableLiveData<String>()
     val city = MutableLiveData<String>()
     val state = MutableLiveData<String>()
+    var enroll_to_loyalty = MutableLiveData<Boolean>()
     var pin = MutableLiveData<String>()
 
 
@@ -114,6 +115,8 @@ class AddCustomerViewModel @Inject constructor(
 
 
         Log.e(TAG, "listAddress:  ${Gson().toJson(listAddress)}")
+        addCustomerDetails.value?.data?.final_reward = 0
+        addCustomerDetails.value?.data?.enroll_to_loyalty = enroll_to_loyalty.value
         addCustomerDetails.value?.data?.addresses_attributes?.addAll(listAddress)
 
 
@@ -196,8 +199,9 @@ class AddCustomerViewModel @Inject constructor(
                 data?.birth_month = value.data!!.birth_month
                 data?.birthday_year = value.data!!.birthday_year
                 data?.company = value.data!!.company
+                data?.enroll_to_loyalty = value.data!!.enroll_to_loyalty
 
-                data?.addresses_attributes?.addAll(value?.data?.addresses_attributes!!)
+                data?.addresses_attributes?.addAll(value.data?.addresses_attributes!!)
 
 
             }
@@ -231,6 +235,8 @@ class AddCustomerViewModel @Inject constructor(
                                         email = customerListReposne.data.email,
                                         phones = customerListReposne.data.phones,
                                         addresses = customerListReposne.data.addresses,
+                                        enroll_to_loyalty = customerListReposne.data.enroll_to_loyalty,
+                                        final_reward = customerListReposne.data.final_reward,
                                         company = customerListReposne.data.company
                                     )
 

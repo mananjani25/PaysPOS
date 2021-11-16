@@ -391,6 +391,8 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
             order.customer?.lastName.toString(),
             order.customer?.birthDate.toString(),
             order.customer?.email.toString(),
+            false,
+            0,
             order.customer?.company.toString(),
             phoneList,
             addressList
