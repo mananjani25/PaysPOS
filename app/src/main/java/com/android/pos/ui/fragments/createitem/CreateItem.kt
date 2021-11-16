@@ -28,6 +28,7 @@ import com.android.pos.ui.adapter.ModifierSetsListAdapter
 import com.android.pos.ui.adapter.VariationListAdapter
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.AmountTextWatcher
+import com.android.pos.utils.MethodUtils.Companion.isOpenRecently
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.UpdateVariationCallback
 import com.android.pos.utils.extensions.getNavigationResultLiveData
@@ -592,6 +593,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
     }
 
     override fun onItemClickListener(position: Int, variation: VariationsAttribute) {
+        if(isOpenRecently()) return
         position1 = position
         val bundle = Bundle().apply {
             putParcelable("variationAttributeList", variation)

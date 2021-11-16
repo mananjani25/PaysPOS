@@ -3,6 +3,7 @@ package com.android.pos.utils
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
+import android.os.SystemClock
 import android.text.TextUtils
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.widget.AppCompatEditText
@@ -213,6 +214,16 @@ class MethodUtils {
             } else {
                 ""
             }
+        }
+
+        var mLastClickTime = 0L
+
+        fun isOpenRecently(): Boolean{
+            if (SystemClock.elapsedRealtime() - mLastClickTime < 1000) {
+                return true
+            }
+            mLastClickTime = SystemClock.elapsedRealtime()
+            return false
         }
     }
 

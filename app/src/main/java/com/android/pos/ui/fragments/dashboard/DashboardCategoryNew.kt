@@ -705,11 +705,11 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             for (j in categoryList1[i].inventoryLists!!.indices) {
                 searchList.add(
                     CategorySearchData(
-                        categoryList1.get(i).inventoryLists!!.get(j)!!.itemId,
-                        categoryList1.get(i).inventoryLists!!.get(j)!!.name,
+                        categoryList1[i].inventoryLists?.get(j)?.itemId?:0,
+                        categoryList1[i].inventoryLists?.get(j)?.name?:"",
                         categoryList1.get(i).inventoryLists?.get(j)?.imageUrl.toString(),
-                        categoryList1.get(i).category.name,
-                        categoryList1.get(i).category.id
+                        categoryList1.get(i).category.name?:"",
+                        categoryList1[i].category.id
                     )
                 )
             }
@@ -1077,7 +1077,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                                     tabList.add(
                                         CategoryTabModel(
                                             categoryList1[i].category.id,
-                                            categoryList1[i].category.name,
+                                            categoryList1[i].category.name?:"",
                                             true,
                                             0
                                         )
@@ -1086,7 +1086,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                                     tabList.add(
                                         CategoryTabModel(
                                             categoryList1[i].category.id,
-                                            categoryList1[i].category.name,
+                                            categoryList1[i].category.name?:"",
                                             false,
                                             0
                                         )

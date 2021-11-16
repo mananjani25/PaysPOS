@@ -50,5 +50,8 @@ class ScheduledShifts : Fragment() {
             findNavController().navigate(R.id.action_scheduledShifts_to_passcode)
 
         }
+        binding.imgCancel.setOnClickListener {
+            activity?.finish()
+        }
     }
 }

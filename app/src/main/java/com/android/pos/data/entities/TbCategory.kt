@@ -15,7 +15,7 @@ class TbCategory : Parcelable {
     var id: Int = 0
     var locationId: Int = 0
     var active: Boolean = false
-    var name: String = ""
+    var name: String? = ""
     var sort: Int = 0
     var createdAt: String? = ""
     var updatedAt: String? = ""

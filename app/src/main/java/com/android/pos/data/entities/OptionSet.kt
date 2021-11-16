@@ -23,7 +23,7 @@ class OptionSet : Parcelable {
     var name: String = ""
 
     @SerializedName("option_type")
-    var optionType: String = ""
+    var optionType: String? = ""
 
     @SerializedName("options")
     var options: List<Option> = emptyList()

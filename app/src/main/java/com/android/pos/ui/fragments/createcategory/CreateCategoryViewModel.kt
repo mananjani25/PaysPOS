@@ -51,7 +51,7 @@ class CreateCategoryViewModel @Inject constructor(
 
 
     fun categoryData(categoryData: TbCategory) {
-        categoryDetails.value?.name = categoryData.name
+        categoryDetails.value?.name = categoryData.name?:""
     }
 
     //  val getInventory = catId.value?.let { posRepository.getInventory(it) }
@@ -118,7 +118,7 @@ class CreateCategoryViewModel @Inject constructor(
                                         oldIds?.forEach { old ->
                                             posRepository.updateItemCategory(
                                                 category.id,
-                                                category.name,
+                                                category.name?:"",
                                                 null
                                             )
                                         }
@@ -127,7 +127,7 @@ class CreateCategoryViewModel @Inject constructor(
                                     ids.forEach { itemId ->
                                         posRepository.updateItemCategory(
                                             category.id,
-                                            category.name,
+                                            category.name?:"",
                                             itemId
                                         )
                                     }

@@ -172,7 +172,7 @@ class PosRepository @Inject constructor(
                         createdAt = category.createdAt.toString()
                         id = category.id
                         active = category.active
-                        name = category.name
+                        name = category.name?:""
                         sort = category.sort
                         updatedAt = category.updatedAt.toString()
                         locationId = category.locationId
