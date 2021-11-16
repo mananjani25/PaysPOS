@@ -11,6 +11,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.responseModel.CreateOrderResponse
+import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.data.model.responseModel.GetTipReponse
 import com.android.pos.data.model.responseModel.OpenOrderResponse
 import com.android.pos.data.remote.Constants
@@ -657,6 +658,80 @@ fun addOrderItems(
     return builder
 }
 
+fun addOrderItemsTransaction(
+    builder: Builder,
+    list: List<GetOrderDetailsResponse.Data.OrderItem>,
+    font: String,
+    showModifiers: Boolean
+): Builder {
+    for (i in 0 until list.size) {
+        val obj = list.get(i)
+        builder.addTextLineSpace(30)
+        builder.addFeedUnit(30)
+        builder.addTextFont(Builder.FONT_E)
+        // builder.addTextAlign(Builder.ALIGN_LEFT)
+        builder.addTextLang(Builder.LANG_EN)
+        addCustomerTextSize(builder, font)
+        builder.addTextStyle(
+            Builder.FALSE,
+            Builder.FALSE,
+            Builder.FALSE,
+            Builder.COLOR_1
+        )
+
+
+
+        builder.addText(
+            padLineCustomerItem(
+                obj.quantity.toString() + "x " + obj.itemName,
+                "$" + MethodUtils.roundOffAmountString(totalPriceTransaction(obj)),
+                if (font == Constants.LARGE) {
+                    24
+                } else {
+                    48
+                }
+            )
+        )
+
+
+        if (obj.orderItemModifiers.isNotEmpty() && showModifiers) {
+            for (j in 0 until obj.orderItemModifiers.size) {
+                val modifierObj = obj.orderItemModifiers.get(j)
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addTextFont(Builder.FONT_E)
+                //builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, font)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+                builder.addTextPosition(4)
+                builder.addText(
+                    padLineCustomerItem(
+                        "   " + modifierObj.name,
+                        "$" + MethodUtils.roundOffAmountString(modifierObj.price.toDouble() * modifierObj.quantity),
+                        if (font == Constants.LARGE) {
+                            23
+                        } else {
+                            47
+                        }
+                    )
+                )
+
+
+            }
+
+        }
+    }
+
+
+    return builder
+}
+
 private fun totalPriceOpenOrder(model: OpenOrderResponse.Data.Order.OrderItem): Double {
     return if (model.orderItemModifiers.isNotEmpty()) {
 
@@ -695,6 +770,25 @@ private fun totalPriceDineInItem(model: TbItem): Double {
 }
 
 private fun totalPrice(model: CreateOrderResponse.Data.Order.OrderItem): Double {
+
+    return if (model.orderItemModifiers.isNotEmpty()) {
+
+        var totalPrice = 0.0
+
+        val mList = model.orderItemModifiers
+        mList.forEach { items ->
+            totalPrice += items.price * items.quantity
+        }
+
+        (model.price * model.quantity) + totalPrice
+    } else {
+
+        model.price * model.quantity
+
+    }
+}
+
+private fun totalPriceTransaction(model: GetOrderDetailsResponse.Data.OrderItem): Double {
 
     return if (model.orderItemModifiers.isNotEmpty()) {
 

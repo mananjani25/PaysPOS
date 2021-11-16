@@ -421,9 +421,9 @@
 
             <androidx.core.widget.NestedScrollView
                 android:layout_width="0dp"
-                android:layout_weight="2"
+                android:layout_height="match_parent"
                 android:layout_marginStart="@dimen/_5sdp"
-                android:layout_height="match_parent">
+                android:layout_weight="2">
 
 
                 <LinearLayout
@@ -597,10 +597,10 @@
                     </LinearLayout>
 
                     <LinearLayout
-                        android:layout_marginBottom="@dimen/_10sdp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/_3sdp"
+                        android:layout_marginBottom="@dimen/_10sdp"
                         android:orientation="horizontal"
                         android:padding="@dimen/_2sdp">
 
@@ -682,14 +682,15 @@
                     android:gravity="center"
                     android:paddingStart="@dimen/_15sdp"
                     android:paddingTop="@dimen/_8sdp"
-                    android:visibility="visible"
                     android:paddingEnd="@dimen/_15sdp"
                     android:paddingBottom="@dimen/_8sdp"
                     android:text="@string/tv_refund"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/_6mdpi" />
+                    android:textSize="@dimen/_6mdpi"
+                    android:visibility="visible" />
 
                 <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtPrintReceipt"
                     style="@style/CustomFontBold"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"

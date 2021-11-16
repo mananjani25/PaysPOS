@@ -1175,7 +1175,7 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
                 builder.addText(
                     padLine(
                         "Change Amount",
-                        "$" + MethodUtils.roundOffAmountString((receiptModel.payments.get(0).amount - receiptModel.totalAmount)),
+                        "$" + MethodUtils.roundOffAmountString(0.0),
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             24
                         } else {

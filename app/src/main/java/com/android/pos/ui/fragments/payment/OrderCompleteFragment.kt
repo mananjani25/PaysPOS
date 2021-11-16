@@ -813,6 +813,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 Builder.COLOR_1
             )
 
+            var totalDiscount: Double = 0.0
+            receiptModel?.order?.totalDiscount?.let {
+                totalDiscount = it
+            }
             builder.addText(
                 padLine(
                     "Sub Total",
@@ -963,11 +967,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     Builder.COLOR_1
                 )
                 var totalAmt = MethodUtils.roundOffAmountDouble(receiptModel?.order?.totalAmount!!)
-                if (receiptModel?.order?.totalDiscount != 0.0) {
+               /* if (receiptModel?.order?.totalDiscount != 0.0) {
                     totalAmt =
                         (totalAmt - MethodUtils.roundOffAmountDouble(receiptModel?.order?.totalDiscount!!))
 
-                }
+                }*/
 
                 builder.addText(
                     padLine(
@@ -1001,7 +1005,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 builder.addText(
                     padLine(
                         "Change Amount",
-                        "$" + MethodUtils.roundOffAmountString((receiptModel?.order?.payments?.get(0)?.amount!! - receiptModel?.order?.totalAmount!!)),
+                        "$" + MethodUtils.roundOffAmountString(0.0),
                         if (customerSettingModel.fonts == LARGE) {
                             24
                         } else {
