@@ -6,6 +6,7 @@ import android.text.SpannableStringBuilder
 import android.text.TextUtils
 import android.text.style.TextAppearanceSpan
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.MainApplication
@@ -20,6 +21,9 @@ class OrderHistoryAdapter :
     RecyclerView.Adapter<OrderHistoryAdapter.MyViewHolder>() {
 
     private var arrayList = ArrayList<Orders>()
+
+    var finalreward = ""
+    var enrolltrueloyalty = false
 
     inner class MyViewHolder(private val binding: ViewOrderHistoryBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -43,7 +47,13 @@ class OrderHistoryAdapter :
             setupAmountPayType(order.total, order.paymentDetails)
 
             //loyalty points
-            binding.txtLoyaltyPoints.text = "-"
+            if (enrolltrueloyalty) {
+                binding.txtLoyaltyPoints.visibility = View.VISIBLE
+                binding.txtLoyaltyPoints.text = finalreward
+            } else {
+                binding.txtLoyaltyPoints.visibility = View.GONE
+
+            }
 
         }
 

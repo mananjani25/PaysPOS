@@ -609,5 +609,7 @@
     <string name="total_nearned_nloyality_points">Total\nEarned\nLoyality Points</string>
     <string name="reorder">Reorder</string>
     <string name="pay_type">Amount &amp; Pay Type</string>
+    <string name="enroll_to_loyalty">Enroll to Loyalty</string>
+
 
 </resources>

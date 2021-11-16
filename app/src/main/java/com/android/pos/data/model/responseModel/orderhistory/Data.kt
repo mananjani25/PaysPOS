@@ -15,6 +15,10 @@ data class Data(
     val firstName: String?,
     @SerializedName("id")
     val id: Int?,
+    @SerializedName("enroll_to_loyalty")
+    val enroll_to_loyalty: Boolean?,
+    @SerializedName("final_reward")
+    val final_reward: Int?,
     @SerializedName("last_name")
     val lastName: String?,
     @SerializedName("orders_list")
