@@ -294,6 +294,72 @@ fun addTipsList(
     return builder
 }
 
+fun addOrdersForKitchenDineIn(
+    builder: Builder,
+    list: TbItem
+): Builder {
+
+    val obj = list
+    builder.addTextLineSpace(30)
+    builder.addFeedUnit(30)
+    builder.addTextFont(Builder.FONT_C)
+    builder.addTextLang(Builder.LANG_EN)
+    builder.addTextAlign(Builder.ALIGN_LEFT)
+    builder.addTextSize(1, 2)
+    builder.addTextStyle(
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.TRUE,
+        Builder.COLOR_1
+    )
+
+    builder.addText(obj.itemQuantity.toString() + " " + obj.name)
+
+    if (obj.modifiers.isNotEmpty()) {
+        for (j in 0 until obj.modifiers.size) {
+            val modifierObj = obj.modifiers.get(j)
+            builder.addTextLineSpace(30)
+            builder.addFeedUnit(30)
+            builder.addTextFont(Builder.FONT_C)
+            //builder.addTextLineSpace(20)
+            builder.addTextAlign(Builder.ALIGN_LEFT)
+            builder.addTextLang(Builder.LANG_EN)
+            builder.addTextSize(1, 2)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.TRUE,
+                Builder.COLOR_1
+            )
+            //builder.addTextPosition(1)
+
+
+            builder.addText("  " + modifierObj.name)
+
+
+        }
+    }
+    if (obj.note.isNotEmpty()) {
+        builder.addTextLineSpace(30)
+        builder.addFeedUnit(30)
+        builder.addTextFont(Builder.FONT_C)
+        //builder.addTextLineSpace(20)
+        builder.addTextAlign(Builder.ALIGN_LEFT)
+        builder.addTextLang(Builder.LANG_EN)
+        builder.addTextSize(1, 2)
+        builder.addTextStyle(
+            Builder.FALSE,
+            Builder.FALSE,
+            Builder.TRUE,
+            Builder.COLOR_1
+        )
+        builder.addText("  Note:" + obj.note)
+
+    }
+
+
+    return builder
+}
 
 fun addOrdersForKitchen(
     builder: Builder,

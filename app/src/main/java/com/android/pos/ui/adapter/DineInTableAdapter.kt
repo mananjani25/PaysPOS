@@ -336,7 +336,11 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
 
                             Log.e(TAG, "idStr:  $ids")
-                            ids?.let { listner.singleItemFired(it, layoutPosition) }
+                            ids?.let { list[bindingAdapterPosition].item?.let { it1 ->
+                                listner.singleItemFired(it, layoutPosition,
+                                    it1
+                                )
+                            } }
                             binding.chkIsFired.isEnabled = false
                             list[bindingAdapterPosition].item = itemsNew
 
@@ -497,7 +501,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
         fun onSendItemToKitchen(item: TbItem)
         fun onWholeTableToKitchen(ids: String)
-        fun singleItemFired(id: String, position: Int)
+        fun singleItemFired(id: String, position: Int, item: TbItem)
     }
 
     fun getList(): List<DineInModel> {

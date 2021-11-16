@@ -53,6 +53,8 @@ class DineInOrderTableViewModel @Inject constructor(
 
     fun getCustomerReceiptSettings() = posRepository.getCustomerReceiptSettings()
 
+    fun getKitchenReceiptSettings() = posRepository.getKitchenReceiptSettings()
+
     private val _msgText = MutableLiveData<Event<String>>()
     val msgText: LiveData<Event<String>> = _msgText
 
