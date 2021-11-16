@@ -30,7 +30,6 @@ import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.TimeFormatUtils
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
-import com.google.common.collect.ForwardingSortedMap
 import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -1180,9 +1179,9 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 val orderItemVariationAttribute = OrderItemVariationAttribute()
                 orderItemVariationAttribute.name = it.name
-                orderItemVariationAttribute.price = it.price!!
-                orderItemVariationAttribute.totalPrice = it.price!! * item.itemQuantity
-                orderItemVariationAttribute.variationId = it.id!!
+                orderItemVariationAttribute.price = it.price?:0.0
+                orderItemVariationAttribute.totalPrice = (it.price?:0.0) * item.itemQuantity
+                orderItemVariationAttribute.variationId = it.id?:0
                 orderItemVariationAttribute.quantity = item.itemQuantity
 
                 /*if (isUpdateOrder) {

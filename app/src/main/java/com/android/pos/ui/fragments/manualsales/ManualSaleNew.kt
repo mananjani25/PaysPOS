@@ -143,8 +143,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
 
                     viewModel.itemCalculation(
                         cartList?.get(0)?.items,
-                        binding.txtTotalAmount,
-                        dashboardViewModel.serviceCharges.value?.data
+                        binding.txtTotalAmount
                     )
                 } else {
 
