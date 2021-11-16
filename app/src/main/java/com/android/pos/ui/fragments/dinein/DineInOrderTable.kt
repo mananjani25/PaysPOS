@@ -130,7 +130,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        getData()
+        //getData()
 
         dineInTableAdapter = DineInTableAdapter()
         binding.rvItemList.adapter = dineInTableAdapter
@@ -159,59 +159,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             orderId = arguments?.getInt("orderId")
             orderId?.let { viewModel.apiCallOrderDetails(it) }
             binding.txtTitle.setText("Order Details")
-
-
-            /*cartList = arguments?.getParcelable("cartList")
-            dineInData = arguments?.getParcelable("dineInList")
-
-            //totalPrice = requireArguments().getDouble("totalPrice")
-
-            Log.e(TAG, "getDineIncartList:   ${Gson().toJson(cartList)}")
-            orderId = dineInData?.order!!.id
-
-            if (cartList?.dineInList != null) {
-
-                var list = cartList?.dineInList!!.toCollection(arrayListOf())
-
-                val guestAttributes = dineInData!!.order.guestAttributes
-
-                var wholeTableAmt = 0.0
-                guestAttributes.get(0).guestItemAttributes.forEach {
-                    wholeTableAmt += it.amount * it.quantity
-                }
-
-                Log.e(TAG, "wholeTableAmt:  ${wholeTableAmt}")
-
-                var dividedAmt: Double = wholeTableAmt / (guestAttributes.size - 1)
-
-                Log.e(TAG, "dividedAmt:   ${dividedAmt}")
-                list.get(0).guestDividedAmt = MethodUtils.roundOffAmountDouble(dividedAmt)
-                for (i in 0 until guestAttributes.size) {
-
-                    for (j in 0 until list.size) {
-                        if (cartList?.dineInList!![j].title == guestAttributes.get(i).name) {
-                            list[j].id = guestAttributes.get(i).id
-                        }
-
-                        for (k in 0 until list.get(j).items.size) {
-                            guestAttributes.get(i).guestItemAttributes.forEach {
-                                if (list.get(j).items.get(k).timeStamp == it.timestamp) {
-                                    list.get(j).items.get(k).isPaid = it.isPaid
-                                    list.get(j).items.get(k).orderItemId = it.orderItemId
-                                }
-                            }
-                        }
-
-
-                    }
-
-                }
-
-                dineInTableAdapter.setList(list)
-
-                binding.txtTotalAmountNew.setText("${MethodUtils.roundOffAmount(totalPrice)}")
-
-            }*/
 
         }
         onClick()
@@ -808,6 +755,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         bundle.putParcelable("floorPlan", floorPlanModel)
         bundle.putDouble("totalServiceCharge", serviceChargeGuest)
         orderId?.let { bundle.putInt("orderId", it) }
+        bundle.putBoolean("isGuestPay", true)
 
         var wholeTableAmt = 0.0
         var paidAmount = 0.0
@@ -829,8 +777,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         if ((wholeTableAmt - paidAmount) == subTotal) {
             bundle.putBoolean("isLastPayment", true)
 
+            Log.e("isLastPayment 1", true.toString())
         } else {
             bundle.putBoolean("isLastPayment", false)
+            Log.e("isLastPayment 1", false.toString())
         }
         findNavController().navigate(
             R.id.action_dineInOrderTable_to_payByGuestDialog,
