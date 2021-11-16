@@ -9,6 +9,7 @@ import android.os.Build
 import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
+import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.model.responseModel.GetTipReponse
 import com.android.pos.data.model.responseModel.OpenOrderResponse
@@ -440,6 +441,81 @@ fun addOrderItemOpenOrder(
 
 }
 
+fun addOrderItemForDineIn(
+    builder: Builder,
+    list: TbItem,
+    font: String,
+    showModifiers: Boolean
+): Builder {
+
+
+    val obj = list
+    builder.addTextLineSpace(30)
+    builder.addFeedUnit(30)
+    builder.addTextFont(Builder.FONT_E)
+    // builder.addTextAlign(Builder.ALIGN_LEFT)
+    builder.addTextLang(Builder.LANG_EN)
+    addCustomerTextSize(builder, font)
+    builder.addTextStyle(
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.COLOR_1
+    )
+
+
+
+    builder.addText(
+        padLineCustomerItem(
+            obj.itemQuantity.toString() + "x " + obj.name,
+            "$" + MethodUtils.roundOffAmountString(totalPriceDineInItem(obj)),
+            if (font == Constants.LARGE) {
+                24
+            } else {
+                48
+            }
+        )
+    )
+
+
+    if (obj.modifiers.isNotEmpty() && showModifiers) {
+        for (j in 0 until obj.modifiers.size) {
+            val modifierObj = obj.modifiers.get(j)
+            builder.addTextLineSpace(30)
+            builder.addFeedUnit(30)
+            builder.addTextFont(Builder.FONT_E)
+            //builder.addTextAlign(Builder.ALIGN_LEFT)
+            builder.addTextLang(Builder.LANG_EN)
+            addCustomerTextSize(builder, font)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.COLOR_1
+            )
+            builder.addTextPosition(4)
+            builder.addText(
+                padLineCustomerItem(
+                    "   " + modifierObj.name,
+                    "$" + MethodUtils.roundOffAmountString(modifierObj.price.toDouble() * modifierObj.itemQuantity),
+                    if (font == Constants.LARGE) {
+                        23
+                    } else {
+                        47
+                    }
+                )
+            )
+
+
+        }
+
+
+    }
+
+
+    return builder
+}
+
 
 fun addOrderItems(
     builder: Builder,
@@ -532,6 +608,24 @@ private fun totalPriceOpenOrder(model: OpenOrderResponse.Data.Order.OrderItem): 
 
     }
 
+}
+
+private fun totalPriceDineInItem(model: TbItem): Double {
+    return if (model.modifiers.isNotEmpty()) {
+
+        var totalPrice = 0.0
+
+        val mList = model.modifiers
+        mList.forEach { items ->
+            totalPrice += items.price * items.itemQuantity
+        }
+
+        (model.price * model.itemQuantity) + totalPrice
+    } else {
+
+        model.price * model.itemQuantity
+
+    }
 }
 
 private fun totalPrice(model: CreateOrderResponse.Data.Order.OrderItem): Double {

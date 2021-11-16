@@ -14,6 +14,7 @@ import com.android.pos.data.model.requestModel.OrderRequestModel
 import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
+import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.TaxServiceChargeRepository
 import com.android.pos.data.repositories.TipDiscountRepository
@@ -50,6 +51,7 @@ class DineInOrderTableViewModel @Inject constructor(
 
     val getServiceChargeList = posRepository.serviceChargeList()
 
+    fun getCustomerReceiptSettings() = posRepository.getCustomerReceiptSettings()
 
     private val _msgText = MutableLiveData<Event<String>>()
     val msgText: LiveData<Event<String>> = _msgText
@@ -60,6 +62,15 @@ class DineInOrderTableViewModel @Inject constructor(
     var subTotalAmount = 0.0
     var totalServiceChargeAmount = 0.0
 
+
+    fun getTipsList() = posRepository.getTipsList()
+    fun getCustomerPrinterList(): LiveData<Resource<List<PrinterResponse.Data.CustomerReceiptPrinters>>> {
+        return posRepository.getCustomerPrinters()
+    }
+
+    fun getKitchenPrinterList(): LiveData<Resource<List<PrinterResponse.Data.KitchenReceiptPrinters>>> {
+        return posRepository.getKitchenPrinters()
+    }
 
     fun payByGuest(id: Int, model: GuestPaymentRequest, isAllPaymentComplete: Boolean) {
         _showProgress.value = Event(true)
