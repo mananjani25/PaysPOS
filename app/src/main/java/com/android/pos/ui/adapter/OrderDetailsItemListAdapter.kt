@@ -6,14 +6,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
+import com.android.pos.data.model.GetPaymentOrderDetailsResponse
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.databinding.ViewOrderItemListBinding
+import kotlin.math.roundToInt
 
 
 class OrderDetailsItemListAdapter :
     RecyclerView.Adapter<OrderDetailsItemListAdapter.MyViewHolder>() {
 
-    var taxList = ArrayList<GetOrderDetailsResponse.Data.OrderItem>()
+    var taxList = ArrayList<GetPaymentOrderDetailsResponse.Data.Order.Order_items>()
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -29,13 +31,13 @@ class OrderDetailsItemListAdapter :
         val itemBinding = holder.taxItemBinding
 
         val context = itemBinding.root.context
-        itemBinding.tvItemName.text = taxList[position].itemName
+        itemBinding.tvItemName.text = taxList[position].item_name
         itemBinding.tvQuantity.text = "x" + taxList[position].quantity
 
         var totalPrice = taxList[position].price * taxList[position].quantity
-        var modifierPrices = 0.0
-        taxList[position].orderItemModifiers.forEach {
-            modifierPrices = (it.price * it.quantity)
+        var modifierPrices = 0
+        taxList[position].order_item_modifiers.forEach {
+            modifierPrices = ((it.price * it.quantity).roundToInt())
         }
         totalPrice += modifierPrices
 
@@ -44,7 +46,7 @@ class OrderDetailsItemListAdapter :
             totalPrice
         )
 
-        val modifierNames = taxList[position].orderItemModifiers.map {
+        val modifierNames = taxList[position].order_item_modifiers.map {
             it.name + " (" + itemBinding.root.context.getString(R.string.symbole) + " " + String.format(
                 itemBinding.root.context.getString(
                     R.string.format
@@ -64,7 +66,7 @@ class OrderDetailsItemListAdapter :
 
     override fun getItemCount() = taxList.size
 
-    fun addOrderDetailsItems(taxList: List<GetOrderDetailsResponse.Data.OrderItem>) {
+    fun addOrderDetailsItems(taxList: List<GetPaymentOrderDetailsResponse.Data.Order.Order_items>) {
 
         this.taxList.apply {
             clear()

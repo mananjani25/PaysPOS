@@ -8,7 +8,7 @@
 
         <variable
             name="orderDetails"
-            type="com.android.pos.data.model.responseModel.GetOrderDetailsResponse" />
+            type="com.android.pos.data.model.GetPaymentOrderDetailsResponse" />
 
         <variable
             name="viewModel"
@@ -213,7 +213,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginTop="@dimen/_5sdp"
-                    android:text="@{`Total Refundable Amount is `+@string/symbole +``+String.format(@string/format,(orderDetails.data.totalAmount-orderDetails.data.totalTips))}"
+                    android:text="@{`Total Refundable Amount is `+@string/symbole +``+String.format(@string/format,(orderDetails.data.order.total_amount-orderDetails.data.order.total_tips))}"
                     android:textColor="@color/color65"
                     android:textSize="@dimen/_5mdpi" />
 

@@ -3,6 +3,7 @@ package com.android.pos.data.remote
 
 import com.android.pos.data.entities.VariationsAttribute
 import com.android.pos.data.model.CustomerListResponse
+import com.android.pos.data.model.GetPaymentOrderDetailsResponse
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.model.responseModel.category.CategoriesResponse
@@ -59,6 +60,7 @@ import com.android.pos.data.remote.Constants.ORDER_HISTORY
 import com.android.pos.data.remote.Constants.ORDER_PAY_AMOUNT_WISE
 import com.android.pos.data.remote.Constants.ORDER_PHONE_RECEIPT
 import com.android.pos.data.remote.Constants.ORDER_TYPES
+import com.android.pos.data.remote.Constants.PAYMENT_DETAILS
 import com.android.pos.data.remote.Constants.PAY_BY_GUEST
 import com.android.pos.data.remote.Constants.REFUND_PAYMENT
 import com.android.pos.data.remote.Constants.REORDER_CATEGORY
@@ -504,6 +506,9 @@ interface ApiService {
 
     @GET(ORDER_DETAILS)
     suspend fun orderDetailsById(@Path("id") orderId: Int): GetOrderDetailsResponse
+
+    @GET(PAYMENT_DETAILS)
+    suspend fun orderPaymentDetailsById(@Path("id") orderId: Int): GetPaymentOrderDetailsResponse
 
     @GET(ORDER_DETAILS)
     suspend fun orderDetailsId(@Path("id") orderId: Int): CreateOrderResponse

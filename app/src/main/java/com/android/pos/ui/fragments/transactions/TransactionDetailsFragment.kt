@@ -14,6 +14,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
+import com.android.pos.data.model.GetPaymentOrderDetailsResponse
 import com.android.pos.data.model.responseModel.GetCustomerReceiptSettingsResponse
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.data.model.responseModel.GetTipReponse
@@ -48,9 +49,12 @@ class TransactionDetailsFragment : Fragment() {
     private lateinit var orderDetailsItemAdapter: OrderDetailsItemListAdapter
     private lateinit var orderDetailsResponse: GetOrderDetailsResponse
     private var customerSettingModel = GetCustomerReceiptSettingsResponse.Data()
+    private lateinit var paymentDetailsResponse: GetPaymentOrderDetailsResponse
     private var orderId: Int = -1
     private val TAG = "TransactionDetailsFr"
     private var tipsList: List<GetTipReponse.Data> = listOf()
+    private var paymentId: Int = -1
+    private var isFromTrans: Boolean = false
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -71,7 +75,14 @@ class TransactionDetailsFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         orderId = arguments?.getInt("orderId")!!
-        viewModel.apiCallOrderDetails(orderId)
+        paymentId = arguments?.getInt("paymentId")!!
+        isFromTrans = arguments?.getBoolean("isFromTrans")!!
+        if (isFromTrans) {
+            viewModel.apiCallPaymentDetails(paymentId)
+        } else {
+            viewModel.apiCallOrderDetails(orderId)
+
+        }
         observeTipsList()
         setupSnackbar()
         observeShowProgress()
@@ -112,12 +123,11 @@ class TransactionDetailsFragment : Fragment() {
 
         binding.tvIssueRefund.setOnClickListener {
             val bundle = Bundle().apply {
-
-                orderDetailsResponse.data.orderItems.forEach {
+                paymentDetailsResponse.data.order.order_items.forEach {
                     it.isChecked = false
                 }
-
-                putParcelable("orderDetailsResponse", orderDetailsResponse)
+                putInt("paymentId",paymentId)
+                putParcelable("orderDetailsResponse", paymentDetailsResponse)
             }
             findNavController().navigate(
                 R.id.action_transactionDetailsFragment_to_issueRefundFragment,
@@ -129,35 +139,35 @@ class TransactionDetailsFragment : Fragment() {
     @SuppressLint("SetTextI18n")
     private fun navigate() {
         ProgressUtils.showProgressDialog(requireActivity())
-        viewModel.data.observe(viewLifecycleOwner, { event ->
+        viewModel.dataPayment.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
 
-                orderDetailsResponse = it
+                paymentDetailsResponse = it
                 binding.tvDate.text =
-                    convertCurrentDate(it.data.createdAt) + " " + convertCurrentTime(
-                        it.data.createdAt
+                    convertCurrentDate(it.data.order.created_at) + " " + convertCurrentTime(
+                        it.data.order.created_at
                     )
 
                 binding.tvTransactionDate.text =
-                    convertCurrentTime(it.data.payments.get(0).createdAt) + "\n" + convertCurrentDate(
-                        it.data.payments.get(0).createdAt
+                    convertCurrentTime(it.data.order.created_at) + "\n" + convertCurrentDate(
+                        it.data.order.created_at
                     )
 
-                if (it.data.customer != null) {
+                if (it.data.order.customer != null) {
                     binding.tvCustomerName.text =
-                        it.data.customer.firstName + " " + it.data.customer.lastName
+                        it.data.order.customer.firstName + " " + it.data.order.customer.lastName
                 } else {
                     binding.tvCustomerName.text = ""
                 }
                 binding.orderDetails = it
-                orderDetailsItemAdapter.addOrderDetailsItems(it.data.orderItems)
+                orderDetailsItemAdapter.addOrderDetailsItems(it.data.order.order_items)
 
 
-                if (orderDetailsResponse.data.totalDiscount != 0.0) {
+                if (!paymentDetailsResponse.data.order.total_discount.equals(0.0)) {
                     binding.llDiscount.visibility = View.VISIBLE
                 }
 
-                if (orderDetailsResponse.data.refundDetails.refundedAmount != 0.0) {
+                if (!paymentDetailsResponse.data.order.refund_detail.refunded_amount.equals(0.0)) {
                     binding.llRefundAmount.visibility = View.VISIBLE
                 }
 
@@ -165,7 +175,7 @@ class TransactionDetailsFragment : Fragment() {
                     binding.tvIssueRefund.visibility = View.GONE
                 }*/
 
-                if (orderDetailsResponse.data.refundDetails.refundedAmount != 0.0) {
+                if (!paymentDetailsResponse.data.order.refund_detail.refunded_amount.equals(0.0)) {
                     binding.tvIssueRefund.visibility = View.GONE
                 }
 

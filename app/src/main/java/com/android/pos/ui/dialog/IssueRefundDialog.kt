@@ -19,6 +19,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.text.NumberFormat
 import java.util.*
 import androidx.navigation.fragment.findNavController
+import com.android.pos.data.model.GetPaymentOrderDetailsResponse
 import com.android.pos.data.model.requestModel.RefundRequestModel
 import com.android.pos.ui.adapter.RefundItemListAdapter
 import com.android.pos.utils.AlertUtils
@@ -34,10 +35,12 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
     var totalTax = 0.0
     var totalItemPrice = 0.0
     private lateinit var binding: DialogIssueRefundBinding
-    private lateinit var orderDetailsResponse: GetOrderDetailsResponse
+    private lateinit var paymentOrderDetailsResponse: GetPaymentOrderDetailsResponse
+    var isFromTrans = false
     private val viewModel by viewModels<TransactionDetailsViewModel>()
     private lateinit var refundItemListAdapter: RefundItemListAdapter
     private var isItem = false
+    private var paymentId = 0
     private var subTotalPrice: Double = 0.0
 
 
@@ -54,8 +57,9 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
-        orderDetailsResponse = arguments?.getParcelable("orderDetailsResponse")!!
-        binding.orderDetails = orderDetailsResponse
+        paymentOrderDetailsResponse = arguments?.getParcelable("orderDetailsResponse")!!
+        paymentId = arguments?.getInt("paymentId")!!
+        binding.orderDetails = paymentOrderDetailsResponse
         binding.edtAmount.addTextChangedListener(this)
 
         setUpRecyclerView()
@@ -76,16 +80,15 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                 binding.tvRefundPaymentDetails.visibility = View.VISIBLE
                 binding.tvRefundItemDetails.visibility = View.GONE
 
-                if (orderDetailsResponse.data.refundDetails.refundedAmount == 0.0) {
-
+                if (paymentOrderDetailsResponse.data.order.refund_detail.refunded_amount.equals(0.0)) {
                     MethodUtils.setRefundPriceTextView(
                         binding.tvTotalRefundAmount,
-                        orderDetailsResponse.data.totalAmount - orderDetailsResponse.data.totalTips
+                        (paymentOrderDetailsResponse.data.order.total_amount - paymentOrderDetailsResponse.data.order.total_tips).toDouble()
                     )
                 } else {
                     MethodUtils.setRefundPriceTextView(
                         binding.tvTotalRefundAmount,
-                        (orderDetailsResponse.data.totalAmount - orderDetailsResponse.data.totalTips) - orderDetailsResponse.data.refundDetails.refundedAmount
+                        ((paymentOrderDetailsResponse.data.order.total_amount - paymentOrderDetailsResponse.data.order.total_tips) - paymentOrderDetailsResponse.data.order.refund_detail.refunded_amount).toDouble()
                     )
                 }
 
@@ -102,10 +105,10 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                     refundData = RefundRequestModel().apply {
                         paymentRefund = RefundRequestModel.PaymentRefund().apply {
                             amount = subTotalPrice
-                            orderId = orderDetailsResponse.data.id
-                            paymentId = orderDetailsResponse.data.payments[0].id
-                            employeeId = orderDetailsResponse.data.employeeId
-                            terminalId = orderDetailsResponse.data.terminalId
+                            orderId = paymentOrderDetailsResponse.data.order_id
+                            paymentId = paymentId
+                            employeeId = paymentOrderDetailsResponse.data.employee_id
+                            terminalId = paymentOrderDetailsResponse.data.terminal_id
                             taxRefunded = totalTax
                             serviceChargeRefunded = totalServiceCharge
                         }
@@ -151,8 +154,8 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
         binding.rvItemListRefund.adapter = refundItemListAdapter
 
         refundItemListAdapter.addItems(
-            orderDetailsResponse.data.orderItems,
-            orderDetailsResponse.data.orderServiceCharges
+            paymentOrderDetailsResponse.data.order.order_items,
+            paymentOrderDetailsResponse.data.service_charge_amount
         )
 
         refundItemListAdapter.showItemSubTotal = {
@@ -188,35 +191,27 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
         refundItemListAdapter.selectedItemList().forEach { it ->
             subTotalPrice = 0.0
             if (it.isChecked) {
-                subTotalPrice += it.totalPrice - it.discountAmount
+                subTotalPrice += it.total_price - it.discount_amount
 
-                it.orderItemTaxes.forEach { tax ->
-                    totalTax += tax.taxTotalAmount
+                it.order_item_taxes.forEach { tax ->
+                    totalTax += tax.tax_total_amount
                 }
 
-                it.orderItemModifiers.forEach { modifiers ->
-                    modifiers.orderItemTaxes.forEach { taxes ->
-                        totalTax += taxes.taxTotalAmount
-                    }
-
-                }
-
-                it.orderItemModifiers.forEach { modifiers ->
+                it.order_item_modifiers.forEach { modifiers ->
                     subTotalPrice += (modifiers.price * modifiers.quantity)
                 }
-                orderDetailsResponse.data.orderServiceCharges.forEach {
-                    totalServiceCharge += (subTotalPrice * it.rate) / 100
-                }
+
+                totalServiceCharge = paymentOrderDetailsResponse.data.service_charge_amount
                 totalItemPrice += subTotalPrice
             }
             val orderItemRefundsAttributeModel =
                 RefundRequestModel.PaymentRefund.OrderItemRefundsAttribute()
 
             orderItemRefundsAttributeModel.amount = subTotalPrice
-            orderItemRefundsAttributeModel.employeeId = it.employeeId
-            orderItemRefundsAttributeModel.orderId = it.orderId
+            orderItemRefundsAttributeModel.employeeId = it.employee_id
+            orderItemRefundsAttributeModel.orderId = it.order_id
             orderItemRefundsAttributeModel.refundType = 0
-            orderItemRefundsAttributeModel.paymentId = orderDetailsResponse.data.payments[0].id
+            orderItemRefundsAttributeModel.paymentId = paymentId
             orderItemRefundsAttributeModel.orderItemId = it.id
             orderItemRefundsAttributeModel.quantity = it.quantity
             orderItemRefundsAttributesList.add(orderItemRefundsAttributeModel)
@@ -226,10 +221,10 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
         refundData = RefundRequestModel().apply {
             paymentRefund = RefundRequestModel.PaymentRefund().apply {
                 amount = totalItemPrice
-                orderId = orderDetailsResponse.data.id
-                paymentId = orderDetailsResponse.data.payments[0].id
-                employeeId = orderDetailsResponse.data.employeeId
-                terminalId = orderDetailsResponse.data.terminalId
+                orderId = paymentOrderDetailsResponse.data.order_id
+                paymentId = paymentId
+                employeeId = paymentOrderDetailsResponse.data.employee_id
+                terminalId = paymentOrderDetailsResponse.data.terminal_id
                 orderItemRefundsAttributes = orderItemRefundsAttributesList
                 taxRefunded = totalTax
                 serviceChargeRefunded = totalServiceCharge
@@ -275,17 +270,17 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
 
 
 
-            if (orderDetailsResponse.data.refundDetails.refundedAmount == 0.0) {
+            if (paymentOrderDetailsResponse.data.order.refund_detail.refunded_amount.equals(0.0)) {
                 if (binding.edtAmount.text.toString()
-                        .toDouble() > orderDetailsResponse.data.totalAmount
+                        .toDouble() > paymentOrderDetailsResponse.data.order.total_amount
                 ) {
-                    binding.edtAmount.setText(MethodUtils.roundOffAmountString(orderDetailsResponse.data.totalAmount - orderDetailsResponse.data.totalTips))
+                    binding.edtAmount.setText(MethodUtils.roundOffAmountString((paymentOrderDetailsResponse.data.order.total_amount - paymentOrderDetailsResponse.data.order.total_tips).toDouble()))
                 }
             } else {
                 val newPrice =
-                    (orderDetailsResponse.data.totalAmount - orderDetailsResponse.data.totalTips) - orderDetailsResponse.data.refundDetails.refundedAmount
+                    (paymentOrderDetailsResponse.data.order.total_amount - paymentOrderDetailsResponse.data.order.total_tips) - paymentOrderDetailsResponse.data.order.refund_detail.refunded_amount
                 if (binding.edtAmount.text.toString().toDouble() > newPrice) {
-                    binding.edtAmount.setText(MethodUtils.roundOffAmountString(newPrice))
+                    binding.edtAmount.setText(MethodUtils.roundOffAmountString(newPrice.toDouble()))
                 }
             }
 

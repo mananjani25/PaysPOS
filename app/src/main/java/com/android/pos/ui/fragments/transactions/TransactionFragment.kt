@@ -82,7 +82,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
         binding.viewModel = viewModel
 
-
+        currentPage = 1
         binding.lifecycleOwner = this
 
 
@@ -710,6 +710,8 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
             event.getContentIfNotHandled()?.let {
                 val bundle = Bundle().apply {
                     putInt("orderId", it.orderDetails.id)
+                    putInt("paymentId", it.id)
+                    putBoolean("isFromTrans",true)
                     putString("orderType", it.orderDetails.orderType)
                 }
                 findNavController().navigate(

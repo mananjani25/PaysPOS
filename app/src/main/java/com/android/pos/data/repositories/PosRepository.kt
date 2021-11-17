@@ -543,6 +543,11 @@ class PosRepository @Inject constructor(
         apiHelperNew.orderDetailsById(orderId)
 
 
+
+    suspend fun paymentDetailsById(paymentId: Int) =
+        apiHelperNew.paymentDetailsById(paymentId)
+
+
     suspend fun orderDetailsId(orderId: Int) =
         apiHelperNew.orderDetailsId(orderId)
 

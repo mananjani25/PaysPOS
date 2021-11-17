@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.android.pos.data.model.GetPaymentOrderDetailsResponse
 import com.android.pos.data.model.requestModel.RefundRequestModel
 import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
@@ -28,6 +29,10 @@ class TransactionDetailsViewModel @Inject constructor(
 
     private val _data = MutableLiveData<Event<GetOrderDetailsResponse?>>()
     val data: LiveData<Event<GetOrderDetailsResponse?>> = _data
+
+
+    private val _datapayment = MutableLiveData<Event<GetPaymentOrderDetailsResponse?>>()
+    val dataPayment: LiveData<Event<GetPaymentOrderDetailsResponse?>> = _datapayment
 
     private val _dataRefundDone = MutableLiveData<Event<BaseResponse?>>()
     val dataRefundDone: LiveData<Event<BaseResponse?>> = _dataRefundDone
@@ -99,6 +104,39 @@ class TransactionDetailsViewModel @Inject constructor(
 
                             resource.data?.let { createTaxResponse ->
                                 _dataRefundDone.value = Event(createTaxResponse)
+                            }
+                        } else {
+                            _snackbarText.value = Event(resource.message)
+                        }
+                    }
+                }
+
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
+                }
+
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
+            }
+        }
+    }
+
+    fun apiCallPaymentDetails(paymentId: Int) {
+        viewModelScope.launch {
+
+            val resource = posRepository.paymentDetailsById(paymentId)
+
+
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+                    resource.data.let { logInResponse ->
+                        if (logInResponse?.status == 200) {
+
+                            resource.data?.let { createTaxResponse ->
+                                _datapayment.value = Event(createTaxResponse)
                             }
                         } else {
                             _snackbarText.value = Event(resource.message)
