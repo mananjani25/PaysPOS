@@ -394,7 +394,7 @@ class TransactionDetailsFragment : Fragment() {
             )
 
 
-            orderDetailsResponse?.data?.venueWebsite?.let {
+            paymentDetailsResponse?.data?.order?.venue_website?.let {
                 builder.addFeedLine(1)
 
                 builder.addTextFont(Builder.FONT_E)
@@ -422,7 +422,7 @@ class TransactionDetailsFragment : Fragment() {
                 Builder.COLOR_1
             )
             builder.addTextAlign(Builder.ALIGN_CENTER)
-            builder.addText(orderDetailsResponse?.data?.orderType + "\n")
+            builder.addText(paymentDetailsResponse.data.order.order_type + "\n")
 
             if (customerSettingModel.fonts == Constants.LARGE) {
 
@@ -439,7 +439,7 @@ class TransactionDetailsFragment : Fragment() {
                         Builder.COLOR_1
                     )
 
-                    builder.addText("OrderID:" + orderDetailsResponse?.data?.id)
+                    builder.addText("OrderID:" + paymentDetailsResponse.data.order.id)
 
                 }
                 builder.addTextLineSpace(30)
@@ -455,7 +455,7 @@ class TransactionDetailsFragment : Fragment() {
                     Builder.COLOR_1
                 )
 
-                builder.addText("ReceiptID:" + orderDetailsResponse?.data?.offlineId)
+                builder.addText("ReceiptID:" +  paymentDetailsResponse.data.order.offline_id)
 
                 if (customerSettingModel.showTeam) {
                     builder.addTextLineSpace(30)
@@ -472,7 +472,7 @@ class TransactionDetailsFragment : Fragment() {
                     )
 
 
-                    builder.addText("Employee:" + orderDetailsResponse?.data?.employee?.name)
+                    builder.addText("Employee:" + paymentDetailsResponse?.data.order.employee?.name)
 
                 }
 
@@ -495,13 +495,13 @@ class TransactionDetailsFragment : Fragment() {
                         TAG,
                         "ConvertDateTime:  ${
                             Constants.getReceiptFormatDateFromUTCServer(
-                                orderDetailsResponse?.data.createdAt.toString()
+                                paymentDetailsResponse?.data.order.created_at.toString()
                             )
                         }"
                     )
                     builder.addText(
                         "Order Time:" + Constants.getReceiptFormatDateFromUTCServer(
-                            orderDetailsResponse?.data.createdAt.toString()
+                            paymentDetailsResponse?.data.order.created_at.toString()
                         )
                     )
 
@@ -552,7 +552,7 @@ class TransactionDetailsFragment : Fragment() {
                 builder.addText(
                     padLine(
                         if (customerSettingModel.showOrderIdTop) {
-                            "OrderID:" + orderDetailsResponse?.data.id
+                            "OrderID:" + paymentDetailsResponse?.data.order.id
                         } else {
                             ""
                         },
