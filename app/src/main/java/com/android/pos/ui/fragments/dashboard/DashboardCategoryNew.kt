@@ -67,6 +67,7 @@ import com.android.pos.ui.activities.SwipeHelper
 import com.android.pos.ui.adapter.*
 import com.android.pos.ui.fragments.payment.PaymentViewModel
 import com.android.pos.utils.*
+import com.android.pos.utils.MethodUtils.Companion.isDoubleClick
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.callback.MyCallback
 import com.android.pos.utils.extensions.alert
@@ -1446,8 +1447,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         txtQty.setText(qty.toString())
 
         variationAdapter?.showVariationPriceClick = { it: VariationsAttribute ->
-
-            if (it.priceType == "Variable") {
+            if (!isDoubleClick()){
+                if (it.priceType == "Variable") {
                 val bundle = Bundle().apply {
                     putParcelable("variationAttribute", it)
                 }
@@ -1457,7 +1458,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             } else if (it.priceType == "Fixed") {
                 showPriceTitle(it, variationAdapter = null, data, txtTitle, isItemClick)
             }
-
+            }
         }
 
         //allow to update price only if variation exists
