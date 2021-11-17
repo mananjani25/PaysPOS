@@ -78,7 +78,7 @@ class GetPaymentOrderDetailsResponse(
             @SerializedName("created_at") val created_at: String,
             @SerializedName("updated_at") val updated_at: String,
             @SerializedName("order_items") val order_items: List<Order_items>,
-            @SerializedName("employee") val employee: String,
+            @SerializedName("employee") val employee: GetOrderDetailsResponse.Data.Employee,
             @SerializedName("customer") val customer: Customer,
             @SerializedName("order_type") val order_type: String,
             @SerializedName("venue_website") val venue_website: String,

@@ -289,7 +289,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/_3sdp"
                         android:gravity="end"
-                        android:text="@{orderDetails.data.order.employee}"
+                        android:text="@{orderDetails.data.order.employee.name}"
                         android:textColor="@color/viewTextColor"
                         android:textSize="@dimen/_5mdpi" />
                 </LinearLayout>
