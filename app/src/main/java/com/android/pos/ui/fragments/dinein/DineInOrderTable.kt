@@ -71,6 +71,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     private var paymentAmount: Double = 0.0
     private var subTotalWT = 0.0
     private var serviceCharge = 0.0
+    private var finalTaxAmt = 0.0
     private var future_delivery_date: String = ""
     private var future_delivery_time: String = ""
     var totalAmount = 0.0
@@ -324,7 +325,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
                     serviceChargeAmount = MethodUtils.roundOffAmountDouble(serviceCharge)
 
-                }
+                },
+                DineInPaymentUpdateModel()
             )
 
 
@@ -543,7 +545,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         txtTotalAmount.text = binding.txtTotalAmountNew.text.toString()
         txtTotalTax.text = "$" + String.format(
             "%.2f",
-            viewModel.totalTaxAmount
+            finalTaxAmt
         )
 
 //        if (popupWindow == null) {
@@ -779,27 +781,33 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         var total = subTotal + totalTax
         Log.e(TAG, "orderIdGuest  ${orderId}")
 
+        var paymentAttr = PaymentAttributes().apply {
+            amount = totalGuest
+            cardName = ""
+            cardNumber = ""
+            cardType = ""
+            cashDiscount = 0.0
+            cashDiscountFee = 0.0
+            employeeId = prefProvider.getValueInt(EMPLOYEE_ID, 0)
+            taxAmount = taxGuest
+            subTotalPrice = subTotalGuest
+            offlineId = randomOfflineId()
+            payableType = "GuestTab"
+            paymentType = "Cash"
+            transactionId = randomOfflineId()
+            terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
+            order_id = orderId
 
-        var model = GuestPaymentRequest(
-            PaymentAttributes().apply {
-                amount = totalGuest
-                cardName = ""
-                cardNumber = ""
-                cardType = ""
-                cashDiscount = 0.0
-                cashDiscountFee = 0.0
-                employeeId = prefProvider.getValueInt(EMPLOYEE_ID, 0)
-                taxAmount = taxGuest
-                subTotalPrice = subTotalGuest
-                offlineId = randomOfflineId()
-                payableType = "GuestTab"
-                paymentType = "Cash"
-                transactionId = randomOfflineId()
-                terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
-                order_id = orderId
+        }
+        var dineInOrderModel = DineInPaymentUpdateModel()
+        dineInOrderModel.id = orderId
+        dineInOrderModel.paymentAttributes = paymentAttr
 
-            }
-        )
+        var modelReq = DineInOrderPayment(dineInOrderModel)
+
+        //var splitModel = SpitByOrderRequestModel(orderId,completed_all_payments = false,paymentAttr,null)
+
+        var model = GuestPaymentRequest(paymentAttr, dineInOrderModel)
 
         val bundle = Bundle()
         dineInModel.id?.let { bundle.putInt("id", it) }
@@ -810,6 +818,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         bundle.putParcelable("model", model)
         bundle.putParcelable("floorPlan", floorPlanModel)
         bundle.putDouble("totalServiceCharge", serviceChargeGuest)
+        bundle.putParcelable("orderPayment", modelReq)
         orderId?.let { bundle.putInt("orderId", it) }
 
         var wholeTableAmt = 0.0
@@ -829,9 +838,20 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         }
 
-        if ((wholeTableAmt - paidAmount) == subTotal) {
-            bundle.putBoolean("isLastPayment", true)
+        Log.e(TAG, "totalAmount  ${getOrderDetailsResponse?.totalAmount!!}")
+        Log.e(TAG, "totalGuest ${totalGuest}")
+        if (getOrderDetailsResponse?.totalAmount != null) {
+            var totalPaid = 0.0
 
+            getOrderDetailsResponse?.payments?.forEach {
+                totalPaid +=  it.amount
+            }
+
+            if (totalGuest == (getOrderDetailsResponse?.totalAmount!! - totalPaid)) {
+                bundle.putBoolean("isLastPayment", true)
+            } else {
+                bundle.putBoolean("isLastPayment", false)
+            }
         } else {
             bundle.putBoolean("isLastPayment", false)
         }
@@ -1040,7 +1060,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         viewModel._Basedata.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let { baseResponse ->
                 if (baseResponse != null) {
-
                     getOrderDetailsResponse = baseResponse
                     var list: ArrayList<DineInModel> = arrayListOf()
 
@@ -1051,6 +1070,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     //New Drag and drop Code
                     var totalPay = 0.0
                     var itemsDiscount = 0.0
+                    var isPaidCount = 0.0
+                    var isUnpaidCount = 0.0
+                    var WholeTableAmount = 0.0
                     val dineInList: ArrayList<DineInModel> = arrayListOf()
 
                     for (i in 0 until baseResponse.guestAttributes.size) {
@@ -1155,9 +1177,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                         model.id = baseResponse.guestAttributes[i].id
 
-
-
-
                         dineInList.add(model)
 
 
@@ -1254,10 +1273,16 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         }
                     }
 
+                    //paid and unpaid guest count
+                    var totalGuestCount = baseResponse.guestAttributes.size - 1
+                    var totalGuestPaidCount = 0.0
+
                     //Whole Table Calculation
                     var WTSubTotal: Double = 0.0
                     var WTTaxes: Double = 0.0
                     var WTServiceCharge: Double = 0.0
+
+
                     for (i in 1 until dineInList.size) {
 
                         if (dineInList.get(i).isHeader == 1) {
@@ -1328,6 +1353,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     dineInList.get(0).guestDividedAmt =
                         MethodUtils.roundOffAmountDouble((WTSubTotal + WTTaxes + WTServiceCharge - orderDiscount) / (baseResponse.guestAttributes.size - 1))
 
+                    WholeTableAmount = MethodUtils.roundOffAmountDouble(
+                        (WTSubTotal + WTTaxes + WTServiceCharge - orderDiscount)
+                    )
 
                     var service: Double = 0.0
                     var serviceSubTotal = subTotalWT - itemsDiscount
@@ -1350,18 +1378,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     }
                     viewModel.totalDiscountAmount += baseResponse.totalDiscount
 
-                    Log.e(TAG, "subTotalWTMy:  ${subTotalWT}")
-                    Log.e(TAG, "sericeChar:  ${service}")
-                    Log.e(TAG, "totalTaxAmt  ${viewModel.totalTaxAmount}")
-                    Log.e(TAG, "totalDiscount  ${viewModel.totalDiscountAmount}")
-                    Log.e(TAG, "OverAllDis  ${baseResponse.totalDiscount}")
-
                     val totalAmoountTxt =
                         MethodUtils.roundOffAmount(subTotalWT + serviceCharge + viewModel.totalTaxAmount - baseResponse.totalDiscount)
-
-                    Log.e(TAG, "totalAmoountTxt:  ${totalAmoountTxt}")
-
-                    binding.txtTotalAmountNew.setText(totalAmoountTxt)
 
                     var fisrtTime: Boolean = false
                     for (i in 1 until dineInList.size) {
@@ -1404,6 +1422,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             touchHelper.attachToRecyclerView(binding.rvItemList)
                         }
                     }
+
+
+
+
                     if (list.isNotEmpty()) {
                         baseResponse.guestAttributes.get(0).guestItemAttributes.forEach {
                             wholeTableAmt += it.amount * it.quantity
@@ -1461,6 +1483,126 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                     //     binding.txtTotalAmountNew.setText("${MethodUtils.roundOffAmount(totalAmount)}")
                     totalPrice = MethodUtils.roundOffAmountDouble(totalAmount)
+
+
+                    var guestAmt = 0.0
+                    var isPaid = true
+                    var isAllFired = true
+                    var noItem = true
+                    var guestSubTotal = 0.0
+                    var totalTaxAmt: Double = 0.0
+                    var serviceChargeGu = 0.0
+                    var paidGuestCount = 0
+                    var isFirstHeader = false
+                    if (dineInList.isNotEmpty()) {
+
+                        for (i in 0 until dineInList.size) {
+                            if (dineInList.get(i).isHeader == 1 && isFirstHeader == false) {
+                                dineInList.get(i).item?.let {
+                                    if (!it.isPaid) {
+                                        guestAmt += (it.itemQuantity * it.price) - it.discountPrice
+                                        guestSubTotal += (it.itemQuantity * it.price) - it.discountPrice
+                                        if (it.modifiers.isNotEmpty()) {
+                                            it.modifiers.forEach { it ->
+
+                                                guestAmt += it.itemQuantity * it.price
+                                                guestSubTotal += it.itemQuantity * it.price
+
+                                            }
+                                        }
+
+                                        if (it.taxes?.isNotEmpty() == true) {
+                                            Log.e(TAG, "taxesList:  ${Gson().toJson(it.taxes)}")
+                                            it.taxes?.forEach { tax ->
+                                                if (tax.isActive) {
+                                                    totalTaxAmt += if (tax.taxType == "Percentage") {
+
+                                                        var modifierPrice = 0.0
+                                                        val price =
+                                                            (it.price * it.itemQuantity) - it.discountPrice
+
+                                                        it.modifiers.forEach {
+                                                            modifierPrice += (it.price * it.itemQuantity)
+                                                        }
+
+                                                        val totalPrice = price + modifierPrice
+
+                                                        val itemTaxPrice =
+                                                            (tax.rate * totalPrice) / 100
+
+                                                        String.format("%.2f", itemTaxPrice)
+                                                            .toDouble()
+                                                    } else {
+
+                                                        String.format(
+                                                            "%.2f",
+                                                            tax.rate * it.itemQuantity
+                                                        )
+                                                            .toDouble()
+                                                    }
+                                                }
+                                                guestAmt += tax.rate
+                                            }
+
+
+                                        }
+
+
+                                    }
+                                    if (!it.isPaid) {
+                                        isPaid = it.isPaid
+                                    }
+
+                                    if (!it.isFired) {
+                                        isAllFired = false
+                                    }
+                                }
+                            } else if (dineInList.get(i).isHeader == 0) {
+                                if (i == 0) {
+                                    isFirstHeader = true
+                                } else {
+                                    isFirstHeader = false
+                                }
+                                if (i != 0 && dineInList.size >= i + 1) {
+                                    if (dineInList.get(i + 1).item?.isPaid == true) {
+                                        paidGuestCount++
+                                    }
+                                }
+
+                            }
+
+
+                        }
+
+                        if (dineInList[0].serviceChargeList?.isNotEmpty() == true) {
+                            dineInList[0].serviceChargeList?.forEach {
+                                if (it.isEnabled) {
+                                    serviceChargeGu += (guestSubTotal * it.percentage) / 100
+                                }
+                            }
+
+
+                        }
+                        guestSubTotal = guestSubTotal
+
+
+                        var divShare = WholeTableAmount / ((baseResponse.guestAttributes.size - 1))
+
+                        var totalG = baseResponse.guestAttributes.size - 1
+                        var unpaidCount = totalG - paidGuestCount
+
+
+                        var myShare = unpaidCount * divShare
+
+                        var finalAmt =
+                            guestSubTotal + serviceChargeGu + totalTaxAmt + myShare
+                        viewModel.totalTaxAmount = totalAmount
+                        serviceCharge = serviceChargeGu
+                        subTotalWT = guestSubTotal + myShare
+                        finalTaxAmt = totalTaxAmt
+
+                        binding.txtTotalAmountNew.setText(MethodUtils.roundOffAmount(finalAmt))
+                    }
 
                 }
             }

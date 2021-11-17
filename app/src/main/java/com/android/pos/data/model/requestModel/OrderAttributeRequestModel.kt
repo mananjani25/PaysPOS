@@ -6,6 +6,7 @@ import com.android.pos.data.model.DineInOrderDetailAttributes
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
+
 class OrderAttributeRequestModel {
 
     @SerializedName("customer_attributes")

@@ -63,6 +63,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
 
     private var guestId: Int? = null
     private var guestRequestModel: GuestPaymentRequest? = null
+    private var splitModel: DineInOrderPayment? = null
     private var floorPlanModel: GetFloorPlanResponse.Data.FloorPlanTable? = null
     private var isLastPayment: Boolean? = false
 
@@ -117,6 +118,8 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
             guestId = requireArguments().getInt("id")
             guestRequestModel = requireArguments().getParcelable("model")
             isLastPayment = requireArguments().getBoolean("isLastPayment")
+            Log.e(TAG, "isLastPayment  ${isLastPayment}")
+            splitModel = requireArguments().getParcelable("orderPayment")
             setupData()
         }
 
@@ -557,10 +560,13 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                     guestRequestModel?.let {
                         guestId?.let { it1 ->
                             isLastPayment?.let { it2 ->
-                                viewModel.payByGuest(
-                                    it1, it,
-                                    it2
-                                )
+                                splitModel?.let { it3 ->
+                                    viewModel.payByGuest(
+                                        it1, it,
+                                        it2,
+                                        it3
+                                    )
+                                }
                             }
                         }
                     }
@@ -590,10 +596,13 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                     guestRequestModel?.let {
                         guestId?.let { it1 ->
                             isLastPayment?.let { it2 ->
-                                viewModel.payByGuest(
-                                    it1, it,
-                                    it2
-                                )
+                                splitModel?.let { it3 ->
+                                    viewModel.payByGuest(
+                                        it1, it,
+                                        it2,
+                                        it3
+                                    )
+                                }
                             }
                         }
                     }
@@ -609,10 +618,13 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                     guestRequestModel?.let {
                         guestId?.let { it1 ->
                             isLastPayment?.let { it2 ->
-                                viewModel.payByGuest(
-                                    it1, it,
-                                    it2
-                                )
+                                splitModel?.let { it3 ->
+                                    viewModel.payByGuest(
+                                        it1, it,
+                                        it2,
+                                        it3
+                                    )
+                                }
                             }
                         }
                     }
@@ -628,10 +640,13 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                     guestRequestModel?.let {
                         guestId?.let { it1 ->
                             isLastPayment?.let { it2 ->
-                                viewModel.payByGuest(
-                                    it1, it,
-                                    it2
-                                )
+                                splitModel?.let { it3 ->
+                                    viewModel.payByGuest(
+                                        it1, it,
+                                        it2,
+                                        it3
+                                    )
+                                }
                             }
                         }
                     }
@@ -646,10 +661,13 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                     guestRequestModel?.let {
                         guestId?.let { it1 ->
                             isLastPayment?.let { it2 ->
-                                viewModel.payByGuest(
-                                    it1, it,
-                                    it2
-                                )
+                                splitModel?.let { it3 ->
+                                    viewModel.payByGuest(
+                                        it1, it,
+                                        it2,
+                                        it3
+                                    )
+                                }
                             }
                         }
                     }

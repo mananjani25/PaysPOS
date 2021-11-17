@@ -8,11 +8,10 @@ import androidx.lifecycle.viewModelScope
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.entities.TbCustomer
 import com.android.pos.data.entities.TbItem
-import com.android.pos.data.model.DineInModel
+import com.android.pos.data.model.requestModel.DineInOrderPayment
 import com.android.pos.data.model.requestModel.GuestPaymentRequest
 import com.android.pos.data.model.requestModel.OrderRequestModel
 import com.android.pos.data.model.responseModel.BaseResponse
-import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.TaxServiceChargeRepository
@@ -21,7 +20,6 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
-import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -61,7 +59,7 @@ class DineInOrderTableViewModel @Inject constructor(
     var totalServiceChargeAmount = 0.0
 
 
-    fun payByGuest(id: Int, model: GuestPaymentRequest, isAllPaymentComplete: Boolean) {
+    fun payByGuest(id: Int, model: GuestPaymentRequest, isAllPaymentComplete: Boolean, orderReq: DineInOrderPayment) {
         _showProgress.value = Event(true)
         viewModelScope.launch {
             val resource: Resource<BaseResponse> =

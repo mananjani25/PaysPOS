@@ -596,7 +596,9 @@ interface ApiService {
     suspend fun payByGuest(
         @Query("id") id: Int,
         @Query("completed_all_payments") completed_all_payments: Boolean,
-        @Body guestPaymentRequest: GuestPaymentRequest
+        @Body guestPaymentRequest: GuestPaymentRequest,
+
+
     ): BaseResponse
 
 

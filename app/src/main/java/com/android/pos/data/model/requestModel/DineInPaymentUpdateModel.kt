@@ -5,9 +5,10 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class GuestPaymentRequest(
-    @SerializedName("guest") var paymentAttributes: PaymentAttributes,
-    @SerializedName("order") var  orderReq:DineInPaymentUpdateModel
+data class DineInPaymentUpdateModel(
+    @SerializedName("id")
+    var id: Int? = null,
+    @SerializedName("payment_attributes")
+    var paymentAttributes: PaymentAttributes? = null
 ):Parcelable {
-
 }
