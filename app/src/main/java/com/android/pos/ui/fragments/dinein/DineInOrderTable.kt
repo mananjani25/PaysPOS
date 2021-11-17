@@ -1064,6 +1064,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         viewModel._Basedata.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let { baseResponse ->
                 if (baseResponse != null) {
+                    subTotalWT = 0.0
+                    serviceCharge =0.0
+                    totalDiscount = 0.0
 
                     getOrderDetailsResponse = baseResponse
                     var list: ArrayList<DineInModel> = arrayListOf()
