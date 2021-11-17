@@ -8,7 +8,7 @@
 
         <variable
             name="orderDetails"
-            type="com.android.pos.data.model.responseModel.GetOrderDetailsResponse" />
+            type="com.android.pos.data.model.GetPaymentOrderDetailsResponse" />
 
         <variable
             name="viewModel"
@@ -49,7 +49,7 @@
                     android:layout_weight="1"
                     android:fontFamily="@font/sf_pro_display_medium"
                     android:gravity="center"
-                    android:text="@{`Order `+orderDetails.data.offlineId}"
+                    android:text="@{`Order `+orderDetails.data.order.offline_id}"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -153,7 +153,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/_3sdp"
                         android:gravity="end"
-                        android:text="@{``+orderDetails.data.offlineId}"
+                        android:text="@{``+orderDetails.data.order.offline_id}"
                         android:textColor="@color/viewTextColor"
                         android:textSize="@dimen/_5mdpi" />
                 </LinearLayout>
@@ -180,7 +180,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/_3sdp"
                         android:gravity="end"
-                        android:text="@{``+orderDetails.data.id}"
+                        android:text="@{``+orderDetails.data.order.id}"
                         android:textColor="@color/viewTextColor"
                         android:textSize="@dimen/_5mdpi" />
                 </LinearLayout>
@@ -207,7 +207,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/_3sdp"
                         android:gravity="end"
-                        android:text="@{orderDetails.data.paymentStatus}"
+                        android:text="@{orderDetails.data.order.payment_status}"
                         android:textColor="@color/colorGreen"
                         android:textSize="@dimen/_5mdpi" />
                 </LinearLayout>
@@ -235,7 +235,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/_3sdp"
                         android:gravity="end"
-                        android:text="@{orderDetails.data.note}"
+                        android:text="@{orderDetails.data.order.note}"
                         android:textColor="@color/viewTextColor"
                         android:textSize="@dimen/_5mdpi" />
                 </LinearLayout>
@@ -262,7 +262,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/_3sdp"
                         android:gravity="end"
-                        android:text="@{orderDetails.data.orderType}"
+                        android:text="@{orderDetails.data.order.order_type}"
                         android:textColor="@color/viewTextColor"
                         android:textSize="@dimen/_5mdpi" />
                 </LinearLayout>
@@ -289,7 +289,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/_3sdp"
                         android:gravity="end"
-                        android:text="@{orderDetails.data.employee.firstName+` `+orderDetails.data.employee.lastName}"
+                        android:text="@{orderDetails.data.order.employee}"
                         android:textColor="@color/viewTextColor"
                         android:textSize="@dimen/_5mdpi" />
                 </LinearLayout>
@@ -378,7 +378,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/_3sdp"
                         android:gravity="end"
-                        android:text="@{orderDetails.data.payments.get(0).paymentType}"
+                        android:text="@{orderDetails.data.payment_type}"
                         android:textColor="@color/viewTextColor"
                         android:textSize="@dimen/_5mdpi" />
                 </LinearLayout>
@@ -405,7 +405,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/_3sdp"
-                        android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.totalAmount)}"
+                        android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.order.total_amount)}"
                         android:textColor="@color/viewTextColor"
                         android:textSize="@dimen/_5mdpi" />
 
@@ -436,7 +436,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:padding="@dimen/_5sdp"
-                        android:text="@{`Order List ( `+orderDetails.data.orderItems.size()+` Items )`}"
+                        android:text="@{`Order List ( `+orderDetails.data.order.order_items.size()+` Items )`}"
                         android:textColor="@color/viewTextColor"
                         android:textSize="@dimen/_6mdpi" />
 
@@ -481,7 +481,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginRight="@dimen/_5sdp"
                             android:gravity="end"
-                            android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.subTotal)}"
+                            android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.order.sub_total)}"
                             android:textColor="@color/viewTextColor"
                             android:textSize="@dimen/_5mdpi" />
                     </LinearLayout>
@@ -508,7 +508,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginRight="@dimen/_5sdp"
                             android:gravity="end"
-                            android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.totalTaxAmount)}"
+                            android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.order.total_tax_amount)}"
                             android:textColor="@color/viewTextColor"
                             android:textSize="@dimen/_5mdpi" />
                     </LinearLayout>
@@ -535,7 +535,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginRight="@dimen/_5sdp"
                             android:gravity="end"
-                            android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.totalServiceCharges)}"
+                            android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.order.total_service_charges)}"
                             android:textColor="@color/viewTextColor"
                             android:textSize="@dimen/_5mdpi" />
                     </LinearLayout>
@@ -562,7 +562,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginRight="@dimen/_5sdp"
                             android:gravity="end"
-                            android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.totalTips)}"
+                            android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.order.total_tips)}"
                             android:textColor="@color/viewTextColor"
                             android:textSize="@dimen/_5mdpi" />
                     </LinearLayout>
@@ -591,7 +591,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginRight="@dimen/_5sdp"
                             android:gravity="end"
-                            android:text="@{`- `+@string/symbole +``+String.format(@string/format,orderDetails.data.totalDiscount)}"
+                            android:text="@{`- `+@string/symbole +``+String.format(@string/format,orderDetails.data.order.total_discount)}"
                             android:textColor="@color/colorRed"
                             android:textSize="@dimen/_5mdpi" />
                     </LinearLayout>
@@ -619,7 +619,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="@dimen/_5sdp"
                             android:gravity="end"
-                            android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.totalAmount)}"
+                            android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.order.total_amount)}"
                             android:textColor="@color/viewTextColor"
                             android:textSize="@dimen/_5mdpi" />
                     </LinearLayout>
@@ -648,7 +648,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginRight="@dimen/_5sdp"
                             android:gravity="end"
-                            android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.refundDetails.refundedAmount)}"
+                            android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.order.refund_detail.refunded_amount)}"
                             android:textColor="@color/colorRed"
                             android:textSize="@dimen/_5mdpi" />
                     </LinearLayout>
