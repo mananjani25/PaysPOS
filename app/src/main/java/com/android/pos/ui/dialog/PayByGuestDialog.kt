@@ -980,16 +980,22 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
 
                         // findNavController().navigate(R.id.action_payByGuestDialog_to_dashboardCategoryNew)
                     } else {
-                        val bundle = Bundle()
-                        bundle.putBoolean("isGuestPaid", true)
-                        bundle.putParcelable("floorPlan", floorPlanModel)
-                        orderId?.let { bundle.putInt("orderId", it) }
 
-                        findNavController().navigate(
-                            R.id.action_payByGuestDialog_to_dineInOrderTable,
-                            bundle
-                        )
+                        if (isLastPayment == true) {
+                            findNavController().navigate(R.id.action_payByGuestDialog_to_dashboardCategoryNew)
 
+                        } else {
+                            val bundle = Bundle()
+                            bundle.putBoolean("isGuestPaid", true)
+                            bundle.putParcelable("floorPlan", floorPlanModel)
+                            orderId?.let { bundle.putInt("orderId", it) }
+
+                            findNavController().navigate(
+                                R.id.action_payByGuestDialog_to_dineInOrderTable,
+                                bundle
+                            )
+
+                        }
                     }
                     /* val navController = findNavController()
                      navController.previousBackStackEntry?.savedStateHandle?.set(

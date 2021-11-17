@@ -49,6 +49,7 @@ import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
 class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
+    private var toFinalAmt: Double = 0.0
     private var totalTaxAmt: Double = 0.0
     private var isFireAll: Boolean = false
     private var clickedPos: Int = 0
@@ -322,20 +323,20 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             }
             // subTotal += dineInTableAdapter.getList().get(0).guestDividedAmt
 
-            var total = subTotal + totalTax
+
 
 
             var model = GuestPaymentRequest(
                 PaymentAttributes().apply {
                     amount =
-                        MethodUtils.roundOffAmountDouble(subTotalWT + serviceCharge + viewModel.totalTaxAmount)
+                        MethodUtils.roundOffAmountDouble(toFinalAmt)
                     cardName = ""
                     cardNumber = ""
                     cardType = ""
                     cashDiscount = 0.0
                     cashDiscountFee = 0.0
                     employeeId = prefProvider.getValueInt(EMPLOYEE_ID, 0)
-                    taxAmount = MethodUtils.roundOffAmountDouble(viewModel.totalTaxAmount)
+                    taxAmount = MethodUtils.roundOffAmountDouble(finalTaxAmt)
                     subTotalPrice = MethodUtils.roundOffAmountDouble(subTotalWT)
                     offlineId = randomOfflineId()
                     payableType = "GuestTab"
@@ -352,18 +353,18 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             val bundle = Bundle()
             bundle.putDouble(
                 "totalPrice",
-                MethodUtils.roundOffAmountDouble(subTotalWT + serviceCharge + viewModel.totalTaxAmount - viewModel.totalDiscountAmount)
+                MethodUtils.roundOffAmountDouble(toFinalAmt)
             )
             bundle.putDouble(
                 "subTotalPrice",
-                MethodUtils.roundOffAmountDouble(subTotalWT - viewModel.totalDiscountAmount)
+                MethodUtils.roundOffAmountDouble(subTotalWT )
             )
-            bundle.putDouble("totalTax", MethodUtils.roundOffAmountDouble(viewModel.totalTaxAmount))
+            bundle.putDouble("totalTax", MethodUtils.roundOffAmountDouble(finalTaxAmt))
             bundle.putParcelable("model", model)
             bundle.putParcelable("floorPlan", floorPlanModel)
             bundle.putBoolean("isTotalPayment", true)
             bundle.putDouble("totalServiceCharge", MethodUtils.roundOffAmountDouble(serviceCharge))
-            bundle.putDouble("totalDiscount", viewModel.totalDiscountAmount)
+            bundle.putDouble("totalDiscount", totalDiscount)
             bundle.putBoolean("isTotalPayment", true)
             bundle.putBoolean("isLastPayment", true)
 
@@ -559,7 +560,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         )
         txtDiscount.text = "- $" + String.format(
             "%.2f",
-            viewModel.totalDiscountAmount
+            totalDiscount
         )
         txtTotalAmount.text = binding.txtTotalAmountNew.text.toString()
         txtTotalTax.text = "$" + String.format(
@@ -1400,12 +1401,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         if (it.isHeader == 1 && !it.isPaid) {
                             it.item?.let { it1 ->
                                 viewModel.taxCalculation(it1)
-                                viewModel.discountCalculation(it1)
+                                 totalDiscount=it1.discountPrice
                             }
 
                         }
                     }
-                    viewModel.totalDiscountAmount += baseResponse.totalDiscount
+                    totalDiscount += baseResponse.totalDiscount
 
                     val totalAmoountTxt =
                         MethodUtils.roundOffAmount(subTotalWT + serviceCharge + viewModel.totalTaxAmount - baseResponse.totalDiscount)
@@ -1631,6 +1632,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         finalTaxAmt = totalTaxAmt
 
                         binding.txtTotalAmountNew.setText(MethodUtils.roundOffAmount(finalAmt))
+
+                        toFinalAmt = finalAmt
+
                     }
 
                 }
