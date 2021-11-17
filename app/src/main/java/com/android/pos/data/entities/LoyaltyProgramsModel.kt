@@ -15,13 +15,13 @@ data class LoyaltyProgramsModel(
     @SerializedName("id")
     val id: Int,
     @SerializedName("is_enable")
-    val isEnable: Boolean,
+    var isEnable: Boolean = false,
     @SerializedName("location_id")
     val locationId: Int,
     @SerializedName("name")
     val name: String,
     @SerializedName("reward_point")
-    val rewardPoint: Int,
+    val rewardPoint: Double,
     @SerializedName("reward_type")
     val rewardType: String,
     @SerializedName("updated_at")

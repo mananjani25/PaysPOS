@@ -109,6 +109,9 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun getServiceChargeList() =
         getResult { apiService.getServiceChargeList() }
 
+    suspend fun loyaltyPointList() =
+        getResult { apiService.loyaltyPointList() }
+
     suspend fun createServiceCharge(data: CreateServiceChargeRequestModel) =
         getResult { apiService.createServiceCharge(data) }
 
@@ -118,8 +121,14 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun serChargeActive(serChargeId: Int, active: Boolean) =
         getResult { apiService.serviceChargeActive(serChargeId, active) }
 
+    suspend fun loyaltyPointActive(serChargeId: Int, active: Boolean) =
+        getResult { apiService.loyaltyPointActive(serChargeId, active) }
+
     suspend fun deleteServiceCharge(serviceChargeId: Int) =
         getResult { apiService.deleteServiceCharge(serviceChargeId) }
+
+    suspend fun deleteLoyaltyPoint(serviceChargeId: Int) =
+        getResult { apiService.deleteLoyaltyPoint(serviceChargeId) }
 
     suspend fun getTeamRoleList() =
         getResult { apiService.getTeamRoles() }

@@ -24,6 +24,7 @@ import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.BusinessSettingAdapter
 import com.android.pos.ui.fragments.settings.discount.DiscountList
 import com.android.pos.ui.fragments.settings.hardware.Hardware
+import com.android.pos.ui.fragments.settings.loyaltypoints.LoyaltyPointFragment
 import com.android.pos.ui.fragments.settings.teamrole.TeamMemberSettings
 import com.android.pos.ui.fragments.settings.notes.Notes
 import com.android.pos.ui.fragments.settings.servicecharge.ServiceChargeList
@@ -261,6 +262,7 @@ class Settings : Fragment() {
         list.add(BusinessSettingModel(0, "Discount", false))
         list.add(BusinessSettingModel(0, "Notes", false))
         list.add(BusinessSettingModel(0, "Service Charge", false))
+        list.add(BusinessSettingModel(0, "Loyalty Points", false))
         for (i in 0 until list.size) {
             if (selectedPos == i) {
                 list[i].isSelected = true
@@ -272,23 +274,23 @@ class Settings : Fragment() {
 
         when (selectedPos) {
             0 -> {
-                binding.commonToolbar.txtSubTitle.setText("Taxes")
+                binding.commonToolbar.txtSubTitle.text = "Taxes"
                 val taxFrag: Fragment = TaxesList()
                 loadFragment(taxFrag)
             }
             1 -> {
-                binding.commonToolbar.txtSubTitle.setText("Tips")
+                binding.commonToolbar.txtSubTitle.text = "Tips"
                 val tips: Fragment = TipsList()
                 loadFragment(tips)
 
             }
             2 -> {
-                binding.commonToolbar.txtSubTitle.setText("Order Receipts")
+                binding.commonToolbar.txtSubTitle.text = "Order Receipts"
                 val orderReceipts = OrderReceipt()
                 loadFragment(orderReceipts)
             }
             3 -> {
-                binding.commonToolbar.txtSubTitle.setText("Discount")
+                binding.commonToolbar.txtSubTitle.text = "Discount"
                 val discount: Fragment = DiscountList()
                 loadFragment(discount)
 
@@ -296,14 +298,20 @@ class Settings : Fragment() {
             }
             4 -> {
 
-                binding.commonToolbar.txtSubTitle.setText("Notes")
+                binding.commonToolbar.txtSubTitle.text = "Notes"
                 val notes: Fragment = Notes()
                 loadFragment(notes)
 
             }
             5 -> {
-                binding.commonToolbar.txtSubTitle.setText("Service Charge")
+                binding.commonToolbar.txtSubTitle.text = "Service Charge"
                 val service: Fragment = ServiceChargeList()
+                loadFragment(service)
+
+            }
+            6 -> {
+                binding.commonToolbar.txtSubTitle.text = "Loyalty Points"
+                val service: Fragment = LoyaltyPointFragment()
                 loadFragment(service)
 
             }
@@ -350,6 +358,12 @@ class Settings : Fragment() {
                         binding.commonToolbar.txtSubTitle.setText("Service Charge")
                         val service: Fragment = ServiceChargeList()
                         loadFragment(service)
+                    }
+                    6 -> {
+                        binding.commonToolbar.txtSubTitle.text = "Loyalty Points"
+                        val service: Fragment = LoyaltyPointFragment()
+                        loadFragment(service)
+
                     }
 
                 }

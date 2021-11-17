@@ -44,6 +44,9 @@ import com.android.pos.data.remote.Constants.KITCHEN_RECEIPT_SETTINGS
 import com.android.pos.data.remote.Constants.KITCHEN_RECEIPT_UPDATE_SEETINGS
 import com.android.pos.data.remote.Constants.LOGIN_TERMINAL
 import com.android.pos.data.remote.Constants.LOGOUT
+import com.android.pos.data.remote.Constants.LOYALTY_POINT
+import com.android.pos.data.remote.Constants.LOYALTY_POINT_ACTIVE
+import com.android.pos.data.remote.Constants.LOYALTY_POINT_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.MODIFIER
 import com.android.pos.data.remote.Constants.MODIFIER_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.NOTES
@@ -236,6 +239,9 @@ interface ApiService {
     @GET(SERVICE_CHARGE)
     suspend fun getServiceChargeList(): GetServiceChargeResponse
 
+    @GET(LOYALTY_POINT)
+    suspend fun loyaltyPointList(): LoyaltyPointResponse
+
     @POST(SERVICE_CHARGE)
     suspend fun createServiceCharge(@Body createDiscount: CreateServiceChargeRequestModel): CreateServiceChargeResponse
 
@@ -251,12 +257,21 @@ interface ApiService {
         @Query("is_enabled") is_active: Boolean
     ): CreateServiceChargeResponse
 
+    @PUT(LOYALTY_POINT_ACTIVE)
+    suspend fun loyaltyPointActive(
+        @Path("id") serviceChargeId: Int,
+        @Query("is_enabled") is_active: Boolean
+    ): BaseResponse
 
     @DELETE(SERVICE_CHARGE_UPDATE_DELETE)
     suspend fun deleteServiceCharge(
         @Path("id") discountId: Int
     ): CreateServiceChargeResponse
 
+    @DELETE(LOYALTY_POINT_UPDATE_DELETE)
+    suspend fun deleteLoyaltyPoint(
+        @Path("id") discountId: Int
+    ): BaseResponse
 
     @GET(NOTES)
     suspend fun getNoteList(): NoteResponse
