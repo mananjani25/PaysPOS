@@ -69,9 +69,9 @@ class TransactionViewModel @Inject constructor(
 
     /* val getEmployeesTimeSheet =
          posRepository.employeesTimeSheet(startDate.value.toString(), endDate.value.toString(),roleId)*/
-    val getTeamRoleList = taxServiceChargeRepository.getTeamRoleList()
-    val employeeData = posRepository.employeesList(locationId)
-    val orderTypes = posRepository.orderTypes()
+    val getTeamRoleList = taxServiceChargeRepository.getTeamRoleListFromDatabase()
+    val employeeData = posRepository.getEmployeeListLocationWiseDatabse(locationId)
+    val orderTypes = posRepository.orderTypesfromDatabase()
 
     fun setCurrentDate(myCalendar: Calendar) {
         val myFormat = "MM/dd/yyyy" //In which you need put here

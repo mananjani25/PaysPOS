@@ -24,6 +24,10 @@ data class CreateCustomerRequestModel(
         var birthday_year: String = "",
         @SerializedName("email")
         var email: String? = "",
+        @SerializedName("enroll_to_loyalty")
+        var enroll_to_loyalty: Boolean? = false,
+        @SerializedName("final_reward")
+        var final_reward: Int? = 0,
         @SerializedName("phones_attributes")
         var phones_attributes: ArrayList<Phone>? = arrayListOf(),
         @SerializedName("addresses_attributes")

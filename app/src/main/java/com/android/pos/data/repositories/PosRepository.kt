@@ -283,6 +283,11 @@ class PosRepository @Inject constructor(
     fun getEmployeeListDatabse() =
         performGetOperationDatabase(databaseQuery = { appDatabase.employeeDao().allEmployee })
 
+    fun getEmployeeListLocationWiseDatabse(locationId: Int) =
+        performGetOperationDatabase(databaseQuery = {
+            appDatabase.employeeDao().allEmployeeLocationWise(locationId)
+        })
+
     fun getORderTypesListDatabase() =
         performGetOperationDatabase(databaseQuery = { appDatabase.orderTypeDao().orderTypes })
 
@@ -308,10 +313,15 @@ class PosRepository @Inject constructor(
     fun orderTypes() = performGetOperation(
         databaseQuery = {
             appDatabase.orderTypeDao().orderTypes
-
         },
         networkCall = { apiHelperNew.orderTypes() },
         saveCallResult = { appDatabase.orderTypeDao().addAll(it.data) })
+
+    fun orderTypesfromDatabase() = performGetOperationDatabase(
+        databaseQuery = {
+            appDatabase.orderTypeDao().orderTypes
+        }
+    )
 
     suspend fun createEmployee(data: CreateEmployeeRequestModel) = apiHelperNew.createEmployee(data)
 
@@ -329,6 +339,7 @@ class PosRepository @Inject constructor(
 
     suspend fun deleteCustomerDataBase(id: Int?) =
         appDatabase.customerDao().deleteCustomerByID(id)
+
 
     suspend fun createCustomer(data: CreateCustomerRequestModel) =
         apiHelperNew.createCustomer(data)

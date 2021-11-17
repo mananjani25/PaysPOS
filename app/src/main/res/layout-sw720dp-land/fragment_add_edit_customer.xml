@@ -506,6 +506,31 @@
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_5mdpi" />
 
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/_15sdp"
+                        android:text="@string/enroll_to_loyalty"
+                        android:textColor="@color/color65"
+                        android:layout_marginBottom="@dimen/_20sdp"
+                        android:textSize="@dimen/_5mdpi" />
+
+                    <CheckBox
+                        android:id="@+id/chkIsLoyalty"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="@={viewModel.addCustomerDetails.data.enroll_to_loyalty}"
+                        android:gravity="center" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
 
