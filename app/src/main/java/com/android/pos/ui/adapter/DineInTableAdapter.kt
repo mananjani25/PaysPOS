@@ -318,7 +318,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
             }
 
-
+            binding.txtEmpName.text = list[bindingAdapterPosition].empName
             binding.model = model.item
             binding.executePendingBindings()
 

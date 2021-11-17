@@ -1266,6 +1266,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                                     itemDineIn.isHeader = 1
                                     itemDineIn.item = item
+                                    itemDineIn.empName = baseResponse.floorPlanTable.lockByName.toString()
 
                                     dineInList.add(itemDineIn)
 

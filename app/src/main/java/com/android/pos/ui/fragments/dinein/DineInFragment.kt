@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.navigation.fragment.findNavController
 import com.android.pos.data.model.responseModel.GetFloorPlanResponse
+import com.android.pos.data.remote.Constants.AVAILABLE
 import com.android.pos.data.remote.Constants.DINE_IN_STATUS
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.OCCUPIED
@@ -170,7 +171,7 @@ class DineInFragment : Fragment() {
 
                         paramsSquare.leftMargin = dineInFloorTablesList[i].xPosition.toInt().toDp()
                         paramsSquare.topMargin = dineInFloorTablesList[i].yPosition.toInt().toDp()
-                        if (dineInFloorTablesList[i].currentOrderDetails != null) {
+                        if (dineInFloorTablesList[i].status == OCCUPIED) {
                             llMainParentSquare.background =
                                 resources.getDrawable(R.drawable.background_drawer_button_green)
                         } else {
@@ -223,7 +224,7 @@ class DineInFragment : Fragment() {
                         paramsRound.leftMargin = dineInFloorTablesList[i].xPosition.toInt().toDp()
                         paramsRound.topMargin = dineInFloorTablesList[i].yPosition.toInt().toDp()
                         // binding.flFloorPlan.removeAllViews()
-                        if (dineInFloorTablesList[i].currentOrderDetails != null) {
+                        if (dineInFloorTablesList[i].status == OCCUPIED) {
                             llMainParentRound.background =
                                 resources.getDrawable(R.drawable.bg_circle_name_green)
 
@@ -248,7 +249,8 @@ class DineInFragment : Fragment() {
     private fun clickInInflatedLayout(): View.OnClickListener {
         return View.OnClickListener { v ->
             val dineInFloorTableModel = v.tag as GetFloorPlanResponse.Data.FloorPlanTable
-            if (dineInFloorTableModel.currentOrderDetails != null) {
+            if (dineInFloorTableModel.status == OCCUPIED && dineInFloorTableModel.currentOrderDetails != null
+            ) {
                 if (dineInFloorTableModel.currentOrderDetails.employeeId == prefProvider.getValueInt(
                         EMPLOYEE_ID, 0
                     )
@@ -263,7 +265,8 @@ class DineInFragment : Fragment() {
                         bundle
                     )
                 }
-            } else {
+
+            } else if (dineInFloorTableModel.status == AVAILABLE) {
 
                 val bundle = Bundle()
                 bundle.putParcelable("dineInFloorTableObject", dineInFloorTableModel)
