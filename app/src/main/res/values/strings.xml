@@ -606,10 +606,10 @@
     <string name="order_id_nstatus">Order ID &amp; Status</string>
     <string name="date_time">Date/ Time</string>
     <string name="order_details">Order Details</string>
-    <string name="total_nearned_nloyality_points">Total\nEarned\nLoyality Points</string>
+    <string name="total_nearned_nloyality_points">Loyalty Points</string>
     <string name="reorder">Reorder</string>
     <string name="pay_type">Amount &amp; Pay Type</string>
-    <string name="enroll_to_loyalty">Enroll to Loyalty</string>
+    <string name="enroll_to_loyalty">Enroll to Loyalty Program</string>
 
 
 </resources>
