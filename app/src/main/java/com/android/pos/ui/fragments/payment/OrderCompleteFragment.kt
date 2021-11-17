@@ -136,6 +136,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             splitValue = requireArguments().getInt("splitValue")
             remainingAmount = requireArguments().getDouble("remainingAmount")
 
+
             Log.e("remainingAmount", remainingAmount.toString())
 
             binding.txtRemainingAmount.text =
@@ -967,23 +968,25 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     Builder.COLOR_1
                 )
                 var totalAmt = MethodUtils.roundOffAmountDouble(receiptModel?.order?.totalAmount!!)
-               /* if (receiptModel?.order?.totalDiscount != 0.0) {
-                    totalAmt =
-                        (totalAmt - MethodUtils.roundOffAmountDouble(receiptModel?.order?.totalDiscount!!))
+                /* if (receiptModel?.order?.totalDiscount != 0.0) {
+                     totalAmt =
+                         (totalAmt - MethodUtils.roundOffAmountDouble(receiptModel?.order?.totalDiscount!!))
 
-                }*/
+                 }*/
 
-                builder.addText(
-                    padLine(
-                        "Total Price",
-                        "$" + MethodUtils.roundOffAmountString(totalAmt),
-                        if (customerSettingModel.fonts == LARGE) {
-                            24
-                        } else {
-                            48
-                        }
+
+                    builder.addText(
+                        padLine(
+                            "Total Price",
+                            "$" + MethodUtils.roundOffAmountString(totalAmt),
+                            if (customerSettingModel.fonts == LARGE) {
+                                24
+                            } else {
+                                48
+                            }
+                        )
                     )
-                )
+
 
             }
 
@@ -1014,6 +1017,37 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     )
                 )
             }
+
+
+            if (isSpilt) {
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+
+                builder.addTextFont(Builder.FONT_E)
+                // builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+
+                builder.addText(
+                    padLine(
+                        "Remaining Amount",
+                        "$" + MethodUtils.roundOffAmountString(remainingAmount),
+                        if (customerSettingModel.fonts == LARGE) {
+                            24
+                        } else {
+                            48
+                        }
+                    )
+                )
+            }
+
+
 
             if (receiptModel?.order?.totalTips == 0.0) {
                 builder.addFeedLine(1)
