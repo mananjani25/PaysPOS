@@ -50,7 +50,7 @@ data class CreateCustomerRequestModel(
             @SerializedName("state")
             var state: String = "",
             @SerializedName("country")
-            var country: String = "",
+            var country: String? = "",
             @SerializedName("postcode")
             var postcode: String = "",
             @SerializedName("type_of_address")

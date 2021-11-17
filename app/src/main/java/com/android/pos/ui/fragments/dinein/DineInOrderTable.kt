@@ -280,7 +280,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 "totalPrice",
                 MethodUtils.roundOffAmountDouble(subTotalWT + serviceCharge + viewModel.totalTaxAmount - viewModel.totalDiscountAmount)
             )
-            bundle.putDouble("subTotalPrice", MethodUtils.roundOffAmountDouble(subTotalWT - viewModel.totalDiscountAmount))
+            bundle.putDouble(
+                "subTotalPrice",
+                MethodUtils.roundOffAmountDouble(subTotalWT - viewModel.totalDiscountAmount)
+            )
             bundle.putDouble("totalTax", MethodUtils.roundOffAmountDouble(viewModel.totalTaxAmount))
             bundle.putParcelable("model", model)
             bundle.putParcelable("floorPlan", floorPlanModel)
@@ -1266,8 +1269,14 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     Log.e(TAG, "WTSubTotal:  ${WTSubTotal}")
                     Log.e(TAG, "WTTaxes:  ${WTTaxes}")
                     Log.e(TAG, "WTServiceCharge:  ${WTServiceCharge}")
+                    Log.e(TAG, "totalDiscount:  ${baseResponse.totalDiscount}")
+                    Log.e(TAG, "itemsDiscount:  ${itemsDiscount}")
+                    var orderDiscount = 0.0
+                    if (baseResponse.totalDiscount >= itemsDiscount) {
+                        orderDiscount = baseResponse.totalDiscount - itemsDiscount
+                    }
                     dineInList.get(0).guestDividedAmt =
-                        MethodUtils.roundOffAmountDouble((WTSubTotal + WTTaxes + WTServiceCharge) / (baseResponse.guestAttributes.size - 1))
+                        MethodUtils.roundOffAmountDouble((WTSubTotal + WTTaxes + WTServiceCharge - orderDiscount) / (baseResponse.guestAttributes.size - 1))
 
 
                     var service: Double = 0.0

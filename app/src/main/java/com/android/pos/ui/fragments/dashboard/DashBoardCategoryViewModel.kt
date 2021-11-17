@@ -10,6 +10,7 @@ import com.android.pos.data.model.DineInModel
 import com.android.pos.data.model.DineInOrderDetailAttributes
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.CreateOrderResponse
+import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ADD
 import com.android.pos.data.remote.Constants.BUSINESS_NAME
@@ -59,6 +60,10 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     private val _updateOrder = MutableLiveData<Event<Any?>>()
     val updateOrder: LiveData<Event<Any?>> = _updateOrder
+
+    fun getCustomerReceiptSettings() = posRepository.getCustomerReceiptSettings()
+
+    fun getKitchenReceiptSettings() = posRepository.getKitchenReceiptSettings()
 
 
     fun venueDataLocal(): LiveData<Resource<List<CategoryWithInventory?>>> {
@@ -133,6 +138,10 @@ class DashBoardCategoryViewModel @Inject constructor(
 
         }
 
+    }
+
+    fun getKitchenPrinterList(): LiveData<Resource<List<PrinterResponse.Data.KitchenReceiptPrinters>>> {
+        return posRepository.getKitchenPrinters()
     }
 
     fun cartLogic(
@@ -1403,14 +1412,21 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     it.data.businessWebsite.toString()
                                 )
 
+                                taxServiceChargeRepository.deleteTaxFromDb()
                                 taxServiceChargeRepository.addAllTaxDatabase(it.data.taxes)
-
+                                posRepository.deleteNotesFromDb()
                                 posRepository.addAllNotesDatabase(it.data.notes)
+                                tipDiscountRepository.deleteDiscountsFromDb()
                                 tipDiscountRepository.addDiscount(it.data.discounts)
+                                taxServiceChargeRepository.deleteServiceChargesFromDb()
                                 taxServiceChargeRepository.addServiceCharges(it.data.service_charges)
+                                posRepository.deleteTerminalsFromDb()
                                 posRepository.addTerminalsDatabase(it.data.terminals)
+                                tipDiscountRepository.deleteTipsFromDb()
                                 tipDiscountRepository.addTips(it.data.tip_settings)
+                                posRepository.deleteCustomerReceiptSettingsFromDb()
                                 posRepository.addCustomerReceiptSettings(it.data.customerReceipt)
+                                posRepository.deleteKitchenReceiptSettingsFromDb()
                                 posRepository.addKitchenReceiptSettings(it.data.kitchenReceipt)
 
                             }

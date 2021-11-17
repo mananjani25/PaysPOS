@@ -146,7 +146,8 @@ class TransactionDetailsFragment : Fragment() {
                 }
 
                 if (orderDetailsResponse.data.orderType.equals("Open Order", ignoreCase = true) &&
-                    orderDetailsResponse.data.paymentStatus.equals("unpaid", ignoreCase = true)
+                    (orderDetailsResponse.data.paymentStatus.equals("unpaid", ignoreCase = true) ||
+                            orderDetailsResponse.data.paymentStatus.equals("cancelled", ignoreCase = true))
                 ) {
                     binding.tvIssueRefund.visibility = View.GONE
                 }

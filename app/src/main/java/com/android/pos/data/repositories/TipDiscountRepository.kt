@@ -20,6 +20,10 @@ class TipDiscountRepository @Inject constructor(
         networkCall = { apiHelperNew.getTipsList() },
         saveCallResult = { appDatabase.tipDao().addAllTips(it.data) })
 
+    suspend fun deleteTipsFromDb() {
+        appDatabase.tipDao().delete()
+    }
+
     suspend fun addTips(tipSettings: List<GetTipReponse.Data>) {
         appDatabase.tipDao().addAllTips(tipSettings)
     }
@@ -46,6 +50,10 @@ class TipDiscountRepository @Inject constructor(
         databaseQuery = { appDatabase.discountDao().allDiscount },
         networkCall = { apiHelperNew.getDiscountsList() },
         saveCallResult = { appDatabase.discountDao().addAllDiscount(it.data) })
+
+    suspend fun deleteDiscountsFromDb() {
+        appDatabase.discountDao().delete()
+    }
 
     suspend fun addDiscount(list: List<TbDiscount>) {
         appDatabase.discountDao().addDiscounts(list)

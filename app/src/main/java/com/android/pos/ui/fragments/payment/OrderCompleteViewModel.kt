@@ -47,6 +47,7 @@ class OrderCompleteViewModel @Inject constructor(
 
     fun getKitchenReceiptSettings() = posRepository.getKitchenReceiptSettings()
 
+
     fun submit(type: String, email: String, phoneNumber: String, orderID: Int) {
 
 

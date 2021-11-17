@@ -34,6 +34,8 @@ object Constants {
     const val EMPLOYEE_ROLE = "employee_role"
     const val UPDATE = "UPDATE"
     const val DELETE = "DELETE"
+    const val PRINT_PAID = "PrintPaid"
+    const val PRINT_UNPAID = "PrintUnpaid"
     const val DINE_IN_LIST_EDIT = "DineInListEdit"
     const val ADD = "ADD"
     const val ORDER_TYPE_ID = "order_type_id"
@@ -55,6 +57,7 @@ object Constants {
     const val DINE_IN_UPDATE = "DineInUpdate"
     const val DINE_IN_ITEM = "DineInItem"
     const val OPEN_ORDER = "OpenOrder"
+    const val OPEN_ORDER_ = "Open Order"
     const val DINE_IN_STATUS = "DineInStatus"
     const val DINE_IN_TABLE_ID = "DineInTableId"
 

@@ -99,6 +99,8 @@ data class OpenOrderResponse(
             val totalTaxAmount: Double,
             @SerializedName("total_tips")
             val totalTips: Double,
+            @SerializedName("digital_receipt_url")
+            val digitalReceiptUrl: String,
             @SerializedName("updated_at")
             val updatedAt: String,
             var isCheck: Boolean = false
@@ -204,6 +206,7 @@ data class OpenOrderResponse(
                     val taxId: Int,
                     @SerializedName("tax_total_amount")
                     val taxTotalAmount: Double,
+
                     @SerializedName("updated_at")
                     val updatedAt: String
                 )
