@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-class Option : Parcelable {
+class Option : Parcelable, Cloneable {
 
     @SerializedName("id")
     var id: Int? = null
@@ -21,5 +21,10 @@ class Option : Parcelable {
 
     @SerializedName("_destroy")
     var _destroy: Boolean = false
+
+    @Throws(CloneNotSupportedException::class)
+    public override fun clone(): Any {
+        return super.clone()
+    }
 
 }

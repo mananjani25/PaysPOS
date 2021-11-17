@@ -218,7 +218,7 @@ class MethodUtils {
 
         var mLastClickTime = 0L
 
-        fun isOpenRecently(): Boolean{
+        fun isDoubleClick(): Boolean{
             if (SystemClock.elapsedRealtime() - mLastClickTime < 1000) {
                 return true
             }

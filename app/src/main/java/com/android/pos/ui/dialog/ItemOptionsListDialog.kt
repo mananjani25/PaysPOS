@@ -313,6 +313,8 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
                 return
             } else {
                 selectedOptionSetNameAdapter.addOptions(itemOptionList[position])
+
+                loadAllOptionsFromOriginalList(position)
                 Log.d("options", "::" + itemOptionList[position].options)
 
                 variationList.add(itemOptionList[position].options)
@@ -330,6 +332,22 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
         }
         spinnerTouched = false
 
+    }
+
+    private fun loadAllOptionsFromOriginalList(position: Int) {
+        if (position >= 0 && itemOptionList.size > 0 && itemOptionList.size > position) {
+            val id = itemOptionList[position].id
+            for (optionSet in itemOptionListCopy) {
+                if (optionSet.id == id) {
+                    itemOptionList[position].options = emptyList()
+                    val newOptionList = arrayListOf<Option>()
+                    optionSet.options.forEach {
+                        newOptionList.add(it.clone() as Option)
+                    }
+                    itemOptionList[position].options = newOptionList
+                }
+            }
+        }
     }
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
