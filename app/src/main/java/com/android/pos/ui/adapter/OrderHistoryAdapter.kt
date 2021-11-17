@@ -49,7 +49,7 @@ class OrderHistoryAdapter :
             //loyalty points
             if (enrolltrueloyalty) {
                 binding.txtLoyaltyPoints.visibility = View.VISIBLE
-                binding.txtLoyaltyPoints.text = finalreward
+                binding.txtLoyaltyPoints.text = "" + order.order_loyalty_points
             } else {
                 binding.txtLoyaltyPoints.visibility = View.GONE
 
