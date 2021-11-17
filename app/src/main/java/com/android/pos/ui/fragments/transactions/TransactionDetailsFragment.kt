@@ -117,7 +117,7 @@ class TransactionDetailsFragment : Fragment() {
         }
 
         binding.txtPrintReceipt.setOnClickListener {
-            getCustomerPrinters()
+         //   getCustomerPrinters()
 
         }
 
@@ -179,9 +179,15 @@ class TransactionDetailsFragment : Fragment() {
                     binding.tvIssueRefund.visibility = View.GONE
                 }
 
-                if (orderDetailsResponse.data.orderType.equals("Open Order", ignoreCase = true) &&
-                    (orderDetailsResponse.data.paymentStatus.equals("unpaid", ignoreCase = true) ||
-                            orderDetailsResponse.data.paymentStatus.equals(
+                if (paymentDetailsResponse.data.order.open_order_type.equals(
+                        "Open Order",
+                        ignoreCase = true
+                    ) &&
+                    (paymentDetailsResponse.data.order.open_order_type.equals(
+                        "unpaid",
+                        ignoreCase = true
+                    ) ||
+                            paymentDetailsResponse.data.order.open_order_type.equals(
                                 "cancelled",
                                 ignoreCase = true
                             ))

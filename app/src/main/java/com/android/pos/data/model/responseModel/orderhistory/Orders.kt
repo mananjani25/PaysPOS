@@ -19,5 +19,7 @@ data class Orders(
     @SerializedName("short_receipt_url")
     val shortReceiptUrl: String?,
     @SerializedName("total")
-    val total: Double?
+    val total: Double?,
+    @SerializedName("order_loyalty_points")
+    val order_loyalty_points: Double?
 )
