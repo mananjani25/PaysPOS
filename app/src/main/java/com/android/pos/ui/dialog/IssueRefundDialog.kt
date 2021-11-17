@@ -191,13 +191,13 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
         refundItemListAdapter.selectedItemList().forEach { it ->
             subTotalPrice = 0.0
             if (it.isChecked) {
-                subTotalPrice += it.total_price - it.discount_amount
+                subTotalPrice += it.totalPrice - it.discountAmount
 
-                it.order_item_taxes.forEach { tax ->
-                    totalTax += tax.tax_total_amount
+                it.orderItemTaxes.forEach { tax ->
+                    totalTax += tax.taxTotalAmount
                 }
 
-                it.order_item_modifiers.forEach { modifiers ->
+                it.orderItemModifiers.forEach { modifiers ->
                     subTotalPrice += (modifiers.price * modifiers.quantity)
                 }
 
@@ -208,8 +208,8 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                 RefundRequestModel.PaymentRefund.OrderItemRefundsAttribute()
 
             orderItemRefundsAttributeModel.amount = subTotalPrice
-            orderItemRefundsAttributeModel.employeeId = it.employee_id
-            orderItemRefundsAttributeModel.orderId = it.order_id
+            orderItemRefundsAttributeModel.employeeId = it.employeeId
+            orderItemRefundsAttributeModel.orderId = it.orderId
             orderItemRefundsAttributeModel.refundType = 0
             orderItemRefundsAttributeModel.paymentId = paymentId
             orderItemRefundsAttributeModel.orderItemId = it.id

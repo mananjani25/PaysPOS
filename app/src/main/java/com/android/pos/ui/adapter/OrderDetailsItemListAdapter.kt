@@ -15,7 +15,7 @@ import kotlin.math.roundToInt
 class OrderDetailsItemListAdapter :
     RecyclerView.Adapter<OrderDetailsItemListAdapter.MyViewHolder>() {
 
-    var taxList = ArrayList<GetPaymentOrderDetailsResponse.Data.Order.Order_items>()
+    var taxList = ArrayList<GetOrderDetailsResponse.Data.OrderItem>()
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -31,12 +31,12 @@ class OrderDetailsItemListAdapter :
         val itemBinding = holder.taxItemBinding
 
         val context = itemBinding.root.context
-        itemBinding.tvItemName.text = taxList[position].item_name
+        itemBinding.tvItemName.text = taxList[position].itemName
         itemBinding.tvQuantity.text = "x" + taxList[position].quantity
 
         var totalPrice = taxList[position].price * taxList[position].quantity
         var modifierPrices = 0
-        taxList[position].order_item_modifiers.forEach {
+        taxList[position].orderItemModifiers.forEach {
             modifierPrices = ((it.price * it.quantity).roundToInt())
         }
         totalPrice += modifierPrices
@@ -46,7 +46,7 @@ class OrderDetailsItemListAdapter :
             totalPrice
         )
 
-        val modifierNames = taxList[position].order_item_modifiers.map {
+        val modifierNames = taxList[position].orderItemModifiers.map {
             it.name + " (" + itemBinding.root.context.getString(R.string.symbole) + " " + String.format(
                 itemBinding.root.context.getString(
                     R.string.format
@@ -66,7 +66,7 @@ class OrderDetailsItemListAdapter :
 
     override fun getItemCount() = taxList.size
 
-    fun addOrderDetailsItems(taxList: List<GetPaymentOrderDetailsResponse.Data.Order.Order_items>) {
+    fun addOrderDetailsItems(taxList: List<GetOrderDetailsResponse.Data.OrderItem>) {
 
         this.taxList.apply {
             clear()

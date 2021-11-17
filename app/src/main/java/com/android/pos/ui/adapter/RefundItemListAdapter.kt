@@ -16,8 +16,8 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
     RecyclerView.Adapter<RefundItemListAdapter.MyViewHolder>() {
 
     var showItemSubTotal: (() -> Unit)? = null
-    var selectedItemList = ArrayList<GetPaymentOrderDetailsResponse.Data.Order.Order_items>()
-    var noteList = ArrayList<GetPaymentOrderDetailsResponse.Data.Order.Order_items>()
+    var selectedItemList = ArrayList<GetOrderDetailsResponse.Data.OrderItem>()
+    var noteList = ArrayList<GetOrderDetailsResponse.Data.OrderItem>()
     var serviceCharge:Double=0.0
 
     override fun onCreateViewHolder(
@@ -30,7 +30,7 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
     }
 
     fun addItems(
-        noteList: List<GetPaymentOrderDetailsResponse.Data.Order.Order_items>,
+        noteList: List<GetOrderDetailsResponse.Data.OrderItem>,
         serviceCharge:Double
     ) {
         this.noteList.apply {
@@ -55,12 +55,12 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
 
     inner class MyViewHolder(val itemBinding: ViewRefundItemBinding) :
         RecyclerView.ViewHolder(itemBinding.root) {
-        fun bind(item: GetPaymentOrderDetailsResponse.Data.Order.Order_items) {
+        fun bind(item: GetOrderDetailsResponse.Data.OrderItem) {
             itemBinding.refundItemListModel = item
 
-            itemBinding.tvItemName.text = item.item_name
+            itemBinding.tvItemName.text = item.itemName
 
-            val modifierNames = item.order_item_modifiers.map {
+            val modifierNames = item.orderItemModifiers.map {
                 it.name + " (" + itemBinding.root.context.getString(R.string.symbole) + " " + String.format(
                     itemBinding.root.context.getString(
                         R.string.format
@@ -79,19 +79,19 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
             var totalTax = 0.0
             var totalServiceCharge = 0.0
 
-            var totalItemPrice:Double = (item.total_price - item.discount_amount).toDouble()
+            var totalItemPrice:Double = (item.totalPrice - item.discountAmount).toDouble()
 
 
-            item.order_item_taxes.forEach { tax ->
+            item.orderItemTaxes.forEach { tax ->
 
 
-                totalTax += tax.tax_total_amount
+                totalTax += tax.amount!!
             }
 
-            item.order_item_modifiers.forEach { modifiers ->
+            item.orderItemModifiers.forEach { modifiers ->
                 totalItemPrice += (modifiers.price * modifiers.quantity)
-                item.order_item_taxes.forEach { taxes ->
-                    totalTax += taxes.tax_total_amount
+                item.orderItemTaxes.forEach { taxes ->
+                    totalTax += taxes.taxTotalAmount
                 }
 
             }
@@ -116,7 +116,7 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
         }
     }
 
-    fun selectedItemList(): ArrayList<GetPaymentOrderDetailsResponse.Data.Order.Order_items> {
+    fun selectedItemList(): ArrayList<GetOrderDetailsResponse.Data.OrderItem> {
         return selectedItemList
     }
 

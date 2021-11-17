@@ -47,7 +47,7 @@ class TransactionDetailsFragment : Fragment() {
     private lateinit var binding: FragmentTransactionDetailsBinding
     private val viewModel by viewModels<TransactionDetailsViewModel>()
     private lateinit var orderDetailsItemAdapter: OrderDetailsItemListAdapter
-    private lateinit var orderDetailsResponse: GetOrderDetailsResponse
+//    private lateinit var orderDetailsResponse: GetOrderDetailsResponse
     private var customerSettingModel = GetCustomerReceiptSettingsResponse.Data()
     private lateinit var paymentDetailsResponse: GetPaymentOrderDetailsResponse
     private var orderId: Int = -1
@@ -117,7 +117,7 @@ class TransactionDetailsFragment : Fragment() {
         }
 
         binding.txtPrintReceipt.setOnClickListener {
-         //   getCustomerPrinters()
+            getCustomerPrinters()
 
         }
 
@@ -472,7 +472,7 @@ class TransactionDetailsFragment : Fragment() {
                     )
 
 
-                    builder.addText("Employee:" + paymentDetailsResponse?.data.order.employee?.name)
+                    builder.addText("Employee:" + paymentDetailsResponse?.data.order.employee)
 
                 }
 
@@ -556,7 +556,7 @@ class TransactionDetailsFragment : Fragment() {
                         } else {
                             ""
                         },
-                        "ReceiptID:" + orderDetailsResponse?.data.offlineId,
+                        "ReceiptID:" + paymentDetailsResponse?.data.order.offline_id,
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             24
                         } else {
@@ -583,7 +583,7 @@ class TransactionDetailsFragment : Fragment() {
                     builder.addText(
                         padLine(
                             if (customerSettingModel.showTeam) {
-                                "Employee:" + orderDetailsResponse?.data?.employee?.name
+                                "Employee:" + paymentDetailsResponse?.data?.order.employee
                             } else {
                                 ""
                             },
@@ -615,7 +615,7 @@ class TransactionDetailsFragment : Fragment() {
                         TAG,
                         "ConvertDateTime:  ${
                             Constants.getReceiptFormatDateFromUTCServer(
-                                orderDetailsResponse?.data?.createdAt.toString()
+                                paymentDetailsResponse?.data.order?.created_at.toString()
                             )
                         }"
                     )
@@ -623,7 +623,7 @@ class TransactionDetailsFragment : Fragment() {
                         padLine(
                             if (customerSettingModel.showTeam) {
                                 "Order Time:" + Constants.getReceiptFormatDateFromUTCServer(
-                                    orderDetailsResponse?.data?.createdAt.toString()
+                                    paymentDetailsResponse?.data.order?.created_at.toString()
                                 )
                             } else {
                                 ""
@@ -664,7 +664,7 @@ class TransactionDetailsFragment : Fragment() {
                             TAG,
                             "ConvertDateTime:  ${
                                 Constants.getReceiptFormatDateFromUTCServer(
-                                    orderDetailsResponse?.data?.createdAt.toString()
+                                    paymentDetailsResponse?.data.order?.created_at.toString()
                                 )
                             }"
                         )
@@ -692,7 +692,7 @@ class TransactionDetailsFragment : Fragment() {
 
             addHorizontalLine(builder)
 
-            orderDetailsResponse?.data?.orderItems?.let {
+            paymentDetailsResponse?.data.order.order_items?.let {
                 addOrderItemsTransaction(
                     builder,
                     it,
@@ -703,7 +703,7 @@ class TransactionDetailsFragment : Fragment() {
 
             builder.addFeedLine(2)
 
-            if (orderDetailsResponse?.data.totalDiscount != null) {
+            if (paymentDetailsResponse?.data.order.total_discount != null) {
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addTextFont(Builder.FONT_E)
@@ -720,10 +720,10 @@ class TransactionDetailsFragment : Fragment() {
                     padLine(
                         "Total Discount",
 
-                        if (orderDetailsResponse?.data.totalDiscount == 0.0) {
-                            "$" + MethodUtils.roundOffAmountString(orderDetailsResponse?.data.totalDiscount)
+                        if (paymentDetailsResponse?.data.order.total_discount == 0.0) {
+                            "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse?.data.order.total_discount)
                         } else {
-                            "-$" + MethodUtils.roundOffAmountString(orderDetailsResponse?.data.totalDiscount)
+                            "-$" + MethodUtils.roundOffAmountString(paymentDetailsResponse?.data.order.total_discount)
                         },
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             24
@@ -749,13 +749,13 @@ class TransactionDetailsFragment : Fragment() {
             )
 
             var totalDiscount: Double = 0.0
-            orderDetailsResponse?.data.totalDiscount?.let {
+            paymentDetailsResponse?.data.order.total_discount?.let {
                 totalDiscount = it
             }
             builder.addText(
                 padLine(
                     "Sub Total",
-                    "$" + MethodUtils.roundOffAmountString(orderDetailsResponse?.data?.subTotal!!),
+                    "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse?.data.order?.sub_total!!),
                     if (customerSettingModel.fonts == Constants.LARGE) {
                         24
                     } else {
@@ -765,7 +765,7 @@ class TransactionDetailsFragment : Fragment() {
             )
 
 
-            if (orderDetailsResponse.data?.totalTaxAmount != null) {
+            if (paymentDetailsResponse.data.order?.total_tax_amount != null) {
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addTextFont(Builder.FONT_E)
@@ -782,7 +782,7 @@ class TransactionDetailsFragment : Fragment() {
                 builder.addText(
                     padLine(
                         "Tax",
-                        "$" + MethodUtils.roundOffAmountString(orderDetailsResponse.data?.totalTaxAmount),
+                        "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.order?.total_tax_amount),
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             24
                         } else {
@@ -792,7 +792,7 @@ class TransactionDetailsFragment : Fragment() {
                 )
             }
 
-            if (orderDetailsResponse.data?.totalServiceCharges != null) {
+            if (paymentDetailsResponse.data.order?.total_service_charges != null) {
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addTextFont(Builder.FONT_E)
@@ -809,7 +809,7 @@ class TransactionDetailsFragment : Fragment() {
                 builder.addText(
                     padLine(
                         "Service Charge",
-                        "$" + MethodUtils.roundOffAmountString(orderDetailsResponse.data?.totalServiceCharges),
+                        "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.order.total_service_charges),
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             24
                         } else {
@@ -819,7 +819,7 @@ class TransactionDetailsFragment : Fragment() {
                 )
             }
 
-            if (orderDetailsResponse.data?.totalTips != 0.0) {
+            if (paymentDetailsResponse.data.order?.total_tips != 0.0) {
 
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
@@ -835,7 +835,7 @@ class TransactionDetailsFragment : Fragment() {
                 builder.addText(
                     padLine(
                         "Tips",
-                        "$" + orderDetailsResponse.data?.totalTips?.let {
+                        "$" + paymentDetailsResponse.data.order?.total_tips?.let {
                             MethodUtils.roundOffAmountString(
                                 it
                             )
@@ -852,7 +852,7 @@ class TransactionDetailsFragment : Fragment() {
 
 
 
-            if (orderDetailsResponse.data?.totalCashDiscountFee != null) {
+            if (paymentDetailsResponse.data.order?.total_cash_discount_fee != null) {
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addTextFont(Builder.FONT_E)
@@ -869,10 +869,10 @@ class TransactionDetailsFragment : Fragment() {
                 builder.addText(
                     padLine(
                         "Cash Discount",
-                        if (orderDetailsResponse.data?.totalCashDiscountFee == 0.0) {
-                            "$" + MethodUtils.roundOffAmountString(orderDetailsResponse.data?.totalCashDiscountFee)
+                        if (paymentDetailsResponse.data.order.total_cash_discount_fee == 0.0) {
+                            "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.order?.total_cash_discount_fee)
                         } else {
-                            "-$" + MethodUtils.roundOffAmountString(orderDetailsResponse.data?.totalCashDiscountFee)
+                            "-$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.order?.total_cash_discount_fee)
                         },
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             24
@@ -887,7 +887,7 @@ class TransactionDetailsFragment : Fragment() {
             builder.addFeedUnit(30)
 
 
-            if (orderDetailsResponse.data?.totalAmount != null) {
+            if (paymentDetailsResponse.data.order?.total_amount != null) {
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
 
@@ -902,7 +902,7 @@ class TransactionDetailsFragment : Fragment() {
                     Builder.COLOR_1
                 )
                 var totalAmt =
-                    MethodUtils.roundOffAmountDouble(orderDetailsResponse.data?.totalAmount)
+                    MethodUtils.roundOffAmountDouble(paymentDetailsResponse.data.order?.total_amount)
                 /* if (receiptModel?.order?.totalDiscount != 0.0) {
                      totalAmt =
                          (totalAmt - MethodUtils.roundOffAmountDouble(receiptModel?.order?.totalDiscount!!))
@@ -951,7 +951,7 @@ class TransactionDetailsFragment : Fragment() {
                 )
             }
 
-            if (orderDetailsResponse.data?.totalTips == 0.0) {
+            if (paymentDetailsResponse.data.order?.total_tips == 0.0) {
                 builder.addFeedLine(1)
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
@@ -969,8 +969,8 @@ class TransactionDetailsFragment : Fragment() {
 
                 var tip = ""
 
-                if (orderDetailsResponse.data?.totalTips != 0.0) {
-                    tip = orderDetailsResponse.data?.totalTips.toString()
+                if (paymentDetailsResponse.data.order?.total_tips != 0.0) {
+                    tip = paymentDetailsResponse.data.order?.total_tips.toString()
                 }
                 builder.addText(
                     padLine(
@@ -1026,43 +1026,14 @@ class TransactionDetailsFragment : Fragment() {
                     addTipsList(
                         builder,
                         tipsList,
-                        if (orderDetailsResponse?.data.totalDiscount != 0.0) {
-                            (orderDetailsResponse?.data?.totalAmount!!.toDouble() - orderDetailsResponse?.data?.totalDiscount!!.toDouble())
-                        } else {
-                            orderDetailsResponse?.data?.totalAmount!!.toDouble()
-                        },
+                        paymentDetailsResponse.data.order.total_amount,
                         customerSettingModel.fonts
                     )
 
                 }
             }
 
-            builder.addFeedLine(1)
-            builder.addTextLineSpace(30)
-            builder.addFeedUnit(30)
 
-            builder.addTextFont(Builder.FONT_E)
-            // builder.addTextAlign(Builder.ALIGN_LEFT)
-            builder.addTextLang(Builder.LANG_EN)
-            addCustomerTextSize(builder, customerSettingModel.fonts)
-            builder.addTextStyle(
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.TRUE,
-                Builder.COLOR_1
-            )
-
-            builder.addText(
-                padLine(
-                    "Transaction ID",
-                    orderDetailsResponse?.data?.payments?.get(0)?.transactionId,
-                    if (customerSettingModel.fonts == Constants.LARGE) {
-                        24
-                    } else {
-                        48
-                    }
-                )
-            )
 
             builder.addTextLineSpace(30)
             builder.addFeedUnit(30)
@@ -1080,7 +1051,7 @@ class TransactionDetailsFragment : Fragment() {
             builder.addText(
                 padLine(
                     "Transaction Type",
-                    orderDetailsResponse?.data?.payments?.get(0)?.paymentType,
+                    "Cash",
                     if (customerSettingModel.fonts == Constants.LARGE) {
                         24
                     } else {
@@ -1090,7 +1061,7 @@ class TransactionDetailsFragment : Fragment() {
             )
             if (customerSettingModel.showCustomerAddress != false or customerSettingModel.showCustomerPhone != false or customerSettingModel.showCustomerName) {
 
-                if (orderDetailsResponse?.data?.customer != null) {
+                if (paymentDetailsResponse?.data.order?.customer != null) {
 
                     builder.addFeedLine(1)
                     builder.addTextLineSpace(30)
@@ -1135,11 +1106,11 @@ class TransactionDetailsFragment : Fragment() {
                             Builder.COLOR_1
                         )
 
-                        builder.addText(orderDetailsResponse?.data?.customer?.firstName + " " + orderDetailsResponse?.data?.customer?.lastName)
+                        builder.addText(paymentDetailsResponse?.data.order?.customer.firstName + " " + paymentDetailsResponse?.data.order?.customer.lastName)
                     }
 
-                    if (customerSettingModel.showCustomerAddress) {
-                        if (orderDetailsResponse?.data?.customer?.addresses?.isNotEmpty() == true) {
+                  /*  if (customerSettingModel.showCustomerAddress) {
+                        if (paymentDetailsResponse?.data.order?.customer.addresses?.isNotEmpty() == true) {
 
                             builder.addTextLineSpace(30)
                             builder.addFeedUnit(30)
@@ -1156,13 +1127,13 @@ class TransactionDetailsFragment : Fragment() {
 
                             builder.addText(orderDetailsResponse?.data?.customer?.addresses?.get(0)?.fullAddress)
                         }
-                    }
+                    }*/
 
                 }
             }
 
 
-            if (orderDetailsResponse?.data?.note != null && orderDetailsResponse?.data?.note != "" && customerSettingModel.showOrderNote) {
+            if (paymentDetailsResponse?.data.order?.note != null && paymentDetailsResponse?.data.order?.note!= "" && customerSettingModel.showOrderNote) {
 
                 builder.addFeedLine(2)
                 builder.addTextFont(Builder.FONT_B)
@@ -1189,7 +1160,7 @@ class TransactionDetailsFragment : Fragment() {
                     Builder.COLOR_1
                 )
 
-                builder.addText(orderDetailsResponse?.data?.note)
+                builder.addText(paymentDetailsResponse?.data.order?.note)
             }
 
 
@@ -1197,7 +1168,7 @@ class TransactionDetailsFragment : Fragment() {
                 builder.addFeedLine(1)
                 builder.addTextAlign(Builder.ALIGN_CENTER)
                 val bitmap =
-                    generateQRCode(orderDetailsResponse?.data?.digitalReceiptUrl.toString())
+                    generateQRCode(paymentDetailsResponse?.data.order?.digital_receipt_url.toString())
                 Log.e(TAG, "BitmapHeight ${bitmap.height}")
                 Log.e(TAG, "BitmapWidth ${bitmap.width}")
                 val newBitmap = Bitmap.createScaledBitmap(bitmap, 175, 175, true)
@@ -1223,7 +1194,7 @@ class TransactionDetailsFragment : Fragment() {
                 )
 
                 PrinterClass.closePrinter()
-                findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
+
                 //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
             } catch (e: Exception) {
                 PrinterClass.closePrinter()

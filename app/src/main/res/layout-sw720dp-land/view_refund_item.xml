@@ -10,7 +10,7 @@
 
         <variable
             name="refundItemListModel"
-            type="com.android.pos.data.model.GetPaymentOrderDetailsResponse.Data.Order.Order_items" />
+            type="com.android.pos.data.model.responseModel.GetOrderDetailsResponse.Data.OrderItem" />
 
         <variable
             name="viewModel"
