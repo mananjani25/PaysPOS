@@ -28,6 +28,7 @@ data class DineInModel(
     var totalTableAmt: Double = 0.0,
     var guestDividerAmt: Double = 0.0,
     var serviceChargeList: ArrayList<TbServiceCharge>? = null,
-    var floorPlanTable: GetOrderDetailsResponse.Data.FloorPlanTable? = null
+    var floorPlanTable: GetOrderDetailsResponse.Data.FloorPlanTable? = null,
+    var empName:String = ""
 
 ) : Parcelable

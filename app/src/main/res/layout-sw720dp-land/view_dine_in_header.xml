@@ -104,7 +104,7 @@
             <ImageView
                 android:id="@+id/imgPrint"
                 android:layout_width="@dimen/_10sdp"
-
+                android:visibility="invisible"
                 android:layout_height="@dimen/_10sdp"
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="@dimen/_12sdp"
