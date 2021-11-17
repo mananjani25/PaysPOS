@@ -9,7 +9,6 @@ import androidx.lifecycle.viewModelScope
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.TbItem
-import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ADD
 import com.android.pos.data.remote.Constants.DELETE
@@ -162,11 +161,9 @@ class ManualSaleViewModel @Inject constructor(
     @SuppressLint("SetTextI18n")
     fun itemCalculation(
         itemList: List<TbItem>?,
-        txtTotalAmount: TextView,
-        serviceChargesList: List<TbServiceCharge>?
+        txtTotalAmount: TextView
     ) {
 
-        Log.e(TAG, "serviceChargesList:  ${Gson().toJson(serviceChargesList)}")
         totalPrice = 0.0
         totalCount = 0
         subTotalPrice = 0.0
@@ -194,19 +191,17 @@ class ManualSaleViewModel @Inject constructor(
             }.sum()
         }
 
-        Log.e(TAG, "serviceChargesList:  ${Gson().toJson(serviceChargesList)}")
-        if (serviceChargesList != null && serviceChargesList.isNotEmpty()) {
+        val serviceChargeList = serviceCharge.value?.data
+        Log.e(TAG, "serviceChargesList:  ${Gson().toJson(serviceChargeList)}")
+        if (serviceChargeList != null && serviceChargeList.isNotEmpty()) {
 
-            serviceChargesList.forEach {
+            serviceChargeList.forEach {
                 if (it.isEnabled) {
                     totalServiceCharge = (subTotalPrice * it.percentage) / 100
                     Log.e("totalServiceCharge", totalServiceCharge.toString())
                 }
             }
-
         }
-
-
 
         totalPrice = (subTotalPrice + totalTax + totalServiceCharge) - totalDiscount
 
@@ -214,11 +209,11 @@ class ManualSaleViewModel @Inject constructor(
             "%.2f",
             totalPrice
         )
-
     }
 
     private fun addCartModel(item: TbItem): CartModel {
         val inventoryModelList = ArrayList<TbItem>()
+        val serviceChargeList = serviceCharge.value?.data
         val cartModel = CartModel().apply {
             terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
             employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
@@ -230,6 +225,7 @@ class ManualSaleViewModel @Inject constructor(
             inventoryModelList.add(item)
             items = inventoryModelList
             isMaual = true
+            serviceCharge = serviceChargeList
         }
         return cartModel
     }

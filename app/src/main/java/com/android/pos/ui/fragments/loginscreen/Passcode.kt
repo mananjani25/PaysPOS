@@ -84,6 +84,10 @@ class Passcode : Fragment() {
             }
         }
 
+        binding.Cancel.setOnClickListener {
+            findNavController().navigateUp()
+        }
+
     }
 
     private fun observeShowProgress() {

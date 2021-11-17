@@ -71,6 +71,7 @@ class CustomerDetails : Fragment() {
             requireArguments().getParcelable<TbCustomer>(
                 CUSTOMER_MODEL
             )!!
+
         binding.model = customerModel
         binding.executePendingBindings()
 
@@ -81,6 +82,20 @@ class CustomerDetails : Fragment() {
             val bundle: Bundle = bundleOf("isEdit" to true, "dataModel" to customerModel)
             findNavController().navigate(R.id.action_customer_to_addEditCustomer, bundle)
         }
+
+
+        if (customerModel.enroll_to_loyalty == true) {
+            binding.linearRewardLayout.visibility = View.VISIBLE
+            binding.layoutHeader.txtLoyaltyPoints.visibility = View.VISIBLE
+            binding.txtrewardpoint.text = customerModel.final_reward.toString()
+            orderHistoryAdapter.finalreward = customerModel.final_reward.toString()
+            orderHistoryAdapter.enrolltrueloyalty = true
+        } else {
+            binding.layoutHeader.txtLoyaltyPoints.visibility = View.GONE
+            binding.linearRewardLayout.visibility = View.GONE
+            orderHistoryAdapter.enrolltrueloyalty = false
+        }
+
 
         if (customerModel.phones.isNotEmpty()) {
             binding.txtPhoneNo.text =
@@ -110,6 +125,7 @@ class CustomerDetails : Fragment() {
             if (data?.isNotEmpty() == true) {
                 binding.llOrderHistory.visible()
                 orderHistoryAdapter.add(data)
+
             } else {
                 binding.llOrderHistory.gone()
             }
