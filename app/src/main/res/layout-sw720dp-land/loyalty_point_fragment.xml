@@ -31,7 +31,7 @@
                 android:background="@drawable/bg_button_border_gray"
                 android:gravity="center"
                 android:padding="@dimen/_5sdp"
-                android:text="@string/add_service_charge"
+                android:text="Add Loyalty Program"
                 android:textColor="@color/btnColor"
                 android:textSize="@dimen/_5mdpi"
                 app:textAllCaps="false" />

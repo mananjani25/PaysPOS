@@ -107,6 +107,10 @@ object Constants {
     const val SERVICE_CHARGE_UPDATE_DELETE = "service_charges/{id}"
     const val SERVICE_CHARGE_ACTIVE = "service_charges/{id}/active"
 
+    const val LOYALTY_POINT = "loyalty_programs"
+    const val LOYALTY_POINT_UPDATE_DELETE = "loyalty_programs/{id}"
+    const val LOYALTY_POINT_ACTIVE = "loyalty_programs/{id}/active"
+
     const val ITEM_UPDATE_DELETE = "items/{id}"
     const val HIDE_ITEM = "items/{id}/active"
     const val ITEMS = "items"

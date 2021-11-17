@@ -54,6 +54,13 @@ class TaxServiceChargeRepository @Inject constructor(
             networkCall = { apiHelperNew.getServiceChargeList() },
             saveCallResult = { appDatabase.serviceChargeDao().addAllServiceCharge(it.data) })
 
+
+    fun loyaltyPointList() =
+        performGetOperation(
+            databaseQuery = { appDatabase.loyaltyProgramsDao().all },
+            networkCall = { apiHelperNew.loyaltyPointList() },
+            saveCallResult = { appDatabase.loyaltyProgramsDao().addAll(it.data) })
+
     suspend fun deleteServiceChargesFromDb() {
         appDatabase.serviceChargeDao().delete()
     }
@@ -74,13 +81,21 @@ class TaxServiceChargeRepository @Inject constructor(
     suspend fun serChargeActive(id: Int, active: Boolean) =
         apiHelperNew.serChargeActive(id, active)
 
+    suspend fun loyaltyPointActive(id: Int, active: Boolean) =
+        apiHelperNew.loyaltyPointActive(id, active)
+
     suspend fun serChargeActiveDatabase(serChargeId: Int, active: Boolean) =
         appDatabase.serviceChargeDao().activeServiceCharge(serChargeId, active)
 
     suspend fun deleteServiceCharge(data: Int) = apiHelperNew.deleteServiceCharge(data)
 
+    suspend fun deleteLoyaltyPoint(data: Int) = apiHelperNew.deleteLoyaltyPoint(data)
+
     suspend fun deleteSerChargeDatabase(serChargeId: Int) =
         appDatabase.serviceChargeDao().deleteServiceChargeById(serChargeId)
+
+    suspend fun deleteLoyaltyPointDatabase(serChargeId: Int) =
+        appDatabase.loyaltyProgramsDao().deleteTipById(serChargeId)
 
     fun getTeamRoleList() =
         performGetOperation(
