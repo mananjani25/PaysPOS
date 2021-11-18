@@ -718,6 +718,10 @@
             android:id="@+id/action_orderCompleteFragment_to_payByGuestDialog"
             app:destination="@id/payByGuestDialog"
             app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_orderCompleteFragment_to_dineInOrderTable"
+            app:destination="@id/dineInOrderTable"
+            app:popUpTo="@id/orderCompleteFragment" />
     </fragment>
     <fragment
         android:id="@+id/orders"

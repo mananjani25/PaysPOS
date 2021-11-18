@@ -318,4 +318,7 @@ object Constants {
     const val DateFormat_hh_mm_a_MM_dd_yyyy = "hh:mm a | MM/dd/yyyy"
     const val DateFormat_MMM_dd_yyyy = "MMM-dd-yyyy"
     const val DateFormat_hh_mm_a = "hh:mm a"
+
+
+    const val DINE_IN_SPLIT_FLAG = "dine_in_split_flag"
 }
