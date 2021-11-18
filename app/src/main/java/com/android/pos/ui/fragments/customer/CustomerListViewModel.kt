@@ -37,7 +37,7 @@ public class CustomerListViewModel @Inject constructor(
     private val _orderHistory = MutableLiveData<Event<List<Orders>?>>()
     val orderHistory: LiveData<Event<List<Orders>?>> = _orderHistory
 
-    fun customerList() = posRepository.customerList()
+    fun customerList(data: LinkedHashMap<String, String>)= posRepository.customerListPagination(data)
 
 
     fun getData() {

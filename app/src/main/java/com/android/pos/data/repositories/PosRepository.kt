@@ -310,6 +310,12 @@ class PosRepository @Inject constructor(
         networkCall = { apiHelperNew.customerList() },
         saveCallResult = { appDatabase.customerDao().addAllCustomer(it.data) })
 
+    fun customerListPagination(data: HashMap<String, String>) = performGetOperation(
+        databaseQuery = { appDatabase.customerDao().allCustomer },
+        networkCall = { apiHelperNew.customerListPagination(data) },
+        saveCallResult = { appDatabase.customerDao().addAllCustomer(it.data) })
+
+
     fun orderTypes() = performGetOperation(
         databaseQuery = {
             appDatabase.orderTypeDao().orderTypes
