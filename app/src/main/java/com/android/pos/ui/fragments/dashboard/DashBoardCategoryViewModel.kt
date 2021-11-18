@@ -56,6 +56,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     var totalServiceCharge = 0.0
     var totalDiscount = 0.0
     var assignCustomer: TbCustomer? = null
+    var orderItemDiscount = 0.0
 
     private val _updateOrder = MutableLiveData<Event<Any?>>()
     val updateOrder: LiveData<Event<Any?>> = _updateOrder

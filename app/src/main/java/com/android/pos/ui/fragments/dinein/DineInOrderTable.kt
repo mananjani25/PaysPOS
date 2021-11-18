@@ -271,8 +271,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             // subTotal += dineInTableAdapter.getList().get(0).guestDividedAmt
 
 
-
-
             var model = GuestPaymentRequest(
                 PaymentAttributes().apply {
                     amount =
@@ -304,7 +302,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             )
             bundle.putDouble(
                 "subTotalPrice",
-                MethodUtils.roundOffAmountDouble(subTotalWT )
+                MethodUtils.roundOffAmountDouble(subTotalWT)
             )
             bundle.putDouble("totalTax", MethodUtils.roundOffAmountDouble(finalTaxAmt))
             bundle.putParcelable("model", model)
@@ -375,6 +373,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 "dine_in_list",
                 newList
             )
+            Log.e(TAG,"DashDiscount ${totalDiscount}")
+            bundle.putDouble("totalDiscount", totalDiscount)
             bundle.putParcelable("tableDetails", getOrderDetailsResponse?.floorPlanTable)
 
             orderId?.let { it1 -> bundle.putInt("orderId", it1) }
@@ -812,7 +812,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             var totalPaid = 0.0
 
             getOrderDetailsResponse?.payments?.forEach {
-                totalPaid +=  it.amount
+                totalPaid += it.amount
             }
 
             if (totalGuest == (getOrderDetailsResponse?.totalAmount!! - totalPaid)) {
@@ -1034,7 +1034,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             event.getContentIfNotHandled()?.let { baseResponse ->
                 if (baseResponse != null) {
                     subTotalWT = 0.0
-                    serviceCharge =0.0
+                    serviceCharge = 0.0
                     totalDiscount = 0.0
 
                     getOrderDetailsResponse = baseResponse
@@ -1238,7 +1238,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                                     itemDineIn.isHeader = 1
                                     itemDineIn.item = item
-                                    itemDineIn.empName = baseResponse.floorPlanTable.lockByName.toString()
+                                    itemDineIn.empName =
+                                        baseResponse.floorPlanTable.lockByName.toString()
 
                                     dineInList.add(itemDineIn)
 
@@ -1349,11 +1350,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         if (it.isHeader == 1 && !it.isPaid) {
                             it.item?.let { it1 ->
                                 viewModel.taxCalculation(it1)
-                                 totalDiscount=it1.discountPrice
+                                totalDiscount = it1.discountPrice
                             }
 
                         }
                     }
+                    totalDiscount=0.0
                     totalDiscount += baseResponse.totalDiscount
 
                     val totalAmoountTxt =

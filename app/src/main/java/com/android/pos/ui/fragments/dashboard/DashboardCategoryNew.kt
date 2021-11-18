@@ -317,7 +317,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private fun checkDineInEditOrder() {
         if (arguments?.getBoolean("is_dine_in_edit") == true) {
             var dineInList = arguments?.getParcelableArrayList<DineInModel>("dine_in_list")
-            Log.e(TAG, "dineInListEditOrder:  ${Gson().toJson(dineInList)}")
+
             if (dineInList?.isNotEmpty() == true) {
                 binding.layoutCart.txtOrderType.setText("Dine In")
 
@@ -355,6 +355,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                 Log.e(TAG, "PassedDineInListSize  ${Gson().toJson(dineInList)}")
                 viewModel.cartLogic(cartList, null, ADD, dineInList = dineInList)
+                viewModel.orderItemDiscount  = arguments?.getDouble("totalDiscount") ?: 0.0
+                Log.e(TAG, "dashTotalDis  ${arguments?.getDouble("totalDiscount")}")
 
             }
 
@@ -508,23 +510,23 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             var dineList: List<DineInModel>? =
                                 cartList.get(0).dineInList
 
-                           /* if (dineList != null) {
+                            /* if (dineList != null) {
 
-                                for (i in 0 until dineList.size) {
-                                    if (dineList.get(i).items != null && dineList.get(i).items.isNotEmpty()) {
-                                        var itr = dineList.get(i).items.iterator()
-                                        while (itr.hasNext()) {
-                                            if (itr.next().isDestroy && itr.next().isEdited) {
-                                                dineList.get(i).items.remove(itr.next())
-                                            }
-                                        }
-
-
+                                 for (i in 0 until dineList.size) {
+                                     if (dineList.get(i).items != null && dineList.get(i).items.isNotEmpty()) {
+                                         var itr = dineList.get(i).items.iterator()
+                                         while (itr.hasNext()) {
+                                             if (itr.next().isDestroy && itr.next().isEdited) {
+                                                 dineList.get(i).items.remove(itr.next())
+                                             }
+                                         }
 
 
-                                    }
-                                }
-                            }*/
+
+
+                                     }
+                                 }
+                             }*/
 
                             if (dineList != null) {
                                 Log.e(TAG, "PassesdineList: ${Gson().toJson(dineList)}")
@@ -706,10 +708,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             for (j in categoryList1[i].inventoryLists!!.indices) {
                 searchList.add(
                     CategorySearchData(
-                        categoryList1[i].inventoryLists?.get(j)?.itemId?:0,
-                        categoryList1[i].inventoryLists?.get(j)?.name?:"",
+                        categoryList1[i].inventoryLists?.get(j)?.itemId ?: 0,
+                        categoryList1[i].inventoryLists?.get(j)?.name ?: "",
                         categoryList1.get(i).inventoryLists?.get(j)?.imageUrl.toString(),
-                        categoryList1.get(i).category.name?:"",
+                        categoryList1.get(i).category.name ?: "",
                         categoryList1[i].category.id
                     )
                 )
@@ -1078,7 +1080,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                                     tabList.add(
                                         CategoryTabModel(
                                             categoryList1[i].category.id,
-                                            categoryList1[i].category.name?:"",
+                                            categoryList1[i].category.name ?: "",
                                             true,
                                             0
                                         )
@@ -1087,7 +1089,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                                     tabList.add(
                                         CategoryTabModel(
                                             categoryList1[i].category.id,
-                                            categoryList1[i].category.name?:"",
+                                            categoryList1[i].category.name ?: "",
                                             false,
                                             0
                                         )
@@ -1447,17 +1449,17 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         txtQty.setText(qty.toString())
 
         variationAdapter?.showVariationPriceClick = { it: VariationsAttribute ->
-            if (!isDoubleClick()){
+            if (!isDoubleClick()) {
                 if (it.priceType == "Variable") {
-                val bundle = Bundle().apply {
-                    putParcelable("variationAttribute", it)
+                    val bundle = Bundle().apply {
+                        putParcelable("variationAttribute", it)
+                    }
+                    findNavController().navigate(
+                        R.id.action_dashboardCategoryNew_to_addVariablePriceDialog, bundle
+                    )
+                } else if (it.priceType == "Fixed") {
+                    showPriceTitle(it, variationAdapter = null, data, txtTitle, isItemClick)
                 }
-                findNavController().navigate(
-                    R.id.action_dashboardCategoryNew_to_addVariablePriceDialog, bundle
-                )
-            } else if (it.priceType == "Fixed") {
-                showPriceTitle(it, variationAdapter = null, data, txtTitle, isItemClick)
-            }
             }
         }
 
@@ -3282,7 +3284,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     }
 
-    private fun clearUpdateFlag(){
+    private fun clearUpdateFlag() {
         isOrderUpdate = false
         prefProvider.setValueboolean(IS_ORDER_UPDATE, value = false)
         requireArguments().remove("update")
