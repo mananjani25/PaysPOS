@@ -274,7 +274,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
             var model = GuestPaymentRequest(
-                PaymentAttributes().apply {
+                GuestPaymentAttributes().apply {
                     amount =
                         MethodUtils.roundOffAmountDouble(toFinalAmt)
                     cardName = ""
@@ -291,6 +291,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     transactionId = randomOfflineId()
                     terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
                     serviceChargeAmount = MethodUtils.roundOffAmountDouble(serviceCharge)
+
 
                 },
                 DineInPaymentUpdateModel()
@@ -748,7 +749,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         var total = subTotal + totalTax
         Log.e(TAG, "orderIdGuest  ${orderId}")
 
-        var paymentAttr = PaymentAttributes().apply {
+        val paymentAttr = GuestPaymentAttributes().apply {
             amount = totalGuest
             cardName = ""
             cardNumber = ""
@@ -764,11 +765,29 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             transactionId = randomOfflineId()
             terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
             order_id = orderId
+            paymentAttributes = listOf(GuestPaymentAttributes().apply {
+                amount = totalGuest
+                cardName = ""
+                cardNumber = ""
+                cardType = ""
+                cashDiscount = 0.0
+                cashDiscountFee = 0.0
+                employeeId = prefProvider.getValueInt(EMPLOYEE_ID, 0)
+                taxAmount = taxGuest
+                subTotalPrice = subTotalGuest
+                offlineId = randomOfflineId()
+                payableType = "GuestTab"
+                paymentType = "Cash"
+                transactionId = randomOfflineId()
+                terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
+                order_id = orderId
+
+            })
 
         }
         var dineInOrderModel = DineInPaymentUpdateModel()
         dineInOrderModel.id = orderId
-        dineInOrderModel.paymentAttributes = paymentAttr
+        // dineInOrderModel.paymentAttributes = paymentAttr
 
         var modelReq = DineInOrderPayment(dineInOrderModel)
 
