@@ -164,6 +164,10 @@ interface ApiService {
     suspend fun customerList(): CustomerListResponse
 
 
+    @GET(CUSTOMERS)
+    suspend fun customerListPagination(@QueryMap options: HashMap<String, String>): CustomerListResponse
+
+
     @GET(TAXES)
     suspend fun getTaxList(): GetTaxResponse
 
