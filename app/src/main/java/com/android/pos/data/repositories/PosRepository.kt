@@ -15,7 +15,6 @@ import com.android.pos.utils.performGetOperation
 import com.android.pos.utils.performGetOperationDatabase
 import com.android.pos.utils.performGetOperationNew
 import com.android.pos.utils.statusUtils.Resource
-import com.google.gson.Gson
 import javax.inject.Inject
 
 
@@ -172,7 +171,7 @@ class PosRepository @Inject constructor(
                         createdAt = category.createdAt.toString()
                         id = category.id
                         active = category.active
-                        name = category.name?:""
+                        name = category.name ?: ""
                         sort = category.sort
                         updatedAt = category.updatedAt.toString()
                         locationId = category.locationId
@@ -244,6 +243,14 @@ class PosRepository @Inject constructor(
 
     suspend fun addKitchenReceiptSettings(data: GetKitchenReceiptSettingsResponse.Data) {
         appDatabase.kitchenSettingsDao().add(data)
+    }
+
+    suspend fun deleteLoyaltyProgramFromDb() {
+        appDatabase.loyaltyProgramsDao().delete()
+    }
+
+    suspend fun addLoyaltyProgramFromDb(data: List<LoyaltyProgramsModel>) {
+        appDatabase.loyaltyProgramsDao().addAll(data)
     }
 
     suspend fun deleteCustomerReceiptSettingsFromDb() {
@@ -543,7 +550,6 @@ class PosRepository @Inject constructor(
         apiHelperNew.orderDetailsById(orderId)
 
 
-
     suspend fun paymentDetailsById(paymentId: Int) =
         apiHelperNew.paymentDetailsById(paymentId)
 
@@ -652,6 +658,7 @@ class PosRepository @Inject constructor(
 
     suspend fun clearTable() {
 
+        Log.e("clear Db Table","-------")
         appDatabase.characterDao().delete()
         appDatabase.categoryDao().delete()
         appDatabase.itemDao().delete()

@@ -5,9 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.data.entities.LoyaltyProgramsModel
-import com.android.pos.data.entities.TbServiceCharge
-import com.android.pos.data.model.responseModel.*
-import com.android.pos.data.repositories.PosRepository
+import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.repositories.TaxServiceChargeRepository
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Status
@@ -33,6 +31,10 @@ class LoyaltyPointViewModel @Inject constructor(
     val notifydata: LiveData<Event<Boolean?>> = _notifydata
 
     val loyaltyPoints = taxServiceChargeRepository.loyaltyPointList()
+
+    var loyaltyName: String? = null
+    var loyaltyTarget: String? = null
+    var loyaltyPointType: String = ""
 
     fun isSerChargeActive(serChargeItem: LoyaltyProgramsModel) {
 
@@ -119,5 +121,9 @@ class LoyaltyPointViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun submit() {
+
     }
 }

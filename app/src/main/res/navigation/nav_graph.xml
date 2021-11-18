@@ -266,6 +266,9 @@
             android:id="@+id/action_settings_to_printer"
             app:destination="@id/printer"
             app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_settings_to_createLoyaltyPointFragment"
+            app:destination="@id/createLoyaltyPointFragment" />
 
 
     </fragment>
@@ -948,6 +951,15 @@
         <action
             android:id="@+id/action_openOrderCustomerFragmentNew_to_assignCustomerOrderFragment"
             app:destination="@id/assignCustomerOrderFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/createLoyaltyPointFragment"
+        android:name="com.android.pos.ui.fragments.settings.loyaltypoints.CreateLoyaltyFragment"
+        android:label="CreateLoyaltyFragment">
+        <argument
+            android:name="isEdit"
+            android:defaultValue="false"
+            app:argType="boolean" />
     </fragment>
 
 </navigation>
