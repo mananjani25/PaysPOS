@@ -12,12 +12,14 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.pos.R
 import com.android.pos.data.entities.TbCustomer
 import com.android.pos.databinding.FragmentAssignCustomerOrderBinding
 import com.android.pos.ui.adapter.AssignCustomerToOrderAdapter
 import com.android.pos.ui.fragments.customer.CustomerListViewModel
 import com.android.pos.utils.callback.ItemCallback
+import com.android.pos.utils.callback.PaginationScrollListener
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -35,6 +37,13 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
     private var isFromDineIn: Boolean? = false
     private var dineInPosition: Int? = null
 
+
+    private var currentpage = 1
+    private val perpagedata = 50
+    private var isLoading = false
+    private var isLastPage = false
+    private var firstDetailLoad = false
+    val data = LinkedHashMap<String, String>()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -46,8 +55,13 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
             false
         )
 
+        data["page"] = currentpage.toString()
+        data["per_page"] = perpagedata.toString()
+
+
         setupUI()
-        loadCustomerLocalList()
+
+        loadCustomerLocalList(currentpage)
         isFromDineIn = arguments?.getBoolean("DINE_IN", false)
         dineInPosition = arguments?.getInt("position")
         return binding.root
@@ -58,6 +72,37 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
         adapter = AssignCustomerToOrderAdapter()
         adapter.setCallback(this)
         binding.rvCustomerList.adapter = adapter
+        val layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        binding.rvCustomerList.layoutManager = layoutManager
+
+        binding.rvCustomerList.addOnScrollListener(object :
+            PaginationScrollListener(layoutManager) {
+
+
+            override fun isLastPage(): Boolean {
+                return isLastPage
+            }
+
+            override fun isLoading(): Boolean {
+                return isLoading
+            }
+
+            override fun getTotalPageCount(): Int {
+                return 0
+            }
+
+
+            override fun loadMoreItems() {
+                if (adapter.itemCount >= 50) {
+                    isLoading = true
+                    currentpage += 1
+                    loadCustomerLocalList(currentpage)
+                }
+
+            }
+
+        })
 
 
         binding.etSearch.addTextChangedListener(object : TextWatcher {
@@ -86,9 +131,10 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
     }
 
 
-    private fun loadCustomerLocalList() {
-
-        viewModel.customerList().observe(viewLifecycleOwner, {
+    private fun loadCustomerLocalList(currentpage: Int) {
+        data["page"] = currentpage.toString()
+        data["per_page"] = perpagedata.toString()
+        viewModel.customerList(data).observe(viewLifecycleOwner, {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {

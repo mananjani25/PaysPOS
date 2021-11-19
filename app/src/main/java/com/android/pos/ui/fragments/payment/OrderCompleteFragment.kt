@@ -47,6 +47,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEventListener,
     BatteryStatusChangeEventListener {
+    private var isGuest: Boolean = false
     private var remainingAmount: Double = 0.0
     private var splitValue: Int = -1
     private var isSpilt: Boolean = false
@@ -131,6 +132,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         isDineIn = requireArguments().getBoolean("isDineIn")
         if (!isDineIn)
             receiptModel = requireArguments().getParcelable("receiptData")
+
+        if (isDineIn) {
+            isGuest = requireArguments().getBoolean("isGuest")
+        }
 
         if (isSpilt) {
             splitValue = requireArguments().getInt("splitValue")
@@ -278,18 +283,27 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     }
 
     private fun moveToDashboard() {
+        Log.e("moveToDashboard", isGuest.toString())
         if (isSpilt) {
             if (isDineIn) {
-                // findNavController().navigate(R.id.action_orderCompleteFragment_to_payByGuestDialog)
                 findNavController().popBackStack()
             } else {
                 findNavController().popBackStack()
             }
         } else {
 
-            removeCustomer()
-            findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
+            if (isGuest) {
+                val bundle = Bundle()
+                bundle.putInt("orderId", orderID)
+                findNavController().navigate(
+                    R.id.action_orderCompleteFragment_to_dineInOrderTable,
+                    bundle
+                )
+            } else {
 
+                removeCustomer()
+                findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
+            }
         }
     }
 

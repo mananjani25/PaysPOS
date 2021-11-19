@@ -7,8 +7,6 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class DineInPaymentUpdateModel(
     @SerializedName("id")
-    var id: Int? = null,
-    @SerializedName("payment_attributes")
-    var paymentAttributes: PaymentAttributes? = null
+    var id: Int? = null
 ):Parcelable {
 }

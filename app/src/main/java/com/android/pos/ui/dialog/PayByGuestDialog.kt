@@ -6,7 +6,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
@@ -16,6 +15,7 @@ import com.android.pos.R
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.GetFloorPlanResponse
+import com.android.pos.data.model.responseModel.GuestPaymentAttributes
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.LOCATION_ID
@@ -36,6 +36,7 @@ import kotlin.math.floor
 @AndroidEntryPoint
 open class PayByGuestDialog : Fragment(), View.OnClickListener {
 
+    private var isGuestPay: Boolean = false
     private lateinit var binding: DialogPayByGuestBinding
 
     private val viewModel by viewModels<DineInOrderTableViewModel>()
@@ -118,6 +119,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
             guestId = requireArguments().getInt("id")
             guestRequestModel = requireArguments().getParcelable("model")
             isLastPayment = requireArguments().getBoolean("isLastPayment")
+            isGuestPay = requireArguments().getBoolean("isGuestPay")
             Log.e(TAG, "isLastPayment  ${isLastPayment}")
             splitModel = requireArguments().getParcelable("orderPayment")
             setupData()
@@ -176,128 +178,136 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
     }
 
     private fun gotoPay() {
-        if (isTotalPayment) {
 
-            orderId?.let { prefProvider.setValueInt("ORDER_ID", it) }
-            when {
-                isSplitByNo -> {
 
-                    var payAmount = (totalPrice + tipAmount) / splitValue
-                    val bundle = Bundle()
-                    bundle.putDouble("totalPrice", payAmount)
-                    bundle.putDouble("paymentAmount", paymentAmount)
-                    orderId?.let { bundle.putInt("orderID", it) }
-                    // bundle.putParcelable("receiptData", it.data)
-                    bundle.putBoolean("isSpilt", true)
-                    bundle.putInt("splitValue", splitValue)
-                    bundle.putDouble("remainingAmount", totalPrice - payAmount)
-                    bundle.putBoolean("isDineIn", true)
-                    findNavController().navigate(
-                        R.id.action_payByGuestDialog_to_orderCompleteFragment,
-                        bundle
+        orderId?.let { prefProvider.setValueInt("ORDER_ID", it) }
+        when {
+            isSplitByNo -> {
+
+                var payAmount = (totalPrice + tipAmount) / splitValue
+                val bundle = Bundle()
+                bundle.putDouble("totalPrice", payAmount)
+                bundle.putDouble("paymentAmount", paymentAmount)
+                orderId?.let { bundle.putInt("orderID", it) }
+                // bundle.putParcelable("receiptData", it.data)
+                bundle.putBoolean("isSpilt", true)
+                bundle.putInt("splitValue", splitValue)
+                bundle.putDouble("remainingAmount", totalPrice - payAmount)
+                bundle.putBoolean("isDineIn", true)
+                bundle.putBoolean("isGuest", isGuestPay)
+                if (isLastPayment!!)
+                    bundle.putBoolean("isGuest", false)
+                findNavController().navigate(
+                    R.id.action_payByGuestDialog_to_orderCompleteFragment,
+                    bundle
+                )
+
+                val splitPayAmount =
+                    prefProvider.getValue(Constants.SPLIT_PAY_AMOUNT_DINE_IN, "")
+                if (splitPayAmount.isNotEmpty()) {
+                    payAmount += splitPayAmount.toDouble()
+                }
+
+
+                prefProvider.setValue(
+                    Constants.SPLIT_PAY_TYPE_DINE_IN,
+                    Constants.SPLIT_NO_DINE_IN
+                )
+                prefProvider.setValue(
+                    Constants.SPLIT_PAY_AMOUNT_DINE_IN,
+                    payAmount.toString()
+                )
+                prefProvider.setValueInt(Constants.SPLIT_NO_DINE_IN, splitValue)
+
+            }
+            isSplitByAmount -> {
+
+                var payAmount = splitAfterAmount
+                val bundle = Bundle()
+                bundle.putDouble("totalPrice", payAmount)
+                bundle.putDouble("paymentAmount", paymentAmount)
+                orderId?.let { bundle.putInt("orderID", it) }
+                //                                bundle.putParcelable("receiptData", it.data)
+
+
+                if (MethodUtils.roundOffAmountDouble(payAmount) != MethodUtils.roundOffAmountDouble(
+                        totalPrice
                     )
+                ) {
 
-                    val splitPayAmount =
-                        prefProvider.getValue(Constants.SPLIT_PAY_AMOUNT_DINE_IN, "")
+                    bundle.putBoolean("isSpilt", true)
+                    bundle.putDouble("remainingAmount", totalPrice - payAmount)
+
+
+                    val splitPayAmount = prefProvider.getValue(
+                        Constants.SPLIT_PAY_AMOUNT_DINE_IN,
+                        ""
+                    )
                     if (splitPayAmount.isNotEmpty()) {
                         payAmount += splitPayAmount.toDouble()
                     }
-
-
-                    prefProvider.setValue(
-                        Constants.SPLIT_PAY_TYPE_DINE_IN,
-                        Constants.SPLIT_NO_DINE_IN
-                    )
                     prefProvider.setValue(
                         Constants.SPLIT_PAY_AMOUNT_DINE_IN,
                         payAmount.toString()
                     )
                     prefProvider.setValueInt(Constants.SPLIT_NO_DINE_IN, splitValue)
-
-                }
-                isSplitByAmount -> {
-
-                    var payAmount = splitAfterAmount
-                    val bundle = Bundle()
-                    bundle.putDouble("totalPrice", payAmount)
-                    bundle.putDouble("paymentAmount", paymentAmount)
-                    orderId?.let { bundle.putInt("orderID", it) }
-                    //                                bundle.putParcelable("receiptData", it.data)
-
-
-                    if (MethodUtils.roundOffAmountDouble(payAmount) != MethodUtils.roundOffAmountDouble(
-                            totalPrice
-                        )
-                    ) {
-
-                        bundle.putBoolean("isSpilt", true)
-                        bundle.putDouble("remainingAmount", totalPrice - payAmount)
-
-
-                        val splitPayAmount = prefProvider.getValue(
-                            Constants.SPLIT_PAY_AMOUNT_DINE_IN,
-                            ""
-                        )
-                        if (splitPayAmount.isNotEmpty()) {
-                            payAmount += splitPayAmount.toDouble()
-                        }
-                        prefProvider.setValue(
-                            Constants.SPLIT_PAY_AMOUNT_DINE_IN,
-                            payAmount.toString()
-                        )
-                        prefProvider.setValueInt(Constants.SPLIT_NO_DINE_IN, splitValue)
-                        prefProvider.setValue(
-                            Constants.SPLIT_PAY_TYPE_DINE_IN,
-                            Constants.SPLIT_PAY_AMOUNT_DINE_IN
-                        )
-                    } else {
-                        bundle.putBoolean("isSpilt", false)
-                        bundle.putDouble("remainingAmount", totalPrice - payAmount)
-
-                        prefProvider.setValue(Constants.SPLIT_PAY_AMOUNT_DINE_IN, "")
-                        prefProvider.setValueInt(Constants.SPLIT_NO_DINE_IN, -1)
-                        prefProvider.setValue(Constants.SPLIT_PAY_TYPE_DINE_IN, "")
-                    }
-
-                    bundle.putBoolean("isDineIn", true)
-                    findNavController().navigate(
-                        R.id.action_payByGuestDialog_to_orderCompleteFragment,
-                        bundle
+                    prefProvider.setValue(
+                        Constants.SPLIT_PAY_TYPE_DINE_IN,
+                        Constants.SPLIT_PAY_AMOUNT_DINE_IN
                     )
-
-                }
-                else -> {
-                    val bundle = Bundle()
-                    bundle.putDouble("totalPrice", totalPrice + tipAmount)
-                    bundle.putDouble("paymentAmount", paymentAmount)
-                    orderId?.let { bundle.putInt("orderID", it) }
-                    //bundle.putParcelable("receiptData", it.data)
+                } else {
                     bundle.putBoolean("isSpilt", false)
-                    bundle.putBoolean("isDineIn", true)
-                    findNavController().navigate(
-                        R.id.action_payByGuestDialog_to_orderCompleteFragment,
-                        bundle
-                    )
+                    bundle.putDouble("remainingAmount", totalPrice - payAmount)
 
                     prefProvider.setValue(Constants.SPLIT_PAY_AMOUNT_DINE_IN, "")
                     prefProvider.setValueInt(Constants.SPLIT_NO_DINE_IN, -1)
                     prefProvider.setValue(Constants.SPLIT_PAY_TYPE_DINE_IN, "")
-                    prefProvider.setValueInt("ORDER_ID", -1)
-
-
                 }
+
+                bundle.putBoolean("isDineIn", true)
+                findNavController().navigate(
+                    R.id.action_payByGuestDialog_to_orderCompleteFragment,
+                    bundle
+                )
+
             }
+            else -> {
+                val bundle = Bundle()
+                bundle.putDouble("totalPrice", totalPrice + tipAmount)
+                bundle.putDouble("paymentAmount", paymentAmount)
+                orderId?.let { bundle.putInt("orderID", it) }
+                //bundle.putParcelable("receiptData", it.data)
+                bundle.putBoolean("isSpilt", false)
+                bundle.putBoolean("isDineIn", true)
+                bundle.putBoolean("isGuest", isGuestPay)
+                if (isLastPayment!!)
+                    bundle.putBoolean("isGuest", false)
 
-            //   findNavController().navigate(R.id.action_payByGuestDialog_to_dashboardCategoryNew)
 
-        } else {
-            val bundle = bundleOf("orderId" to orderId, "isGuestPaid" to true)
+                findNavController().navigate(
+                    R.id.action_payByGuestDialog_to_orderCompleteFragment,
+                    bundle
+                )
 
-            findNavController().navigate(
-                R.id.action_payByGuestDialog_to_dineInOrderTable,
-                bundle
-            )
+                prefProvider.setValue(Constants.SPLIT_PAY_AMOUNT_DINE_IN, "")
+                prefProvider.setValueInt(Constants.SPLIT_NO_DINE_IN, -1)
+                prefProvider.setValue(Constants.SPLIT_PAY_TYPE_DINE_IN, "")
+                prefProvider.setValueInt("ORDER_ID", -1)
+
+
+
+
+            }
         }
+
+//        } else {
+//            val bundle = bundleOf("orderId" to orderId, "isGuestPaid" to true)
+//
+//            findNavController().navigate(
+//                R.id.action_payByGuestDialog_to_dineInOrderTable,
+//                bundle
+//            )
+//        }
     }
 
     private fun setTotalPaymentData() {
@@ -557,6 +567,8 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
 
                 } else {
 
+                    guestPaySpit()
+
                     guestRequestModel?.let {
                         guestId?.let { it1 ->
                             isLastPayment?.let { it2 ->
@@ -576,22 +588,24 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
             }
 
             R.id.txtOriginalAmount -> {
-                if (isTotalPayment) {
-                    paymentAmount = when {
+                paymentAmount = when {
 
-                        isSplitByNo -> {
-                            (totalPrice + tipAmount) / splitValue
-                        }
-                        isSplitByAmount -> {
-                            splitAfterAmount
-                        }
-                        else -> {
-                            (totalPrice + tipAmount)
-                        }
+                    isSplitByNo -> {
+                        (totalPrice + tipAmount) / splitValue
                     }
+                    isSplitByAmount -> {
+                        splitAfterAmount
+                    }
+                    else -> {
+                        (totalPrice + tipAmount)
+                    }
+                }
+                if (isTotalPayment) {
+
                     makePayment(0.0)
 
                 } else {
+                    guestPaySpit()
 
                     guestRequestModel?.let {
                         guestId?.let { it1 ->
@@ -610,11 +624,13 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
 
             }
             R.id.txtSecondAmount -> {
+                paymentAmount = secondValue.toDouble()
                 if (isTotalPayment) {
-                    paymentAmount = secondValue.toDouble()
+
                     makePayment(0.0)
 
                 } else {
+                    guestPaySpit()
                     guestRequestModel?.let {
                         guestId?.let { it1 ->
                             isLastPayment?.let { it2 ->
@@ -632,11 +648,13 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
             }
 
             R.id.txtThirdAmount -> {
+                paymentAmount = thirdValue
                 if (isTotalPayment) {
-                    paymentAmount = thirdValue
+
                     makePayment(0.0)
 
                 } else {
+                    guestPaySpit()
                     guestRequestModel?.let {
                         guestId?.let { it1 ->
                             isLastPayment?.let { it2 ->
@@ -653,11 +671,13 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                 }
             }
             R.id.txtFourthAmount -> {
+                paymentAmount = fourthValue
                 if (isTotalPayment) {
-                    paymentAmount = fourthValue
+
                     makePayment(0.0)
 
                 } else {
+                    guestPaySpit()
                     guestRequestModel?.let {
                         guestId?.let { it1 ->
                             isLastPayment?.let { it2 ->
@@ -677,6 +697,44 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
 
         }
 
+    }
+
+    private fun guestPaySpit() {
+        if (splitValue != -1) {
+            guestRequestModel?.paymentAttributes!!.amount =
+                totalPrice / splitValue
+            guestRequestModel?.paymentAttributes!!.serviceChargeAmount =
+                totalServiceCharge / splitValue
+            guestRequestModel?.paymentAttributes!!.subTotal =
+                subTotalPrice / splitValue
+            guestRequestModel?.paymentAttributes!!.taxAmount =
+                totalTax / splitValue
+            guestRequestModel?.paymentAttributes!!.tips =
+                tipAmount / splitValue
+            guestRequestModel?.paymentAttributes!!.totalDiscount =
+                totaldiscount / splitValue
+
+            val guestPaymentAttributes = GuestPaymentAttributes()
+            guestPaymentAttributes.amount =
+                totalPrice / splitValue
+            guestPaymentAttributes.serviceChargeAmount =
+                totalServiceCharge / splitValue
+            guestPaymentAttributes.subTotal =
+                subTotalPrice / splitValue
+            guestPaymentAttributes.taxAmount =
+                totalTax / splitValue
+            guestPaymentAttributes.tips =
+                tipAmount / splitValue
+            guestPaymentAttributes.totalDiscount =
+                totaldiscount / splitValue
+            guestPaymentAttributes.payableType = guestRequestModel?.paymentAttributes!!.payableType
+            guestPaymentAttributes.paymentType = guestRequestModel?.paymentAttributes!!.paymentType
+            guestPaymentAttributes.offlineId = guestRequestModel?.paymentAttributes!!.offlineId
+            guestPaymentAttributes.order_id = guestRequestModel?.paymentAttributes!!.order_id
+
+            guestRequestModel?.paymentAttributes!!.paymentAttributes =
+                listOf(guestPaymentAttributes)
+        }
     }
 
     private fun makePayment(amounta: Double) {
@@ -866,145 +924,9 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                 AlertUtils.showCustomAlertWithListenerWithOK(requireContext(), str) { _, _ ->
 
 
-                    if (isTotalPayment) {
-
-//                        when {
-//                            isSplitByNo -> {
-//
-//                                var payAmount = (totalPrice + tipAmount) / splitValue
-//                                val bundle = Bundle()
-//                                bundle.putDouble("totalPrice", payAmount)
-//                                bundle.putDouble("paymentAmount", paymentAmount)
-//                                orderId?.let { bundle.putInt("orderID", it) }
-//                                // bundle.putParcelable("receiptData", it.data)
-//                                bundle.putBoolean("isSpilt", true)
-//                                bundle.putInt("splitValue", splitValue)
-//                                bundle.putDouble("remainingAmount", totalPrice - payAmount)
-//                                bundle.putBoolean("isDineIn", true)
-//                                findNavController().navigate(
-//                                    R.id.action_payByGuestDialog_to_orderCompleteFragment,
-//                                    bundle
-//                                )
-//
-//                                val splitPayAmount =
-//                                    prefProvider.getValue(Constants.SPLIT_PAY_AMOUNT_DINE_IN, "")
-//                                if (splitPayAmount.isNotEmpty()) {
-//                                    payAmount += splitPayAmount.toDouble()
-//                                }
-//
-//
-//                                prefProvider.setValue(
-//                                    Constants.SPLIT_PAY_TYPE_DINE_IN,
-//                                    Constants.SPLIT_NO_DINE_IN
-//                                )
-//                                prefProvider.setValue(
-//                                    Constants.SPLIT_PAY_AMOUNT_DINE_IN,
-//                                    payAmount.toString()
-//                                )
-//                                prefProvider.setValueInt(Constants.SPLIT_NO_DINE_IN, splitValue)
-//
-//                            }
-//                            isSplitByAmount -> {
-//
-//                                var payAmount = splitAfterAmount
-//                                val bundle = Bundle()
-//                                bundle.putDouble("totalPrice", payAmount)
-//                                bundle.putDouble("paymentAmount", paymentAmount)
-//                                orderId?.let { bundle.putInt("orderID", it) }
-////                                bundle.putParcelable("receiptData", it.data)
-//
-//
-//                                if (MethodUtils.roundOffAmountDouble(payAmount) != MethodUtils.roundOffAmountDouble(
-//                                        totalPrice
-//                                    )
-//                                ) {
-//
-//                                    bundle.putBoolean("isSpilt", true)
-//                                    bundle.putDouble("remainingAmount", totalPrice - payAmount)
-//
-//
-//                                    val splitPayAmount = prefProvider.getValue(
-//                                        Constants.SPLIT_PAY_AMOUNT_DINE_IN,
-//                                        ""
-//                                    )
-//                                    if (splitPayAmount.isNotEmpty()) {
-//                                        payAmount += splitPayAmount.toDouble()
-//                                    }
-//                                    prefProvider.setValue(
-//                                        Constants.SPLIT_PAY_AMOUNT_DINE_IN,
-//                                        payAmount.toString()
-//                                    )
-//                                    prefProvider.setValueInt(Constants.SPLIT_NO_DINE_IN, splitValue)
-//                                    prefProvider.setValue(
-//                                        Constants.SPLIT_PAY_TYPE_DINE_IN,
-//                                        Constants.SPLIT_PAY_AMOUNT_DINE_IN
-//                                    )
-//                                } else {
-//                                    bundle.putBoolean("isSpilt", false)
-//                                    bundle.putDouble("remainingAmount", totalPrice - payAmount)
-//
-//                                    prefProvider.setValue(Constants.SPLIT_PAY_AMOUNT_DINE_IN, "")
-//                                    prefProvider.setValueInt(Constants.SPLIT_NO_DINE_IN, -1)
-//                                    prefProvider.setValue(Constants.SPLIT_PAY_TYPE_DINE_IN, "")
-//                                }
-//
-//                                bundle.putBoolean("isDineIn", true)
-//                                findNavController().navigate(
-//                                    R.id.action_payByGuestDialog_to_orderCompleteFragment,
-//                                    bundle
-//                                )
-//
-//                            }
-//                            else -> {
-//                                val bundle = Bundle()
-//                                bundle.putDouble("totalPrice", totalPrice + tipAmount)
-//                                bundle.putDouble("paymentAmount", paymentAmount)
-//                                orderId?.let { bundle.putInt("orderID", it) }
-//                                //bundle.putParcelable("receiptData", it.data)
-//                                bundle.putBoolean("isSpilt", false)
-//                                bundle.putBoolean("isDineIn", true)
-//                                findNavController().navigate(
-//                                    R.id.action_payByGuestDialog_to_orderCompleteFragment,
-//                                    bundle
-//                                )
-//
-//                                prefProvider.setValue(Constants.SPLIT_PAY_AMOUNT, "")
-//                                prefProvider.setValueInt(Constants.SPLIT_NO, -1)
-//                                prefProvider.setValue(Constants.SPLIT_PAY_TYPE, "")
-//                                prefProvider.setValueInt("ORDER_ID", -1)
-//
-//
-//                            }
-//                        }
+                    gotoPay()
 
 
-                        // findNavController().navigate(R.id.action_payByGuestDialog_to_dashboardCategoryNew)
-                    } else {
-
-                        if (isLastPayment == true) {
-                            findNavController().navigate(R.id.action_payByGuestDialog_to_dashboardCategoryNew)
-
-                        } else {
-                            val bundle = Bundle()
-                            bundle.putBoolean("isGuestPaid", true)
-                            bundle.putParcelable("floorPlan", floorPlanModel)
-                            orderId?.let { bundle.putInt("orderId", it) }
-
-                            findNavController().navigate(
-                                R.id.action_payByGuestDialog_to_dineInOrderTable,
-                                bundle
-                            )
-
-                        }
-                    }
-                    /* val navController = findNavController()
-                     navController.previousBackStackEntry?.savedStateHandle?.set(
-                         com.android.pos.data.remote.Constants.KEY,
-                         Constants.GUESTPAID
-                     )
-
-                     navController.popBackStack()
- */
                 }
 
             }
@@ -1039,12 +961,10 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
 
             }
 
-            val model = OrderRequestModel(
+            return OrderRequestModel(
                 completed_all_payments = false,
                 order = orderModel
             )
-
-            return model
         } else {
 
             orderModel.apply {
@@ -1069,12 +989,10 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
 
             }
 
-            val model = OrderRequestModel(
+            return OrderRequestModel(
                 completed_all_payments = true,
                 order = orderModel
             )
-
-            return model
         }
 
 

@@ -58,6 +58,10 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun customerList() =
         getResult { apiService.customerList() }
 
+
+    suspend fun customerListPagination(data: HashMap<String, String>) =
+        getResult { apiService.customerListPagination(data) }
+
     suspend fun getTaxList() =
         getResult { apiService.getTaxList() }
 
