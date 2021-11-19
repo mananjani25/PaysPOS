@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
-import com.android.pos.data.model.GetPaymentOrderDetailsResponse
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.databinding.ViewRefundItemBinding
 import com.android.pos.ui.fragments.transactions.TransactionDetailsViewModel
@@ -18,7 +17,7 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
     var showItemSubTotal: (() -> Unit)? = null
     var selectedItemList = ArrayList<GetOrderDetailsResponse.Data.OrderItem>()
     var noteList = ArrayList<GetOrderDetailsResponse.Data.OrderItem>()
-    var serviceCharge:Double=0.0
+    var serviceCharge: Double = 0.0
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -31,7 +30,7 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
 
     fun addItems(
         noteList: List<GetOrderDetailsResponse.Data.OrderItem>,
-        serviceCharge:Double
+        serviceCharge: Double
     ) {
         this.noteList.apply {
             clear()
@@ -79,13 +78,14 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
             var totalTax = 0.0
             var totalServiceCharge = 0.0
 
-            var totalItemPrice:Double = (item.totalPrice - item.discountAmount).toDouble()
+            var totalItemPrice: Double = (item.totalPrice - item.discountAmount).toDouble()
 
 
             item.orderItemTaxes.forEach { tax ->
 
 
-                totalTax += tax.amount!!
+                if (tax.amount != null)
+                    totalTax += tax.amount
             }
 
             item.orderItemModifiers.forEach { modifiers ->
@@ -95,7 +95,7 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
                 }
 
             }
-            
+
             totalItemPrice += totalTax + serviceCharge
             MethodUtils.setPriceTextView(itemBinding.tvItemPrice, totalItemPrice.toDouble())
 
