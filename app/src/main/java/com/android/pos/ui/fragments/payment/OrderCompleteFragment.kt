@@ -701,10 +701,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         Builder.COLOR_1
                     )
 
-                    Log.e(
-                        TAG,
-                        "ConvertDateTime:  ${getReceiptFormatDateFromUTCServer(receiptModel?.order?.createdAt.toString())}"
-                    )
                     builder.addText(
                         padLine(
                             if (customerSettingModel.showTeam) {
@@ -1334,7 +1330,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 )
 
                 PrinterClass.closePrinter()
-                findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
+               // findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
                 //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
             } catch (e: Exception) {
                 PrinterClass.closePrinter()
