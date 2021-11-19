@@ -328,7 +328,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private fun checkDineInEditOrder() {
         if (arguments?.getBoolean("is_dine_in_edit") == true) {
             var dineInList = arguments?.getParcelableArrayList<DineInModel>("dine_in_list")
-            Log.e(TAG, "dineInListEditOrder:  ${Gson().toJson(dineInList)}")
+
             if (dineInList?.isNotEmpty() == true) {
                 binding.layoutCart.txtOrderType.setText("Dine In")
 
@@ -366,6 +366,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                 Log.e(TAG, "PassedDineInListSize  ${Gson().toJson(dineInList)}")
                 viewModel.cartLogic(cartList, null, ADD, dineInList = dineInList)
+                viewModel.orderItemDiscount  = arguments?.getDouble("totalDiscount") ?: 0.0
+                Log.e(TAG, "dashTotalDis  ${arguments?.getDouble("totalDiscount")}")
 
             }
 
