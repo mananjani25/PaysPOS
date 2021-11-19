@@ -1,6 +1,7 @@
 package com.android.pos.data.repositories
 
 import com.android.pos.data.db.AppDatabase
+import com.android.pos.data.entities.LoyaltyProgramsModel
 import com.android.pos.data.entities.TaxData
 import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.entities.TeamRole
@@ -102,6 +103,9 @@ class TaxServiceChargeRepository @Inject constructor(
 
     suspend fun deleteLoyaltyPointDatabase(serChargeId: Int) =
         appDatabase.loyaltyProgramsDao().deleteTipById(serChargeId)
+
+    suspend fun addLoyaltyPointDatabase(loyaltyProgramsModel: LoyaltyProgramsModel) =
+        appDatabase.loyaltyProgramsDao().add(loyaltyProgramsModel)
 
     fun getTeamRoleList() =
         performGetOperation(
