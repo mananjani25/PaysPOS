@@ -29,10 +29,10 @@ class LoyaltyPointFragment : Fragment() {
     private lateinit var binding: LoyaltyPointFragmentBinding
 
     private var position: Int = -1
-    private lateinit var discountListUpdateDelete: ArrayList<LoyaltyProgramsModel>
+    private lateinit var loyaltyProgramListUpdateDelete: ArrayList<LoyaltyProgramsModel>
     private val viewModel by viewModels<LoyaltyPointViewModel>()
-    private lateinit var serviceChargeListadapter: LoyaltyPointAdapter
-    private lateinit var serviceChargeObject: LoyaltyProgramsModel
+    private lateinit var loyaltyPointAdapter: LoyaltyPointAdapter
+    private lateinit var loyaltyProgramsModel: LoyaltyProgramsModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,10 +44,10 @@ class LoyaltyPointFragment : Fragment() {
         binding.lifecycleOwner = this
 
         setUpRecyclerView()
-        getTaxListObserver()
+        getLoyaltyPointListObserver()
         setupSnackbar()
         observeShowProgress()
-        deleteServiceCharge()
+        deleteLoyaltyPoint()
         notifyAdapter()
         initListeners()
 
@@ -69,8 +69,8 @@ class LoyaltyPointFragment : Fragment() {
     }
 
     private fun setUpRecyclerView() {
-        serviceChargeListadapter = LoyaltyPointAdapter(viewModel)
-        binding.rvServiceCharge.adapter = serviceChargeListadapter
+        loyaltyPointAdapter = LoyaltyPointAdapter(viewModel)
+        binding.rvServiceCharge.adapter = loyaltyPointAdapter
 
         object : SwipeHelper(activity, binding.rvServiceCharge) {
             override fun instantiateUnderlayButton(
@@ -78,16 +78,17 @@ class LoyaltyPointFragment : Fragment() {
                 underlayButtons: MutableList<UnderlayButton?>
             ) {
 
-                underlayButtons.add(UnderlayButton(
-                    "Edit",
-                    0,
+                underlayButtons.add(
+                    UnderlayButton(
+                        "Edit",
+                        0,
                     Color.parseColor("#2997cc")
                 ) { pos ->
 
-                    serviceChargeObject = serviceChargeListadapter.getItem(pos)
+                        loyaltyProgramsModel = loyaltyPointAdapter.getItem(pos)
                     val bundle = Bundle()
                     bundle.putBoolean("isEdit", true)
-                    val loyaltyObj = serviceChargeListadapter.getItem(pos)
+                        val loyaltyObj = loyaltyPointAdapter.getItem(pos)
                     bundle.putParcelable("loyaltyObject", loyaltyObj)
                     findNavController().navigate(
                         R.id.action_settings_to_createLoyaltyPointFragment,
@@ -109,8 +110,8 @@ class LoyaltyPointFragment : Fragment() {
                     ) {
                         positiveButton(getString(R.string.tv_delete)) {
                             // Do positive stuff here
-                            serviceChargeObject = serviceChargeListadapter.getItem(pos)
-                            viewModel.delete(serviceChargeListadapter.getItem(pos).id)
+                            loyaltyProgramsModel = loyaltyPointAdapter.getItem(pos)
+                            viewModel.delete(loyaltyPointAdapter.getItem(pos).id)
                         }
                         negativeButton(R.string.tv_cancel) {
                             // Do negative stuff here
@@ -121,7 +122,7 @@ class LoyaltyPointFragment : Fragment() {
         }
     }
 
-    private fun getTaxListObserver() {
+    private fun getLoyaltyPointListObserver() {
         viewModel.loyaltyPoints.observe(viewLifecycleOwner, {
 
 
@@ -149,7 +150,8 @@ class LoyaltyPointFragment : Fragment() {
     private fun notifyAdapter() {
         viewModel.notifydata.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
-                serviceChargeListadapter.notifyDataSetChanged()
+
+                loyaltyPointAdapter.update(it)
             }
         })
     }
@@ -169,24 +171,24 @@ class LoyaltyPointFragment : Fragment() {
     }
 
     private fun setTaxData(taxList: List<LoyaltyProgramsModel>) {
-        discountListUpdateDelete = taxList as ArrayList<LoyaltyProgramsModel>
-        serviceChargeListadapter.apply {
+        loyaltyProgramListUpdateDelete = taxList as ArrayList<LoyaltyProgramsModel>
+        loyaltyPointAdapter.apply {
             addServiceCharge(taxList)
             notifyDataSetChanged()
         }
     }
 
-    private fun deleteServiceCharge() {
+    private fun deleteLoyaltyPoint() {
 
         viewModel.data.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
                 AlertUtils.showCustomAlert(requireActivity(), it.message)
-                discountListUpdateDelete.remove(serviceChargeObject)
-                serviceChargeListadapter.addServiceCharge(discountListUpdateDelete)
-                serviceChargeListadapter.notifyItemRemoved(position)
-                serviceChargeListadapter.notifyItemRangeChanged(
+                loyaltyProgramListUpdateDelete.remove(loyaltyProgramsModel)
+                loyaltyPointAdapter.addServiceCharge(loyaltyProgramListUpdateDelete)
+                loyaltyPointAdapter.notifyItemRemoved(position)
+                loyaltyPointAdapter.notifyItemRangeChanged(
                     position,
-                    discountListUpdateDelete.size
+                    loyaltyProgramListUpdateDelete.size
                 )
 
             }
