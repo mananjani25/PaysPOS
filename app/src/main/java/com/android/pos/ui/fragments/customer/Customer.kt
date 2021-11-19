@@ -14,22 +14,19 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
+import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.entities.TbCustomer
-import com.android.pos.data.model.CustomerDetailModel
-import com.android.pos.data.model.CustomerModel
-import com.android.pos.data.model.responseModel.EmployeeListResponse
 import com.android.pos.data.remote.Constants.CUSTOMERDETAILS
 import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.databinding.FragmentCustomerBinding
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.CustomerListAdapter
-import com.android.pos.ui.fragments.team.TeamListViewModel
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.SwipeHelper
-import com.android.pos.utils.SwipeHelperNew
+import com.android.pos.utils.callback.PaginationScrollListener
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.statusUtils.Status
@@ -46,7 +43,13 @@ class Customer : Fragment() {
         arrayListOf()
     private var dialog: Dialog? = null
     private val TAG = "Customer"
+    private var currentpage = 1
+    private val perpagedata = 50
+    private var isLoading = false
+    private var isLastPage = false
+    private var firstDetailLoad = false
 
+    val data = LinkedHashMap<String, String>()
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -70,9 +73,44 @@ class Customer : Fragment() {
         dialog?.setContentView(R.layout.dialog_customer)
 
         binding.lifecycleOwner = this
+
+
         // loadCustomerList()
         setUpRecyclerView()
-        loadCustomerLocalList()
+        loadCustomerLocalList(currentpage)
+
+        val layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        binding.rvEmployeeList.layoutManager = layoutManager
+
+        binding.rvEmployeeList.addOnScrollListener(object :
+            PaginationScrollListener(layoutManager) {
+
+
+            override fun isLastPage(): Boolean {
+                return isLastPage
+            }
+
+            override fun isLoading(): Boolean {
+                return isLoading
+            }
+
+            override fun getTotalPageCount(): Int {
+                return 0
+            }
+
+
+            override fun loadMoreItems() {
+                if (dynamicCustomerList.size >= perpagedata) {
+                    isLoading = true
+                    currentpage += 1
+                    loadCustomerLocalList(currentpage)
+                }
+            }
+
+        })
+
+
         return binding.root
     }
 
@@ -130,12 +168,13 @@ class Customer : Fragment() {
         }
     }
 
-    private fun loadCustomerLocalList() {
-
-
-        //viewModel.clearDataBase()
-
-        viewModel.customerList().observe(viewLifecycleOwner, {
+    private fun loadCustomerLocalList(currentpage: Int) {
+        data["page"] = currentpage.toString()
+        data["per_page"] = perpagedata.toString()
+        if (currentpage == 1) {
+            firstDetailLoad = false
+        }
+        viewModel.customerList(data).observe(viewLifecycleOwner, {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
@@ -154,7 +193,9 @@ class Customer : Fragment() {
                             //setUpRecyclerView()
 
                             try {
-                                loadFragment(data[0])
+                                if (!firstDetailLoad) {
+                                    loadFragment(data[0])
+                                }
                             } catch (e: Exception) {
 
                             }
@@ -206,7 +247,7 @@ class Customer : Fragment() {
                 when (it) {
                     CUSTOMERDETAILS -> {
                         Log.e(TAG, "UpdateLoadList")
-                        viewModel.customerList()
+                        viewModel.customerList(data)
 
                     }
 
@@ -244,7 +285,7 @@ class Customer : Fragment() {
 
     private fun loadFragment(model: TbCustomer) {
 
-
+        firstDetailLoad = true
         val frag = CustomerDetails.newInstance(model)
         val fm: FragmentManager = requireActivity().supportFragmentManager
         fm.beginTransaction().replace(binding.frameContainer.id, frag).commit()
@@ -252,7 +293,7 @@ class Customer : Fragment() {
 
 
     private fun configureToolbar() {
-        binding.layoutTool.txtTitle.setText("Customers")
+        binding.layoutTool.txtTitle.text = "Customers"
 
         binding.layoutTool.imgDrawer.setOnClickListener {
             (requireActivity() as MainActivity).enableDrawer()

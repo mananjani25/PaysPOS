@@ -15,6 +15,7 @@ import com.android.pos.R
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.GetFloorPlanResponse
+import com.android.pos.data.model.responseModel.GuestPaymentAttributes
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.LOCATION_ID
@@ -566,6 +567,8 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
 
                 } else {
 
+                    guestPaySpit()
+
                     guestRequestModel?.let {
                         guestId?.let { it1 ->
                             isLastPayment?.let { it2 ->
@@ -585,22 +588,24 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
             }
 
             R.id.txtOriginalAmount -> {
-                if (isTotalPayment) {
-                    paymentAmount = when {
+                paymentAmount = when {
 
-                        isSplitByNo -> {
-                            (totalPrice + tipAmount) / splitValue
-                        }
-                        isSplitByAmount -> {
-                            splitAfterAmount
-                        }
-                        else -> {
-                            (totalPrice + tipAmount)
-                        }
+                    isSplitByNo -> {
+                        (totalPrice + tipAmount) / splitValue
                     }
+                    isSplitByAmount -> {
+                        splitAfterAmount
+                    }
+                    else -> {
+                        (totalPrice + tipAmount)
+                    }
+                }
+                if (isTotalPayment) {
+
                     makePayment(0.0)
 
                 } else {
+                    guestPaySpit()
 
                     guestRequestModel?.let {
                         guestId?.let { it1 ->
@@ -619,11 +624,13 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
 
             }
             R.id.txtSecondAmount -> {
+                paymentAmount = secondValue.toDouble()
                 if (isTotalPayment) {
-                    paymentAmount = secondValue.toDouble()
+
                     makePayment(0.0)
 
                 } else {
+                    guestPaySpit()
                     guestRequestModel?.let {
                         guestId?.let { it1 ->
                             isLastPayment?.let { it2 ->
@@ -641,11 +648,13 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
             }
 
             R.id.txtThirdAmount -> {
+                paymentAmount = thirdValue
                 if (isTotalPayment) {
-                    paymentAmount = thirdValue
+
                     makePayment(0.0)
 
                 } else {
+                    guestPaySpit()
                     guestRequestModel?.let {
                         guestId?.let { it1 ->
                             isLastPayment?.let { it2 ->
@@ -662,11 +671,13 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                 }
             }
             R.id.txtFourthAmount -> {
+                paymentAmount = fourthValue
                 if (isTotalPayment) {
-                    paymentAmount = fourthValue
+
                     makePayment(0.0)
 
                 } else {
+                    guestPaySpit()
                     guestRequestModel?.let {
                         guestId?.let { it1 ->
                             isLastPayment?.let { it2 ->
@@ -686,6 +697,44 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
 
         }
 
+    }
+
+    private fun guestPaySpit() {
+        if (splitValue != -1) {
+            guestRequestModel?.paymentAttributes!!.amount =
+                totalPrice / splitValue
+            guestRequestModel?.paymentAttributes!!.serviceChargeAmount =
+                totalServiceCharge / splitValue
+            guestRequestModel?.paymentAttributes!!.subTotal =
+                subTotalPrice / splitValue
+            guestRequestModel?.paymentAttributes!!.taxAmount =
+                totalTax / splitValue
+            guestRequestModel?.paymentAttributes!!.tips =
+                tipAmount / splitValue
+            guestRequestModel?.paymentAttributes!!.totalDiscount =
+                totaldiscount / splitValue
+
+            val guestPaymentAttributes = GuestPaymentAttributes()
+            guestPaymentAttributes.amount =
+                totalPrice / splitValue
+            guestPaymentAttributes.serviceChargeAmount =
+                totalServiceCharge / splitValue
+            guestPaymentAttributes.subTotal =
+                subTotalPrice / splitValue
+            guestPaymentAttributes.taxAmount =
+                totalTax / splitValue
+            guestPaymentAttributes.tips =
+                tipAmount / splitValue
+            guestPaymentAttributes.totalDiscount =
+                totaldiscount / splitValue
+            guestPaymentAttributes.payableType = guestRequestModel?.paymentAttributes!!.payableType
+            guestPaymentAttributes.paymentType = guestRequestModel?.paymentAttributes!!.paymentType
+            guestPaymentAttributes.offlineId = guestRequestModel?.paymentAttributes!!.offlineId
+            guestPaymentAttributes.order_id = guestRequestModel?.paymentAttributes!!.order_id
+
+            guestRequestModel?.paymentAttributes!!.paymentAttributes =
+                listOf(guestPaymentAttributes)
+        }
     }
 
     private fun makePayment(amounta: Double) {
@@ -877,19 +926,6 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
 
                     gotoPay()
 
-//                    if (!isTotalPayment) {
-//
-//                        val bundle = Bundle()
-//                        bundle.putBoolean("isGuestPaid", true)
-//                        bundle.putParcelable("floorPlan", floorPlanModel)
-//                        orderId?.let { bundle.putInt("orderId", it) }
-//
-//                        findNavController().navigate(
-//                            R.id.action_payByGuestDialog_to_dineInOrderTable,
-//                            bundle
-//                        )
-//
-//                    }
 
                 }
 

@@ -703,7 +703,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             orderAttributeRequestModel.customer_id = customerId
         }
 
-        orderAttributeRequestModel.paymentAttributes =
+      /*  orderAttributeRequestModel.paymentAttributes =
             paymentAttributes(
                 cartModel,
                 totalPrice,
@@ -712,7 +712,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 totalTax,
                 totalDiscount, tipAmount
             )
-
+*/
         orderAttributeRequestModel.orderServiceChargesAttributes =
             orderServiceChargesAttributes(cartModel, subTotalPrice)
 
