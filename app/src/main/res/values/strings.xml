@@ -320,6 +320,7 @@
     <string name="tv_delete">Delete</string>
     <string name="symbole">$&#160;</string>
     <string name="percentage_symbol">%</string>
+    <string name="dollar_symbol">$</string>
     <string name="format">%.2f</string>
     <string name="zero">0.00</string>
     <string name="itemPrice">%s</string>
@@ -610,6 +611,14 @@
     <string name="reorder">Reorder</string>
     <string name="pay_type">Amount &amp; Pay Type</string>
     <string name="enroll_to_loyalty">Enroll to Loyalty Program</string>
+    <string name="loyalty_name">Loyalty Name</string>
+    <string name="loyalty_value">LOYALTY VALUE</string>
+    <string name="percentage_value">Percentage Value</string>
+    <string name="amount_value">Amount Value</string>
+    <string name="loyalty_target">Loyalty Target</string>
+    <string name="number_of_points_required_to_get_the_reward">(Number of points required to get the reward)</string>
+    <string name="error_loyalty_name_blank">Please Enter Loyalty Name</string>
+    <string name="error_loyalty_point_blank">Please Enter Loyalty Target</string>
 
 
 </resources>

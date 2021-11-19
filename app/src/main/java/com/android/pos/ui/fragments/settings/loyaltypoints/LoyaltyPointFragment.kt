@@ -5,18 +5,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.entities.LoyaltyProgramsModel
-import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.databinding.LoyaltyPointFragmentBinding
-import com.android.pos.databinding.ServiceChargeFragmentBinding
 import com.android.pos.ui.adapter.LoyaltyPointAdapter
-import com.android.pos.ui.adapter.ServiceChargeListAdapter
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.SwipeHelper
@@ -53,8 +49,16 @@ class LoyaltyPointFragment : Fragment() {
         observeShowProgress()
         deleteServiceCharge()
         notifyAdapter()
+        initListeners()
 
         return binding.root
+    }
+
+    private fun initListeners() {
+        binding.txtAddLoyaltyProgram.setOnClickListener {
+
+            findNavController().navigate(R.id.action_settings_to_createLoyaltyPointFragment)
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -83,14 +87,12 @@ class LoyaltyPointFragment : Fragment() {
                     serviceChargeObject = serviceChargeListadapter.getItem(pos)
                     val bundle = Bundle()
                     bundle.putBoolean("isEdit", true)
-                    // bundle.putParcelable("serviceChargeObject", serviceChargeObject)
-
-                    //     var bundle= bundleOf()
+                    val loyaltyObj = serviceChargeListadapter.getItem(pos)
+                    bundle.putParcelable("loyaltyObject", loyaltyObj)
                     findNavController().navigate(
-                        R.id.action_settings_to_addServiceCharge,
+                        R.id.action_settings_to_createLoyaltyPointFragment,
                         bundle
                     )
-
                 })
 
                 underlayButtons.add(UnderlayButton(

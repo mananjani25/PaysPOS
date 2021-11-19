@@ -1,10 +1,13 @@
 package com.android.pos.data.entities
 
 
+import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 @Entity(tableName = "LoyaltyPrograms")
 data class LoyaltyProgramsModel(
     @SerializedName("amount")
@@ -26,4 +29,4 @@ data class LoyaltyProgramsModel(
     val rewardType: String,
     @SerializedName("updated_at")
     val updatedAt: String
-)
+): Parcelable

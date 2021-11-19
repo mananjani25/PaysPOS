@@ -58,6 +58,7 @@ import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
 import com.android.pos.data.remote.Constants.ORDER_TYPE_NAME
 import com.android.pos.data.remote.Constants.PERCENTAGE
+import com.android.pos.data.remote.Constants.ROYALTY_POINTS
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.remote.Constants.UPDATE
 import com.android.pos.data.remote.Constants.VERTICAL
@@ -70,9 +71,7 @@ import com.android.pos.utils.*
 import com.android.pos.utils.MethodUtils.Companion.isDoubleClick
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.callback.MyCallback
-import com.android.pos.utils.extensions.alert
-import com.android.pos.utils.extensions.getNavigationResultLiveData
-import com.android.pos.utils.extensions.liveSnackBar
+import com.android.pos.utils.extensions.*
 import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.statusUtils.Status
 import com.epson.eposprint.Builder
@@ -259,7 +258,19 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             binding.layoutCart.txtCustomerName.text =
                 prefProvider.getValue(CUSTOMER_NAME, "").toString()
             removeCustomerViewSet()
+
+            //royalty
+            if (prefProvider.getValue(ROYALTY_POINTS, "").isNotEmpty()) {
+                binding.layoutCart.txtRoyaltyPoints.visible()
+                binding.layoutCart.txtRoyaltyPoints.text =
+                    prefProvider.getValue(ROYALTY_POINTS, "")
+            } else {
+                binding.layoutCart.txtRoyaltyPoints.gone()
+            }
+        } else {
+            binding.layoutCart.txtRoyaltyPoints.gone()
         }
+
 
         setFragmentResultListener("request_key_customer") { requestKey: String, bundle: Bundle ->
             val result = bundle.getParcelable<TbCustomer>("data")
@@ -386,6 +397,16 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     ) {
         prefProvider.setValue(CUSTOMER_NAME, result.first_name + " " + result.last_name)
         binding.layoutCart.txtCustomerName.text = result.first_name + " " + result.last_name
+        //royalty
+        if (result.enroll_to_loyalty == true) {
+            prefProvider.setValue(ROYALTY_POINTS, "${result.final_reward}")
+            binding.layoutCart.txtRoyaltyPoints.visible()
+            binding.layoutCart.txtRoyaltyPoints.text =
+                "${getString(R.string.loyalty_points)}: ${result.final_reward}"
+        } else {
+            binding.layoutCart.txtRoyaltyPoints.gone()
+        }
+
         removeCustomerViewSet()
         assignCustomer = result
 
@@ -508,23 +529,23 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             var dineList: List<DineInModel>? =
                                 cartList.get(0).dineInList
 
-                           /* if (dineList != null) {
+                            /* if (dineList != null) {
 
-                                for (i in 0 until dineList.size) {
-                                    if (dineList.get(i).items != null && dineList.get(i).items.isNotEmpty()) {
-                                        var itr = dineList.get(i).items.iterator()
-                                        while (itr.hasNext()) {
-                                            if (itr.next().isDestroy && itr.next().isEdited) {
-                                                dineList.get(i).items.remove(itr.next())
-                                            }
-                                        }
-
-
+                                 for (i in 0 until dineList.size) {
+                                     if (dineList.get(i).items != null && dineList.get(i).items.isNotEmpty()) {
+                                         var itr = dineList.get(i).items.iterator()
+                                         while (itr.hasNext()) {
+                                             if (itr.next().isDestroy && itr.next().isEdited) {
+                                                 dineList.get(i).items.remove(itr.next())
+                                             }
+                                         }
 
 
-                                    }
-                                }
-                            }*/
+
+
+                                     }
+                                 }
+                             }*/
 
                             if (dineList != null) {
                                 Log.e(TAG, "PassesdineList: ${Gson().toJson(dineList)}")
@@ -706,10 +727,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             for (j in categoryList1[i].inventoryLists!!.indices) {
                 searchList.add(
                     CategorySearchData(
-                        categoryList1[i].inventoryLists?.get(j)?.itemId?:0,
-                        categoryList1[i].inventoryLists?.get(j)?.name?:"",
+                        categoryList1[i].inventoryLists?.get(j)?.itemId ?: 0,
+                        categoryList1[i].inventoryLists?.get(j)?.name ?: "",
                         categoryList1.get(i).inventoryLists?.get(j)?.imageUrl.toString(),
-                        categoryList1.get(i).category.name?:"",
+                        categoryList1.get(i).category.name ?: "",
                         categoryList1[i].category.id
                     )
                 )
@@ -1078,7 +1099,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                                     tabList.add(
                                         CategoryTabModel(
                                             categoryList1[i].category.id,
-                                            categoryList1[i].category.name?:"",
+                                            categoryList1[i].category.name ?: "",
                                             true,
                                             0
                                         )
@@ -1087,7 +1108,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                                     tabList.add(
                                         CategoryTabModel(
                                             categoryList1[i].category.id,
-                                            categoryList1[i].category.name?:"",
+                                            categoryList1[i].category.name ?: "",
                                             false,
                                             0
                                         )
@@ -1447,17 +1468,17 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         txtQty.setText(qty.toString())
 
         variationAdapter?.showVariationPriceClick = { it: VariationsAttribute ->
-            if (!isDoubleClick()){
+            if (!isDoubleClick()) {
                 if (it.priceType == "Variable") {
-                val bundle = Bundle().apply {
-                    putParcelable("variationAttribute", it)
+                    val bundle = Bundle().apply {
+                        putParcelable("variationAttribute", it)
+                    }
+                    findNavController().navigate(
+                        R.id.action_dashboardCategoryNew_to_addVariablePriceDialog, bundle
+                    )
+                } else if (it.priceType == "Fixed") {
+                    showPriceTitle(it, variationAdapter = null, data, txtTitle, isItemClick)
                 }
-                findNavController().navigate(
-                    R.id.action_dashboardCategoryNew_to_addVariablePriceDialog, bundle
-                )
-            } else if (it.priceType == "Fixed") {
-                showPriceTitle(it, variationAdapter = null, data, txtTitle, isItemClick)
-            }
             }
         }
 
@@ -2164,7 +2185,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private fun clearCustomer() {
         binding.layoutCart.txtCrtNewCustomer.text = "Add Customer"
         binding.layoutCart.txtCustomerName.text = "Add Customer"
+        binding.layoutCart.txtRoyaltyPoints.gone()
+        binding.layoutCart.txtRoyaltyPoints.text = ""
         prefProvider.setValue(CUSTOMER_NAME, "")
+        prefProvider.setValue(ROYALTY_POINTS, "")
         prefProvider.setValueInt(CUSTOMER_ID, -1)
     }
 
@@ -3282,7 +3306,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     }
 
-    private fun clearUpdateFlag(){
+    private fun clearUpdateFlag() {
         isOrderUpdate = false
         prefProvider.setValueboolean(IS_ORDER_UPDATE, value = false)
         requireArguments().remove("update")
