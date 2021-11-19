@@ -120,19 +120,69 @@
                     android:layout_height="1dp"
                     android:background="@color/view" />
 
-
-                <androidx.appcompat.widget.SwitchCompat
-                    android:id="@+id/swtCreateLoyalty"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_gravity="center"
-                    android:checked="true"
-                    android:onCheckedChanged="@{(button, bool)-> createLoyaltyFragment.discountType(bool)}"
-                    android:padding="@dimen/_5sdp"
-                    android:text="@string/percentage_value"
-                    android:textSize="@dimen/_6mdpi"
-                    app:theme="@style/AppTheme" />
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1">
+
+                        <TextView
+                            android:id="@+id/tvSymbolDollar"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/_3sdp"
+                            android:fontFamily="@font/sf_pro_display_semibold"
+                            android:text="@string/symbole"
+                            android:textColor="@color/viewTextColor"
+                            android:textSize="@dimen/_5mdpi"
+                            android:visibility="gone" />
+
+                        <TextView
+                            android:id="@+id/tvSymbolPer"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/_5sdp"
+                            android:fontFamily="@font/sf_pro_display_semibold"
+                            android:text="@string/percentage_symbol"
+                            android:textColor="@color/viewTextColor"
+                            android:textSize="@dimen/_5mdpi"
+                            android:visibility="gone" />
+
+                        <androidx.appcompat.widget.AppCompatEditText
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@null"
+                            android:hint="0%"
+                            android:imeOptions="actionNext"
+                            android:inputType="numberDecimal"
+                            android:paddingStart="@dimen/_5sdp"
+                            android:paddingTop="@dimen/_5sdp"
+                            android:paddingBottom="@dimen/_5sdp"
+                            android:text="@={``+viewModel.loyaltyAmount}"
+                            android:textColor="@color/black"
+                            android:textColorHint="@color/hintColor"
+                            android:textSize="@dimen/_5mdpi" />
+
+                    </LinearLayout>
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/swtCreateLoyalty"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:checked="true"
+                        android:onCheckedChanged="@{(button, bool)-> createLoyaltyFragment.discountType(bool)}"
+                        android:padding="@dimen/_5sdp"
+                        android:text="@string/percentage_value"
+                        android:textSize="@dimen/_6mdpi"
+                        app:theme="@style/AppTheme" />
+                </LinearLayout>
+
 
                 <View
                     android:layout_width="match_parent"
@@ -160,9 +210,9 @@
                     android:background="@drawable/background_white_with_border"
                     android:hint="@string/loyalty_target"
                     android:imeOptions="actionNext"
-                    android:inputType="number"
+                    android:inputType="numberDecimal"
                     android:padding="@dimen/_5sdp"
-                    android:text="@={viewModel.loyaltyTarget}"
+                    android:text="@={``+viewModel.loyaltyTarget}"
                     android:textColor="@color/black"
                     android:textColorHint="@color/hintColor"
                     android:textSize="@dimen/_5mdpi" />

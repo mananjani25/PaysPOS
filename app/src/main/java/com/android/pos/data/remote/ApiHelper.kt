@@ -458,4 +458,12 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun getOrderHistory(id: String) = getResult {
         apiService.getCustomerOrderHistory(id)
     }
+
+    suspend fun createLoyaltyPoint(loyaltyPointRequest: LoyaltyPointRequest) = getResult {
+        apiService.createLoyaltyPoint(loyaltyPointRequest)
+    }
+
+    suspend fun editLoyaltyPoint(loyaltyPointRequest: LoyaltyPointRequest) = getResult {
+        apiService.editLoyaltyPoint("${loyaltyPointRequest.id}", loyaltyPointRequest)
+    }
 }

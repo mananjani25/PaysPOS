@@ -617,6 +617,8 @@
     <string name="amount_value">Amount Value</string>
     <string name="loyalty_target">Loyalty Target</string>
     <string name="number_of_points_required_to_get_the_reward">(Number of points required to get the reward)</string>
+    <string name="error_loyalty_name_blank">Please Enter Loyalty Name</string>
+    <string name="error_loyalty_point_blank">Please Enter Loyalty Target</string>
 
 
 </resources>

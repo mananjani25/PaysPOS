@@ -10,13 +10,19 @@ import com.android.pos.data.model.responseModel.GetKitchenReceiptSettingsRespons
 import com.android.pos.data.remote.ApiHelper
 import com.android.pos.utils.performGetOperation
 import com.android.pos.utils.performGetOperationDatabase
-import java.util.HashMap
+import java.util.*
 import javax.inject.Inject
 
 class TaxServiceChargeRepository @Inject constructor(
     private val appDatabase: AppDatabase,
     private val apiHelperNew: ApiHelper
 ) {
+
+    suspend fun createLoyaltyPoint(loyaltyPointRequest: LoyaltyPointRequest) =
+        apiHelperNew.createLoyaltyPoint(loyaltyPointRequest)
+
+    suspend fun editLoyaltyPoint(loyaltyPointRequest: LoyaltyPointRequest) =
+        apiHelperNew.editLoyaltyPoint(loyaltyPointRequest)
 
     fun getTaxList() =
         performGetOperation(

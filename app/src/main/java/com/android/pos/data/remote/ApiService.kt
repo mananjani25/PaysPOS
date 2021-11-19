@@ -619,7 +619,7 @@ interface ApiService {
         @Body guestPaymentRequest: GuestPaymentRequest,
 
 
-    ): BaseResponse
+        ): BaseResponse
 
 
     @PUT(ORDER_DETAILS)
@@ -642,4 +642,13 @@ interface ApiService {
     suspend fun getCustomerOrderHistory(
         @Path("id") id: String
     ): OrderHistoryResponse
+
+    @POST(LOYALTY_POINT)
+    suspend fun createLoyaltyPoint(@Body loyaltyPointRequest: LoyaltyPointRequest): CreateLoyaltyPointResponse
+
+    @PUT(LOYALTY_POINT_UPDATE_DELETE)
+    suspend fun editLoyaltyPoint(
+        @Path("id") id: String,
+        @Body loyaltyPointRequest: LoyaltyPointRequest
+    ): CreateLoyaltyPointResponse
 }

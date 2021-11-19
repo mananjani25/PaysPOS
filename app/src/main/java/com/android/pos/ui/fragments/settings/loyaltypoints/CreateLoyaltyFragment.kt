@@ -9,7 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
-import com.android.pos.data.entities.TbDiscount
+import com.android.pos.data.entities.LoyaltyProgramsModel
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentCreateLoyaltyBinding
 import com.android.pos.utils.AlertUtils
@@ -26,7 +26,7 @@ class CreateLoyaltyFragment : Fragment() {
     private val viewModel by viewModels<LoyaltyPointViewModel>()
 
     var isEdit: Boolean = false
-    private lateinit var discountData: TbDiscount
+    private var loyaltyProgramsModel: LoyaltyProgramsModel? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,6 +38,7 @@ class CreateLoyaltyFragment : Fragment() {
         binding.createLoyaltyFragment = this
         binding.viewModel = viewModel
         initControls()
+        initObservers()
         return binding.root
     }
 
@@ -46,25 +47,21 @@ class CreateLoyaltyFragment : Fragment() {
 
         if (isEdit) {
             binding.txtSave.text = getString(R.string.update)
-            discountData = arguments?.getParcelable("discountObject")!!
+            loyaltyProgramsModel = arguments?.getParcelable("loyaltyObject")
 
-            //viewModel.setDiscountData(discountData)
+            viewModel.setLoyaltyData(loyaltyProgramsModel)
 
-            if (discountData.discountType == getString(R.string.percentage_symbol)) {
-                binding.swtCreateLoyalty.isChecked = true
-                binding.swtCreateLoyalty.text = getString(R.string.percentage_value)
-                /*binding.tvSymbolPer.visibility = View.VISIBLE
-                binding.tvSymbolDollar.visibility = View.GONE*/
-            } else {
-                binding.swtCreateLoyalty.isChecked = false
-                binding.swtCreateLoyalty.text = getString(R.string.amount_value)
-                /*binding.tvSymbolDollar.visibility = View.VISIBLE
-                binding.tvSymbolPer.visibility = View.GONE*/
-            }
+            binding.swtCreateLoyalty.isChecked =
+                loyaltyProgramsModel?.rewardType == getString(R.string.percentage_symbol)
 
-            //viewModel.isEditData(isEdit, discountData.id)
+        } else {
+            binding.swtCreateLoyalty.isChecked = true
         }
+        discountType(binding.swtCreateLoyalty.isChecked)
 
+    }
+
+    private fun initObservers() {
         setupSnackbar()
         observeShowProgress()
         navigate()
@@ -76,7 +73,6 @@ class CreateLoyaltyFragment : Fragment() {
                 }
             }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -103,14 +99,14 @@ class CreateLoyaltyFragment : Fragment() {
     fun discountType(isChecked: Boolean) {
         if (isChecked) {
             binding.swtCreateLoyalty.text = getString(R.string.percentage_value)
-            viewModel.loyaltyPointType  = getString(R.string.percentage_symbol)
-           /* binding.tvSymbolPer.visibility = View.VISIBLE
-            binding.tvSymbolDollar.visibility = View.GONE*/
+            viewModel.loyaltyPointType = getString(R.string.percentage_symbol)
+            binding.tvSymbolPer.visibility = View.VISIBLE
+            binding.tvSymbolDollar.visibility = View.GONE
         } else {
             binding.swtCreateLoyalty.text = getString(R.string.amount_value)
-            viewModel.loyaltyPointType  = getString(R.string.dollar_symbol)
-           /* binding.tvSymbolDollar.visibility = View.VISIBLE
-            binding.tvSymbolPer.visibility = View.GONE*/
+            viewModel.loyaltyPointType = getString(R.string.dollar_symbol)
+            binding.tvSymbolDollar.visibility = View.VISIBLE
+            binding.tvSymbolPer.visibility = View.GONE
         }
     }
 
@@ -130,7 +126,7 @@ class CreateLoyaltyFragment : Fragment() {
 
     private fun navigate() {
 
-        viewModel.data.observe(viewLifecycleOwner, { event ->
+        viewModel.createLoyaltyPointData.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let { createDiscountResponse ->
                 activity?.let {
                     AlertUtils.showCustomAlertWithListenerWithOK(
