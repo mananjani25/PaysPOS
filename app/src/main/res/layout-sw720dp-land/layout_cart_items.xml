@@ -112,20 +112,40 @@
             android:paddingTop="@dimen/_1sdp"
             android:paddingBottom="@dimen/_1sdp">
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/txtCustomerName"
-                style="@style/CustomFontSemiBold"
-                android:layout_width="match_parent"
+            <LinearLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
                 android:layout_weight="1"
-                android:background="?attr/selectableItemBackground"
-                android:gravity="start"
-                android:padding="@dimen/_5sdp"
-                android:text="@string/add_customer"
-                android:textColor="@color/btnColorDark_"
-                android:textSize="@dimen/_5mdpi"
-                app:textAllCaps="false" />
+                android:orientation="vertical"
+                android:padding="@dimen/_5sdp">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtCustomerName"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:background="?attr/selectableItemBackground"
+                    android:gravity="start"
+                    android:text="@string/add_customer"
+                    android:textColor="@color/btnColorDark_"
+                    android:textSize="@dimen/_5mdpi"
+                    app:textAllCaps="false" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtRoyaltyPoints"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:background="?attr/selectableItemBackground"
+                    android:gravity="start"
+                    android:text="Loyalty Point: 0.0"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_5mdpi"
+                    android:visibility="gone"
+                    app:textAllCaps="false" />
+            </LinearLayout>
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:layout_width="@dimen/_15sdp"

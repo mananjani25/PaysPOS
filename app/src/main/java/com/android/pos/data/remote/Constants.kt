@@ -26,6 +26,7 @@ object Constants {
     const val EMAIL = "email"
     const val USERNAME = "userName"
     const val CUSTOMER_NAME = "customer_name"
+    const val ROYALTY_POINTS = "royalty_points"
     const val SALE_CUSTOMER_NAME = "sale_customer_name"
     const val IS_CLOCKOUT = "isClockout"
     const val IS_REFUND = "isRefund"
