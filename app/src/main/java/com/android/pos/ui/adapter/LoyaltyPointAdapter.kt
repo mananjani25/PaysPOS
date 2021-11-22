@@ -11,7 +11,7 @@ import com.android.pos.ui.fragments.settings.loyaltypoints.LoyaltyPointViewModel
 class LoyaltyPointAdapter(val viewModel: LoyaltyPointViewModel) :
     RecyclerView.Adapter<LoyaltyPointAdapter.MyViewHolder>() {
 
-    var serviceChargeList = ArrayList<LoyaltyProgramsModel>()
+    var loyaltyPointList = ArrayList<LoyaltyProgramsModel>()
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -27,10 +27,10 @@ class LoyaltyPointAdapter(val viewModel: LoyaltyPointViewModel) :
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: LoyaltyPointAdapter.MyViewHolder, position: Int) {
         val itemBinding = holder.discountItemBinding
-        itemBinding.serviceChargeModel = serviceChargeList[position]
+        itemBinding.serviceChargeModel = loyaltyPointList[position]
         itemBinding.viewModel = viewModel
 
-        val model = serviceChargeList[position]
+        val model = loyaltyPointList[position]
         if (model.rewardType == "%") {
             itemBinding.txtLoyaltyValue.text = model.amount.toString() + "%"
         } else {
@@ -40,19 +40,28 @@ class LoyaltyPointAdapter(val viewModel: LoyaltyPointViewModel) :
         itemBinding.executePendingBindings()
     }
 
-    override fun getItemCount() = serviceChargeList.size
+    override fun getItemCount() = loyaltyPointList.size
 
 
     fun addServiceCharge(discountList: List<LoyaltyProgramsModel>) {
 
-        this.serviceChargeList.apply {
+        this.loyaltyPointList.apply {
             clear()
             addAll(discountList)
         }
     }
 
     fun getItem(position: Int): LoyaltyProgramsModel {
-        return serviceChargeList[position]
+        return loyaltyPointList[position]
+    }
+
+    fun update(id: Int) {
+
+        loyaltyPointList.forEach {
+            it.isEnable = it.id == id
+        }
+        notifyDataSetChanged()
+
     }
 
     inner class MyViewHolder(val discountItemBinding: ViewLoyaltyPointItemBinding) :

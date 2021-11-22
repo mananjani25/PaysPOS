@@ -37,8 +37,8 @@ class LoyaltyPointViewModel @Inject constructor(
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
-    private val _notifydata = MutableLiveData<Event<Boolean?>>()
-    val notifydata: LiveData<Event<Boolean?>> = _notifydata
+    private val _notifydata = MutableLiveData<Event<Int?>>()
+    val notifydata: LiveData<Event<Int?>> = _notifydata
 
     val loyaltyPoints = taxServiceChargeRepository.loyaltyPointList()
 
@@ -75,7 +75,7 @@ class LoyaltyPointViewModel @Inject constructor(
                                     serChargeItem.id,
                                     serChargeItem.isEnable
                                 )
-                                _notifydata.value = Event(true)
+                                _notifydata.value = Event(serChargeItem.id)
 
                             }
                         } else {
@@ -170,6 +170,8 @@ class LoyaltyPointViewModel @Inject constructor(
                             resource.data.let {
                                 if (it?.status == 200) {
                                     _createLoyaltyPointData.postValue(Event(resource.data))
+
+                                    taxServiceChargeRepository.addLoyaltyPointDatabase(it.data)
                                 }
                             }
                         }
