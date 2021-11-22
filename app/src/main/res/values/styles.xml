@@ -85,4 +85,12 @@
         <item name="android:textColor">@color/hint_color</item>
         <item name="android:textSize">@dimen/_5mdpi</item>
     </style>
+    <style name="CustomerNameStyle">
+        <item name="android:textColor">@color/txtColor</item>
+        <item name="android:textSize">@dimen/_6mdpi</item>
+    </style>
+    <style name="LoyaltyPointStyle">
+        <item name="android:textColor">@color/txt_color_blue</item>
+        <item name="android:textSize">@dimen/_5mdpi</item>
+    </style>
 </resources>

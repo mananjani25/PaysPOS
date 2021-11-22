@@ -1,13 +1,18 @@
 package com.android.pos.ui.adapter
 
+import android.text.Spannable
+import android.text.SpannableStringBuilder
+import android.text.TextUtils
+import android.text.style.TextAppearanceSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
 import androidx.recyclerview.widget.RecyclerView
+import com.android.pos.MainApplication
+import com.android.pos.R
 import com.android.pos.data.entities.TbCustomer
-import com.android.pos.data.model.CustomerListResponse
 import com.android.pos.databinding.ViewCustomerAssignOrderBinding
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.callback.ItemCallback
@@ -63,6 +68,43 @@ class AssignCustomerToOrderAdapter :
             } else {
                 binding.txtPhone.visibility = View.GONE
             }
+
+            //customer name and loyalty point
+            setupNameAndLoyalty(
+                "${item.first_name} ${item.last_name}",
+                item.enroll_to_loyalty == true,
+                item.final_reward
+            )
+        }
+
+        private fun setupNameAndLoyalty(
+            name: String?,
+            enrollToLoyalty: Boolean,
+            loyaltyPoint: Int?
+        ) {
+            val ssName = SpannableStringBuilder(name)
+            ssName.setSpan(
+                TextAppearanceSpan(MainApplication.getInstance(), R.style.CustomerNameStyle),
+                0,
+                ssName.length,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+
+            if (enrollToLoyalty) {
+                val ssPoint = SpannableStringBuilder("Loyalty Point: $loyaltyPoint")
+                ssPoint.setSpan(
+                    TextAppearanceSpan(MainApplication.getInstance(), R.style.LoyaltyPointStyle),
+                    0,
+                    ssPoint.length,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+                TextUtils.concat(ssName, "  ", ssPoint)
+                    .also { binding.txtName.text = it }
+            } else {
+                TextUtils.concat(ssName)
+                    .also { binding.txtName.text = it }
+            }
+
         }
 
         init {
