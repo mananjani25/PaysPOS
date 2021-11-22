@@ -27,6 +27,7 @@ import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.extensions.toDp
 import com.android.pos.utils.statusUtils.Status
+import com.google.gson.Gson
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -75,7 +76,8 @@ class DineInFragment : Fragment() {
         }
 
         binding.imgMergeTable.setOnClickListener {
-            findNavController().navigate(R.id.action_dineInFragment_to_mergeTableDialog)
+            loadFloorPlanDetails()
+           // findNavController().navigate(R.id.action_dineInFragment_to_mergeTableDialog)
 
         }
 
@@ -131,6 +133,28 @@ class DineInFragment : Fragment() {
         })
     }
 
+    private fun loadFloorPlanDetails(){
+        viewModel.getFloorPlanDetails.observe(viewLifecycleOwner, {
+            it?.let { resource ->
+                when (resource.status) {
+                    Status.SUCCESS -> {
+                        ProgressUtils.dismissProgressDialog()
+
+                        Log.e(TAG,"getFloorPlanDetails:  ${Gson().toJson(resource.data)}")
+                    }
+                    Status.ERROR -> {
+                        ProgressUtils.dismissProgressDialog()
+                        binding.root.showAlert(resource.message)
+
+                    }
+                    Status.LOADING -> {
+                        ProgressUtils.showProgressDialog(requireActivity())
+                    }
+                }
+            }
+        })
+
+    }
     private fun setFloorPlan(dineInFloorTablesList: List<GetFloorPlanResponse.Data.FloorPlanTable>) {
 
         binding.flFloorPlan.removeAllViews()

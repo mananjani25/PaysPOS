@@ -47,6 +47,8 @@ class DineInViewModel @Inject constructor(
 
     val getFloorPlan = posRepository.getFloorPlan(prefProvider.getValueInt(LOCATION_ID, 0))
 
+    val getFloorPlanDetails = posRepository.getFloorPlanTableDetails()
+
     fun getTableStatus(tableId: Int, status: String) {
         _showProgress.value = Event(true)
         viewModelScope.launch {

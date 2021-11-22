@@ -635,6 +635,9 @@ interface ApiService {
     @GET(GET_FLOOR_PLAN)
     suspend fun getFloorPlan(@Query("location_id") location_id: Int): GetFloorPlanResponse
 
+    @GET(Constants.FLOOR_PLAN_TABLE_DETAILS)
+    suspend fun getFloorPlanTableDetails():GetFloorPlanDetailResponse
+
 
 
     @GET(REPORT_SUMMARY)

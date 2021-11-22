@@ -648,6 +648,7 @@ class PosRepository @Inject constructor(
     fun getFloorPlan(locationId: Int) =
         performGetOperationNew(networkCall = { apiHelperNew.getFloorPlan(locationId) })
 
+    fun getFloorPlanTableDetails() = performGetOperationNew(networkCall = {apiHelperNew.getFloorPlanTableDetails()})
 
     suspend fun employeeClockOut(data: HashMap<String, String>) =
         apiHelperNew.employeeClockOut(data)
