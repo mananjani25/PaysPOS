@@ -182,12 +182,7 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
                         Constants.CUSTOMER_NAME,
                         order.customer.firstName + " " + order.customer.lastName
                     )
-                    if (order.customer.enroll_to_loyalty == true) {
-                        prefProvider.setValue(
-                            Constants.ROYALTY_POINTS,
-                            "${order.customer.final_reward}"
-                        )
-                    }
+                    prefProvider.saveCustomerData(order.customer as? TbCustomer)
                 }
 
                 dashboardViewModel.addCart(

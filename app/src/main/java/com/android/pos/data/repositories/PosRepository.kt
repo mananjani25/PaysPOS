@@ -253,6 +253,10 @@ class PosRepository @Inject constructor(
         appDatabase.loyaltyProgramsDao().addAll(data)
     }
 
+    fun getLoyaltyProgramFromDb() =
+        performGetOperationDatabase(databaseQuery = { appDatabase.loyaltyProgramsDao().all })
+
+
     suspend fun deleteCustomerReceiptSettingsFromDb() {
         appDatabase.customerSettingsDao().delete()
     }

@@ -99,8 +99,14 @@ class OrderAttributeRequestModel {
     @SerializedName("discount_id")
     var discount_id: Int? = null
 
-    @SerializedName("total_cash_discount_fee")
-    var total_cash_discount_fee: Double? = null
+    @SerializedName("loyalty_program_id")
+    var loyalty_program_id: String = ""
+
+    @SerializedName("loyalty_amount")
+    var loyalty_amount: Double? = 0.0
+
+    @SerializedName("is_loyalty_applied")
+    var is_loyalty_applied: Boolean? = false
 }
 
 
@@ -516,4 +522,13 @@ class PaymentAttributes : Parcelable {
 
     @SerializedName("transaction_id")
     var transactionId: String = ""
+
+    @SerializedName("loyalty_program_id")
+    var loyalty_program_id: String = ""
+
+    @SerializedName("loyalty_amount")
+    var loyalty_amount: Double? = 0.0
+
+    @SerializedName("is_loyalty_applied")
+    var is_loyalty_applied: Boolean? = false
 }

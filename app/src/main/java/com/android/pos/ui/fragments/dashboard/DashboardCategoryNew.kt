@@ -58,7 +58,6 @@ import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
 import com.android.pos.data.remote.Constants.ORDER_TYPE_NAME
 import com.android.pos.data.remote.Constants.PERCENTAGE
-import com.android.pos.data.remote.Constants.ROYALTY_POINTS
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.remote.Constants.UPDATE
 import com.android.pos.data.remote.Constants.VERTICAL
@@ -259,20 +258,21 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 prefProvider.getValue(CUSTOMER_NAME, "").toString()
             removeCustomerViewSet()
 
-            //royalty
-            if (prefProvider.getValue(ROYALTY_POINTS, "").isNotEmpty()) {
-                binding.layoutCart.txtRoyaltyPoints.visible()
-                "${getString(R.string.loyalty_points)}: ${
-                    prefProvider.getValue(
-                        ROYALTY_POINTS,
-                        ""
-                    )
-                }".also { binding.layoutCart.txtRoyaltyPoints.text = it }
-            } else {
-                binding.layoutCart.txtRoyaltyPoints.gone()
-            }
+            //loyalty
+            val customer = prefProvider.getCustomerData()
+            customer?.let {
+                viewModel.selectedCustomer = customer
+                if (it.enroll_to_loyalty == true) {
+                    binding.layoutCart.txtLoyaltyPoints.visible()
+                    "${getString(R.string.loyalty_points)}: ${customer.final_reward}".also {
+                        binding.layoutCart.txtLoyaltyPoints.text = it
+                    }
+                } else {
+                    binding.layoutCart.txtLoyaltyPoints.gone()
+                }
+            } ?: binding.layoutCart.txtLoyaltyPoints.gone()
         } else {
-            binding.layoutCart.txtRoyaltyPoints.gone()
+            binding.layoutCart.txtLoyaltyPoints.gone()
         }
 
 
@@ -397,20 +397,25 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         binding.layoutCart.txtCrtNewCustomer.text = "Remove Customer"
     }
 
+    private fun saveCustomerData(customer: TbCustomer?) {
+        viewModel.selectedCustomer = customer
+        prefProvider.saveCustomerData(customer)
+    }
+
     private fun setUpCustomer(
         result: TbCustomer,
         bundle: Bundle
     ) {
         prefProvider.setValue(CUSTOMER_NAME, result.first_name + " " + result.last_name)
         binding.layoutCart.txtCustomerName.text = result.first_name + " " + result.last_name
-        //royalty
+        saveCustomerData(result)
+        //loyalty
         if (result.enroll_to_loyalty == true) {
-            prefProvider.setValue(ROYALTY_POINTS, "${result.final_reward}")
-            binding.layoutCart.txtRoyaltyPoints.visible()
-            binding.layoutCart.txtRoyaltyPoints.text =
+            binding.layoutCart.txtLoyaltyPoints.visible()
+            binding.layoutCart.txtLoyaltyPoints.text =
                 "${getString(R.string.loyalty_points)}: ${result.final_reward}"
         } else {
-            binding.layoutCart.txtRoyaltyPoints.gone()
+            binding.layoutCart.txtLoyaltyPoints.gone()
         }
 
         removeCustomerViewSet()
@@ -1190,6 +1195,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         val txtDiscount: AppCompatTextView = popupView.findViewById(R.id.txtDiscount)
         val txtTotalAmount: AppCompatTextView = popupView.findViewById(R.id.txtTotalAmount)
         val txtTotalTax: AppCompatTextView = popupView.findViewById(R.id.txtTotalTax)
+        val llLoyalty: LinearLayoutCompat = popupView.findViewById(R.id.llLoyalty)
+        val txtLoyaltyAmount: AppCompatTextView = popupView.findViewById(R.id.txtLoyaltyAmount)
         Log.e(TAG, "subTotalPrice:   ${viewModel.subTotalPrice - (cartList[0].discountPrice)}")
 
         txtSubTotal.text = "$" + String.format(
@@ -1215,6 +1222,15 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             viewModel.totalTax
         )
 
+        //display the loyalty point
+        val customer = viewModel.selectedCustomer
+        if (customer != null && customer.enroll_to_loyalty == true) {
+            llLoyalty.visible()
+            txtLoyaltyAmount.text = "${checkAppliedLoyaltyProgram(customer, total)}"
+        } else {
+            llLoyalty.gone()
+        }
+
 //        if (popupWindow == null) {
         popupWindow = PopupWindow(
             popupView,
@@ -1234,6 +1250,31 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 //            popupWindow = null
 //        }
 
+    }
+
+    private fun checkAppliedLoyaltyProgram(customer: TbCustomer, total: Double): Double {
+        var loyaltyAmount = 0.0
+        val availablePoints = customer.final_reward ?: 0
+        val availableLoyaltyPrograms = viewModel.loyaltyPoints.value?.data
+        if (availableLoyaltyPrograms?.isNotEmpty() == true) {
+            for (i in availableLoyaltyPrograms.indices) {
+                if (availableLoyaltyPrograms[i].isEnable && availableLoyaltyPrograms[i].rewardPoint <= availablePoints) {
+                    //if customer has points than required
+                    viewModel.appliedLoyaltyProgram = availableLoyaltyPrograms[i]
+                    val multiple: Int =
+                        (availablePoints / availableLoyaltyPrograms[i].rewardPoint)
+                    val possibleLoyaltyAmount = multiple * availableLoyaltyPrograms[i].amount
+                    if (possibleLoyaltyAmount > total) {
+                        //if loyalty amount is more than total price
+                        loyaltyAmount = total
+                    } else {
+                        loyaltyAmount = possibleLoyaltyAmount
+                    }
+                    break
+                }
+            }
+        }
+        return loyaltyAmount
     }
 
     private fun resetTabbySearch(model: CategorySearchData) {
@@ -2191,11 +2232,11 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private fun clearCustomer() {
         binding.layoutCart.txtCrtNewCustomer.text = "Add Customer"
         binding.layoutCart.txtCustomerName.text = "Add Customer"
-        binding.layoutCart.txtRoyaltyPoints.gone()
-        binding.layoutCart.txtRoyaltyPoints.text = ""
+        binding.layoutCart.txtLoyaltyPoints.gone()
+        binding.layoutCart.txtLoyaltyPoints.text = ""
         prefProvider.setValue(CUSTOMER_NAME, "")
-        prefProvider.setValue(ROYALTY_POINTS, "")
         prefProvider.setValueInt(CUSTOMER_ID, -1)
+        saveCustomerData(null)
     }
 
     fun calculateDiscountPercentage(originalPrice: Double, percentage: Double): Double {

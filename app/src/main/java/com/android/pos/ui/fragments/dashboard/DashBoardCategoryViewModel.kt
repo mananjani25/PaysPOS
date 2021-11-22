@@ -57,6 +57,11 @@ class DashBoardCategoryViewModel @Inject constructor(
     var totalDiscount = 0.0
     var assignCustomer: TbCustomer? = null
     var orderItemDiscount = 0.0
+    var selectedCustomer: TbCustomer? = null
+    var appliedLoyaltyProgram : LoyaltyProgramsModel?= null
+    var isLoyaltyApplied = false
+    var loyaltyAmount = 0.0
+    var loyaltyProgramId = 0
 
     private val _updateOrder = MutableLiveData<Event<Any?>>()
     val updateOrder: LiveData<Event<Any?>> = _updateOrder
@@ -76,6 +81,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     val serviceCharges = posRepository.serviceChargeList()
 
+    val loyaltyPoints = posRepository.getLoyaltyProgramFromDb()
 
     val taxList = posRepository.taxList()
 
@@ -703,16 +709,16 @@ class DashBoardCategoryViewModel @Inject constructor(
             orderAttributeRequestModel.customer_id = customerId
         }
 
-      /*  orderAttributeRequestModel.paymentAttributes =
-            paymentAttributes(
-                cartModel,
-                totalPrice,
-                subTotalPrice,
-                totalServiceCharge,
-                totalTax,
-                totalDiscount, tipAmount
-            )
-*/
+        /*  orderAttributeRequestModel.paymentAttributes =
+              paymentAttributes(
+                  cartModel,
+                  totalPrice,
+                  subTotalPrice,
+                  totalServiceCharge,
+                  totalTax,
+                  totalDiscount, tipAmount
+              )
+  */
         orderAttributeRequestModel.orderServiceChargesAttributes =
             orderServiceChargesAttributes(cartModel, subTotalPrice)
 
@@ -1180,9 +1186,9 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 val orderItemVariationAttribute = OrderItemVariationAttribute()
                 orderItemVariationAttribute.name = it.name
-                orderItemVariationAttribute.price = it.price?:0.0
-                orderItemVariationAttribute.totalPrice = (it.price?:0.0) * item.itemQuantity
-                orderItemVariationAttribute.variationId = it.id?:0
+                orderItemVariationAttribute.price = it.price ?: 0.0
+                orderItemVariationAttribute.totalPrice = (it.price ?: 0.0) * item.itemQuantity
+                orderItemVariationAttribute.variationId = it.id ?: 0
                 orderItemVariationAttribute.quantity = item.itemQuantity
 
                 /*if (isUpdateOrder) {
