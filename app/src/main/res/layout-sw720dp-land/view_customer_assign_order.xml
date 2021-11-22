@@ -36,6 +36,7 @@
                 android:paddingEnd="@dimen/_3sdp">
 
                 <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtName"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -43,7 +44,6 @@
                     android:layout_marginStart="@dimen/_5sdp"
                     android:layout_weight="1"
                     android:gravity="start"
-                    android:text="@{model.first_name+ ' ' + model.last_name}"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi"
                     tools:text="Vishal Patel" />
@@ -62,7 +62,7 @@
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
-            <androidx.appcompat.widget.AppCompatTextView
+            <!--<androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtLoyaltyPoints"
                 style="@style/CustomFontSemiBold"
                 android:layout_width="wrap_content"
@@ -74,7 +74,7 @@
                 android:textSize="@dimen/_5mdpi"
                 android:visibility="@{model.enroll_to_loyalty ?View.VISIBLE : View.GONE}"
                 tools:text="@{`Loyalty Points: `+ model.final_reward}" />
-
+-->
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtAddress1"
                 style="@style/CustomFontSemiBold"
