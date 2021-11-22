@@ -1562,8 +1562,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                 } else {
                                     isFirstHeader = false
                                 }
-                                if (i != 0 && dineInList.size >= i + 1) {
-                                    if (dineInList.get(i + 1).item?.isPaid == true) {
+                                if (i != 0 && dineInList.size > i + 1) {
+                                    if (dineInList.get(i + 1).item != null && dineInList.get(i + 1).item?.isPaid == true) {
                                         paidGuestCount++
                                     }
                                 }
