@@ -98,6 +98,9 @@ class OrderAttributeRequestModel {
 
     @SerializedName("discount_id")
     var discount_id: Int? = null
+
+    @SerializedName("total_cash_discount_fee")
+    var total_cash_discount_fee: Double? = null
 }
 
 
