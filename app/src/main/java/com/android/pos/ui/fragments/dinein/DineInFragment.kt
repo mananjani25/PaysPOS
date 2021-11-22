@@ -74,6 +74,11 @@ class DineInFragment : Fragment() {
             findNavController().navigate(R.id.action_dineInFragment_to_orders)
         }
 
+        binding.imgMergeTable.setOnClickListener {
+            findNavController().navigate(R.id.action_dineInFragment_to_mergeTableDialog)
+
+        }
+
 
 
         dineInFloorNameListAdapter.showFloorPlan = {
@@ -82,7 +87,7 @@ class DineInFragment : Fragment() {
             setFloorPlan(dineInFloorTablesList)
         }
 
-        binding.llHome.setOnClickListener {
+        binding.txtHome.setOnClickListener {
             findNavController().popBackStack(R.id.dashboardCategoryNew, false)
         }
 

@@ -2773,7 +2773,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
             }
             negativeButton(R.string.tv_cancel) {
-                // Do negative stuff here
+                // Do negative stuff heref
             }
         }
 
