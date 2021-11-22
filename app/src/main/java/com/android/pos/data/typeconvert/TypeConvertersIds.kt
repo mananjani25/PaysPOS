@@ -22,7 +22,11 @@ object TypeConvertersIds {
     @TypeConverter
     fun writingStringFromList(list: List<Int>): String {
         var genreIds = ""
-        for (i in list) genreIds += ",$i"
+        list.forEach {
+            if (it != null) {
+                genreIds += ",$it"
+            }
+        }
         return genreIds
     }
 }
