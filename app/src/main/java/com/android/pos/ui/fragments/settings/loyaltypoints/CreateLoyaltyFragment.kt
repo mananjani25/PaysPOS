@@ -91,7 +91,7 @@ class CreateLoyaltyFragment : Fragment() {
         val navControll = findNavController()
         navControll.previousBackStackEntry?.savedStateHandle?.set(
             Constants.KEY,
-            Constants.CREATEDISCOUNT
+            Constants.CREATELOYALTY
         )
         navControll.popBackStack()
     }

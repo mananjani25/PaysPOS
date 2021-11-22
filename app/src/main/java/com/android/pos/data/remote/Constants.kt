@@ -141,6 +141,7 @@ object Constants {
     const val CREATECATEGORY = "create_category"
     const val CREATEMODIFIER = "create_modifier"
     const val CREATEDISCOUNT = "create_discount"
+    const val CREATELOYALTY = "create_loyalty"
     const val CREATEOPTION = "create_option"
     const val CREATEITEM = "create_item"
     const val PRINTER = "printer"

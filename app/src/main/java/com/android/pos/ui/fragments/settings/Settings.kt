@@ -12,6 +12,7 @@ import com.android.pos.R
 import com.android.pos.data.model.BusinessSettingModel
 import com.android.pos.data.remote.Constants.ADD_SERVICE_CHARGE
 import com.android.pos.data.remote.Constants.CREATEDISCOUNT
+import com.android.pos.data.remote.Constants.CREATELOYALTY
 import com.android.pos.data.remote.Constants.CREATE_NOTES
 import com.android.pos.data.remote.Constants.CREATE_TAX
 import com.android.pos.data.remote.Constants.CREATE_TIP
@@ -165,6 +166,16 @@ class Settings : Fragment() {
                         loadFragment(frag)
                         binding.commonToolbar.txtSubTitle.setText("Hardware")
 
+                    }
+
+                    CREATELOYALTY->{
+                        binding.txtBusiness.styleBold()
+                        binding.txtHardware.styleNormal()
+                        binding.txtSecurity.styleNormal()
+                        binding.txtMarketing.styleNormal()
+                        binding.txtEmployee.styleNormal()
+                        binding.txtReports.styleNormal()
+                        setAdapter(6)
                     }
 
 

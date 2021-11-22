@@ -262,8 +262,12 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             //royalty
             if (prefProvider.getValue(ROYALTY_POINTS, "").isNotEmpty()) {
                 binding.layoutCart.txtRoyaltyPoints.visible()
-                binding.layoutCart.txtRoyaltyPoints.text =
-                    prefProvider.getValue(ROYALTY_POINTS, "")
+                "${getString(R.string.loyalty_points)}: ${
+                    prefProvider.getValue(
+                        ROYALTY_POINTS,
+                        ""
+                    )
+                }".also { binding.layoutCart.txtRoyaltyPoints.text = it }
             } else {
                 binding.layoutCart.txtRoyaltyPoints.gone()
             }
@@ -366,7 +370,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                 Log.e(TAG, "PassedDineInListSize  ${Gson().toJson(dineInList)}")
                 viewModel.cartLogic(cartList, null, ADD, dineInList = dineInList)
-                viewModel.orderItemDiscount  = arguments?.getDouble("totalDiscount") ?: 0.0
+                viewModel.orderItemDiscount = arguments?.getDouble("totalDiscount") ?: 0.0
                 Log.e(TAG, "dashTotalDis  ${arguments?.getDouble("totalDiscount")}")
 
             }
