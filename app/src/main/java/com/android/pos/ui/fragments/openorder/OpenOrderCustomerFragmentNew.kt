@@ -17,7 +17,6 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
@@ -42,6 +41,8 @@ import java.util.*
 @AndroidEntryPoint
 class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
     private var customerID: Int? = null
+    private var enrollToLoyalty: Boolean = false
+    private var finalReward: Int = 0
     private var deliveryType: String = "Pickup"
     private var country = arrayOf("United States", "Canada")
     private lateinit var binding: FragmentOpenOrderNewBinding
@@ -182,6 +183,8 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
     private fun setupCustomer(customer: TbCustomer) {
 
         customerID = customer.id
+        enrollToLoyalty = customer.enroll_to_loyalty ?: false
+        finalReward = customer.final_reward ?: 0
 
         binding.edtFirstName.setText(customer.first_name)
         binding.edtLastName.setText(customer.last_name)
@@ -379,8 +382,8 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
                         MethodUtils.getText(binding.edtLastName),
                         "",
                         MethodUtils.getText(binding.edtEmail),
-                        false,
-                        0,
+                        enrollToLoyalty,
+                        finalReward,
                         MethodUtils.getText(binding.edtCompany),
                         phonesList,
                         list

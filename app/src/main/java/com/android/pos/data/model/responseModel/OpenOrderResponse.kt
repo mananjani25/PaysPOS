@@ -302,7 +302,11 @@ data class OpenOrderResponse(
                 @SerializedName("addresses")
                 val addresses: List<Address>,
                 @SerializedName("phones")
-                val phones: List<Phone>
+                val phones: List<Phone>,
+                @SerializedName("enroll_to_loyalty")
+                val enroll_to_loyalty: Boolean?,
+                @SerializedName("final_reward")
+                val final_reward: Int? = 0
             ) {
                 data class Address(
                     @SerializedName("address1")
