@@ -106,7 +106,7 @@ class LoyaltyPointFragment : Fragment() {
 
                     alert(
                         getString(R.string.app_name),
-                        getString(R.string.delete_service_charge_message)
+                        getString(R.string.delete_loyalty_message)
                     ) {
                         positiveButton(getString(R.string.tv_delete)) {
                             // Do positive stuff here

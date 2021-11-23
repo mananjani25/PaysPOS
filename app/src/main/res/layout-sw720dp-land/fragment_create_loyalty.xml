@@ -50,6 +50,7 @@
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:padding="@dimen/_4sdp"
+                    android:id="@+id/txtHeader"
                     android:text="Create Loyalty Point"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />
