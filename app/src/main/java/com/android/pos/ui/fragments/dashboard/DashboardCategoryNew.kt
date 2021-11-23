@@ -181,6 +181,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         dineInUpdateOrder()
         getCustomerReceiptSettings()
         getKitchenReceiptSettings()
+        getLoyaltyPrograms()
 
         binding.footer.imgClock.setOnClickListener {
             alert(
@@ -209,6 +210,15 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 
         return binding.root
+    }
+
+    private fun getLoyaltyPrograms() {
+        viewModel.loyaltyPointsLiveData.observe(requireActivity(), {
+            if (it.data != null) {
+                viewModel.loyaltyPointsList.clear()
+                viewModel.loyaltyPointsList.addAll(it.data)
+            }
+        })
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -1213,8 +1223,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         )
 
         val total = viewModel.totalPrice - cartList[0].discountPrice
-
-        MethodUtils.setPriceTextView(txtTotalAmount, total)
+        var amountToBepaid = total
 
         //  txtTotalAmount.text = total.toString()
         txtTotalTax.text = "$" + String.format(
@@ -1226,10 +1235,15 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         val customer = viewModel.selectedCustomer
         if (customer != null && customer.enroll_to_loyalty == true) {
             llLoyalty.visible()
-            txtLoyaltyAmount.text = "${checkAppliedLoyaltyProgram(customer, total)}"
+            Log.e(TAG, Gson().toJson(viewModel.redeemLoyaltyInfo))
+            amountToBepaid = viewModel.redeemLoyaltyInfo.remainingLoyaltyAmount
+            txtLoyaltyAmount.text = "${viewModel.redeemLoyaltyInfo.usedLoyaltyAmount}"
         } else {
             llLoyalty.gone()
         }
+
+        //display total price to be paid
+        MethodUtils.setPriceTextView(txtTotalAmount, amountToBepaid)
 
 //        if (popupWindow == null) {
         popupWindow = PopupWindow(
@@ -1252,29 +1266,48 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     }
 
-    private fun checkAppliedLoyaltyProgram(customer: TbCustomer, total: Double): Double {
-        var loyaltyAmount = 0.0
+    private fun checkAppliedLoyaltyProgram(customer: TbCustomer, total: Double): RedeemLoyaltyInfo {
+        val redeemLoyaltyInfo = RedeemLoyaltyInfo()
+        redeemLoyaltyInfo.total = total
+
         val availablePoints = customer.final_reward ?: 0
-        val availableLoyaltyPrograms = viewModel.loyaltyPoints.value?.data
-        if (availableLoyaltyPrograms?.isNotEmpty() == true) {
+        val availableLoyaltyPrograms = viewModel.loyaltyPointsList
+        if (availableLoyaltyPrograms.isNotEmpty()) {
             for (i in availableLoyaltyPrograms.indices) {
                 if (availableLoyaltyPrograms[i].isEnable && availableLoyaltyPrograms[i].rewardPoint <= availablePoints) {
+
+                    redeemLoyaltyInfo.loyaltyProgramsModel = availableLoyaltyPrograms[i]
+
                     //if customer has points than required
                     viewModel.appliedLoyaltyProgram = availableLoyaltyPrograms[i]
                     val multiple: Int =
                         (availablePoints / availableLoyaltyPrograms[i].rewardPoint)
                     val possibleLoyaltyAmount = multiple * availableLoyaltyPrograms[i].amount
                     if (possibleLoyaltyAmount > total) {
-                        //if loyalty amount is more than total price
-                        loyaltyAmount = total
+                        //if loyalty amount is more than total price then
+                        val multiple = (total / availableLoyaltyPrograms[i].amount).toInt()
+                        redeemLoyaltyInfo.usedLoyaltyPoints =
+                            multiple * availableLoyaltyPrograms[i].rewardPoint
+                        redeemLoyaltyInfo.remainingLoyaltyPoints =
+                            availablePoints - redeemLoyaltyInfo.usedLoyaltyPoints
+                        redeemLoyaltyInfo.remainingLoyaltyAmount =
+                            total % availableLoyaltyPrograms[i].amount
+                        redeemLoyaltyInfo.usedLoyaltyAmount =
+                            multiple * availableLoyaltyPrograms[i].amount
                     } else {
-                        loyaltyAmount = possibleLoyaltyAmount
+                        redeemLoyaltyInfo.usedLoyaltyAmount = possibleLoyaltyAmount
+                        redeemLoyaltyInfo.remainingLoyaltyAmount =
+                            total - redeemLoyaltyInfo.usedLoyaltyAmount
+                        redeemLoyaltyInfo.usedLoyaltyPoints =
+                            multiple * availableLoyaltyPrograms[i].rewardPoint
+                        redeemLoyaltyInfo.remainingLoyaltyPoints =
+                            availablePoints % availableLoyaltyPrograms[i].rewardPoint
                     }
                     break
                 }
             }
         }
-        return loyaltyAmount
+        return redeemLoyaltyInfo
     }
 
     private fun resetTabbySearch(model: CategorySearchData) {
@@ -2177,11 +2210,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         }
                     }
                 }
-
             }
         }
-
-
     }
 
     private fun createDineInRequest() {

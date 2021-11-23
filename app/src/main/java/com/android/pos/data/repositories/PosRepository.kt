@@ -668,7 +668,7 @@ class PosRepository @Inject constructor(
 
     suspend fun clearTable() {
 
-        Log.e("clear Db Table","-------")
+        Log.e("clear Db Table", "-------")
         appDatabase.characterDao().delete()
         appDatabase.categoryDao().delete()
         appDatabase.itemDao().delete()
