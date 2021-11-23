@@ -8,27 +8,23 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import androidx.fragment.app.Fragment
 import androidx.activity.OnBackPressedCallback
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.model.GetPaymentOrderDetailsResponse
 import com.android.pos.data.model.responseModel.GetCustomerReceiptSettingsResponse
-import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.data.model.responseModel.GetTipReponse
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
-import com.android.pos.data.remote.Constants.DIALOG_KEY_VARIATION_DETAILS
-import com.android.pos.data.remote.Constants.IS_REFUND
 import com.android.pos.databinding.FragmentTransactionDetailsBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.OrderDetailsItemListAdapter
 import com.android.pos.utils.*
 import com.android.pos.utils.TimeFormatUtils.convertCurrentDate
 import com.android.pos.utils.TimeFormatUtils.convertCurrentTime
-import com.android.pos.utils.extensions.getNavigationResultLiveData
 import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.statusUtils.Status
@@ -47,7 +43,8 @@ class TransactionDetailsFragment : Fragment() {
     private lateinit var binding: FragmentTransactionDetailsBinding
     private val viewModel by viewModels<TransactionDetailsViewModel>()
     private lateinit var orderDetailsItemAdapter: OrderDetailsItemListAdapter
-//    private lateinit var orderDetailsResponse: GetOrderDetailsResponse
+
+    //    private lateinit var orderDetailsResponse: GetOrderDetailsResponse
     private var customerSettingModel = GetCustomerReceiptSettingsResponse.Data()
     private lateinit var paymentDetailsResponse: GetPaymentOrderDetailsResponse
     private var orderId: Int = -1
@@ -77,12 +74,12 @@ class TransactionDetailsFragment : Fragment() {
         orderId = arguments?.getInt("orderId")!!
         paymentId = arguments?.getInt("paymentId")!!
         isFromTrans = arguments?.getBoolean("isFromTrans")!!
-        if (isFromTrans) {
-            viewModel.apiCallPaymentDetails(paymentId)
-        } else {
-            viewModel.apiCallOrderDetails(orderId)
-
-        }
+//        if (isFromTrans) {
+        viewModel.apiCallPaymentDetails(paymentId)
+//        } else {
+//            viewModel.apiCallOrderDetails(orderId)
+//
+//        }
         observeTipsList()
         setupSnackbar()
         observeShowProgress()
@@ -126,7 +123,7 @@ class TransactionDetailsFragment : Fragment() {
                 paymentDetailsResponse.data.order.order_items.forEach {
                     it.isChecked = false
                 }
-                putInt("paymentId",paymentId)
+                putInt("paymentId", paymentId)
                 putParcelable("orderDetailsResponse", paymentDetailsResponse)
             }
             findNavController().navigate(
@@ -455,7 +452,7 @@ class TransactionDetailsFragment : Fragment() {
                     Builder.COLOR_1
                 )
 
-                builder.addText("ReceiptID:" +  paymentDetailsResponse.data.order.offline_id)
+                builder.addText("ReceiptID:" + paymentDetailsResponse.data.order.offline_id)
 
                 if (customerSettingModel.showTeam) {
                     builder.addTextLineSpace(30)
@@ -1109,31 +1106,31 @@ class TransactionDetailsFragment : Fragment() {
                         builder.addText(paymentDetailsResponse?.data.order?.customer.firstName + " " + paymentDetailsResponse?.data.order?.customer.lastName)
                     }
 
-                  /*  if (customerSettingModel.showCustomerAddress) {
-                        if (paymentDetailsResponse?.data.order?.customer.addresses?.isNotEmpty() == true) {
+                    /*  if (customerSettingModel.showCustomerAddress) {
+                          if (paymentDetailsResponse?.data.order?.customer.addresses?.isNotEmpty() == true) {
 
-                            builder.addTextLineSpace(30)
-                            builder.addFeedUnit(30)
-                            builder.addTextFont(Builder.FONT_E)
-                            //builder.addTextAlign(Builder.ALIGN_LEFT)
-                            builder.addTextLang(Builder.LANG_EN)
-                            addCustomerTextSize(builder, customerSettingModel.fonts)
-                            builder.addTextStyle(
-                                Builder.FALSE,
-                                Builder.FALSE,
-                                Builder.FALSE,
-                                Builder.COLOR_1
-                            )
+                              builder.addTextLineSpace(30)
+                              builder.addFeedUnit(30)
+                              builder.addTextFont(Builder.FONT_E)
+                              //builder.addTextAlign(Builder.ALIGN_LEFT)
+                              builder.addTextLang(Builder.LANG_EN)
+                              addCustomerTextSize(builder, customerSettingModel.fonts)
+                              builder.addTextStyle(
+                                  Builder.FALSE,
+                                  Builder.FALSE,
+                                  Builder.FALSE,
+                                  Builder.COLOR_1
+                              )
 
-                            builder.addText(orderDetailsResponse?.data?.customer?.addresses?.get(0)?.fullAddress)
-                        }
-                    }*/
+                              builder.addText(orderDetailsResponse?.data?.customer?.addresses?.get(0)?.fullAddress)
+                          }
+                      }*/
 
                 }
             }
 
 
-            if (paymentDetailsResponse?.data.order?.note != null && paymentDetailsResponse?.data.order?.note!= "" && customerSettingModel.showOrderNote) {
+            if (paymentDetailsResponse?.data.order?.note != null && paymentDetailsResponse?.data.order?.note != "" && customerSettingModel.showOrderNote) {
 
                 builder.addFeedLine(2)
                 builder.addTextFont(Builder.FONT_B)

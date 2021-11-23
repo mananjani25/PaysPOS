@@ -129,6 +129,7 @@ class ReasonForRefundDialog : DialogFragment() {
 
                         val bundle = Bundle().apply {
                             putInt("orderId", refundData.paymentRefund?.orderId!!)
+                            putInt("paymentId", refundData.paymentRefund?.paymentId!!)
                         }
 
                         findNavController().navigate(

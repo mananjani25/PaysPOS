@@ -43,6 +43,7 @@ class CreateNote : Fragment() {
 
         if (isEdit) {
             binding.txtSave.text = getString(R.string.update)
+            binding.txtNoteTitle.text = getString(R.string.update_note)
             noteData = arguments?.getParcelable("taxObject")!!
 
             viewModel.setNoteData(noteData)

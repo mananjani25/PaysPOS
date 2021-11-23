@@ -46,6 +46,7 @@ class CreateDiscount : Fragment() {
 
         if (isEdit) {
             binding.txtSave.text = getString(R.string.update)
+            binding.txtDiscountTitle.text = getString(R.string.update_discount)
             discountData = arguments?.getParcelable("discountObject")!!
 
             viewModel.setDiscountData(discountData)

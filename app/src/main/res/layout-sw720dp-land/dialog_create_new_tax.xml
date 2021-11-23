@@ -41,6 +41,7 @@
                     app:srcCompat="@drawable/ic_cancel_black" />
 
                 <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtTaxTitle"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"

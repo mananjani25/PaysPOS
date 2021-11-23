@@ -44,13 +44,14 @@
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontSemiBold"
+                    android:id="@+id/txtLoyaltyPointsTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:padding="@dimen/_4sdp"
-                    android:text="Create Loyalty Point"
+                    android:text="@string/create_loyalty_point"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />
 
