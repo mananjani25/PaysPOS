@@ -627,6 +627,7 @@
     <string name="update_tip">Update Tip</string>
     <string name="create_loyalty_point">Create Loyalty Point</string>
     <string name="update_loyalty_point">Update Loyalty Point</string>
+    <string name="tip_after_split_alert">If you will split the bill, then your added tip will be removed, Are you sure you want to split the bill?</string>
 
 
 </resources>

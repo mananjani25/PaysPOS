@@ -903,16 +903,17 @@ class PaymentViewModel @Inject constructor(
                 if (splitValue == -1) MethodUtils.roundOffAmountDouble(totalServiceCharge) else MethodUtils.roundOffAmountDouble(
                     totalServiceCharge
                 ) / splitValue
-            subTotal = MethodUtils.roundOffAmountDouble(subTotalPrice)
+            subTotal =
+                if (splitValue == -1) MethodUtils.roundOffAmountDouble(subTotalPrice) else MethodUtils.roundOffAmountDouble(
+                    subTotalPrice
+                ) / splitValue
             taxAmount =
                 if (splitValue == -1) MethodUtils.roundOffAmountDouble(totalTax) else MethodUtils.roundOffAmountDouble(
                     totalTax
                 ) / splitValue
             terminalId = cartModel.terminalId
-            tips =
-                if (splitValue == -1) MethodUtils.roundOffAmountDouble(tipAmount) else MethodUtils.roundOffAmountDouble(
-                    tipAmount
-                ) / splitValue
+            tips = MethodUtils.roundOffAmountDouble(tipAmount)
+
             tipsAdjusted = false
             totalDiscount =
                 if (splitValue == -1) MethodUtils.roundOffAmountDouble(totalDis) else MethodUtils.roundOffAmountDouble(
