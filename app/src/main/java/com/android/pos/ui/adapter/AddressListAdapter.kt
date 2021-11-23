@@ -105,7 +105,7 @@ class AddressListAdapter(val refreshCallBack: (Int) -> Unit) :
                 placesApi.fetchPlaceDetails(place.id, object : OnPlacesDetailsListener {
                     override fun onError(errorMessage: String) {
 
-                        Log.e("onError", errorMessage)
+
                     }
 
                     override fun onPlaceDetailsFetched(placeDetails: PlaceDetails) {

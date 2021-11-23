@@ -12,6 +12,7 @@ import com.android.pos.databinding.FragmentDineInBinding
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import com.android.pos.ui.adapter.DineInFloorNameListAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,10 +24,13 @@ import com.android.pos.data.remote.Constants.DINE_IN_STATUS
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.OCCUPIED
 import com.android.pos.di.PrefProvider
+import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.extensions.toDp
 import com.android.pos.utils.statusUtils.Status
+import com.google.gson.Gson
+import okhttp3.internal.notify
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -74,6 +78,12 @@ class DineInFragment : Fragment() {
             findNavController().navigate(R.id.action_dineInFragment_to_orders)
         }
 
+        binding.imgMergeTable.setOnClickListener {
+            loadFloorPlanDetails()
+
+
+        }
+
 
 
         dineInFloorNameListAdapter.showFloorPlan = {
@@ -82,7 +92,7 @@ class DineInFragment : Fragment() {
             setFloorPlan(dineInFloorTablesList)
         }
 
-        binding.llHome.setOnClickListener {
+        binding.txtHome.setOnClickListener {
             findNavController().popBackStack(R.id.dashboardCategoryNew, false)
         }
 
@@ -126,6 +136,58 @@ class DineInFragment : Fragment() {
         })
     }
 
+    private fun loadFloorPlanDetails() {
+        viewModel.getFloorPlanDetails.observe(viewLifecycleOwner, {
+            it?.let { resource ->
+                when (resource.status) {
+                    Status.SUCCESS -> {
+                        ProgressUtils.dismissProgressDialog()
+                        val bundle = Bundle()
+                        if (resource.data?.status == 200) {
+                            setFragmentResultListener("request_key_table_selection") { requestKey: String, bundle: Bundle ->
+                                var mergeStatus = bundle.getBoolean("merge_done")
+                                if (mergeStatus) {
+
+
+                                }
+
+                            }
+                            //bundle.putParcelable("floorList", resource.data.data)
+                            bundle.putParcelableArrayList(
+                                "floorList", it.data?.data?.toCollection(
+                                    arrayListOf()
+                                )
+                            )
+                            findNavController().navigate(
+                                R.id.action_dineInFragment_to_mergeTableDialog,
+                                bundle
+                            )
+
+                        } else {
+                            AlertUtils.showCustomAlertWithListenerWithOK(
+                                requireContext(), it.message.toString()
+                            ) { _, _ ->
+                                val navController = findNavController()
+                                navController.popBackStack()
+                            }
+
+                        }
+
+                    }
+                    Status.ERROR -> {
+                        ProgressUtils.dismissProgressDialog()
+                        binding.root.showAlert(resource.message)
+
+                    }
+                    Status.LOADING -> {
+                        ProgressUtils.showProgressDialog(requireActivity())
+                    }
+                }
+            }
+        })
+
+    }
+
     private fun setFloorPlan(dineInFloorTablesList: List<GetFloorPlanResponse.Data.FloorPlanTable>) {
 
         binding.flFloorPlan.removeAllViews()
@@ -165,12 +227,14 @@ class DineInFragment : Fragment() {
                         inflatedViewSquare.tag = dineInFloorTablesList[i]
 
                         val paramsSquare = FrameLayout.LayoutParams(
-                            dineInFloorTablesList[i].width.toInt().toDp(),
-                            dineInFloorTablesList[i].height.toInt().toDp()
+                            (dineInFloorTablesList[i].width.toInt().toDp() * 1.5).toInt(),
+                            (dineInFloorTablesList[i].height.toInt().toDp() * 1.5).toInt()
                         )
 
-                        paramsSquare.leftMargin = dineInFloorTablesList[i].xPosition.toInt().toDp()
-                        paramsSquare.topMargin = dineInFloorTablesList[i].yPosition.toInt().toDp()
+                        paramsSquare.leftMargin =
+                            (dineInFloorTablesList[i].xPosition * 1.35).toInt().toDp()
+                        paramsSquare.topMargin =
+                            (dineInFloorTablesList[i].yPosition * 1.35).toInt().toDp()
                         if (dineInFloorTablesList[i].status == OCCUPIED) {
                             llMainParentSquare.background =
                                 resources.getDrawable(R.drawable.background_drawer_button_green)
@@ -218,11 +282,13 @@ class DineInFragment : Fragment() {
                         inflatedViewRound.tag = dineInFloorTablesList[i]
 
                         val paramsRound = FrameLayout.LayoutParams(
-                            dineInFloorTablesList[i].width.toInt().toDp(),
-                            dineInFloorTablesList[i].height.toInt().toDp()
+                            (dineInFloorTablesList[i].width.toInt().toDp() * 1.5).toInt(),
+                            (dineInFloorTablesList[i].height.toInt().toDp() * 1.5).toInt()
                         )
-                        paramsRound.leftMargin = dineInFloorTablesList[i].xPosition.toInt().toDp()
-                        paramsRound.topMargin = dineInFloorTablesList[i].yPosition.toInt().toDp()
+                        paramsRound.leftMargin =
+                            (dineInFloorTablesList[i].xPosition * 1.35).toInt().toDp()
+                        paramsRound.topMargin =
+                            (dineInFloorTablesList[i].yPosition * 1.35).toInt().toDp()
                         // binding.flFloorPlan.removeAllViews()
                         if (dineInFloorTablesList[i].status == OCCUPIED) {
                             llMainParentRound.background =

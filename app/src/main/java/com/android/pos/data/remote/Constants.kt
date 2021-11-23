@@ -209,7 +209,9 @@ object Constants {
     const val PAY_BY_GUEST = "payments/pay_by_guest"
 
     const val GET_FLOOR_PLAN = "floor_plans"
+    const val FLOOR_PLAN_TABLE_DETAILS = "floor_plans/floor_plan_table_details"
     const val FLOOR_PLAN_STATUS = "floor_plan_tables/{id}/check_employee_table_lock"
+    const val MERGE_FLOOR_TABLE = "floor_plan_tables/{id}/merge_floor_plan_tables"
 
     const val REPORT_SUMMARY = "reports/report_summary"
     const val ORDER_HISTORY = "customers/{id}/customer_order_history"
