@@ -93,6 +93,9 @@ class TransactionDetailsViewModel @Inject constructor(
 
         refundData.paymentRefund?.reasonForRefund = refundReason
         refundData.paymentRefund?.amount = refundAmount
+
+        _showProgress.value = Event(true)
+
         viewModelScope.launch {
 
             val resource = taxServiceChargeRepository.refundPayment(refundData)
@@ -124,6 +127,8 @@ class TransactionDetailsViewModel @Inject constructor(
     }
 
     fun apiCallPaymentDetails(paymentId: Int) {
+
+        _showProgress.value = Event(true)
         viewModelScope.launch {
 
             val resource = posRepository.paymentDetailsById(paymentId)

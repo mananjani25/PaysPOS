@@ -41,6 +41,7 @@ class CreateTip : Fragment() {
 
         if (isEdit) {
             binding.txtSave.text = getString(R.string.update)
+            binding.txtTipTitle.text = getString(R.string.update_tip)
             tipData = arguments?.getParcelable("tipObject")!!
 
             viewModel.setTipData(tipData)

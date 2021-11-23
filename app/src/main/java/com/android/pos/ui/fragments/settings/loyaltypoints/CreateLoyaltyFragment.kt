@@ -47,6 +47,7 @@ class CreateLoyaltyFragment : Fragment() {
 
         if (isEdit) {
             binding.txtSave.text = getString(R.string.update)
+            binding.txtLoyaltyPointsTitle.text = getString(R.string.update_loyalty_point)
             loyaltyProgramsModel = arguments?.getParcelable("loyaltyObject")
 
             viewModel.setLoyaltyData(loyaltyProgramsModel)

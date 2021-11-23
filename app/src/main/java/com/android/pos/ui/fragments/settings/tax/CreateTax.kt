@@ -62,6 +62,7 @@ class CreateTax : Fragment() {
         if (isEdit) {
             taxData = arguments?.getParcelable("taxObject")!!
             binding.txtSave.text = getString(R.string.update)
+            binding.txtTaxTitle.text = getString(R.string.tv_update_tax)
             viewModel.setTaxData(taxData)
 
             binding.itemsCount.text = "" + taxData.itemIds.size + " Items"
