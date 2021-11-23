@@ -49,7 +49,7 @@ class LoyaltyPointViewModel @Inject constructor(
     var loyaltyPointType: String = ""
     var isEdit: Boolean = false
 
-    fun isSerChargeActive(serChargeItem: LoyaltyProgramsModel) {
+    fun isLoyaltyPointActive(serChargeItem: LoyaltyProgramsModel) {
 
         // _showProgress.value = Event(true)
 
@@ -71,7 +71,7 @@ class LoyaltyPointViewModel @Inject constructor(
                         if (it?.status == 200) {
                             resource.data?.let { baseResponse ->
 
-                                taxServiceChargeRepository.serChargeActiveDatabase(
+                                taxServiceChargeRepository.loyaltyProgramActiveDatabase(
                                     serChargeItem.id,
                                     serChargeItem.isEnable
                                 )

@@ -37,7 +37,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:onClick="@{() -> viewModel.isSerChargeActive(serviceChargeModel)}"
+                android:onClick="@{() -> viewModel.isLoyaltyPointActive(serviceChargeModel)}"
                 android:padding="@dimen/_5sdp"
                 android:src="@{serviceChargeModel.isEnable ? @drawable/ic_check_box: @drawable/ic_check_box_unchecked}" />
 
