@@ -39,12 +39,12 @@
 
                 <ImageView
                     android:id="@+id/imgMergeTable"
-                    android:layout_width="@dimen/_17sdp"
-                    android:layout_height="@dimen/_10sdp"
+                    android:layout_width="@dimen/_27sdp"
+                    android:layout_height="@dimen/_12sdp"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:layout_marginEnd="@dimen/_8sdp"
-                    android:padding="@dimen/_2sdp"
+                    android:padding="@dimen/_3sdp"
                     android:src="@drawable/merge" />
 
 

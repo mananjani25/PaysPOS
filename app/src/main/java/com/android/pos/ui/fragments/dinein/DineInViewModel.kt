@@ -44,10 +44,39 @@ class DineInViewModel @Inject constructor(
     val _tableStatusSuccess = MutableLiveData<Event<Int>>()
     val tableCheckSuccess: LiveData<Event<Int>> = _tableStatusSuccess
 
+    val _mergeStatus = MutableLiveData<Event<String>>()
+    val mergeStatusChange: LiveData<Event<String>> = _mergeStatus
+
 
     val getFloorPlan = posRepository.getFloorPlan(prefProvider.getValueInt(LOCATION_ID, 0))
 
     val getFloorPlanDetails = posRepository.getFloorPlanTableDetails()
+
+    fun mergeTable(parentTableId: Int, childIds: String) {
+        _showProgress.value = Event(true)
+        viewModelScope.launch {
+            val resource = posRepository.mergeFloorTable(parentTableId, childIds)
+
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    (resource.data?.message?.let {
+                        _mergeStatus.value = Event(it)
+                    })
+                }
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+
+                }
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message.toString())
+                    _showProgress.value = Event(false)
+
+                }
+
+            }
+
+        }
+    }
 
     fun getTableStatus(tableId: Int, status: String) {
         _showProgress.value = Event(true)

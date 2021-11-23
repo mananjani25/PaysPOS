@@ -47,6 +47,7 @@ import com.android.pos.data.remote.Constants.LOGOUT
 import com.android.pos.data.remote.Constants.LOYALTY_POINT
 import com.android.pos.data.remote.Constants.LOYALTY_POINT_ACTIVE
 import com.android.pos.data.remote.Constants.LOYALTY_POINT_UPDATE_DELETE
+import com.android.pos.data.remote.Constants.MERGE_FLOOR_TABLE
 import com.android.pos.data.remote.Constants.MODIFIER
 import com.android.pos.data.remote.Constants.MODIFIER_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.NOTES
@@ -616,6 +617,12 @@ interface ApiService {
         @Query("status") status: String
     ): BaseResponse
 
+    @POST(MERGE_FLOOR_TABLE)
+    suspend fun mergeFloorTable(
+        @Path("id") parentTableId: Int,
+        @Query("child_table_ids") childTableIds: String
+    ): MergeTableResponse
+
     @POST(PAY_BY_GUEST)
     suspend fun payByGuest(
         @Query("id") id: Int,
@@ -636,8 +643,7 @@ interface ApiService {
     suspend fun getFloorPlan(@Query("location_id") location_id: Int): GetFloorPlanResponse
 
     @GET(Constants.FLOOR_PLAN_TABLE_DETAILS)
-    suspend fun getFloorPlanTableDetails():GetFloorPlanDetailResponse
-
+    suspend fun getFloorPlanTableDetails(): GetFloorPlanDetailResponse
 
 
     @GET(REPORT_SUMMARY)
