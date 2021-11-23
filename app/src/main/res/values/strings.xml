@@ -91,6 +91,7 @@
     <string name="delete_discount_message">Are you sure want to Delete Discount?</string>
     <string name="delete_customer_message">Are you sure, you want to Delete the Customer?</string>
     <string name="delete_service_charge_message">Are you sure want to Delete Service Charge?</string>
+    <string name="delete_loyalty_message">Are you sure want to Delete Loyalty Program?</string>
     <string name="delete_employee_message">Are you sure, you want to delete Employee?</string>
     <string name="clockout_message">Are you sure, you want to Clockout?</string>
     <string name="delete_item_message">Are you sure you want to delete this item?</string>
@@ -619,6 +620,9 @@
     <string name="number_of_points_required_to_get_the_reward">(Number of points required to get the reward)</string>
     <string name="error_loyalty_name_blank">Please Enter Loyalty Name</string>
     <string name="error_loyalty_point_blank">Please Enter Loyalty Target</string>
+
+    <string name="create_loyalty_point">Create Loyalty Point</string>
+    <string name="edit_loyalty_point">Edit Loyalty Point</string>
 
 
 </resources>

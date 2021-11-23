@@ -94,6 +94,9 @@ class TaxServiceChargeRepository @Inject constructor(
     suspend fun serChargeActiveDatabase(serChargeId: Int, active: Boolean) =
         appDatabase.serviceChargeDao().activeServiceCharge(serChargeId, active)
 
+    suspend fun loyaltyProgramActiveDatabase(loyaltyId: Int, active: Boolean) =
+        appDatabase.loyaltyProgramsDao().activeLoyaltyProgram(loyaltyId, active)
+
     suspend fun deleteServiceCharge(data: Int) = apiHelperNew.deleteServiceCharge(data)
 
     suspend fun deleteLoyaltyPoint(data: Int) = apiHelperNew.deleteLoyaltyPoint(data)

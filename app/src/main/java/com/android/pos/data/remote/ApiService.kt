@@ -264,7 +264,7 @@ interface ApiService {
     @PUT(LOYALTY_POINT_ACTIVE)
     suspend fun loyaltyPointActive(
         @Path("id") serviceChargeId: Int,
-        @Query("is_enabled") is_active: Boolean
+        @Query("is_enable") is_active: Boolean
     ): BaseResponse
 
     @DELETE(SERVICE_CHARGE_UPDATE_DELETE)
