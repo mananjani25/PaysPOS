@@ -30,5 +30,8 @@ interface LoyaltyProgramsDao {
     @Query("DELETE FROM LoyaltyPrograms where LoyaltyPrograms.id  = :id")
     suspend fun deleteTipById(id: Int)
 
+    @Query("UPDATE LoyaltyPrograms SET isEnable = :active WHERE  LoyaltyPrograms.id = :id")
+    suspend fun activeLoyaltyProgram(id: Int, active: Boolean?): Int
+
 
 }

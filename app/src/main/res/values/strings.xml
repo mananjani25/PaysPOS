@@ -91,6 +91,7 @@
     <string name="delete_discount_message">Are you sure want to Delete Discount?</string>
     <string name="delete_customer_message">Are you sure, you want to Delete the Customer?</string>
     <string name="delete_service_charge_message">Are you sure want to Delete Service Charge?</string>
+    <string name="delete_loyalty_message">Are you sure want to Delete Loyalty Program?</string>
     <string name="delete_employee_message">Are you sure, you want to delete Employee?</string>
     <string name="clockout_message">Are you sure, you want to Clockout?</string>
     <string name="delete_item_message">Are you sure you want to delete this item?</string>
@@ -629,6 +630,9 @@
     <string name="create_loyalty_point">Create Loyalty Point</string>
     <string name="update_loyalty_point">Update Loyalty Point</string>
     <string name="tip_after_split_alert">If you will split the bill, then your added tip will be removed, Are you sure you want to split the bill?</string>
+
+    <string name="create_loyalty_point">Create Loyalty Point</string>
+    <string name="edit_loyalty_point">Edit Loyalty Point</string>
 
 
 </resources>

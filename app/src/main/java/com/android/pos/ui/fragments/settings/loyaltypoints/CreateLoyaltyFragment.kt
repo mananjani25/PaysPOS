@@ -46,6 +46,7 @@ class CreateLoyaltyFragment : Fragment() {
         isEdit = arguments?.getBoolean("isEdit")!!
 
         if (isEdit) {
+            binding.txtHeader.text = getString(R.string.create_loyalty_point)
             binding.txtSave.text = getString(R.string.update)
             binding.txtLoyaltyPointsTitle.text = getString(R.string.update_loyalty_point)
             loyaltyProgramsModel = arguments?.getParcelable("loyaltyObject")
@@ -56,6 +57,7 @@ class CreateLoyaltyFragment : Fragment() {
                 loyaltyProgramsModel?.rewardType == getString(R.string.percentage_symbol)
 
         } else {
+            binding.txtHeader.text = getString(R.string.edit_loyalty_point)
             binding.swtCreateLoyalty.isChecked = true
         }
         discountType(binding.swtCreateLoyalty.isChecked)
