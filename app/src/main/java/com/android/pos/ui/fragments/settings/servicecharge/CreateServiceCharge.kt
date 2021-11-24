@@ -44,6 +44,7 @@ class CreateServiceCharge : Fragment() {
 
         if (isEdit) {
             binding.txtSave.text = getString(R.string.update)
+            binding.txtServiceChargeTitle.text = getString(R.string.update_service_charge)
             serviceChargeData = arguments?.getParcelable("serviceChargeObject")!!
 
             viewModel.setDiscountData(serviceChargeData)

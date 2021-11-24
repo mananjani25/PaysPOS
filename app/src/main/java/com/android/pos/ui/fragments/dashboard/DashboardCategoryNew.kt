@@ -144,7 +144,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         isOrderUpdate = requireArguments().getBoolean("update")
         if (isOrderUpdate) {
-            Log.e(TAG, "bundle isOrderUpdate : $isOrderUpdate")
             orderId = requireArguments().getInt("orderId")
             paymentId = requireArguments().getInt("paymentId")
             paymentOfflineId = requireArguments().getString("paymentOfflineId").toString()
@@ -168,13 +167,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             }
         }
 
-        Log.e(TAG, "isOrderUpdate : $isOrderUpdate")
         if (isOrderUpdate) {
             binding.layoutCart.txtSave.text = getString(R.string.update)
-            Log.e(TAG, "save 171")
         } else {
             binding.layoutCart.txtSave.text = getString(R.string.save)
-            Log.e(TAG, "save 173")
         }
 
         navigateDineInOrder()
@@ -378,10 +374,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 prefProvider.setValue(ORDER_TYPE_NAME, DINE_IN)
                 prefProvider.setValueInt(ORDER_TYPE_ID, 2)
 
-                Log.e(TAG, "PassedDineInListSize  ${Gson().toJson(dineInList)}")
                 viewModel.cartLogic(cartList, null, ADD, dineInList = dineInList)
-                viewModel.orderItemDiscount = arguments?.getDouble("totalDiscount") ?: 0.0
-                Log.e(TAG, "dashTotalDis  ${arguments?.getDouble("totalDiscount")}")
+                viewModel.orderItemDiscount  = arguments?.getDouble("totalDiscount") ?: 0.0
 
             }
 
@@ -489,7 +483,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         binding.rvOrderType.adapter = orderTypeAdapter
 
         viewModel.orderTypes().observe(requireActivity(), {
-            Log.e("ORDER_TYPE_SIZE", "${Gson().toJson(it.data)}")
             it.data?.let { it1 -> orderTypeAdapter.addAll(it1) }
         })
 
@@ -534,9 +527,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             viewModel.mAllWords(prefProvider.getValue(ORDER_TYPE, "").toString()).observe(
                 requireActivity(), {
                     cartList = it as ArrayList<CartModel>
-                    Log.e(TAG, "cartSize:  ${cartList.size}")
-                    Log.e(TAG, "OrderType:  ${prefProvider.getValue(ORDER_TYPE, "").toString()}")
-                    Log.e(TAG, "cartList:  ${Gson().toJson(cartList)}")
+
                     if (cartList.isNotEmpty()) {
 
                         if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
@@ -545,38 +536,19 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             binding.layoutCart.rvCart.visibility = View.GONE
                             binding.layoutCart.rvCartDineIn.visibility = View.VISIBLE
                             binding.layoutCart.llPayment.visibility = View.VISIBLE
-                            Log.e(TAG, "GotAddedDineIn ${cartList[0].items}")
 
-                            var dineList: List<DineInModel>? =
+                            val dineList: List<DineInModel>? =
                                 cartList.get(0).dineInList
 
-                            /* if (dineList != null) {
-
-                                 for (i in 0 until dineList.size) {
-                                     if (dineList.get(i).items != null && dineList.get(i).items.isNotEmpty()) {
-                                         var itr = dineList.get(i).items.iterator()
-                                         while (itr.hasNext()) {
-                                             if (itr.next().isDestroy && itr.next().isEdited) {
-                                                 dineList.get(i).items.remove(itr.next())
-                                             }
-                                         }
-
-
-
-
-                                     }
-                                 }
-                             }*/
 
                             if (dineList != null) {
-                                Log.e(TAG, "PassesdineList: ${Gson().toJson(dineList)}")
                                 dineInCartAdapter.setList(dineList.toCollection(arrayListOf()))
 
                             }
 
                             if (cartList[0].items?.isNotEmpty() == true) {
 
-                                var dineList = dineInCartAdapter.getList()
+                                val dineList = dineInCartAdapter.getList()
                                 cartList[0].items?.forEach {
 
                                     if (it.isManualSales && dineList.isNotEmpty()) {
@@ -678,21 +650,16 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     }
 
     private fun hideOrderType() {
-        Log.e(TAG, "HideOrderType  ${prefProvider.getValue(ORDER_TYPE, "")}")
-        Log.e(TAG, "DineInSt: ${prefProvider.getValueboolean(DINE_IN_STATUS, true)}")
+
         if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
             binding.layoutCart.llCart.visibility = View.VISIBLE
             binding.lltakeout.visibility = View.GONE
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT).toString() == DINE_IN) {
-                Log.e(TAG, "getDineInStatus  ${prefProvider.getValueboolean(DINE_IN_STATUS, true)}")
-                if ((prefProvider.getValueboolean(DINE_IN_STATUS, true)) == false) {
+                if (!prefProvider.getValueboolean(DINE_IN_STATUS, true)) {
                     binding.layoutCart.llShowMenu.visibility = View.GONE
                     binding.layoutCart.viewDineIn.visibility = View.GONE
                     binding.layoutCart.rvCart.visibility = View.GONE
                     binding.layoutCart.rvCartDineIn.visibility = View.GONE
-
-                    //viewModel.deleteCart()
-                    //isOrderUpdate = false
 
                     if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
                         prefProvider.setValue(ORDER_TYPE, "")
@@ -701,7 +668,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                 } else {
 
-                    binding.layoutCart.txtOrderType.setText("Dine In")
+                    binding.layoutCart.txtOrderType.text = "Dine In"
                 }
             } else {
                 binding.layoutCart.txtOrderType.text =
@@ -716,7 +683,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 if (requireArguments().getBoolean("isFromDineIn")) {
                     getDineInCartList()
                 } else if (arguments?.getBoolean("is_dine_in_edit") == true) {
-                    Log.e(TAG, "is_dine_in_edit_true")
                     checkDineInEditOrder()
                 }
 
@@ -1275,8 +1241,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private fun resetTabbySearch(model: CategorySearchData) {
         var tabPos = -1
         val tabList = (binding.rvTabLayout.adapter as CategoryTabAdapter1).list
-        Log.e(TAG, "searchTabList  ${Gson().toJson(tabList)}")
-        Log.e(TAG, "searchmodel  ${Gson().toJson(model)}")
         for (i in 0 until tabList.size) {
 
             if (tabList[i].id == model.categoryID) {
@@ -1320,20 +1284,14 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 }
                 if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
 
-                    //TODO bugsolve
                     if (cartList.isNotEmpty()) {
                         cartList[0].orderType = DINE_IN
                     }
 
-                    Log.e(TAG, "HeaderPosition:  ${dineInCartAdapter.getHeaderPosition()}")
-                    /*cartList.get(0).dineInList?.get(dineInCartAdapter.getHeaderPosition())?.items?.add(
-                        item
-                    )*/
                     val dineInList = dineInCartAdapter.getList()
-                    //dineInList.get(dineInCartAdapter.getHeaderPosition()).items.add(item)
                     dineInList.get(0).selectedPosition = dineInCartAdapter.getHeaderPosition()
                     viewModel.cartLogic(cartList, item, ADD, dineInList = dineInList)
-                    Log.e(TAG, "serviceChargesList:  ${Gson().toJson(serviceChargesList)}")
+
 
 
                 } else {
@@ -1371,8 +1329,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             //for open order and edit cart
             item.isEdited = true
         }
-        Log.e(TAG, "isOrderUpdate $isOrderUpdate")
-        Log.e(TAG, "data.isEdited ${item.isEdited}")
     }
 
     private fun orderTypeDialog() {
@@ -1380,7 +1336,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         val bundle = Bundle().apply {
             putParcelableArrayList("data", orderTypeAdapter.list)
         }
-        Log.e(TAG, "currentDestination:   ${findNavController().currentDestination}")
         findNavController().navigate(
             R.id.action_dashboardCategoryNew_to_orderTypeDialog,
             bundle
@@ -1657,7 +1612,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             setFragmentResultListener("request_key_discount_details") { requestKey: String, bundle: Bundle ->
                 val result = bundle.getParcelable<TbDiscount>("data")
                 if (result != null) {
-                    Log.e(TAG, "GetDiscountResult:  ${Gson().toJson(result)}")
                     if (result.discountType == requireContext().getString(R.string.disc_percentage)) {
 
                         data.discountPrice = calculateDiscountPercentage(
@@ -1668,8 +1622,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         data.discountId = result.id
                         data.discountType = result.discountType
                         data.isManualSales = false
-                        Log.e(TAG, "insideDiscountmodel:  ${Gson().toJson(data)}")
-                        //   viewModel.cartLogic(cartList, data, Constants.UPDATE)
                         txtTitle.text = data.name + "  $" + String.format(
                             "%.2f",
                             (totalPrice(data) - data.discountPrice)
@@ -1766,7 +1718,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     totalPrice(data)
                 )
         }
-        Log.e(TAG, "txtTitle text >> ${txtTitle.text}")
     }
 
 
@@ -1863,7 +1814,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             event.getContentIfNotHandled()?.let { it ->
                 AlertUtils.showCustomAlert(requireActivity(), it.message)
                 binding.layoutCart.txtSave.text = getString(R.string.save)
-                Log.e(TAG, "save 1794")
                 clearCustomer()
                 hideOrderType()
                 getKitchenPrinters(it)
@@ -1917,7 +1867,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     }
 
     private fun chooseOrderType(orderType: TbOrderType) {
-        Log.e(TAG, "CurrentDestination:   ${findNavController().currentDestination}")
 
         when (orderType.orderType) {
             TAKEOUT -> {
@@ -2020,7 +1969,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                                 prefProvider.setValue(ORDER_TYPE, "")
                             }
                             binding.layoutCart.txtSave.text = getString(R.string.save)
-                            Log.e(TAG, "save 1923")
                             clearCustomer()
                             hideOrderType()
                             hideOrderMenu()
@@ -2029,14 +1977,11 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                         } else {
                             viewModel.deleteCart()
-                            Log.e(TAG, "isOrderUpdate 1777 $isOrderUpdate")
-
 
                             if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
                                 prefProvider.setValue(ORDER_TYPE, "")
                             }
                             binding.layoutCart.txtSave.text = getString(R.string.save)
-                            Log.e(TAG, "save 1939")
                             clearCustomer()
                             hideOrderType()
                             hideOrderMenu()
@@ -2118,9 +2063,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             if (prefProvider.getValueboolean(DINE_IN_UPDATE, false)) {
 
                 if (cartList.isNotEmpty()) {
-                    var request = viewModel.updateOrder(cartList[0])
+                    val request = viewModel.updateOrder(cartList[0])
 
-                    Log.e(TAG, "DineinSenOrder  ${cartList[0].orderId}")
                     prefProvider.setValueboolean(DINE_IN_UPDATE, false)
                     prefProvider.setValueboolean(DINE_IN_LIST_EDIT, false)
                     prefProvider.setValueboolean(DINE_IN_UPDATE, false)
@@ -2408,7 +2352,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             }
 
         }
-        Log.e(TAG, "orderFloorDetailsAdd  ${Gson().toJson(orderFloorDetails)}")
 
         val dineInList: ArrayList<DineInModel> = arrayListOf()
         dineInList.add(DineInModel(0, true, 0, "Whole Table"))
@@ -2444,13 +2387,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             cartList.add(cartModel)
         }
 
-        /* Log.e(TAG, "OrderId:   ${orderType!!.id}")
-         Log.e(TAG, "OrderName:   ${orderType!!.name}")
-         Log.e(TAG, "OrderOrderType:   ${orderType!!.orderType}")
-         prefProvider.setValueInt(ORDER_TYPE_ID, orderType!!.id)
-         prefProvider.setValue(ORDER_TYPE_NAME, orderType!!.name)
-         prefProvider.setValue(ORDER_TYPE, orderType!!.orderType)
-    */
         cartList.get(0).orderType = DINE_IN
         viewModel.cartLogic(cartList, null, ADD, dineInList = dineInList)
 
@@ -2460,6 +2396,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onItemSelected(headerPosition: Int, position: Int, data: TbItem) {
         val isItemClick = false
         val dialog = Dialog(requireContext())
@@ -2676,24 +2613,18 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         }
         btnRemove.setOnClickListener {
-            Log.e(TAG, "RemoveMayItem")
 
-            cartList.get(0).orderType = DINE_IN
+            cartList[0].orderType = DINE_IN
 
             if (prefProvider.getValueboolean(DINE_IN_UPDATE, false)) {
 
 
-                var list = dineInCartAdapter.getList()
-                Log.e(
-                    TAG,
-                    "DeleteItem  ${Gson().toJson(list.get(headerPosition).items.get(position))}"
-                )
-                var item: TbItem = list.get(headerPosition).items.get(position)
+                val list = dineInCartAdapter.getList()
+                val item: TbItem = list[headerPosition].items[position]
                 item.isEdited = true
                 item.isDestroy = true
-                list.get(headerPosition).items[position] = item
+                list[headerPosition].items[position] = item
                 viewModel.dineInCartUpdate(cartList, list)
-                /*list.get(headerPosition).*/
 
 
             } else {
@@ -2711,7 +2642,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             setFragmentResultListener("request_key_discount_details") { requestKey: String, bundle: Bundle ->
                 val result = bundle.getParcelable<TbDiscount>("data")
                 if (result != null) {
-                    Log.e(TAG, "GetDiscountResult:  ${Gson().toJson(result)}")
                     if (result.discountType == requireContext().getString(R.string.disc_percentage)) {
 
                         data.discountPrice = calculateDiscountPercentage(
@@ -2722,8 +2652,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         data.discountId = result.id
                         data.discountType = result.discountType
                         data.isManualSales = false
-                        Log.e(TAG, "insideDiscountmodel:  ${Gson().toJson(data)}")
-                        //   viewModel.cartLogic(cartList, data, Constants.UPDATE)
                         txtTitle.text = data.name + "  $" + String.format(
                             "%.2f",
                             (totalPrice(data) - data.discountPrice)
@@ -2776,7 +2704,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     override fun onCustomerClicked(position: Int, isRemoved: Boolean) {
         if (isRemoved) {
             if (cartList.get(0).dineInList?.size!! >= position) {
-                var dineIn = cartList.get(0).dineInList
+                val dineIn = cartList.get(0).dineInList
                 dineIn?.get(position)?.customer = null
                 viewModel.dineInCartUpdate(cartList, dineIn!!)
             }
@@ -2793,9 +2721,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     }
 
     override fun onItemDelete(position: Int, itemPosition: Int, data: TbItem) {
-        Log.e(TAG, "ItemDineDeleteHeader ${position}")
-        Log.e(TAG, "ItemDineDelete ${itemPosition}")
-
         alert(
             getString(R.string.app_name),
             getString(R.string.delete_item_message)
@@ -2814,7 +2739,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
             }
             negativeButton(R.string.tv_cancel) {
-                // Do negative stuff here
+                // Do negative stuff heref
             }
         }
 
@@ -2844,8 +2769,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 if (baseResponse != null) {
 
 
-                    Log.e(TAG, "BaseResponseInDash ${Gson().toJson(baseResponse)}")
-                    var bundle = Bundle()
+                    val bundle = Bundle()
                     bundle.putDouble("totalPrice", baseResponse.order.totalAmount)
                     bundle.putParcelable("cartList", cartList[0])
                     bundle.putParcelable("dineInList", baseResponse)
@@ -2869,7 +2793,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private fun tableStatusCheck() {
         viewModel.tableCheck.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let { status ->
-                Log.e(TAG, "getstr:   $status")
 
                 AlertUtils.showCustomAlertWithListenerWithOK(
                     requireContext(),
@@ -2886,11 +2809,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private fun tableStatusSucess() {
         viewModel.tableCheckSuccess.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let { status ->
-                Log.e(TAG, "getstr:   $status")
 
                 viewModel.deleteCart()
-                Log.e(TAG, "isOrderUpdate 2560 $isOrderUpdate")
-
                 if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
                     prefProvider.setValue(ORDER_TYPE, "")
                 }
@@ -2912,7 +2832,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             requireActivity().contentResolver,
             Settings.Secure.ANDROID_ID
         )
-        Log.e(TAG, "androidId:  ${androidId}")
     }
 
 
@@ -2933,11 +2852,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         prefProvider.setValue(ORDER_TYPE, "")
                     }
                     binding.layoutCart.txtSave.text = getString(R.string.save)
-                    Log.e(TAG, "save 2835")
                     clearCustomer()
                     hideOrderType()
                     hideOrderMenu()
-                    var bundle = Bundle()
+                    val bundle = Bundle()
                     bundle.putParcelable("cartList", cartList[0])
                     bundle.putBoolean("isGuestPaid", false)
 
@@ -3144,10 +3062,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 Builder.COLOR_1
             )
 
-            Log.e(
-                TAG,
-                "ConvertDateTime:  ${Constants.getReceiptFormatDateFromUTCServer(receiptModel?.order?.createdAt.toString())}"
-            )
             builder.addText(
                 padLine(
                     Constants.getReceiptFormatDateFromUTCServer(receiptModel?.order?.createdAt.toString()),
@@ -3262,7 +3176,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                     if (kitchenSettingModel.showCustomerPhone) {
 
-                        if (receiptModel?.order?.customer?.phones?.isNotEmpty() == true) {
+                        if (receiptModel?.order?.customer?.phones?.isNotEmpty()) {
                             builder.addTextLineSpace(30)
                             builder.addFeedUnit(30)
                             builder.addTextFont(Builder.FONT_E)
@@ -3296,7 +3210,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                  builder.addText(receiptModel?.order?.customer?.email)*/
 
                     if (kitchenSettingModel.showCustomerAddress) {
-                        if (receiptModel?.order?.customer?.addresses?.isNotEmpty() == true) {
+                        if (receiptModel.order?.customer?.addresses?.isNotEmpty()) {
 
                             builder.addTextLineSpace(30)
                             builder.addFeedUnit(30)

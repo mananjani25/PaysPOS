@@ -80,6 +80,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         splitValue = -1
         isSplitByNo = false
         isSplitByAmount = false
+        tipAmount = 0.0
         cartList = requireArguments().getParcelable("cartList")
         setupData()
         callbackSetup()
@@ -130,24 +131,29 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         setFragmentResultListener("request_key_tips") { requestKey: String, bundle: Bundle ->
             tipAmount = bundle.getDouble("tipAmount")
 
-
-            if (tipAmount == 0.00) {
-                binding.txtTotalAmount.text =
-                    MethodUtils.roundOffAmount(totalPrice)
-            } else {
-                binding.txtTotalAmount.text =
-                    MethodUtils.roundOffAmount(totalPrice + tipAmount) + " (" + MethodUtils.roundOffAmount(
-                        tipAmount
-                    ) + " Tip Added)"
-            }
-
-
-            getCashPaymentOptionList(totalPrice + tipAmount)
-            MethodUtils.setPriceTextView(binding.txtTipAmt, tipAmount)
-            MethodUtils.setPriceTextView(binding.txtTotal, totalPrice + tipAmount)
+            tipAmountCalculation()
         }
 
 
+    }
+
+    private fun tipAmountCalculation() {
+
+        val _totalPrice = if (splitValue == -1) totalPrice else totalPrice / splitValue
+
+        if (tipAmount == 0.00) {
+            binding.txtTotalAmount.text = MethodUtils.roundOffAmount(_totalPrice)
+        } else {
+            binding.txtTotalAmount.text =
+                MethodUtils.roundOffAmount(_totalPrice + tipAmount) + " (" + MethodUtils.roundOffAmount(
+                    tipAmount
+                ) + " Tip Added)"
+        }
+
+
+        getCashPaymentOptionList(_totalPrice + tipAmount)
+        MethodUtils.setPriceTextView(binding.txtTipAmt, tipAmount)
+        MethodUtils.setPriceTextView(binding.txtTotal, _totalPrice + tipAmount)
     }
 
     private fun setupData() {
@@ -196,6 +202,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         val splitPayAmount = prefProvider.getValue(SPLIT_PAY_AMOUNT, "")
 
         if (splitPayType == SPLIT_NO) {
+            tipAmount = 0.0
 
             if (splitPayAmount.isNotEmpty()) {
                 totalPrice -= splitPayAmount.toDouble()
@@ -215,10 +222,10 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     val split_totalDiscount = totalDiscount / splitNo
                     totalDiscount -= split_totalDiscount
 
-                    val split_tip_amount = tipAmount / splitNo
-                    tipAmount -= split_tip_amount
-
-                    totalPrice += tipAmount
+//                    val split_tip_amount = tipAmount / splitNo
+//                    tipAmount -= split_tip_amount
+//
+//                    totalPrice += tipAmount
                 }
 
             }
@@ -244,7 +251,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 totalTax -= totalTax1
                 totalServiceCharge -= totalServiceCharge1
                 totalDiscount -= totalDiscount1
-                tipAmount -= tipAmount1
+//                tipAmount -= tipAmount1
 
 
             }
@@ -383,7 +390,9 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 paymentAmount = when {
 
                     isSplitByNo -> {
-                        (totalPrice + tipAmount) / splitValue
+
+                        (totalPrice / splitValue) + tipAmount
+
                     }
                     isSplitByAmount -> {
                         splitAfterAmount
@@ -415,7 +424,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 paymentAmount = when {
 
                     isSplitByNo -> {
-                        (totalPrice + tipAmount) / splitValue
+                        (totalPrice / splitValue) + tipAmount
                     }
                     isSplitByAmount -> {
                         splitAfterAmount
@@ -435,13 +444,25 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             }
             R.id.txtSplitAmount -> {
 
-                val bundle = Bundle()
-                bundle.putDouble("totalPrice", (totalPrice + tipAmount))
-                bundle.putInt("splitValue", splitValue)
-                findNavController().navigate(
-                    R.id.action_paymentFragment_to_splitAmountFragment,
-                    bundle
-                )
+                if (tipAmount == 0.0) {
+                    val bundle = Bundle()
+                    bundle.putDouble("totalPrice", (totalPrice + tipAmount))
+                    bundle.putInt("splitValue", splitValue)
+                    findNavController().navigate(
+                        R.id.action_paymentFragment_to_splitAmountFragment,
+                        bundle
+                    )
+                } else {
+
+                    AlertUtils.showCustomAlertWithYesNoListener(
+                        requireActivity(),
+                        getString(R.string.tip_after_split_alert)
+                    ) { _, _ ->
+
+                        tipAmount = 0.0
+                        tipAmountCalculation()
+                    }
+                }
             }
 
             R.id.txtAddTips -> {
@@ -658,7 +679,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 when {
                     isSplitByNo -> {
 
-                        var payAmount = (totalPrice + tipAmount) / splitValue
+                        var payAmount = ((totalPrice / splitValue) + tipAmount)
                         val bundle = Bundle()
                         bundle.putDouble("totalPrice", payAmount)
                         bundle.putDouble("paymentAmount", paymentAmount)
@@ -666,7 +687,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                         bundle.putParcelable("receiptData", it.data)
                         bundle.putBoolean("isSpilt", true)
                         bundle.putInt("splitValue", splitValue)
-                        bundle.putDouble("remainingAmount", (totalPrice + tipAmount) - payAmount)
+                        bundle.putDouble("remainingAmount", (totalPrice) - (payAmount - tipAmount))
                         findNavController().navigate(
                             R.id.action_paymentFragment_to_orderCompleteFragment,
                             bundle
@@ -679,7 +700,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
 
                         prefProvider.setValue(SPLIT_PAY_TYPE, SPLIT_NO)
-                        prefProvider.setValue(SPLIT_PAY_AMOUNT, payAmount.toString())
+                        prefProvider.setValue(SPLIT_PAY_AMOUNT, (payAmount - tipAmount).toString())
                         prefProvider.setValueInt(SPLIT_NO, splitValue)
 
                     }

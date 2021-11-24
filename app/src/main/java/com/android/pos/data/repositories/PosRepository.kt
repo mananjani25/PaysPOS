@@ -639,6 +639,8 @@ class PosRepository @Inject constructor(
     ) =
         apiHelperNew.getTableStatus(tableId, empId, terminalId, status)
 
+    suspend fun mergeFloorTable(parentTableId:Int,childIds:String) = apiHelperNew.mergeFloorTable(parentTableId,childIds)
+
     suspend fun payByGuest(
         id: Int,
         isAllComplete: Boolean,
@@ -652,6 +654,7 @@ class PosRepository @Inject constructor(
     fun getFloorPlan(locationId: Int) =
         performGetOperationNew(networkCall = { apiHelperNew.getFloorPlan(locationId) })
 
+    fun getFloorPlanTableDetails() = performGetOperationNew(networkCall = {apiHelperNew.getFloorPlanTableDetails()})
 
     suspend fun employeeClockOut(data: HashMap<String, String>) =
         apiHelperNew.employeeClockOut(data)

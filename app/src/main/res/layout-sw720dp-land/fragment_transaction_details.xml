@@ -405,7 +405,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/_3sdp"
-                        android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.order.total_amount)}"
+                        android:text="@{@string/symbole +``+String.format(@string/format,(orderDetails.data.amount + orderDetails.data.tips))}"
                         android:textColor="@color/viewTextColor"
                         android:textSize="@dimen/_5mdpi" />
 
@@ -481,7 +481,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginRight="@dimen/_5sdp"
                             android:gravity="end"
-                            android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.order.sub_total)}"
+                            android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.sub_total)}"
                             android:textColor="@color/viewTextColor"
                             android:textSize="@dimen/_5mdpi" />
                     </LinearLayout>
@@ -508,7 +508,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginRight="@dimen/_5sdp"
                             android:gravity="end"
-                            android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.order.total_tax_amount)}"
+                            android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.tax_amount)}"
                             android:textColor="@color/viewTextColor"
                             android:textSize="@dimen/_5mdpi" />
                     </LinearLayout>
@@ -535,7 +535,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginRight="@dimen/_5sdp"
                             android:gravity="end"
-                            android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.order.total_service_charges)}"
+                            android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.service_charge_amount)}"
                             android:textColor="@color/viewTextColor"
                             android:textSize="@dimen/_5mdpi" />
                     </LinearLayout>
@@ -562,7 +562,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginRight="@dimen/_5sdp"
                             android:gravity="end"
-                            android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.order.total_tips)}"
+                            android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.tips)}"
                             android:textColor="@color/viewTextColor"
                             android:textSize="@dimen/_5mdpi" />
                     </LinearLayout>
@@ -591,7 +591,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginRight="@dimen/_5sdp"
                             android:gravity="end"
-                            android:text="@{`- `+@string/symbole +``+String.format(@string/format,orderDetails.data.order.total_discount)}"
+                            android:text="@{`- `+@string/symbole +``+String.format(@string/format,orderDetails.data.total_discount)}"
                             android:textColor="@color/colorRed"
                             android:textSize="@dimen/_5mdpi" />
                     </LinearLayout>
@@ -677,7 +677,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="@dimen/_5sdp"
                             android:gravity="end"
-                            android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.order.total_amount)}"
+                            android:text="@{@string/symbole +``+String.format(@string/format,(orderDetails.data.amount + orderDetails.data.tips))}"
                             android:textColor="@color/viewTextColor"
                             android:textSize="@dimen/_5mdpi" />
                     </LinearLayout>

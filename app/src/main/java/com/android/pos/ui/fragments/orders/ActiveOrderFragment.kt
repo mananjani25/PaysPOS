@@ -308,6 +308,7 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
                     discountId = it.discountId
                 if (it.order_item_variation != null)
                     variationsAttributes = variationAtt(it.order_item_variation)
+                note = it.note
             }
 
             inventoryModelList.add(items)

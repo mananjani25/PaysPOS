@@ -1,19 +1,17 @@
 package com.android.pos.ui.fragments.settings.teamrole
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.Employee
 import com.android.pos.data.entities.ModulePermission
 import com.android.pos.data.entities.TeamRole
-import com.android.pos.data.model.PermissionModuleListModel
-import com.android.pos.data.model.responseModel.GetTeamRoleModule
 import com.android.pos.databinding.FragmentUserAccessPermissionBinding
 import com.android.pos.ui.adapter.*
 import com.android.pos.utils.AlertUtils
@@ -82,6 +80,12 @@ class UserAccessPermissionFragment : Fragment() {
 
         binding.imgClose.setOnClickListener {
             findNavController().navigateUp()
+        }
+        binding.txtCancel.setOnClickListener {
+            findNavController().navigateUp()
+        }
+        binding.txtHome.setOnClickListener {
+            findNavController().navigate(R.id.action_userAccessPermissionFragment_to_dashboardCategoryNew)
         }
 
         return binding.root

@@ -19,11 +19,11 @@
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/imgBack"
-                    android:background="?attr/selectableItemBackground"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_gravity="center"
+                    android:background="?attr/selectableItemBackground"
                     android:padding="@dimen/_4sdp"
                     app:srcCompat="@drawable/ic_cancel_black" />
 
