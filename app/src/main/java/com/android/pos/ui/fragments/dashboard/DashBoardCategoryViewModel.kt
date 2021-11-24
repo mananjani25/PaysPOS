@@ -556,10 +556,8 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                     //if customer has more points than required(minimum limit)
                     appliedLoyaltyProgram = availableLoyaltyPrograms[i]
-                    val multiple: Int =
-                        (availablePoints / availableLoyaltyPrograms[i].rewardPoint)
-                    val possibleLoyaltyAmount = multiple * availableLoyaltyPrograms[i].amount
-                    if (possibleLoyaltyAmount > total) {
+                    val availableLoyaltyAmount = availablePoints * availableLoyaltyPrograms[i].amount / availableLoyaltyPrograms[i].rewardPoint
+                    if (availableLoyaltyAmount > total) {
                         //if loyalty amount is more than total price
 
                         redeemLoyaltyInfo.usedLoyaltyPoints =
@@ -570,13 +568,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                         redeemLoyaltyInfo.remainingLoyaltyPoints =
                             availablePoints - redeemLoyaltyInfo.usedLoyaltyPoints
                     } else {
-                        redeemLoyaltyInfo.usedLoyaltyAmount = possibleLoyaltyAmount
-                        redeemLoyaltyInfo.remainingLoyaltyAmount =
-                            total - redeemLoyaltyInfo.usedLoyaltyAmount
-                        redeemLoyaltyInfo.usedLoyaltyPoints =
-                            multiple * availableLoyaltyPrograms[i].rewardPoint
-                        redeemLoyaltyInfo.remainingLoyaltyPoints =
-                            availablePoints % availableLoyaltyPrograms[i].rewardPoint
+                        redeemLoyaltyInfo.usedLoyaltyAmount =  (availablePoints  * availableLoyaltyPrograms[i].amount / availableLoyaltyPrograms[i].rewardPoint)
+                        redeemLoyaltyInfo.usedLoyaltyPoints = availablePoints
+                        redeemLoyaltyInfo.remainingLoyaltyPoints = 0
+                        redeemLoyaltyInfo.remainingLoyaltyAmount = total - redeemLoyaltyInfo.usedLoyaltyAmount
                     }
                     redeemLoyaltyInfo.isLoyaltyApplied = true
                     break
