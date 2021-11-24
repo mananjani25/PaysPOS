@@ -172,6 +172,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             binding.txtRemainingAmount.text = MethodUtils.roundOffAmount(remainingAmount)
 
             binding.txtRemainingAmount.visibility = View.VISIBLE
+            binding.txtRemainingAmountLabel.visibility = View.VISIBLE
             binding.llHome.visibility = View.GONE
             binding.llNoReceipt.text = "Next Payment"
             binding.txtHome.text = "Next Payment"
@@ -185,6 +186,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             binding.viewSplitLine.visibility = View.GONE
             binding.constraintSplit.visibility = View.GONE
             binding.txtRemainingAmount.visibility = View.GONE
+            binding.txtRemainingAmountLabel.visibility = View.GONE
             binding.llHome.visibility = View.VISIBLE
             binding.llNoReceipt.text = getString(R.string.no_receipt)
             binding.txtHome.text = getString(R.string.tv_home)
