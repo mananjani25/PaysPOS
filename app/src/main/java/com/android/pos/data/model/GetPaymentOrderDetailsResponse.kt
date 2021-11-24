@@ -39,6 +39,10 @@ class GetPaymentOrderDetailsResponse(
         @SerializedName("tax_amount") val tax_amount: Double,
         @SerializedName("service_charge_amount") val service_charge_amount: Double,
         @SerializedName("terminal_id") val terminal_id: Int,
+        @SerializedName("used_reward_points") val used_reward_points: Int?,
+        @SerializedName("loyalty_program_id") val loyalty_program_id: Int?,
+        @SerializedName("loyalty_amount") val loyalty_amount: Double?,
+        @SerializedName("is_loyalty_applied") val is_loyalty_applied: Boolean?,
         @SerializedName("order") val order: Order
     ) : Parcelable {
         @Parcelize

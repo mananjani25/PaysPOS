@@ -125,7 +125,7 @@ class CustomerDetails : Fragment() {
             if (data?.isNotEmpty() == true) {
                 binding.llOrderHistory.visible()
                 orderHistoryAdapter.add(data)
-                var point = 0.0
+                /*var point = 0.0
 
                 data.forEach {
 
@@ -133,7 +133,7 @@ class CustomerDetails : Fragment() {
                         point += it.order_loyalty_points
                 }
 
-                binding.txtrewardpoint.text = "" + point
+                binding.txtrewardpoint.text = "" + point*/
 
             } else {
                 binding.llOrderHistory.gone()

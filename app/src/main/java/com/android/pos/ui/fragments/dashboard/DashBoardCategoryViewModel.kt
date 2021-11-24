@@ -557,7 +557,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                         (availablePoints / availableLoyaltyPrograms[i].rewardPoint)
                     val possibleLoyaltyAmount = multiple * availableLoyaltyPrograms[i].amount
                     if (possibleLoyaltyAmount > total) {
-                        //if loyalty amount is more than total price then
+                        //if loyalty amount is more than total price
                         val multiple = (total / availableLoyaltyPrograms[i].amount).toInt()
                         redeemLoyaltyInfo.usedLoyaltyPoints =
                             multiple * availableLoyaltyPrograms[i].rewardPoint
@@ -576,7 +576,14 @@ class DashBoardCategoryViewModel @Inject constructor(
                         redeemLoyaltyInfo.remainingLoyaltyPoints =
                             availablePoints % availableLoyaltyPrograms[i].rewardPoint
                     }
+                    redeemLoyaltyInfo.isLoyaltyApplied = true
                     break
+                } else {
+                    redeemLoyaltyInfo.remainingLoyaltyAmount = total
+                    redeemLoyaltyInfo.remainingLoyaltyPoints = availablePoints
+                    redeemLoyaltyInfo.usedLoyaltyPoints = 0
+                    redeemLoyaltyInfo.usedLoyaltyAmount = 0.0
+                    redeemLoyaltyInfo.isLoyaltyApplied = false
                 }
             }
         }

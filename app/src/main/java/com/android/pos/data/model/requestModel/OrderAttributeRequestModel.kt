@@ -105,6 +105,9 @@ class OrderAttributeRequestModel {
     @SerializedName("loyalty_amount")
     var loyalty_amount: Double? = 0.0
 
+    @SerializedName("used_reward_points")
+    var used_reward_points: Int? = 0
+
     @SerializedName("is_loyalty_applied")
     var is_loyalty_applied: Boolean? = false
 }
@@ -528,6 +531,9 @@ class PaymentAttributes : Parcelable {
 
     @SerializedName("loyalty_amount")
     var loyalty_amount: Double? = 0.0
+
+    @SerializedName("used_reward_points")
+    var used_reward_points: Int? = 0
 
     @SerializedName("is_loyalty_applied")
     var is_loyalty_applied: Boolean? = false

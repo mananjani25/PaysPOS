@@ -1207,6 +1207,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         val txtTotalTax: AppCompatTextView = popupView.findViewById(R.id.txtTotalTax)
         val llLoyalty: LinearLayoutCompat = popupView.findViewById(R.id.llLoyalty)
         val txtLoyaltyAmount: AppCompatTextView = popupView.findViewById(R.id.txtLoyaltyAmount)
+        val llLoyaltyPoints: LinearLayoutCompat = popupView.findViewById(R.id.llLoyaltyPoints)
+        val txtLoyaltyPoints: AppCompatTextView = popupView.findViewById(R.id.txtLoyaltyPoints)
         Log.e(TAG, "subTotalPrice:   ${viewModel.subTotalPrice - (cartList[0].discountPrice)}")
 
         txtSubTotal.text = "$" + String.format(
@@ -1235,11 +1237,15 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         val customer = viewModel.selectedCustomer
         if (customer != null && customer.enroll_to_loyalty == true) {
             llLoyalty.visible()
+            llLoyaltyPoints.visible()
             Log.e(TAG, Gson().toJson(viewModel.redeemLoyaltyInfo))
             amountToBepaid = viewModel.redeemLoyaltyInfo.remainingLoyaltyAmount
-            txtLoyaltyAmount.text = "${viewModel.redeemLoyaltyInfo.usedLoyaltyAmount}"
+            txtLoyaltyAmount.text =
+                "- $${String.format("%.2f", viewModel.redeemLoyaltyInfo.usedLoyaltyAmount)}"
+            txtLoyaltyPoints.text = "${viewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
         } else {
             llLoyalty.gone()
+            llLoyaltyPoints.gone()
         }
 
         //display total price to be paid
@@ -2126,7 +2132,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         false,
                         viewModel.totalDiscount + cartList.discountPrice,
                         0.00,
-                        -1
+                        -1,
+                        viewModel.redeemLoyaltyInfo
                     )
                     viewModelPayment.saveOrder(true)
                     viewModelPayment.submit(request)
@@ -2167,11 +2174,14 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 }
             } else {
 
-
                 val bundle = Bundle()
                 bundle.putDouble(
                     "totalPrice",
-                    viewModel.totalPrice - cartList[0].discountPrice
+                    viewModel.redeemLoyaltyInfo.remainingLoyaltyAmount
+                )
+                bundle.putString(
+                    "redeemLoyalty",
+                    Gson().toJson(viewModel.redeemLoyaltyInfo)
                 )
                 bundle.putDouble("subTotalPrice", viewModel.subTotalPrice)
                 bundle.putDouble("totalTax", viewModel.totalTax)
