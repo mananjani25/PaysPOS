@@ -253,6 +253,11 @@ class PosRepository @Inject constructor(
         appDatabase.loyaltyProgramsDao().addAll(data)
     }
 
+
+    suspend fun addCashDiscountsFromDb(data: List<CashDiscountModel>) {
+        appDatabase.cashDiscountDao().addAll(data)
+    }
+
     suspend fun deleteCustomerReceiptSettingsFromDb() {
         appDatabase.customerSettingsDao().delete()
     }
@@ -612,7 +617,7 @@ class PosRepository @Inject constructor(
 
 
     suspend fun cashInOut(data: CashLogRequest) = apiHelperNew.cashInOut(data)
-
+    suspend fun getCashDisDetail(active: Int) = appDatabase.cashDiscountDao().getActiveCashDiscount(active)
 
     suspend fun getCashLog(startDate: String, endDate: String, terminalId: String) =
         apiHelperNew.getCashInOut(startDate, endDate, terminalId)
@@ -635,7 +640,8 @@ class PosRepository @Inject constructor(
     ) =
         apiHelperNew.getTableStatus(tableId, empId, terminalId, status)
 
-    suspend fun mergeFloorTable(parentTableId:Int,childIds:String) = apiHelperNew.mergeFloorTable(parentTableId,childIds)
+    suspend fun mergeFloorTable(parentTableId: Int, childIds: String) =
+        apiHelperNew.mergeFloorTable(parentTableId, childIds)
 
     suspend fun payByGuest(
         id: Int,
@@ -650,7 +656,8 @@ class PosRepository @Inject constructor(
     fun getFloorPlan(locationId: Int) =
         performGetOperationNew(networkCall = { apiHelperNew.getFloorPlan(locationId) })
 
-    fun getFloorPlanTableDetails() = performGetOperationNew(networkCall = {apiHelperNew.getFloorPlanTableDetails()})
+    fun getFloorPlanTableDetails() =
+        performGetOperationNew(networkCall = { apiHelperNew.getFloorPlanTableDetails() })
 
     suspend fun employeeClockOut(data: HashMap<String, String>) =
         apiHelperNew.employeeClockOut(data)
@@ -667,7 +674,7 @@ class PosRepository @Inject constructor(
 
     suspend fun clearTable() {
 
-        Log.e("clear Db Table","-------")
+        Log.e("clear Db Table", "-------")
         appDatabase.characterDao().delete()
         appDatabase.categoryDao().delete()
         appDatabase.itemDao().delete()

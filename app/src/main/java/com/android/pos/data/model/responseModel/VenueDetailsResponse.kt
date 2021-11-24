@@ -3,10 +3,7 @@ package com.android.pos.data.model.responseModel
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.android.pos.data.entities.LoyaltyProgramsModel
-import com.android.pos.data.entities.TaxData
-import com.android.pos.data.entities.TbDiscount
-import com.android.pos.data.entities.TbServiceCharge
+import com.android.pos.data.entities.*
 import com.google.gson.annotations.SerializedName
 
 data class VenueDetailsResponse(
@@ -52,6 +49,8 @@ data class VenueDetailsResponse(
         val service_charges: List<TbServiceCharge>,
         @SerializedName("loyalty_programs")
         val loyaltyPrograms: List<LoyaltyProgramsModel>,
+        @SerializedName("cash_discounts")
+        val cash_discounts: List<CashDiscountModel>,
         @SerializedName("terminals")
         val terminals: List<Terminal>,
         @SerializedName("tip_settings")

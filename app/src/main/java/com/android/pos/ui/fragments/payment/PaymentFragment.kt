@@ -9,10 +9,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import com.android.pos.MainApplication
 import com.android.pos.R
 import com.android.pos.data.entities.CartModel
+import com.android.pos.data.entities.CashDiscountModel
 import com.android.pos.data.model.requestModel.SpitByOrderPaymentModel
 import com.android.pos.data.model.requestModel.SpitByOrderRequestModel
 import com.android.pos.data.remote.Constants
@@ -25,6 +27,7 @@ import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.math.ceil
 import kotlin.math.floor
@@ -53,6 +56,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
     private var totalTax: Double = 0.0
     private var totalServiceCharge: Double = 0.0
     private var paymentAmount: Double = 0.0
+    var cashDiscountData: CashDiscountModel? = null
     private lateinit var binding: PaymentFragmentBinding
     private val TAG = "PaymentFragment"
 
@@ -162,6 +166,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         totalDiscount = requireArguments().getDouble("totalDiscount")
         future_delivery_time = requireArguments().getString("future_delivery_time").toString()
         future_delivery_date = requireArguments().getString("future_delivery_date").toString()
+        getSerchargeCashDisDetail()
 
 
 
@@ -267,6 +272,19 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         binding.txtThirdAmount.setOnClickListener(this)
         binding.txtFourthAmount.setOnClickListener(this)
         binding.txtAddTips.setOnClickListener(this)
+
+
+    }
+
+    private fun getSerchargeCashDisDetail() {
+        viewModel.viewModelScope.launch {
+            cashDiscountData = viewModel.getCashDiscountDetails(1)
+        }
+        if (cashDiscountData != null) {
+            binding.txtLableDiscount.text = cashDiscountData?.name
+            binding.txtCashdiscount.text = cashDiscountData?.rate_or_amount.toString()
+
+        }
 
 
     }
