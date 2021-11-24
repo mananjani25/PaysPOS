@@ -130,7 +130,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         viewModel.getTipsList().observe(viewLifecycleOwner, {
             if (it.isNotEmpty()) {
                 tipsList = it
-                Log.e(TAG, "tipsList:  ${Gson().toJson(tipsList)}")
+
             }
 
 
@@ -143,6 +143,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         setupSnackbar()
         observeShowProgress()
+        setLabelData()
 
 
 
@@ -159,31 +160,30 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         }
 
         if (isSpilt) {
-            binding.txtSplitTitle.visibility = View.VISIBLE
-            binding.rvSplits.visibility = View.VISIBLE
+            binding.constraintSplit.visibility = View.VISIBLE
+            binding.viewSplitLine.visibility = View.VISIBLE
             splitValue = requireArguments().getInt("splitValue")
             remainingAmount = requireArguments().getDouble("remainingAmount")
             splitPaidAmount = requireArguments().getDouble("payAmount")
 
 
-            Log.e("remainingAmount", remainingAmount.toString())
 
-            binding.txtRemainingAmount.text =
-                "Remaining Amount " + MethodUtils.roundOffAmount(remainingAmount)
+
+            binding.txtRemainingAmount.text = MethodUtils.roundOffAmount(remainingAmount)
 
             binding.txtRemainingAmount.visibility = View.VISIBLE
             binding.llHome.visibility = View.GONE
             binding.llNoReceipt.text = "Next Payment"
             binding.txtHome.text = "Next Payment"
 
-            Log.e(TAG, "SplitSize:  ${splitList.size}")
+
             var title = "Split "
 
             viewModel.addSplitToDatabase(title, splitPaidAmount, remainingAmount)
 
         } else {
-            binding.txtSplitTitle.visibility = View.GONE
-            binding.rvSplits.visibility = View.GONE
+            binding.viewSplitLine.visibility = View.GONE
+            binding.constraintSplit.visibility = View.GONE
             binding.txtRemainingAmount.visibility = View.GONE
             binding.llHome.visibility = View.VISIBLE
             binding.llNoReceipt.text = getString(R.string.no_receipt)
@@ -191,9 +191,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             viewModel.deleteSplitDb()
         }
 
-        Log.e(TAG, "receiptModel:   ${Gson().toJson(receiptModel)}")
+
         binding.txtTitle.text =
-            MethodUtils.roundOffAmount(paymentAmount) + " cash"
+            MethodUtils.roundOffAmount(paymentAmount)
 
         if (totalPrice != paymentAmount) {
             binding.txtChangeAmount.text =
@@ -247,6 +247,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 
+    }
+
+    private fun setLabelData() {
+        binding.txtTitleCash.text = "Cash"
+        binding.txtRemainingAmountLabel.text = "Remaining Amount"
     }
 
     override fun onClick(v: View?) {
@@ -316,7 +321,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     }
 
     private fun moveToDashboard() {
-        Log.e("moveToDashboard", isGuest.toString())
+
         if (isSpilt) {
             if (isDineIn) {
                 findNavController().popBackStack()
@@ -407,7 +412,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters,
         type: String
     ) {
-        Log.e(TAG, "getPrinter:  ${PrinterClass.getPrinter()}")
+
         PrinterClass.closePrinter()
         if (PrinterClass.getPrinter() == null) {
             var printer: Print? = Print(requireContext())

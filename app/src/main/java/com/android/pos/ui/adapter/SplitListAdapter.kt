@@ -21,8 +21,15 @@ class SplitListAdapter() : RecyclerView.Adapter<SplitListAdapter.MyViewHolder>()
         fun bind(model: SplitDetailListModel) {
             binding.model = model
             binding.executePendingBindings()
-            binding.txtSplitAmount.text = "Amount: " + MethodUtils.roundOffAmount(list.get(bindingAdapterPosition).amount)
-            binding.txtRemainingAmount.text = "Remaining Amount: "+MethodUtils.roundOffAmount(list.get(bindingAdapterPosition).remainingAmt)
+            binding.txtSplitAmount.text =
+                "" + MethodUtils.roundOffAmount(list.get(bindingAdapterPosition).amount)
+            binding.txtRemainingAmount.text =
+                "" + MethodUtils.roundOffAmount(list.get(bindingAdapterPosition).remainingAmt)
+            binding.txtTitle.text =
+                list[bindingAdapterPosition].title + " " + (bindingAdapterPosition + 1)
+
+            binding.txtRemainingAmountLabel.text = "Remaining Amount "
+            binding.txtSplitAmountLabel.text = "Amount "
 
 
         }
