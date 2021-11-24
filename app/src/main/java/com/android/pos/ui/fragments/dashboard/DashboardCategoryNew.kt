@@ -173,11 +173,11 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             binding.layoutCart.txtSave.text = getString(R.string.save)
         }
 
+        getLoyaltyPrograms()
         navigateDineInOrder()
         dineInUpdateOrder()
         getCustomerReceiptSettings()
         getKitchenReceiptSettings()
-        getLoyaltyPrograms()
 
         binding.footer.imgClock.setOnClickListener {
             alert(
@@ -209,8 +209,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     }
 
     private fun getLoyaltyPrograms() {
+        Log.e("Loyalty", "getLoyaltyPrograms called..")
         viewModel.loyaltyPointsLiveData.observe(requireActivity(), {
             if (it.data != null) {
+                Log.e("Loyalty", "getLoyaltyPrograms fetched..")
                 viewModel.loyaltyPointsList.clear()
                 viewModel.loyaltyPointsList.addAll(it.data)
             }
@@ -375,7 +377,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 prefProvider.setValueInt(ORDER_TYPE_ID, 2)
 
                 viewModel.cartLogic(cartList, null, ADD, dineInList = dineInList)
-                viewModel.orderItemDiscount  = arguments?.getDouble("totalDiscount") ?: 0.0
+                viewModel.orderItemDiscount = arguments?.getDouble("totalDiscount") ?: 0.0
 
             }
 
@@ -513,6 +515,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     }
 
     private fun getCartList() {
+
+        Log.e("Loyalty", "getCartList called..")
 
         cartAdapter = CartAdapter()
         cartAdapter.setCallback(this)
@@ -1291,7 +1295,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     val dineInList = dineInCartAdapter.getList()
                     dineInList.get(0).selectedPosition = dineInCartAdapter.getHeaderPosition()
                     viewModel.cartLogic(cartList, item, ADD, dineInList = dineInList)
-
 
 
                 } else {

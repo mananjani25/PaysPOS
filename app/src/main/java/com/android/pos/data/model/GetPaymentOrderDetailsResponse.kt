@@ -45,6 +45,11 @@ class GetPaymentOrderDetailsResponse(
         @SerializedName("is_loyalty_applied") val is_loyalty_applied: Boolean?,
         @SerializedName("order") val order: Order
     ) : Parcelable {
+        fun showFormattedValue(value : Double) = "$" + String.format(
+            "%.2f",
+            value
+        )
+
         @Parcelize
         data class Order(
             @SerializedName("id") val id: Int,

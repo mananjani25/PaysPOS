@@ -620,7 +620,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginRight="@dimen/_5sdp"
                             android:gravity="end"
-                            android:text="@{`- `+@string/symbole +``+orderDetails.data.loyalty_amount}"
+                            android:text="@{`- `+``+orderDetails.data.showFormattedValue(orderDetails.data.loyalty_amount)}"
                             android:textColor="@color/viewTextColor"
                             android:textSize="@dimen/_5mdpi" />
                     </LinearLayout>

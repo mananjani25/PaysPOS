@@ -540,6 +540,9 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     private fun checkAppliedLoyaltyProgram(customer: TbCustomer, total: Double): RedeemLoyaltyInfo {
+
+        Log.e("Loyalty", "checkAppliedLoyaltyProgram..")
+
         val redeemLoyaltyInfo = RedeemLoyaltyInfo()
         redeemLoyaltyInfo.total = total
 
@@ -558,15 +561,14 @@ class DashBoardCategoryViewModel @Inject constructor(
                     val possibleLoyaltyAmount = multiple * availableLoyaltyPrograms[i].amount
                     if (possibleLoyaltyAmount > total) {
                         //if loyalty amount is more than total price
-                        val multiple = (total / availableLoyaltyPrograms[i].amount).toInt()
+
                         redeemLoyaltyInfo.usedLoyaltyPoints =
-                            multiple * availableLoyaltyPrograms[i].rewardPoint
+                            (total * availableLoyaltyPrograms[i].rewardPoint / availableLoyaltyPrograms[i].amount).toInt()
+                        redeemLoyaltyInfo.usedLoyaltyAmount =
+                            (redeemLoyaltyInfo.usedLoyaltyPoints * availableLoyaltyPrograms[i].amount / availableLoyaltyPrograms[i].rewardPoint)
+                        redeemLoyaltyInfo.remainingLoyaltyAmount = total - redeemLoyaltyInfo.usedLoyaltyAmount
                         redeemLoyaltyInfo.remainingLoyaltyPoints =
                             availablePoints - redeemLoyaltyInfo.usedLoyaltyPoints
-                        redeemLoyaltyInfo.remainingLoyaltyAmount =
-                            total % availableLoyaltyPrograms[i].amount
-                        redeemLoyaltyInfo.usedLoyaltyAmount =
-                            multiple * availableLoyaltyPrograms[i].amount
                     } else {
                         redeemLoyaltyInfo.usedLoyaltyAmount = possibleLoyaltyAmount
                         redeemLoyaltyInfo.remainingLoyaltyAmount =
