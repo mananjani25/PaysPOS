@@ -1272,50 +1272,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     }
 
-    private fun checkAppliedLoyaltyProgram(customer: TbCustomer, total: Double): RedeemLoyaltyInfo {
-        val redeemLoyaltyInfo = RedeemLoyaltyInfo()
-        redeemLoyaltyInfo.total = total
-
-        val availablePoints = customer.final_reward ?: 0
-        val availableLoyaltyPrograms = viewModel.loyaltyPointsList
-        if (availableLoyaltyPrograms.isNotEmpty()) {
-            for (i in availableLoyaltyPrograms.indices) {
-                if (availableLoyaltyPrograms[i].isEnable && availableLoyaltyPrograms[i].rewardPoint <= availablePoints) {
-
-                    redeemLoyaltyInfo.loyaltyProgramsModel = availableLoyaltyPrograms[i]
-
-                    //if customer has points than required
-                    viewModel.appliedLoyaltyProgram = availableLoyaltyPrograms[i]
-                    val multiple: Int =
-                        (availablePoints / availableLoyaltyPrograms[i].rewardPoint)
-                    val possibleLoyaltyAmount = multiple * availableLoyaltyPrograms[i].amount
-                    if (possibleLoyaltyAmount > total) {
-                        //if loyalty amount is more than total price then
-                        val multiple = (total / availableLoyaltyPrograms[i].amount).toInt()
-                        redeemLoyaltyInfo.usedLoyaltyPoints =
-                            multiple * availableLoyaltyPrograms[i].rewardPoint
-                        redeemLoyaltyInfo.remainingLoyaltyPoints =
-                            availablePoints - redeemLoyaltyInfo.usedLoyaltyPoints
-                        redeemLoyaltyInfo.remainingLoyaltyAmount =
-                            total % availableLoyaltyPrograms[i].amount
-                        redeemLoyaltyInfo.usedLoyaltyAmount =
-                            multiple * availableLoyaltyPrograms[i].amount
-                    } else {
-                        redeemLoyaltyInfo.usedLoyaltyAmount = possibleLoyaltyAmount
-                        redeemLoyaltyInfo.remainingLoyaltyAmount =
-                            total - redeemLoyaltyInfo.usedLoyaltyAmount
-                        redeemLoyaltyInfo.usedLoyaltyPoints =
-                            multiple * availableLoyaltyPrograms[i].rewardPoint
-                        redeemLoyaltyInfo.remainingLoyaltyPoints =
-                            availablePoints % availableLoyaltyPrograms[i].rewardPoint
-                    }
-                    break
-                }
-            }
-        }
-        return redeemLoyaltyInfo
-    }
-
     private fun resetTabbySearch(model: CategorySearchData) {
         var tabPos = -1
         val tabList = (binding.rvTabLayout.adapter as CategoryTabAdapter1).list
