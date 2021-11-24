@@ -8,6 +8,7 @@ import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.db.IDataManager
 import com.android.pos.data.entities.*
 import com.android.pos.data.entities.ModifierSet
+import com.android.pos.data.model.SplitDetailListModel
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.ApiHelper
@@ -261,8 +262,16 @@ class PosRepository @Inject constructor(
         appDatabase.customerSettingsDao().delete()
     }
 
+    suspend fun deleteSplitDb() {
+        appDatabase.splitDao().delete()
+    }
+
     suspend fun addCustomerReceiptSettings(data: GetCustomerReceiptSettingsResponse.Data) {
         appDatabase.customerSettingsDao().add(data)
+    }
+
+    suspend fun addSplitAmount(model: SplitDetailListModel) {
+        appDatabase.splitDao().addSplit(model)
     }
 
     suspend fun createNote(data: CreateNoteRequest) = apiHelperNew.createNote(data)
@@ -639,7 +648,8 @@ class PosRepository @Inject constructor(
     ) =
         apiHelperNew.getTableStatus(tableId, empId, terminalId, status)
 
-    suspend fun mergeFloorTable(parentTableId:Int,childIds:String) = apiHelperNew.mergeFloorTable(parentTableId,childIds)
+    suspend fun mergeFloorTable(parentTableId: Int, childIds: String) =
+        apiHelperNew.mergeFloorTable(parentTableId, childIds)
 
     suspend fun payByGuest(
         id: Int,
@@ -654,7 +664,8 @@ class PosRepository @Inject constructor(
     fun getFloorPlan(locationId: Int) =
         performGetOperationNew(networkCall = { apiHelperNew.getFloorPlan(locationId) })
 
-    fun getFloorPlanTableDetails() = performGetOperationNew(networkCall = {apiHelperNew.getFloorPlanTableDetails()})
+    fun getFloorPlanTableDetails() =
+        performGetOperationNew(networkCall = { apiHelperNew.getFloorPlanTableDetails() })
 
     suspend fun employeeClockOut(data: HashMap<String, String>) =
         apiHelperNew.employeeClockOut(data)
