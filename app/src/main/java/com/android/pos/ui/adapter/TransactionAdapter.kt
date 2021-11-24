@@ -79,11 +79,11 @@ class TransactionAdapter(val viewModel: TransactionViewModel) :
                 itemBinding.tvRefundedAmount.visibility = View.GONE
             }
 
-            if (model.transactionId.isNotEmpty()) {
-                itemBinding.txtTransactionId.visibility = View.VISIBLE
-            } else {
-                itemBinding.txtTransactionId.visibility = View.GONE
-            }
+//            if (model.transactionId.isNotEmpty()) {
+//                itemBinding.txtTransactionId.visibility = View.VISIBLE
+//            } else {
+//                itemBinding.txtTransactionId.visibility = View.GONE
+//            }
 
             itemBinding.executePendingBindings()
 

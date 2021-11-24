@@ -87,7 +87,7 @@ class TeamMemberTimeSheetFragment : Fragment(), AdapterView.OnItemSelectedListen
 
             override fun afterTextChanged(s: Editable) {
 
-                teamMemberTimeSheetAdapter.filter.filter(s.toString().trim())
+                teamMemberTimeSheetAdapter.filter.filter(s.toString().lowercase().trim())
 
             }
         })
@@ -189,9 +189,9 @@ class TeamMemberTimeSheetFragment : Fragment(), AdapterView.OnItemSelectedListen
                 )
 
                 binding.tvEmployeeTotalHours.text =
-                    "All Employees Total Hours:- " + timeSheet.employeTotalHours
+                    "All Employees Total Hours : " + timeSheet.employeTotalHours
                 binding.tvEmployeeTotalWages.text =
-                    "All Employees Total Wages:- " + timeSheet.employeeTotalWage
+                    "All Employees Total Wages : " + timeSheet.employeeTotalWage
 
             }
         })
