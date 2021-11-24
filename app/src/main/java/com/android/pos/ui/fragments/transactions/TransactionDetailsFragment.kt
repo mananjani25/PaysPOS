@@ -164,6 +164,11 @@ class TransactionDetailsFragment : Fragment() {
                     binding.llDiscount.visibility = View.VISIBLE
                 }
 
+                if (paymentDetailsResponse.data.is_loyalty_applied == true) {
+                    binding.llLoyalty.visibility = View.VISIBLE
+                    binding.llLoyaltyPoints.visibility = View.VISIBLE
+                }
+
                 if (!paymentDetailsResponse.data.order.refund_detail.refunded_amount.equals(0.0)) {
                     binding.llRefundAmount.visibility = View.VISIBLE
                 }

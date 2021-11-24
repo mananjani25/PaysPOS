@@ -57,6 +57,12 @@ class DashBoardCategoryViewModel @Inject constructor(
     var totalDiscount = 0.0
     var assignCustomer: TbCustomer? = null
     var orderItemDiscount = 0.0
+    var selectedCustomer: TbCustomer? = null
+    var appliedLoyaltyProgram: LoyaltyProgramsModel? = null
+    var redeemLoyaltyInfo: RedeemLoyaltyInfo = RedeemLoyaltyInfo()
+    var isLoyaltyApplied = false
+    var loyaltyAmount = 0.0
+    var loyaltyProgramId = 0
 
     private val _updateOrder = MutableLiveData<Event<Any?>>()
     val updateOrder: LiveData<Event<Any?>> = _updateOrder
@@ -76,6 +82,8 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     val serviceCharges = posRepository.serviceChargeList()
 
+    val loyaltyPointsLiveData = posRepository.getLoyaltyProgramFromDb()
+    val loyaltyPointsList = arrayListOf<LoyaltyProgramsModel>()
 
     val taxList = posRepository.taxList()
 
@@ -457,6 +465,8 @@ class DashBoardCategoryViewModel @Inject constructor(
         totalTax = 0.0
         totalServiceCharge = 0.0
 
+        var amountToBePaid = 0.0
+
         if (cartList != null && cartList.isNotEmpty()) {
             if (cartList.get(0).orderType == DINE_IN) {
 
@@ -486,6 +496,8 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 totalPrice = (subTotalPrice + totalTax + totalServiceCharge)
 
+                amountToBePaid = totalPrice - cartList[0].discountPrice
+
 
             } else {
 
@@ -511,11 +523,73 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 totalPrice = (subTotalPrice + totalTax + totalServiceCharge)
 
+
+                //display the loyalty point
+                amountToBePaid = totalPrice - cartList[0].discountPrice
+                val customer = selectedCustomer
+                if (customer != null && customer.enroll_to_loyalty == true) {
+                    redeemLoyaltyInfo = checkAppliedLoyaltyProgram(customer, amountToBePaid)
+                    amountToBePaid = redeemLoyaltyInfo.remainingLoyaltyAmount
+                    Log.e(TAG, Gson().toJson(redeemLoyaltyInfo))
+                }
             }
 
-            MethodUtils.setPriceTextView(txtTotalAmount, totalPrice - cartList[0].discountPrice)
+            MethodUtils.setPriceTextView(txtTotalAmount, amountToBePaid)
         }
 
+    }
+
+    private fun checkAppliedLoyaltyProgram(customer: TbCustomer, total: Double): RedeemLoyaltyInfo {
+
+        Log.e("Loyalty", "checkAppliedLoyaltyProgram..")
+
+        val redeemLoyaltyInfo = RedeemLoyaltyInfo()
+        redeemLoyaltyInfo.total = total
+
+        val availablePoints = customer.final_reward ?: 0
+        val availableLoyaltyPrograms = loyaltyPointsList
+        if (availableLoyaltyPrograms.isNotEmpty()) {
+            for (i in availableLoyaltyPrograms.indices) {
+                if (availableLoyaltyPrograms[i].isEnable && availableLoyaltyPrograms[i].rewardPoint <= availablePoints) {
+
+                    redeemLoyaltyInfo.loyaltyProgramsModel = availableLoyaltyPrograms[i]
+
+                    //if customer has more points than required(minimum limit)
+                    appliedLoyaltyProgram = availableLoyaltyPrograms[i]
+                    val multiple: Int =
+                        (availablePoints / availableLoyaltyPrograms[i].rewardPoint)
+                    val possibleLoyaltyAmount = multiple * availableLoyaltyPrograms[i].amount
+                    if (possibleLoyaltyAmount > total) {
+                        //if loyalty amount is more than total price
+
+                        redeemLoyaltyInfo.usedLoyaltyPoints =
+                            (total * availableLoyaltyPrograms[i].rewardPoint / availableLoyaltyPrograms[i].amount).toInt()
+                        redeemLoyaltyInfo.usedLoyaltyAmount =
+                            (redeemLoyaltyInfo.usedLoyaltyPoints * availableLoyaltyPrograms[i].amount / availableLoyaltyPrograms[i].rewardPoint)
+                        redeemLoyaltyInfo.remainingLoyaltyAmount = total - redeemLoyaltyInfo.usedLoyaltyAmount
+                        redeemLoyaltyInfo.remainingLoyaltyPoints =
+                            availablePoints - redeemLoyaltyInfo.usedLoyaltyPoints
+                    } else {
+                        redeemLoyaltyInfo.usedLoyaltyAmount = possibleLoyaltyAmount
+                        redeemLoyaltyInfo.remainingLoyaltyAmount =
+                            total - redeemLoyaltyInfo.usedLoyaltyAmount
+                        redeemLoyaltyInfo.usedLoyaltyPoints =
+                            multiple * availableLoyaltyPrograms[i].rewardPoint
+                        redeemLoyaltyInfo.remainingLoyaltyPoints =
+                            availablePoints % availableLoyaltyPrograms[i].rewardPoint
+                    }
+                    redeemLoyaltyInfo.isLoyaltyApplied = true
+                    break
+                } else {
+                    redeemLoyaltyInfo.remainingLoyaltyAmount = total
+                    redeemLoyaltyInfo.remainingLoyaltyPoints = availablePoints
+                    redeemLoyaltyInfo.usedLoyaltyPoints = 0
+                    redeemLoyaltyInfo.usedLoyaltyAmount = 0.0
+                    redeemLoyaltyInfo.isLoyaltyApplied = false
+                }
+            }
+        }
+        return redeemLoyaltyInfo
     }
 
     private fun serviceChargeCalculation(cartList: List<CartModel>) {
@@ -703,16 +777,16 @@ class DashBoardCategoryViewModel @Inject constructor(
             orderAttributeRequestModel.customer_id = customerId
         }
 
-      /*  orderAttributeRequestModel.paymentAttributes =
-            paymentAttributes(
-                cartModel,
-                totalPrice,
-                subTotalPrice,
-                totalServiceCharge,
-                totalTax,
-                totalDiscount, tipAmount
-            )
-*/
+        /*  orderAttributeRequestModel.paymentAttributes =
+              paymentAttributes(
+                  cartModel,
+                  totalPrice,
+                  subTotalPrice,
+                  totalServiceCharge,
+                  totalTax,
+                  totalDiscount, tipAmount
+              )
+  */
         orderAttributeRequestModel.orderServiceChargesAttributes =
             orderServiceChargesAttributes(cartModel, subTotalPrice)
 
@@ -1180,9 +1254,9 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 val orderItemVariationAttribute = OrderItemVariationAttribute()
                 orderItemVariationAttribute.name = it.name
-                orderItemVariationAttribute.price = it.price?:0.0
-                orderItemVariationAttribute.totalPrice = (it.price?:0.0) * item.itemQuantity
-                orderItemVariationAttribute.variationId = it.id?:0
+                orderItemVariationAttribute.price = it.price ?: 0.0
+                orderItemVariationAttribute.totalPrice = (it.price ?: 0.0) * item.itemQuantity
+                orderItemVariationAttribute.variationId = it.id ?: 0
                 orderItemVariationAttribute.quantity = item.itemQuantity
 
                 /*if (isUpdateOrder) {

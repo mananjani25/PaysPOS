@@ -13,6 +13,7 @@ import androidx.navigation.fragment.findNavController
 import com.android.pos.MainApplication
 import com.android.pos.R
 import com.android.pos.data.entities.CartModel
+import com.android.pos.data.entities.RedeemLoyaltyInfo
 import com.android.pos.data.model.requestModel.SpitByOrderPaymentModel
 import com.android.pos.data.model.requestModel.SpitByOrderRequestModel
 import com.android.pos.data.remote.Constants
@@ -24,6 +25,7 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlin.math.ceil
@@ -42,6 +44,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
     private var tipAmount: Double = 0.0
     private var future_delivery_date: String = ""
     private var future_delivery_time: String = ""
+    private var redeemLoyaltyInfo: RedeemLoyaltyInfo? = null
     private var fourthValue: Double = 0.0
     private var thirdValue: Double = 0.0
     private var secondValue: Int = 0
@@ -162,8 +165,10 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         totalDiscount = requireArguments().getDouble("totalDiscount")
         future_delivery_time = requireArguments().getString("future_delivery_time").toString()
         future_delivery_date = requireArguments().getString("future_delivery_date").toString()
-
-
+        redeemLoyaltyInfo = Gson().fromJson(
+            requireArguments().getString("redeemLoyalty").toString(),
+            RedeemLoyaltyInfo::class.java
+        )
 
         MethodUtils.setPriceTextView(binding.txtSubTotal, subTotalPrice)
         MethodUtils.setPriceTextView(binding.txtTax, totalTax)
@@ -508,7 +513,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     false,
                     totalDiscount,
                     tipAmount,
-                    splitValue
+                    splitValue,
+                    redeemLoyaltyInfo
                 )
             }
             if (myRequest != null) {
@@ -569,7 +575,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     false,
                     totalDiscount,
                     tipAmount,
-                    splitValue
+                    splitValue,
+                    redeemLoyaltyInfo
                 )
             }
             if (myRequest != null) {
@@ -614,7 +621,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     true,
                     totalDiscount,
                     tipAmount,
-                    splitValue
+                    splitValue,
+                    redeemLoyaltyInfo
                 )
             }
             if (myRequest != null) {

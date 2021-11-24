@@ -3,6 +3,9 @@ package com.android.pos.di
 import android.content.Context
 import android.content.SharedPreferences
 import com.android.pos.R
+import com.android.pos.data.entities.TbCustomer
+import com.android.pos.data.remote.Constants
+import com.google.gson.Gson
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -112,6 +115,17 @@ class PrefProvider @Inject constructor(@ApplicationContext context: Context) {
         val prefsPrivateEditor = sharedPreferences!!.edit()
         prefsPrivateEditor!!.clear().apply()
         sharedPreferences = null
+    }
+
+    fun saveCustomerData(customer: TbCustomer?) {
+        setValue(Constants.PREF_CUSTOMER, Gson().toJson(customer))
+    }
+
+    fun getCustomerData(): TbCustomer? {
+        return Gson().fromJson(
+            getValue(Constants.PREF_CUSTOMER,""),
+            TbCustomer::class.java
+        )
     }
 
     /* fun setCustomObject(

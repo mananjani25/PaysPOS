@@ -15,7 +15,7 @@ data class LoyaltyPointRequest(
     @SerializedName("name")
     val name: String?,
     @SerializedName("reward_point")
-    val rewardPoint: Double?,
+    val rewardPoint: Int?,
     @SerializedName("reward_type")
     val rewardType: String?
 )

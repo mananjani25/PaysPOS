@@ -253,6 +253,10 @@ class PosRepository @Inject constructor(
         appDatabase.loyaltyProgramsDao().addAll(data)
     }
 
+    fun getLoyaltyProgramFromDb() =
+        performGetOperationDatabase(databaseQuery = { appDatabase.loyaltyProgramsDao().all })
+
+
     suspend fun deleteCustomerReceiptSettingsFromDb() {
         appDatabase.customerSettingsDao().delete()
     }
@@ -667,7 +671,7 @@ class PosRepository @Inject constructor(
 
     suspend fun clearTable() {
 
-        Log.e("clear Db Table","-------")
+        Log.e("clear Db Table", "-------")
         appDatabase.characterDao().delete()
         appDatabase.categoryDao().delete()
         appDatabase.itemDao().delete()

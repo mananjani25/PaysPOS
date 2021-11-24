@@ -563,6 +563,8 @@
     <string name="whole_table">Whole Table</string>
     <string name="website">Website</string>
     <string name="tv_discount">Discount</string>
+    <string name="tv_loyalty_amount">Loyalty Amount</string>
+    <string name="tv_used_loyalty_points">Used Loyalty Points</string>
     <string name="tv_refunded_amount">Refunded Amount</string>
     <string name="tv_email_address">Email Address <font color='#E90C0C'>*</font></string>
     <string name="tv_email_address_">Email Address</string>

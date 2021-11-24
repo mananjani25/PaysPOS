@@ -44,7 +44,7 @@ class LoyaltyPointViewModel @Inject constructor(
 
     var loyaltyId: Int? = null
     var loyaltyName: String? = null
-    var loyaltyTarget: Double? = 0.0
+    var loyaltyTarget: Int? = 0
     var loyaltyAmount: Double = 0.0
     var loyaltyPointType: String = ""
     var isEdit: Boolean = false
@@ -194,7 +194,7 @@ class LoyaltyPointViewModel @Inject constructor(
         isEdit = true
         loyaltyName = loyaltyProgramsModel?.name ?: ""
         loyaltyAmount = loyaltyProgramsModel?.amount ?: 0.0
-        loyaltyTarget = loyaltyProgramsModel?.rewardPoint ?: 0.0
+        loyaltyTarget = loyaltyProgramsModel?.rewardPoint ?: 0
         loyaltyId = loyaltyProgramsModel?.id
 
 

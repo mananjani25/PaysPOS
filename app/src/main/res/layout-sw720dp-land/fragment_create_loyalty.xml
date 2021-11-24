@@ -210,7 +210,7 @@
                     android:background="@drawable/background_white_with_border"
                     android:hint="@string/loyalty_target"
                     android:imeOptions="actionNext"
-                    android:inputType="numberDecimal"
+                    android:inputType="number"
                     android:padding="@dimen/_5sdp"
                     android:text="@={``+viewModel.loyaltyTarget}"
                     android:textColor="@color/black"
