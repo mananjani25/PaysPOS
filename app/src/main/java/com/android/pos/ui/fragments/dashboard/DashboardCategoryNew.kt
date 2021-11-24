@@ -2079,7 +2079,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     val request = viewModelPayment.createOrderRequest(
                         cartList,
                         viewModel.subTotalPrice,
-                        viewModel.totalPrice - cartList.discountPrice,
+                        viewModel.redeemLoyaltyInfo.remainingLoyaltyAmount,
                         viewModel.totalServiceCharge,
                         viewModel.totalTax,
                         OPEN_ORDER,
