@@ -29,7 +29,7 @@ class CreateItemViewModel @Inject constructor(
     ViewModel() {
 
     private var itemId: Int? = null
-    private var categoryIdViewModel: Int? = null
+    private var categoryIdViewModel: Int = 0
     private var isEdit: Boolean = false
     var itemDetails = MutableLiveData(CreateItemRequestModel())
     private lateinit var itemData: CreateItemRequestModel
@@ -74,7 +74,7 @@ class CreateItemViewModel @Inject constructor(
         val value = itemDetails.value
         if (TextUtils.isEmpty(value?.name?.trim())) {
             _snackbarText.value = Event(R.string.item_name_validate)
-        } else if (categoryIdViewModel == null) {
+        } else if (categoryIdViewModel == 0) {
             _snackbarText.value = Event(R.string.category_select_validate)
         } /*else if (TextUtils.isEmpty(
                 value?.price?.toString()?.trim()

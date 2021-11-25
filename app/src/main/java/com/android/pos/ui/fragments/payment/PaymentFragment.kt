@@ -377,7 +377,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 if (prefProvider.getValue(SPLIT_PAY_AMOUNT, "") == "") {
                     prefProvider.setValue(SPLIT_PAY_AMOUNT, "")
                     prefProvider.setValueInt(SPLIT_NO, -1)
-                    findNavController().navigateUp()
+                    findNavController().navigate(R.id.action_paymentFragment_to_dashboardCategoryNew)
                 } else {
                     AlertUtils.showCustomAlert(requireContext(), "Please complete all payment.")
                 }
@@ -444,23 +444,32 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             }
             R.id.txtSplitAmount -> {
 
-                if (tipAmount == 0.0) {
-                    val bundle = Bundle()
-                    bundle.putDouble("totalPrice", (totalPrice + tipAmount))
-                    bundle.putInt("splitValue", splitValue)
-                    findNavController().navigate(
-                        R.id.action_paymentFragment_to_splitAmountFragment,
-                        bundle
-                    )
-                } else {
+                if (totalPrice == 0.0) {
 
-                    AlertUtils.showCustomAlertWithYesNoListener(
+                    AlertUtils.showCustomAlert(
                         requireActivity(),
-                        getString(R.string.tip_after_split_alert)
-                    ) { _, _ ->
+                        "You can't split amount less then 1."
+                    )
 
-                        tipAmount = 0.0
-                        tipAmountCalculation()
+                } else {
+                    if (tipAmount == 0.0) {
+                        val bundle = Bundle()
+                        bundle.putDouble("totalPrice", (totalPrice + tipAmount))
+                        bundle.putInt("splitValue", splitValue)
+                        findNavController().navigate(
+                            R.id.action_paymentFragment_to_splitAmountFragment,
+                            bundle
+                        )
+                    } else {
+
+                        AlertUtils.showCustomAlertWithYesNoListener(
+                            requireActivity(),
+                            getString(R.string.tip_after_split_alert)
+                        ) { _, _ ->
+
+                            tipAmount = 0.0
+                            tipAmountCalculation()
+                        }
                     }
                 }
             }
