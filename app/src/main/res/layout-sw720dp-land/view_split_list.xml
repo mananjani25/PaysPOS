@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingDefaultResource">
+
+    <data>
+
+        <variable
+            name="model"
+            type="com.android.pos.data.model.SplitDetailListModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txtTitle"
+            style="@style/CustomFontSemiBold"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:paddingStart="@dimen/_5sdp"
+            android:paddingTop="@dimen/_5sdp"
+            android:paddingEnd="@dimen/_5sdp"
+            android:singleLine="true"
+            android:textColor="@color/txtColor"
+            android:textSize="@dimen/_7mdpi"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <RelativeLayout
+            android:id="@+id/relSplitAmt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/_15sdp"
+            android:padding="@dimen/_5sdp"
+            app:layout_constraintEnd_toStartOf="@+id/relRemainingAmt"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintStart_toStartOf="@+id/txtTitle"
+            app:layout_constraintTop_toBottomOf="@+id/txtTitle">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtSplitAmountLabel"
+                style="@style/CustomFontMediumStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:gravity="start"
+                android:singleLine="true"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_5mdpi"
+                tools:text="Amount" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtSplitAmount"
+                style="@style/CustomFontSemiBold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@+id/txtSplitAmountLabel"
+                android:gravity="start"
+                android:singleLine="true"
+                android:textColor="@color/colorGreen"
+                android:textSize="@dimen/_6mdpi"
+                tools:text="$100.00" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/relRemainingAmt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/_15sdp"
+            android:gravity="center"
+            android:padding="@dimen/_5sdp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txtTitle">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtRemainingAmountLabel"
+                style="@style/CustomFontMediumStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:singleLine="true"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_5mdpi"
+                android:layout_centerVertical="true"
+                tools:text="Remaining Amount " />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtRemainingAmount"
+                style="@style/CustomFontSemiBold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@+id/txtRemainingAmountLabel"
+                android:gravity="start"
+                android:singleLine="true"
+                android:layout_centerVertical="true"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_6mdpi"
+                tools:text="$100.00" />
+        </RelativeLayout>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

@@ -6,6 +6,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.R
+import com.android.pos.data.db.AppDatabase
+import com.android.pos.data.model.SplitDetailListModel
 import com.android.pos.data.model.requestModel.CreateNoteRequest
 import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.model.responseModel.PrinterResponse
@@ -22,7 +24,8 @@ import javax.inject.Inject
 @HiltViewModel
 class OrderCompleteViewModel @Inject constructor(
     private val posRepository: PosRepository,
-    private val prefProvider: PrefProvider
+    private val prefProvider: PrefProvider,
+    private val appDatabase: AppDatabase
 ) : ViewModel() {
 
     val createNoteDetails = MutableLiveData(CreateNoteRequest())
@@ -160,5 +163,21 @@ class OrderCompleteViewModel @Inject constructor(
         }
     }
 
+    fun deleteSplitDb() {
+        viewModelScope.launch {
+            posRepository.deleteSplitDb()
+        }
+    }
+
+    val allSplitList = appDatabase.splitDao().allSplitList
+
+
+    fun addSplitToDatabase(title: String, amount: Double, remainingAmt: Double) {
+        val model =
+            SplitDetailListModel(title = title, amount = amount, remainingAmt = remainingAmt)
+        viewModelScope.launch {
+            posRepository.addSplitAmount(model)
+        }
+    }
 
 }

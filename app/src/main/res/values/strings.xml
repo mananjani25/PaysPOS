@@ -114,7 +114,7 @@
     <string name="tv_hourly_rate">Hourly Rate</string>
     <string name="tv_access">Access</string>
     <string name="tv_permission_set">Permission set</string>
-    <string name="tv_personal_passcode">Personal passcode</string>
+    <string name="tv_personal_passcode">Passcode name</string>
     <string name="tv_location">Location</string>
     <string name="tv_create_team_member">Create Team Member</string>
     <string name="tv_info_email">Adding an email will invite this team member to create their login for POS.</string>
@@ -619,11 +619,11 @@
     <string name="reorder">Reorder</string>
     <string name="pay_type">Amount &amp; Pay Type</string>
     <string name="enroll_to_loyalty">Enroll to Loyalty Program</string>
-    <string name="loyalty_name">Loyalty Name</string>
-    <string name="loyalty_value">LOYALTY VALUE</string>
+    <string name="loyalty_name">Loyalty Name <font color='#E90C0C'>*</font></string>
+    <string name="loyalty_value">LOYALTY VALUE <font color='#E90C0C'>*</font></string>
     <string name="percentage_value">Percentage Value</string>
     <string name="amount_value">Amount Value</string>
-    <string name="loyalty_target">Loyalty Target</string>
+    <string name="loyalty_target">Loyalty Target<font color='#E90C0C'>*</font></string>
     <string name="number_of_points_required_to_get_the_reward">(Number of points required to get the reward)</string>
     <string name="error_loyalty_name_blank">Please Enter Loyalty Name</string>
     <string name="error_loyalty_point_blank">Please Enter Loyalty Target</string>

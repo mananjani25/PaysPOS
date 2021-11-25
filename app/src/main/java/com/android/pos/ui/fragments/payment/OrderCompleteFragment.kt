@@ -15,6 +15,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.TbCustomer
+import com.android.pos.data.model.SplitDetailListModel
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.BLUETOOTH
@@ -27,6 +28,7 @@ import com.android.pos.data.remote.Constants.LARGE
 import com.android.pos.data.remote.Constants.getReceiptFormatDateFromUTCServer
 import com.android.pos.databinding.FragmentOrderCompletBinding
 import com.android.pos.di.PrefProvider
+import com.android.pos.ui.adapter.SplitListAdapter
 import com.android.pos.utils.*
 import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.printer.PrinterClass
@@ -49,6 +51,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     BatteryStatusChangeEventListener {
     private var isGuest: Boolean = false
     private var remainingAmount: Double = 0.0
+    private var splitPaidAmount: Double = 0.0
     private var splitValue: Int = -1
     private var isSpilt: Boolean = false
     private var isDineIn: Boolean = false
@@ -61,12 +64,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private var receiptModel: CreateOrderResponse.Data? = null
     private var customerSettingModel = GetCustomerReceiptSettingsResponse.Data()
     private var kitchenSettingModel = GetKitchenReceiptSettingsResponse.Data()
+    private var splitList: ArrayList<SplitDetailListModel> = arrayListOf()
 
     @Inject
     lateinit var prefProvider: PrefProvider
     private lateinit var binding: FragmentOrderCompletBinding
     private val TAG = "OrderCompleteFragment"
     private var tipsList: List<GetTipReponse.Data> = listOf()
+    private lateinit var splitAdapter: SplitListAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -78,9 +83,25 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         observeTipsList()
         getCustomerReceiptSettings()
         getKitchenReceiptSettings()
-
+        splitAdapter = SplitListAdapter()
+        binding.rvSplits.adapter = splitAdapter
+        if (requireArguments().getBoolean("isSpilt")) {
+            observeSplitList()
+        }
 
         return binding.root
+    }
+
+    private fun observeSplitList() {
+        viewModel.allSplitList.observe(viewLifecycleOwner, {
+            if (it.isNotEmpty()) {
+                splitList = arrayListOf()
+                splitList = it.toCollection(arrayListOf())
+                Log.e(TAG, "SplitList:  ${Gson().toJson(splitList)}")
+                splitAdapter.setList(it.toCollection(arrayListOf()))
+
+            }
+        })
     }
 
     private fun getKitchenReceiptSettings() {
@@ -109,7 +130,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         viewModel.getTipsList().observe(viewLifecycleOwner, {
             if (it.isNotEmpty()) {
                 tipsList = it
-                Log.e(TAG, "tipsList:  ${Gson().toJson(tipsList)}")
+
             }
 
 
@@ -122,6 +143,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         setupSnackbar()
         observeShowProgress()
+        setLabelData()
 
 
 
@@ -138,29 +160,42 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         }
 
         if (isSpilt) {
+            binding.constraintSplit.visibility = View.VISIBLE
+            binding.viewSplitLine.visibility = View.VISIBLE
             splitValue = requireArguments().getInt("splitValue")
             remainingAmount = requireArguments().getDouble("remainingAmount")
+            splitPaidAmount = requireArguments().getDouble("payAmount")
 
 
-            Log.e("remainingAmount", remainingAmount.toString())
 
-            binding.txtRemainingAmount.text =
-                "Remaining Amount " + MethodUtils.roundOffAmount(remainingAmount)
+
+            binding.txtRemainingAmount.text = MethodUtils.roundOffAmount(remainingAmount)
 
             binding.txtRemainingAmount.visibility = View.VISIBLE
+            binding.txtRemainingAmountLabel.visibility = View.VISIBLE
             binding.llHome.visibility = View.GONE
             binding.llNoReceipt.text = "Next Payment"
             binding.txtHome.text = "Next Payment"
+
+
+            var title = "Split "
+
+            viewModel.addSplitToDatabase(title, splitPaidAmount, remainingAmount)
+
         } else {
+            binding.viewSplitLine.visibility = View.GONE
+            binding.constraintSplit.visibility = View.GONE
             binding.txtRemainingAmount.visibility = View.GONE
+            binding.txtRemainingAmountLabel.visibility = View.GONE
             binding.llHome.visibility = View.VISIBLE
             binding.llNoReceipt.text = getString(R.string.no_receipt)
             binding.txtHome.text = getString(R.string.tv_home)
+            viewModel.deleteSplitDb()
         }
 
-        Log.e(TAG, "receiptModel:   ${Gson().toJson(receiptModel)}")
+
         binding.txtTitle.text =
-            MethodUtils.roundOffAmount(paymentAmount) + " cash"
+            MethodUtils.roundOffAmount(paymentAmount)
 
         if (totalPrice != paymentAmount) {
             binding.txtChangeAmount.text =
@@ -214,6 +249,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 
+    }
+
+    private fun setLabelData() {
+        binding.txtTitleCash.text = "Cash"
+        binding.txtRemainingAmountLabel.text = "Remaining Amount"
     }
 
     override fun onClick(v: View?) {
@@ -283,7 +323,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     }
 
     private fun moveToDashboard() {
-        Log.e("moveToDashboard", isGuest.toString())
+
         if (isSpilt) {
             if (isDineIn) {
                 findNavController().popBackStack()
@@ -374,7 +414,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters,
         type: String
     ) {
-        Log.e(TAG, "getPrinter:  ${PrinterClass.getPrinter()}")
+
         PrinterClass.closePrinter()
         if (PrinterClass.getPrinter() == null) {
             var printer: Print? = Print(requireContext())
@@ -985,17 +1025,17 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                  }*/
 
 
-                    builder.addText(
-                        padLine(
-                            "Total Price",
-                            "$" + MethodUtils.roundOffAmountString(totalAmt),
-                            if (customerSettingModel.fonts == LARGE) {
-                                24
-                            } else {
-                                48
-                            }
-                        )
+                builder.addText(
+                    padLine(
+                        "Total Price",
+                        "$" + MethodUtils.roundOffAmountString(totalAmt),
+                        if (customerSettingModel.fonts == LARGE) {
+                            24
+                        } else {
+                            48
+                        }
                     )
+                )
 
 
             }
@@ -1330,7 +1370,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 )
 
                 PrinterClass.closePrinter()
-               // findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
+                // findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
                 //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
             } catch (e: Exception) {
                 PrinterClass.closePrinter()

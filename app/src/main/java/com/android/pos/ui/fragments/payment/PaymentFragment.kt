@@ -688,6 +688,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                         bundle.putBoolean("isSpilt", true)
                         bundle.putInt("splitValue", splitValue)
                         bundle.putDouble("remainingAmount", (totalPrice) - (payAmount - tipAmount))
+                        bundle.putDouble("payAmount", payAmount)
                         findNavController().navigate(
                             R.id.action_paymentFragment_to_orderCompleteFragment,
                             bundle
@@ -721,6 +722,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
                             bundle.putBoolean("isSpilt", true)
                             bundle.putDouble("remainingAmount", totalPrice - payAmount)
+                            bundle.putDouble("payAmount", payAmount)
 
 
                             val splitPayAmount = prefProvider.getValue(SPLIT_PAY_AMOUNT, "")

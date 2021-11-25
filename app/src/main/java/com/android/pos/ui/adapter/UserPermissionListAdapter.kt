@@ -1,6 +1,7 @@
 package com.android.pos.ui.adapter
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.entities.TeamRole
@@ -24,6 +25,8 @@ class UserPermissionListAdapter : RecyclerView.Adapter<UserPermissionListAdapter
     override fun onBindViewHolder(holder: UserPermissionListAdapter.MyViewHolder, position: Int) {
         val itemBinding = holder.tipItemBinding
         itemBinding.permissionListModel = permissionList[position]
+
+        itemBinding.imgArrow.visibility = View.VISIBLE
 
         itemBinding.executePendingBindings()
     }

@@ -212,8 +212,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
             }
 
             override fun getTotalPageCount(): Int {
-
-                return TOTAL_PAGES
+                return 0
             }
 
 

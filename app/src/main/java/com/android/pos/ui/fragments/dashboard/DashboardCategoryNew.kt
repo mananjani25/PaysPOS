@@ -1960,10 +1960,13 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                         if (prefProvider.getValue(ORDER_TYPE, "").toString() == DINE_IN) {
 
-                            dineInCartAdapter.getList().get(1).floorPlanTable?.id?.let {
-                                viewModel.getTableStatus(
-                                    it, "Available"
-                                )
+                            val dList = dineInCartAdapter.getList()
+                            if (dList.isNotEmpty()) {
+                                dList[1].floorPlanTable?.id?.let {
+                                    viewModel.getTableStatus(
+                                        it, "Available"
+                                    )
+                                }
                             }
                             viewModel.deleteCart()
                             isOrderUpdate = false
