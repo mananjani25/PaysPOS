@@ -254,9 +254,7 @@ class PosRepository @Inject constructor(
         appDatabase.loyaltyProgramsDao().addAll(data)
     }
 
-    fun getLoyaltyProgramFromDb() =
-        performGetOperationDatabase(databaseQuery = { appDatabase.loyaltyProgramsDao().all })
-
+    fun getActiveLoyaltyProgramFromDb() =  performGetOperationDatabase(databaseQuery = { appDatabase.loyaltyProgramsDao().findActiveLoyalty(active = true) })
 
     suspend fun deleteCustomerReceiptSettingsFromDb() {
         appDatabase.customerSettingsDao().delete()

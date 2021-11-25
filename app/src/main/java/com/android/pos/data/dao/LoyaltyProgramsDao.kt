@@ -24,6 +24,9 @@ interface LoyaltyProgramsDao {
     @Query("SELECT * from LoyaltyPrograms where LoyaltyPrograms.id  = :id LIMIT 1")
     fun byId(id: Int?): LoyaltyProgramsModel
 
+    @Query("SELECT * from LoyaltyPrograms where LoyaltyPrograms.isEnable  = :active LIMIT 1")
+    fun findActiveLoyalty(active: Boolean?): LiveData<LoyaltyProgramsModel>
+
     @Query("DELETE FROM LoyaltyPrograms")
     suspend fun delete()
 

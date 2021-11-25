@@ -58,11 +58,8 @@ class DashBoardCategoryViewModel @Inject constructor(
     var assignCustomer: TbCustomer? = null
     var orderItemDiscount = 0.0
     var selectedCustomer: TbCustomer? = null
-    var appliedLoyaltyProgram: LoyaltyProgramsModel? = null
+    var activeLoyaltyProgram: LoyaltyProgramsModel? = null
     var redeemLoyaltyInfo: RedeemLoyaltyInfo = RedeemLoyaltyInfo()
-    var isLoyaltyApplied = false
-    var loyaltyAmount = 0.0
-    var loyaltyProgramId = 0
 
     private val _updateOrder = MutableLiveData<Event<Any?>>()
     val updateOrder: LiveData<Event<Any?>> = _updateOrder
@@ -82,8 +79,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     val serviceCharges = posRepository.serviceChargeList()
 
-    val loyaltyPointsLiveData = posRepository.getLoyaltyProgramFromDb()
-    val loyaltyPointsList = arrayListOf<LoyaltyProgramsModel>()
+    val activeLoyaltyProgramLiveData = posRepository.getActiveLoyaltyProgramFromDb()
 
     val taxList = posRepository.taxList()
 
@@ -545,53 +541,44 @@ class DashBoardCategoryViewModel @Inject constructor(
 
         val redeemLoyaltyInfo = RedeemLoyaltyInfo()
         redeemLoyaltyInfo.total = total
-        var isCalculated = false
         val availablePoints = customer?.final_reward ?: 0
-        val availableLoyaltyPrograms = loyaltyPointsList
 
-        if (customer != null && customer.enroll_to_loyalty == true && availableLoyaltyPrograms.isNotEmpty()) {
-            for (i in availableLoyaltyPrograms.indices) {
-                if (availableLoyaltyPrograms[i].isEnable && availableLoyaltyPrograms[i].rewardPoint <= availablePoints) {
+        if (customer != null && customer.enroll_to_loyalty == true && activeLoyaltyProgram != null && activeLoyaltyProgram?.rewardPoint ?: 0 <= availablePoints) {
+            activeLoyaltyProgram?.let {
+                redeemLoyaltyInfo.loyaltyProgramsModel = activeLoyaltyProgram
 
-                    redeemLoyaltyInfo.loyaltyProgramsModel = availableLoyaltyPrograms[i]
+                //if customer has more points than required(minimum limit)
+                val availableLoyaltyAmount =
+                    availablePoints * it.amount / it.rewardPoint
+                if (availableLoyaltyAmount > total) {
+                    //if loyalty amount is more than total price
 
-                    //if customer has more points than required(minimum limit)
-                    appliedLoyaltyProgram = availableLoyaltyPrograms[i]
-                    val availableLoyaltyAmount =
-                        availablePoints * availableLoyaltyPrograms[i].amount / availableLoyaltyPrograms[i].rewardPoint
-                    if (availableLoyaltyAmount > total) {
-                        //if loyalty amount is more than total price
-
-                        redeemLoyaltyInfo.usedLoyaltyPoints =
-                            (total * availableLoyaltyPrograms[i].rewardPoint / availableLoyaltyPrograms[i].amount).toInt()
-                        redeemLoyaltyInfo.usedLoyaltyAmount =
-                            (redeemLoyaltyInfo.usedLoyaltyPoints * availableLoyaltyPrograms[i].amount / availableLoyaltyPrograms[i].rewardPoint)
-                        redeemLoyaltyInfo.remainingLoyaltyAmount =
-                            total - redeemLoyaltyInfo.usedLoyaltyAmount
-                        redeemLoyaltyInfo.remainingLoyaltyPoints =
-                            availablePoints - redeemLoyaltyInfo.usedLoyaltyPoints
-                    } else {
-                        redeemLoyaltyInfo.usedLoyaltyAmount =
-                            (availablePoints * availableLoyaltyPrograms[i].amount / availableLoyaltyPrograms[i].rewardPoint)
-                        redeemLoyaltyInfo.usedLoyaltyPoints = availablePoints
-                        redeemLoyaltyInfo.remainingLoyaltyPoints = 0
-                        redeemLoyaltyInfo.remainingLoyaltyAmount =
-                            total - redeemLoyaltyInfo.usedLoyaltyAmount
-                    }
-                    redeemLoyaltyInfo.isLoyaltyApplied = true
-                    isCalculated = true
-                    break
+                    redeemLoyaltyInfo.usedLoyaltyPoints =
+                        (total * it.rewardPoint / it.amount).toInt()
+                    redeemLoyaltyInfo.usedLoyaltyAmount =
+                        (redeemLoyaltyInfo.usedLoyaltyPoints * it.amount / it.rewardPoint)
+                    redeemLoyaltyInfo.remainingLoyaltyAmount =
+                        total - redeemLoyaltyInfo.usedLoyaltyAmount
+                    redeemLoyaltyInfo.remainingLoyaltyPoints =
+                        availablePoints - redeemLoyaltyInfo.usedLoyaltyPoints
+                } else {
+                    redeemLoyaltyInfo.usedLoyaltyAmount =
+                        (availablePoints * it.amount / it.rewardPoint)
+                    redeemLoyaltyInfo.usedLoyaltyPoints = availablePoints
+                    redeemLoyaltyInfo.remainingLoyaltyPoints = 0
+                    redeemLoyaltyInfo.remainingLoyaltyAmount =
+                        total - redeemLoyaltyInfo.usedLoyaltyAmount
                 }
+                redeemLoyaltyInfo.isLoyaltyApplied = true
             }
-        }
-
-        if (!isCalculated) {
+        } else {
             redeemLoyaltyInfo.remainingLoyaltyAmount = total
             redeemLoyaltyInfo.remainingLoyaltyPoints = availablePoints
             redeemLoyaltyInfo.usedLoyaltyPoints = 0
             redeemLoyaltyInfo.usedLoyaltyAmount = 0.0
             redeemLoyaltyInfo.isLoyaltyApplied = false
         }
+
         return redeemLoyaltyInfo
     }
 
