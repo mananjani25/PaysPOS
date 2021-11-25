@@ -57,6 +57,12 @@ data class GetFloorPlanResponse(
             val xPosition: Double,
             @SerializedName("y_position")
             val yPosition: Double,
+            @SerializedName("child_table")
+            val childTable: Boolean,
+            @SerializedName("parent_table")
+            val parentTable: Boolean,
+            @SerializedName("merged_floor_plan_table_id")
+            val mergedFloorPlanTable_id: Int,
             @SerializedName("current_order_details")
             var currentOrderDetails: CurrentOrderDetails
         ) : Parcelable {

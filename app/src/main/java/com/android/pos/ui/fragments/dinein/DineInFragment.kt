@@ -120,6 +120,7 @@ class DineInFragment : Fragment() {
                                 it.data!!.data as ArrayList<GetFloorPlanResponse.Data>
                             dineInFloorNameListAdapter.addFloorName(dineInFloorNameList)
 
+
                             setFloorPlan(dineInFloorNameList[0].floorPlanTables)
                         }
                     }
@@ -193,7 +194,7 @@ class DineInFragment : Fragment() {
         binding.flFloorPlan.removeAllViews()
         if (dineInFloorTablesList.isNotEmpty()) {
             for (i in dineInFloorTablesList.indices) {
-                if (dineInFloorTablesList[i].tableType == "square") {
+                if (dineInFloorTablesList[i].tableType == "square" && (!dineInFloorTablesList[i].childTable)) {
                     val inflatedViewSquare = layoutInflater.inflate(
                         R.layout.view_floor_square,
                         binding.flFloorPlan,
@@ -248,7 +249,7 @@ class DineInFragment : Fragment() {
 
                         inflatedViewSquare.setOnClickListener(clickInInflatedLayout()) //setting click to each item_content
                     }
-                } else if (dineInFloorTablesList[i].tableType == "round") {
+                } else if (dineInFloorTablesList[i].tableType == "round" && (!dineInFloorTablesList[i].childTable)) {
                     val inflatedViewRound = layoutInflater.inflate(
                         R.layout.view_floor_round,
                         binding.flFloorPlan,
