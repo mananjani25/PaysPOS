@@ -30,7 +30,7 @@ data class GetFloorPlanResponse(
         @Parcelize
         data class FloorPlanTable(
             @SerializedName("chair_count")
-            val chairCount: Int,
+            var chairCount: Int,
             @SerializedName("created_at")
             val createdAt: String,
             @SerializedName("floor_plan_id")
@@ -64,7 +64,8 @@ data class GetFloorPlanResponse(
             @SerializedName("merged_floor_plan_table_id")
             val mergedFloorPlanTable_id: Int,
             @SerializedName("current_order_details")
-            var currentOrderDetails: CurrentOrderDetails
+            var currentOrderDetails: CurrentOrderDetails,
+            @SerializedName("merged_child_table_details") val merged_child_table_details: List<MergedChildTableDetails>,
         ) : Parcelable {
             @Parcelize
             data class CurrentOrderDetails(
@@ -76,6 +77,14 @@ data class GetFloorPlanResponse(
                 @SerializedName("order_id") var orderId: Int,
                 @SerializedName("total_amount") var totalAmount: Double
 
+            ) : Parcelable
+
+            @Parcelize
+            data class MergedChildTableDetails(
+
+                @SerializedName("table_name") val table_name: String,
+                @SerializedName("table_number") val table_number: Int,
+                @SerializedName("chair_count") val chair_count: Int
             ) : Parcelable
         }
     }
