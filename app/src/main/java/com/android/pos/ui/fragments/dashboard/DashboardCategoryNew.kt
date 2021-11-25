@@ -2022,7 +2022,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     viewModelPayment.updateOrder(
                         isOrderUpdate,
                         orderId,
-                        paymentId,
+                            paymentId,
                         paymentOfflineId,
                         orderOfflineId
                     )
@@ -2040,7 +2040,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         viewModel.totalDiscount + cartList.discountPrice,
                         0.00,
                         -1,
-                        viewModel.redeemLoyaltyInfo
+                        viewModel.redeemLoyaltyInfo,
+                        false
                     )
                     viewModelPayment.saveOrder(true)
                     viewModelPayment.submit(request)
