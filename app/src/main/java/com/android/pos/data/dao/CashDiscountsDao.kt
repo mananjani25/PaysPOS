@@ -1,5 +1,6 @@
 package com.android.pos.data.dao
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -18,7 +19,7 @@ interface CashDiscountsDao {
 
 
     @Query("select * from CashDiscount WHERE CashDiscount.is_active= :active LIMIT 1")
-    suspend fun getActiveCashDiscount(active: Int): CashDiscountModel
+    fun getActiveCashDiscount(active: Int): LiveData<CashDiscountModel>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addAll(cashDiscountModel: List<CashDiscountModel>)

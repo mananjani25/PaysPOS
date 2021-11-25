@@ -234,6 +234,7 @@
                 <include layout="@layout/divider" />
 
                 <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/llCredit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
@@ -436,19 +437,52 @@
                 android:paddingBottom="@dimen/_3sdp">
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/txt_lable_discount"
                     style="@style/CustomFontMediumStyle"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
                     android:layout_weight="1"
                     android:gravity="start"
-                    android:text="Service Charge"
+                    android:text="@string/cash_discount"
                     android:textColor="@color/drawerBack"
                     android:textSize="@dimen/_5mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txt_cashdiscount"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="start"
+                    android:textColor="@color/drawerBack"
+                    android:textSize="@dimen/_5mdpi"
+                    tools:text="$20.00" />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackground"
+                android:orientation="horizontal"
+                android:paddingStart="@dimen/_5sdp"
+                android:paddingTop="@dimen/_3sdp"
+                android:paddingEnd="@dimen/_5sdp"
+                android:paddingBottom="@dimen/_3sdp">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:gravity="start"
+                    android:text="@string/non_cash_adj"
+                    android:textColor="@color/drawerBack"
+                    android:textSize="@dimen/_5mdpi" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txt_noncashAdj"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

@@ -238,7 +238,7 @@ class PaymentViewModel @Inject constructor(
         }
     }
 
-     suspend fun getCashDiscountDetails(active:Int): CashDiscountModel {
+     fun getCashDiscountDetails(active: Int): LiveData<CashDiscountModel>? {
         return posRepository.getCashDisDetail(active)
     }
 

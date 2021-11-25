@@ -607,6 +607,10 @@ class PosRepository @Inject constructor(
         return null
     }
 
+    fun getCashDisDetail(active: Int): LiveData<CashDiscountModel>? {
+        return appDatabase.cashDiscountDao().getActiveCashDiscount(active)
+    }
+
 
     fun getOpenOrders(param1: String): LiveData<Resource<OpenOrderResponse>> =
         performGetOperationNew(networkCall = {
@@ -617,7 +621,7 @@ class PosRepository @Inject constructor(
 
 
     suspend fun cashInOut(data: CashLogRequest) = apiHelperNew.cashInOut(data)
-    suspend fun getCashDisDetail(active: Int) = appDatabase.cashDiscountDao().getActiveCashDiscount(active)
+
 
     suspend fun getCashLog(startDate: String, endDate: String, terminalId: String) =
         apiHelperNew.getCashInOut(startDate, endDate, terminalId)

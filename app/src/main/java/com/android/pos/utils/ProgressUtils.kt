@@ -5,6 +5,7 @@ import android.app.Dialog
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.WindowManager
 import androidx.fragment.app.FragmentActivity
@@ -56,7 +57,7 @@ object ProgressUtils {
 
         if (!builder!!.isShowing) {
             val activity: Activity = context as Activity
-            if (!activity.isFinishing) {
+            if (!activity.isFinishing && !activity.isDestroyed) {
                 try {
                     builder?.show()
                 } catch (e: Exception) {
@@ -96,8 +97,14 @@ object ProgressUtils {
      * For dismiss progress dialog
      */
     fun dismissProgressDialog() {
+        try {
+            if (builder != null && builder?.isShowing == true) {
+                builder?.dismiss()
+            }
+        } catch (e: Exception) {
+            Log.d("pos", "dismissProgressDialog: " + e.message)
+        }
 
-        if (builder != null && builder!!.isShowing) builder!!.dismiss()
     }
 
 

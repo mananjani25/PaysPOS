@@ -1,6 +1,7 @@
 package com.android.pos.ui.fragments.dashboard
 
 import android.annotation.SuppressLint
+import android.os.Handler
 import android.util.Log
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.lifecycle.*
@@ -53,10 +54,13 @@ class DashBoardCategoryViewModel @Inject constructor(
     var totalCount = 0
     var subTotalPrice = 0.0
     var totalTax = 0.0
+    var cashDiscount: Double = 0.0
+    var nonCashAdj: Double = 0.0
     var totalServiceCharge = 0.0
     var totalDiscount = 0.0
     var assignCustomer: TbCustomer? = null
     var orderItemDiscount = 0.0
+    var paymentType: String = "cash"
 
     private val _updateOrder = MutableLiveData<Event<Any?>>()
     val updateOrder: LiveData<Event<Any?>> = _updateOrder
@@ -443,13 +447,23 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
     }
 
+    fun getCashDiscountDetails(active: Int): LiveData<CashDiscountModel>? {
+        return posRepository.getCashDisDetail(active)
+    }
+
+
+
     @SuppressLint("SetTextI18n")
     fun itemCalculation(
         cartList: List<CartModel>?,
-        txtTotalAmount: AppCompatTextView
+        txtTotalAmount: AppCompatTextView,
+        cashdiscount: Double
     ) {
 
 
+        var totalAmmount = 0.0
+        cashDiscount = 0.0
+        nonCashAdj = 0.0
         totalPrice = 0.0
         totalCount = 0
         subTotalPrice = 0.0
@@ -484,6 +498,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     }.sum()
                 }
 
+
                 totalPrice = (subTotalPrice + totalTax + totalServiceCharge)
 
 
@@ -513,7 +528,8 @@ class DashBoardCategoryViewModel @Inject constructor(
 
             }
 
-            MethodUtils.setPriceTextView(txtTotalAmount, totalPrice - cartList[0].discountPrice)
+            totalAmmount = totalPrice-cartList[0].discountPrice
+            MethodUtils.setPriceTextView(txtTotalAmount, totalAmmount-cashdiscount)
         }
 
     }
@@ -1180,9 +1196,9 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 val orderItemVariationAttribute = OrderItemVariationAttribute()
                 orderItemVariationAttribute.name = it.name
-                orderItemVariationAttribute.price = it.price?:0.0
-                orderItemVariationAttribute.totalPrice = (it.price?:0.0) * item.itemQuantity
-                orderItemVariationAttribute.variationId = it.id?:0
+                orderItemVariationAttribute.price = it.price ?: 0.0
+                orderItemVariationAttribute.totalPrice = (it.price ?: 0.0) * item.itemQuantity
+                orderItemVariationAttribute.variationId = it.id ?: 0
                 orderItemVariationAttribute.quantity = item.itemQuantity
 
                 /*if (isUpdateOrder) {
@@ -1431,7 +1447,6 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 posRepository.deleteLoyaltyProgramFromDb()
                                 posRepository.addLoyaltyProgramFromDb(it.data.loyaltyPrograms)
                                 posRepository.addCashDiscountsFromDb(it.data.cash_discounts)
-
                             }
 
                             prefProvider.setValueboolean(Constants.SYNC_DATA, true)
