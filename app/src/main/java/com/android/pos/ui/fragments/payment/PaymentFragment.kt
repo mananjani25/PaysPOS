@@ -523,7 +523,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     totalDiscount,
                     tipAmount,
                     splitValue,
-                    redeemLoyaltyInfo
+                    redeemLoyaltyInfo,
+                    true
                 )
             }
             if (myRequest != null) {
@@ -585,7 +586,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     totalDiscount,
                     tipAmount,
                     splitValue,
-                    redeemLoyaltyInfo
+                    redeemLoyaltyInfo,
+                    true
                 )
             }
             if (myRequest != null) {
@@ -631,7 +633,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     totalDiscount,
                     tipAmount,
                     splitValue,
-                    redeemLoyaltyInfo
+                    redeemLoyaltyInfo,
+                    true
                 )
             }
             if (myRequest != null) {

@@ -301,7 +301,8 @@ class PaymentViewModel @Inject constructor(
         totalDiscount: Double,
         tipAmount: Double,
         splitValue: Int,
-        redeemLoyaltyInfo: RedeemLoyaltyInfo?
+        redeemLoyaltyInfo: RedeemLoyaltyInfo?,
+        needToAddPaymentAttributes: Boolean?
     ): OrderRequestModel {
 
         val orderAttributeRequestModel = OrderAttributeRequestModel()
@@ -338,7 +339,8 @@ class PaymentViewModel @Inject constructor(
             MethodUtils.roundOffAmountDouble(totalServiceCharge)
         orderAttributeRequestModel.totalTaxAmount = MethodUtils.roundOffAmountDouble(totalTax)
         orderAttributeRequestModel.totalTips = MethodUtils.roundOffAmountDouble(tipAmount)
-        orderAttributeRequestModel.loyalty_program_id = "${redeemLoyaltyInfo?.loyaltyProgramsModel?.id}"
+        orderAttributeRequestModel.loyalty_program_id =
+            "${redeemLoyaltyInfo?.loyaltyProgramsModel?.id}"
         orderAttributeRequestModel.loyalty_amount = redeemLoyaltyInfo?.usedLoyaltyAmount
         orderAttributeRequestModel.used_reward_points = redeemLoyaltyInfo?.usedLoyaltyPoints
         orderAttributeRequestModel.is_loyalty_applied = redeemLoyaltyInfo?.isLoyaltyApplied
@@ -352,7 +354,7 @@ class PaymentViewModel @Inject constructor(
         }
 
 
-        orderAttributeRequestModel.paymentAttributes =
+        orderAttributeRequestModel.paymentAttributes = if (needToAddPaymentAttributes == true) {
             paymentAttributes(
                 cartModel,
                 totalPrice,
@@ -362,6 +364,10 @@ class PaymentViewModel @Inject constructor(
                 totalDiscount, tipAmount, splitValue,
                 redeemLoyaltyInfo = redeemLoyaltyInfo
             )
+        } else {
+            null
+        }
+
         orderAttributeRequestModel.orderServiceChargesAttributes =
             orderServiceChargesAttributes(cartModel, subTotalPrice)
         if (cartModel.orderType == DINE_IN) {
