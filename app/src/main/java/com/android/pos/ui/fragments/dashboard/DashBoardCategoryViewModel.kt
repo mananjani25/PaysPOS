@@ -524,14 +524,11 @@ class DashBoardCategoryViewModel @Inject constructor(
                 totalPrice = (subTotalPrice + totalTax + totalServiceCharge)
 
 
-                //display the loyalty point
+                //loyalty point and price calculation
                 amountToBePaid = totalPrice - cartList[0].discountPrice
-                val customer = selectedCustomer
-                if (customer != null && customer.enroll_to_loyalty == true) {
-                    redeemLoyaltyInfo = checkAppliedLoyaltyProgram(customer, amountToBePaid)
-                    amountToBePaid = redeemLoyaltyInfo.remainingLoyaltyAmount
-                    Log.e(TAG, Gson().toJson(redeemLoyaltyInfo))
-                }
+                redeemLoyaltyInfo = checkAppliedLoyaltyProgram(selectedCustomer, amountToBePaid)
+                amountToBePaid = redeemLoyaltyInfo.remainingLoyaltyAmount
+                Log.e(TAG, Gson().toJson(redeemLoyaltyInfo))
             }
 
             MethodUtils.setPriceTextView(txtTotalAmount, amountToBePaid)
@@ -539,16 +536,20 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     }
 
-    private fun checkAppliedLoyaltyProgram(customer: TbCustomer, total: Double): RedeemLoyaltyInfo {
+    private fun checkAppliedLoyaltyProgram(
+        customer: TbCustomer?,
+        total: Double
+    ): RedeemLoyaltyInfo {
 
         Log.e("Loyalty", "checkAppliedLoyaltyProgram..")
 
         val redeemLoyaltyInfo = RedeemLoyaltyInfo()
         redeemLoyaltyInfo.total = total
-
-        val availablePoints = customer.final_reward ?: 0
+        var isCalculated = false
+        val availablePoints = customer?.final_reward ?: 0
         val availableLoyaltyPrograms = loyaltyPointsList
-        if (availableLoyaltyPrograms.isNotEmpty()) {
+
+        if (customer != null && customer.enroll_to_loyalty == true && availableLoyaltyPrograms.isNotEmpty()) {
             for (i in availableLoyaltyPrograms.indices) {
                 if (availableLoyaltyPrograms[i].isEnable && availableLoyaltyPrograms[i].rewardPoint <= availablePoints) {
 
@@ -556,7 +557,8 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                     //if customer has more points than required(minimum limit)
                     appliedLoyaltyProgram = availableLoyaltyPrograms[i]
-                    val availableLoyaltyAmount = availablePoints * availableLoyaltyPrograms[i].amount / availableLoyaltyPrograms[i].rewardPoint
+                    val availableLoyaltyAmount =
+                        availablePoints * availableLoyaltyPrograms[i].amount / availableLoyaltyPrograms[i].rewardPoint
                     if (availableLoyaltyAmount > total) {
                         //if loyalty amount is more than total price
 
@@ -564,26 +566,26 @@ class DashBoardCategoryViewModel @Inject constructor(
                             (total * availableLoyaltyPrograms[i].rewardPoint / availableLoyaltyPrograms[i].amount).toInt()
                         redeemLoyaltyInfo.usedLoyaltyAmount =
                             (redeemLoyaltyInfo.usedLoyaltyPoints * availableLoyaltyPrograms[i].amount / availableLoyaltyPrograms[i].rewardPoint)
-                        redeemLoyaltyInfo.remainingLoyaltyAmount = total - redeemLoyaltyInfo.usedLoyaltyAmount
+                        redeemLoyaltyInfo.remainingLoyaltyAmount =
+                            total - redeemLoyaltyInfo.usedLoyaltyAmount
                         redeemLoyaltyInfo.remainingLoyaltyPoints =
                             availablePoints - redeemLoyaltyInfo.usedLoyaltyPoints
                     } else {
-                        redeemLoyaltyInfo.usedLoyaltyAmount =  (availablePoints  * availableLoyaltyPrograms[i].amount / availableLoyaltyPrograms[i].rewardPoint)
+                        redeemLoyaltyInfo.usedLoyaltyAmount =
+                            (availablePoints * availableLoyaltyPrograms[i].amount / availableLoyaltyPrograms[i].rewardPoint)
                         redeemLoyaltyInfo.usedLoyaltyPoints = availablePoints
                         redeemLoyaltyInfo.remainingLoyaltyPoints = 0
-                        redeemLoyaltyInfo.remainingLoyaltyAmount = total - redeemLoyaltyInfo.usedLoyaltyAmount
+                        redeemLoyaltyInfo.remainingLoyaltyAmount =
+                            total - redeemLoyaltyInfo.usedLoyaltyAmount
                     }
                     redeemLoyaltyInfo.isLoyaltyApplied = true
+                    isCalculated = true
                     break
-                } else {
-                    redeemLoyaltyInfo.remainingLoyaltyAmount = total
-                    redeemLoyaltyInfo.remainingLoyaltyPoints = availablePoints
-                    redeemLoyaltyInfo.usedLoyaltyPoints = 0
-                    redeemLoyaltyInfo.usedLoyaltyAmount = 0.0
-                    redeemLoyaltyInfo.isLoyaltyApplied = false
                 }
             }
-        }else{
+        }
+
+        if (!isCalculated) {
             redeemLoyaltyInfo.remainingLoyaltyAmount = total
             redeemLoyaltyInfo.remainingLoyaltyPoints = availablePoints
             redeemLoyaltyInfo.usedLoyaltyPoints = 0
