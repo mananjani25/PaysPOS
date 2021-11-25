@@ -1279,29 +1279,46 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     override fun onClick(item: TbItem) {
 
-        if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
+        if (prefProvider.getValue(ORDER_TYPE, "") != "") {
 
             if (item.modifier_set_ids.isEmpty() && item.variationsAttributes.isEmpty()) {
-                item.itemQuantity = 1
-                if (cartList.isEmpty()) {
-                    viewModel.setServiceCharges(serviceChargesList)
-                }
-                if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
 
-                    if (cartList.isNotEmpty()) {
-                        cartList[0].orderType = DINE_IN
+                // qty check logic
+                var itemQty = 1
+                if (cartList.isNotEmpty()) {
+                    cartList[0].items?.filter { it.itemId == item.itemId }?.map {
+                        itemQty += it.itemQuantity
                     }
+                }
+                if (item.quantity >= itemQty) {
+                    item.itemQuantity = 1
 
-                    val dineInList = dineInCartAdapter.getList()
-                    dineInList.get(0).selectedPosition = dineInCartAdapter.getHeaderPosition()
-                    viewModel.cartLogic(cartList, item, ADD, dineInList = dineInList)
+                    if (cartList.isEmpty()) {
+                        viewModel.setServiceCharges(serviceChargesList)
+                    }
+                    if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
+
+                        if (cartList.isNotEmpty()) {
+                            cartList[0].orderType = DINE_IN
+                        }
+
+                        val dineInList = dineInCartAdapter.getList()
+                        dineInList.get(0).selectedPosition = dineInCartAdapter.getHeaderPosition()
+                        viewModel.cartLogic(cartList, item, ADD, dineInList = dineInList)
 
 
+                    } else {
+                        //check is_edited flag
+                        makeItemEdited(item)
+
+                        viewModel.cartLogic(cartList, item, ADD)
+                    }
                 } else {
-                    //check is_edited flag
-                    makeItemEdited(item)
-
-                    viewModel.cartLogic(cartList, item, ADD)
+                    item.itemQuantity = -1
+                    AlertUtils.showCustomAlert(
+                        requireActivity(),
+                        getString(R.string.qty_validation)
+                    )
                 }
             } else {
                 ItemPopup(item, true)
@@ -1591,8 +1608,15 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         }
 
         llPlus.setOnClickListener {
+
             qty += 1
-            txtQty.setText(qty.toString())
+
+            if (data.quantity >= qty) {
+                txtQty.setText(qty.toString())
+            } else {
+                qty -= 1
+                AlertUtils.showCustomAlert(requireActivity(), getString(R.string.qty_validation))
+            }
 
 
         }
