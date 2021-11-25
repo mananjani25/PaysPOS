@@ -78,6 +78,10 @@ class DineInViewModel @Inject constructor(
         }
     }
 
+    fun unMergeTable(id:Int){
+
+    }
+
     fun getTableStatus(tableId: Int, status: String) {
         _showProgress.value = Event(true)
         viewModelScope.launch {

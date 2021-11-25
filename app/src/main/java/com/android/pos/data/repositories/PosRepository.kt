@@ -651,6 +651,7 @@ class PosRepository @Inject constructor(
     suspend fun mergeFloorTable(parentTableId: Int, childIds: String) =
         apiHelperNew.mergeFloorTable(parentTableId, childIds)
 
+    suspend fun unMergeTable(id: Int) = apiHelperNew.unMergeTable(id)
     suspend fun payByGuest(
         id: Int,
         isAllComplete: Boolean,

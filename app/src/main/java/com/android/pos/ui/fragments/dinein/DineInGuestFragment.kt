@@ -32,6 +32,7 @@ class DineInGuestFragment : Fragment(), GuestListAdapter.GuestListner {
     private val viewModel by viewModels<DineInViewModel>()
     private val TAG = "DineInGuestFragment"
     private var guestCount: Int = 0
+    private
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -98,6 +99,10 @@ class DineInGuestFragment : Fragment(), GuestListAdapter.GuestListner {
     private fun onClick() {
         binding.imgClose.setOnClickListener {
             findNavController().popBackStack()
+        }
+
+        binding.imgUnMergeTable.setOnClickListener {
+            viewModel.unMergeTable(dineInFloorTableModel.id)
         }
     }
 

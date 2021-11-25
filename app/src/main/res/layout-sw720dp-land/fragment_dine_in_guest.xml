@@ -9,7 +9,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
@@ -26,8 +26,9 @@
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtTitle"
                 style="@style/CustomFontMediumStyle"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:gravity="center"
@@ -35,7 +36,17 @@
                 android:textColor="@color/viewTextColor"
                 android:textSize="@dimen/_6mdpi" />
 
-        </LinearLayout>
+            <ImageView
+                android:id="@+id/imgUnMergeTable"
+                android:layout_width="@dimen/_27sdp"
+                android:layout_height="@dimen/_12sdp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="@dimen/_8sdp"
+                android:padding="@dimen/_3sdp"
+                android:src="@drawable/merge" />
+
+        </RelativeLayout>
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
