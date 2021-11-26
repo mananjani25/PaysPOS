@@ -14,6 +14,7 @@ import android.widget.LinearLayout
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
+import androidx.navigation.NavController
 import com.android.pos.ui.adapter.DineInFloorNameListAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
@@ -63,7 +64,7 @@ class DineInFragment : Fragment() {
         )
 
         binding.lifecycleOwner = this
-        //   binding.viewModel = viewModel
+        // binding.viewModel = viewModel
 
         loadFloorPlan()
         setUpRecyclerView()
@@ -109,7 +110,7 @@ class DineInFragment : Fragment() {
     }
 
     private fun loadFloorPlan() {
-        viewModel.getFloorPlan.observe(viewLifecycleOwner, {
+        viewModel.getFloorPlan().observe(viewLifecycleOwner, {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
@@ -147,6 +148,7 @@ class DineInFragment : Fragment() {
                             setFragmentResultListener("request_key_table_selection") { requestKey: String, bundle: Bundle ->
                                 var mergeStatus = bundle.getBoolean("merge_done")
                                 if (mergeStatus) {
+                                    loadFloorPlan()
 
 
                                 }

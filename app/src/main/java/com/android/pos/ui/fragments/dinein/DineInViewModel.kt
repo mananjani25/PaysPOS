@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.model.responseModel.CreateNoteResponse
+import com.android.pos.data.model.responseModel.GetFloorPlanResponse
 import com.android.pos.data.model.responseModel.NoteResponse
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.LOCATION_ID
@@ -50,9 +51,14 @@ class DineInViewModel @Inject constructor(
     val _unMergeStatus = MutableLiveData<Event<String>>()
     val unMergeStatusUpdate: LiveData<Event<String>> = _unMergeStatus
 
-    val getFloorPlan = posRepository.getFloorPlan(prefProvider.getValueInt(LOCATION_ID, 0))
+    fun getFloorPlan():LiveData<Resource<GetFloorPlanResponse>> {
+        return posRepository.getFloorPlan(prefProvider.getValueInt(LOCATION_ID, 0))
+    }
 
-    val getFloorPlanDetails = posRepository.getFloorPlanTableDetails()
+   // val getFloorPlan = posRepository.getFloorPlan(prefProvider.getValueInt(LOCATION_ID, 0))
+
+    val getFloorPlanDetails =
+        posRepository.getFloorPlanTableDetails()
 
     fun mergeTable(parentTableId: Int, childIds: String) {
         _showProgress.value = Event(true)
@@ -88,7 +94,7 @@ class DineInViewModel @Inject constructor(
             when (resource.status) {
                 Status.SUCCESS -> {
                     _showProgress.value = Event(false)
-                    _mergeStatus.value = Event(resource.data?.message.toString())
+                    _unMergeStatus.value = Event(resource.data?.message.toString())
 
                 }
                 Status.ERROR -> {
