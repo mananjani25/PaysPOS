@@ -62,7 +62,6 @@ import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
 import com.android.pos.data.remote.Constants.ORDER_TYPE_NAME
 import com.android.pos.data.remote.Constants.PERCENTAGE
 import com.android.pos.data.remote.Constants.RATE_OR_AMOUNT
-import com.android.pos.data.remote.Constants.ROYALTY_POINTS
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.remote.Constants.UPDATE
 import com.android.pos.data.remote.Constants.VERTICAL

@@ -1,7 +1,6 @@
 package com.android.pos.ui.fragments.dashboard
 
 import android.annotation.SuppressLint
-import android.os.Handler
 import android.util.Log
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.lifecycle.*
@@ -460,7 +459,6 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
 
-
     @SuppressLint("SetTextI18n")
     fun itemCalculation(
         cartList: List<CartModel>?,
@@ -547,7 +545,6 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
         //totalAmmount = totalPrice-cartList[0].discountPrice
         MethodUtils.setPriceTextView(txtTotalAmount, amountToBePaid - cashdiscount)
-        }
 
     }
 
@@ -804,7 +801,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                   totalTax,
                   totalDiscount, tipAmount
               )
-  */
+    */
         orderAttributeRequestModel.orderServiceChargesAttributes =
             orderServiceChargesAttributes(cartModel, subTotalPrice)
 
@@ -1003,7 +1000,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 /* customerModel.companyName = it.customer?.company.toString()
                  customerModel.phonesAttributes = phoneList
                  customerModel.locationId = prefProvider.getValueInt(LOCATION_ID, 1)
- */
+    */
                 //  model.customerAttributes = customerModel
 
             } else {
@@ -1170,7 +1167,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 /*if (isUpdateOrder && it.orderModifierId != null)
                     id = it.orderModifierId
-*/
+    */
                 if (item.orderItemId != null) {
                     id = it.id
                 }
@@ -1201,7 +1198,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             val orderModifierTaxesAttribute = OrderModifierTaxesAttribute()
             /*  if (isUpdateOrder && tax.orderTaxId != null)
                   orderModifierTaxesAttribute.id = tax.orderTaxId
-*/
+    */
             if (prefProvider.getValueboolean(DINE_IN_UPDATE, false)) {
                 if (items.isEdited && items.orderItemId == null) {
                     orderModifierTaxesAttribute.tax_id = tax?.taxId
@@ -1235,7 +1232,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                  orderModifierTaxesAttribute.order_id = orderId
                  orderModifierTaxesAttribute.order_item_id = items.orderItemId
              }
-*/
+    */
             if (tax?.taxType == "Percentage") {
                 val itemTaxPrice =
                     (tax?.rate?.times((modifier.price * modifier.itemQuantity)))?.div(100)
@@ -1481,7 +1478,6 @@ class DashBoardCategoryViewModel @Inject constructor(
             }
 
         }
-
     }
 
     private fun syncSettingModule() {
