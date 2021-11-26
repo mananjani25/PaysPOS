@@ -195,7 +195,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_10sdp"
                     android:hint="@string/loyalty_target"
-                    android:inputType="textCapWords"
+                    android:textAllCaps="true"
                     android:paddingTop="@dimen/_5sdp"
                     android:paddingBottom="@dimen/_5sdp"
                     android:text="@string/loyalty_target"
