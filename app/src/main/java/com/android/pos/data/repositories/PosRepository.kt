@@ -254,9 +254,12 @@ class PosRepository @Inject constructor(
         appDatabase.loyaltyProgramsDao().addAll(data)
     }
 
-    fun getLoyaltyProgramFromDb() =
-        performGetOperationDatabase(databaseQuery = { appDatabase.loyaltyProgramsDao().all })
+    fun getActiveLoyaltyProgramFromDb() =  performGetOperationDatabase(databaseQuery = { appDatabase.loyaltyProgramsDao().findActiveLoyalty(active = true) })
 
+
+    suspend fun addCashDiscountsFromDb(data: List<CashDiscountModel>) {
+        appDatabase.cashDiscountDao().addAll(data)
+    }
 
     suspend fun deleteCustomerReceiptSettingsFromDb() {
         appDatabase.customerSettingsDao().delete()
@@ -613,6 +616,10 @@ class PosRepository @Inject constructor(
                 .minMaxByItemModifier(_itemId, modifierSetId)
         }
         return null
+    }
+
+    fun getCashDisDetail(active: Int): LiveData<CashDiscountModel>? {
+        return appDatabase.cashDiscountDao().getActiveCashDiscount(active)
     }
 
 

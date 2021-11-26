@@ -58,31 +58,46 @@ class OrderHistoryAdapter :
         }
 
         private fun setupAmountPayType(total: Double?, paymentDetails: List<PaymentDetail>?) {
-            val totalFormatted = "$" + String.format(
-                "%.2f",
-                total ?: 0.0
-            )
-            val ssTotal = SpannableStringBuilder(totalFormatted)
-            ssTotal.setSpan(
-                TextAppearanceSpan(MainApplication.getInstance(), R.style.DateStyle),
-                0,
-                ssTotal.length,
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
-            val payType = if (paymentDetails?.isNotEmpty() == true) {
-                paymentDetails[0].paymentType ?: ""
-            } else {
-                ""
+
+            val sring = SpannableStringBuilder()
+
+            var size = 1
+            paymentDetails?.forEach {
+
+
+                val totalFormatted = "$" + String.format(
+                    "%.2f",
+                    total ?: 0.0
+                )
+                val ssTotal = SpannableStringBuilder(totalFormatted)
+                ssTotal.setSpan(
+                    TextAppearanceSpan(MainApplication.getInstance(), R.style.DateStyle),
+                    0,
+                    ssTotal.length,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+                val payType = if (paymentDetails.isNotEmpty()) {
+                    paymentDetails[0].paymentType ?: ""
+                } else {
+                    ""
+                }
+                val ssPayType = SpannableStringBuilder(payType)
+                ssPayType.setSpan(
+                    TextAppearanceSpan(MainApplication.getInstance(), R.style.TimeStyle),
+                    0,
+                    ssPayType.length,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+
+                val a = TextUtils.concat(ssTotal, "\n", ssPayType)
+
+                sring.append(a)
+                if (paymentDetails.size > 1 && paymentDetails.size > size)
+                    sring.append("\n\n")
+
+                size += 1
             }
-            val ssPayType = SpannableStringBuilder(payType)
-            ssPayType.setSpan(
-                TextAppearanceSpan(MainApplication.getInstance(), R.style.TimeStyle),
-                0,
-                ssPayType.length,
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
-            TextUtils.concat(ssTotal, "\n", ssPayType)
-                .also { binding.txtPayType.text = it }
+            binding.txtPayType.text = sring.toString()
         }
 
         private fun setupIdAndStatus(id: Int?, paymentStatus: String?) {

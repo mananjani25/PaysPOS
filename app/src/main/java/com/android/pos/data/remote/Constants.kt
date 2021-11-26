@@ -62,6 +62,13 @@ object Constants {
     const val DINE_IN_STATUS = "DineInStatus"
     const val DINE_IN_TABLE_ID = "DineInTableId"
 
+    const val AMOUNT_TYPE = "amountType"
+    const val RATE_OR_AMOUNT = "rateAmount"
+    const val OPTION_TYPE = "optionType"
+    const val CASH_DIS_STORED= "cashDisStore"
+
+
+
     //Api End Points
     const val USERS_LOG_IN = "users/log_in"
     const val EMPLOYEE_CLOCK_IN = "employee_activities/clock_in"

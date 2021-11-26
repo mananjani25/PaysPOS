@@ -632,7 +632,9 @@
     <string name="create_loyalty_point">Create Loyalty Point</string>
     <string name="update_loyalty_point">Update Loyalty Point</string>
     <string name="tip_after_split_alert">If you will split the bill, then your added tip will be removed, Are you sure you want to split the bill?</string>
-
+    <string name="qty_validation">Quantity not available</string>
+    <string name="cash_discount">Cash Discount</string>
+    <string name="non_cash_adj">Non Cash Adj</string>
 
 
 </resources>
