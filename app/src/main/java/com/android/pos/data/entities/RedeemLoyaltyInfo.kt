@@ -8,6 +8,7 @@ class RedeemLoyaltyInfo() {
     var remainingLoyaltyAmount: Double = 0.0
     var usedLoyaltyAmount: Double = 0.0
     var isLoyaltyApplied : Boolean? = false
+    var cashDiscount: Double?= 0.0
 
     fun showFormattedValue(value : Double) = "$" + String.format(
         "%.2f",

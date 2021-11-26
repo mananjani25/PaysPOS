@@ -2142,7 +2142,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     val request = viewModelPayment.createOrderRequest(
                         cartList,
                         viewModel.subTotalPrice,
-                        viewModel.redeemLoyaltyInfo.remainingLoyaltyAmount,
+                        (viewModel.redeemLoyaltyInfo.remainingLoyaltyAmount +(viewModel.redeemLoyaltyInfo.cashDiscount ?:0.0)),
                         viewModel.totalServiceCharge,
                         viewModel.totalTax,
                         OPEN_ORDER,
@@ -2196,7 +2196,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 val bundle = Bundle()
                 bundle.putDouble(
                     "totalPrice",
-                    viewModel.redeemLoyaltyInfo.remainingLoyaltyAmount
+                    (viewModel.redeemLoyaltyInfo.remainingLoyaltyAmount + (viewModel.redeemLoyaltyInfo.cashDiscount ?:0.0))
                 )
                 bundle.putString(
                     "redeemLoyalty",

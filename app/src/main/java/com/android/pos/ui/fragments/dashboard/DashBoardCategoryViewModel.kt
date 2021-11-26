@@ -53,7 +53,6 @@ class DashBoardCategoryViewModel @Inject constructor(
     var totalCount = 0
     var subTotalPrice = 0.0
     var totalTax = 0.0
-    var cashDiscount: Double = 0.0
     var nonCashAdj: Double = 0.0
     var totalServiceCharge = 0.0
     var totalDiscount = 0.0
@@ -504,7 +503,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 totalPrice = (subTotalPrice + totalTax + totalServiceCharge)
 
-                amountToBePaid = totalPrice - cartList[0].discountPrice
+                amountToBePaid = totalPrice - cartList[0].discountPrice - cashdiscount
 
 
             } else {
@@ -534,25 +533,27 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 //loyalty point and price calculation
                 amountToBePaid = totalPrice - cartList[0].discountPrice
-                redeemLoyaltyInfo = checkAppliedLoyaltyProgram(selectedCustomer, amountToBePaid)
+                redeemLoyaltyInfo = checkAppliedLoyaltyProgram(selectedCustomer, amountToBePaid, cashdiscount)
                 amountToBePaid = redeemLoyaltyInfo.remainingLoyaltyAmount
                 Log.e(TAG, Gson().toJson(redeemLoyaltyInfo))
             }
         }
         //totalAmmount = totalPrice-cartList[0].discountPrice
-        MethodUtils.setPriceTextView(txtTotalAmount, amountToBePaid - cashdiscount)
+        MethodUtils.setPriceTextView(txtTotalAmount, amountToBePaid)
 
     }
 
     private fun checkAppliedLoyaltyProgram(
         customer: TbCustomer?,
-        total: Double
+        total: Double,
+        cashdiscount : Double
     ): RedeemLoyaltyInfo {
 
         Log.e("Loyalty", "checkAppliedLoyaltyProgram..")
 
         val redeemLoyaltyInfo = RedeemLoyaltyInfo()
-        redeemLoyaltyInfo.total = total
+        redeemLoyaltyInfo.cashDiscount = cashdiscount
+        redeemLoyaltyInfo.total = total - cashdiscount
         val availablePoints = customer?.final_reward ?: 0
 
         if (customer != null && customer.enroll_to_loyalty == true && activeLoyaltyProgram != null && activeLoyaltyProgram?.rewardPoint ?: 0 <= availablePoints) {
@@ -562,15 +563,15 @@ class DashBoardCategoryViewModel @Inject constructor(
                 //if customer has more points than required(minimum limit)
                 val availableLoyaltyAmount =
                     availablePoints * it.amount / it.rewardPoint
-                if (availableLoyaltyAmount > total) {
+                if (availableLoyaltyAmount > redeemLoyaltyInfo.total) {
                     //if loyalty amount is more than total price
 
                     redeemLoyaltyInfo.usedLoyaltyPoints =
-                        (total * it.rewardPoint / it.amount).toInt()
+                        (redeemLoyaltyInfo.total * it.rewardPoint / it.amount).toInt()
                     redeemLoyaltyInfo.usedLoyaltyAmount =
                         (redeemLoyaltyInfo.usedLoyaltyPoints * it.amount / it.rewardPoint)
                     redeemLoyaltyInfo.remainingLoyaltyAmount =
-                        total - redeemLoyaltyInfo.usedLoyaltyAmount
+                        redeemLoyaltyInfo.total - redeemLoyaltyInfo.usedLoyaltyAmount
                     redeemLoyaltyInfo.remainingLoyaltyPoints =
                         availablePoints - redeemLoyaltyInfo.usedLoyaltyPoints
                 } else {
@@ -579,12 +580,12 @@ class DashBoardCategoryViewModel @Inject constructor(
                     redeemLoyaltyInfo.usedLoyaltyPoints = availablePoints
                     redeemLoyaltyInfo.remainingLoyaltyPoints = 0
                     redeemLoyaltyInfo.remainingLoyaltyAmount =
-                        total - redeemLoyaltyInfo.usedLoyaltyAmount
+                        redeemLoyaltyInfo.total - redeemLoyaltyInfo.usedLoyaltyAmount
                 }
                 redeemLoyaltyInfo.isLoyaltyApplied = true
             }
         } else {
-            redeemLoyaltyInfo.remainingLoyaltyAmount = total
+            redeemLoyaltyInfo.remainingLoyaltyAmount =  redeemLoyaltyInfo.total
             redeemLoyaltyInfo.remainingLoyaltyPoints = availablePoints
             redeemLoyaltyInfo.usedLoyaltyPoints = 0
             redeemLoyaltyInfo.usedLoyaltyAmount = 0.0
