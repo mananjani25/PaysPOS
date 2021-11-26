@@ -576,7 +576,7 @@
     <string name="cancel">Cancel</string>
     <string name="assign_customer">Assign Customer</string>
     <string name="tv_choose_photo">Choose Photo</string>
-    <string name="_201_555_0123">(201) 555-0123 <font color='#E90C0C'>*</font></string>
+    <string name="_201_555_0123">Mobile Number<font color='#E90C0C'>*</font></string>
 
     <!--Error Messages-->
     <string name="error_something_wrong">Something went wrong. Please try again.</string>
