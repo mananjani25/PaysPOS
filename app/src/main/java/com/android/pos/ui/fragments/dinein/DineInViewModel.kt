@@ -47,6 +47,8 @@ class DineInViewModel @Inject constructor(
     val _mergeStatus = MutableLiveData<Event<String>>()
     val mergeStatusChange: LiveData<Event<String>> = _mergeStatus
 
+    val _unMergeStatus = MutableLiveData<Event<String>>()
+    val unMergeStatusUpdate: LiveData<Event<String>> = _unMergeStatus
 
     val getFloorPlan = posRepository.getFloorPlan(prefProvider.getValueInt(LOCATION_ID, 0))
 
@@ -59,6 +61,7 @@ class DineInViewModel @Inject constructor(
 
             when (resource.status) {
                 Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
                     (resource.data?.message?.let {
                         _mergeStatus.value = Event(it)
                     })
@@ -78,7 +81,31 @@ class DineInViewModel @Inject constructor(
         }
     }
 
-    fun unMergeTable(id:Int){
+    fun unMergeTable(id: Int) {
+        _showProgress.value = Event(true)
+        viewModelScope.launch {
+            val resource = posRepository.unMergeTable(id)
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+                    _mergeStatus.value = Event(resource.data?.message.toString())
+
+                }
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message.toString())
+                    _showProgress.value = Event(false)
+
+
+                }
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+
+                }
+
+            }
+
+        }
+
 
     }
 

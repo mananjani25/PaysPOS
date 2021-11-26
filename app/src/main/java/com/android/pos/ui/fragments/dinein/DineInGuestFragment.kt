@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
@@ -32,7 +33,6 @@ class DineInGuestFragment : Fragment(), GuestListAdapter.GuestListner {
     private val viewModel by viewModels<DineInViewModel>()
     private val TAG = "DineInGuestFragment"
     private var guestCount: Int = 0
-    private
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -47,6 +47,8 @@ class DineInGuestFragment : Fragment(), GuestListAdapter.GuestListner {
         tableStatusCheck()
         tableStatusSucess()
         observeShowProgress()
+        observeUnMergeTable()
+
 
 
         return binding.root
@@ -55,8 +57,6 @@ class DineInGuestFragment : Fragment(), GuestListAdapter.GuestListner {
     private fun tableStatusSucess() {
         viewModel.tableCheckSuccess.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let { status ->
-                Log.e(TAG, "getstr:   $status")
-
                 prefProvider.setValue(ORDER_TYPE, DINE_IN)
                 prefProvider.setValue(ORDER_TYPE_NAME, DINE_IN)
                 val bundle = bundleOf(
@@ -93,6 +93,11 @@ class DineInGuestFragment : Fragment(), GuestListAdapter.GuestListner {
         super.onViewCreated(view, savedInstanceState)
         setUpRecyclerView()
         onClick()
+        if (requireArguments()?.getBoolean("isMerged")) {
+            binding.imgUnMergeTable.visibility = View.VISIBLE
+        } else {
+            binding.imgUnMergeTable.visibility = View.GONE
+        }
 
     }
 
@@ -107,7 +112,6 @@ class DineInGuestFragment : Fragment(), GuestListAdapter.GuestListner {
     }
 
     override fun onGuestSelected(numberOfGuest: Int) {
-        Log.e(TAG, "numberOfGuest:  $numberOfGuest")
         guestCount = numberOfGuest
 
 
@@ -167,6 +171,21 @@ class DineInGuestFragment : Fragment(), GuestListAdapter.GuestListner {
         })
 
 
+    }
+
+    private fun observeUnMergeTable() {
+        viewModel.unMergeStatusUpdate.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let { status ->
+                Log.e(TAG, "AnyStatus:  ${status}")
+                AlertUtils.showCustomAlertWithListenerWithOK(
+                    requireContext(), status.toString()
+                ) { _, _ ->
+                    findNavController().popBackStack()
+                }
+
+
+            }
+        })
     }
 
 }

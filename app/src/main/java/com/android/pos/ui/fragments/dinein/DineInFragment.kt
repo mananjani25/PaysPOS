@@ -30,6 +30,7 @@ import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.extensions.toDp
 import com.android.pos.utils.statusUtils.Status
+import com.google.gson.Gson
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -118,7 +119,6 @@ class DineInFragment : Fragment() {
                             dineInFloorNameList =
                                 it.data!!.data as ArrayList<GetFloorPlanResponse.Data>
                             dineInFloorNameListAdapter.addFloorName(dineInFloorNameList)
-
 
                             setFloorPlan(dineInFloorNameList[0].floorPlanTables)
                         }
@@ -276,7 +276,7 @@ class DineInFragment : Fragment() {
                         val tvNoOFChairs: AppCompatTextView =
                             inflatedViewRound.findViewById(R.id.tvNoOFChairs)
 
-                        tvNoOFChairs.text = "" + dineInFloorTablesList[i].chairCount
+                        //tvNoOFChairs.text = "" + dineInFloorTablesList[i].chairCount
 
                         val tvTableName: AppCompatTextView =
                             inflatedViewRound.findViewById(R.id.tvTableName)
@@ -286,7 +286,23 @@ class DineInFragment : Fragment() {
                         val tvTableNumber: AppCompatTextView =
                             inflatedViewRound.findViewById(R.id.tvTableNumber)
 
-                        tvTableNumber.text = "" + dineInFloorTablesList[i].tableNumber
+                        if (dineInFloorTablesList[i].parentTable) {
+                            var tableNo: String =
+                                dineInFloorTablesList[i].tableNumber.toString()
+                            var chairCount = dineInFloorTablesList[i].chairCount
+                            dineInFloorTablesList[i].merged_child_table_details.forEach {
+                                tableNo = tableNo + "," + it.table_number
+                                chairCount += it.chair_count
+                            }
+                            dineInFloorTablesList[i].chairCount = chairCount
+                            tvTableNumber.text = tableNo
+                            tvNoOFChairs.text = "" + dineInFloorTablesList[i].chairCount
+
+                        } else {
+                            tvTableNumber.text = "" + dineInFloorTablesList[i].tableNumber
+                            tvNoOFChairs.text = "" + dineInFloorTablesList[i].chairCount
+
+                        }
 
                         if (llMainParentRound.parent != null) {
                             (llMainParentRound.parent as ViewGroup).removeView(llMainParentRound)
@@ -358,6 +374,7 @@ class DineInFragment : Fragment() {
                 )
 
             } else if (dineInFloorTableModel.status == MERGED) {
+                Log.e(TAG, "dineInFloorTableModel:  ${Gson().toJson(dineInFloorTableModel)}")
 
                 val bundle = Bundle()
                 bundle.putBoolean("isMerged", true)

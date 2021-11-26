@@ -43,8 +43,8 @@
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="@dimen/_8sdp"
-                android:padding="@dimen/_3sdp"
-                android:src="@drawable/merge" />
+                android:padding="@dimen/_2sdp"
+                android:src="@drawable/ic_unmerge" />
 
         </RelativeLayout>
 
