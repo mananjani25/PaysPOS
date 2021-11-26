@@ -62,6 +62,13 @@ object Constants {
     const val DINE_IN_STATUS = "DineInStatus"
     const val DINE_IN_TABLE_ID = "DineInTableId"
 
+    const val AMOUNT_TYPE = "amountType"
+    const val RATE_OR_AMOUNT = "rateAmount"
+    const val OPTION_TYPE = "optionType"
+    const val CASH_DIS_STORED= "cashDisStore"
+
+
+
     //Api End Points
     const val USERS_LOG_IN = "users/log_in"
     const val EMPLOYEE_CLOCK_IN = "employee_activities/clock_in"
@@ -179,6 +186,7 @@ object Constants {
     const val KITCHEN = "Kitchen"
     const val CUSTOMER = "Customer"
     const val AVAILABLE = "Available"
+    const val MERGED = "Merged"
 
 
     const val MODIFIER_UPDATE_DELETE = "modifier_sets/{id}"
@@ -212,6 +220,7 @@ object Constants {
     const val FLOOR_PLAN_TABLE_DETAILS = "floor_plans/floor_plan_table_details"
     const val FLOOR_PLAN_STATUS = "floor_plan_tables/{id}/check_employee_table_lock"
     const val MERGE_FLOOR_TABLE = "floor_plan_tables/{id}/merge_floor_plan_tables"
+    const val UNMERGE_TABLE = "floor_plan_tables/{id}/unmerge_floor_plan_tables"
 
     const val REPORT_SUMMARY = "reports/report_summary"
     const val ORDER_HISTORY = "customers/{id}/customer_order_history"

@@ -238,6 +238,10 @@ class PaymentViewModel @Inject constructor(
         }
     }
 
+     fun getCashDiscountDetails(active: Int): LiveData<CashDiscountModel>? {
+        return posRepository.getCashDisDetail(active)
+    }
+
 
     private suspend fun cashOutApi(createOrderResponse: CreateOrderResponse, event: String) {
 

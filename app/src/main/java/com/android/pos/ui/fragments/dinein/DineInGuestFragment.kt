@@ -99,6 +99,10 @@ class DineInGuestFragment : Fragment(), GuestListAdapter.GuestListner {
         binding.imgClose.setOnClickListener {
             findNavController().popBackStack()
         }
+
+        binding.imgUnMergeTable.setOnClickListener {
+            viewModel.unMergeTable(dineInFloorTableModel.id)
+        }
     }
 
     override fun onGuestSelected(numberOfGuest: Int) {

@@ -256,6 +256,11 @@ class PosRepository @Inject constructor(
 
     fun getActiveLoyaltyProgramFromDb() =  performGetOperationDatabase(databaseQuery = { appDatabase.loyaltyProgramsDao().findActiveLoyalty(active = true) })
 
+
+    suspend fun addCashDiscountsFromDb(data: List<CashDiscountModel>) {
+        appDatabase.cashDiscountDao().addAll(data)
+    }
+
     suspend fun deleteCustomerReceiptSettingsFromDb() {
         appDatabase.customerSettingsDao().delete()
     }
@@ -613,6 +618,10 @@ class PosRepository @Inject constructor(
         return null
     }
 
+    fun getCashDisDetail(active: Int): LiveData<CashDiscountModel>? {
+        return appDatabase.cashDiscountDao().getActiveCashDiscount(active)
+    }
+
 
     fun getOpenOrders(param1: String): LiveData<Resource<OpenOrderResponse>> =
         performGetOperationNew(networkCall = {
@@ -649,6 +658,7 @@ class PosRepository @Inject constructor(
     suspend fun mergeFloorTable(parentTableId: Int, childIds: String) =
         apiHelperNew.mergeFloorTable(parentTableId, childIds)
 
+    suspend fun unMergeTable(id: Int) = apiHelperNew.unMergeTable(id)
     suspend fun payByGuest(
         id: Int,
         isAllComplete: Boolean,

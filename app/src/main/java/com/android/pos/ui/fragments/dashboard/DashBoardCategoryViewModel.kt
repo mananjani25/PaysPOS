@@ -53,6 +53,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     var totalCount = 0
     var subTotalPrice = 0.0
     var totalTax = 0.0
+    var nonCashAdj: Double = 0.0
     var totalServiceCharge = 0.0
     var totalDiscount = 0.0
     var assignCustomer: TbCustomer? = null
@@ -60,6 +61,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     var selectedCustomer: TbCustomer? = null
     var activeLoyaltyProgram: LoyaltyProgramsModel? = null
     var redeemLoyaltyInfo: RedeemLoyaltyInfo = RedeemLoyaltyInfo()
+    var paymentType: String = "cash"
 
     private val _updateOrder = MutableLiveData<Event<Any?>>()
     val updateOrder: LiveData<Event<Any?>> = _updateOrder
@@ -447,13 +449,21 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
     }
 
+    fun getCashDiscountDetails(active: Int): LiveData<CashDiscountModel>? {
+        return posRepository.getCashDisDetail(active)
+    }
+
+
     @SuppressLint("SetTextI18n")
     fun itemCalculation(
         cartList: List<CartModel>?,
-        txtTotalAmount: AppCompatTextView
+        txtTotalAmount: AppCompatTextView,
+        cashdiscount: Double
     ) {
 
 
+        var totalAmmount = 0.0
+        nonCashAdj = 0.0
         totalPrice = 0.0
         totalCount = 0
         subTotalPrice = 0.0
@@ -490,9 +500,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                     }.sum()
                 }
 
+
                 totalPrice = (subTotalPrice + totalTax + totalServiceCharge)
 
-                amountToBePaid = totalPrice - cartList[0].discountPrice
+                amountToBePaid = totalPrice - cartList[0].discountPrice - cashdiscount
 
 
             } else {
@@ -522,25 +533,27 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 //loyalty point and price calculation
                 amountToBePaid = totalPrice - cartList[0].discountPrice
-                redeemLoyaltyInfo = checkAppliedLoyaltyProgram(selectedCustomer, amountToBePaid)
+                redeemLoyaltyInfo = checkAppliedLoyaltyProgram(selectedCustomer, amountToBePaid, cashdiscount)
                 amountToBePaid = redeemLoyaltyInfo.remainingLoyaltyAmount
                 Log.e(TAG, Gson().toJson(redeemLoyaltyInfo))
             }
-
-            MethodUtils.setPriceTextView(txtTotalAmount, amountToBePaid)
         }
+        //totalAmmount = totalPrice-cartList[0].discountPrice
+        MethodUtils.setPriceTextView(txtTotalAmount, amountToBePaid)
 
     }
 
     private fun checkAppliedLoyaltyProgram(
         customer: TbCustomer?,
-        total: Double
+        total: Double,
+        cashdiscount : Double
     ): RedeemLoyaltyInfo {
 
         Log.e("Loyalty", "checkAppliedLoyaltyProgram..")
 
         val redeemLoyaltyInfo = RedeemLoyaltyInfo()
-        redeemLoyaltyInfo.total = total
+        redeemLoyaltyInfo.cashDiscount = cashdiscount
+        redeemLoyaltyInfo.total = total - cashdiscount
         val availablePoints = customer?.final_reward ?: 0
 
         if (customer != null && customer.enroll_to_loyalty == true && activeLoyaltyProgram != null && activeLoyaltyProgram?.rewardPoint ?: 0 <= availablePoints) {
@@ -550,15 +563,15 @@ class DashBoardCategoryViewModel @Inject constructor(
                 //if customer has more points than required(minimum limit)
                 val availableLoyaltyAmount =
                     availablePoints * it.amount / it.rewardPoint
-                if (availableLoyaltyAmount > total) {
+                if (availableLoyaltyAmount > redeemLoyaltyInfo.total) {
                     //if loyalty amount is more than total price
 
                     redeemLoyaltyInfo.usedLoyaltyPoints =
-                        (total * it.rewardPoint / it.amount).toInt()
+                        (redeemLoyaltyInfo.total * it.rewardPoint / it.amount).toInt()
                     redeemLoyaltyInfo.usedLoyaltyAmount =
                         (redeemLoyaltyInfo.usedLoyaltyPoints * it.amount / it.rewardPoint)
                     redeemLoyaltyInfo.remainingLoyaltyAmount =
-                        total - redeemLoyaltyInfo.usedLoyaltyAmount
+                        redeemLoyaltyInfo.total - redeemLoyaltyInfo.usedLoyaltyAmount
                     redeemLoyaltyInfo.remainingLoyaltyPoints =
                         availablePoints - redeemLoyaltyInfo.usedLoyaltyPoints
                 } else {
@@ -567,12 +580,12 @@ class DashBoardCategoryViewModel @Inject constructor(
                     redeemLoyaltyInfo.usedLoyaltyPoints = availablePoints
                     redeemLoyaltyInfo.remainingLoyaltyPoints = 0
                     redeemLoyaltyInfo.remainingLoyaltyAmount =
-                        total - redeemLoyaltyInfo.usedLoyaltyAmount
+                        redeemLoyaltyInfo.total - redeemLoyaltyInfo.usedLoyaltyAmount
                 }
                 redeemLoyaltyInfo.isLoyaltyApplied = true
             }
         } else {
-            redeemLoyaltyInfo.remainingLoyaltyAmount = total
+            redeemLoyaltyInfo.remainingLoyaltyAmount =  redeemLoyaltyInfo.total
             redeemLoyaltyInfo.remainingLoyaltyPoints = availablePoints
             redeemLoyaltyInfo.usedLoyaltyPoints = 0
             redeemLoyaltyInfo.usedLoyaltyAmount = 0.0
@@ -776,7 +789,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                   totalTax,
                   totalDiscount, tipAmount
               )
-  */
+    */
         orderAttributeRequestModel.orderServiceChargesAttributes =
             orderServiceChargesAttributes(cartModel, subTotalPrice)
 
@@ -975,7 +988,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 /* customerModel.companyName = it.customer?.company.toString()
                  customerModel.phonesAttributes = phoneList
                  customerModel.locationId = prefProvider.getValueInt(LOCATION_ID, 1)
- */
+    */
                 //  model.customerAttributes = customerModel
 
             } else {
@@ -1142,7 +1155,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 /*if (isUpdateOrder && it.orderModifierId != null)
                     id = it.orderModifierId
-*/
+    */
                 if (item.orderItemId != null) {
                     id = it.id
                 }
@@ -1173,7 +1186,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             val orderModifierTaxesAttribute = OrderModifierTaxesAttribute()
             /*  if (isUpdateOrder && tax.orderTaxId != null)
                   orderModifierTaxesAttribute.id = tax.orderTaxId
-*/
+    */
             if (prefProvider.getValueboolean(DINE_IN_UPDATE, false)) {
                 if (items.isEdited && items.orderItemId == null) {
                     orderModifierTaxesAttribute.tax_id = tax?.taxId
@@ -1207,7 +1220,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                  orderModifierTaxesAttribute.order_id = orderId
                  orderModifierTaxesAttribute.order_item_id = items.orderItemId
              }
-*/
+    */
             if (tax?.taxType == "Percentage") {
                 val itemTaxPrice =
                     (tax?.rate?.times((modifier.price * modifier.itemQuantity)))?.div(100)
@@ -1453,7 +1466,6 @@ class DashBoardCategoryViewModel @Inject constructor(
             }
 
         }
-
     }
 
     private fun syncSettingModule() {
@@ -1494,7 +1506,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 posRepository.addKitchenReceiptSettings(it.data.kitchenReceipt)
                                 posRepository.deleteLoyaltyProgramFromDb()
                                 posRepository.addLoyaltyProgramFromDb(it.data.loyaltyPrograms)
-
+                                posRepository.addCashDiscountsFromDb(it.data.cash_discounts)
                             }
 
                             prefProvider.setValueboolean(Constants.SYNC_DATA, true)

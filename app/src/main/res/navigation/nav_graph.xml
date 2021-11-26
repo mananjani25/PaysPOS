@@ -601,6 +601,10 @@
         <action
             android:id="@+id/action_paymentFragment_to_addTipsDialog"
             app:destination="@id/addTipsDialog" />
+        <action
+            android:id="@+id/action_paymentFragment_to_dashboardCategoryNew"
+            app:destination="@id/dashboardCategoryNew"
+            app:launchSingleTop="true" />
     </fragment>
     <dialog
         android:id="@+id/splitAmountFragment"
