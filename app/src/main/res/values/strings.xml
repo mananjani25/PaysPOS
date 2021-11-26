@@ -636,6 +636,10 @@
     <string name="cash_discount">Cash Discount</string>
     <string name="non_cash_adj">Non Cash Adj</string>
     <string name="sub_total_price">Sub Total Price</string>
+    <string name="total_discount">Total Discount</string>
+    <string name="loyalty_amount">Loyalty Amount</string>
+    <string name="used_loyalty_points">Used Loyalty Points</string>
+    <string name="loyalty_rewards">Loyalty Rewards</string>
 
 
 </resources>

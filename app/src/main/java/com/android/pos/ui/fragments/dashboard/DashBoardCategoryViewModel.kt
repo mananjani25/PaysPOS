@@ -534,7 +534,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 //loyalty point and price calculation
                 amountToBePaid = totalPrice - cartList[0].discountPrice
                 redeemLoyaltyInfo = checkAppliedLoyaltyProgram(selectedCustomer, amountToBePaid, cashdiscount)
-                amountToBePaid = redeemLoyaltyInfo.remainingLoyaltyAmount
+                amountToBePaid = redeemLoyaltyInfo.getAmountToBePaid()
                 Log.e(TAG, Gson().toJson(redeemLoyaltyInfo))
             }
         }
@@ -546,17 +546,21 @@ class DashBoardCategoryViewModel @Inject constructor(
     private fun checkAppliedLoyaltyProgram(
         customer: TbCustomer?,
         total: Double,
-        cashdiscount : Double
+        cashdiscount: Double
     ): RedeemLoyaltyInfo {
 
         Log.e("Loyalty", "checkAppliedLoyaltyProgram..")
 
-        val redeemLoyaltyInfo = RedeemLoyaltyInfo()
         redeemLoyaltyInfo.cashDiscount = cashdiscount
         redeemLoyaltyInfo.total = total - cashdiscount
         val availablePoints = customer?.final_reward ?: 0
 
-        if (customer != null && customer.enroll_to_loyalty == true && activeLoyaltyProgram != null && activeLoyaltyProgram?.rewardPoint ?: 0 <= availablePoints) {
+        if(customer == null){
+            //loyalty cant be applied if customer is not selected.
+            redeemLoyaltyInfo.needToApplyLoyalty = false
+        }else if (customer.enroll_to_loyalty == true
+            && activeLoyaltyProgram != null && activeLoyaltyProgram?.rewardPoint ?: 0 <= availablePoints
+        ) {
             activeLoyaltyProgram?.let {
                 redeemLoyaltyInfo.loyaltyProgramsModel = activeLoyaltyProgram
 
@@ -570,7 +574,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                         (redeemLoyaltyInfo.total * it.rewardPoint / it.amount).toInt()
                     redeemLoyaltyInfo.usedLoyaltyAmount =
                         (redeemLoyaltyInfo.usedLoyaltyPoints * it.amount / it.rewardPoint)
-                    redeemLoyaltyInfo.remainingLoyaltyAmount =
+                    redeemLoyaltyInfo.remainingAmount =
                         redeemLoyaltyInfo.total - redeemLoyaltyInfo.usedLoyaltyAmount
                     redeemLoyaltyInfo.remainingLoyaltyPoints =
                         availablePoints - redeemLoyaltyInfo.usedLoyaltyPoints
@@ -579,13 +583,13 @@ class DashBoardCategoryViewModel @Inject constructor(
                         (availablePoints * it.amount / it.rewardPoint)
                     redeemLoyaltyInfo.usedLoyaltyPoints = availablePoints
                     redeemLoyaltyInfo.remainingLoyaltyPoints = 0
-                    redeemLoyaltyInfo.remainingLoyaltyAmount =
+                    redeemLoyaltyInfo.remainingAmount =
                         redeemLoyaltyInfo.total - redeemLoyaltyInfo.usedLoyaltyAmount
                 }
                 redeemLoyaltyInfo.isLoyaltyApplied = true
             }
         } else {
-            redeemLoyaltyInfo.remainingLoyaltyAmount =  redeemLoyaltyInfo.total
+            redeemLoyaltyInfo.remainingAmount = redeemLoyaltyInfo.total
             redeemLoyaltyInfo.remainingLoyaltyPoints = availablePoints
             redeemLoyaltyInfo.usedLoyaltyPoints = 0
             redeemLoyaltyInfo.usedLoyaltyAmount = 0.0
