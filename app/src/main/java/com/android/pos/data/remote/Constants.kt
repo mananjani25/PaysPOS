@@ -25,8 +25,8 @@ object Constants {
     const val LOCATION_ID = "locationId"
     const val EMAIL = "email"
     const val USERNAME = "userName"
+    const val PREF_CUSTOMER = "pref_customer"
     const val CUSTOMER_NAME = "customer_name"
-    const val ROYALTY_POINTS = "royalty_points"
     const val SALE_CUSTOMER_NAME = "sale_customer_name"
     const val IS_CLOCKOUT = "isClockout"
     const val IS_REFUND = "isRefund"
@@ -186,6 +186,7 @@ object Constants {
     const val KITCHEN = "Kitchen"
     const val CUSTOMER = "Customer"
     const val AVAILABLE = "Available"
+    const val MERGED = "Merged"
 
 
     const val MODIFIER_UPDATE_DELETE = "modifier_sets/{id}"
@@ -219,6 +220,7 @@ object Constants {
     const val FLOOR_PLAN_TABLE_DETAILS = "floor_plans/floor_plan_table_details"
     const val FLOOR_PLAN_STATUS = "floor_plan_tables/{id}/check_employee_table_lock"
     const val MERGE_FLOOR_TABLE = "floor_plan_tables/{id}/merge_floor_plan_tables"
+    const val UNMERGE_TABLE = "floor_plan_tables/{id}/unmerge_floor_plan_tables"
 
     const val REPORT_SUMMARY = "reports/report_summary"
     const val ORDER_HISTORY = "customers/{id}/customer_order_history"

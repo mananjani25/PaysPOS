@@ -13,6 +13,7 @@ import androidx.navigation.fragment.findNavController
 import com.android.pos.MainApplication
 import com.android.pos.R
 import com.android.pos.data.entities.CartModel
+import com.android.pos.data.entities.RedeemLoyaltyInfo
 import com.android.pos.data.entities.CashDiscountModel
 import com.android.pos.data.model.requestModel.SpitByOrderPaymentModel
 import com.android.pos.data.model.requestModel.SpitByOrderRequestModel
@@ -25,6 +26,7 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlin.math.ceil
@@ -43,6 +45,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
     private var tipAmount: Double = 0.0
     private var future_delivery_date: String = ""
     private var future_delivery_time: String = ""
+    private var redeemLoyaltyInfo: RedeemLoyaltyInfo? = null
     private var fourthValue: Double = 0.0
     private var thirdValue: Double = 0.0
     private var secondValue: Int = 0
@@ -172,10 +175,20 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         MethodUtils.setPriceTextView(binding.txtTotal, _totalPrice + tipAmount)
     }
 
-
     @SuppressLint("SetTextI18n")
     private fun setupData(optionType: String) {
 
+        totalPrice = requireArguments().getDouble("totalPrice")
+        subTotalPrice = requireArguments().getDouble("subTotalPrice")
+        totalTax = requireArguments().getDouble("totalTax")
+        totalServiceCharge = requireArguments().getDouble("totalServiceCharge")
+        totalDiscount = requireArguments().getDouble("totalDiscount")
+        future_delivery_time = requireArguments().getString("future_delivery_time").toString()
+        future_delivery_date = requireArguments().getString("future_delivery_date").toString()
+        redeemLoyaltyInfo = Gson().fromJson(
+            requireArguments().getString("redeemLoyalty").toString(),
+            RedeemLoyaltyInfo::class.java
+        )
 
         MethodUtils.setPriceTextView(binding.txtSubTotal, subTotalPrice)
         MethodUtils.setPriceTextView(binding.txtTax, totalTax)
@@ -473,7 +486,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 if (prefProvider.getValue(SPLIT_PAY_AMOUNT, "") == "") {
                     prefProvider.setValue(SPLIT_PAY_AMOUNT, "")
                     prefProvider.setValueInt(SPLIT_NO, -1)
-                    findNavController().navigateUp()
+                    findNavController().navigate(R.id.action_paymentFragment_to_dashboardCategoryNew)
                 } else {
                     AlertUtils.showCustomAlert(requireContext(), "Please complete all payment.")
                 }
@@ -553,23 +566,32 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             }
             R.id.txtSplitAmount -> {
 
-                if (tipAmount == 0.0) {
-                    val bundle = Bundle()
-                    bundle.putDouble("totalPrice", (totalPrice + tipAmount) - final_discount)
-                    bundle.putInt("splitValue", splitValue)
-                    findNavController().navigate(
-                        R.id.action_paymentFragment_to_splitAmountFragment,
-                        bundle
-                    )
-                } else {
+                if (totalPrice == 0.0) {
 
-                    AlertUtils.showCustomAlertWithYesNoListener(
+                    AlertUtils.showCustomAlert(
                         requireActivity(),
-                        getString(R.string.tip_after_split_alert)
-                    ) { _, _ ->
+                        "You can't split amount less then 1."
+                    )
 
-                        tipAmount = 0.0
-                        tipAmountCalculation()
+                } else {
+                    if (tipAmount == 0.0) {
+                        val bundle = Bundle()
+                        bundle.putDouble("totalPrice", (totalPrice + tipAmount - final_discount))
+                        bundle.putInt("splitValue", splitValue)
+                        findNavController().navigate(
+                            R.id.action_paymentFragment_to_splitAmountFragment,
+                            bundle
+                        )
+                    } else {
+
+                        AlertUtils.showCustomAlertWithYesNoListener(
+                            requireActivity(),
+                            getString(R.string.tip_after_split_alert)
+                        ) { _, _ ->
+
+                            tipAmount = 0.0
+                            tipAmountCalculation()
+                        }
                     }
                 }
             }
@@ -623,7 +645,9 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     false,
                     totalDiscount,
                     tipAmount,
-                    splitValue
+                    splitValue,
+                    redeemLoyaltyInfo,
+                    true
                 )
             }
             if (myRequest != null) {
@@ -685,7 +709,9 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     false,
                     totalDiscount,
                     tipAmount,
-                    splitValue
+                    splitValue,
+                    redeemLoyaltyInfo,
+                    true
                 )
             }
             if (myRequest != null) {
@@ -730,7 +756,9 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     true,
                     totalDiscount,
                     tipAmount,
-                    splitValue
+                    splitValue,
+                    redeemLoyaltyInfo,
+                    true
                 )
             }
             if (myRequest != null) {
@@ -796,6 +824,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                         bundle.putBoolean("isSpilt", true)
                         bundle.putInt("splitValue", splitValue)
                         bundle.putDouble("remainingAmount", (totalPrice) - (payAmount - tipAmount))
+                        bundle.putDouble("payAmount", payAmount)
                         findNavController().navigate(
                             R.id.action_paymentFragment_to_orderCompleteFragment,
                             bundle
@@ -829,6 +858,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
                             bundle.putBoolean("isSpilt", true)
                             bundle.putDouble("remainingAmount", totalPrice - payAmount)
+                            bundle.putDouble("payAmount", payAmount)
 
 
                             val splitPayAmount = prefProvider.getValue(SPLIT_PAY_AMOUNT, "")

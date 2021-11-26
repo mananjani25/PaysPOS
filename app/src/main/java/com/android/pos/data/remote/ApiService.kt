@@ -86,6 +86,7 @@ import com.android.pos.data.remote.Constants.TIPS
 import com.android.pos.data.remote.Constants.TIPS_ACTIVE
 import com.android.pos.data.remote.Constants.TIPS_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.TRANSACTION_LIST
+import com.android.pos.data.remote.Constants.UNMERGE_TABLE
 import com.android.pos.data.remote.Constants.UPDATE_PRINTER_STATUS
 import com.android.pos.data.remote.Constants.UPDATE_TIP
 import com.android.pos.data.remote.Constants.USERS_LOG_IN
@@ -622,6 +623,11 @@ interface ApiService {
         @Path("id") parentTableId: Int,
         @Query("child_table_ids") childTableIds: String
     ): MergeTableResponse
+
+    @DELETE(UNMERGE_TABLE)
+    suspend fun unMergeTable(
+        @Path("id") Id: Int,
+    ): BaseResponse
 
     @POST(PAY_BY_GUEST)
     suspend fun payByGuest(

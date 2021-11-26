@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
+import com.android.pos.data.model.responseModel.OpenOrderResponse
 import com.android.pos.data.typeconvert.TypeConvertorAddress
 import com.android.pos.data.typeconvert.TypeConvertorPhone
 import com.google.gson.annotations.SerializedName
@@ -26,4 +27,18 @@ data class TbCustomer(
     @TypeConverters(TypeConvertorAddress::class)
     @SerializedName("addresses") val addresses: List<TbAddress> = listOf(),
     var isSelcted: Boolean = false
-) : Parcelable
+) : Parcelable{
+    companion object{
+        fun customerMapping(customer: OpenOrderResponse.Data.Order.Customer) : TbCustomer{
+            return TbCustomer(id = customer.id,
+            first_name = customer.firstName,
+            last_name = customer.lastName,
+            birth_date = customer.birthDate,
+            email = customer.email,
+            enroll_to_loyalty = customer.enroll_to_loyalty,
+            final_reward = customer.final_reward,
+            company = customer.company,
+            )
+        }
+    }
+}

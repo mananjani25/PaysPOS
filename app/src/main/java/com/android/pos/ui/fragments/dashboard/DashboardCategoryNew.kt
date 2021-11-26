@@ -198,7 +198,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             binding.layoutCart.txtSave.text = getString(R.string.save)
         }
 
-
+        getLoyaltyPrograms()
         navigateDineInOrder()
         dineInUpdateOrder()
         getCustomerReceiptSettings()
@@ -233,6 +233,17 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         return binding.root
     }
 
+    private fun getLoyaltyPrograms() {
+        Log.e("Loyalty", "getLoyaltyPrograms called..")
+        viewModel.loyaltyPointsLiveData.observe(requireActivity(), {
+            if (it.data != null) {
+                Log.e("Loyalty", "getLoyaltyPrograms fetched..")
+                viewModel.loyaltyPointsList.clear()
+                viewModel.loyaltyPointsList.addAll(it.data)
+            }
+        })
+    }
+
     fun getDiscountCashData(): Double {
         var optionType = prefProvider.getValue(OPTION_TYPE, "CashDiscount")
         var amountType = prefProvider.getValue(AMOUNT_TYPE, "Dollar")
@@ -259,7 +270,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
+        observeShowProgress()
         syncData()
         hideOrderType()
         setupAdapter()
@@ -303,20 +314,21 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 prefProvider.getValue(CUSTOMER_NAME, "").toString()
             removeCustomerViewSet()
 
-            //royalty
-            if (prefProvider.getValue(ROYALTY_POINTS, "").isNotEmpty()) {
-                binding.layoutCart.txtRoyaltyPoints.visible()
-                "${getString(R.string.loyalty_points)}: ${
-                    prefProvider.getValue(
-                        ROYALTY_POINTS,
-                        ""
-                    )
-                }".also { binding.layoutCart.txtRoyaltyPoints.text = it }
-            } else {
-                binding.layoutCart.txtRoyaltyPoints.gone()
-            }
+            //loyalty
+            val customer = prefProvider.getCustomerData()
+            customer?.let {
+                viewModel.selectedCustomer = customer
+                if (it.enroll_to_loyalty == true) {
+                    binding.layoutCart.txtLoyaltyPoints.visible()
+                    "${getString(R.string.loyalty_points)}: ${customer.final_reward}".also {
+                        binding.layoutCart.txtLoyaltyPoints.text = it
+                    }
+                } else {
+                    binding.layoutCart.txtLoyaltyPoints.gone()
+                }
+            } ?: binding.layoutCart.txtLoyaltyPoints.gone()
         } else {
-            binding.layoutCart.txtRoyaltyPoints.gone()
+            binding.layoutCart.txtLoyaltyPoints.gone()
         }
 
 
@@ -442,20 +454,25 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         binding.layoutCart.txtCrtNewCustomer.text = "Remove Customer"
     }
 
+    private fun saveCustomerData(customer: TbCustomer?) {
+        viewModel.selectedCustomer = customer
+        prefProvider.saveCustomerData(customer)
+    }
+
     private fun setUpCustomer(
         result: TbCustomer,
         bundle: Bundle
     ) {
         prefProvider.setValue(CUSTOMER_NAME, result.first_name + " " + result.last_name)
         binding.layoutCart.txtCustomerName.text = result.first_name + " " + result.last_name
-        //royalty
+        saveCustomerData(result)
+        //loyalty
         if (result.enroll_to_loyalty == true) {
-            prefProvider.setValue(ROYALTY_POINTS, "${result.final_reward}")
-            binding.layoutCart.txtRoyaltyPoints.visible()
-            binding.layoutCart.txtRoyaltyPoints.text =
+            binding.layoutCart.txtLoyaltyPoints.visible()
+            binding.layoutCart.txtLoyaltyPoints.text =
                 "${getString(R.string.loyalty_points)}: ${result.final_reward}"
         } else {
-            binding.layoutCart.txtRoyaltyPoints.gone()
+            binding.layoutCart.txtLoyaltyPoints.gone()
         }
 
         removeCustomerViewSet()
@@ -549,6 +566,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     }
 
     private fun getCartList() {
+
+        Log.e("Loyalty", "getCartList called..")
 
         cartAdapter = CartAdapter()
         cartAdapter.setCallback(this)
@@ -909,7 +928,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         dialog.show()
     }
 
-
     private fun closeDialog(dialog: Dialog?) {
         dialog?.dismiss()
     }
@@ -1213,6 +1231,11 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         val txtDiscount: AppCompatTextView = popupView.findViewById(R.id.txtDiscount)
         val txtTotalAmount: AppCompatTextView = popupView.findViewById(R.id.txtTotalAmount)
         val txtTotalTax: AppCompatTextView = popupView.findViewById(R.id.txtTotalTax)
+        val llLoyalty: LinearLayoutCompat = popupView.findViewById(R.id.llLoyalty)
+        val txtLoyaltyAmount: AppCompatTextView = popupView.findViewById(R.id.txtLoyaltyAmount)
+        val llLoyaltyPoints: LinearLayoutCompat = popupView.findViewById(R.id.llLoyaltyPoints)
+        val txtLoyaltyPoints: AppCompatTextView = popupView.findViewById(R.id.txtLoyaltyPoints)
+        Log.e(TAG, "subTotalPrice:   ${viewModel.subTotalPrice - (cartList[0].discountPrice)}")
         val txttotalCashDiscount: AppCompatTextView = popupView.findViewById(R.id.txtcashDiscount)
         val txtTotalcashAdj: AppCompatTextView = popupView.findViewById(R.id.txtnoncashadj)
 
@@ -1262,14 +1285,31 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         )
 
         val total = totalAmounnt - cartList[0].discountPrice
-
-        MethodUtils.setPriceTextView(txtTotalAmount, total)
+        var amountToBepaid = total
 
         //  txtTotalAmount.text = total.toString()
         txtTotalTax.text = "$" + String.format(
             "%.2f",
             viewModel.totalTax
         )
+
+        //display the loyalty point
+        val customer = viewModel.selectedCustomer
+        if (customer != null && customer.enroll_to_loyalty == true) {
+            llLoyalty.visible()
+            llLoyaltyPoints.visible()
+            Log.e(TAG, Gson().toJson(viewModel.redeemLoyaltyInfo))
+            amountToBepaid = viewModel.redeemLoyaltyInfo.remainingLoyaltyAmount
+            txtLoyaltyAmount.text =
+                "- $${String.format("%.2f", viewModel.redeemLoyaltyInfo.usedLoyaltyAmount)}"
+            txtLoyaltyPoints.text = "${viewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
+        } else {
+            llLoyalty.gone()
+            llLoyaltyPoints.gone()
+        }
+
+        //display total price to be paid
+        MethodUtils.setPriceTextView(txtTotalAmount, amountToBepaid)
 
 //        if (popupWindow == null) {
         popupWindow = PopupWindow(
@@ -1329,29 +1369,46 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     override fun onClick(item: TbItem) {
 
-        if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
+        if (prefProvider.getValue(ORDER_TYPE, "") != "") {
 
             if (item.modifier_set_ids.isEmpty() && item.variationsAttributes.isEmpty()) {
-                item.itemQuantity = 1
-                if (cartList.isEmpty()) {
-                    viewModel.setServiceCharges(serviceChargesList)
-                }
-                if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
 
-                    if (cartList.isNotEmpty()) {
-                        cartList[0].orderType = DINE_IN
+                // qty check logic
+                var itemQty = 1
+                if (cartList.isNotEmpty()) {
+                    cartList[0].items?.filter { it.itemId == item.itemId }?.map {
+                        itemQty += it.itemQuantity
                     }
+                }
+                if (item.quantity >= itemQty) {
+                    item.itemQuantity = 1
 
-                    val dineInList = dineInCartAdapter.getList()
-                    dineInList.get(0).selectedPosition = dineInCartAdapter.getHeaderPosition()
-                    viewModel.cartLogic(cartList, item, ADD, dineInList = dineInList)
+                    if (cartList.isEmpty()) {
+                        viewModel.setServiceCharges(serviceChargesList)
+                    }
+                    if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
+
+                        if (cartList.isNotEmpty()) {
+                            cartList[0].orderType = DINE_IN
+                        }
+
+                        val dineInList = dineInCartAdapter.getList()
+                        dineInList.get(0).selectedPosition = dineInCartAdapter.getHeaderPosition()
+                        viewModel.cartLogic(cartList, item, ADD, dineInList = dineInList)
 
 
                 } else {
                     //check is_edited flag
                     makeItemEdited(item)
 
-                    viewModel.cartLogic(cartList, item, ADD)
+                        viewModel.cartLogic(cartList, item, ADD)
+                    }
+                } else {
+                    item.itemQuantity = -1
+                    AlertUtils.showCustomAlert(
+                        requireActivity(),
+                        getString(R.string.qty_validation)
+                    )
                 }
             } else {
                 ItemPopup(item, true)
@@ -1641,8 +1698,15 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         }
 
         llPlus.setOnClickListener {
+
             qty += 1
-            txtQty.setText(qty.toString())
+
+            if (data.quantity >= qty) {
+                txtQty.setText(qty.toString())
+            } else {
+                qty -= 1
+                AlertUtils.showCustomAlert(requireActivity(), getString(R.string.qty_validation))
+            }
 
 
         }
@@ -2010,10 +2074,13 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                         if (prefProvider.getValue(ORDER_TYPE, "").toString() == DINE_IN) {
 
-                            dineInCartAdapter.getList().get(1).floorPlanTable?.id?.let {
-                                viewModel.getTableStatus(
-                                    it, "Available"
-                                )
+                            val dList = dineInCartAdapter.getList()
+                            if (dList.isNotEmpty()) {
+                                dList[1].floorPlanTable?.id?.let {
+                                    viewModel.getTableStatus(
+                                        it, "Available"
+                                    )
+                                }
                             }
                             viewModel.deleteCart()
                             isOrderUpdate = false
@@ -2069,7 +2136,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     viewModelPayment.updateOrder(
                         isOrderUpdate,
                         orderId,
-                        paymentId,
+                            paymentId,
                         paymentOfflineId,
                         orderOfflineId
                     )
@@ -2077,7 +2144,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     val request = viewModelPayment.createOrderRequest(
                         cartList,
                         viewModel.subTotalPrice,
-                        viewModel.totalPrice - cartList.discountPrice,
+                        viewModel.redeemLoyaltyInfo.remainingLoyaltyAmount,
                         viewModel.totalServiceCharge,
                         viewModel.totalTax,
                         OPEN_ORDER,
@@ -2086,7 +2153,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         false,
                         viewModel.totalDiscount + cartList.discountPrice,
                         0.00,
-                        -1
+                        -1,
+                        viewModel.redeemLoyaltyInfo,
+                        false
                     )
                     viewModelPayment.saveOrder(true)
                     viewModelPayment.submit(request)
@@ -2126,11 +2195,14 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 }
             } else {
 
-
                 val bundle = Bundle()
                 bundle.putDouble(
                     "totalPrice",
-                    viewModel.totalPrice - cartList[0].discountPrice
+                    viewModel.redeemLoyaltyInfo.remainingLoyaltyAmount
+                )
+                bundle.putString(
+                    "redeemLoyalty",
+                    Gson().toJson(viewModel.redeemLoyaltyInfo)
                 )
                 bundle.putDouble("subTotalPrice", viewModel.subTotalPrice)
                 bundle.putDouble("totalTax", viewModel.totalTax)
@@ -2169,11 +2241,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         }
                     }
                 }
-
             }
         }
-
-
     }
 
     private fun createDineInRequest() {
@@ -2224,11 +2293,11 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private fun clearCustomer() {
         binding.layoutCart.txtCrtNewCustomer.text = "Add Customer"
         binding.layoutCart.txtCustomerName.text = "Add Customer"
-        binding.layoutCart.txtRoyaltyPoints.gone()
-        binding.layoutCart.txtRoyaltyPoints.text = ""
+        binding.layoutCart.txtLoyaltyPoints.gone()
+        binding.layoutCart.txtLoyaltyPoints.text = ""
         prefProvider.setValue(CUSTOMER_NAME, "")
-        prefProvider.setValue(ROYALTY_POINTS, "")
         prefProvider.setValueInt(CUSTOMER_ID, -1)
+        saveCustomerData(null)
     }
 
     fun calculateDiscountPercentage(originalPrice: Double, percentage: Double): Double {

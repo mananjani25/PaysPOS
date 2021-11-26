@@ -8,6 +8,7 @@ import androidx.room.TypeConverters
 import com.android.pos.data.dao.*
 import com.android.pos.data.entities.*
 import com.android.pos.data.model.CharacterModel
+import com.android.pos.data.model.SplitDetailListModel
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.Constants.DATABASE_NAME
 import com.android.pos.data.typeconvert.*
@@ -21,7 +22,7 @@ import com.android.pos.data.typeconvert.*
         ModulePermission::class, TbOrderType::class, VenueDetailsResponse.Data.Terminal::class,
         ItemModifierSets::class, OptionSet::class, PrinterResponse.Data.CustomerReceiptPrinters::class,
         PrinterResponse.Data.KitchenReceiptPrinters::class, GetKitchenReceiptSettingsResponse.Data::class,
-        GetCustomerReceiptSettingsResponse.Data::class, LoyaltyProgramsModel::class, CashDiscountModel::class],
+        GetCustomerReceiptSettingsResponse.Data::class, LoyaltyProgramsModel::class,SplitDetailListModel::class, CashDiscountModel::class],
     version = 2
 )
 @TypeConverters(
@@ -53,6 +54,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun categoryDao(): CategoryDao
     abstract fun itemDao(): DBItemDao
     abstract fun taxDao(): TaxDao
+    abstract fun splitDao():SplitListDao
     abstract fun tipDao(): TipsDao
     abstract fun discountDao(): DiscountDao
     abstract fun notesDao(): NotesDao

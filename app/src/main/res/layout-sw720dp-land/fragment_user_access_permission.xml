@@ -28,7 +28,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginStart="@dimen/_5sdp"
+                android:padding="@dimen/_4sdp"
                 android:src="@drawable/ic_cancel_black" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -50,7 +50,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/_10sdp"
                 android:fontFamily="@font/sf_pro_display_semibold"
-                android:padding="@dimen/_3sdp"
+                android:padding="@dimen/_4sdp"
                 android:text="@string/tv_home"
                 android:textColor="@color/txt_color_blue"
                 android:textSize="@dimen/_7mdpi" />
@@ -277,6 +277,7 @@
                         app:textAllCaps="false" />
 
                     <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtCancel"
                         style="@style/CustomFontSemiBold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

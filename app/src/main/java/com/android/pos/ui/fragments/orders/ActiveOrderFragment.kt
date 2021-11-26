@@ -182,12 +182,7 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
                         Constants.CUSTOMER_NAME,
                         order.customer.firstName + " " + order.customer.lastName
                     )
-                    if (order.customer.enroll_to_loyalty == true) {
-                        prefProvider.setValue(
-                            Constants.ROYALTY_POINTS,
-                            "${order.customer.final_reward}"
-                        )
-                    }
+                    prefProvider.saveCustomerData(TbCustomer.customerMapping(order.customer))
                 }
 
                 dashboardViewModel.addCart(
@@ -196,8 +191,10 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
                 val bundle = Bundle()
                 bundle.putBoolean("update", true)
                 bundle.putInt("orderId", order.id)
-                bundle.putInt("paymentId", order.payments[0].id)
-                bundle.putString("paymentOfflineId", order.payments[0].offlineId)
+                if (!order.payments.isNullOrEmpty()) {
+                    bundle.putInt("paymentId", order.payments[0].id)
+                    bundle.putString("paymentOfflineId", order.payments[0].offlineId)
+                }
                 bundle.putString("orderOfflineId", order.offlineId)
                 findNavController().navigate(
                     R.id.action_orders_to_dashboardCategoryNew, bundle
@@ -1309,33 +1306,33 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
                 )
             }
 
-            if (printType == PRINT_PAID){
-            builder.addTextLineSpace(30)
-            builder.addFeedUnit(30)
-            builder.addTextFont(Builder.FONT_E)
-            // builder.addTextAlign(Builder.ALIGN_LEFT)
-            builder.addTextLang(Builder.LANG_EN)
-            addCustomerTextSize(builder, customerSettingModel.fonts)
-            builder.addTextStyle(
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.TRUE,
-                Builder.COLOR_1
-            )
-
-            builder.addText(
-                padLine(
-                    "Transaction Type",
-                    receiptModel.payments.get(0).paymentType,
-                    if (customerSettingModel.fonts == Constants.LARGE) {
-                        24
-                    } else {
-                        48
-                    }
+            if (printType == PRINT_PAID) {
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addTextFont(Builder.FONT_E)
+                // builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
                 )
-            )
 
-        }
+                builder.addText(
+                    padLine(
+                        "Transaction Type",
+                        receiptModel.payments.get(0).paymentType,
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            24
+                        } else {
+                            48
+                        }
+                    )
+                )
+
+            }
             if (customerSettingModel.showCustomerAddress != false or customerSettingModel.showCustomerPhone != false or customerSettingModel.showCustomerName) {
 
                 if (receiptModel.customer != null) {

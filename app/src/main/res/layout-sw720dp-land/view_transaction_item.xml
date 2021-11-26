@@ -149,8 +149,9 @@
                     android:layout_gravity="center"
                     android:gravity="center"
                     tools:text="AXDAWEDWD"
-                    android:text="@{itemSheetModel.transactionId}"
-                    android:textColor="@color/txtColor"
+                    android:text="@{``+itemSheetModel.orderId}"
+
+                    android:textColor="@color/btnColor"
                     android:textSize="@dimen/_5mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -159,7 +160,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:gravity="center"
-                    android:text="@{itemSheetModel.orderDetails.receiptId}"
+                    android:text="@{`#`+itemSheetModel.orderDetails.receiptId}"
                     tools:text="$AAAAAAA"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_5mdpi" />

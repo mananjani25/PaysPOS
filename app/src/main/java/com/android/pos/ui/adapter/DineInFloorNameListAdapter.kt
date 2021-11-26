@@ -34,7 +34,6 @@ class DineInFloorNameListAdapter(val viewModel: DineInViewModel) :
     }
 
 
-
     override fun onBindViewHolder(holder: DineInFloorNameListAdapter.MyViewHolder, position: Int) {
         holder.bind(floorNameList[position])
 

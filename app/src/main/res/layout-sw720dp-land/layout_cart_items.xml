@@ -133,7 +133,7 @@
                     app:textAllCaps="false" />
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/txtRoyaltyPoints"
+                    android:id="@+id/txtLoyaltyPoints"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

@@ -83,12 +83,12 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                 if (paymentOrderDetailsResponse.data.order.refund_detail.refunded_amount.equals(0.0)) {
                     MethodUtils.setRefundPriceTextView(
                         binding.tvTotalRefundAmount,
-                        (paymentOrderDetailsResponse.data.order.total_amount - paymentOrderDetailsResponse.data.order.total_tips).toDouble()
+                        (paymentOrderDetailsResponse.data.sub_total + paymentOrderDetailsResponse.data.tips + paymentOrderDetailsResponse.data.tax_amount + paymentOrderDetailsResponse.data.service_charge_amount)
                     )
                 } else {
                     MethodUtils.setRefundPriceTextView(
                         binding.tvTotalRefundAmount,
-                        ((paymentOrderDetailsResponse.data.order.total_amount - paymentOrderDetailsResponse.data.order.total_tips) - paymentOrderDetailsResponse.data.order.refund_detail.refunded_amount).toDouble()
+                        ((paymentOrderDetailsResponse.data.amount - paymentOrderDetailsResponse.data.tips) - paymentOrderDetailsResponse.data.order.refund_detail.refunded_amount)
                     )
                 }
 
@@ -106,7 +106,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                         paymentRefund = RefundRequestModel.PaymentRefund().apply {
                             amount = subTotalPrice
                             orderId = paymentOrderDetailsResponse.data.order_id
-                            paymentId = paymentId
+                            paymentId = payment_id
                             employeeId = paymentOrderDetailsResponse.data.employee_id
                             terminalId = paymentOrderDetailsResponse.data.terminal_id
                             taxRefunded = totalTax

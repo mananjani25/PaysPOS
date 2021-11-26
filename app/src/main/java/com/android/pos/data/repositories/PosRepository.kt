@@ -8,6 +8,7 @@ import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.db.IDataManager
 import com.android.pos.data.entities.*
 import com.android.pos.data.entities.ModifierSet
+import com.android.pos.data.model.SplitDetailListModel
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.ApiHelper
@@ -253,6 +254,10 @@ class PosRepository @Inject constructor(
         appDatabase.loyaltyProgramsDao().addAll(data)
     }
 
+    fun getLoyaltyProgramFromDb() =
+        performGetOperationDatabase(databaseQuery = { appDatabase.loyaltyProgramsDao().all })
+
+
 
     suspend fun addCashDiscountsFromDb(data: List<CashDiscountModel>) {
         appDatabase.cashDiscountDao().addAll(data)
@@ -262,8 +267,16 @@ class PosRepository @Inject constructor(
         appDatabase.customerSettingsDao().delete()
     }
 
+    suspend fun deleteSplitDb() {
+        appDatabase.splitDao().delete()
+    }
+
     suspend fun addCustomerReceiptSettings(data: GetCustomerReceiptSettingsResponse.Data) {
         appDatabase.customerSettingsDao().add(data)
+    }
+
+    suspend fun addSplitAmount(model: SplitDetailListModel) {
+        appDatabase.splitDao().addSplit(model)
     }
 
     suspend fun createNote(data: CreateNoteRequest) = apiHelperNew.createNote(data)
@@ -647,6 +660,7 @@ class PosRepository @Inject constructor(
     suspend fun mergeFloorTable(parentTableId: Int, childIds: String) =
         apiHelperNew.mergeFloorTable(parentTableId, childIds)
 
+    suspend fun unMergeTable(id: Int) = apiHelperNew.unMergeTable(id)
     suspend fun payByGuest(
         id: Int,
         isAllComplete: Boolean,

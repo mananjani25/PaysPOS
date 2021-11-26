@@ -22,6 +22,7 @@ import com.android.pos.data.model.responseModel.GetFloorPlanResponse
 import com.android.pos.data.remote.Constants.AVAILABLE
 import com.android.pos.data.remote.Constants.DINE_IN_STATUS
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
+import com.android.pos.data.remote.Constants.MERGED
 import com.android.pos.data.remote.Constants.OCCUPIED
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.AlertUtils
@@ -29,8 +30,6 @@ import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.extensions.toDp
 import com.android.pos.utils.statusUtils.Status
-import com.google.gson.Gson
-import okhttp3.internal.notify
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -120,6 +119,7 @@ class DineInFragment : Fragment() {
                                 it.data!!.data as ArrayList<GetFloorPlanResponse.Data>
                             dineInFloorNameListAdapter.addFloorName(dineInFloorNameList)
 
+
                             setFloorPlan(dineInFloorNameList[0].floorPlanTables)
                         }
                     }
@@ -193,7 +193,7 @@ class DineInFragment : Fragment() {
         binding.flFloorPlan.removeAllViews()
         if (dineInFloorTablesList.isNotEmpty()) {
             for (i in dineInFloorTablesList.indices) {
-                if (dineInFloorTablesList[i].tableType == "square") {
+                if (dineInFloorTablesList[i].tableType == "square" && (!dineInFloorTablesList[i].childTable)) {
                     val inflatedViewSquare = layoutInflater.inflate(
                         R.layout.view_floor_square,
                         binding.flFloorPlan,
@@ -207,7 +207,6 @@ class DineInFragment : Fragment() {
                         val tvNoOFChairs: AppCompatTextView =
                             inflatedViewSquare.findViewById(R.id.tvNoOFChairs)
 
-                        tvNoOFChairs.text = "" + dineInFloorTablesList[i].chairCount
 
                         val tvTableName: AppCompatTextView =
                             inflatedViewSquare.findViewById(R.id.tvTableName)
@@ -217,8 +216,23 @@ class DineInFragment : Fragment() {
                         val tvTableNumber: AppCompatTextView =
                             inflatedViewSquare.findViewById(R.id.tvTableNumber)
 
-                        tvTableNumber.text = "" + dineInFloorTablesList[i].tableNumber
+                        if (dineInFloorTablesList[i].parentTable) {
+                            var tableNo: String =
+                                dineInFloorTablesList[i].tableNumber.toString()
+                            var chairCount = dineInFloorTablesList[i].chairCount
+                            dineInFloorTablesList[i].merged_child_table_details.forEach {
+                                tableNo = tableNo + "," + it.table_number
+                                chairCount += it.chair_count
+                            }
+                            dineInFloorTablesList[i].chairCount = chairCount
+                            tvTableNumber.text = tableNo
+                            tvNoOFChairs.text = "" + dineInFloorTablesList[i].chairCount
 
+                        } else {
+                            tvTableNumber.text = "" + dineInFloorTablesList[i].tableNumber
+                            tvNoOFChairs.text = "" + dineInFloorTablesList[i].chairCount
+
+                        }
                         if (llMainParentSquare.parent != null) {
                             (llMainParentSquare.parent as ViewGroup).removeView(llMainParentSquare)
                         }
@@ -248,7 +262,7 @@ class DineInFragment : Fragment() {
 
                         inflatedViewSquare.setOnClickListener(clickInInflatedLayout()) //setting click to each item_content
                     }
-                } else if (dineInFloorTablesList[i].tableType == "round") {
+                } else if (dineInFloorTablesList[i].tableType == "round" && (!dineInFloorTablesList[i].childTable)) {
                     val inflatedViewRound = layoutInflater.inflate(
                         R.layout.view_floor_round,
                         binding.flFloorPlan,
@@ -323,6 +337,7 @@ class DineInFragment : Fragment() {
                 ) {
                     val bundle = Bundle()
                     bundle.putBoolean("isFromFloor", true)
+                    bundle.putBoolean("isMerged", false)
                     bundle.putParcelable("floorPlan", dineInFloorTableModel)
 
 
@@ -335,12 +350,24 @@ class DineInFragment : Fragment() {
             } else if (dineInFloorTableModel.status == AVAILABLE) {
 
                 val bundle = Bundle()
+                bundle.putBoolean("isMerged", false)
                 bundle.putParcelable("dineInFloorTableObject", dineInFloorTableModel)
                 findNavController().navigate(
                     R.id.action_dineInFragment_to_dineInGuestFragment,
                     bundle
                 )
-                Log.d("Clickeditematposition", "::$dineInFloorTableModel")
+
+            } else if (dineInFloorTableModel.status == MERGED) {
+
+                val bundle = Bundle()
+                bundle.putBoolean("isMerged", true)
+                bundle.putParcelable("dineInFloorTableObject", dineInFloorTableModel)
+                findNavController().navigate(
+                    R.id.action_dineInFragment_to_dineInGuestFragment,
+                    bundle
+                )
+
+
             }
         }
     }
