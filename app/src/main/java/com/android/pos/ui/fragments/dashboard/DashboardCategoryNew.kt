@@ -37,10 +37,12 @@ import com.android.pos.data.model.DineInOrderDetailAttributes
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ADD
+import com.android.pos.data.remote.Constants.AMOUNT_TYPE
 import com.android.pos.data.remote.Constants.BUNDLE_ORDER_ID
 import com.android.pos.data.remote.Constants.BUNDLE_ORDER_OFFLINE_ID
 import com.android.pos.data.remote.Constants.BUNDLE_PAYMENT_ID
 import com.android.pos.data.remote.Constants.BUNDLE_PAYMENT_OFFLINE_ID
+import com.android.pos.data.remote.Constants.CASH_DIS_STORED
 import com.android.pos.data.remote.Constants.CUSTOMER_ID
 import com.android.pos.data.remote.Constants.CUSTOMER_NAME
 import com.android.pos.data.remote.Constants.DELETE
@@ -54,10 +56,12 @@ import com.android.pos.data.remote.Constants.HORIZONTAL
 import com.android.pos.data.remote.Constants.IS_ORDER_UPDATE
 import com.android.pos.data.remote.Constants.MANUALSALE
 import com.android.pos.data.remote.Constants.OPEN_ORDER
+import com.android.pos.data.remote.Constants.OPTION_TYPE
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
 import com.android.pos.data.remote.Constants.ORDER_TYPE_NAME
 import com.android.pos.data.remote.Constants.PERCENTAGE
+import com.android.pos.data.remote.Constants.RATE_OR_AMOUNT
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.remote.Constants.UPDATE
 import com.android.pos.data.remote.Constants.VERTICAL
@@ -101,6 +105,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private var orderType: TbOrderType? = null
     private var future_delivery_date: String = ""
     private var assignCustomer: TbCustomer? = null
+    var cashDiscount: Double = 0.0
     private var serviceChargesList: List<TbServiceCharge>? = null
     private var singleItem: TbItem? = null
     private var cartList: ArrayList<CartModel> = arrayListOf()
@@ -125,6 +130,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private lateinit var orderTypeAdapter: OrderTypeAdapter
     private val viewModelPayment by viewModels<PaymentViewModel>()
     private lateinit var dineInCartAdapter: DineInAdapter
+    lateinit var cashDiscountModel: CashDiscountModel
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -165,7 +171,25 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     prefProvider.getValue(BUNDLE_PAYMENT_OFFLINE_ID, defaultValue = "")
                 orderOfflineId = prefProvider.getValue(BUNDLE_ORDER_OFFLINE_ID, defaultValue = "")
             }
+
         }
+
+        viewModel.getCashDiscountDetails(active = 1)
+            ?.observe(viewLifecycleOwner, { cashDiscountData ->
+                cashDiscountData?.let {
+                    cashDiscountModel = it
+                    prefProvider.setValue(AMOUNT_TYPE, cashDiscountData.amount_type)
+                    prefProvider.setValue(OPTION_TYPE, cashDiscountData.option_type)
+                    prefProvider.setValue(
+                        RATE_OR_AMOUNT,
+                        cashDiscountData.rate_or_amount.toString()
+                    )
+                    prefProvider.setValueboolean(CASH_DIS_STORED, true)
+                    Log.d(TAG, "onCreateView: " + cashDiscountModel.rate_or_amount)
+                }
+            })
+
+
 
         if (isOrderUpdate) {
             binding.layoutCart.txtSave.text = getString(R.string.update)
@@ -210,13 +234,35 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     private fun getLoyaltyPrograms() {
         Log.e("Loyalty", "getLoyaltyPrograms called..")
-        viewModel.loyaltyPointsLiveData.observe(requireActivity(), {
+        viewModel.activeLoyaltyProgramLiveData.observe(requireActivity(), {
             if (it.data != null) {
                 Log.e("Loyalty", "getLoyaltyPrograms fetched..")
-                viewModel.loyaltyPointsList.clear()
-                viewModel.loyaltyPointsList.addAll(it.data)
+                viewModel.activeLoyaltyProgram = it.data
             }
         })
+    }
+
+    fun getDiscountCashData(): Double {
+        var optionType = prefProvider.getValue(OPTION_TYPE, "CashDiscount")
+        var amountType = prefProvider.getValue(AMOUNT_TYPE, "Dollar")
+        var rateorAmount = prefProvider.getValue(RATE_OR_AMOUNT, "0")
+        if (optionType == "CashDiscount") {
+            if (amountType == "Dollar") {
+                return rateorAmount.toDouble().also { cashDiscount = it }
+            } else if (amountType == "Percentage") {
+                return (viewModel.subTotalPrice * 100 / rateorAmount.toDouble()).also {
+                    cashDiscount = it
+                }
+            }
+        } else {
+            return 0.0
+        }
+        return 0.0
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        observeShowProgress()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -315,7 +361,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                 val price = discountApplyPrice - orderDiscount
 
-                MethodUtils.setPriceTextView(binding.layoutCart.txtTotalAmount, price)
+                MethodUtils.setPriceTextView(
+                    binding.layoutCart.txtTotalAmount,
+                    price - getDiscountCashData()
+                )
                 if (cartList.isNotEmpty()) {
                     cartList[0].discountPrice = orderDiscount
                     cartList[0].discountType = result.discountType
@@ -613,8 +662,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                         viewModel.itemCalculation(
                             cartList,
-                            binding.layoutCart.txtTotalAmount
-
+                            binding.layoutCart.txtTotalAmount, getDiscountCashData()
                         )
 
                         if (prefProvider.getValue(ORDER_TYPE, "")
@@ -643,7 +691,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     } else {
                         viewModel.itemCalculation(
                             cartList,
-                            binding.layoutCart.txtTotalAmount
+                            binding.layoutCart.txtTotalAmount,
+                            getDiscountCashData()
                         )
                         binding.layoutCart.rvCart.visibility = View.GONE
                         binding.layoutCart.llPayment.visibility = View.GONE
@@ -879,6 +928,11 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     private fun closeDialog(dialog: Dialog?) {
         dialog?.dismiss()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        ProgressUtils.dismissProgressDialog()
     }
 
     private fun horizontalTabList() {
@@ -1180,6 +1234,40 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         val llLoyaltyPoints: LinearLayoutCompat = popupView.findViewById(R.id.llLoyaltyPoints)
         val txtLoyaltyPoints: AppCompatTextView = popupView.findViewById(R.id.txtLoyaltyPoints)
         Log.e(TAG, "subTotalPrice:   ${viewModel.subTotalPrice - (cartList[0].discountPrice)}")
+        val txttotalCashDiscount: AppCompatTextView = popupView.findViewById(R.id.txtcashDiscount)
+        val txtTotalcashAdj: AppCompatTextView = popupView.findViewById(R.id.txtnoncashadj)
+
+
+        var totalAmounnt = 0.0
+
+        var optionType = prefProvider.getValue(OPTION_TYPE, "CashDiscount")
+        var amountType = prefProvider.getValue(AMOUNT_TYPE, "Dollar")
+        var rateorAmount = prefProvider.getValue(RATE_OR_AMOUNT, "0")
+
+
+        if (optionType == "CashDiscount") {
+            if (amountType == "Dollar") {
+                cashDiscount = rateorAmount.toDouble()
+                totalAmounnt = viewModel.totalPrice - cashDiscount
+            } else if (amountType == "Percentage") {
+                cashDiscount = (viewModel.subTotalPrice * 100 / rateorAmount.toDouble())
+                totalAmounnt = viewModel.totalPrice - cashDiscount
+            }
+            txttotalCashDiscount.text = "- $" + String.format("%.2f", cashDiscount)
+            txtTotalcashAdj.text = "- $" + String.format("%.2f", 0.0)
+        } else if (optionType == "SurCharge") {
+            totalAmounnt = viewModel.totalPrice
+            if (amountType == "Dollar") {
+                cashDiscount = rateorAmount.toDouble()
+            } else if (amountType == "Percentage") {
+                cashDiscount = (viewModel.subTotalPrice * 100 / rateorAmount.toDouble())
+            }
+            txttotalCashDiscount.text = "- $" + String.format("%.2f", 0.0)
+            txtTotalcashAdj.text = "- $" + String.format("%.2f", cashDiscount)
+        }
+
+
+
 
         txtSubTotal.text = "$" + String.format(
             "%.2f",
@@ -1194,7 +1282,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             viewModel.totalDiscount + cartList[0].discountPrice
         )
 
-        val total = viewModel.totalPrice - cartList[0].discountPrice
+        val total = totalAmounnt - cartList[0].discountPrice
         var amountToBepaid = total
 
         //  txtTotalAmount.text = total.toString()
@@ -1307,9 +1395,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         viewModel.cartLogic(cartList, item, ADD, dineInList = dineInList)
 
 
-                    } else {
-                        //check is_edited flag
-                        makeItemEdited(item)
+                } else {
+                    //check is_edited flag
+                    makeItemEdited(item)
 
                         viewModel.cartLogic(cartList, item, ADD)
                     }
@@ -2046,7 +2134,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     viewModelPayment.updateOrder(
                         isOrderUpdate,
                         orderId,
-                        paymentId,
+                            paymentId,
                         paymentOfflineId,
                         orderOfflineId
                     )
@@ -2054,7 +2142,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     val request = viewModelPayment.createOrderRequest(
                         cartList,
                         viewModel.subTotalPrice,
-                        viewModel.redeemLoyaltyInfo.remainingLoyaltyAmount,
+                        (viewModel.redeemLoyaltyInfo.remainingLoyaltyAmount +(viewModel.redeemLoyaltyInfo.cashDiscount ?:0.0)),
                         viewModel.totalServiceCharge,
                         viewModel.totalTax,
                         OPEN_ORDER,
@@ -2064,7 +2152,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         viewModel.totalDiscount + cartList.discountPrice,
                         0.00,
                         -1,
-                        viewModel.redeemLoyaltyInfo
+                        viewModel.redeemLoyaltyInfo,
+                        false
                     )
                     viewModelPayment.saveOrder(true)
                     viewModelPayment.submit(request)
@@ -2107,7 +2196,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 val bundle = Bundle()
                 bundle.putDouble(
                     "totalPrice",
-                    viewModel.redeemLoyaltyInfo.remainingLoyaltyAmount
+                    (viewModel.redeemLoyaltyInfo.remainingLoyaltyAmount + (viewModel.redeemLoyaltyInfo.cashDiscount ?:0.0))
                 )
                 bundle.putString(
                     "redeemLoyalty",
