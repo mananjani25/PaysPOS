@@ -89,7 +89,7 @@
     <string name="delete_tip_message">Are you sure want to Delete Tip?</string>
     <string name="delete_note_message">Are you sure want to Delete Note?</string>
     <string name="delete_discount_message">Are you sure want to Delete Discount?</string>
-    <string name="delete_customer_message">Are you sure, you want to Delete the Customer?</string>
+    <string name="delete_customer_message">Are you sure, you want to delete this Customer?</string>
     <string name="delete_service_charge_message">Are you sure want to Delete Service Charge?</string>
     <string name="delete_loyalty_message">Are you sure want to Delete Loyalty Program?</string>
     <string name="delete_employee_message">Are you sure, you want to delete Employee?</string>
@@ -576,7 +576,7 @@
     <string name="cancel">Cancel</string>
     <string name="assign_customer">Assign Customer</string>
     <string name="tv_choose_photo">Choose Photo</string>
-    <string name="_201_555_0123">(201) 555-0123 <font color='#E90C0C'>*</font></string>
+    <string name="_201_555_0123">Mobile Number<font color='#E90C0C'>*</font></string>
 
     <!--Error Messages-->
     <string name="error_something_wrong">Something went wrong. Please try again.</string>
@@ -635,6 +635,11 @@
     <string name="qty_validation">Quantity not available</string>
     <string name="cash_discount">Cash Discount</string>
     <string name="non_cash_adj">Non Cash Adj</string>
+    <string name="sub_total_price">Sub Total Price</string>
+    <string name="total_discount">Total Discount</string>
+    <string name="loyalty_amount">Loyalty Amount</string>
+    <string name="used_loyalty_points">Used Loyalty Points</string>
+    <string name="loyalty_rewards">Loyalty Rewards</string>
 
 
 </resources>

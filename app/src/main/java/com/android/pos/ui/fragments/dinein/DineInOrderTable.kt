@@ -63,6 +63,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     private var totalPrice: Double = 0.0
     private var totalDiscount: Double = 0.0
     private var subTotalPrice: Double = 0.0
+    var cashDiscount: Double = 0.0
     private var totalTax: Double = 0.0
     private var totalServiceCharge: Double = 0.0
     private var paymentAmount: Double = 0.0
@@ -84,7 +85,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     var serviceChargeList: ArrayList<TbServiceCharge> = arrayListOf()
     private var tipsList: List<GetTipReponse.Data> = listOf()
     private var kitchenPrinterList: List<PrinterResponse.Data.KitchenReceiptPrinters> = listOf()
-
+    lateinit var cashDiscountModel: CashDiscountModel
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -101,6 +102,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             false
         )
         binding.lifecycleOwner = this
+
         observeShowProgress()
         setupSnackbar()
         getCustomerList()
@@ -112,6 +114,24 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         navigateDineInOrder()
         return binding.root
+    }
+
+    fun getDiscountCashData(): Double {
+        var optionType = prefProvider.getValue(Constants.OPTION_TYPE, "CashDiscount")
+        var amountType = prefProvider.getValue(Constants.AMOUNT_TYPE, "Dollar")
+        var rateorAmount = prefProvider.getValue(Constants.RATE_OR_AMOUNT, "0")
+        if (optionType == "CashDiscount") {
+            if (amountType == "Dollar") {
+                return rateorAmount.toDouble().also { cashDiscount = it }
+            } else if (amountType == "Percentage") {
+                return (viewModel.subTotalAmount * 100 / rateorAmount.toDouble()).also {
+                    cashDiscount = it
+                }
+            }
+        } else {
+            return 0.0
+        }
+        return 0.0
     }
 
     private fun getCustomerList() {
@@ -374,7 +394,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 "dine_in_list",
                 newList
             )
-            Log.e(TAG,"DashDiscount ${totalDiscount}")
+            Log.e(TAG, "DashDiscount ${totalDiscount}")
             bundle.putDouble("totalDiscount", totalDiscount)
             bundle.putParcelable("tableDetails", getOrderDetailsResponse?.floorPlanTable)
 
@@ -497,6 +517,32 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         val txtDiscount: AppCompatTextView = popupView.findViewById(R.id.txtDiscount)
         val txtTotalAmount: AppCompatTextView = popupView.findViewById(R.id.txtTotalAmount)
         val txtTotalTax: AppCompatTextView = popupView.findViewById(R.id.txtTotalTax)
+        val txttotalCashDiscount: AppCompatTextView = popupView.findViewById(R.id.txtcashDiscount)
+        val txtTotalcashAdj: AppCompatTextView = popupView.findViewById(R.id.txtnoncashadj)
+        var optionType = prefProvider.getValue(Constants.OPTION_TYPE, "CashDiscount")
+        var amountType = prefProvider.getValue(Constants.AMOUNT_TYPE, "Dollar")
+        var rateorAmount = prefProvider.getValue(Constants.RATE_OR_AMOUNT, "0")
+
+
+        if (optionType == "CashDiscount") {
+            if (amountType == "Dollar") {
+                cashDiscount = rateorAmount.toDouble()
+            } else if (amountType == "Percentage") {
+                cashDiscount = (viewModel.subTotalAmount * 100 / rateorAmount.toDouble())
+            }
+            txttotalCashDiscount.text = "- $" + String.format("%.2f", cashDiscount)
+            txtTotalcashAdj.text = "- $" + String.format("%.2f", 0.0)
+        } else if (optionType == "SurCharge") {
+            if (amountType == "Dollar") {
+                cashDiscount = rateorAmount.toDouble()
+            } else if (amountType == "Percentage") {
+                cashDiscount = (viewModel.subTotalAmount * 100 / rateorAmount.toDouble())
+            }
+            txttotalCashDiscount.text = "- $" + String.format("%.2f", 0.0)
+            txtTotalcashAdj.text = "- $" + String.format("%.2f", cashDiscount)
+        }
+
+
 
         txtSubTotal.text = "$" + String.format(
             "%.2f",
@@ -510,6 +556,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             "%.2f",
             totalDiscount
         )
+
+
         txtTotalAmount.text = binding.txtTotalAmountNew.text.toString()
         txtTotalTax.text = "$" + String.format(
             "%.2f",
@@ -1374,7 +1422,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                         }
                     }
-                    totalDiscount=0.0
+                    totalDiscount = 0.0
                     totalDiscount += baseResponse.totalDiscount
 
                     val totalAmoountTxt =
@@ -1585,7 +1633,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         guestSubTotal = guestSubTotal
 
 
-                        var divShare = WholeTableAmount / ((baseResponse.guestAttributes.size - 1))
+                        var divShare =
+                            WholeTableAmount / ((baseResponse.guestAttributes.size - 1))
 
                         var totalG = baseResponse.guestAttributes.size - 1
                         var unpaidCount = totalG - paidGuestCount
@@ -1594,7 +1643,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         var myShare = unpaidCount * divShare
 
                         var finalAmt =
-                            guestSubTotal + serviceChargeGu + totalTaxAmt + myShare
+                            guestSubTotal + serviceChargeGu + totalTaxAmt + myShare - getDiscountCashData()
                         viewModel.totalTaxAmount = totalAmount
                         serviceCharge = serviceChargeGu
                         subTotalWT = guestSubTotal + myShare
@@ -2079,7 +2128,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             )
             builder.addTextAlign(Builder.ALIGN_CENTER)
 
-            addBuilderText(builder, prefProvider.getValue(Constants.BUSINESS_NAME, "").toString())
+            addBuilderText(
+                builder,
+                prefProvider.getValue(Constants.BUSINESS_NAME, "").toString()
+            )
             builder.addFeedLine(1)
             builder.addTextFont(Builder.FONT_E)
             builder.addTextAlign(Builder.ALIGN_CENTER)
@@ -2941,7 +2993,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             if (customerSettingModel.showQrCode) {
                 builder.addFeedLine(1)
                 builder.addTextAlign(Builder.ALIGN_CENTER)
-                val bitmap = generateQRCode(getOrderDetailsResponse?.digitalReceiptUrl.toString())
+                val bitmap =
+                    generateQRCode(getOrderDetailsResponse?.digitalReceiptUrl.toString())
 
                 val newBitmap = Bitmap.createScaledBitmap(bitmap, 175, 175, true)
                 builder.addImage(
@@ -2992,7 +3045,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
     private fun generateQRCode(qrcodeStaticUrl: String): Bitmap {
 
-        val manager = requireContext().getSystemService(Context.WINDOW_SERVICE) as WindowManager?
+        val manager =
+            requireContext().getSystemService(Context.WINDOW_SERVICE) as WindowManager?
 
         // initializing a variable for default display.
 

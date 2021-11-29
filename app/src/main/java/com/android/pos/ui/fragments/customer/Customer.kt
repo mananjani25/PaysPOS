@@ -265,19 +265,18 @@ class Customer : Fragment() {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
 
+            }
+
+            override fun afterTextChanged(s: Editable?) {
 
                 try {
                     customerAdapter.filter.filter(
-                        binding.autoSearch.text.trim().toString()
+                        s.toString().trim().lowercase()
                     )
 
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-
             }
 
         })

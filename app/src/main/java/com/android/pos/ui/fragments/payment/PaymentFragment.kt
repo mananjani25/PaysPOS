@@ -13,8 +13,8 @@ import androidx.navigation.fragment.findNavController
 import com.android.pos.MainApplication
 import com.android.pos.R
 import com.android.pos.data.entities.CartModel
-import com.android.pos.data.entities.RedeemLoyaltyInfo
 import com.android.pos.data.entities.CashDiscountModel
+import com.android.pos.data.entities.RedeemLoyaltyInfo
 import com.android.pos.data.model.requestModel.SpitByOrderPaymentModel
 import com.android.pos.data.model.requestModel.SpitByOrderRequestModel
 import com.android.pos.data.remote.Constants
@@ -26,6 +26,8 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.extensions.gone
+import com.android.pos.utils.extensions.visible
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -194,6 +196,15 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         MethodUtils.setPriceTextView(binding.txtTax, totalTax)
         MethodUtils.setPriceTextView(binding.txtTipAmt, tipAmount)
         MethodUtils.setPriceTextView(binding.txtServiceCharge, totalServiceCharge)
+        if (redeemLoyaltyInfo?.needToApplyLoyalty == true) {
+            binding.llLoyalty.visible()
+            binding.llLoyaltyPoint.visible()
+            binding.txtLoyaltyAmount.text  = "- $" + String.format("%.2f", redeemLoyaltyInfo?.usedLoyaltyAmount?:0.0)
+            binding.txtUsedLoyaltyPoints.text = "${redeemLoyaltyInfo?.usedLoyaltyPoints?:0}"
+        }else{
+            binding.llLoyalty.gone()
+            binding.llLoyaltyPoint.gone()
+        }
 
         if (paymentType == "Credit") {
             if (optionType == "SurCharge") {
@@ -500,7 +511,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
                     isSplitByNo -> {
 
-                        (totalPrice / splitValue) + tipAmount
+                        ((totalPrice - final_discount) / splitValue) + tipAmount
 
                     }
                     isSplitByAmount -> {
@@ -815,7 +826,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 when {
                     isSplitByNo -> {
 
-                        var payAmount = ((totalPrice / splitValue) + tipAmount)
+                        var payAmount = (((totalPrice - final_discount) / splitValue) + tipAmount)
                         val bundle = Bundle()
                         bundle.putDouble("totalPrice", payAmount)
                         bundle.putDouble("paymentAmount", paymentAmount)
@@ -823,7 +834,10 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                         bundle.putParcelable("receiptData", it.data)
                         bundle.putBoolean("isSpilt", true)
                         bundle.putInt("splitValue", splitValue)
-                        bundle.putDouble("remainingAmount", (totalPrice) - (payAmount - tipAmount))
+                        bundle.putDouble(
+                            "remainingAmount",
+                            (totalPrice - final_discount) - (payAmount - tipAmount)
+                        )
                         bundle.putDouble("payAmount", payAmount)
                         findNavController().navigate(
                             R.id.action_paymentFragment_to_orderCompleteFragment,

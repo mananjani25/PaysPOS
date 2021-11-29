@@ -6,7 +6,6 @@
     android:layout_height="wrap_content"
     android:layout_margin="@dimen/_5sdp"
     android:elevation="@dimen/_5sdp"
-
     app:cardCornerRadius="@dimen/_5sdp"
     tools:ignore="MissingDefaultResource">
 
@@ -14,376 +13,382 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/bg_card"
-        android:minWidth="@dimen/_150sdp"
         android:orientation="vertical"
-        android:padding="@dimen/_5sdp">
+        android:padding="@dimen/_5sdp"
+        android:weightSum="1">
 
-        <androidx.appcompat.widget.LinearLayoutCompat
-            android:layout_width="wrap_content"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="@dimen/_180sdp"
             android:layout_height="wrap_content"
-            android:minWidth="@dimen/_150sdp"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
             <androidx.appcompat.widget.LinearLayoutCompat
-                android:layout_width="0dp"
+                android:id="@+id/llData"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
+                android:orientation="horizontal"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
                 <androidx.appcompat.widget.LinearLayoutCompat
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:background="?attr/selectableItemBackground"
-                    android:orientation="horizontal"
-                    android:paddingStart="@dimen/_5sdp"
-                    android:paddingTop="@dimen/_3sdp"
-                    android:paddingEnd="@dimen/_5sdp"
-                    android:paddingBottom="@dimen/_3sdp">
+                    android:layout_weight="1"
+                    android:orientation="vertical">
 
-                    <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontMediumStyle"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:gravity="start"
-                        android:text="Total Tax"
-                        android:textColor="@color/drawerBack"
-                        android:textSize="@dimen/_5mdpi" />
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/txtTotalTax"
-                        style="@style/CustomFontSemiBold"
-                        android:layout_width="0dp"
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:gravity="end"
-                        android:text="$20.00"
-                        android:textColor="@color/drawerBack"
-                        android:textSize="@dimen/_5mdpi" />
+                        android:background="?attr/selectableItemBackground"
+                        android:orientation="horizontal"
+                        android:paddingStart="@dimen/_5sdp"
+                        android:paddingTop="@dimen/_3sdp"
+                        android:paddingEnd="@dimen/_5sdp"
+                        android:paddingBottom="@dimen/_3sdp">
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/CustomFontMediumStyle"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:gravity="start"
+                            android:text="Total Tax"
+                            android:textColor="@color/drawerBack"
+                            android:textSize="@dimen/_5mdpi" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/txtTotalTax"
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:gravity="end"
+                            android:text="$20.00"
+                            android:textColor="@color/drawerBack"
+                            android:textSize="@dimen/_5mdpi" />
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="?attr/selectableItemBackground"
+                        android:orientation="horizontal"
+                        android:paddingStart="@dimen/_5sdp"
+                        android:paddingTop="@dimen/_3sdp"
+                        android:paddingEnd="@dimen/_5sdp"
+                        android:paddingBottom="@dimen/_3sdp">
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/CustomFontMediumStyle"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center"
+                            android:layout_weight="1.5"
+                            android:gravity="start"
+                            android:text="@string/cash_discount"
+                            android:textColor="@color/drawerBack"
+                            android:textSize="@dimen/_5mdpi" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/txtcashDiscount"
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:gravity="end"
+                            android:text="$20.00"
+                            android:textColor="@color/drawerBack"
+                            android:textSize="@dimen/_5mdpi" />
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="?attr/selectableItemBackground"
+                        android:orientation="horizontal"
+                        android:paddingStart="@dimen/_5sdp"
+                        android:paddingTop="@dimen/_3sdp"
+                        android:paddingEnd="@dimen/_5sdp"
+                        android:paddingBottom="@dimen/_3sdp">
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/CustomFontMediumStyle"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:gravity="start"
+                            android:text="@string/non_cash_adj"
+                            android:textColor="@color/drawerBack"
+                            android:textSize="@dimen/_5mdpi" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/txtnoncashadj"
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:gravity="end"
+                            android:text="$20.00"
+                            android:textColor="@color/drawerBack"
+                            android:textSize="@dimen/_5mdpi" />
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:layout_width="match_parent"
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:background="?attr/selectableItemBackground"
-                    android:orientation="horizontal"
-                    android:paddingStart="@dimen/_5sdp"
-                    android:paddingTop="@dimen/_3sdp"
-                    android:paddingEnd="@dimen/_5sdp"
-                    android:paddingBottom="@dimen/_3sdp">
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:layout_weight="1">
 
-                    <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontMediumStyle"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="center"
-                        android:layout_weight="1.5"
-                        android:gravity="start"
-                        android:text="@string/cash_discount"
-                        android:textColor="@color/drawerBack"
-                        android:textSize="@dimen/_5mdpi" />
+                    <CheckBox
+                        android:id="@+id/chkTotalPrice"
+                        style="@style/PopUpCheckBox"
+                        android:layout_marginEnd="0dp"
+                        android:checked="false"
+                        android:visibility="invisible"
+                        app:layout_constraintBottom_toBottomOf="@id/lblTotalPrice"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/lblTotalPrice" />
 
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/txtcashDiscount"
-                        style="@style/CustomFontSemiBold"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:gravity="end"
-                        android:text="$20.00"
-                        android:textColor="@color/drawerBack"
-                        android:textSize="@dimen/_5mdpi" />
+                    <TextView
+                        android:id="@+id/lblTotalPrice"
+                        style="@style/PopUpLabel"
+                        android:text="@string/sub_total_price"
+                        app:layout_constraintEnd_toStartOf="@id/txtSubTotal"
+                        app:layout_constraintHorizontal_weight="0.6"
+                        app:layout_constraintStart_toEndOf="@id/chkTotalPrice"
+                        app:layout_constraintTop_toTopOf="parent" />
 
-                </androidx.appcompat.widget.LinearLayoutCompat>
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="?attr/selectableItemBackground"
-                    android:orientation="horizontal"
-                    android:paddingStart="@dimen/_5sdp"
-                    android:paddingTop="@dimen/_3sdp"
-                    android:paddingEnd="@dimen/_5sdp"
-                    android:paddingBottom="@dimen/_3sdp">
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontMediumStyle"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:gravity="start"
-                        android:text="@string/non_cash_adj"
-                        android:textColor="@color/drawerBack"
-                        android:textSize="@dimen/_5mdpi" />
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/txtnoncashadj"
-                        style="@style/CustomFontSemiBold"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:gravity="end"
-                        android:text="$20.00"
-                        android:textColor="@color/drawerBack"
-                        android:textSize="@dimen/_5mdpi" />
-
-                </androidx.appcompat.widget.LinearLayoutCompat>
-
-            </androidx.appcompat.widget.LinearLayoutCompat>
-
-            <androidx.appcompat.widget.LinearLayoutCompat
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="?attr/selectableItemBackground"
-                    android:orientation="horizontal"
-                    android:paddingStart="@dimen/_5sdp"
-                    android:paddingTop="@dimen/_3sdp"
-                    android:paddingEnd="@dimen/_5sdp"
-                    android:paddingBottom="@dimen/_3sdp">
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontMediumStyle"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:gravity="start"
-                        android:text="Sub Total Price"
-                        android:textColor="@color/drawerBack"
-                        android:textSize="@dimen/_5mdpi" />
-
-                    <androidx.appcompat.widget.AppCompatTextView
+                    <TextView
                         android:id="@+id/txtSubTotal"
-                        style="@style/CustomFontSemiBold"
-                        android:layout_width="0dp"
+                        style="@style/PopUpValue"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_weight="0.5"
+                        app:layout_constraintStart_toEndOf="@id/lblTotalPrice"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:text="$200.00" />
+
+                    <androidx.constraintlayout.widget.Barrier
+                        android:id="@+id/barrierTotalPrice"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:gravity="end"
-                        android:text="$20.00"
-                        android:textColor="@color/drawerBack"
-                        android:textSize="@dimen/_5mdpi" />
+                        app:barrierDirection="bottom"
+                        app:constraint_referenced_ids="chkTotalPrice,lblTotalPrice,txtSubTotal" />
 
-                </androidx.appcompat.widget.LinearLayoutCompat>
+                    <CheckBox
+                        android:id="@+id/chkServiceCharge"
+                        style="@style/PopUpCheckBox"
+                        android:layout_marginEnd="0dp"
+                        android:checked="false"
+                        android:visibility="invisible"
+                        app:layout_constraintBottom_toBottomOf="@id/lblServiceCharge"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/lblServiceCharge" />
 
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="?attr/selectableItemBackground"
-                    android:orientation="horizontal"
-                    android:paddingStart="@dimen/_5sdp"
-                    android:paddingTop="@dimen/_3sdp"
-                    android:paddingEnd="@dimen/_5sdp"
-                    android:paddingBottom="@dimen/_3sdp">
+                    <TextView
+                        android:id="@+id/lblServiceCharge"
+                        style="@style/PopUpLabel"
+                        android:text="@string/service_charge"
+                        app:layout_constraintEnd_toStartOf="@id/txtServiceCharge"
+                        app:layout_constraintHorizontal_weight="0.6"
+                        app:layout_constraintStart_toEndOf="@id/chkServiceCharge"
+                        app:layout_constraintTop_toBottomOf="@id/barrierTotalPrice" />
 
-                    <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontMediumStyle"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:gravity="start"
-                        android:text="Service Charge"
-                        android:textColor="@color/drawerBack"
-                        android:textSize="@dimen/_5mdpi" />
-
-                    <androidx.appcompat.widget.AppCompatTextView
+                    <TextView
                         android:id="@+id/txtServiceCharge"
-                        style="@style/CustomFontSemiBold"
-                        android:layout_width="0dp"
+                        style="@style/PopUpValue"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_weight="0.5"
+                        app:layout_constraintStart_toEndOf="@id/lblServiceCharge"
+                        app:layout_constraintTop_toTopOf="@id/lblServiceCharge"
+                        tools:text="$200.00" />
+
+                    <androidx.constraintlayout.widget.Barrier
+                        android:id="@+id/barrierServiceCharge"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:gravity="end"
-                        android:text="$0.00"
-                        android:textColor="@color/drawerBack"
-                        android:textSize="@dimen/_5mdpi" />
+                        app:barrierDirection="bottom"
+                        app:constraint_referenced_ids="chkServiceCharge,lblServiceCharge,txtServiceCharge" />
 
-                </androidx.appcompat.widget.LinearLayoutCompat>
+                    <CheckBox
+                        android:id="@+id/chkTotalDiscount"
+                        style="@style/PopUpCheckBox"
+                        android:layout_marginEnd="0dp"
+                        android:checked="false"
+                        android:visibility="invisible"
+                        app:layout_constraintBottom_toBottomOf="@id/lblTotalDiscount"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/lblTotalDiscount" />
 
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="?attr/selectableItemBackground"
-                    android:orientation="horizontal"
-                    android:paddingStart="@dimen/_5sdp"
-                    android:paddingTop="@dimen/_3sdp"
-                    android:paddingEnd="@dimen/_5sdp"
-                    android:paddingBottom="@dimen/_3sdp">
+                    <TextView
+                        android:id="@+id/lblTotalDiscount"
+                        style="@style/PopUpLabel"
+                        android:text="@string/total_discount"
+                        app:layout_constraintEnd_toStartOf="@id/txtServiceCharge"
+                        app:layout_constraintHorizontal_weight="0.6"
+                        app:layout_constraintStart_toEndOf="@id/chkTotalDiscount"
+                        app:layout_constraintTop_toBottomOf="@id/barrierServiceCharge" />
 
-                    <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontMediumStyle"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:gravity="start"
-                        android:text="Total Discount"
-                        android:textColor="@color/drawerBack"
-                        android:textSize="@dimen/_5mdpi" />
-
-                    <androidx.appcompat.widget.AppCompatTextView
+                    <TextView
                         android:id="@+id/txtDiscount"
-                        style="@style/CustomFontSemiBold"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:gravity="end"
-                        android:text="$0.00"
+                        style="@style/PopUpValue"
                         android:textColor="@color/colorRed"
-                        android:textSize="@dimen/_5mdpi" />
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_weight="0.5"
+                        app:layout_constraintStart_toEndOf="@id/lblTotalDiscount"
+                        app:layout_constraintTop_toTopOf="@id/lblTotalDiscount"
+                        tools:text="-$200.00" />
 
-                </androidx.appcompat.widget.LinearLayoutCompat>
+                    <androidx.constraintlayout.widget.Barrier
+                        android:id="@+id/barrierTotalDiscount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:barrierDirection="bottom"
+                        app:constraint_referenced_ids="chkTotalDiscount,lblTotalDiscount,txtDiscount" />
 
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:id="@+id/llLoyalty"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="?attr/selectableItemBackground"
-                    android:orientation="horizontal"
-                    android:paddingStart="@dimen/_5sdp"
-                    android:paddingTop="@dimen/_3sdp"
-                    android:paddingEnd="@dimen/_5sdp"
-                    android:paddingBottom="@dimen/_3sdp">
+                    <CheckBox
+                        android:id="@+id/chkLoyaltyAmount"
+                        style="@style/PopUpCheckBox"
+                        android:layout_marginEnd="0dp"
+                        android:checked="false"
+                        app:layout_constraintBottom_toBottomOf="@id/lblLoyaltyAmount"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/lblLoyaltyAmount" />
 
-                    <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontMediumStyle"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:gravity="start"
-                        android:text="Loyalty Amount"
-                        android:textColor="@color/drawerBack"
-                        android:textSize="@dimen/_5mdpi" />
+                    <TextView
+                        android:id="@+id/lblLoyaltyAmount"
+                        style="@style/PopUpLabel"
+                        android:text="@string/loyalty_rewards"
+                        app:layout_constraintEnd_toStartOf="@id/txtLoyaltyAmount"
+                        app:layout_constraintHorizontal_weight="0.6"
+                        app:layout_constraintStart_toEndOf="@id/chkLoyaltyAmount"
+                        app:layout_constraintTop_toBottomOf="@id/barrierTotalDiscount" />
 
-                    <androidx.appcompat.widget.AppCompatTextView
+                    <TextView
                         android:id="@+id/txtLoyaltyAmount"
-                        style="@style/CustomFontSemiBold"
-                        android:layout_width="0dp"
+                        style="@style/PopUpValue"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_weight="0.5"
+                        app:layout_constraintStart_toEndOf="@id/lblLoyaltyAmount"
+                        app:layout_constraintTop_toTopOf="@id/lblLoyaltyAmount"
+                        tools:text="$200.00" />
+
+                    <androidx.constraintlayout.widget.Barrier
+                        android:id="@+id/barrierLoyaltyAmount"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:gravity="end"
-                        android:text="$0.00"
-                        android:textColor="@color/drawerBack"
-                        android:textSize="@dimen/_5mdpi" />
+                        app:barrierDirection="bottom"
+                        app:constraint_referenced_ids="chkLoyaltyAmount,lblLoyaltyAmount,txtLoyaltyAmount" />
 
-                </androidx.appcompat.widget.LinearLayoutCompat>
+                    <TextView
+                        android:id="@+id/lblLoyaltyPoints"
+                        style="@style/PopUpLabel"
+                        android:text="@string/used_loyalty_points"
+                        app:layout_constraintEnd_toStartOf="@id/txtLoyaltyAmount"
+                        app:layout_constraintHorizontal_weight="0.6"
+                        app:layout_constraintStart_toStartOf="@id/lblLoyaltyAmount"
+                        app:layout_constraintTop_toBottomOf="@id/barrierLoyaltyAmount" />
 
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:id="@+id/llLoyaltyPoints"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="?attr/selectableItemBackground"
-                    android:orientation="horizontal"
-                    android:paddingStart="@dimen/_5sdp"
-                    android:paddingTop="@dimen/_3sdp"
-                    android:paddingEnd="@dimen/_5sdp"
-                    android:paddingBottom="@dimen/_3sdp">
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontMediumStyle"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:gravity="start"
-                        android:text="Used Loyalty Points"
-                        android:textColor="@color/drawerBack"
-                        android:textSize="@dimen/_5mdpi" />
-
-                    <androidx.appcompat.widget.AppCompatTextView
+                    <TextView
                         android:id="@+id/txtLoyaltyPoints"
-                        style="@style/CustomFontSemiBold"
-                        android:layout_width="0dp"
+                        style="@style/PopUpValue"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_weight="0.5"
+                        app:layout_constraintStart_toEndOf="@id/lblLoyaltyPoints"
+                        app:layout_constraintTop_toTopOf="@id/lblLoyaltyPoints"
+                        tools:text="322" />
+
+                    <androidx.constraintlayout.widget.Group
+                        android:id="@+id/groupLoyalty"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:gravity="end"
-                        android:text="0"
-                        android:textColor="@color/drawerBack"
-                        android:textSize="@dimen/_5mdpi" />
+                        app:constraint_referenced_ids="lblLoyaltyAmount,txtLoyaltyAmount,lblLoyaltyPoints,txtLoyaltyPoints" />
 
-                </androidx.appcompat.widget.LinearLayoutCompat>
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
-        </androidx.appcompat.widget.LinearLayoutCompat>
-
-        <include layout="@layout/divider" />
-
-        <androidx.appcompat.widget.LinearLayoutCompat
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:minWidth="@dimen/_150sdp"
-            android:orientation="horizontal">
-
-            <androidx.appcompat.widget.LinearLayoutCompat
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:visibility="invisible">
-
-            </androidx.appcompat.widget.LinearLayoutCompat>
+            <View
+                android:id="@+id/divider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/view"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/llData" />
 
             <androidx.appcompat.widget.LinearLayoutCompat
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:paddingTop="@dimen/_5sdp"
-                android:paddingEnd="@dimen/_5sdp"
-                android:paddingBottom="@dimen/_5sdp">
+                android:minWidth="@dimen/_180sdp"
+                android:orientation="horizontal"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/divider">
 
                 <androidx.appcompat.widget.LinearLayoutCompat
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:background="?attr/selectableItemBackground"
-                    android:orientation="horizontal">
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:visibility="invisible">
 
-                    <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontMediumStyle"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:gravity="start"
-                        android:text="Final Amount"
-                        android:textColor="@color/drawerBack"
-                        android:textSize="@dimen/_6mdpi" />
+                </androidx.appcompat.widget.LinearLayoutCompat>
 
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/txtTotalAmount"
-                        style="@style/CustomFontSemiBold"
-                        android:layout_width="0dp"
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:paddingTop="@dimen/_5sdp"
+                    android:paddingEnd="@dimen/_5sdp"
+                    android:paddingBottom="@dimen/_5sdp">
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:gravity="end"
-                        android:text="$20.00"
-                        android:textColor="@color/drawerBack"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:background="?attr/selectableItemBackground"
+                        android:orientation="horizontal">
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/CustomFontMediumStyle"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:gravity="start"
+                            android:text="Final Amount"
+                            android:textColor="@color/drawerBack"
+                            android:textSize="@dimen/_6mdpi" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/txtTotalAmount"
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:gravity="end"
+                            android:text="$20.00"
+                            android:textColor="@color/drawerBack"
+                            android:textSize="@dimen/_6mdpi" />
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
-        </androidx.appcompat.widget.LinearLayoutCompat>
-
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 
