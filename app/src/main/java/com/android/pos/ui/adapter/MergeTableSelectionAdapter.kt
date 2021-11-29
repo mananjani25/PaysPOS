@@ -128,6 +128,10 @@ class MergeTableSelectionAdapter : RecyclerView.Adapter<MergeTableSelectionAdapt
 
     }
 
+    fun getList(): ArrayList<MergeTableListModel> {
+        return list
+    }
+
     fun getSelectedIds(): String {
 
         var ids = ""

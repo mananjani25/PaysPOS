@@ -118,12 +118,12 @@ data class CreateOrderResponse(
                 @SerializedName("name") var name: String,
                 @SerializedName("is_paid") var isPaid: Boolean,
                 @SerializedName("total_amount") var totalAmount: Double,
-                @SerializedName("cash_discount") var cashDiscount: String,
-                @SerializedName("total_discount") var totalDiscount: String,
-                @SerializedName("total_service_charge") var totalServiceCharge: String,
-                @SerializedName("sub_total") var subTotal: String,
-                @SerializedName("total_tax") var totalTax: Int,
-                @SerializedName("total_tips") var totalTips: Int,
+                @SerializedName("cash_discount") var cashDiscount: Double,
+                @SerializedName("total_discount") var totalDiscount: Double,
+                @SerializedName("total_service_charge") var totalServiceCharge: Double,
+                @SerializedName("sub_total") var subTotal: Double,
+                @SerializedName("total_tax") var totalTax: Double,
+                @SerializedName("total_tips") var totalTips: Double,
                 @SerializedName("customer_id") var customerId: Int,
                 @SerializedName("guest_item_attributes") var guestItemAttributes: List<GuestItemAttributes>
 
@@ -131,7 +131,7 @@ data class CreateOrderResponse(
                 @Parcelize
                 data class GuestItemAttributes(
                     @SerializedName("id") var id: Int,
-                    @SerializedName("order_id") var orderId: String,
+                    @SerializedName("order_id") var orderId: Int,
                     @SerializedName("order_item_id") var orderItemId: Int?,
                     @SerializedName("quantity") var quantity: Int,
                     @SerializedName("item_id") var itemId: Int,

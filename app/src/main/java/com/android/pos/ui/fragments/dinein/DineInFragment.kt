@@ -25,6 +25,7 @@ import com.android.pos.data.remote.Constants.AVAILABLE
 import com.android.pos.data.remote.Constants.DINE_IN_STATUS
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.MERGED
+import com.android.pos.data.remote.Constants.MERGEDANDOCCUPIED
 import com.android.pos.data.remote.Constants.OCCUPIED
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.AlertUtils
@@ -157,6 +158,7 @@ class DineInFragment : Fragment() {
 
                             }
                             //bundle.putParcelable("floorList", resource.data.data)
+                            Log.e(TAG, "itFloorData ${Gson().toJson(it?.data?.data)}")
                             bundle.putParcelableArrayList(
                                 "floorList", it.data?.data?.toCollection(
                                     arrayListOf()
@@ -253,7 +255,7 @@ class DineInFragment : Fragment() {
                             (dineInFloorTablesList[i].xPosition * 1.35).toInt().toDp()
                         paramsSquare.topMargin =
                             (dineInFloorTablesList[i].yPosition * 1.35).toInt().toDp()
-                        if (dineInFloorTablesList[i].status == OCCUPIED) {
+                        if (dineInFloorTablesList[i].status == OCCUPIED || dineInFloorTablesList[i].status == MERGEDANDOCCUPIED) {
                             llMainParentSquare.background =
                                 resources.getDrawable(R.drawable.background_drawer_button_green)
                         } else {
@@ -324,7 +326,7 @@ class DineInFragment : Fragment() {
                         paramsRound.topMargin =
                             (dineInFloorTablesList[i].yPosition * 1.35).toInt().toDp()
                         // binding.flFloorPlan.removeAllViews()
-                        if (dineInFloorTablesList[i].status == OCCUPIED) {
+                        if (dineInFloorTablesList[i].status == OCCUPIED || dineInFloorTablesList[i].status == MERGEDANDOCCUPIED) {
                             llMainParentRound.background =
                                 resources.getDrawable(R.drawable.bg_circle_name_green)
 
@@ -388,6 +390,28 @@ class DineInFragment : Fragment() {
                     bundle
                 )
 
+
+            } else if (dineInFloorTableModel.status == MERGEDANDOCCUPIED) {
+
+                if (dineInFloorTableModel.currentOrderDetails.employeeId == prefProvider.getValueInt(
+                        EMPLOYEE_ID, 0
+                    )
+                ) {
+                    Log.e(
+                        TAG,
+                        "dineInFloorTableModelMErged:  ${Gson().toJson(dineInFloorTableModel)}"
+                    )
+                    val bundle = Bundle()
+                    bundle.putBoolean("isFromFloor", true)
+                    bundle.putBoolean("isMerged", false)
+                    bundle.putParcelable("floorPlan", dineInFloorTableModel)
+
+
+                    findNavController().navigate(
+                        R.id.action_dineInFragment_to_dineInOrderTable,
+                        bundle
+                    )
+                }
 
             }
         }
