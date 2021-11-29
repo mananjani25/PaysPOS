@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.navigation.fragment.findNavController
 import com.android.pos.data.model.responseModel.GetFloorPlanResponse
+import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.data.remote.Constants.AVAILABLE
 import com.android.pos.data.remote.Constants.DINE_IN_STATUS
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
@@ -43,6 +44,7 @@ class DineInFragment : Fragment() {
     private var dineInFloorNameList = ArrayList<GetFloorPlanResponse.Data>()
     private var dineInFloorTablesList = ArrayList<GetFloorPlanResponse.Data.FloorPlanTable>()
     private val TAG = this.javaClass.name.toString()
+
 
     @Inject
     lateinit var prefProvider: PrefProvider
