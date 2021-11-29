@@ -193,11 +193,21 @@ class MergeTableDialog : DialogFragment() {
             }
 
 
+            var orderModel = primaryTable?.orderDetails?.let { it1 ->
+                viewModel.createMergeOrderRequest(
+                    it1
+                )
+            }
+
+            if (orderModel != null) {
+                parentTableId?.let { it1 -> viewModel.mergeTable(it1,childIds,orderModel,orderModel.id) }
+
+            } else {
+                Log.e(TAG, "primaryTable:  ${Gson().toJson(primaryTable)}")
+                parentTableId?.let { it1 -> viewModel.mergeTable(it1, childIds) }
 
 
-
-            Log.e(TAG, "primaryTable:  ${Gson().toJson(primaryTable)}")
-            //parentTableId?.let { it1 -> viewModel.mergeTable(it1, childIds) }
+            }
 
 
         }

@@ -234,6 +234,8 @@ object Constants {
 
     const val OCCUPIED = "Occupied"
 
+    const val MERGEDANDOCCUPIED = "MergedAndOccupied"
+
     fun createRequestModelForUpdatePrinter(
         model: ArrayList<PrinterResponse.Data.OrderTypes>,
         printerModel: PrinterListModel?
