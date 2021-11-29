@@ -252,6 +252,8 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
                 binding.layoutTool.txtSubTitle.text = data.firstName
 
             }
+
+            empObject = data
         }
 
         val teamDetails = TeamDetails()

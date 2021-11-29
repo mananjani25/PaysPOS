@@ -114,7 +114,7 @@
     <string name="tv_hourly_rate">Hourly Rate</string>
     <string name="tv_access">Access</string>
     <string name="tv_permission_set">Permission set</string>
-    <string name="tv_personal_passcode">Passcode name</string>
+    <string name="tv_personal_passcode">Passcode</string>
     <string name="tv_location">Location</string>
     <string name="tv_create_team_member">Create Team Member</string>
     <string name="tv_info_email">Adding an email will invite this team member to create their login for POS.</string>
@@ -360,7 +360,7 @@
     <string name="tv_end_date">End Date</string>
     <string name="tv_customer">Customer</string>
     <string name="tv_total_hours">Total Hours</string>
-    <string name="tv_total_wage">Total Wage</string>
+    <string name="tv_total_wage">Total Wages</string>
     <string name="tv_mon">Mon</string>
     <string name="tv_tue">Tue</string>
     <string name="tv_wed">Wed</string>
@@ -371,7 +371,7 @@
     <string name="tv_hash">#</string>
     <string name="tv_clock_in_date_time">Clock In Date/Time</string>
     <string name="tv_clock_out_date_time">Clock Out Date/Time</string>
-    <string name="tv_wage">Wage</string>
+    <string name="tv_wage">Wages</string>
     <string name="tv_break">Break</string>
     <string name="tv_working_hours">Working Hours</string>
     <string name="tv_action">Action</string>
@@ -627,6 +627,7 @@
     <string name="number_of_points_required_to_get_the_reward">(Number of points required to get the reward)</string>
     <string name="error_loyalty_name_blank">Please Enter Loyalty Name</string>
     <string name="error_loyalty_point_blank">Please Enter Loyalty Target</string>
+    <string name="error_loyalty_point_amount">Please Enter Loyalty Value</string>
     <string name="create_tip">Create Tip</string>
     <string name="update_tip">Update Tip</string>
     <string name="create_loyalty_point">Create Loyalty Point</string>
