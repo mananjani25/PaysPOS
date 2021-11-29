@@ -148,6 +148,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         binding = FragmentDashboardCategoryNewBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
         getDeviceId()
+        getLoyaltyPrograms()
 
         isOrderUpdate = requireArguments().getBoolean("update")
         if (isOrderUpdate) {
@@ -198,7 +199,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             binding.layoutCart.txtSave.text = getString(R.string.save)
         }
 
-        getLoyaltyPrograms()
+
         navigateDineInOrder()
         dineInUpdateOrder()
         getCustomerReceiptSettings()
