@@ -56,6 +56,7 @@ import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
 import com.android.pos.data.remote.Constants.HORIZONTAL
 import com.android.pos.data.remote.Constants.IS_ORDER_UPDATE
 import com.android.pos.data.remote.Constants.MANUALSALE
+import com.android.pos.data.remote.Constants.MERGED
 import com.android.pos.data.remote.Constants.OPEN_ORDER
 import com.android.pos.data.remote.Constants.OPTION_TYPE
 import com.android.pos.data.remote.Constants.ORDER_TYPE
@@ -2094,9 +2095,14 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             val dList = dineInCartAdapter.getList()
                             if (dList.isNotEmpty()) {
                                 dList[1].floorPlanTable?.id?.let {
-                                    viewModel.getTableStatus(
-                                        it, "Available"
-                                    )
+
+                                    if (dList[1]?.floorPlanTable?.status.toString() == MERGED) {
+                                            viewModel.getTableStatus(it, MERGED)
+                                    } else {
+                                        viewModel.getTableStatus(
+                                            it, "Available"
+                                        )
+                                    }
                                 }
                             }
                             viewModel.deleteCart()
