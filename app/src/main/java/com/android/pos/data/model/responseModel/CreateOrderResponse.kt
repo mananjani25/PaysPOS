@@ -91,8 +91,10 @@ data class CreateOrderResponse(
             val terminalId: Int,
             @SerializedName("total_amount")
             val totalAmount: Double,
-            @SerializedName("total_cash_discount_fee")
+            @SerializedName("cash_discount_or_surcharge")
             val totalCashDiscountFee: Double,
+            @SerializedName("cash_discount_type")
+            val cash_discount_type: String = "",
             @SerializedName("total_discount")
             val totalDiscount: Double,
             @SerializedName("total_service_charges")
@@ -118,7 +120,7 @@ data class CreateOrderResponse(
                 @SerializedName("name") var name: String,
                 @SerializedName("is_paid") var isPaid: Boolean,
                 @SerializedName("total_amount") var totalAmount: Double,
-                @SerializedName("cash_discount") var cashDiscount: String,
+                @SerializedName("cash_discount_or_surcharge") var cashDiscount: String,
                 @SerializedName("total_discount") var totalDiscount: String,
                 @SerializedName("total_service_charge") var totalServiceCharge: String,
                 @SerializedName("sub_total") var subTotal: String,
@@ -291,10 +293,14 @@ data class CreateOrderResponse(
                 val cardNumber: String,
                 @SerializedName("card_type")
                 val cardType: String,
-                @SerializedName("cash_discount")
-                val cashDiscount: Double,
                 @SerializedName("created_at")
                 val createdAt: String,
+                @SerializedName("cash_discount_or_surcharge")
+                val cash_discount_or_surcharge: Double,
+                @SerializedName("total_cash_discount")
+                val totalcashdiscount: Double,
+                @SerializedName("cash_discount_type")
+                var cash_discount_type: String = "",
                 @SerializedName("employee_id")
                 val employeeId: Int,
                 @SerializedName("id")

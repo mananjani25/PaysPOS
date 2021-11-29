@@ -1093,7 +1093,7 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
 
 
 
-            if (receiptModel.totalCashDiscountFee != null) {
+            if (receiptModel.cash_discount_or_surcharge != null) {
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addTextFont(Builder.FONT_E)
@@ -1110,10 +1110,10 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
                 builder.addText(
                     padLine(
                         "Cash Discount",
-                        if (receiptModel.totalCashDiscountFee == 0.0) {
-                            "$" + MethodUtils.roundOffAmountString(receiptModel.totalCashDiscountFee!!)
+                        if (receiptModel.cash_discount_or_surcharge == 0.0) {
+                            "$" + MethodUtils.roundOffAmountString(receiptModel.cash_discount_or_surcharge!!)
                         } else {
-                            "-$" + MethodUtils.roundOffAmountString(receiptModel.totalCashDiscountFee!!)
+                            "-$" + MethodUtils.roundOffAmountString(receiptModel.cash_discount_or_surcharge!!)
                         },
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             24

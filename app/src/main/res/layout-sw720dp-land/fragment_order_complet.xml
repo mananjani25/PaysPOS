@@ -71,7 +71,7 @@
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_7mdpi"
                 android:visibility="visible"
-                tools:text="Cash" />
+                tools:text="" />
 
 
             <androidx.appcompat.widget.AppCompatTextView

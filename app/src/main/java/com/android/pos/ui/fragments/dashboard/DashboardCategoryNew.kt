@@ -131,6 +131,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private val viewModelPayment by viewModels<PaymentViewModel>()
     private lateinit var dineInCartAdapter: DineInAdapter
     lateinit var cashDiscountModel: CashDiscountModel
+    var cashDiscountType = "CashDiscount"
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -185,6 +186,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         cashDiscountData.rate_or_amount.toString()
                     )
                     prefProvider.setValueboolean(CASH_DIS_STORED, true)
+                    cashDiscountType = cashDiscountData.option_type
                     Log.d(TAG, "onCreateView: " + cashDiscountModel.rate_or_amount)
                 }
             })
@@ -1395,9 +1397,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         viewModel.cartLogic(cartList, item, ADD, dineInList = dineInList)
 
 
-                } else {
-                    //check is_edited flag
-                    makeItemEdited(item)
+                    } else {
+                        //check is_edited flag
+                        makeItemEdited(item)
 
                         viewModel.cartLogic(cartList, item, ADD)
                     }
@@ -2134,7 +2136,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     viewModelPayment.updateOrder(
                         isOrderUpdate,
                         orderId,
-                            paymentId,
+                        paymentId,
                         paymentOfflineId,
                         orderOfflineId
                     )
@@ -2142,7 +2144,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     val request = viewModelPayment.createOrderRequest(
                         cartList,
                         viewModel.subTotalPrice,
-                        (viewModel.redeemLoyaltyInfo.remainingLoyaltyAmount +(viewModel.redeemLoyaltyInfo.cashDiscount ?:0.0)),
+                        (viewModel.redeemLoyaltyInfo.remainingLoyaltyAmount + (viewModel.redeemLoyaltyInfo.cashDiscount
+                            ?: 0.0)),
                         viewModel.totalServiceCharge,
                         viewModel.totalTax,
                         OPEN_ORDER,
@@ -2153,7 +2156,11 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         0.00,
                         -1,
                         viewModel.redeemLoyaltyInfo,
-                        false
+                        cashDiscount,
+                        false,
+                        "Cash",
+                        cashDiscountType
+
                     )
                     viewModelPayment.saveOrder(true)
                     viewModelPayment.submit(request)
@@ -2196,7 +2203,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 val bundle = Bundle()
                 bundle.putDouble(
                     "totalPrice",
-                    (viewModel.redeemLoyaltyInfo.remainingLoyaltyAmount + (viewModel.redeemLoyaltyInfo.cashDiscount ?:0.0))
+                    (viewModel.redeemLoyaltyInfo.remainingLoyaltyAmount + (viewModel.redeemLoyaltyInfo.cashDiscount
+                        ?: 0.0))
                 )
                 bundle.putString(
                     "redeemLoyalty",

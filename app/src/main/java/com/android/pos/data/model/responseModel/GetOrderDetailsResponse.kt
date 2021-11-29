@@ -96,8 +96,8 @@ data class GetOrderDetailsResponse(
         var guestAttributes: List<CreateOrderResponse.Data.Order.GuestAttributes>,
         @SerializedName("floor_plan_table")
         var floorPlanTable: FloorPlanTable,
-        @SerializedName("total_cash_discount_fee")
-        val totalCashDiscountFee: Double,
+        @SerializedName("cash_discount_or_surcharge")
+        val cash_discount_or_surcharge: Double,
         @SerializedName("total_discount")
         val totalDiscount: Double,
         @SerializedName("total_service_charges")
@@ -406,8 +406,8 @@ data class GetOrderDetailsResponse(
             val cardNumber: String,
             @SerializedName("card_type")
             val cardType: String?,
-            @SerializedName("cash_discount")
-            val cashDiscount: Double,
+            @SerializedName("cash_discount_or_surcharge")
+            val cash_discount_or_surcharge: Double,
             @SerializedName("created_at")
             val createdAt: String,
             @SerializedName("dynamic_payment_id")
