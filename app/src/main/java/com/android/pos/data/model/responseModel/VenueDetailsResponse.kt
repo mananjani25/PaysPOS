@@ -16,6 +16,7 @@ data class VenueDetailsResponse(
     @SerializedName("type")
     val type: String
 ) {
+
     data class Data(
         @SerializedName("business_name")
         val businessName: String,

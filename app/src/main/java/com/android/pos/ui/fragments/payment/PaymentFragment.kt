@@ -511,7 +511,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
                     isSplitByNo -> {
 
-                        (totalPrice / splitValue) + tipAmount
+                        ((totalPrice - final_discount) / splitValue) + tipAmount
 
                     }
                     isSplitByAmount -> {
@@ -826,7 +826,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 when {
                     isSplitByNo -> {
 
-                        var payAmount = ((totalPrice / splitValue) + tipAmount)
+                        var payAmount = (((totalPrice - final_discount) / splitValue) + tipAmount)
                         val bundle = Bundle()
                         bundle.putDouble("totalPrice", payAmount)
                         bundle.putDouble("paymentAmount", paymentAmount)
@@ -834,7 +834,10 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                         bundle.putParcelable("receiptData", it.data)
                         bundle.putBoolean("isSpilt", true)
                         bundle.putInt("splitValue", splitValue)
-                        bundle.putDouble("remainingAmount", (totalPrice) - (payAmount - tipAmount))
+                        bundle.putDouble(
+                            "remainingAmount",
+                            (totalPrice - final_discount) - (payAmount - tipAmount)
+                        )
                         bundle.putDouble("payAmount", payAmount)
                         findNavController().navigate(
                             R.id.action_paymentFragment_to_orderCompleteFragment,

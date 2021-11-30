@@ -17,7 +17,10 @@ import com.android.pos.data.model.MergeFloorModel
 import com.android.pos.data.model.MergeTableListModel
 import com.android.pos.data.model.MergeTableModel
 import com.android.pos.data.model.responseModel.GetFloorPlanDetailResponse
+import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.AVAILABLE
+import com.android.pos.data.remote.Constants.OCCUPIED
 import com.android.pos.databinding.DialogMergeTableSelectionBinding
 import com.android.pos.ui.adapter.MergeTableSelectionAdapter
 import com.android.pos.ui.fragments.dinein.DineInViewModel
@@ -37,6 +40,8 @@ class MergeTableDialog : DialogFragment() {
     private val viewModel by viewModels<DineInViewModel>()
     private val TAG = "MergeTableDialog"
     private var tableSelectedPos: Int = 0
+    private var listOrdersMerged: ArrayList<GetOrderDetailsResponse.Data> = arrayListOf()
+    private var orderList: ArrayList<GetFloorPlanDetailResponse.OrderDetails> = arrayListOf()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -58,7 +63,6 @@ class MergeTableDialog : DialogFragment() {
     private fun observeMergeTable() {
         viewModel.mergeStatusChange.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let { status ->
-                Log.e(TAG, "AnyStatus:  ${status}")
                 AlertUtils.showCustomAlertWithListenerWithOK(
                     requireContext(), status.toString()
                 ) { _, _ ->
@@ -87,7 +91,6 @@ class MergeTableDialog : DialogFragment() {
     private fun setData() {
         listFloorPlan = requireArguments().getParcelableArrayList("floorList")
 
-
         var listTable: ArrayList<MergeTableModel> = arrayListOf()
         var listFloor: ArrayList<MergeFloorModel> = arrayListOf()
 
@@ -95,7 +98,20 @@ class MergeTableDialog : DialogFragment() {
             listFloor.add(MergeFloorModel(it.id, it.name))
 
             it.floor_plan_tables.forEach { table ->
-                listTable.add(MergeTableModel(table.id, table.table_name, it.id, it.name))
+                listTable.add(
+                    MergeTableModel(
+                        table.id, table.table_name, it.id, it.name, if (table.status == OCCUPIED) {
+                            true
+                        } else {
+                            false
+                        }, orderId = if (table.order_details != null) {
+                            table.order_details.id
+                        } else {
+                            null
+                        },
+                        orderDetails = table.order_details
+                    )
+                )
             }
         }
         list.add(MergeTableListModel(listTable, listFloor))
@@ -165,9 +181,33 @@ class MergeTableDialog : DialogFragment() {
             dismiss()
         }
         binding.txtSave.setOnClickListener {
+            var primaryTable = tableAdapter.getItem(tableSelectedPos)
+            var list = adapter.getList()
             val parentTableId = tableAdapter.getItem(tableSelectedPos)?.id
             val childIds = adapter.getSelectedIds()
-            parentTableId?.let { it1 -> viewModel.mergeTable(it1, childIds) }
+            var listofOrderIds: ArrayList<Int> = arrayListOf()
+
+            if (primaryTable?.orderId != null) {
+                listofOrderIds.add(primaryTable?.orderId!!)
+
+            }
+
+
+            var orderModel = primaryTable?.orderDetails?.let { it1 ->
+                viewModel.createMergeOrderRequest(
+                    it1
+                )
+            }
+
+            if (orderModel != null) {
+                parentTableId?.let { it1 -> viewModel.mergeTable(it1,childIds,orderModel,orderModel.id) }
+
+            } else {
+                Log.e(TAG, "primaryTable:  ${Gson().toJson(primaryTable)}")
+                parentTableId?.let { it1 -> viewModel.mergeTable(it1, childIds) }
+
+
+            }
 
 
         }

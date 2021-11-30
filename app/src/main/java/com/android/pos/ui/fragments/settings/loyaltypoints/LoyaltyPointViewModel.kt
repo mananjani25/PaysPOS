@@ -141,7 +141,10 @@ class LoyaltyPointViewModel @Inject constructor(
             loyaltyName.isNullOrEmpty() -> {
                 _snackbarText.value = Event(R.string.error_loyalty_name_blank)
             }
-            loyaltyTarget == null -> {
+            loyaltyAmount == 0.0 -> {
+                _snackbarText.value = Event(R.string.error_loyalty_point_blank)
+            }
+            loyaltyAmount == null && loyaltyTarget == 0 -> {
                 _snackbarText.value = Event(R.string.error_loyalty_point_blank)
             }
             else -> {

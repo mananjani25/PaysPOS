@@ -14,15 +14,18 @@ import android.widget.LinearLayout
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
+import androidx.navigation.NavController
 import com.android.pos.ui.adapter.DineInFloorNameListAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.navigation.fragment.findNavController
 import com.android.pos.data.model.responseModel.GetFloorPlanResponse
+import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.data.remote.Constants.AVAILABLE
 import com.android.pos.data.remote.Constants.DINE_IN_STATUS
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.MERGED
+import com.android.pos.data.remote.Constants.MERGEDANDOCCUPIED
 import com.android.pos.data.remote.Constants.OCCUPIED
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.AlertUtils
@@ -30,6 +33,7 @@ import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.extensions.toDp
 import com.android.pos.utils.statusUtils.Status
+import com.google.gson.Gson
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -41,6 +45,7 @@ class DineInFragment : Fragment() {
     private var dineInFloorNameList = ArrayList<GetFloorPlanResponse.Data>()
     private var dineInFloorTablesList = ArrayList<GetFloorPlanResponse.Data.FloorPlanTable>()
     private val TAG = this.javaClass.name.toString()
+
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -62,7 +67,7 @@ class DineInFragment : Fragment() {
         )
 
         binding.lifecycleOwner = this
-        //   binding.viewModel = viewModel
+        // binding.viewModel = viewModel
 
         loadFloorPlan()
         setUpRecyclerView()
@@ -108,7 +113,7 @@ class DineInFragment : Fragment() {
     }
 
     private fun loadFloorPlan() {
-        viewModel.getFloorPlan.observe(viewLifecycleOwner, {
+        viewModel.getFloorPlan().observe(viewLifecycleOwner, {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
@@ -118,7 +123,6 @@ class DineInFragment : Fragment() {
                             dineInFloorNameList =
                                 it.data!!.data as ArrayList<GetFloorPlanResponse.Data>
                             dineInFloorNameListAdapter.addFloorName(dineInFloorNameList)
-
 
                             setFloorPlan(dineInFloorNameList[0].floorPlanTables)
                         }
@@ -147,12 +151,14 @@ class DineInFragment : Fragment() {
                             setFragmentResultListener("request_key_table_selection") { requestKey: String, bundle: Bundle ->
                                 var mergeStatus = bundle.getBoolean("merge_done")
                                 if (mergeStatus) {
+                                    loadFloorPlan()
 
 
                                 }
 
                             }
                             //bundle.putParcelable("floorList", resource.data.data)
+                            Log.e(TAG, "itFloorData ${Gson().toJson(it?.data?.data)}")
                             bundle.putParcelableArrayList(
                                 "floorList", it.data?.data?.toCollection(
                                     arrayListOf()
@@ -249,7 +255,7 @@ class DineInFragment : Fragment() {
                             (dineInFloorTablesList[i].xPosition * 1.35).toInt().toDp()
                         paramsSquare.topMargin =
                             (dineInFloorTablesList[i].yPosition * 1.35).toInt().toDp()
-                        if (dineInFloorTablesList[i].status == OCCUPIED) {
+                        if (dineInFloorTablesList[i].status == OCCUPIED || dineInFloorTablesList[i].status == MERGEDANDOCCUPIED) {
                             llMainParentSquare.background =
                                 resources.getDrawable(R.drawable.background_drawer_button_green)
                         } else {
@@ -276,7 +282,7 @@ class DineInFragment : Fragment() {
                         val tvNoOFChairs: AppCompatTextView =
                             inflatedViewRound.findViewById(R.id.tvNoOFChairs)
 
-                        tvNoOFChairs.text = "" + dineInFloorTablesList[i].chairCount
+                        //tvNoOFChairs.text = "" + dineInFloorTablesList[i].chairCount
 
                         val tvTableName: AppCompatTextView =
                             inflatedViewRound.findViewById(R.id.tvTableName)
@@ -286,7 +292,23 @@ class DineInFragment : Fragment() {
                         val tvTableNumber: AppCompatTextView =
                             inflatedViewRound.findViewById(R.id.tvTableNumber)
 
-                        tvTableNumber.text = "" + dineInFloorTablesList[i].tableNumber
+                        if (dineInFloorTablesList[i].parentTable) {
+                            var tableNo: String =
+                                dineInFloorTablesList[i].tableNumber.toString()
+                            var chairCount = dineInFloorTablesList[i].chairCount
+                            dineInFloorTablesList[i].merged_child_table_details.forEach {
+                                tableNo = tableNo + "," + it.table_number
+                                chairCount += it.chair_count
+                            }
+                            dineInFloorTablesList[i].chairCount = chairCount
+                            tvTableNumber.text = tableNo
+                            tvNoOFChairs.text = "" + dineInFloorTablesList[i].chairCount
+
+                        } else {
+                            tvTableNumber.text = "" + dineInFloorTablesList[i].tableNumber
+                            tvNoOFChairs.text = "" + dineInFloorTablesList[i].chairCount
+
+                        }
 
                         if (llMainParentRound.parent != null) {
                             (llMainParentRound.parent as ViewGroup).removeView(llMainParentRound)
@@ -304,7 +326,7 @@ class DineInFragment : Fragment() {
                         paramsRound.topMargin =
                             (dineInFloorTablesList[i].yPosition * 1.35).toInt().toDp()
                         // binding.flFloorPlan.removeAllViews()
-                        if (dineInFloorTablesList[i].status == OCCUPIED) {
+                        if (dineInFloorTablesList[i].status == OCCUPIED || dineInFloorTablesList[i].status == MERGEDANDOCCUPIED) {
                             llMainParentRound.background =
                                 resources.getDrawable(R.drawable.bg_circle_name_green)
 
@@ -358,6 +380,7 @@ class DineInFragment : Fragment() {
                 )
 
             } else if (dineInFloorTableModel.status == MERGED) {
+                Log.e(TAG, "dineInFloorTableModel:  ${Gson().toJson(dineInFloorTableModel)}")
 
                 val bundle = Bundle()
                 bundle.putBoolean("isMerged", true)
@@ -367,6 +390,28 @@ class DineInFragment : Fragment() {
                     bundle
                 )
 
+
+            } else if (dineInFloorTableModel.status == MERGEDANDOCCUPIED) {
+
+                if (dineInFloorTableModel.currentOrderDetails.employeeId == prefProvider.getValueInt(
+                        EMPLOYEE_ID, 0
+                    )
+                ) {
+                    Log.e(
+                        TAG,
+                        "dineInFloorTableModelMErged:  ${Gson().toJson(dineInFloorTableModel)}"
+                    )
+                    val bundle = Bundle()
+                    bundle.putBoolean("isFromFloor", true)
+                    bundle.putBoolean("isMerged", false)
+                    bundle.putParcelable("floorPlan", dineInFloorTableModel)
+
+
+                    findNavController().navigate(
+                        R.id.action_dineInFragment_to_dineInOrderTable,
+                        bundle
+                    )
+                }
 
             }
         }
