@@ -658,8 +658,8 @@ class PosRepository @Inject constructor(
     suspend fun mergeFloorTable(
         parentTableId: Int,
         childIds: String,
-        orderModel: OrderAttributeRequestModel?=null,
-        orderId:Int?
+        orderModel: OrderAttributeRequestModel,
+        orderId:Int
     ) =
         apiHelperNew.mergeFloorTable(parentTableId, childIds,orderModel,orderId)
 

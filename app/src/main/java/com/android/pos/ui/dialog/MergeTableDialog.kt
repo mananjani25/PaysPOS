@@ -16,6 +16,7 @@ import com.android.pos.R
 import com.android.pos.data.model.MergeFloorModel
 import com.android.pos.data.model.MergeTableListModel
 import com.android.pos.data.model.MergeTableModel
+import com.android.pos.data.model.requestModel.OrderAttributeRequestModel
 import com.android.pos.data.model.responseModel.GetFloorPlanDetailResponse
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.data.remote.Constants
@@ -197,14 +198,19 @@ class MergeTableDialog : DialogFragment() {
                 viewModel.createMergeOrderRequest(
                     it1
                 )
-            }
+            }?:null
 
             if (orderModel != null) {
-                parentTableId?.let { it1 -> viewModel.mergeTable(it1,childIds,orderModel,orderModel.id) }
+                parentTableId?.let { it1 -> orderModel.id?.let { it2 ->
+                    viewModel.mergeTable(it1,childIds,orderModel,
+                        it2
+                    )
+                } }
 
             } else {
                 Log.e(TAG, "primaryTable:  ${Gson().toJson(primaryTable)}")
-                parentTableId?.let { it1 -> viewModel.mergeTable(it1, childIds) }
+
+                parentTableId?.let { it1 -> viewModel.mergeTable(it1, childIds, OrderAttributeRequestModel(),0) }
 
 
             }
