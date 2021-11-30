@@ -87,19 +87,6 @@ class TransactionDetailsFragment : Fragment() {
         navigate()
         getCustomerReceiptSettings()
 
-        viewModel.getCashDiscountDetails(active = 1)
-            ?.observe(viewLifecycleOwner, { cashDiscountData ->
-                cashDiscountData?.let {
-                    prefProvider.setValue(Constants.AMOUNT_TYPE, cashDiscountData.amount_type)
-                    prefProvider.setValue(Constants.OPTION_TYPE, cashDiscountData.option_type)
-                    prefProvider.setValue(
-                        Constants.RATE_OR_AMOUNT,
-                        cashDiscountData.rate_or_amount.toString()
-                    )
-                    prefProvider.setValueboolean(Constants.CASH_DIS_STORED, true)
-
-                }
-            })
 
         val callback: OnBackPressedCallback =
             object : OnBackPressedCallback(true /* enabled by default */) {
@@ -210,6 +197,34 @@ class TransactionDetailsFragment : Fragment() {
                 ) {
                     binding.tvIssueRefund.visibility = View.GONE
                 }
+
+
+                if (paymentDetailsResponse.data.payment_type == "Card") {
+                    if (paymentDetailsResponse.data.cash_discount_type == "CashDiscount") {
+                        binding.linearCashDiscount.visibility = View.GONE
+                        binding.liinearNoncashAdj.visibility = View.GONE
+                    }else{
+                        binding.linearCashDiscount.visibility = View.GONE
+                        binding.liinearNoncashAdj.visibility = View.VISIBLE
+                        binding.txtNonCashAdjamount.text = "+ $" + String.format(
+                            "%.2f",
+                            paymentDetailsResponse.data.cash_discount_or_surcharge
+                        )
+                    }
+                } else {
+                    if (paymentDetailsResponse.data.cash_discount_type == "CashDiscount") {
+                        binding.linearCashDiscount.visibility = View.VISIBLE
+                        binding.liinearNoncashAdj.visibility = View.GONE
+                        binding.txtCashAmounntDiscount.text = "- $" + String.format(
+                            "%.2f",
+                            paymentDetailsResponse.data.cash_discount_or_surcharge
+                        )
+                    }else{
+                        binding.linearCashDiscount.visibility = View.GONE
+                        binding.liinearNoncashAdj.visibility = View.GONE
+                    }
+                }
+
 
                 ProgressUtils.dismissProgressDialog()
             }

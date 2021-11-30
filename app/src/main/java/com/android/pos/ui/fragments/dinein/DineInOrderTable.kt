@@ -11,6 +11,7 @@ import android.util.Log
 import android.view.*
 import android.widget.PopupWindow
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -519,6 +520,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         val txtTotalTax: AppCompatTextView = popupView.findViewById(R.id.txtTotalTax)
         val txttotalCashDiscount: AppCompatTextView = popupView.findViewById(R.id.txtcashDiscount)
         val txtTotalcashAdj: AppCompatTextView = popupView.findViewById(R.id.txtnoncashadj)
+        val linearCCashDiscount: LinearLayoutCompat =
+            popupView.findViewById(R.id.lineaarCashDiscount)
+        val linear_NonCashDiscount: LinearLayoutCompat =
+            popupView.findViewById(R.id.linear_NonCashDiscount)
+
         var optionType = prefProvider.getValue(Constants.OPTION_TYPE, "CashDiscount")
         var amountType = prefProvider.getValue(Constants.AMOUNT_TYPE, "Dollar")
         var rateorAmount = prefProvider.getValue(Constants.RATE_OR_AMOUNT, "0")
@@ -530,6 +536,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             } else if (amountType == "Percentage") {
                 cashDiscount = (viewModel.subTotalAmount * 100 / rateorAmount.toDouble())
             }
+            linearCCashDiscount.visibility = View.VISIBLE
+            linear_NonCashDiscount.visibility = View.GONE
             txttotalCashDiscount.text = "- $" + String.format("%.2f", cashDiscount)
             txtTotalcashAdj.text = "- $" + String.format("%.2f", 0.0)
         } else if (optionType == "SurCharge") {
@@ -538,6 +546,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             } else if (amountType == "Percentage") {
                 cashDiscount = (viewModel.subTotalAmount * 100 / rateorAmount.toDouble())
             }
+            linearCCashDiscount.visibility = View.GONE
+            linear_NonCashDiscount.visibility = View.GONE
             txttotalCashDiscount.text = "- $" + String.format("%.2f", 0.0)
             txtTotalcashAdj.text = "- $" + String.format("%.2f", cashDiscount)
         }

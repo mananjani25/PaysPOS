@@ -34,6 +34,7 @@ class GetPaymentOrderDetailsResponse(
         @SerializedName("card_type") val card_type: String,
         @SerializedName("card_name") val card_name: String,
         @SerializedName("card_number") val card_number: String,
+        @SerializedName("cash_discount_type") val cash_discount_type: String,
         @SerializedName("employee_id") val employee_id: Int,
         @SerializedName("cash_discount_or_surcharge") val cash_discount_or_surcharge: Double,
         @SerializedName("tax_amount") val tax_amount: Double,

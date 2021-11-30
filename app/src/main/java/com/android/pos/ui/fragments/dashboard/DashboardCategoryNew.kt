@@ -1274,6 +1274,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         Log.e(TAG, "subTotalPrice:   ${viewModel.subTotalPrice - (cartList[0].discountPrice)}")
         val txttotalCashDiscount: AppCompatTextView = popupView.findViewById(R.id.txtcashDiscount)
         val txtTotalcashAdj: AppCompatTextView = popupView.findViewById(R.id.txtnoncashadj)
+        val linearCCashDiscount: LinearLayoutCompat =
+            popupView.findViewById(R.id.lineaarCashDiscount)
+        val linear_NonCashDiscount: LinearLayoutCompat =
+            popupView.findViewById(R.id.linear_NonCashDiscount)
 
 
         var totalAmounnt = 0.0
@@ -1291,15 +1295,21 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 cashDiscount = (viewModel.subTotalPrice * 100 / rateorAmount.toDouble())
                 totalAmounnt = viewModel.totalPrice - cashDiscount
             }
+
+            linearCCashDiscount.visibility = View.VISIBLE
+            linear_NonCashDiscount.visibility = View.GONE
             txttotalCashDiscount.text = "- $" + String.format("%.2f", cashDiscount)
             txtTotalcashAdj.text = "- $" + String.format("%.2f", 0.0)
         } else if (optionType == "SurCharge") {
+
             totalAmounnt = viewModel.totalPrice
             if (amountType == "Dollar") {
                 cashDiscount = rateorAmount.toDouble()
             } else if (amountType == "Percentage") {
                 cashDiscount = (viewModel.subTotalPrice * 100 / rateorAmount.toDouble())
             }
+            linearCCashDiscount.visibility = View.GONE
+            linear_NonCashDiscount.visibility = View.GONE
             txttotalCashDiscount.text = "- $" + String.format("%.2f", 0.0)
             txtTotalcashAdj.text = "- $" + String.format("%.2f", cashDiscount)
         }
@@ -2099,7 +2109,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                                 dList[1].floorPlanTable?.id?.let {
 
                                     if (dList[1]?.floorPlanTable?.status.toString() == MERGED) {
-                                            viewModel.getTableStatus(it, MERGED)
+                                        viewModel.getTableStatus(it, MERGED)
                                     } else {
                                         viewModel.getTableStatus(
                                             it, "Available"
