@@ -26,6 +26,7 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentTransactionBinding
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.TransactionAdapter
+import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.callback.PaginationScrollListener
@@ -37,6 +38,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.math.abs
 
 @AndroidEntryPoint
 class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, ItemCallback {
@@ -116,100 +118,54 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
 
         startTime = TimePickerDialog.OnTimeSetListener { view, hour, minute ->
-            var timestring = ""
             val timecalender = Calendar.getInstance()
             timecalender.set(Calendar.HOUR_OF_DAY, hour)
             timecalender.set(Calendar.MINUTE, minute)
-            var hoursfinal: Int = 0
-            if (hour > 12) {
-                hoursfinal = hour - 12
-                if (hoursfinal < 10) {
-                    if (minute < 10) {
-                        timestring = "0$hoursfinal:0$minute PM"
-                    } else {
-                        timestring = "0$hoursfinal:$minute PM"
-                    }
-                } else {
-                    if (minute < 10) {
-                        timestring = "$hoursfinal:0$minute PM"
-                    } else {
-                        timestring = "$hoursfinal:$minute PM"
-                    }
-                }
+            viewModel.startDate.value = timeCalculateForStartEndTime(hour, minute, "isstart")
+            if (differnceTrue(viewModel.startDate.value!!, viewModel.endDate.value) <= 30) {
+                viewModel.apiCallTimeSheet(
+                    currentPage,
+                    getTerminalId(binding.includeView.spTerminals.selectedItemPosition).toString(),
+                    getRoleId(binding.includeView.spRoles.selectedItemPosition).toString(),
+                    getEmployeeId(binding.includeView.spEmployees.selectedItemPosition).toString(),
+                    getOrderId(binding.includeView.spOrders.selectedItemPosition).toString(),
+                    getTipType(binding.includeView.spTipTypes.selectedItemPosition),
+                    getPaymentType(binding.includeView.spTransactionTypes.selectedItemPosition)
+                )
             } else {
-                if (hour < 10) {
-                    if (minute < 10) {
-                        timestring = "0$hour:0$minute AM"
-                    } else {
-                        timestring = "0$hour:$minute AM"
-                    }
-                } else {
-                    if (minute < 10) {
-                        timestring = "$hour:0$minute AM"
-                    } else {
-                        timestring = "$hour:$minute AM"
-                    }
+                AlertUtils.showCustomAlertWithListenerWithOK(requireActivity(), "Please Select date in 30 Days.") { _, _ ->
                 }
             }
-
-            val myFormat = "MM/dd/yyyy" //In which you need put here
-            val sdf = SimpleDateFormat(myFormat, Locale.getDefault())
-            val startDatestring = sdf.format(myCalendar.time)
-            viewModel.startDate.value = "$startDatestring $timestring"
-            Log.d("yash", "onCreateView: starttime " + timestring)
-            Log.d("yash", "onCreateView: startDate&Time " + viewModel.startDate.value)
         }
 
         endTime = TimePickerDialog.OnTimeSetListener { view, hour, minute ->
-            var timestring = ""
             val timecalender = Calendar.getInstance()
             timecalender.set(Calendar.HOUR_OF_DAY, hour)
             timecalender.set(Calendar.MINUTE, minute)
-            var hoursfinal: Int = 0
-            if (hour > 12) {
-                hoursfinal = hour - 12
-                if (hoursfinal < 10) {
-                    if (minute < 10) {
-                        timestring = "0$hoursfinal:0$minute PM"
-                    } else {
-                        timestring = "0$hoursfinal:$minute PM"
-                    }
-                } else {
-                    if (minute < 10) {
-                        timestring = "$hoursfinal:0$minute PM"
-                    } else {
-                        timestring = "$hoursfinal:$minute PM"
-                    }
-                }
+            viewModel.endDate.value = timeCalculateForStartEndTime(hour, minute, "isend")
+
+            if (differnceTrue(viewModel.endDate.value!!, viewModel.startDate.value) <= 30) {
+                viewModel.apiCallTimeSheet(
+                    currentPage,
+                    getTerminalId(binding.includeView.spTerminals.selectedItemPosition).toString(),
+                    getRoleId(binding.includeView.spRoles.selectedItemPosition).toString(),
+                    getEmployeeId(binding.includeView.spEmployees.selectedItemPosition).toString(),
+                    getOrderId(binding.includeView.spOrders.selectedItemPosition).toString(),
+                    getTipType(binding.includeView.spTipTypes.selectedItemPosition),
+                    getPaymentType(binding.includeView.spTransactionTypes.selectedItemPosition)
+
+                )
             } else {
-                if (hour < 10) {
-                    if (minute < 10) {
-                        timestring = "0$hour:0$minute AM"
-                    } else {
-                        timestring = "0$hour:$minute AM"
-                    }
-                } else {
-                    if (minute < 10) {
-                        timestring = "$hour:0$minute AM"
-                    } else {
-                        timestring = "$hour:$minute AM"
-                    }
+                AlertUtils.showCustomAlertWithListenerWithOK(requireActivity(), "Please Select date in 30 Days.") { _, _ ->
                 }
             }
-            val myFormat = "MM/dd/yyyy" //In which you need put here
-            val sdf = SimpleDateFormat(myFormat, Locale.getDefault())
-            val enddatrstring = sdf.format(myCalendar1.time)
-            viewModel.endDate.value = "$enddatrstring $timestring"
-            Log.d("yash", "onCreateView: endtime " + timestring)
-            Log.d("yash", "onCreateView: enndDate&Time " + viewModel.endDate.value)
+
         }
 
         startDate = DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
             myCalendar.set(Calendar.YEAR, year)
             myCalendar.set(Calendar.MONTH, monthOfYear)
             myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-
-
             TimePickerDialog(
                 requireActivity(),
                 startTime,
@@ -217,18 +173,6 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                 myCalendar2.get(Calendar.MINUTE),
                 false
             ).show()
-
-
-//            viewModel.apiCallTimeSheet(
-//                currentPage,
-//                getTerminalId(binding.includeView.spTerminals.selectedItemPosition).toString(),
-//                getRoleId(binding.includeView.spRoles.selectedItemPosition).toString(),
-//                getEmployeeId(binding.includeView.spEmployees.selectedItemPosition).toString(),
-//                getOrderId(binding.includeView.spOrders.selectedItemPosition).toString(),
-//                getTipType(binding.includeView.spTipTypes.selectedItemPosition),
-//                getPaymentType(binding.includeView.spTransactionTypes.selectedItemPosition)
-//            )
-
         }
 
         endDate = DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
@@ -243,17 +187,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                 myCalendar3.get(Calendar.MINUTE),
                 false
             ).show()
-            viewModel.updateLabel(myCalendar1)
-//            viewModel.apiCallTimeSheet(
-//                currentPage,
-//                getTerminalId(binding.includeView.spTerminals.selectedItemPosition).toString(),
-//                getRoleId(binding.includeView.spRoles.selectedItemPosition).toString(),
-//                getEmployeeId(binding.includeView.spEmployees.selectedItemPosition).toString(),
-//                getOrderId(binding.includeView.spOrders.selectedItemPosition).toString(),
-//                getTipType(binding.includeView.spTipTypes.selectedItemPosition),
-//                getPaymentType(binding.includeView.spTransactionTypes.selectedItemPosition)
-//
-//            )
+
         }
 
 
@@ -360,9 +294,72 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
         return binding.root
     }
 
+    private fun differnceTrue(date1: String, date2: String?): Long {
+        var dateType1: Date
+        var dateType2: Date
+        var daydifference = "0".toLong()
+//        11/30/2021 09:40 AM
+        try {
+            var dates = SimpleDateFormat("MM/dd/yyyy")
+            dateType1 = dates.parse(date1.substringBefore(" "))
+            dateType2 = dates.parse(date2?.substringBefore(" "))
+            var differencedate = abs(dateType1.time - dateType2.time)
+            daydifference = differencedate / (24 * 60 * 60 * 1000)
+            Log.d("yash", "differnceTrue: " + daydifference)
+            return daydifference
+        } catch (e: Exception) {
+        }
+        return daydifference
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel.setCurrentDate(myCalendar)
+    }
+
+    fun timeCalculateForStartEndTime(hour: Int, minute: Int, isStart: String): String {
+        var timestring = ""
+        var hoursfinal: Int = 0
+        if (hour > 12) {
+            hoursfinal = hour - 12
+            if (hoursfinal < 10) {
+                if (minute < 10) {
+                    timestring = "0$hoursfinal:0$minute PM"
+                } else {
+                    timestring = "0$hoursfinal:$minute PM"
+                }
+            } else {
+                if (minute < 10) {
+                    timestring = "$hoursfinal:0$minute PM"
+                } else {
+                    timestring = "$hoursfinal:$minute PM"
+                }
+            }
+        } else {
+            if (hour < 10) {
+                if (minute < 10) {
+                    timestring = "0$hour:0$minute AM"
+                } else {
+                    timestring = "0$hour:$minute AM"
+                }
+            } else {
+                if (minute < 10) {
+                    timestring = "$hour:0$minute AM"
+                } else {
+                    timestring = "$hour:$minute AM"
+                }
+            }
+        }
+
+        val myFormat = "MM/dd/yyyy" //In which you need put here
+        val sdf = SimpleDateFormat(myFormat, Locale.getDefault())
+        var startDatestring = ""
+        if (isStart == "isstart") {
+            startDatestring = sdf.format(myCalendar.time)
+        } else {
+            startDatestring = sdf.format(myCalendar1.time)
+        }
+        return "$startDatestring $timestring"
     }
 
     private fun startDatePickerObserver() {
@@ -821,7 +818,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                 val bundle = Bundle().apply {
                     putInt("orderId", it.orderDetails.id)
                     putInt("paymentId", it.id)
-                    putBoolean("isFromTrans",true)
+                    putBoolean("isFromTrans", true)
                     putString("orderType", it.orderDetails.orderType)
                 }
                 findNavController().navigate(
