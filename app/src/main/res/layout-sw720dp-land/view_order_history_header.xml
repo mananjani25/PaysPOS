@@ -39,6 +39,13 @@
             android:visibility="gone"
             android:text="@string/loyalty_points" />
 
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txtUsedLoyaltyPoints"
+            style="@style/HistoryItemHeaderText"
+            android:gravity="center"
+            android:visibility="gone"
+            android:text="@string/redeemed_loyalty_points" />
+
         <!--<androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txtReorder"
             style="@style/HistoryItemHeaderText"

@@ -281,6 +281,7 @@
     <string name="lock_screen_after_each_transaction">Lock screen after each transaction</string>
     <string name="gift_card">Gift Card</string>
     <string name="loyalty_points">Loyalty Points</string>
+    <string name="redeemed_loyalty_points">Redeemed Loyalty Points</string>
     <string name="user_access_permission">User Access Permission</string>
     <string name="time_tracking">Time Tracking</string>
     <string name="all_current_and_future_locations">All current and future locations</string>
