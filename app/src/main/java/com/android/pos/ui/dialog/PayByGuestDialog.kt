@@ -2,6 +2,7 @@ package com.android.pos.ui.dialog
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -136,9 +137,6 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
             setupData()
         }
 
-        binding.btnpaynowCreditdialog.setOnClickListener {
-            makePaymentCreditCard()
-        }
         setFragmentResultListener("request_key_split") { requestKey: String, bundle: Bundle ->
             splitValue = bundle.getInt("split")
 
@@ -178,24 +176,19 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
     }
 
     fun getDiscountCashData(): Double {
-
-        if (optionType == "CashDiscount") {
-            if (amountType == "Dollar") {
-                return rateorAmount.toDouble().also { cashDiscount = it }
-            } else if (amountType == "Percentage") {
-                return (viewModel.subTotalAmount * 100 / rateorAmount.toDouble()).also {
-                    cashDiscount = it
-                }
+        if (amountType == "Dollar") {
+            return rateorAmount.toDouble().also { cashDiscount = it }
+        } else if (amountType == "Percentage") {
+            return (viewModel.subTotalAmount * 100 / rateorAmount.toDouble()).also {
+                cashDiscount = it
             }
-        } else {
-            return 0.0
         }
         return 0.0
     }
 
 
     private fun wholePaymentObservor() {
-        paymentViewModel.msgText.observe(viewLifecycleOwner, { event ->
+        paymentViewModel.msgText.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 AlertUtils.showCustomAlertWithListenerWithOK(requireContext(), it) { _, _ ->
                     gotoPay()
@@ -203,7 +196,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                 }
 
             }
-        })
+        }
 
     }
 
@@ -221,7 +214,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                 bundle.putBoolean("isSpilt", false)
                 bundle.putBoolean("isDineIn", true)
                 bundle.putBoolean("isGuest", isGuestPay)
-                bundle.putString("paymentType","Card")
+                bundle.putString("paymentType", "Card")
                 findNavController().navigate(
                     R.id.action_payByGuestDialog_to_orderCompleteFragment,
                     bundle
@@ -244,7 +237,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                 bundle.putDouble("remainingAmount", totalPrice - payAmount)
                 bundle.putBoolean("isDineIn", true)
                 bundle.putBoolean("isGuest", isGuestPay)
-                bundle.putString("paymentType","Cash")
+                bundle.putString("paymentType", "Cash")
                 if (isLastPayment!!)
                     bundle.putBoolean("isGuest", false)
                 findNavController().navigate(
@@ -276,7 +269,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                 val bundle = Bundle()
                 bundle.putDouble("totalPrice", payAmount)
                 bundle.putDouble("paymentAmount", paymentAmount)
-                bundle.putString("paymentType","Cash")
+                bundle.putString("paymentType", "Cash")
                 orderId?.let { bundle.putInt("orderID", it) }
                 //                                bundle.putParcelable("receiptData", it.data)
 
@@ -331,7 +324,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                 bundle.putBoolean("isSpilt", false)
                 bundle.putBoolean("isDineIn", true)
                 bundle.putBoolean("isGuest", isGuestPay)
-                bundle.putString("paymentType","Cash")
+                bundle.putString("paymentType", "Cash")
                 if (isLastPayment!!)
                     bundle.putBoolean("isGuest", false)
 
@@ -455,6 +448,9 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
     private fun setUpPaymentTypeWiseDiscount() {
         if (paymentType == "Card") {
             if (optionType == "SurCharge") {
+
+                binding.linnearCashDiscounnt.visibility = View.GONE
+                binding.linearNonCashAdjamounnt.visibility = View.VISIBLE
                 binding.txtCashdiscount.text = "- $" + String.format("%.2f", 0.0)
                 //100 -4 = 96 == totalprice
                 MethodUtils.setPriceTextView(
@@ -467,8 +463,11 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                 )
                 cardPaymentAmount =
                     (totalPrice + tipAmount + getDiscountCashData()) + getDiscountCashData()
-                binding.txtNoncashAdj.text = "- $" + String.format("%.2f", getDiscountCashData())
+                binding.txtNoncashAdj.text = "+ $" + String.format("%.2f", getDiscountCashData())
             } else {
+                binding.linnearCashDiscounnt.visibility = View.GONE
+                binding.linearNonCashAdjamounnt.visibility = View.GONE
+
                 binding.txtCashdiscount.text = "- $" + String.format("%.2f", getDiscountCashData())
                 MethodUtils.setPriceTextView(
                     binding.txtTotal,
@@ -483,6 +482,8 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
             }
         } else if (paymentType == "Cash") {
             if (optionType == "SurCharge") {
+                binding.linnearCashDiscounnt.visibility = View.GONE
+                binding.linearNonCashAdjamounnt.visibility = View.GONE
                 binding.txtCashdiscount.text = "- $" + String.format("%.2f", 0.0)
                 MethodUtils.setPriceTextView(
                     binding.txtTotal,
@@ -494,6 +495,8 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                 )
                 binding.txtNoncashAdj.text = "- $" + String.format("%.2f", getDiscountCashData())
             } else {
+                binding.linnearCashDiscounnt.visibility = View.VISIBLE
+                binding.linearNonCashAdjamounnt.visibility = View.GONE
                 binding.txtCashdiscount.text = "- $" + String.format("%.2f", getDiscountCashData())
                 MethodUtils.setPriceTextView(
                     binding.txtTotal,
@@ -652,13 +655,15 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
             R.id.llCredit -> {
                 paymentType = "Card"
                 setUpPaymentTypeWiseDiscount()
-                binding.btnpaynowCreditdialog.visibility = View.VISIBLE
-                Log.d(TAG, "onClick: " + cardPaymentAmount)
+                val handler = Handler()
+                handler.postDelayed({
+                    makePaymentCreditCard()
+                }, 2000)
+
 
             }
 
             R.id.llCash -> {
-                binding.btnpaynowCreditdialog.visibility = View.GONE
                 if (paymentType == "Card") {
                     paymentType = "Cash"
                     setUpPaymentTypeWiseDiscount()
@@ -704,7 +709,6 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
             }
 
             R.id.txtOriginalAmount -> {
-                binding.btnpaynowCreditdialog.visibility = View.GONE
                 paymentAmount = when {
 
                     isSplitByNo -> {
@@ -741,7 +745,6 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
 
             }
             R.id.txtSecondAmount -> {
-                binding.btnpaynowCreditdialog.visibility = View.GONE
                 paymentAmount = secondValue.toDouble()
                 if (isTotalPayment) {
 
@@ -766,7 +769,6 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
             }
 
             R.id.txtThirdAmount -> {
-                binding.btnpaynowCreditdialog.visibility = View.GONE
                 paymentAmount = thirdValue
                 if (isTotalPayment) {
 
@@ -790,7 +792,6 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                 }
             }
             R.id.txtFourthAmount -> {
-                binding.btnpaynowCreditdialog.visibility = View.GONE
                 paymentAmount = fourthValue
                 if (isTotalPayment) {
 
@@ -1199,5 +1200,4 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
 
 
     }
-
 }

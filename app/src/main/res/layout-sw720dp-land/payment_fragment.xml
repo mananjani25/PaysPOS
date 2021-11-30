@@ -427,11 +427,13 @@
             </androidx.appcompat.widget.LinearLayoutCompat>
 
             <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/linear_cashdiiscount"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="?attr/selectableItemBackground"
                 android:orientation="horizontal"
                 android:paddingStart="@dimen/_5sdp"
+                android:visibility="gone"
                 android:paddingTop="@dimen/_3sdp"
                 android:paddingEnd="@dimen/_5sdp"
                 android:paddingBottom="@dimen/_3sdp">
@@ -461,12 +463,14 @@
             </androidx.appcompat.widget.LinearLayoutCompat>
 
             <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/linearnoncashAdj"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="?attr/selectableItemBackground"
                 android:orientation="horizontal"
                 android:paddingStart="@dimen/_5sdp"
                 android:paddingTop="@dimen/_3sdp"
+                android:visibility="gone"
                 android:paddingEnd="@dimen/_5sdp"
                 android:paddingBottom="@dimen/_3sdp">
 

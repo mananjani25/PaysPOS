@@ -2,6 +2,7 @@ package com.android.pos.ui.fragments.payment
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -199,9 +200,10 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         if (redeemLoyaltyInfo?.needToApplyLoyalty == true) {
             binding.llLoyalty.visible()
             binding.llLoyaltyPoint.visible()
-            binding.txtLoyaltyAmount.text  = "- $" + String.format("%.2f", redeemLoyaltyInfo?.usedLoyaltyAmount?:0.0)
-            binding.txtUsedLoyaltyPoints.text = "${redeemLoyaltyInfo?.usedLoyaltyPoints?:0}"
-        }else{
+            binding.txtLoyaltyAmount.text =
+                "- $" + String.format("%.2f", redeemLoyaltyInfo?.usedLoyaltyAmount ?: 0.0)
+            binding.txtUsedLoyaltyPoints.text = "${redeemLoyaltyInfo?.usedLoyaltyPoints ?: 0}"
+        } else {
             binding.llLoyalty.gone()
             binding.llLoyaltyPoint.gone()
         }
@@ -217,9 +219,13 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     binding.txtTotalAmount,
                     (totalPrice + tipAmount) + final_discount
                 )
+                binding.linearCashdiiscount.visibility = View.GONE
+                binding.linearnoncashAdj.visibility = View.VISIBLE
                 cardPaymentAmount = (totalPrice + tipAmount) + final_discount
-                binding.txtNoncashAdj.text = "- $" + String.format("%.2f", final_discount)
+                binding.txtNoncashAdj.text = "+ $" + String.format("%.2f", final_discount)
             } else {
+                binding.linearCashdiiscount.visibility = View.GONE
+                binding.linearnoncashAdj.visibility = View.GONE
                 binding.txtCashdiscount.text = "- $" + String.format("%.2f", final_discount)
                 MethodUtils.setPriceTextView(
                     binding.txtTotal,
@@ -248,10 +254,14 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
         } else {
             if (optionType == "SurCharge") {
+                binding.linearCashdiiscount.visibility = View.GONE
+                binding.linearnoncashAdj.visibility = View.GONE
                 binding.txtCashdiscount.text = "- $" + String.format("%.2f", 0.0)
                 MethodUtils.setPriceTextView(binding.txtTotal, (totalPrice + tipAmount))
                 binding.txtNoncashAdj.text = "- $" + String.format("%.2f", final_discount)
             } else {
+                binding.linearCashdiiscount.visibility = View.VISIBLE
+                binding.linearnoncashAdj.visibility = View.GONE
                 binding.txtCashdiscount.text = "- $" + String.format("%.2f", final_discount)
                 MethodUtils.setPriceTextView(
                     binding.txtTotal,
@@ -358,14 +368,13 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         binding.imgBack.setOnClickListener(this)
         binding.llCash.setOnClickListener(this)
         binding.llCredit.setOnClickListener(this)
-        binding.btnpaynowCredit.setOnClickListener(this)
         binding.txtOriginalAmount.setOnClickListener(this)
         binding.txtSecondAmount.setOnClickListener(this)
         binding.txtThirdAmount.setOnClickListener(this)
         binding.txtFourthAmount.setOnClickListener(this)
         binding.txtAddTips.setOnClickListener(this)
 
-
+        Log.d(TAG, "onClick: $cardPaymentAmount")
     }
 
     private fun getSerchargeCashDisDetail() {
@@ -508,7 +517,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             }
 
             R.id.txtOriginalAmount -> {
-                binding.linearPaynowcredit.visibility = View.GONE
+
 
                 paymentAmount = when {
 
@@ -529,24 +538,20 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 makePayment()
             }
             R.id.txtSecondAmount -> {
-                binding.linearPaynowcredit.visibility = View.GONE
                 paymentAmount = secondValue.toDouble()
                 makePayment()
             }
             R.id.txtThirdAmount -> {
-                binding.linearPaynowcredit.visibility = View.GONE
                 paymentAmount = thirdValue
                 makePayment()
             }
             R.id.txtFourthAmount -> {
-                binding.linearPaynowcredit.visibility = View.GONE
                 paymentAmount = fourthValue
                 makePayment()
             }
 
 
             R.id.llCash -> {
-                binding.linearPaynowcredit.visibility = View.GONE
                 if (paymentType == "Card") {
                     getSerchargeCashDisDetail()
                     paymentType = "Cash"
@@ -574,22 +579,20 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             }
             R.id.llCredit -> {
                 paymentType = "Card"
-                binding.linearPaynowcredit.visibility = View.VISIBLE
                 getSerchargeCashDisDetail()
-                Log.d(TAG, "onClick: " + cardPaymentAmount)
 
+                val handler = Handler()
+                handler.postDelayed({
+                    makePaymentCreditCard()
+                }, 2000)
 
             }
 
-            R.id.btnpaynowCredit -> {
-                makePaymentCreditCard()
-            }
 
             R.id.txtCustom -> {
                 findNavController().navigate(R.id.action_paymentFragment_to_customAmountFragment)
             }
             R.id.txtSplitAmount -> {
-                binding.linearPaynowcredit.visibility = View.GONE
                 if (totalPrice == 0.0) {
 
                     AlertUtils.showCustomAlert(
@@ -883,7 +886,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                         bundle.putBoolean("isSpilt", false)
                         bundle.putBoolean("isDineIn", false)
                         bundle.putBoolean("isGuest", false)
-                        bundle.putString("paymentType","Card")
+                        bundle.putString("paymentType", "Card")
                         findNavController().navigate(
                             R.id.action_paymentFragment_to_orderCompleteFragment,
                             bundle
@@ -904,7 +907,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                         bundle.putParcelable("receiptData", it.data)
                         bundle.putBoolean("isSpilt", true)
                         bundle.putInt("splitValue", splitValue)
-                        bundle.putString("paymentType","Cash")
+                        bundle.putString("paymentType", "Cash")
                         bundle.putDouble(
                             "remainingAmount",
                             (totalPrice - final_discount) - (payAmount - tipAmount)
@@ -934,7 +937,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                         bundle.putDouble("paymentAmount", paymentAmount)
                         bundle.putInt("orderID", it.data.order.id)
                         bundle.putParcelable("receiptData", it.data)
-                        bundle.putString("paymentType","Cash")
+                        bundle.putString("paymentType", "Cash")
 
                         if (MethodUtils.roundOffAmountDouble(payAmount) != MethodUtils.roundOffAmountDouble(
                                 totalPrice
@@ -978,7 +981,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                         bundle.putInt("orderID", it.data.order.id)
                         bundle.putParcelable("receiptData", it.data)
                         bundle.putBoolean("isSpilt", false)
-                        bundle.putString("paymentType","Cash")
+                        bundle.putString("paymentType", "Cash")
                         findNavController().navigate(
                             R.id.action_paymentFragment_to_orderCompleteFragment,
                             bundle

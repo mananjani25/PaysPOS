@@ -542,8 +542,10 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:id="@+id/linear_cash_Discount"
                         android:layout_marginTop="@dimen/_3sdp"
                         android:orientation="horizontal"
+                        android:visibility="gone"
                         android:padding="@dimen/_2sdp">
 
                         <androidx.appcompat.widget.AppCompatTextView
@@ -556,20 +558,23 @@
                             android:textSize="@dimen/_5mdpi" />
 
                         <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/txt_cashAmounntDiscount"
                             style="@style/CustomFontSemiBold"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginRight="@dimen/_5sdp"
                             android:gravity="end"
-                            android:text="@{`- `+@string/symbole +``+String.format(@string/format,orderDetails.data.cash_discount_or_surcharge)}"
+                            android:text=""
                             android:textColor="@color/viewTextColor"
                             android:textSize="@dimen/_5mdpi" />
                     </LinearLayout>
                     <LinearLayout
+                        android:id="@+id/liinear_noncashAdj"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/_3sdp"
                         android:orientation="horizontal"
+                        android:visibility="gone"
                         android:padding="@dimen/_2sdp">
 
                         <androidx.appcompat.widget.AppCompatTextView
@@ -582,6 +587,7 @@
                             android:textSize="@dimen/_5mdpi" />
 
                         <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/txt_NonCashAdjamount"
                             style="@style/CustomFontSemiBold"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"

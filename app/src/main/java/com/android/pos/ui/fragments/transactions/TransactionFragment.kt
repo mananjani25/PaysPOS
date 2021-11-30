@@ -217,18 +217,22 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
 
             override fun loadMoreItems() {
-                isLoading = true
                 currentPage += 1
+                if (currentPage <= TOTAL_PAGES) {
+                    isLoading = true
+                    viewModel.apiCallTimeSheet(
+                        currentPage,
+                        getTerminalId(binding.includeView.spTerminals.selectedItemPosition).toString(),
+                        getRoleId(binding.includeView.spRoles.selectedItemPosition).toString(),
+                        getEmployeeId(binding.includeView.spEmployees.selectedItemPosition).toString(),
+                        getOrderId(binding.includeView.spOrders.selectedItemPosition).toString(),
+                        getTipType(binding.includeView.spTipTypes.selectedItemPosition),
+                        getPaymentType(binding.includeView.spTransactionTypes.selectedItemPosition)
+                    )
+                } else {
+                    transactionAdapter.showLoading(false)
+                }
 
-                viewModel.apiCallTimeSheet(
-                    currentPage,
-                    getTerminalId(binding.includeView.spTerminals.selectedItemPosition).toString(),
-                    getRoleId(binding.includeView.spRoles.selectedItemPosition).toString(),
-                    getEmployeeId(binding.includeView.spEmployees.selectedItemPosition).toString(),
-                    getOrderId(binding.includeView.spOrders.selectedItemPosition).toString(),
-                    getTipType(binding.includeView.spTipTypes.selectedItemPosition),
-                    getPaymentType(binding.includeView.spTransactionTypes.selectedItemPosition)
-                )
             }
 
         })
@@ -257,7 +261,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
     private fun startDatePickerObserver() {
         viewModel.startDateSelection.observe(requireActivity(), { event ->
             event.getContentIfNotHandled()?.let {
-
+                currentPage = 1
                 DatePickerDialog(
                     requireActivity(), startDate, myCalendar
                         .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
@@ -272,7 +276,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
     private fun endDatePickerObserver() {
         viewModel.endDateSelection.observe(requireActivity(), { event ->
             event.getContentIfNotHandled()?.let {
-
+                currentPage = 1
                 DatePickerDialog(
                     requireActivity(), endDate, myCalendar1
                         .get(Calendar.YEAR), myCalendar1.get(Calendar.MONTH),
@@ -454,7 +458,6 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                 // employeeTimeSheet.addAll(timeSheet.data.payments)
                 TOTAL_PAGES = timeSheet.data.pagination.maxPageSize.toInt()
 
-                isLoading = false
                 transactionAdapter.showLoading(false)
 
                 if (checkFilter) {
@@ -463,11 +466,10 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                 }
                 transactionAdapter.addAll(timeSheet.data.payments)
 
-
+                isLoading = false
                 if (currentPage != TOTAL_PAGES) {
+
                     transactionAdapter.showLoading(true)
-                } else {
-                    isLastPage = true
                 }
 
 
@@ -656,7 +658,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
 
         if (spinnerTouched) {
-
+            currentPage = 1
             checkFilter = true
             viewModel.apiCallTimeSheet(
                 currentPage,
@@ -710,7 +712,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                 val bundle = Bundle().apply {
                     putInt("orderId", it.orderDetails.id)
                     putInt("paymentId", it.id)
-                    putBoolean("isFromTrans",true)
+                    putBoolean("isFromTrans", true)
                     putString("orderType", it.orderDetails.orderType)
                 }
                 findNavController().navigate(

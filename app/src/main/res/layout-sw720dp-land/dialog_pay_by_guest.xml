@@ -444,11 +444,13 @@
             </androidx.appcompat.widget.LinearLayoutCompat>
 
             <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/linnearCashDiscounnt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="?attr/selectableItemBackground"
                 android:orientation="horizontal"
                 android:paddingStart="@dimen/_5sdp"
+                android:visibility="gone"
                 android:paddingTop="@dimen/_3sdp"
                 android:paddingEnd="@dimen/_5sdp"
                 android:paddingBottom="@dimen/_3sdp">
@@ -478,11 +480,13 @@
             </androidx.appcompat.widget.LinearLayoutCompat>
 
             <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/linearNonCashAdjamounnt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="?attr/selectableItemBackground"
                 android:orientation="horizontal"
                 android:paddingStart="@dimen/_5sdp"
+                android:visibility="gone"
                 android:paddingTop="@dimen/_3sdp"
                 android:paddingEnd="@dimen/_5sdp"
                 android:paddingBottom="@dimen/_3sdp">
