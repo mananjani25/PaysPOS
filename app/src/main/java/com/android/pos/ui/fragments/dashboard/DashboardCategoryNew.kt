@@ -133,6 +133,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private val viewModelPayment by viewModels<PaymentViewModel>()
     private lateinit var dineInCartAdapter: DineInAdapter
     lateinit var cashDiscountModel: CashDiscountModel
+    var cashDiscountType = "CashDiscount"
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -188,6 +189,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         cashDiscountData.rate_or_amount.toString()
                     )
                     prefProvider.setValueboolean(CASH_DIS_STORED, true)
+                    cashDiscountType = cashDiscountData.option_type
                     Log.d(TAG, "onCreateView: " + cashDiscountModel.rate_or_amount)
                 }
             })
@@ -2164,6 +2166,13 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         orderOfflineId
                     )
 
+                    // (viewModel.redeemLoyaltyInfo.getAmountToBePaid() + (viewModel.redeemLoyaltyInfo.cashDiscount
+                    //                            ?: 0.0)),
+
+
+//                    (viewModel.redeemLoyaltyInfo.remainingLoyaltyAmount + (viewModel.redeemLoyaltyInfo.cashDiscount
+//                        ?: 0.0)),
+
                     val request = viewModelPayment.createOrderRequest(
                         cartList,
                         viewModel.subTotalPrice,
@@ -2179,7 +2188,11 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         0.00,
                         -1,
                         viewModel.redeemLoyaltyInfo,
-                        false
+                        cashDiscount,
+                        false,
+                        "Cash",
+                        cashDiscountType
+
                     )
                     viewModelPayment.saveOrder(true)
                     viewModelPayment.submit(request)

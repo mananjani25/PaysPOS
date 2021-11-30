@@ -238,7 +238,7 @@ class PaymentViewModel @Inject constructor(
         }
     }
 
-     fun getCashDiscountDetails(active: Int): LiveData<CashDiscountModel>? {
+    fun getCashDiscountDetails(active: Int): LiveData<CashDiscountModel>? {
         return posRepository.getCashDisDetail(active)
     }
 
@@ -306,7 +306,10 @@ class PaymentViewModel @Inject constructor(
         tipAmount: Double,
         splitValue: Int,
         redeemLoyaltyInfo: RedeemLoyaltyInfo?,
-        needToAddPaymentAttributes: Boolean?
+        finaldiscount: Double,
+        needToAddPaymentAttributes: Boolean?,
+        paymentType: String,
+        cashdiscountType: String
     ): OrderRequestModel {
 
         val orderAttributeRequestModel = OrderAttributeRequestModel()
@@ -323,6 +326,8 @@ class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.locationId = cartModel.locationId
         orderAttributeRequestModel.terminalId = cartModel.terminalId
         orderAttributeRequestModel.note = cartModel.note
+        orderAttributeRequestModel.cash_discount_or_surcharge = finaldiscount
+        orderAttributeRequestModel.cash_discount_type = cashdiscountType
         orderAttributeRequestModel.offlineId =
             if (isUpdateOrder) orderOfflineId.toString() else randomOfflineId()
         Log.e(TAG, "openOrderType: " + cartModel.orderType)
@@ -365,7 +370,8 @@ class PaymentViewModel @Inject constructor(
                 subTotalPrice,
                 totalServiceCharge,
                 totalTax,
-                totalDiscount, tipAmount, splitValue,
+                totalDiscount, tipAmount, splitValue, finaldiscount, paymentType,
+                cashdiscountType,
                 redeemLoyaltyInfo = redeemLoyaltyInfo
             )
         } else {
@@ -898,6 +904,9 @@ class PaymentViewModel @Inject constructor(
         totalDis: Double,
         tipAmount: Double,
         splitValue: Int,
+        finalcashdiscount: Double,
+        paymentTypeStatus: String,
+        cashdiscountType: String,
         redeemLoyaltyInfo: RedeemLoyaltyInfo?
     ): PaymentAttributes {
         return PaymentAttributes().apply {
@@ -910,12 +919,14 @@ class PaymentViewModel @Inject constructor(
 //            cardName = ""
 //            cardNumber = ""
 //            cardType = 0
-            cashDiscount = 0.0
+            cash_discount_or_surcharge = finalcashdiscount
+            total_cash_discount = finalcashdiscount
             cashDiscountFee = 0.0
+            cash_discount_type = cashdiscountType
             employeeId = cartModel.employeeID
             offlineId = if (isUpdateOrder) paymentOfflineId.toString() else randomOfflineId()
             payableType = "Order"
-            paymentType = "Cash"
+            paymentType = paymentTypeStatus
             serviceChargeAmount =
                 if (splitValue == -1) MethodUtils.roundOffAmountDouble(totalServiceCharge) else MethodUtils.roundOffAmountDouble(
                     totalServiceCharge

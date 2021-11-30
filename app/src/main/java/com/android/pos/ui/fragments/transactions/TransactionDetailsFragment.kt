@@ -87,6 +87,20 @@ class TransactionDetailsFragment : Fragment() {
         navigate()
         getCustomerReceiptSettings()
 
+        viewModel.getCashDiscountDetails(active = 1)
+            ?.observe(viewLifecycleOwner, { cashDiscountData ->
+                cashDiscountData?.let {
+                    prefProvider.setValue(Constants.AMOUNT_TYPE, cashDiscountData.amount_type)
+                    prefProvider.setValue(Constants.OPTION_TYPE, cashDiscountData.option_type)
+                    prefProvider.setValue(
+                        Constants.RATE_OR_AMOUNT,
+                        cashDiscountData.rate_or_amount.toString()
+                    )
+                    prefProvider.setValueboolean(Constants.CASH_DIS_STORED, true)
+
+                }
+            })
+
         val callback: OnBackPressedCallback =
             object : OnBackPressedCallback(true /* enabled by default */) {
                 override fun handleOnBackPressed() {
@@ -854,7 +868,7 @@ class TransactionDetailsFragment : Fragment() {
 
 
 
-            if (paymentDetailsResponse.data.order?.total_cash_discount_fee != null) {
+            if (paymentDetailsResponse.data.order?.cash_discount_or_surcharge != null) {
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addTextFont(Builder.FONT_E)
@@ -871,10 +885,10 @@ class TransactionDetailsFragment : Fragment() {
                 builder.addText(
                     padLine(
                         "Cash Discount",
-                        if (paymentDetailsResponse.data.order.total_cash_discount_fee == 0.0) {
-                            "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.order?.total_cash_discount_fee)
+                        if (paymentDetailsResponse.data.order.cash_discount_or_surcharge == 0.0) {
+                            "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.order?.cash_discount_or_surcharge)
                         } else {
-                            "-$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.order?.total_cash_discount_fee)
+                            "-$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.order?.cash_discount_or_surcharge)
                         },
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             24

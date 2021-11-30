@@ -2640,7 +2640,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
 
-            if (getOrderDetailsResponse?.totalCashDiscountFee != null) {
+            if (getOrderDetailsResponse?.cash_discount_or_surcharge != null) {
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addTextFont(Builder.FONT_E)
@@ -2657,14 +2657,14 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 builder.addText(
                     padLine(
                         "Cash Discount",
-                        if (getOrderDetailsResponse?.totalCashDiscountFee == 0.0) {
-                            "$" + getOrderDetailsResponse?.totalCashDiscountFee?.let {
+                        if (getOrderDetailsResponse?.cash_discount_or_surcharge == 0.0) {
+                            "$" + getOrderDetailsResponse?.cash_discount_or_surcharge?.let {
                                 MethodUtils.roundOffAmountString(
                                     it
                                 )
                             }
                         } else {
-                            "-$" + getOrderDetailsResponse?.totalCashDiscountFee?.let {
+                            "-$" + getOrderDetailsResponse?.cash_discount_or_surcharge?.let {
                                 MethodUtils.roundOffAmountString(
                                     it
                                 )

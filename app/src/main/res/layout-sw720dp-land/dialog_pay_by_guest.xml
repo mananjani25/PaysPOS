@@ -683,7 +683,18 @@
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
-        </androidx.appcompat.widget.LinearLayoutCompat>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnpaynowCreditdialog"
+                android:layout_gravity="center"
+                android:layout_margin="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/btnColorDark_"
+                android:text="@string/pay_now"
+                android:visibility="gone"
+                android:textColor="@color/white"
+                android:textStyle="bold" />
+            </androidx.appcompat.widget.LinearLayoutCompat>
 
 
     </androidx.appcompat.widget.LinearLayoutCompat>

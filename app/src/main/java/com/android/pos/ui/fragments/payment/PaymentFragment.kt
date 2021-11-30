@@ -63,8 +63,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
     private lateinit var binding: PaymentFragmentBinding
     private val TAG = "PaymentFragment"
     var final_discount = 0.0
-    var final_NonCashAdj = 0.0
     var paymentType = "Cash"
+    var cashDiscountType = "CashDiscount"
     var cardPaymentAmount = 0.0
 
     @Inject
@@ -206,7 +206,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             binding.llLoyaltyPoint.gone()
         }
 
-        if (paymentType == "Credit") {
+        if (paymentType == "Card") {
             if (optionType == "SurCharge") {
                 binding.txtCashdiscount.text = "- $" + String.format("%.2f", 0.0)
                 MethodUtils.setPriceTextView(
@@ -358,6 +358,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         binding.imgBack.setOnClickListener(this)
         binding.llCash.setOnClickListener(this)
         binding.llCredit.setOnClickListener(this)
+        binding.btnpaynowCredit.setOnClickListener(this)
         binding.txtOriginalAmount.setOnClickListener(this)
         binding.txtSecondAmount.setOnClickListener(this)
         binding.txtThirdAmount.setOnClickListener(this)
@@ -390,6 +391,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     }
 
                 }
+                cashDiscountType = cashDiscountData.option_type
                 setupData(cashDiscountData.option_type)
             })
 
@@ -506,6 +508,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             }
 
             R.id.txtOriginalAmount -> {
+                binding.linearPaynowcredit.visibility = View.GONE
 
                 paymentAmount = when {
 
@@ -526,21 +529,25 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 makePayment()
             }
             R.id.txtSecondAmount -> {
+                binding.linearPaynowcredit.visibility = View.GONE
                 paymentAmount = secondValue.toDouble()
                 makePayment()
             }
             R.id.txtThirdAmount -> {
+                binding.linearPaynowcredit.visibility = View.GONE
                 paymentAmount = thirdValue
                 makePayment()
             }
             R.id.txtFourthAmount -> {
+                binding.linearPaynowcredit.visibility = View.GONE
                 paymentAmount = fourthValue
                 makePayment()
             }
 
 
             R.id.llCash -> {
-                if (paymentType == "Credit") {
+                binding.linearPaynowcredit.visibility = View.GONE
+                if (paymentType == "Card") {
                     getSerchargeCashDisDetail()
                     paymentType = "Cash"
                 } else {
@@ -566,17 +573,23 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
             }
             R.id.llCredit -> {
-                paymentType = "Credit"
+                paymentType = "Card"
+                binding.linearPaynowcredit.visibility = View.VISIBLE
                 getSerchargeCashDisDetail()
                 Log.d(TAG, "onClick: " + cardPaymentAmount)
 
 
             }
+
+            R.id.btnpaynowCredit -> {
+                makePaymentCreditCard()
+            }
+
             R.id.txtCustom -> {
                 findNavController().navigate(R.id.action_paymentFragment_to_customAmountFragment)
             }
             R.id.txtSplitAmount -> {
-
+                binding.linearPaynowcredit.visibility = View.GONE
                 if (totalPrice == 0.0) {
 
                     AlertUtils.showCustomAlert(
@@ -620,6 +633,35 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
     }
 
+    private fun makePaymentCreditCard() {
+
+        val myRequest = cartList?.let {
+
+            viewModel.createOrderRequest(
+                it,
+                subTotalPrice,
+                cardPaymentAmount,
+                totalServiceCharge,
+                totalTax,
+                prefProvider.getValue(Constants.ORDER_TYPE, "").toString(),
+                future_delivery_date,
+                future_delivery_date,
+                true,
+                totalDiscount,
+                tipAmount,
+                splitValue,
+                redeemLoyaltyInfo,
+                final_discount,
+                true,
+                paymentType, cashDiscountType
+            )
+        }
+        if (myRequest != null) {
+            viewModel.totalPayAmount(cardPaymentAmount)
+            viewModel.submit(myRequest)
+        }
+    }
+
 
     private fun makePayment() {
 
@@ -658,7 +700,10 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     tipAmount,
                     splitValue,
                     redeemLoyaltyInfo,
-                    true
+                    final_discount,
+                    true,
+                    paymentType,
+                    cashDiscountType
                 )
             }
             if (myRequest != null) {
@@ -722,7 +767,10 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     tipAmount,
                     splitValue,
                     redeemLoyaltyInfo,
-                    true
+                    final_discount,
+                    true,
+                    paymentType,
+                    cashDiscountType
                 )
             }
             if (myRequest != null) {
@@ -769,7 +817,9 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     tipAmount,
                     splitValue,
                     redeemLoyaltyInfo,
-                    true
+                    final_discount,
+                    true,
+                    paymentType, cashDiscountType
                 )
             }
             if (myRequest != null) {
@@ -824,6 +874,26 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 prefProvider.setValueInt("ORDER_ID", it.data.order.id)
 
                 when {
+                    paymentType == "Card" -> {
+                        val bundle = Bundle()
+                        bundle.putDouble("totalPrice", cardPaymentAmount)
+                        bundle.putDouble("paymentAmount", cardPaymentAmount)
+                        orderId?.let { bundle.putInt("orderID", it) }
+                        //bundle.putParcelable("receiptData", it.data)
+                        bundle.putBoolean("isSpilt", false)
+                        bundle.putBoolean("isDineIn", false)
+                        bundle.putBoolean("isGuest", false)
+                        bundle.putString("paymentType","Card")
+                        findNavController().navigate(
+                            R.id.action_paymentFragment_to_orderCompleteFragment,
+                            bundle
+                        )
+                        prefProvider.setValue(Constants.SPLIT_PAY_AMOUNT_DINE_IN, "")
+                        prefProvider.setValueInt(Constants.SPLIT_NO_DINE_IN, -1)
+                        prefProvider.setValue(Constants.SPLIT_PAY_TYPE_DINE_IN, "")
+                        prefProvider.setValueInt("ORDER_ID", -1)
+                    }
+
                     isSplitByNo -> {
 
                         var payAmount = (((totalPrice - final_discount) / splitValue) + tipAmount)
@@ -834,6 +904,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                         bundle.putParcelable("receiptData", it.data)
                         bundle.putBoolean("isSpilt", true)
                         bundle.putInt("splitValue", splitValue)
+                        bundle.putString("paymentType","Cash")
                         bundle.putDouble(
                             "remainingAmount",
                             (totalPrice - final_discount) - (payAmount - tipAmount)
@@ -863,7 +934,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                         bundle.putDouble("paymentAmount", paymentAmount)
                         bundle.putInt("orderID", it.data.order.id)
                         bundle.putParcelable("receiptData", it.data)
-
+                        bundle.putString("paymentType","Cash")
 
                         if (MethodUtils.roundOffAmountDouble(payAmount) != MethodUtils.roundOffAmountDouble(
                                 totalPrice
@@ -907,6 +978,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                         bundle.putInt("orderID", it.data.order.id)
                         bundle.putParcelable("receiptData", it.data)
                         bundle.putBoolean("isSpilt", false)
+                        bundle.putString("paymentType","Cash")
                         findNavController().navigate(
                             R.id.action_paymentFragment_to_orderCompleteFragment,
                             bundle

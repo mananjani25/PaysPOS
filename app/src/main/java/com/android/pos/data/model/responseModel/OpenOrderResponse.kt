@@ -89,8 +89,8 @@ data class OpenOrderResponse(
             val terminalId: Int,
             @SerializedName("total_amount")
             val totalAmount: Double,
-            @SerializedName("total_cash_discount_fee")
-            val totalCashDiscountFee: Double,
+            @SerializedName("cash_discount_or_surcharge")
+            val cash_discount_or_surcharge: Double,
             @SerializedName("total_discount")
             val totalDiscount: Double,
             @SerializedName("total_service_charges")
@@ -240,7 +240,7 @@ data class OpenOrderResponse(
                 val cardNumber: String,
                 @SerializedName("card_type")
                 val cardType: String,
-                @SerializedName("cash_discount")
+                @SerializedName("cash_discount_or_surcharge")
                 val cashDiscount: Int,
                 @SerializedName("created_at")
                 val createdAt: String,
