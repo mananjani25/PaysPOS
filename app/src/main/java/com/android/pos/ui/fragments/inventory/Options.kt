@@ -11,7 +11,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.databinding.FragmentOptionsBinding
@@ -55,6 +57,12 @@ class Options : Fragment(), TextWatcher {
     }
 
     private fun setAdapter() {
+        binding.rvOptonList.addItemDecoration(
+            DividerItemDecoration(
+                context,
+                LinearLayoutManager.VERTICAL
+            )
+        )
         adapter = OptionListAdapter()
         binding.rvOptonList.adapter = adapter
         binding.edtSearch.addTextChangedListener(this)

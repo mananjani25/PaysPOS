@@ -14,6 +14,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.pos.R
 import com.android.pos.data.entities.*
 import com.android.pos.data.remote.Constants
@@ -243,20 +245,9 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
         }
         viewModel.selectedModifierList(modifierSetIds)
 
-        // variationListApi = ArrayList()
-
-
         if (isEdit) {
-            /*variationListApi.forEach { variationOriginal ->
-                variationListAdapter.selectedVariation().forEach { variationDeleted ->
-                    if (variationOriginal.name == variationDeleted.name) {
-                        variationOriginal._destroy = false
-                    } else {
-                        variationOriginal._destroy = true
-                    }
-                }
-            }*/
-            var mList: ArrayList<VariationsAttribute> = arrayListOf()
+
+            val mList: ArrayList<VariationsAttribute> = arrayListOf()
 
             for (i in 0 until variationListApi.size) {
                 val temp = variationListAdapter.selectedVariation().any {
@@ -292,37 +283,10 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
                 viewModel.variationAttribute(mList)
             }
 
-
-            /*Log.e(
-                TAG,
-                "FinalvariationListApi:  ${Gson().toJson(mList)}"
-            )*/
-
-            // viewModel.variationAttribute(mList)
         } else {
             viewModel.variationAttribute(variationListAdapter.selectedVariation())
         }
 
-        // viewModel.variationAttribute(variationListAdapter.selectedVariation())
-
-        /*var body2: MultipartBody.Part? = null
-        //  if (!TextUtils.isEmpty(imagePath)) {
-
-        //   if (!(imagePath?.startsWith("https")!! || imagePath!!.startsWith("http"))) {
-        val file1 = File("/storage/emulated/0/DCIM/Camera/IMG_20211006_120155.jpg")
-        val requestFile1: RequestBody =
-            file1.asRequestBody("multipart/form-data".toMediaTypeOrNull())
-        body2 = MultipartBody.Part.createFormData("image", file1.name, requestFile1)
-*/            //  }
-
-        //  }
-
-
-        /* val bitmap =
-             BitmapFactory.decodeFile(imagePath)
-         if (bitmap != null) {
-             base64 = convertBase64(bitmap)
-         }*/
         var newImagePathToUpload = imagePath
         if (isEdit && imagePath.equals(itemObject.imageUrl, true)) {
             //send image if its altered.
@@ -363,32 +327,6 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
         viewModel.submit()
     }
 
-    private fun convertBase64(bitmap: Bitmap): String {
-
-
-        // a potentially time consuming task
-        var byteArrayOutputStream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.PNG, 75, byteArrayOutputStream)
-        var byteArray: ByteArray = byteArrayOutputStream.toByteArray()
-
-        try {
-            System.gc()
-            base64 = Base64.encodeToString(byteArray, Base64.DEFAULT)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        } catch (e: OutOfMemoryError) {
-            byteArrayOutputStream = ByteArrayOutputStream()
-            bitmap.compress(Bitmap.CompressFormat.PNG, 50, byteArrayOutputStream)
-            byteArray = byteArrayOutputStream.toByteArray()
-            base64 = Base64.encodeToString(byteArray, Base64.DEFAULT)
-            Log.e("Out of memory", "Out of memory error catched");
-
-
-        }
-        return base64
-
-    }
-
     private fun getModifiers() {
 
         viewModel.modifierSet.observe(requireActivity(), {
@@ -404,6 +342,14 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
     }
 
     private fun setAdapter() {
+
+        binding.rvModifiersList.addItemDecoration(
+            DividerItemDecoration(
+                context,
+                LinearLayoutManager.VERTICAL
+            )
+        )
+
         adapter = ModifierSetsListAdapter(true)
         binding.rvModifiersList.adapter = adapter
 

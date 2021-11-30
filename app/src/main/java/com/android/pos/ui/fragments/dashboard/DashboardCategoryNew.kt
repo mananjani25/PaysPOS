@@ -359,7 +359,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         }
         setFragmentResultListener("request_key_discount_order") { requestKey: String, bundle: Bundle ->
             val result = bundle.getParcelable<TbDiscount>("data")
-            if (result != null) {
+            if (result != null && viewModel.totalPrice != 0.0) {
                 orderDiscount = result.percentage
 
                 val discountApplyPrice = viewModel.totalPrice
