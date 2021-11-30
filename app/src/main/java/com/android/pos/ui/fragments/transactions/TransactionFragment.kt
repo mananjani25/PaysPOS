@@ -1,6 +1,7 @@
 package com.android.pos.ui.fragments.transactions
 
 import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -33,6 +34,7 @@ import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.statusUtils.Status
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -48,6 +50,8 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
     private val viewModel by viewModels<TransactionViewModel>()
     private lateinit var startDate: DatePickerDialog.OnDateSetListener
     private lateinit var endDate: DatePickerDialog.OnDateSetListener
+    private lateinit var startTime: TimePickerDialog.OnTimeSetListener
+    private lateinit var endTime: TimePickerDialog.OnTimeSetListener
     private lateinit var terminalListGlobal: ArrayList<VenueDetailsResponse.Data.Terminal>
     private lateinit var orderTypeListGlobal: ArrayList<TbOrderType>
     private lateinit var teamRoleListGlobal: ArrayList<TeamRole>
@@ -56,6 +60,8 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
     private var paymentTypeList = ArrayList<String>()
     val myCalendar = Calendar.getInstance()
     val myCalendar1 = Calendar.getInstance()
+    val myCalendar2 = Calendar.getInstance()
+    val myCalendar3 = Calendar.getInstance()
     private var spinnerTouched = false
 
     private var employeeTimeSheet = ArrayList<GetTransactionListResponse.Data.Payment>()
@@ -109,21 +115,119 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
         setUpPaymentTypeSpinnerAdapter()
 
 
+        startTime = TimePickerDialog.OnTimeSetListener { view, hour, minute ->
+            var timestring = ""
+            val timecalender = Calendar.getInstance()
+            timecalender.set(Calendar.HOUR_OF_DAY, hour)
+            timecalender.set(Calendar.MINUTE, minute)
+            var hoursfinal: Int = 0
+            if (hour > 12) {
+                hoursfinal = hour - 12
+                if (hoursfinal < 10) {
+                    if (minute < 10) {
+                        timestring = "0$hoursfinal:0$minute PM"
+                    } else {
+                        timestring = "0$hoursfinal:$minute PM"
+                    }
+                } else {
+                    if (minute < 10) {
+                        timestring = "$hoursfinal:0$minute PM"
+                    } else {
+                        timestring = "$hoursfinal:$minute PM"
+                    }
+                }
+            } else {
+                if (hour < 10) {
+                    if (minute < 10) {
+                        timestring = "0$hour:0$minute AM"
+                    } else {
+                        timestring = "0$hour:$minute AM"
+                    }
+                } else {
+                    if (minute < 10) {
+                        timestring = "$hour:0$minute AM"
+                    } else {
+                        timestring = "$hour:$minute AM"
+                    }
+                }
+            }
+
+            val myFormat = "MM/dd/yyyy" //In which you need put here
+            val sdf = SimpleDateFormat(myFormat, Locale.getDefault())
+            val startDatestring = sdf.format(myCalendar.time)
+            viewModel.startDate.value = "$startDatestring $timestring"
+            Log.d("yash", "onCreateView: starttime " + timestring)
+            Log.d("yash", "onCreateView: startDate&Time " + viewModel.startDate.value)
+        }
+
+        endTime = TimePickerDialog.OnTimeSetListener { view, hour, minute ->
+            var timestring = ""
+            val timecalender = Calendar.getInstance()
+            timecalender.set(Calendar.HOUR_OF_DAY, hour)
+            timecalender.set(Calendar.MINUTE, minute)
+            var hoursfinal: Int = 0
+            if (hour > 12) {
+                hoursfinal = hour - 12
+                if (hoursfinal < 10) {
+                    if (minute < 10) {
+                        timestring = "0$hoursfinal:0$minute PM"
+                    } else {
+                        timestring = "0$hoursfinal:$minute PM"
+                    }
+                } else {
+                    if (minute < 10) {
+                        timestring = "$hoursfinal:0$minute PM"
+                    } else {
+                        timestring = "$hoursfinal:$minute PM"
+                    }
+                }
+            } else {
+                if (hour < 10) {
+                    if (minute < 10) {
+                        timestring = "0$hour:0$minute AM"
+                    } else {
+                        timestring = "0$hour:$minute AM"
+                    }
+                } else {
+                    if (minute < 10) {
+                        timestring = "$hour:0$minute AM"
+                    } else {
+                        timestring = "$hour:$minute AM"
+                    }
+                }
+            }
+            val myFormat = "MM/dd/yyyy" //In which you need put here
+            val sdf = SimpleDateFormat(myFormat, Locale.getDefault())
+            val enddatrstring = sdf.format(myCalendar1.time)
+            viewModel.endDate.value = "$enddatrstring $timestring"
+            Log.d("yash", "onCreateView: endtime " + timestring)
+            Log.d("yash", "onCreateView: enndDate&Time " + viewModel.endDate.value)
+        }
+
         startDate = DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
             myCalendar.set(Calendar.YEAR, year)
             myCalendar.set(Calendar.MONTH, monthOfYear)
             myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
 
-            viewModel.updateLabel(myCalendar)
-            viewModel.apiCallTimeSheet(
-                currentPage,
-                getTerminalId(binding.includeView.spTerminals.selectedItemPosition).toString(),
-                getRoleId(binding.includeView.spRoles.selectedItemPosition).toString(),
-                getEmployeeId(binding.includeView.spEmployees.selectedItemPosition).toString(),
-                getOrderId(binding.includeView.spOrders.selectedItemPosition).toString(),
-                getTipType(binding.includeView.spTipTypes.selectedItemPosition),
-                getPaymentType(binding.includeView.spTransactionTypes.selectedItemPosition)
-            )
+
+            TimePickerDialog(
+                requireActivity(),
+                startTime,
+                myCalendar2.get(Calendar.HOUR),
+                myCalendar2.get(Calendar.MINUTE),
+                false
+            ).show()
+
+
+//            viewModel.apiCallTimeSheet(
+//                currentPage,
+//                getTerminalId(binding.includeView.spTerminals.selectedItemPosition).toString(),
+//                getRoleId(binding.includeView.spRoles.selectedItemPosition).toString(),
+//                getEmployeeId(binding.includeView.spEmployees.selectedItemPosition).toString(),
+//                getOrderId(binding.includeView.spOrders.selectedItemPosition).toString(),
+//                getTipType(binding.includeView.spTipTypes.selectedItemPosition),
+//                getPaymentType(binding.includeView.spTransactionTypes.selectedItemPosition)
+//            )
 
         }
 
@@ -132,17 +236,24 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
             myCalendar1.set(Calendar.MONTH, monthOfYear)
             myCalendar1.set(Calendar.DAY_OF_MONTH, dayOfMonth)
 
+            TimePickerDialog(
+                requireActivity(),
+                endTime,
+                myCalendar3.get(Calendar.HOUR),
+                myCalendar3.get(Calendar.MINUTE),
+                false
+            ).show()
             viewModel.updateLabel(myCalendar1)
-            viewModel.apiCallTimeSheet(
-                currentPage,
-                getTerminalId(binding.includeView.spTerminals.selectedItemPosition).toString(),
-                getRoleId(binding.includeView.spRoles.selectedItemPosition).toString(),
-                getEmployeeId(binding.includeView.spEmployees.selectedItemPosition).toString(),
-                getOrderId(binding.includeView.spOrders.selectedItemPosition).toString(),
-                getTipType(binding.includeView.spTipTypes.selectedItemPosition),
-                getPaymentType(binding.includeView.spTransactionTypes.selectedItemPosition)
-
-            )
+//            viewModel.apiCallTimeSheet(
+//                currentPage,
+//                getTerminalId(binding.includeView.spTerminals.selectedItemPosition).toString(),
+//                getRoleId(binding.includeView.spRoles.selectedItemPosition).toString(),
+//                getEmployeeId(binding.includeView.spEmployees.selectedItemPosition).toString(),
+//                getOrderId(binding.includeView.spOrders.selectedItemPosition).toString(),
+//                getTipType(binding.includeView.spTipTypes.selectedItemPosition),
+//                getPaymentType(binding.includeView.spTransactionTypes.selectedItemPosition)
+//
+//            )
         }
 
 

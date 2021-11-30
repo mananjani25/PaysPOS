@@ -1,5 +1,6 @@
 package com.android.pos.ui.fragments.transactions
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -76,8 +77,10 @@ class TransactionViewModel @Inject constructor(
     fun setCurrentDate(myCalendar: Calendar) {
         val myFormat = "MM/dd/yyyy" //In which you need put here
         val sdf = SimpleDateFormat(myFormat, Locale.getDefault())
-        startDate.value = sdf.format(myCalendar.time)
-        endDate.value = sdf.format(myCalendar.time)
+        startDate.value = sdf.format(myCalendar.time)+" "+SimpleDateFormat("hh:mm a", Locale.getDefault()).format( Date())
+        endDate.value = sdf.format(myCalendar.time)+" "+SimpleDateFormat("hh:mm a", Locale.getDefault()).format( Date())
+
+        Log.d("yash", "setCurrentDate: "+SimpleDateFormat("hh:mm a", Locale.getDefault()).format( Date()))
     }
 
     fun datePicker(selectPicker: Boolean) {
@@ -105,6 +108,9 @@ class TransactionViewModel @Inject constructor(
         }
     }
 
+    fun updateLabelDateTIme(datetime:String) {
+
+    }
 
     fun apiCallTimeSheet(
         currentPage: Int,
