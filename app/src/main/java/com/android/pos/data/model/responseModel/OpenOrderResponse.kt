@@ -99,8 +99,18 @@ data class OpenOrderResponse(
             val totalTaxAmount: Double,
             @SerializedName("total_tips")
             val totalTips: Double,
+            @SerializedName("loyalty_amount")
+            val loyaltyAmount: Double,
+            @SerializedName("is_loyalty_applied")
+            val isLoyaltyApplied: Boolean,
+            @SerializedName("used_reward_points")
+            val usedRewardPoints: Int,
+            @SerializedName("loyalty_program_id")
+            val loyaltyProgramId: Int,
             @SerializedName("digital_receipt_url")
             val digitalReceiptUrl: String,
+            @SerializedName("cash_discount_type")
+            val cashDiscountType: String,
             @SerializedName("updated_at")
             val updatedAt: String,
             var isCheck: Boolean = false

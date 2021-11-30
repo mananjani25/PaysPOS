@@ -38,7 +38,7 @@
                 android:background="?attr/selectableItemBackground"
                 android:padding="@dimen/_5sdp"
                 android:text="@string/products"
-                android:visibility="gone"
+                android:visibility="visible"
                 android:textColor="@color/txt_color_blue"
                 android:textSize="@dimen/_5mdpi" />
 
@@ -50,6 +50,7 @@
                 android:layout_gravity="center"
                 android:padding="@dimen/_5sdp"
                 android:text="@string/services"
+                android:visibility="gone"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_5mdpi" />
 

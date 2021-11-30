@@ -20,7 +20,8 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/view" />
+            android:background="@color/view"
+            android:visibility="gone" />
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
@@ -35,17 +36,17 @@
                 android:layout_weight="1"
                 android:gravity="start"
                 android:padding="@dimen/_5sdp"
+                android:text="@{model.name}"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_6mdpi"
-                android:text="@{model.name}" />
+                android:textSize="@dimen/_6mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/modifiers"
                 style="@style/CustomFontSemiBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:gravity="start"
-                android:id="@+id/modifiers"
                 android:padding="@dimen/_5sdp"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi" />
@@ -59,6 +60,7 @@
         </androidx.appcompat.widget.LinearLayoutCompat>
 
         <View
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="0.3dp"
             android:background="@color/view" />
