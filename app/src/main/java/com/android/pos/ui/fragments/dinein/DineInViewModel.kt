@@ -59,7 +59,7 @@ class DineInViewModel @Inject constructor(
     val getFloorPlanDetails =
         posRepository.getFloorPlanTableDetails()
 
-    fun mergeTable(parentTableId: Int, childIds: String,orderModel:OrderAttributeRequestModel?=null,orderId:Int?=null) {
+    fun mergeTable(parentTableId: Int, childIds: String,orderModel:OrderAttributeRequestModel,orderId:Int) {
         _showProgress.value = Event(true)
         viewModelScope.launch {
             val resource = posRepository.mergeFloorTable(parentTableId, childIds,orderModel,orderId)
