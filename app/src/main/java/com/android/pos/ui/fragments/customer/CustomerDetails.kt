@@ -87,11 +87,13 @@ class CustomerDetails : Fragment() {
         if (customerModel.enroll_to_loyalty == true) {
             binding.linearRewardLayout.visibility = View.VISIBLE
             binding.layoutHeader.txtLoyaltyPoints.visibility = View.VISIBLE
+            binding.layoutHeader.txtUsedLoyaltyPoints.visibility = View.VISIBLE
             binding.txtrewardpoint.text = customerModel.final_reward.toString()
             orderHistoryAdapter.finalreward = customerModel.final_reward.toString()
             orderHistoryAdapter.enrolltrueloyalty = true
         } else {
             binding.layoutHeader.txtLoyaltyPoints.visibility = View.GONE
+            binding.layoutHeader.txtUsedLoyaltyPoints.visibility = View.GONE
             binding.linearRewardLayout.visibility = View.GONE
             orderHistoryAdapter.enrolltrueloyalty = false
         }
