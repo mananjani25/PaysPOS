@@ -93,4 +93,30 @@
         <item name="android:textColor">@color/txt_color_blue</item>
         <item name="android:textSize">@dimen/_5mdpi</item>
     </style>
+
+    <style name="PopUpCheckBox">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:button">@drawable/bg_checkbox</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:minHeight">0dp</item>
+    </style>
+
+    <style name="PopUpLabel" parent="CustomFontMediumStyle">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/_3sdp</item>
+        <item name="android:textColor">@color/drawerBack</item>
+        <item name="android:textSize">@dimen/_5mdpi</item>
+        <item name="android:gravity">start</item>
+    </style>
+
+    <style name="PopUpValue" parent="CustomFontSemiBold">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/_3sdp</item>
+        <item name="android:textColor">@color/drawerBack</item>
+        <item name="android:textSize">@dimen/_5mdpi</item>
+        <item name="android:gravity">end</item>
+    </style>
 </resources>

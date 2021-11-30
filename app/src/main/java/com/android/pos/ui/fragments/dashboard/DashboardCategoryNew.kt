@@ -18,6 +18,7 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.constraintlayout.widget.Group
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
@@ -55,6 +56,7 @@ import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
 import com.android.pos.data.remote.Constants.HORIZONTAL
 import com.android.pos.data.remote.Constants.IS_ORDER_UPDATE
 import com.android.pos.data.remote.Constants.MANUALSALE
+import com.android.pos.data.remote.Constants.MERGED
 import com.android.pos.data.remote.Constants.OPEN_ORDER
 import com.android.pos.data.remote.Constants.OPTION_TYPE
 import com.android.pos.data.remote.Constants.ORDER_TYPE
@@ -148,6 +150,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         binding = FragmentDashboardCategoryNewBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
         getDeviceId()
+        getLoyaltyPrograms()
 
         isOrderUpdate = requireArguments().getBoolean("update")
         if (isOrderUpdate) {
@@ -199,7 +202,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             binding.layoutCart.txtSave.text = getString(R.string.save)
         }
 
-        getLoyaltyPrograms()
+
         navigateDineInOrder()
         dineInUpdateOrder()
         getCustomerReceiptSettings()
@@ -1226,14 +1229,47 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         val popupView: View = layoutInflater.inflate(R.layout.info_popup_window, null)
 
+        //set pop up data
+        setPopUpData(popupView)
+
+        //listeners
+        val chkLoyalty: CheckBox = popupView.findViewById(R.id.chkLoyaltyAmount)
+        chkLoyalty.setOnCheckedChangeListener { _, p1 ->
+            viewModel.redeemLoyaltyInfo.needToApplyLoyalty = p1
+            //refresh pop up data and final calculation
+            setPopUpData(popupView)
+            refreshItemCalculation()
+        }
+
+        popupWindow = PopupWindow(
+            popupView,
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+        popupWindow?.setBackgroundDrawable(BitmapDrawable())
+        popupWindow?.isOutsideTouchable = true
+
+
+        popupWindow?.setOnDismissListener(PopupWindow.OnDismissListener {
+            //TODO do sth here on dismiss
+        })
+        popupWindow?.showAtLocation(view, Gravity.TOP, 600, 650);
+//        } else {
+//            popupWindow!!.dismiss()
+//            popupWindow = null
+//        }
+
+    }
+
+    private fun setPopUpData(popupView: View) {
         val txtSubTotal: AppCompatTextView = popupView.findViewById(R.id.txtSubTotal)
         val txtServiceCharge: AppCompatTextView = popupView.findViewById(R.id.txtServiceCharge)
         val txtDiscount: AppCompatTextView = popupView.findViewById(R.id.txtDiscount)
         val txtTotalAmount: AppCompatTextView = popupView.findViewById(R.id.txtTotalAmount)
         val txtTotalTax: AppCompatTextView = popupView.findViewById(R.id.txtTotalTax)
-        val llLoyalty: LinearLayoutCompat = popupView.findViewById(R.id.llLoyalty)
         val txtLoyaltyAmount: AppCompatTextView = popupView.findViewById(R.id.txtLoyaltyAmount)
-        val llLoyaltyPoints: LinearLayoutCompat = popupView.findViewById(R.id.llLoyaltyPoints)
+        val groupLoyalty: Group = popupView.findViewById(R.id.groupLoyalty)
+        val chkLoyalty: CheckBox = popupView.findViewById(R.id.chkLoyaltyAmount)
         val txtLoyaltyPoints: AppCompatTextView = popupView.findViewById(R.id.txtLoyaltyPoints)
         Log.e(TAG, "subTotalPrice:   ${viewModel.subTotalPrice - (cartList[0].discountPrice)}")
         val txttotalCashDiscount: AppCompatTextView = popupView.findViewById(R.id.txtcashDiscount)
@@ -1296,40 +1332,24 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         //display the loyalty point
         val customer = viewModel.selectedCustomer
         if (customer != null && customer.enroll_to_loyalty == true) {
-            llLoyalty.visible()
-            llLoyaltyPoints.visible()
+
             Log.e(TAG, Gson().toJson(viewModel.redeemLoyaltyInfo))
-            amountToBepaid = viewModel.redeemLoyaltyInfo.remainingLoyaltyAmount
+            amountToBepaid = viewModel.redeemLoyaltyInfo.getAmountToBePaid()
             txtLoyaltyAmount.text =
                 "- $${String.format("%.2f", viewModel.redeemLoyaltyInfo.usedLoyaltyAmount)}"
             txtLoyaltyPoints.text = "${viewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
+
+            groupLoyalty.visible()
+            chkLoyalty.visible()
+            chkLoyalty.isChecked = viewModel.redeemLoyaltyInfo.needToApplyLoyalty
+
         } else {
-            llLoyalty.gone()
-            llLoyaltyPoints.gone()
+            groupLoyalty.gone()
+            chkLoyalty.gone()
         }
 
         //display total price to be paid
         MethodUtils.setPriceTextView(txtTotalAmount, amountToBepaid)
-
-//        if (popupWindow == null) {
-        popupWindow = PopupWindow(
-            popupView,
-            ViewGroup.LayoutParams.WRAP_CONTENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        )
-        popupWindow!!.setBackgroundDrawable(BitmapDrawable())
-        popupWindow!!.isOutsideTouchable = true
-
-
-        popupWindow!!.setOnDismissListener(PopupWindow.OnDismissListener {
-            //TODO do sth here on dismiss
-        })
-        popupWindow!!.showAtLocation(view, Gravity.TOP, 600, 650);
-//        } else {
-//            popupWindow!!.dismiss()
-//            popupWindow = null
-//        }
-
     }
 
     private fun resetTabbySearch(model: CategorySearchData) {
@@ -2077,9 +2097,14 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             val dList = dineInCartAdapter.getList()
                             if (dList.isNotEmpty()) {
                                 dList[1].floorPlanTable?.id?.let {
-                                    viewModel.getTableStatus(
-                                        it, "Available"
-                                    )
+
+                                    if (dList[1]?.floorPlanTable?.status.toString() == MERGED) {
+                                            viewModel.getTableStatus(it, MERGED)
+                                    } else {
+                                        viewModel.getTableStatus(
+                                            it, "Available"
+                                        )
+                                    }
                                 }
                             }
                             viewModel.deleteCart()
@@ -2144,7 +2169,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     val request = viewModelPayment.createOrderRequest(
                         cartList,
                         viewModel.subTotalPrice,
-                        (viewModel.redeemLoyaltyInfo.remainingLoyaltyAmount + (viewModel.redeemLoyaltyInfo.cashDiscount
+                        (viewModel.redeemLoyaltyInfo.getAmountToBePaid() + (viewModel.redeemLoyaltyInfo.cashDiscount
                             ?: 0.0)),
                         viewModel.totalServiceCharge,
                         viewModel.totalTax,
@@ -2203,7 +2228,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 val bundle = Bundle()
                 bundle.putDouble(
                     "totalPrice",
-                    (viewModel.redeemLoyaltyInfo.remainingLoyaltyAmount + (viewModel.redeemLoyaltyInfo.cashDiscount
+                    (viewModel.redeemLoyaltyInfo.getAmountToBePaid() + (viewModel.redeemLoyaltyInfo.cashDiscount
                         ?: 0.0))
                 )
                 bundle.putString(
@@ -2304,6 +2329,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         prefProvider.setValue(CUSTOMER_NAME, "")
         prefProvider.setValueInt(CUSTOMER_ID, -1)
         saveCustomerData(null)
+        refreshItemCalculation()
     }
 
     fun calculateDiscountPercentage(originalPrice: Double, percentage: Double): Double {
@@ -3395,5 +3421,12 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         prefProvider.setValueboolean(IS_ORDER_UPDATE, value = false)
         requireArguments().remove("update")
 
+    }
+
+    private fun refreshItemCalculation() {
+        viewModel.itemCalculation(
+            cartList,
+            binding.layoutCart.txtTotalAmount, getDiscountCashData()
+        )
     }
 }

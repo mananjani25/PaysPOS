@@ -2,15 +2,25 @@ package com.android.pos.data.entities
 
 class RedeemLoyaltyInfo() {
     var loyaltyProgramsModel: LoyaltyProgramsModel? = null
-    var total : Double = 0.0
+    var total: Double = 0.0
     var usedLoyaltyPoints: Int = 0
     var remainingLoyaltyPoints: Int = 0
-    var remainingLoyaltyAmount: Double = 0.0
+    var remainingAmount: Double = 0.0
     var usedLoyaltyAmount: Double = 0.0
-    var isLoyaltyApplied : Boolean? = false
-    var cashDiscount: Double?= 0.0
+    var isLoyaltyApplied: Boolean? = false
+    var cashDiscount: Double? = 0.0
+    var amountToBePaid: Double? = 0.0
+    var needToApplyLoyalty: Boolean = false
 
-    fun showFormattedValue(value : Double) = "$" + String.format(
+    fun getAmountToBePaid(): Double {
+        return if (needToApplyLoyalty) {
+            remainingAmount
+        } else {
+            total
+        }
+    }
+
+    fun showFormattedValue(value: Double) = "$" + String.format(
         "%.2f",
         value
     )

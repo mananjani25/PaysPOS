@@ -443,8 +443,13 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
             apiService.getTableStatus(tableId, empId, terminalId, status)
         }
 
-    suspend fun mergeFloorTable(parentTableId: Int, childIds: String) =
-        getResult { apiService.mergeFloorTable(parentTableId, childIds) }
+    suspend fun mergeFloorTable(
+        parentTableId: Int,
+        childIds: String,
+        orderModel: OrderAttributeRequestModel?=null,
+        orderId: Int?
+    ) =
+        getResult { apiService.mergeFloorTable(parentTableId, childIds, orderId, orderModel) }
 
     suspend fun unMergeTable(id: Int) = getResult { apiService.unMergeTable(id) }
 

@@ -133,7 +133,7 @@ data class CreateOrderResponse(
                 @Parcelize
                 data class GuestItemAttributes(
                     @SerializedName("id") var id: Int,
-                    @SerializedName("order_id") var orderId: String,
+                    @SerializedName("order_id") var orderId: Int,
                     @SerializedName("order_item_id") var orderItemId: Int?,
                     @SerializedName("quantity") var quantity: Int,
                     @SerializedName("item_id") var itemId: Int,
