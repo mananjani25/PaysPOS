@@ -253,16 +253,24 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         var rateorAmount = prefProvider.getValue(RATE_OR_AMOUNT, "0")
         if (optionType == "CashDiscount") {
             if (amountType == "Dollar") {
-                return rateorAmount.toDouble().also { cashDiscount = it }
+                if (viewModel.subTotalPrice.toDouble() > 0) {
+                    return rateorAmount.toDouble().also { cashDiscount = it }
+                } else {
+                    return 0.00
+                }
             } else if (amountType == "Percentage") {
-                return (viewModel.subTotalPrice * 100 / rateorAmount.toDouble()).also {
-                    cashDiscount = it
+                if (viewModel.subTotalPrice.toDouble() > 0) {
+                    return (viewModel.subTotalPrice * 100 / rateorAmount.toDouble()).also {
+                        cashDiscount = it
+                    }
+                } else {
+                    return 0.00
                 }
             }
         } else {
-            return 0.0
+            return 0.00
         }
-        return 0.0
+        return 0.00
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -1289,10 +1297,18 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         if (optionType == "CashDiscount") {
             if (amountType == "Dollar") {
-                cashDiscount = rateorAmount.toDouble()
+                if (viewModel.subTotalPrice > 0) {
+                    cashDiscount = rateorAmount.toDouble()
+                } else {
+                    cashDiscount = 0.00
+                }
                 totalAmounnt = viewModel.totalPrice - cashDiscount
             } else if (amountType == "Percentage") {
-                cashDiscount = (viewModel.subTotalPrice * 100 / rateorAmount.toDouble())
+                if (viewModel.subTotalPrice > 0) {
+                    cashDiscount = (viewModel.subTotalPrice * 100 / rateorAmount.toDouble())
+                } else {
+                    cashDiscount = 0.00
+                }
                 totalAmounnt = viewModel.totalPrice - cashDiscount
             }
 
@@ -1304,9 +1320,17 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
             totalAmounnt = viewModel.totalPrice
             if (amountType == "Dollar") {
-                cashDiscount = rateorAmount.toDouble()
+                if (viewModel.subTotalPrice > 0) {
+                    cashDiscount = rateorAmount.toDouble()
+                } else {
+                    cashDiscount = 0.00
+                }
             } else if (amountType == "Percentage") {
-                cashDiscount = (viewModel.subTotalPrice * 100 / rateorAmount.toDouble())
+                if (viewModel.subTotalPrice > 0) {
+                    cashDiscount = (viewModel.subTotalPrice * 100 / rateorAmount.toDouble())
+                } else {
+                    cashDiscount = 0.00
+                }
             }
             linearCCashDiscount.visibility = View.GONE
             linear_NonCashDiscount.visibility = View.GONE
