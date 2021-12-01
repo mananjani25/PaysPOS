@@ -8,6 +8,7 @@ import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
 import com.android.pos.data.remote.Constants.EMPLOYEE_ROLE
+import com.android.pos.data.remote.Constants.EMPLOYEE_ROLE_ID
 import com.android.pos.data.remote.Constants.IS_CLOCKOUT
 import com.android.pos.data.remote.Constants.PASSCODE
 import com.android.pos.data.remote.Constants.TERMINAL_ID
@@ -96,6 +97,7 @@ class PasscodeViewModel @Inject constructor(
                                     prefProvider.setValueInt(EMPLOYEE_ID, it.data.employeeId)
                                     prefProvider.setValue(EMPLOYEE_NAME, it.data.employee_name)
                                     prefProvider.setValue(EMPLOYEE_ROLE, it.data.employee_role)
+                                    prefProvider.setValueInt(EMPLOYEE_ROLE_ID, it.data.team_role_id?:0)
                                     prefProvider.setValue(PASSCODE, passcode)
                                     employeeLogin(data)
 

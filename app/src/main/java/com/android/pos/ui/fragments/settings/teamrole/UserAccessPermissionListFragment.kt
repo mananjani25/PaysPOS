@@ -2,20 +2,20 @@ package com.android.pos.ui.fragments.settings.teamrole
 
 import android.graphics.Color
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.entities.TeamRole
-import com.android.pos.data.model.responseModel.GetUserPermissionListResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentUserAccessPermissionListBinding
+import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.UserPermissionListAdapter
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
@@ -26,6 +26,7 @@ import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.statusUtils.Status
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class UserAccessPermissionListFragment : Fragment() {
@@ -35,6 +36,10 @@ class UserAccessPermissionListFragment : Fragment() {
     private val viewModel by viewModels<UserAccessPermissionListViewModel>()
     private lateinit var userPermissionListAdapter: UserPermissionListAdapter
     private lateinit var userPermissionObject: TeamRole
+
+    @Inject
+    lateinit var prefProvider: PrefProvider
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -57,9 +62,14 @@ class UserAccessPermissionListFragment : Fragment() {
         observeShowProgress()
 
         binding.txtAddNewRole.setOnClickListener {
-            findNavController().navigate(
-                R.id.action_userAccessPermissionListFragment_to_userAccessPermissionFragment
-            )
+            //TODO user permission
+            if (prefProvider.isManager()) {
+                findNavController().navigate(
+                    R.id.action_userAccessPermissionListFragment_to_userAccessPermissionFragment
+                )
+            }else{
+                binding.root.showAlert("")
+            }
         }
 
         binding.imgClose.setOnClickListener {

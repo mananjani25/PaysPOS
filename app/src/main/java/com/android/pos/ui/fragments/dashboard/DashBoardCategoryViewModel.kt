@@ -27,6 +27,7 @@ import com.android.pos.data.repositories.TipDiscountRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
 import com.android.pos.utils.MethodUtils
+import com.android.pos.di.RolePermission
 import com.android.pos.utils.TimeFormatUtils
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
@@ -45,7 +46,8 @@ class DashBoardCategoryViewModel @Inject constructor(
     private val appDatabase: AppDatabase,
     private val prefProvider: PrefProvider,
     private val taxServiceChargeRepository: TaxServiceChargeRepository,
-    private val tipDiscountRepository: TipDiscountRepository
+    private val tipDiscountRepository: TipDiscountRepository,
+    private val rolePermission: RolePermission
 ) : ViewModel() {
 
     val TAG = "DashBoardCateViewModel"
@@ -533,7 +535,8 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 //loyalty point and price calculation
                 amountToBePaid = totalPrice - cartList[0].discountPrice
-                redeemLoyaltyInfo = checkAppliedLoyaltyProgram(selectedCustomer, amountToBePaid, cashdiscount)
+                redeemLoyaltyInfo =
+                    checkAppliedLoyaltyProgram(selectedCustomer, amountToBePaid, cashdiscount)
                 amountToBePaid = redeemLoyaltyInfo.getAmountToBePaid()
                 Log.e(TAG, Gson().toJson(redeemLoyaltyInfo))
             }
@@ -555,10 +558,10 @@ class DashBoardCategoryViewModel @Inject constructor(
         redeemLoyaltyInfo.total = total - cashdiscount
         val availablePoints = customer?.final_reward ?: 0
 
-        if(customer == null){
+        if (customer == null) {
             //loyalty cant be applied if customer is not selected.
             redeemLoyaltyInfo.needToApplyLoyalty = false
-        }else if (customer.enroll_to_loyalty == true
+        } else if (customer.enroll_to_loyalty == true
             && activeLoyaltyProgram != null && activeLoyaltyProgram?.rewardPoint ?: 0 <= availablePoints
         ) {
             activeLoyaltyProgram?.let {
@@ -1511,6 +1514,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 posRepository.deleteLoyaltyProgramFromDb()
                                 posRepository.addLoyaltyProgramFromDb(it.data.loyaltyPrograms)
                                 posRepository.addCashDiscountsFromDb(it.data.cash_discounts)
+                                posRepository.deleteTeamRoleFromDb()
+                                posRepository.addTeamRoleFromDb(it.data.teamRoles)
+                                rolePermission.findCurrentUserRoleAndSave(it.data.teamRoles)
                             }
 
                             prefProvider.setValueboolean(Constants.SYNC_DATA, true)

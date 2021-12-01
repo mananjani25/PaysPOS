@@ -69,6 +69,7 @@ import com.android.pos.data.remote.Constants.UPDATE
 import com.android.pos.data.remote.Constants.VERTICAL
 import com.android.pos.databinding.FragmentDashboardCategoryNewBinding
 import com.android.pos.di.PrefProvider
+import com.android.pos.di.RolePermission
 import com.android.pos.ui.activities.SwipeHelper
 import com.android.pos.ui.adapter.*
 import com.android.pos.ui.fragments.payment.PaymentViewModel
@@ -136,6 +137,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     @Inject
     lateinit var prefProvider: PrefProvider
+
+    @Inject
+    lateinit var rolePermission: RolePermission
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
     }
@@ -867,8 +872,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             closeDialog(dialog)
         }
         linearCust.setOnClickListener {
-            findNavController().navigate(R.id.action_dashboardCategoryNew_to_customer)
-            closeDialog(dialog)
+            if (rolePermission.hasCustomerPermission(binding.root)) {
+                findNavController().navigate(R.id.action_dashboardCategoryNew_to_customer)
+                closeDialog(dialog)
+            }
         }
         linearReports.setOnClickListener {
             findNavController().navigate(R.id.action_dashboardCategoryNew_to_reports)
