@@ -1,11 +1,14 @@
 package com.android.pos.ui.fragments.loginscreen
 
 import android.annotation.SuppressLint
+import android.content.ClipboardManager
+import android.content.Context
 import android.os.Bundle
 import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -62,7 +65,28 @@ class LoginFragment : Fragment() {
             findNavController().navigate(R.id.action_login_to_forgotPasswordFragment)
         }
 
+        binding.txtTerminalTitle.setOnClickListener {
+
+            copy()
+        }
+        binding.terminalId.setOnClickListener {
+            copy()
+        }
+
+        binding.terminalId.text = getDeviceId()
+        prefProvider.setValue(Constants.UNIQUE_ID, binding.terminalId.text.toString().trim())
+
         return binding.root
+    }
+
+    private fun copy() {
+
+        println(binding.terminalId.text.toString().trim())
+
+        val cm: ClipboardManager =
+            requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        cm.text = binding.terminalId.text.toString().trim()
+        Toast.makeText(context, "Copied to clipboard", Toast.LENGTH_SHORT).show()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -103,5 +127,12 @@ class LoginFragment : Fragment() {
         binding.root.liveSnackBar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
     }
 
+    @SuppressLint("HardwareIds")
+    private fun getDeviceId(): String {
+        return Settings.Secure.getString(
+            requireActivity().contentResolver,
+            Settings.Secure.ANDROID_ID
+        )
+    }
 
 }

@@ -644,6 +644,7 @@
     <string name="loyalty_rewards">Loyalty Rewards</string>
     <string name="end_date_amp_time"><![CDATA[End Date & Time]]></string>
     <string name="start_date_amp_time"><![CDATA[Start Date & Time]]></string>
+    <string name="terminal_login_id_tap_to_copy_unique_id">Terminal Login ID (Tap to copy Unique id)</string>
 
 
 </resources>

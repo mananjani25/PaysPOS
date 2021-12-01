@@ -23,6 +23,7 @@
 
 
             <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtTerminalTitle"
                 style="@style/CustomFontBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -129,14 +130,44 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginLeft="@dimen/_5sdp"
-                android:visibility="invisible"
                 android:layout_marginTop="@dimen/_10sdp"
                 android:layout_marginRight="@dimen/_5sdp"
                 android:text="@string/tv_info_provider"
                 android:textColor="@color/gray_color"
-                android:textSize="@dimen/_6mdpi" />
+                android:textSize="@dimen/_6mdpi"
+                android:visibility="invisible" />
 
         </LinearLayout>
+
+
+        <androidx.appcompat.widget.AppCompatTextView
+            style="@style/CustomFontSemiBold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center"
+            android:layout_marginBottom="@dimen/_26sdp"
+            android:gravity="bottom|center"
+            android:padding="@dimen/_5sdp"
+            android:text="@string/terminal_login_id_tap_to_copy_unique_id"
+            android:textColor="@color/txtColor"
+            android:textSize="@dimen/_6mdpi" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/terminal_id"
+            style="@style/CustomFontSemiBold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center"
+            android:layout_marginBottom="@dimen/_15sdp"
+            android:gravity="bottom|center"
+            android:padding="@dimen/_5sdp"
+            tools:text="@string/tv_pos_2021"
+            android:textColor="@color/btnColor"
+            android:textSize="@dimen/_6mdpi" />
 
         <androidx.appcompat.widget.AppCompatTextView
             style="@style/CustomFontMediumStyle"

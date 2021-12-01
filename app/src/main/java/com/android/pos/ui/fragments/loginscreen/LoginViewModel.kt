@@ -1,6 +1,7 @@
 package com.android.pos.ui.fragments.loginscreen
 
 import android.text.TextUtils
+import android.util.Log
 import android.util.Patterns
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -8,13 +9,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.R
 import com.android.pos.data.model.requestModel.LoginRequestModel
+import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.AUTH_TOKEN
 import com.android.pos.data.remote.Constants.BASE_URL_NEW
 import com.android.pos.data.remote.Constants.EMAIL
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.data.remote.Constants.USERNAME
-import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.UserRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
@@ -112,9 +113,12 @@ class LoginViewModel @Inject constructor(
 
     private suspend fun defaultTerminalCall() {
 
+        Log.e(TERMINAL_ID, prefProvider.getValue(Constants.UNIQUE_ID, ""))
+
         viewModelScope.launch {
             delay(1000)
-            val defaultTerminal = userRepository.getDefaultTerminal("qwerty123")
+            val defaultTerminal =
+                userRepository.getDefaultTerminal(prefProvider.getValue(Constants.UNIQUE_ID, ""))
             when (defaultTerminal.status) {
                 Status.SUCCESS -> {
 
@@ -145,4 +149,5 @@ class LoginViewModel @Inject constructor(
 
         }
     }
+
 }
