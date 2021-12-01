@@ -45,7 +45,7 @@ class RolePermission @Inject constructor(
                 }
             }
         }
-        root?.showAlert("You do not have permission to access this feature.. \nKindly contact your manager to access this.")
+        root?.showAlert("You do not have permission to access this feature.. \nPlease contact your manager.")
         return false
     }
 
