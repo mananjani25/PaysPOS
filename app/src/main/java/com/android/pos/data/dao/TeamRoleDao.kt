@@ -25,7 +25,7 @@ interface TeamRoleDao {
     fun allRoleList(): List<TeamRole>
 
     @Query("SELECT * from TbTeamRole where TbTeamRole.id  = :id LIMIT 1")
-    fun roleById(id: Int?): TeamRole
+    fun roleById(id: Int?): LiveData<TeamRole>
 
     @Query("DELETE FROM TbTeamRole")
     suspend fun delete()

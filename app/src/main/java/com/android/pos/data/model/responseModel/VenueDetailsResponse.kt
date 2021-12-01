@@ -64,6 +64,8 @@ data class VenueDetailsResponse(
         val customerReceipt: GetCustomerReceiptSettingsResponse.Data,
         @SerializedName("kitchen_receipt")
         val kitchenReceipt: GetKitchenReceiptSettingsResponse.Data,
+        @SerializedName("team_roles")
+        val teamRoles: List<TeamRole>,
 
         ) {
         data class CancelOrderReason(

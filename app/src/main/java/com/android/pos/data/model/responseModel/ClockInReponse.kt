@@ -14,6 +14,8 @@ data class ClockInReponse(
         val employee_name: String,
         @SerializedName("employee_role")
         val employee_role: String,
+        @SerializedName("team_role_id")
+        val team_role_id: Int?,
         @SerializedName("module_records")
         val moduleRecords: List<ModuleRecord>
     ) {

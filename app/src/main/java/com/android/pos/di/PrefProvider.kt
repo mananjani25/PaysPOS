@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.android.pos.R
 import com.android.pos.data.entities.TbCustomer
+import com.android.pos.data.entities.TeamRole
 import com.android.pos.data.remote.Constants
 import com.google.gson.Gson
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -30,7 +31,7 @@ class PrefProvider @Inject constructor(@ApplicationContext context: Context) {
         openPref()
         val result = sharedPreferences?.getString(key, defaultValue)
         sharedPreferences = null
-        return result?:""
+        return result ?: ""
     }
 
     fun getValueInt(
@@ -123,9 +124,32 @@ class PrefProvider @Inject constructor(@ApplicationContext context: Context) {
 
     fun getCustomerData(): TbCustomer? {
         return Gson().fromJson(
-            getValue(Constants.PREF_CUSTOMER,""),
+            getValue(Constants.PREF_CUSTOMER, ""),
             TbCustomer::class.java
         )
+    }
+
+    fun saveCurrentRoleDetails(teamRole: TeamRole){
+        setValue(Constants.CURRENT_EMPLOYEE_ROLE, Gson().toJson(teamRole))
+    }
+
+    fun getCurrentEmployeeRole(): TeamRole? {
+        return Gson().fromJson(
+            getValue(Constants.CURRENT_EMPLOYEE_ROLE, ""),
+            TeamRole::class.java
+        )
+    }
+
+    fun getEmployeeRoleId(): Int {
+        return getValueInt(Constants.EMPLOYEE_ROLE_ID, 0)
+    }
+
+    fun getEmployeeRole(): String {
+        return getValue(Constants.EMPLOYEE_ROLE, "")
+    }
+
+    fun isManager(): Boolean {
+        return getValue(Constants.EMPLOYEE_ROLE, "").equals("Manager",true)
     }
 
     /* fun setCustomObject(

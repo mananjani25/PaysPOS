@@ -12,6 +12,7 @@ import com.android.pos.data.model.SplitDetailListModel
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.ApiHelper
+import com.android.pos.di.PrefProvider
 import com.android.pos.utils.performGetOperation
 import com.android.pos.utils.performGetOperationDatabase
 import com.android.pos.utils.performGetOperationNew
@@ -20,6 +21,7 @@ import javax.inject.Inject
 
 
 class PosRepository @Inject constructor(
+    private val prefProvider: PrefProvider,
     private val appDatabase: AppDatabase,
     private val apiHelperNew: ApiHelper
 ) : IDataManager {
@@ -256,6 +258,15 @@ class PosRepository @Inject constructor(
 
     fun getActiveLoyaltyProgramFromDb() =  performGetOperationDatabase(databaseQuery = { appDatabase.loyaltyProgramsDao().findActiveLoyalty(active = true) })
 
+    suspend fun deleteTeamRoleFromDb(){
+        appDatabase.teamRoleDao().delete()
+    }
+
+    suspend fun addTeamRoleFromDb(teamRoleList: List<TeamRole>){
+        appDatabase.teamRoleDao().addAllRolesSuspend(teamRoleList)
+    }
+
+    fun getCurrentUserTeamRoleFromDb() =  performGetOperationDatabase(databaseQuery = { appDatabase.teamRoleDao().roleById(id = prefProvider.getEmployeeRoleId()) })
 
     suspend fun addCashDiscountsFromDb(data: List<CashDiscountModel>) {
         appDatabase.cashDiscountDao().addAll(data)
