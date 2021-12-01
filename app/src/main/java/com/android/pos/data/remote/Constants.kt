@@ -339,4 +339,6 @@ object Constants {
 
 
     const val DINE_IN_SPLIT_FLAG = "dine_in_split_flag"
+
+    const val UNIQUE_ID = "unique_id"
 }
