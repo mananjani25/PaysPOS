@@ -6,7 +6,6 @@ import android.util.Log
 import android.view.*
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
@@ -19,8 +18,6 @@ import com.android.pos.data.model.MergeTableModel
 import com.android.pos.data.model.requestModel.OrderAttributeRequestModel
 import com.android.pos.data.model.responseModel.GetFloorPlanDetailResponse
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
-import com.android.pos.data.remote.Constants
-import com.android.pos.data.remote.Constants.AVAILABLE
 import com.android.pos.data.remote.Constants.OCCUPIED
 import com.android.pos.databinding.DialogMergeTableSelectionBinding
 import com.android.pos.ui.adapter.MergeTableSelectionAdapter
@@ -214,14 +211,24 @@ class MergeTableDialog : DialogFragment() {
                 )
             }
 
-            var orderModel = primaryTable?.orderDetails?.let { it1 ->
+            var orderModel: OrderAttributeRequestModel = OrderAttributeRequestModel()
+            if (primaryTable?.orderDetails != null) {
+                orderModel =  viewModel.createMergeOrderRequest(
+                    primaryTable?.orderDetails!!,
+                    tableMergeList
+                )
+            }
+
+
+
+            primaryTable?.orderDetails?.let { it1 ->
                 viewModel.createMergeOrderRequest(
                     it1,
                     tableMergeList
                 )
-            } ?: null
+            }
 
-            if (orderModel != null) {
+            if (primaryTable?.orderDetails != null) {
                 parentTableId?.let { it1 ->
                     orderModel.id?.let { it2 ->
                         viewModel.mergeTable(
@@ -238,7 +245,7 @@ class MergeTableDialog : DialogFragment() {
                     viewModel.mergeTable(
                         it1,
                         childIds,
-                        OrderAttributeRequestModel(),
+                        orderModel,
                         0
                     )
                 }
