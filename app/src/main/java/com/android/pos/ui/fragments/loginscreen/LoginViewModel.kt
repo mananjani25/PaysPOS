@@ -118,7 +118,7 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             delay(1000)
             val defaultTerminal =
-                userRepository.getDefaultTerminal(prefProvider.getValue(Constants.UNIQUE_ID, ""))
+                userRepository.getDefaultTerminal("qwerty123")
             when (defaultTerminal.status) {
                 Status.SUCCESS -> {
 
