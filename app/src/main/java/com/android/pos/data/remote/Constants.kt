@@ -226,6 +226,7 @@ object Constants {
     const val ORDER_HISTORY = "customers/{id}/customer_order_history"
 
     const val BUSINESS_NAME = "business_name"
+    const val SYSTEM_TIMEZONE = "time_zone"
     const val BUSINESS_ADDRESS = "business_address"
     const val BUSINESS_PHONE_NO = "business_phone_no"
     const val BUSINESS_WEBSITE = "business_website"

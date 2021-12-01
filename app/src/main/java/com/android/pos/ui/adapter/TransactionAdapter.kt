@@ -62,9 +62,10 @@ class TransactionAdapter(val viewModel: TransactionViewModel) :
             val model = filterList[position]
 
             itemBinding.tvDate.text =
-                convertCurrentDate(filterList[position].createdAt) + "\n" + convertCurrentTime(
-                    filterList[position].createdAt
+                convertCurrentDate(filterList[position].createdAt, context) + "\n" + convertCurrentTime(
+                    filterList[position].createdAt, context
                 )
+
             itemBinding.txtCustomerName.text =
                 (model.customer.firstName ?: "") + " " + (model.customer.lastName ?: "")
 

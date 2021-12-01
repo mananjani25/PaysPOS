@@ -142,13 +142,15 @@ class TransactionDetailsFragment : Fragment() {
 
                 paymentDetailsResponse = it
                 binding.tvDate.text =
-                    convertCurrentDate(it.data.order.created_at) + " " + convertCurrentTime(
-                        it.data.order.created_at
+                    convertCurrentDate(it.data.order.created_at, context) + " " + convertCurrentTime(
+                        it.data.order.created_at,
+                        context
                     )
 
                 binding.tvTransactionDate.text =
-                    convertCurrentTime(it.data.order.created_at) + "\n" + convertCurrentDate(
-                        it.data.order.created_at
+                    convertCurrentTime(it.data.order.created_at, context) + "\n" + convertCurrentDate(
+                        it.data.order.created_at,
+                        context
                     )
 
                 if (it.data.order.customer != null) {

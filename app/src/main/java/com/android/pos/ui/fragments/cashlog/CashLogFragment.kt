@@ -112,7 +112,7 @@ class CashLogFragment : Fragment(), AdapterView.OnItemSelectedListener {
             )
         )
 
-        adapter = CashLogAdapter()
+        adapter = CashLogAdapter(context)
         binding.rvOpenOrder.adapter = adapter
     }
 

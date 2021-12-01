@@ -123,6 +123,8 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
             timecalender.set(Calendar.MINUTE, minute)
             viewModel.startDate.value = timeCalculateForStartEndTime(hour, minute, "isstart")
             if (differnceTrue(viewModel.startDate.value!!, viewModel.endDate.value) <= 30) {
+                checkFilter = true
+                currentPage = 1
                 viewModel.apiCallTimeSheet(
                     currentPage,
                     getTerminalId(binding.includeView.spTerminals.selectedItemPosition).toString(),
@@ -133,7 +135,10 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                     getPaymentType(binding.includeView.spTransactionTypes.selectedItemPosition)
                 )
             } else {
-                AlertUtils.showCustomAlertWithListenerWithOK(requireActivity(), "Please Select date in 30 Days.") { _, _ ->
+                AlertUtils.showCustomAlertWithListenerWithOK(
+                    requireActivity(),
+                    "Please Select date in 30 Days."
+                ) { _, _ ->
                 }
             }
         }
@@ -143,7 +148,8 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
             timecalender.set(Calendar.HOUR_OF_DAY, hour)
             timecalender.set(Calendar.MINUTE, minute)
             viewModel.endDate.value = timeCalculateForStartEndTime(hour, minute, "isend")
-
+            checkFilter = true
+            currentPage = 1
             if (differnceTrue(viewModel.endDate.value!!, viewModel.startDate.value) <= 30) {
                 viewModel.apiCallTimeSheet(
                     currentPage,
@@ -156,7 +162,10 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
                 )
             } else {
-                AlertUtils.showCustomAlertWithListenerWithOK(requireActivity(), "Please Select date in 30 Days.") { _, _ ->
+                AlertUtils.showCustomAlertWithListenerWithOK(
+                    requireActivity(),
+                    "Please Select date in 30 Days."
+                ) { _, _ ->
                 }
             }
 
@@ -324,8 +333,12 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
     fun timeCalculateForStartEndTime(hour: Int, minute: Int, isStart: String): String {
         var timestring = ""
         var hoursfinal: Int = 0
-        if (hour > 12) {
-            hoursfinal = hour - 12
+        if ((hour == 12 && minute > 0) || (hour > 12 && minute > 0)) {
+            if (hour == 12) {
+                hoursfinal = hour
+            } else {
+                hoursfinal = hour - 12
+            }
             if (hoursfinal < 10) {
                 if (minute < 10) {
                     timestring = "0$hoursfinal:0$minute PM"
@@ -340,19 +353,28 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                 }
             }
         } else {
-            if (hour < 10) {
+            if (hour == 0) {
                 if (minute < 10) {
-                    timestring = "0$hour:0$minute AM"
+                    timestring = "${hour.plus(12)}:0$minute AM"
                 } else {
-                    timestring = "0$hour:$minute AM"
+                    timestring = "${hour.plus(12)}:$minute AM"
                 }
             } else {
-                if (minute < 10) {
-                    timestring = "$hour:0$minute AM"
+                if (hour < 10) {
+                    if (minute < 10) {
+                        timestring = "0$hour:0$minute AM"
+                    } else {
+                        timestring = "0$hour:$minute AM"
+                    }
                 } else {
-                    timestring = "$hour:$minute AM"
+                    if (minute < 10) {
+                        timestring = "$hour:0$minute AM"
+                    } else {
+                        timestring = "$hour:$minute AM"
+                    }
                 }
             }
+
         }
 
         val myFormat = "MM/dd/yyyy" //In which you need put here
