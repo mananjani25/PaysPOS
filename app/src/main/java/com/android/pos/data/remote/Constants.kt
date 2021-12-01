@@ -33,6 +33,8 @@ object Constants {
     const val EMPLOYEE_ID = "employee_id"
     const val EMPLOYEE_NAME = "employee_name"
     const val EMPLOYEE_ROLE = "employee_role"
+    const val EMPLOYEE_ROLE_ID = "employee_role_id"
+    const val CURRENT_EMPLOYEE_ROLE = "current_employee_role"
     const val UPDATE = "UPDATE"
     const val DELETE = "DELETE"
     const val PRINT_PAID = "PrintPaid"

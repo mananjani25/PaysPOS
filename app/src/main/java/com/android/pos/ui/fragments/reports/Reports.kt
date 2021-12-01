@@ -11,9 +11,17 @@ import com.android.pos.R
 import com.android.pos.databinding.FragmentReportsBinding
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.fragments.report.ReportSummaryFragment
+import com.android.pos.di.RolePermission
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class Reports : Fragment() {
+
     private lateinit var binding: FragmentReportsBinding
+
+    @Inject
+    lateinit var rolePermission: RolePermission
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,9 +53,11 @@ class Reports : Fragment() {
             loadFragment(frag)
         }
         binding.txtSales.setOnClickListener {
-            selectedPosition(1)
-            val frag: Fragment = ReportSummaryFragment()
-            loadFragment(frag)
+            if (rolePermission.hasReportSummaryPermission(binding.root)) {
+                selectedPosition(1)
+                val frag: Fragment = ReportSummaryFragment()
+                loadFragment(frag)
+            }
         }
         binding.txtShiftReport.setOnClickListener {
             //selectedPosition(2)
