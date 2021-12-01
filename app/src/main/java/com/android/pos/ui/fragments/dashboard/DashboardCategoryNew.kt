@@ -149,7 +149,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         // prefProvider.setValueboolean(IS_CLOCKOUT, false)
         binding = FragmentDashboardCategoryNewBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
-        getDeviceId()
         getLoyaltyPrograms()
 
         isOrderUpdate = requireArguments().getBoolean("update")
@@ -3020,13 +3019,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     }
 
-    private fun getDeviceId() {
 
-        val androidId: String = Settings.Secure.getString(
-            requireActivity().contentResolver,
-            Settings.Secure.ANDROID_ID
-        )
-    }
 
 
     private fun dineInUpdateOrder() {
