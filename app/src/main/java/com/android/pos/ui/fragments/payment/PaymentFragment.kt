@@ -223,7 +223,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 binding.linearnoncashAdj.visibility = View.VISIBLE
                 cardPaymentAmount = (totalPrice + tipAmount) + final_discount
                 binding.txtNoncashAdj.text = "+ $" + String.format("%.2f", final_discount)
-            } else {
+            } else if (optionType == "CashDiscount") {
                 binding.linearCashdiiscount.visibility = View.GONE
                 binding.linearnoncashAdj.visibility = View.GONE
                 binding.txtCashdiscount.text = "- $" + String.format("%.2f", final_discount)
@@ -237,6 +237,17 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 )
                 cardPaymentAmount = (totalPrice + tipAmount)
                 binding.txtNoncashAdj.text = "- $" + String.format("%.2f", 0.0)
+            } else {
+                binding.linearCashdiiscount.visibility = View.GONE
+                binding.linearnoncashAdj.visibility = View.GONE
+                MethodUtils.setPriceTextView(
+                    binding.txtTotal,
+                    (totalPrice + tipAmount)
+                )
+                MethodUtils.setPriceTextView(
+                    binding.txtTotalAmount,
+                    (totalPrice + tipAmount)
+                )
             }
 
 
@@ -259,7 +270,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 binding.txtCashdiscount.text = "- $" + String.format("%.2f", 0.0)
                 MethodUtils.setPriceTextView(binding.txtTotal, (totalPrice + tipAmount))
                 binding.txtNoncashAdj.text = "- $" + String.format("%.2f", final_discount)
-            } else {
+            } else if (optionType == "CashDiscount") {
                 binding.linearCashdiiscount.visibility = View.VISIBLE
                 binding.linearnoncashAdj.visibility = View.GONE
                 binding.txtCashdiscount.text = "- $" + String.format("%.2f", final_discount)
@@ -268,6 +279,17 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     (totalPrice + tipAmount) - final_discount
                 )
                 binding.txtNoncashAdj.text = "- $" + String.format("%.2f", 0.0)
+            } else {
+                binding.linearCashdiiscount.visibility = View.GONE
+                binding.linearnoncashAdj.visibility = View.GONE
+                MethodUtils.setPriceTextView(
+                    binding.txtTotal,
+                    (totalPrice + tipAmount)
+                )
+                MethodUtils.setPriceTextView(
+                    binding.txtTotalAmount,
+                    (totalPrice + tipAmount)
+                )
             }
 
             if (totalDiscount == 0.0) {
@@ -398,10 +420,11 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                             }
                         }
                     }
-
+                    cashDiscountType = cashDiscountData.option_type
+                    setupData(cashDiscountData.option_type)
+                }else{
+                    setupData("")
                 }
-                cashDiscountType = cashDiscountData.option_type
-                setupData(cashDiscountData.option_type)
             })
 
 

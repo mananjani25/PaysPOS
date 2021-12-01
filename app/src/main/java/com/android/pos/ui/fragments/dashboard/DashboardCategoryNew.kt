@@ -135,7 +135,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private val viewModelPayment by viewModels<PaymentViewModel>()
     private lateinit var dineInCartAdapter: DineInAdapter
     lateinit var cashDiscountModel: CashDiscountModel
-    var cashDiscountType = "CashDiscount"
+    var cashDiscountType = ""
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -255,8 +255,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     }
 
     fun getDiscountCashData(): Double {
-        var optionType = prefProvider.getValue(OPTION_TYPE, "CashDiscount")
-        var amountType = prefProvider.getValue(AMOUNT_TYPE, "Dollar")
+        var optionType = prefProvider.getValue(OPTION_TYPE, "")
+        var amountType = prefProvider.getValue(AMOUNT_TYPE, "")
         var rateorAmount = prefProvider.getValue(RATE_OR_AMOUNT, "0")
         if (optionType == "CashDiscount") {
             if (amountType == "Dollar") {
@@ -2233,7 +2233,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         0.00,
                         -1,
                         viewModel.redeemLoyaltyInfo,
-                        cashDiscount,
+                        getDiscountCashData(),
                         false,
                         "Cash",
                         cashDiscountType
