@@ -11,6 +11,7 @@ import android.util.Log
 import android.view.*
 import android.widget.PopupWindow
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -122,16 +123,24 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         var rateorAmount = prefProvider.getValue(Constants.RATE_OR_AMOUNT, "0")
         if (optionType == "CashDiscount") {
             if (amountType == "Dollar") {
-                return rateorAmount.toDouble().also { cashDiscount = it }
+                if (subTotalPrice > 0) {
+                    return rateorAmount.toDouble().also { cashDiscount = it }
+                } else {
+                    return 0.00
+                }
             } else if (amountType == "Percentage") {
-                return (viewModel.subTotalAmount * 100 / rateorAmount.toDouble()).also {
-                    cashDiscount = it
+                if (subTotalPrice > 0) {
+                    return (viewModel.subTotalAmount * 100 / rateorAmount.toDouble()).also {
+                        cashDiscount = it
+                    }
+                } else {
+                    return 0.00
                 }
             }
         } else {
-            return 0.0
+            return 0.00
         }
-        return 0.0
+        return 0.00
     }
 
     private fun getCustomerList() {
@@ -519,6 +528,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         val txtTotalTax: AppCompatTextView = popupView.findViewById(R.id.txtTotalTax)
         val txttotalCashDiscount: AppCompatTextView = popupView.findViewById(R.id.txtcashDiscount)
         val txtTotalcashAdj: AppCompatTextView = popupView.findViewById(R.id.txtnoncashadj)
+        val linearCCashDiscount: LinearLayoutCompat =
+            popupView.findViewById(R.id.lineaarCashDiscount)
+        val linear_NonCashDiscount: LinearLayoutCompat =
+            popupView.findViewById(R.id.linear_NonCashDiscount)
+
         var optionType = prefProvider.getValue(Constants.OPTION_TYPE, "CashDiscount")
         var amountType = prefProvider.getValue(Constants.AMOUNT_TYPE, "Dollar")
         var rateorAmount = prefProvider.getValue(Constants.RATE_OR_AMOUNT, "0")
@@ -526,19 +540,39 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         if (optionType == "CashDiscount") {
             if (amountType == "Dollar") {
-                cashDiscount = rateorAmount.toDouble()
+                if (viewModel.subTotalAmount > 0) {
+                    cashDiscount = rateorAmount.toDouble()
+                } else {
+                    cashDiscount = 0.00
+                }
             } else if (amountType == "Percentage") {
-                cashDiscount = (viewModel.subTotalAmount * 100 / rateorAmount.toDouble())
+                if (viewModel.subTotalAmount > 0) {
+                    cashDiscount = (viewModel.subTotalAmount * 100 / rateorAmount.toDouble())
+                } else {
+                    cashDiscount = 0.00
+                }
             }
+            linearCCashDiscount.visibility = View.VISIBLE
+            linear_NonCashDiscount.visibility = View.GONE
             txttotalCashDiscount.text = "- $" + String.format("%.2f", cashDiscount)
-            txtTotalcashAdj.text = "- $" + String.format("%.2f", 0.0)
+            txtTotalcashAdj.text = "- $" + String.format("%.2f", 0.00)
         } else if (optionType == "SurCharge") {
             if (amountType == "Dollar") {
-                cashDiscount = rateorAmount.toDouble()
+                if (viewModel.subTotalAmount > 0) {
+                    cashDiscount = rateorAmount.toDouble()
+                } else {
+                    cashDiscount = 0.00
+                }
             } else if (amountType == "Percentage") {
-                cashDiscount = (viewModel.subTotalAmount * 100 / rateorAmount.toDouble())
+                if (viewModel.subTotalAmount > 0) {
+                    cashDiscount = (viewModel.subTotalAmount * 100 / rateorAmount.toDouble())
+                } else {
+                    cashDiscount = 0.00
+                }
             }
-            txttotalCashDiscount.text = "- $" + String.format("%.2f", 0.0)
+            linearCCashDiscount.visibility = View.GONE
+            linear_NonCashDiscount.visibility = View.GONE
+            txttotalCashDiscount.text = "- $" + String.format("%.2f", 0.00)
             txtTotalcashAdj.text = "- $" + String.format("%.2f", cashDiscount)
         }
 
@@ -2640,7 +2674,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
 
-            if (getOrderDetailsResponse?.totalCashDiscountFee != null) {
+            if (getOrderDetailsResponse?.cash_discount_or_surcharge != null) {
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addTextFont(Builder.FONT_E)
@@ -2657,14 +2691,14 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 builder.addText(
                     padLine(
                         "Cash Discount",
-                        if (getOrderDetailsResponse?.totalCashDiscountFee == 0.0) {
-                            "$" + getOrderDetailsResponse?.totalCashDiscountFee?.let {
+                        if (getOrderDetailsResponse?.cash_discount_or_surcharge == 0.0) {
+                            "$" + getOrderDetailsResponse?.cash_discount_or_surcharge?.let {
                                 MethodUtils.roundOffAmountString(
                                     it
                                 )
                             }
                         } else {
-                            "-$" + getOrderDetailsResponse?.totalCashDiscountFee?.let {
+                            "-$" + getOrderDetailsResponse?.cash_discount_or_surcharge?.let {
                                 MethodUtils.roundOffAmountString(
                                     it
                                 )

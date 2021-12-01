@@ -87,6 +87,7 @@ class TransactionDetailsFragment : Fragment() {
         navigate()
         getCustomerReceiptSettings()
 
+
         val callback: OnBackPressedCallback =
             object : OnBackPressedCallback(true /* enabled by default */) {
                 override fun handleOnBackPressed() {
@@ -196,6 +197,34 @@ class TransactionDetailsFragment : Fragment() {
                 ) {
                     binding.tvIssueRefund.visibility = View.GONE
                 }
+
+
+                if (paymentDetailsResponse.data.payment_type == "Card") {
+                    if (paymentDetailsResponse.data.cash_discount_type == "CashDiscount") {
+                        binding.linearCashDiscount.visibility = View.GONE
+                        binding.liinearNoncashAdj.visibility = View.GONE
+                    }else{
+                        binding.linearCashDiscount.visibility = View.GONE
+                        binding.liinearNoncashAdj.visibility = View.VISIBLE
+                        binding.txtNonCashAdjamount.text = "+ $" + String.format(
+                            "%.2f",
+                            paymentDetailsResponse.data.cash_discount_or_surcharge
+                        )
+                    }
+                } else {
+                    if (paymentDetailsResponse.data.cash_discount_type == "CashDiscount") {
+                        binding.linearCashDiscount.visibility = View.VISIBLE
+                        binding.liinearNoncashAdj.visibility = View.GONE
+                        binding.txtCashAmounntDiscount.text = "- $" + String.format(
+                            "%.2f",
+                            paymentDetailsResponse.data.cash_discount_or_surcharge
+                        )
+                    }else{
+                        binding.linearCashDiscount.visibility = View.GONE
+                        binding.liinearNoncashAdj.visibility = View.GONE
+                    }
+                }
+
 
                 ProgressUtils.dismissProgressDialog()
             }
@@ -854,7 +883,7 @@ class TransactionDetailsFragment : Fragment() {
 
 
 
-            if (paymentDetailsResponse.data.order?.total_cash_discount_fee != null) {
+            if (paymentDetailsResponse.data.order?.cash_discount_or_surcharge != null) {
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addTextFont(Builder.FONT_E)
@@ -871,10 +900,10 @@ class TransactionDetailsFragment : Fragment() {
                 builder.addText(
                     padLine(
                         "Cash Discount",
-                        if (paymentDetailsResponse.data.order.total_cash_discount_fee == 0.0) {
-                            "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.order?.total_cash_discount_fee)
+                        if (paymentDetailsResponse.data.order.cash_discount_or_surcharge == 0.0) {
+                            "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.order?.cash_discount_or_surcharge)
                         } else {
-                            "-$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.order?.total_cash_discount_fee)
+                            "-$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.order?.cash_discount_or_surcharge)
                         },
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             24

@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.android.pos.data.entities.CashDiscountModel
 import com.android.pos.data.model.GetPaymentOrderDetailsResponse
 import com.android.pos.data.model.requestModel.RefundRequestModel
 import com.android.pos.data.model.responseModel.BaseResponse
@@ -84,6 +85,10 @@ class TransactionDetailsViewModel @Inject constructor(
             }
         }
 
+
+    fun getCashDiscountDetails(active: Int): LiveData<CashDiscountModel>? {
+        return posRepository.getCashDisDetail(active)
+    }
 
     fun refundPaymentApiCall(
         refundAmount: Double,

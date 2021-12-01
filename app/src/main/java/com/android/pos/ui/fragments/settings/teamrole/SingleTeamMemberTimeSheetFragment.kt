@@ -141,9 +141,9 @@ class SingleTeamMemberTimeSheetFragment : Fragment() {
                     timeSheet.data
                 )
                 binding.tvEmployeeTotalHours.text =
-                    "Employees Total Hours:- " + timeSheet.employeTotalHours
+                    "Employees Total Hours : " + timeSheet.employeTotalHours
                 binding.tvEmployeeTotalWages.text =
-                    "Employees Total Wages:- " + timeSheet.employeeTotalWage
+                    "Employees Total Wages : " + timeSheet.employeeTotalWage
             }
         })
 

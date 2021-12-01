@@ -81,6 +81,12 @@ class OrderAttributeRequestModel {
 //    @SerializedName("total_cash_discount")
 //    var totalCashDiscount: Double = 0.0
 
+    @SerializedName("cash_discount_or_surcharge")
+    var cash_discount_or_surcharge: Double = 0.0
+
+    @SerializedName("cash_discount_type")
+    var cash_discount_type: String = ""
+
     @SerializedName("total_discount")
     var totalDiscount: Double = 0.0
 
@@ -478,11 +484,18 @@ class PaymentAttributes : Parcelable {
     @SerializedName("card_type")
     var cardType: String = ""
 
-    @SerializedName("cash_discount")
-    var cashDiscount: Double = 0.0
+    @SerializedName("cash_discount_or_surcharge")
+    var cash_discount_or_surcharge: Double = 0.0
 
     @SerializedName("cash_discount_fee")
     var cashDiscountFee: Double = 0.0
+
+
+    @SerializedName("cash_discount_type")
+    var cash_discount_type: String = ""
+
+    @SerializedName("total_cash_discount")
+    var total_cash_discount: Double = 0.0
 
     @SerializedName("employee_id")
     var employeeId: Int = 0

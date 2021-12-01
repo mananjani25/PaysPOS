@@ -858,7 +858,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 //            cardName = ""
 //            cardNumber = ""
 //            cardType = 0
-            cashDiscount = 0.0
+            cash_discount_or_surcharge = 0.0
             cashDiscountFee = 0.0
             employeeId = cartModel.employeeID
             offlineId = randomOfflineId()

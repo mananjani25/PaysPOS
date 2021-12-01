@@ -57,6 +57,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private var isDineIn: Boolean = false
     private var kitchenPrinterList: List<PrinterResponse.Data.KitchenReceiptPrinters> = listOf()
     private var orderID: Int = 0
+    var paymentType: String = ""
     private var type: String = ""
     private var totalPrice: Double = 0.0
     private var paymentAmount: Double = 0.0
@@ -143,7 +144,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         setupSnackbar()
         observeShowProgress()
-        setLabelData()
 
 
 
@@ -151,6 +151,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         paymentAmount = requireArguments().getDouble("paymentAmount")
         orderID = requireArguments().getInt("orderID")
         isSpilt = requireArguments().getBoolean("isSpilt")
+        paymentType = requireArguments().getString("paymentType", "")
         isDineIn = requireArguments().getBoolean("isDineIn")
         if (!isDineIn)
             receiptModel = requireArguments().getParcelable("receiptData")
@@ -158,6 +159,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         if (isDineIn) {
             isGuest = requireArguments().getBoolean("isGuest")
         }
+        setLabelData()
+
 
         if (isSpilt) {
             binding.constraintSplit.visibility = View.VISIBLE
@@ -252,7 +255,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     }
 
     private fun setLabelData() {
-        binding.txtTitleCash.text = "Cash"
+        if (paymentType == "Card") {
+            binding.txtTitleCash.text = "Card"
+        } else {
+            binding.txtTitleCash.text = "Cash"
+        }
+
         binding.txtRemainingAmountLabel.text = "Remaining Amount"
     }
 

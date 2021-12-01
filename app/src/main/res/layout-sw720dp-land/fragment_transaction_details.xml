@@ -539,6 +539,64 @@
                             android:textColor="@color/viewTextColor"
                             android:textSize="@dimen/_5mdpi" />
                     </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/linear_cash_Discount"
+                        android:layout_marginTop="@dimen/_3sdp"
+                        android:orientation="horizontal"
+                        android:visibility="gone"
+                        android:padding="@dimen/_2sdp">
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/CustomFontMediumStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/_3sdp"
+                            android:text="@string/cash_discount"
+                            android:textColor="@color/viewTextColor"
+                            android:textSize="@dimen/_5mdpi" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/txt_cashAmounntDiscount"
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="@dimen/_5sdp"
+                            android:gravity="end"
+                            android:text=""
+                            android:textColor="@color/viewTextColor"
+                            android:textSize="@dimen/_5mdpi" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/liinear_noncashAdj"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_3sdp"
+                        android:orientation="horizontal"
+                        android:visibility="gone"
+                        android:padding="@dimen/_2sdp">
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/CustomFontMediumStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/_3sdp"
+                            android:text="@string/non_cash_adj"
+                            android:textColor="@color/viewTextColor"
+                            android:textSize="@dimen/_5mdpi" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/txt_NonCashAdjamount"
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="@dimen/_5sdp"
+                            android:gravity="end"
+                            android:text="0.0"
+                            android:textColor="@color/viewTextColor"
+                            android:textSize="@dimen/_5mdpi" />
+                    </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="match_parent"

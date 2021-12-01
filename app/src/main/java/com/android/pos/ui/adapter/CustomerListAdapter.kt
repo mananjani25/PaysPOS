@@ -163,9 +163,6 @@ class CustomerListAdapter(
                 } else {
                     val fList = ArrayList<TbCustomer>()
 
-
-
-
                     list.filter {
 
                         val ss = StringBuilder()
@@ -179,11 +176,25 @@ class CustomerListAdapter(
                             company = it.company
                         }
 
-                        it.first_name?.lowercase(Locale.getDefault())!!.contains(charSequence) or
-                                it.last_name!!.lowercase(Locale.getDefault())
-                                    .contains(charSequence) or
-                                (it.email?.lowercase(Locale.getDefault())?.contains(charSequence)
-                                    ?: false) or
+                        var fname = ""
+                        if (it.first_name != null) {
+                            fname = it.first_name
+                        }
+
+                        var lname = ""
+                        if (it.last_name != null) {
+                            lname = it.last_name
+                        }
+
+                        val name = "$fname $lname"
+
+                        var email = ""
+                        if (it.email != null) {
+                            email = it.email
+                        }
+
+                        name.lowercase(Locale.getDefault()).contains(charSequence) or
+                                email.lowercase(Locale.getDefault()).contains(charSequence) or
                                 phone.contains(charSequence) or
                                 company.lowercase(Locale.getDefault()).contains(charSequence)
                     }.forEach { fList.add(it) }
