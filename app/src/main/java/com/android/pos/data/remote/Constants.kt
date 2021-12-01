@@ -54,6 +54,7 @@ object Constants {
     const val BUNDLE_PAYMENT_ID = "BUNDLE_PAYMENT_ID"
     const val BUNDLE_PAYMENT_OFFLINE_ID = "BUNDLE_PAYMENT_OFFLINE_ID"
     const val BUNDLE_ORDER_OFFLINE_ID = "BUNDLE_ORDER_OFFLINE_ID"
+    const val BUNDLE_ISLOYALTYAPPLIED = "BUNDLE_ISLOYALTYAPPLIED"
 
     const val TAKEOUT = "TakeOut"
     const val DINE_IN = "DineIn"

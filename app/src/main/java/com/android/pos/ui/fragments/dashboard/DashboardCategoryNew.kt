@@ -39,6 +39,7 @@ import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ADD
 import com.android.pos.data.remote.Constants.AMOUNT_TYPE
+import com.android.pos.data.remote.Constants.BUNDLE_ISLOYALTYAPPLIED
 import com.android.pos.data.remote.Constants.BUNDLE_ORDER_ID
 import com.android.pos.data.remote.Constants.BUNDLE_ORDER_OFFLINE_ID
 import com.android.pos.data.remote.Constants.BUNDLE_PAYMENT_ID
@@ -162,13 +163,14 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             paymentId = requireArguments().getInt("paymentId")
             paymentOfflineId = requireArguments().getString("paymentOfflineId").toString()
             orderOfflineId = requireArguments().getString("orderOfflineId").toString()
+            viewModel.redeemLoyaltyInfo.needToApplyLoyalty = requireArguments().getBoolean("isLoyaltyApplied")
 
             //save pref
             prefProvider.setValueboolean(IS_ORDER_UPDATE, value = true)
             prefProvider.setValueInt(BUNDLE_ORDER_ID, value = orderId ?: 0)
             prefProvider.setValueInt(BUNDLE_PAYMENT_ID, value = paymentId ?: 0)
             prefProvider.setValue(BUNDLE_PAYMENT_OFFLINE_ID, value = paymentOfflineId)
-            prefProvider.setValue(BUNDLE_ORDER_OFFLINE_ID, value = orderOfflineId)
+            prefProvider.setValueboolean(BUNDLE_ISLOYALTYAPPLIED, value = viewModel.redeemLoyaltyInfo.needToApplyLoyalty)
         } else {
             //check pref
             if (prefProvider.getValueboolean(IS_ORDER_UPDATE, defaultValue = false)) {
@@ -178,6 +180,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 paymentOfflineId =
                     prefProvider.getValue(BUNDLE_PAYMENT_OFFLINE_ID, defaultValue = "")
                 orderOfflineId = prefProvider.getValue(BUNDLE_ORDER_OFFLINE_ID, defaultValue = "")
+                viewModel.redeemLoyaltyInfo.needToApplyLoyalty = prefProvider.getValueboolean(BUNDLE_ISLOYALTYAPPLIED,false)
             }
 
         }
