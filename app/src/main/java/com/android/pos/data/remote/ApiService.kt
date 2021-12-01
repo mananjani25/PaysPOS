@@ -623,7 +623,7 @@ interface ApiService {
         @Path("id") parentTableId: Int,
         @Query("child_table_ids") childTableIds: String,
         @Query("order_id")order_id:Int?,
-        @Body orderReq:MergeTableRequest?=null
+        @Body orderReq:OrderAttributeRequestModel?
     ): MergeTableResponse
 
     @DELETE(UNMERGE_TABLE)

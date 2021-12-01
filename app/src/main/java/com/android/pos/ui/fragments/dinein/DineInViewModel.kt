@@ -21,7 +21,6 @@ import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.math.sign
 
 @HiltViewModel
 class DineInViewModel @Inject constructor(
@@ -64,14 +63,13 @@ class DineInViewModel @Inject constructor(
     fun mergeTable(
         parentTableId: Int,
         childIds: String,
-        orderModel: OrderAttributeRequestModel,
+        orderModel: OrderAttributeRequestModel?,
         orderId: Int
     ) {
         _showProgress.value = Event(true)
-        var mergeModel = MergeTableRequest(orderModel)
         viewModelScope.launch {
             val resource =
-                posRepository.mergeFloorTable(parentTableId, childIds, mergeModel, orderId)
+                posRepository.mergeFloorTable(parentTableId, childIds, orderModel, orderId)
 
             when (resource.status) {
                 Status.SUCCESS -> {
