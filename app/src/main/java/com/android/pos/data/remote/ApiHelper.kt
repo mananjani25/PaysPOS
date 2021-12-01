@@ -446,8 +446,8 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun mergeFloorTable(
         parentTableId: Int,
         childIds: String,
-        orderModel: OrderAttributeRequestModel?,
-        orderId: Int
+        orderModel: MergeTableRequest?,
+        orderId: Int?=null
     ) =
         getResult { apiService.mergeFloorTable(parentTableId, childIds, orderId, orderModel) }
 

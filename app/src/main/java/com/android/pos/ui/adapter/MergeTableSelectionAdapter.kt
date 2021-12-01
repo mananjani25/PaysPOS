@@ -60,8 +60,10 @@ class MergeTableSelectionAdapter : RecyclerView.Adapter<MergeTableSelectionAdapt
                     position: Int,
                     id: Long
                 ) {
-                    list.get(layoutPosition).selectedTableId =
+                    list.get(0).selectedTableId =
                         (binding.spnTable.adapter.getItem(position) as MergeTableModel).id
+                    Log.e(TAG,"selectedTableID  ${(binding.spnTable.adapter.getItem(position) as MergeTableModel).id}")
+                    Log.e(TAG,"selectedTablePosition  ${position}")
                     list.get(layoutPosition).tableSelectedPosition = position
                     list.get(layoutPosition).tableChairCount =
                         (binding.spnTable.adapter.getItem(position) as MergeTableModel).chairCount
