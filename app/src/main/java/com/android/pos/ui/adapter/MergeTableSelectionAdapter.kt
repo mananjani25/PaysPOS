@@ -62,6 +62,10 @@ class MergeTableSelectionAdapter : RecyclerView.Adapter<MergeTableSelectionAdapt
                 ) {
                     list.get(layoutPosition).selectedTableId =
                         (binding.spnTable.adapter.getItem(position) as MergeTableModel).id
+                    list.get(layoutPosition).tableSelectedPosition = position
+                    list.get(layoutPosition).tableChairCount =
+                        (binding.spnTable.adapter.getItem(position) as MergeTableModel).chairCount
+                    //list[layoutPosition].table =  (binding.spnTable.adapter.getItem(position) as MergeTableModel)
 
                 }
 
@@ -84,6 +88,8 @@ class MergeTableSelectionAdapter : RecyclerView.Adapter<MergeTableSelectionAdapt
                         tempTableList = list.get(0).listTable.filter { it ->
                             it.floorId == list.get(0).listFloorPlan.get(position).id
                         }.toCollection(arrayListOf())
+                        list[layoutPosition].selectedFloorPlanId =
+                            list.get(0).listFloorPlan.get(position).id
 
                         tableAdapter.clear()
                         tableAdapter.addAll(tempTableList)

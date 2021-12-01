@@ -116,6 +116,9 @@ class OrderAttributeRequestModel {
 
     @SerializedName("is_loyalty_applied")
     var is_loyalty_applied: Boolean? = false
+
+    @SerializedName("merged_table_nos")
+    var mergedTableNumbers: Int? = null
 }
 
 
@@ -211,7 +214,10 @@ class GuestsAttributes(
     @SerializedName("customer_id") var customerId: Int? = null,
     @SerializedName("_destroy") var Destroy: Boolean? = null,
     @SerializedName("guest_items_attributes") var guestItemsAttributes: List<GuestItemsAttributes> = emptyList(),
-    @SerializedName("customer_attributes") var customerAttributes: CustomerAttributes? = null
+    @SerializedName("customer_attributes") var customerAttributes: CustomerAttributes? = null,
+    @SerializedName("is_child_guest") var isChildGuest: Boolean = false,
+    @SerializedName("child_merge_id") var childMergeId: Int? = null
+
 
 )
 

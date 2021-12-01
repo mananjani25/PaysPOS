@@ -110,7 +110,8 @@ class MergeTableDialog : DialogFragment() {
                         } else {
                             null
                         },
-                        orderDetails = table.order_details
+                        orderDetails = table.order_details,
+                        chairCount = table.chair_count
                     )
                 )
             }
@@ -184,33 +185,63 @@ class MergeTableDialog : DialogFragment() {
         binding.txtSave.setOnClickListener {
             var primaryTable = tableAdapter.getItem(tableSelectedPos)
             var list = adapter.getList()
+
+
             val parentTableId = tableAdapter.getItem(tableSelectedPos)?.id
             val childIds = adapter.getSelectedIds()
             var listofOrderIds: ArrayList<Int> = arrayListOf()
 
             if (primaryTable?.orderId != null) {
-                listofOrderIds.add(primaryTable?.orderId!!)
+                listofOrderIds.add(primaryTable.orderId!!)
 
             }
+            var totalChairCount = 0
 
+            totalChairCount = adapter.getList().get(0).tableChairCount
+                ?: 0
+
+            var tableMergeList: ArrayList<MergeTableModel> = arrayListOf()
+            for (i in 0 until totalChairCount) {
+
+                tableMergeList.add(
+                    MergeTableModel(
+                        id = adapter.getList().get(0).tableSelectedPosition?.let { it1 ->
+                            adapter.getList().get(0).listTable.get(
+                                it1
+                            ).id
+                        }!!, name = "", floorId = 0, floorName = ""
+                    )
+                )
+            }
 
             var orderModel = primaryTable?.orderDetails?.let { it1 ->
                 viewModel.createMergeOrderRequest(
-                    it1
+                    it1,
+                    tableMergeList
                 )
-            }?:null
+            } ?: null
 
             if (orderModel != null) {
-                parentTableId?.let { it1 -> orderModel.id?.let { it2 ->
-                    viewModel.mergeTable(it1,childIds,orderModel,
-                        it2
-                    )
-                } }
+                parentTableId?.let { it1 ->
+                    orderModel.id?.let { it2 ->
+                        viewModel.mergeTable(
+                            it1, childIds, orderModel,
+                            it2
+                        )
+                    }
+                }
 
             } else {
                 Log.e(TAG, "primaryTable:  ${Gson().toJson(primaryTable)}")
 
-                parentTableId?.let { it1 -> viewModel.mergeTable(it1, childIds, OrderAttributeRequestModel(),0) }
+                parentTableId?.let { it1 ->
+                    viewModel.mergeTable(
+                        it1,
+                        childIds,
+                        OrderAttributeRequestModel(),
+                        0
+                    )
+                }
 
 
             }
