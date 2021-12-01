@@ -135,7 +135,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private val viewModelPayment by viewModels<PaymentViewModel>()
     private lateinit var dineInCartAdapter: DineInAdapter
     lateinit var cashDiscountModel: CashDiscountModel
-    var cashDiscountType = "CashDiscount"
+    var cashDiscountType = ""
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -163,14 +163,18 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             paymentId = requireArguments().getInt("paymentId")
             paymentOfflineId = requireArguments().getString("paymentOfflineId").toString()
             orderOfflineId = requireArguments().getString("orderOfflineId").toString()
-            viewModel.redeemLoyaltyInfo.needToApplyLoyalty = requireArguments().getBoolean("isLoyaltyApplied")
+            viewModel.redeemLoyaltyInfo.needToApplyLoyalty =
+                requireArguments().getBoolean("isLoyaltyApplied")
 
             //save pref
             prefProvider.setValueboolean(IS_ORDER_UPDATE, value = true)
             prefProvider.setValueInt(BUNDLE_ORDER_ID, value = orderId ?: 0)
             prefProvider.setValueInt(BUNDLE_PAYMENT_ID, value = paymentId ?: 0)
             prefProvider.setValue(BUNDLE_PAYMENT_OFFLINE_ID, value = paymentOfflineId)
-            prefProvider.setValueboolean(BUNDLE_ISLOYALTYAPPLIED, value = viewModel.redeemLoyaltyInfo.needToApplyLoyalty)
+            prefProvider.setValueboolean(
+                BUNDLE_ISLOYALTYAPPLIED,
+                value = viewModel.redeemLoyaltyInfo.needToApplyLoyalty
+            )
         } else {
             //check pref
             if (prefProvider.getValueboolean(IS_ORDER_UPDATE, defaultValue = false)) {
@@ -180,15 +184,16 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 paymentOfflineId =
                     prefProvider.getValue(BUNDLE_PAYMENT_OFFLINE_ID, defaultValue = "")
                 orderOfflineId = prefProvider.getValue(BUNDLE_ORDER_OFFLINE_ID, defaultValue = "")
-                viewModel.redeemLoyaltyInfo.needToApplyLoyalty = prefProvider.getValueboolean(BUNDLE_ISLOYALTYAPPLIED,false)
+                viewModel.redeemLoyaltyInfo.needToApplyLoyalty =
+                    prefProvider.getValueboolean(BUNDLE_ISLOYALTYAPPLIED, false)
             }
 
         }
 
         viewModel.getCashDiscountDetails(active = 1)
             ?.observe(viewLifecycleOwner, { cashDiscountData ->
-                cashDiscountData?.let {
-                    cashDiscountModel = it
+                if (cashDiscountData != null) {
+                    cashDiscountModel = cashDiscountData
                     prefProvider.setValue(AMOUNT_TYPE, cashDiscountData.amount_type)
                     prefProvider.setValue(OPTION_TYPE, cashDiscountData.option_type)
                     prefProvider.setValue(
@@ -198,6 +203,15 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     prefProvider.setValueboolean(CASH_DIS_STORED, true)
                     cashDiscountType = cashDiscountData.option_type
                     Log.d(TAG, "onCreateView: " + cashDiscountModel.rate_or_amount)
+                } else {
+                    prefProvider.setValue(AMOUNT_TYPE, "")
+                    prefProvider.setValue(OPTION_TYPE, "")
+                    prefProvider.setValue(
+                        RATE_OR_AMOUNT,
+                        "0"
+                    )
+                    prefProvider.setValueboolean(CASH_DIS_STORED, true)
+                    cashDiscountType = ""
                 }
             })
 
@@ -255,8 +269,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     }
 
     fun getDiscountCashData(): Double {
-        var optionType = prefProvider.getValue(OPTION_TYPE, "CashDiscount")
-        var amountType = prefProvider.getValue(AMOUNT_TYPE, "Dollar")
+        var optionType = prefProvider.getValue(OPTION_TYPE, "")
+        var amountType = prefProvider.getValue(AMOUNT_TYPE, "")
         var rateorAmount = prefProvider.getValue(RATE_OR_AMOUNT, "0")
         if (optionType == "CashDiscount") {
             if (amountType == "Dollar") {
@@ -1301,8 +1315,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         var totalAmounnt = 0.0
 
-        var optionType = prefProvider.getValue(OPTION_TYPE, "CashDiscount")
-        var amountType = prefProvider.getValue(AMOUNT_TYPE, "Dollar")
+        var optionType = prefProvider.getValue(OPTION_TYPE, "")
+        var amountType = prefProvider.getValue(AMOUNT_TYPE, "")
         var rateorAmount = prefProvider.getValue(RATE_OR_AMOUNT, "0")
 
 
@@ -2233,7 +2247,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         0.00,
                         -1,
                         viewModel.redeemLoyaltyInfo,
-                        cashDiscount,
+                        getDiscountCashData(),
                         false,
                         "Cash",
                         cashDiscountType
@@ -3030,8 +3044,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         })
 
     }
-
-
 
 
     private fun dineInUpdateOrder() {
