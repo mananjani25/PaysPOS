@@ -444,11 +444,13 @@
             </androidx.appcompat.widget.LinearLayoutCompat>
 
             <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/linnearCashDiscounnt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="?attr/selectableItemBackground"
                 android:orientation="horizontal"
                 android:paddingStart="@dimen/_5sdp"
+                android:visibility="gone"
                 android:paddingTop="@dimen/_3sdp"
                 android:paddingEnd="@dimen/_5sdp"
                 android:paddingBottom="@dimen/_3sdp">
@@ -478,11 +480,13 @@
             </androidx.appcompat.widget.LinearLayoutCompat>
 
             <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/linearNonCashAdjamounnt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="?attr/selectableItemBackground"
                 android:orientation="horizontal"
                 android:paddingStart="@dimen/_5sdp"
+                android:visibility="gone"
                 android:paddingTop="@dimen/_3sdp"
                 android:paddingEnd="@dimen/_5sdp"
                 android:paddingBottom="@dimen/_3sdp">
@@ -683,7 +687,18 @@
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
-        </androidx.appcompat.widget.LinearLayoutCompat>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnpaynowCreditdialog"
+                android:layout_gravity="center"
+                android:layout_margin="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/btnColorDark_"
+                android:text="@string/pay_now"
+                android:visibility="gone"
+                android:textColor="@color/white"
+                android:textStyle="bold" />
+            </androidx.appcompat.widget.LinearLayoutCompat>
 
 
     </androidx.appcompat.widget.LinearLayoutCompat>

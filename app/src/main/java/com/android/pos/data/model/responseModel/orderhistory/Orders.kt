@@ -21,5 +21,7 @@ data class Orders(
     @SerializedName("total")
     val total: Double?,
     @SerializedName("order_loyalty_points")
-    val order_loyalty_points: Double?
+    val order_loyalty_points: Int?,
+    @SerializedName("used_reward_points")
+    val used_reward_points: Int?
 )

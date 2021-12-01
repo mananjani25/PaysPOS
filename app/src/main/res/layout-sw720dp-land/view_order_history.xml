@@ -38,7 +38,14 @@
             style="@style/HistoryItemText"
             android:gravity="center"
             android:visibility="gone"
-            tools:text="$48.75\n48" />
+            tools:text="48" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txtUsedLoyaltyPoints"
+            style="@style/HistoryItemHeaderText"
+            android:gravity="center"
+            android:visibility="gone"
+            tools:text="200" />
 
         <!--<androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txtReorder"

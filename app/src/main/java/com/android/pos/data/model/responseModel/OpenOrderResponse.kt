@@ -89,8 +89,8 @@ data class OpenOrderResponse(
             val terminalId: Int,
             @SerializedName("total_amount")
             val totalAmount: Double,
-            @SerializedName("total_cash_discount_fee")
-            val totalCashDiscountFee: Double,
+            @SerializedName("cash_discount_or_surcharge")
+            val cash_discount_or_surcharge: Double,
             @SerializedName("total_discount")
             val totalDiscount: Double,
             @SerializedName("total_service_charges")
@@ -99,8 +99,18 @@ data class OpenOrderResponse(
             val totalTaxAmount: Double,
             @SerializedName("total_tips")
             val totalTips: Double,
+            @SerializedName("loyalty_amount")
+            val loyaltyAmount: Double,
+            @SerializedName("is_loyalty_applied")
+            val isLoyaltyApplied: Boolean,
+            @SerializedName("used_reward_points")
+            val usedRewardPoints: Int,
+            @SerializedName("loyalty_program_id")
+            val loyaltyProgramId: Int,
             @SerializedName("digital_receipt_url")
             val digitalReceiptUrl: String,
+            @SerializedName("cash_discount_type")
+            val cashDiscountType: String,
             @SerializedName("updated_at")
             val updatedAt: String,
             var isCheck: Boolean = false
@@ -240,7 +250,7 @@ data class OpenOrderResponse(
                 val cardNumber: String,
                 @SerializedName("card_type")
                 val cardType: String,
-                @SerializedName("cash_discount")
+                @SerializedName("cash_discount_or_surcharge")
                 val cashDiscount: Int,
                 @SerializedName("created_at")
                 val createdAt: String,

@@ -37,6 +37,7 @@ import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.statusUtils.Status
 import com.epson.eposprint.Builder
 import com.epson.eposprint.Print
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -206,11 +207,11 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
                 val cartModel = cartModel(order)
 
                 val bundle = Bundle()
-                bundle.putDouble("totalPrice", order.payments[0].amount)
-                bundle.putDouble("subTotalPrice", order.payments[0].subTotal)
-                bundle.putDouble("totalTax", order.payments[0].taxAmount)
-                bundle.putDouble("totalDiscount", order.payments[0].totalDiscount)
-                bundle.putDouble("totalServiceCharge", order.payments[0].serviceChargeAmount)
+                bundle.putDouble("totalPrice", order.totalAmount)
+                bundle.putDouble("subTotalPrice", order.subTotal)
+                bundle.putDouble("totalTax", order.totalTaxAmount)
+                bundle.putDouble("totalDiscount", order.totalDiscount)
+                bundle.putDouble("totalServiceCharge", order.totalServiceCharges)
                 bundle.putString("future_delivery_date", order.futureDeliveryDate)
                 bundle.putString("future_delivery_time", order.futureDeliveryTime)
                 bundle.putParcelable("cartList", cartModel)
@@ -218,9 +219,33 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
 
                 bundle.putBoolean("update", true)
                 bundle.putInt("orderId", order.id)
-                bundle.putInt("paymentId", order.payments[0].id)
-                bundle.putString("paymentOfflineId", order.payments[0].offlineId)
+                if (order.payments.isNotEmpty()) {
+                    bundle.putInt("paymentId", order.payments[0].id)
+                    bundle.putString("paymentOfflineId", order.payments[0].offlineId)
+                }
                 bundle.putString("orderOfflineId", order.offlineId)
+
+                val redeemLoyaltyInfo = RedeemLoyaltyInfo()
+                val loyaltyProgramsModel = LoyaltyProgramsModel(
+                    0.0,
+                    "",
+                    order.loyaltyProgramId,
+                    order.isLoyaltyApplied,
+                    order.locationId,
+                    "",
+                    0,
+                    "",
+                    ""
+                )
+                redeemLoyaltyInfo.loyaltyProgramsModel = loyaltyProgramsModel
+                redeemLoyaltyInfo.isLoyaltyApplied = order.isLoyaltyApplied
+                redeemLoyaltyInfo.usedLoyaltyAmount = order.loyaltyAmount
+                redeemLoyaltyInfo.usedLoyaltyPoints = order.usedRewardPoints
+
+                bundle.putString(
+                    "redeemLoyalty",
+                    Gson().toJson(redeemLoyaltyInfo)
+                )
 
                 findNavController().navigate(
                     R.id.action_orders_to_paymentFragment,
@@ -1093,7 +1118,7 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
 
 
 
-            if (receiptModel.totalCashDiscountFee != null) {
+            if (receiptModel.cash_discount_or_surcharge != null) {
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addTextFont(Builder.FONT_E)
@@ -1110,10 +1135,10 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
                 builder.addText(
                     padLine(
                         "Cash Discount",
-                        if (receiptModel.totalCashDiscountFee == 0.0) {
-                            "$" + MethodUtils.roundOffAmountString(receiptModel.totalCashDiscountFee!!)
+                        if (receiptModel.cash_discount_or_surcharge == 0.0) {
+                            "$" + MethodUtils.roundOffAmountString(receiptModel.cash_discount_or_surcharge!!)
                         } else {
-                            "-$" + MethodUtils.roundOffAmountString(receiptModel.totalCashDiscountFee!!)
+                            "-$" + MethodUtils.roundOffAmountString(receiptModel.cash_discount_or_surcharge!!)
                         },
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             24

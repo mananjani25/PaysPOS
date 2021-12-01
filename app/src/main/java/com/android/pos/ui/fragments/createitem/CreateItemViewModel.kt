@@ -117,19 +117,17 @@ class CreateItemViewModel @Inject constructor(
                 if (isEdit) id = itemId
                 active = true
                 name = value!!.name
-                if (itemPriceViewModel != null) {
-                    priceType = "Fixed"
+                priceType = if (itemPriceViewModel != null) {
+                    "Fixed"
                 } else {
-                    priceType = "Variable"
+                    "Variable"
                 }
                 price = itemPriceViewModel
-                Log.e("!_@_ image path", " in viewmodel $imageViewModel")
-//                image = body2ViewModel?.dropLast(1)
                 image = imageViewModel
                 sku = skuViewModel
                 quantity = stockViewModel
                 desc = descViewModel
-                categoryId = categoryIdViewModel!!
+                categoryId = categoryIdViewModel
                 modifierSetIds = modifierSetIdsViewModel
                 variationsAttributes = variationAttributeModel
                 locationId = prefProvider.getValueInt(LOCATION_ID, -1)
