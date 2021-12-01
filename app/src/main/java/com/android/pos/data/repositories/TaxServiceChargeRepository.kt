@@ -9,6 +9,7 @@ import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.GetCustomerReceiptSettingsResponse
 import com.android.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
 import com.android.pos.data.remote.ApiHelper
+import com.android.pos.di.RolePermission
 import com.android.pos.utils.performGetOperation
 import com.android.pos.utils.performGetOperationDatabase
 import java.util.*
@@ -16,7 +17,8 @@ import javax.inject.Inject
 
 class TaxServiceChargeRepository @Inject constructor(
     private val appDatabase: AppDatabase,
-    private val apiHelperNew: ApiHelper
+    private val apiHelperNew: ApiHelper,
+    private val rolePermission: RolePermission
 ) {
 
     suspend fun createLoyaltyPoint(loyaltyPointRequest: LoyaltyPointRequest) =
@@ -114,7 +116,8 @@ class TaxServiceChargeRepository @Inject constructor(
         performGetOperation(
             databaseQuery = { appDatabase.teamRoleDao().allRoles },
             networkCall = { apiHelperNew.getTeamRoleList() },
-            saveCallResult = { appDatabase.teamRoleDao().addAllRoles(it.data.teamRoles) })
+            saveCallResult = { appDatabase.teamRoleDao().addAllRoles(it.data.teamRoles)
+            rolePermission.findCurrentUserRoleAndSave(it.data.teamRoles)})
 
 
     fun getTeamRoleListFromDatabase() =

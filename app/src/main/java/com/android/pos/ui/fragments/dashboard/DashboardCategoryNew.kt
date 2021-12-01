@@ -828,7 +828,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         }
 
         binding.footer.linearTransaction.setOnClickListener {
-            findNavController().navigate(R.id.action_dashboardCategoryNew_to_transactionFragment)
+            if (rolePermission.hasTransactionPermission(binding.root)) {
+                findNavController().navigate(R.id.action_dashboardCategoryNew_to_transactionFragment)
+            }
         }
 
 
