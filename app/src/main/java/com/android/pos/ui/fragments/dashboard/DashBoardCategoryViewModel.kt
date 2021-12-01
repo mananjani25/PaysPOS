@@ -586,14 +586,14 @@ class DashBoardCategoryViewModel @Inject constructor(
                     redeemLoyaltyInfo.remainingAmount =
                         redeemLoyaltyInfo.total - redeemLoyaltyInfo.usedLoyaltyAmount
                 }
-                redeemLoyaltyInfo.isLoyaltyApplied = true
+                //redeemLoyaltyInfo.isLoyaltyApplied = true
             }
         } else {
             redeemLoyaltyInfo.remainingAmount = redeemLoyaltyInfo.total
             redeemLoyaltyInfo.remainingLoyaltyPoints = availablePoints
             redeemLoyaltyInfo.usedLoyaltyPoints = 0
             redeemLoyaltyInfo.usedLoyaltyAmount = 0.0
-            redeemLoyaltyInfo.isLoyaltyApplied = false
+            //redeemLoyaltyInfo.isLoyaltyApplied = false
         }
 
         return redeemLoyaltyInfo
