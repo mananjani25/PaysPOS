@@ -185,7 +185,7 @@ class MergeTableDialog : DialogFragment() {
 
 
             val parentTableId = tableAdapter.getItem(tableSelectedPos)?.id
-            val childIds = adapter.getSelectedIds()
+            val childIds = adapter.getList().get(0).selectedTableId.toString()
             var listofOrderIds: ArrayList<Int> = arrayListOf()
 
             if (primaryTable?.orderId != null) {
@@ -213,7 +213,7 @@ class MergeTableDialog : DialogFragment() {
 
             var orderModel: OrderAttributeRequestModel = OrderAttributeRequestModel()
             if (primaryTable?.orderDetails != null) {
-                orderModel =  viewModel.createMergeOrderRequest(
+                orderModel = viewModel.createMergeOrderRequest(
                     primaryTable?.orderDetails!!,
                     tableMergeList
                 )
@@ -245,8 +245,8 @@ class MergeTableDialog : DialogFragment() {
                     viewModel.mergeTable(
                         it1,
                         childIds,
-                        orderModel,
-                        0
+                        null,
+                        null
                     )
                 }
 
