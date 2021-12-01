@@ -1,12 +1,15 @@
 package com.android.pos.utils
 
+import android.content.Context
+import com.android.pos.data.remote.Constants.SYSTEM_TIMEZONE
+import com.android.pos.di.PrefProvider
 import java.text.SimpleDateFormat
 import java.util.*
 
 object TimeFormatUtils {
 
     fun showCurrentTime(): String = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date())
-
+    lateinit var prefProvider: PrefProvider
     fun getCurrentDate(): String {
         //2021-08-17
         val c: Date = Calendar.getInstance().time
@@ -16,10 +19,15 @@ object TimeFormatUtils {
         return formattedDate
     }
 
-    fun convertCurrentTime(mSelectedDate: String): String {
+
+
+    fun convertCurrentTime(mSelectedDate: String, context: Context?): String {
         try {
-            val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+            val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+            inputFormat.timeZone = TimeZone.getTimeZone("UTC")
             val outputFormat = SimpleDateFormat("hh:mm a")
+            prefProvider = PrefProvider(context = context!!)
+            outputFormat.timeZone = TimeZone.getTimeZone(prefProvider.getValue(SYSTEM_TIMEZONE,""))
             val date = inputFormat.parse(mSelectedDate)
             val formattedDate = outputFormat.format(date)
             //  val formattedDateFinalDate = outputFormat.parse(formattedDate)
@@ -32,16 +40,16 @@ object TimeFormatUtils {
             val formattedDate = outputFormat.format(date)
             //  val formattedDateFinalDate = outputFormat.parse(formattedDate)
             return formattedDate
-
         }
-
-
     }
 
-    fun convertCurrentDate(mSelectedDate: String): String {
+    fun convertCurrentDate(mSelectedDate: String, context: Context?): String {
         try {
-            val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+            val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+            inputFormat.timeZone = TimeZone.getTimeZone("UTC")
             val outputFormat = SimpleDateFormat("MMM-dd-yyyy")
+            prefProvider = PrefProvider(context = context!!)
+            outputFormat.timeZone = TimeZone.getTimeZone(prefProvider.getValue(SYSTEM_TIMEZONE,""))
             val date = inputFormat.parse(mSelectedDate)
             val formattedDate = outputFormat.format(date)
             //  val formattedDateFinalDate = outputFormat.parse(formattedDate)

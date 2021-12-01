@@ -1,6 +1,7 @@
 package com.android.pos.ui.adapter
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -8,7 +9,7 @@ import com.android.pos.data.model.responseModel.CashLogResponse
 import com.android.pos.databinding.ViewCashLogBinding
 import com.android.pos.utils.TimeFormatUtils
 
-class CashLogAdapter :
+class CashLogAdapter(val context: Context?) :
     RecyclerView.Adapter<CashLogAdapter.MyViewHolder>() {
 
     var orderList = ArrayList<CashLogResponse.Data.Cashe>()
@@ -22,8 +23,8 @@ class CashLogAdapter :
             binding.executePendingBindings()
 
             binding.txtDateTime.text =
-                TimeFormatUtils.convertCurrentDate(item.createdAt) + " " + TimeFormatUtils.convertCurrentTime(
-                    item.createdAt
+                TimeFormatUtils.convertCurrentDate(item.createdAt,context) + " " + TimeFormatUtils.convertCurrentTime(
+                    item.createdAt,context
                 )
 
             if (item.event.equals("IN", ignoreCase = true)) {

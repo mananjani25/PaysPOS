@@ -20,6 +20,7 @@ import com.android.pos.data.remote.Constants.DELETE
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.DINE_IN_LIST_EDIT
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
+import com.android.pos.data.remote.Constants.SYSTEM_TIMEZONE
 import com.android.pos.data.remote.Constants.UPDATE
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.TaxServiceChargeRepository
@@ -533,7 +534,8 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 //loyalty point and price calculation
                 amountToBePaid = totalPrice - cartList[0].discountPrice
-                redeemLoyaltyInfo = checkAppliedLoyaltyProgram(selectedCustomer, amountToBePaid, cashdiscount)
+                redeemLoyaltyInfo =
+                    checkAppliedLoyaltyProgram(selectedCustomer, amountToBePaid, cashdiscount)
                 amountToBePaid = redeemLoyaltyInfo.getAmountToBePaid()
                 Log.e(TAG, Gson().toJson(redeemLoyaltyInfo))
             }
@@ -555,10 +557,10 @@ class DashBoardCategoryViewModel @Inject constructor(
         redeemLoyaltyInfo.total = total - cashdiscount
         val availablePoints = customer?.final_reward ?: 0
 
-        if(customer == null){
+        if (customer == null) {
             //loyalty cant be applied if customer is not selected.
             redeemLoyaltyInfo.needToApplyLoyalty = false
-        }else if (customer.enroll_to_loyalty == true
+        } else if (customer.enroll_to_loyalty == true
             && activeLoyaltyProgram != null && activeLoyaltyProgram?.rewardPoint ?: 0 <= availablePoints
         ) {
             activeLoyaltyProgram?.let {
@@ -1486,6 +1488,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 Log.e(TAG, "FullData  ${Gson().toJson(it)}")
 
                                 prefProvider.setValue(BUSINESS_NAME, it.data.businessName)
+                                prefProvider.setValue(SYSTEM_TIMEZONE, it.data.timeZone)
                                 prefProvider.setValue(BUSINESS_PHONE_NO, it.data.phoneNumber)
                                 prefProvider.setValue(
                                     BUSINESS_WEBSITE,

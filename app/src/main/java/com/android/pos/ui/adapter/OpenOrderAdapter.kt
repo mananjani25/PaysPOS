@@ -1,6 +1,7 @@
 package com.android.pos.ui.adapter
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,10 +14,9 @@ import com.android.pos.data.remote.Constants.PRINT_PAID
 import com.android.pos.data.remote.Constants.PRINT_UNPAID
 import com.android.pos.databinding.ViewOpenOrderItemBinding
 import com.android.pos.utils.TimeFormatUtils
-import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.callback.OrderCallBack
 
-class OpenOrderAdapter :
+class OpenOrderAdapter(val context: Context) :
     RecyclerView.Adapter<OpenOrderAdapter.MyViewHolder>() {
 
     var orderList = ArrayList<OpenOrderResponse.Data.Order>()
@@ -40,8 +40,9 @@ class OpenOrderAdapter :
             binding.llShowLayout.visibility = View.GONE
 
             binding.tvDate.text =
-                TimeFormatUtils.convertCurrentDate(item.createdAt) + "\n" + TimeFormatUtils.convertCurrentTime(
-                    item.createdAt
+                TimeFormatUtils.convertCurrentDate(item.createdAt, context) + "\n" + TimeFormatUtils.convertCurrentTime(
+                    item.createdAt,
+                    context
                 )
             binding.txtCustomerName.text =
                 (item.customer?.firstName ?: "") + " " + (item.customer?.lastName ?: "")

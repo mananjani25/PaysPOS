@@ -137,7 +137,7 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
             )
         )
 
-        adapter = OpenOrderAdapter()
+        adapter = OpenOrderAdapter(requireContext())
         adapter.setCallback(this)
         binding.rvOpenOrder.adapter = adapter
     }
