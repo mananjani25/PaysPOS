@@ -642,6 +642,8 @@
     <string name="loyalty_amount">Loyalty Amount</string>
     <string name="used_loyalty_points">Used Loyalty Points</string>
     <string name="loyalty_rewards">Loyalty Rewards</string>
+    <string name="end_date_amp_time"><![CDATA[End Date & Time]]></string>
+    <string name="start_date_amp_time"><![CDATA[Start Date & Time]]></string>
 
 
 </resources>
