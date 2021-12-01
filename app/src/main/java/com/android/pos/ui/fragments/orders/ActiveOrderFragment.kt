@@ -239,6 +239,7 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
                 )
                 redeemLoyaltyInfo.loyaltyProgramsModel = loyaltyProgramsModel
                 redeemLoyaltyInfo.isLoyaltyApplied = order.isLoyaltyApplied
+                redeemLoyaltyInfo.needToApplyLoyalty = order.isLoyaltyApplied
                 redeemLoyaltyInfo.usedLoyaltyAmount = order.loyaltyAmount
                 redeemLoyaltyInfo.usedLoyaltyPoints = order.usedRewardPoints
 
