@@ -13,6 +13,7 @@ data class DineInOrderDetailAttributes(
     @SerializedName("table_number") var tableNumber: Int? = null,
     @SerializedName("chair_count") var chairCount: Int? = null,
     @SerializedName("table_name") var tableName: String? = null,
-    @SerializedName("floor_plan_name") var floorPlanName: String? = null
+    @SerializedName("floor_plan_name") var floorPlanName: String? = null,
+
 
 )
