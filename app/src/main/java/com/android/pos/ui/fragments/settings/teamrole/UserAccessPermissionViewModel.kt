@@ -16,6 +16,7 @@ import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.TaxServiceChargeRepository
 import com.android.pos.di.PrefProvider
+import com.android.pos.di.RolePermission
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
@@ -28,7 +29,8 @@ import javax.inject.Inject
 class UserAccessPermissionViewModel @Inject constructor(
     private val taxServiceChargeRepository: TaxServiceChargeRepository,
     private val prefProvider: PrefProvider,
-    private val posRepository: PosRepository
+    private val posRepository: PosRepository,
+    private val rolePermission : RolePermission
 ) : ViewModel() {
 
     val locationId = prefProvider.getValueInt(LOCATION_ID, 0)
@@ -249,7 +251,7 @@ class UserAccessPermissionViewModel @Inject constructor(
                             resource.data?.let { createTeamRole ->
 
                                 val role = createTeamRole.data.teamRoles
-
+                                rolePermission.findCurrentUserRoleAndSave(role)
                                 taxServiceChargeRepository.createTeamRoleDatabase(
                                     role
                                 )
@@ -317,7 +319,7 @@ class UserAccessPermissionViewModel @Inject constructor(
                                 resource.data?.let { createTeamRole ->
 
                                     val role = createTeamRole.data.teamRoles
-
+                                    rolePermission.findCurrentUserRoleAndSave(role)
                                     taxServiceChargeRepository.createTeamRoleDatabase(
                                         role
                                     )
