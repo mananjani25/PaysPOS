@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.data.model.DineInOrderDetailAttributes
+import com.android.pos.data.model.MergeTableModel
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
@@ -20,6 +21,7 @@ import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.math.sign
 
 @HiltViewModel
 class DineInViewModel @Inject constructor(
@@ -59,10 +61,17 @@ class DineInViewModel @Inject constructor(
     val getFloorPlanDetails =
         posRepository.getFloorPlanTableDetails()
 
-    fun mergeTable(parentTableId: Int, childIds: String,orderModel:OrderAttributeRequestModel,orderId:Int) {
+    fun mergeTable(
+        parentTableId: Int,
+        childIds: String,
+        orderModel: OrderAttributeRequestModel,
+        orderId: Int
+    ) {
         _showProgress.value = Event(true)
+        var mergeModel = MergeTableRequest(orderModel)
         viewModelScope.launch {
-            val resource = posRepository.mergeFloorTable(parentTableId, childIds,orderModel,orderId)
+            val resource =
+                posRepository.mergeFloorTable(parentTableId, childIds, mergeModel, orderId)
 
             when (resource.status) {
                 Status.SUCCESS -> {
@@ -152,11 +161,15 @@ class DineInViewModel @Inject constructor(
 
     }
 
-    fun createMergeOrderRequest(orderDetails: GetFloorPlanDetailResponse.OrderDetails): OrderAttributeRequestModel {
+    fun createMergeOrderRequest(
+        orderDetails: GetFloorPlanDetailResponse.OrderDetails,
+        mergeTableLists: ArrayList<MergeTableModel>
+    ): OrderAttributeRequestModel {
         var model = OrderAttributeRequestModel()
         model.date = orderDetails.date
 //        model.deliveryType = orderDetails.delivery_type
         model.employeeId = orderDetails.employee_id
+        //model.mergedTableNumbers = totalGuestCount
 /*
         model.futureDeliveryDate = orderDetails.future_delivery_date
         model.futureDeliveryTime = orderDetails.future_delivery_time
@@ -262,12 +275,29 @@ class DineInViewModel @Inject constructor(
             listGuestAttr.add(guestModel)
 
         }
+
+        for (i in 0 until mergeTableLists.size) {
+
+            var guestModel = GuestsAttributes()
+            var guestCount = listGuestAttr.size
+
+            guestModel.name = "Guest ${guestCount}"
+
+            guestModel.orderId = listGuestAttr.get(0).orderId
+            guestModel.isChildGuest = true
+            guestModel.childMergeId = mergeTableLists[i].id
+
+            /*var guestItemList: ArrayList<GuestItemsAttributes> = arrayListOf()
+            guestModel.guestItemsAttributes = guestItemList
+*/            listGuestAttr.add(guestModel)
+
+
+        }
         model.guestsAttributes = listGuestAttr
         var dineInOrderDetails = DineInOrderDetailAttributes()
         dineInOrderDetails.chairCount = orderDetails.floor_plan_table.chair_count
         //dineInOrderDetails.id = orderDetails.floor_plan_table.id
-        dineInOrderDetails.totalGuestCount =
-            orderDetails.floor_plan_table.order_details?.guest_attributes?.size
+        //dineInOrderDetails.totalGuestCount = totalGuestCount
         dineInOrderDetails.orderId = orderDetails.floor_plan_table.order_details?.order_type_id
         dineInOrderDetails.floorPlanId = orderDetails.floor_plan_table.floor_plan_id
         dineInOrderDetails.floorPlanTableId = orderDetails.floor_plan_table.id
@@ -296,7 +326,7 @@ class DineInViewModel @Inject constructor(
 
         //--------------------NEED TO ADD PAYMENT ATTRIBUTE-----------------------//
 
-      //  model.paymentStatus = orderDetails.payment_status
+        //  model.paymentStatus = orderDetails.payment_status
         model.serviceChargeEnabled = orderDetails.service_charge_enabled
         model.subTotal = orderDetails.sub_total
         model.taxEnabled = orderDetails.tax_enabled
