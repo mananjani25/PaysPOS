@@ -37,8 +37,8 @@ class ForgotPasswordViewModel @Inject constructor(
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
 
-    private val _data = MutableLiveData<Event<Boolean?>>()
-    val data: LiveData<Event<Boolean?>> = _data
+    private val _data = MutableLiveData<Event<String?>>()
+    val data: LiveData<Event<String?>> = _data
 
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
@@ -67,7 +67,7 @@ class ForgotPasswordViewModel @Inject constructor(
                             if (logInResponse?.status == 200) {
 
                                 resource.data?.let {
-                                    _data.value = Event(true)
+                                    _data.value = Event(logInResponse.message)
 
                                 }
 

@@ -9,17 +9,12 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
-import com.android.pos.data.remote.Constants
-import com.android.pos.data.remote.Constants.AUTH_TOKEN
-import com.android.pos.data.remote.Constants.IS_CLOCKOUT
 import com.android.pos.databinding.FragmentForgotPasswordBinding
-import com.android.pos.databinding.FragmentLoginBinding
-import com.android.pos.di.PrefProvider
+import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class ForgotPasswordFragment : Fragment() {
@@ -71,9 +66,15 @@ class ForgotPasswordFragment : Fragment() {
 
         viewModel.data.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
-                if (it) {
+
+
+                AlertUtils.showCustomAlertWithListenerWithOK(
+                    requireContext(), it
+                ) { _, _ ->
                     findNavController().navigateUp()
                 }
+
+
             }
         })
 
