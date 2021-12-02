@@ -7,7 +7,6 @@ import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.provider.Settings
 import android.util.Log
 import android.view.*
 import android.view.ViewGroup
@@ -163,14 +162,18 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             paymentId = requireArguments().getInt("paymentId")
             paymentOfflineId = requireArguments().getString("paymentOfflineId").toString()
             orderOfflineId = requireArguments().getString("orderOfflineId").toString()
-            viewModel.redeemLoyaltyInfo.needToApplyLoyalty = requireArguments().getBoolean("isLoyaltyApplied")
+            viewModel.redeemLoyaltyInfo.needToApplyLoyalty =
+                requireArguments().getBoolean("isLoyaltyApplied")
 
             //save pref
             prefProvider.setValueboolean(IS_ORDER_UPDATE, value = true)
             prefProvider.setValueInt(BUNDLE_ORDER_ID, value = orderId ?: 0)
             prefProvider.setValueInt(BUNDLE_PAYMENT_ID, value = paymentId ?: 0)
             prefProvider.setValue(BUNDLE_PAYMENT_OFFLINE_ID, value = paymentOfflineId)
-            prefProvider.setValueboolean(BUNDLE_ISLOYALTYAPPLIED, value = viewModel.redeemLoyaltyInfo.needToApplyLoyalty)
+            prefProvider.setValueboolean(
+                BUNDLE_ISLOYALTYAPPLIED,
+                value = viewModel.redeemLoyaltyInfo.needToApplyLoyalty
+            )
         } else {
             //check pref
             if (prefProvider.getValueboolean(IS_ORDER_UPDATE, defaultValue = false)) {
@@ -180,7 +183,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 paymentOfflineId =
                     prefProvider.getValue(BUNDLE_PAYMENT_OFFLINE_ID, defaultValue = "")
                 orderOfflineId = prefProvider.getValue(BUNDLE_ORDER_OFFLINE_ID, defaultValue = "")
-                viewModel.redeemLoyaltyInfo.needToApplyLoyalty = prefProvider.getValueboolean(BUNDLE_ISLOYALTYAPPLIED,false)
+                viewModel.redeemLoyaltyInfo.needToApplyLoyalty =
+                    prefProvider.getValueboolean(BUNDLE_ISLOYALTYAPPLIED, false)
             }
 
         }
@@ -781,23 +785,20 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private fun searchCategory() {
 
         searchList = arrayListOf()
-
-
-        for (i in 0 until categoryList1.size) {
-            for (j in categoryList1[i].inventoryLists!!.indices) {
+        categoryList1.forEach { categories ->
+            val itemList = categories.inventoryLists
+            itemList?.filter { it?.isHide == true }?.forEach { tbItem ->
                 searchList.add(
                     CategorySearchData(
-                        categoryList1[i].inventoryLists?.get(j)?.itemId ?: 0,
-                        categoryList1[i].inventoryLists?.get(j)?.name ?: "",
-                        categoryList1.get(i).inventoryLists?.get(j)?.imageUrl.toString(),
-                        categoryList1.get(i).category.name ?: "",
-                        categoryList1[i].category.id
+                        tbItem?.itemId ?: 0,
+                        tbItem?.name ?: "",
+                        tbItem?.imageUrl.toString(),
+                        categories.category.name ?: "",
+                        categories.category.id
                     )
                 )
             }
-
         }
-
         searchAdapter =
             CategorySearchAdapter(
                 requireActivity(),
@@ -1765,12 +1766,34 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         llPlus.setOnClickListener {
 
             qty += 1
+            txtQty.setText(qty.toString())
 
-            if (data.quantity >= qty) {
-                txtQty.setText(qty.toString())
+            if (data.variationsAttributes.isNotEmpty()) {
+
+                val stockQty = variationAdapter?.getItem()?.stockQty
+
+                if (stockQty?.isNotEmpty() == true) {
+
+                    if (stockQty.toInt() >= qty) {
+                        txtQty.setText(qty.toString())
+                    } else {
+                        qty -= 1
+                        stockValidationAlert(qty, txtQty)
+                    }
+
+                } else {
+                    qty -= 1
+                    stockValidationAlert(qty, txtQty)
+                }
+
             } else {
-                qty -= 1
-                AlertUtils.showCustomAlert(requireActivity(), getString(R.string.qty_validation))
+
+                if (data.quantity >= qty) {
+                    txtQty.setText(qty.toString())
+                } else {
+                    qty -= 1
+                    stockValidationAlert(qty, txtQty)
+                }
             }
 
 
@@ -1857,6 +1880,14 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         dialog.setCanceledOnTouchOutside(false)
         dialog.show()
+    }
+
+    private fun stockValidationAlert(qty: Int, txtQty: AppCompatEditText) {
+        txtQty.setText(qty.toString())
+        AlertUtils.showCustomAlert(
+            requireActivity(),
+            getString(R.string.qty_validation)
+        )
     }
 
 
@@ -3030,8 +3061,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         })
 
     }
-
-
 
 
     private fun dineInUpdateOrder() {

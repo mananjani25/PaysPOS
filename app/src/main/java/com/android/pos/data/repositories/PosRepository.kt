@@ -266,7 +266,6 @@ class PosRepository @Inject constructor(
         appDatabase.teamRoleDao().addAllRolesSuspend(teamRoleList)
     }
 
-    fun getCurrentUserTeamRoleFromDb() =  performGetOperationDatabase(databaseQuery = { appDatabase.teamRoleDao().roleById(id = prefProvider.getEmployeeRoleId()) })
 
     suspend fun addCashDiscountsFromDb(data: List<CashDiscountModel>) {
         appDatabase.cashDiscountDao().addAll(data)

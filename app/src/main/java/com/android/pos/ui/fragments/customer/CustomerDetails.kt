@@ -104,7 +104,7 @@ class CustomerDetails : Fragment() {
                 "${AlertUtils.usNumberFormat(customerModel.phones[0].phone_number)}"
         }
         if (customerModel.addresses.isNotEmpty()) {
-            ("" + customerModel.addresses[0].address1 + "," + customerModel.addresses[0].address2 + "," + customerModel.addresses[0].city).also {
+            (customerModel.addresses[0].address1 + "," + customerModel.addresses[0].address2 + "," + customerModel.addresses[0].city).also {
                 binding.txtAddress.text = it
             }
         }

@@ -158,6 +158,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/_5sdp"
                         android:text="@string/options"
+                        android:textAllCaps="true"
                         android:textColor="@color/txtColor"
                         android:textSize="@dimen/_6mdpi" />
 

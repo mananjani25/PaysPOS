@@ -56,6 +56,9 @@ class TaxServiceChargeRepository @Inject constructor(
 
     suspend fun deleteTaxDatabase(taxId: Int) = appDatabase.taxDao().deleteTaxById(taxId)
 
+    fun getCurrentUserTeamRoleFromDb(taxId: Int) =
+        performGetOperationDatabase(databaseQuery = { appDatabase.teamRoleDao().roleById(taxId) })
+
 
     fun getServiceChargeList() =
         performGetOperation(

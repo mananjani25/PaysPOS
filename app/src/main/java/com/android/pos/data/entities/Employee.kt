@@ -37,8 +37,8 @@ data class Employee(
     @SerializedName("updated_at")
     val updatedAt: String?,
     @SerializedName("team_role_id")
-    val teamRoleId: String?,
+    val teamRoleId: Int?,
     @SerializedName("hourly_wages")
-    val hourlyWages: Int?,
+    val hourlyWages: Double = 0.0,
     var isChecked: Boolean = false
 ) : Parcelable

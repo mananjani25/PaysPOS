@@ -102,6 +102,13 @@ class MethodUtils {
             return edtFirstName.text.toString().trim()
         }
 
+        fun clearString(s: String): Double {
+
+            val cleanString: String = s.replace("""[$]""".toRegex(), "")
+
+            return cleanString.trim().toDouble()
+        }
+
         fun getTextTextView(edtFirstName: AppCompatTextView): String {
 
             return edtFirstName.text.toString().trim()

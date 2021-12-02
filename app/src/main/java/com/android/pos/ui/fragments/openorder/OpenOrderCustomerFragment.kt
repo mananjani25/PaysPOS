@@ -27,11 +27,8 @@ import com.android.pos.data.entities.TbCustomer
 import com.android.pos.data.entities.TbPhones
 import com.android.pos.databinding.FragmentOpenOrderBinding
 import com.android.pos.utils.AlertUtils
-import com.android.pos.utils.Event
 import com.android.pos.utils.MethodUtils
-import com.android.pos.utils.extensions.liveSnackBar
 import com.google.android.material.datepicker.MaterialDatePicker
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import dagger.hilt.android.AndroidEntryPoint
@@ -82,6 +79,8 @@ class OpenOrderCustomerFragment : Fragment(), View.OnClickListener {
         binding.btnClearCustomer.setOnClickListener(this)
         binding.btnCancelCustomer.setOnClickListener(this)
         binding.txtSave.setOnClickListener(this)
+        binding.txtSave.setOnClickListener(this)
+        binding.btnCancelDelivery.setOnClickListener(this)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             onDateSelected(System.currentTimeMillis())
@@ -287,7 +286,10 @@ class OpenOrderCustomerFragment : Fragment(), View.OnClickListener {
             }
 
             R.id.btnCancelCustomer -> {
-
+                findNavController().navigateUp()
+            }
+            R.id.btnCancelDelivery -> {
+                findNavController().navigateUp()
             }
             R.id.btnClearCustomer -> {
 
