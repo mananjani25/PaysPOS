@@ -49,7 +49,7 @@
                 android:layout_centerVertical="true"
                 android:paddingVertical="@dimen/_2sdp">
 
-                <androidx.appcompat.widget.AppCompatSpinner
+                <Spinner
                     android:id="@+id/spnTable"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="wrap_content"
@@ -103,7 +103,7 @@
                 android:layout_centerVertical="true"
                 android:paddingVertical="@dimen/_2sdp">
 
-                <androidx.appcompat.widget.AppCompatSpinner
+                <Spinner
                     android:id="@+id/spnFloorName"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="wrap_content"

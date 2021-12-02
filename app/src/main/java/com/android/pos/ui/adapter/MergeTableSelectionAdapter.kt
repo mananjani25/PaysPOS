@@ -46,13 +46,6 @@ class MergeTableSelectionAdapter : RecyclerView.Adapter<MergeTableSelectionAdapt
                 model.listFloorPlan
             )
 
-            tableAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            floorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-
-
-            binding.spnFloorName.adapter = floorAdapter
-            binding.spnTable.adapter = tableAdapter
-
             binding.spnTable.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(
                     parent: AdapterView<*>?,
@@ -60,10 +53,18 @@ class MergeTableSelectionAdapter : RecyclerView.Adapter<MergeTableSelectionAdapt
                     position: Int,
                     id: Long
                 ) {
+                    binding.spnTable.setSelection(position)
                     list.get(0).selectedTableId =
-                        (binding.spnTable.adapter.getItem(position) as MergeTableModel).id
-                    Log.e(TAG,"selectedTableID  ${(binding.spnTable.adapter.getItem(position) as MergeTableModel).id}")
-                    Log.e(TAG,"selectedTablePosition  ${position}")
+                        (parent?.adapter?.getItem(position) as MergeTableModel).id
+                    Log.e(
+                        TAG,
+                        "selectedTableParetnID ${(parent?.adapter?.getItem(position) as MergeTableModel).id}"
+                    )
+                    Log.e(
+                        TAG,
+                        "selectedTableID  ${(binding.spnTable.adapter.getItem(position) as MergeTableModel).id}"
+                    )
+                    Log.e(TAG, "selectedTablePosition  ${position}")
                     list.get(layoutPosition).tableSelectedPosition = position
                     list.get(layoutPosition).tableChairCount =
                         (binding.spnTable.adapter.getItem(position) as MergeTableModel).chairCount
@@ -75,7 +76,10 @@ class MergeTableSelectionAdapter : RecyclerView.Adapter<MergeTableSelectionAdapt
 
                 }
 
+
+
             }
+
 
             binding.spnFloorName.onItemSelectedListener =
                 object : AdapterView.OnItemSelectedListener {
@@ -87,15 +91,29 @@ class MergeTableSelectionAdapter : RecyclerView.Adapter<MergeTableSelectionAdapt
                     ) {
                         var tempTableList: ArrayList<MergeTableModel> = arrayListOf()
                         list.get(0).listFloorPlan.get(position).id
-                        tempTableList = list.get(0).listTable.filter { it ->
-                            it.floorId == list.get(0).listFloorPlan.get(position).id
+                        tempTableList = list.get(layoutPosition).listTable.filter { it ->
+                            it.floorId == list.get(layoutPosition).listFloorPlan.get(position).id
                         }.toCollection(arrayListOf())
                         list[layoutPosition].selectedFloorPlanId =
                             list.get(0).listFloorPlan.get(position).id
 
-                        tableAdapter.clear()
+
+
+                        tableAdapter = ArrayAdapter(
+                            binding.root.context,
+                            R.layout.spinner_text_selected,
+                            tempTableList
+                        )
+                        tableAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                        binding.spnTable.adapter = tableAdapter
+
+                       /* tableAdapter.clear()
                         tableAdapter.addAll(tempTableList)
                         tableAdapter.notifyDataSetChanged()
+                        binding.spnTable.isSelected = true
+                        binding.spnTable.setSelection(0)
+*/
+
 
                     }
 
@@ -105,11 +123,24 @@ class MergeTableSelectionAdapter : RecyclerView.Adapter<MergeTableSelectionAdapt
 
                 }
 
+            tableAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            floorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
+
+            binding.spnFloorName.adapter = floorAdapter
+            binding.spnTable.adapter = tableAdapter
+
+
+
+
+
             if (layoutPosition != 0) {
                 binding.imgDelete.visibility = View.VISIBLE
             } else {
                 binding.imgDelete.visibility = View.GONE
             }
+
+            binding.executePendingBindings()
 
 
         }
