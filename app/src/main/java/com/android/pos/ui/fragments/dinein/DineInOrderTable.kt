@@ -9,9 +9,11 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.widget.CheckBox
 import android.widget.PopupWindow
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.constraintlayout.widget.Group
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -47,6 +49,7 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.inject.Inject
 import kotlin.collections.ArrayList
+import kotlin.math.log
 
 @AndroidEntryPoint
 class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
@@ -87,6 +90,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     private var tipsList: List<GetTipReponse.Data> = listOf()
     private var kitchenPrinterList: List<PrinterResponse.Data.KitchenReceiptPrinters> = listOf()
     lateinit var cashDiscountModel: CashDiscountModel
+    var optionType = ""
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -104,6 +108,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         )
         binding.lifecycleOwner = this
 
+        optionType = prefProvider.getValue(Constants.OPTION_TYPE, "")
         observeShowProgress()
         setupSnackbar()
         getCustomerList()
@@ -117,31 +122,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         return binding.root
     }
 
-    fun getDiscountCashData(): Double {
-        var optionType = prefProvider.getValue(Constants.OPTION_TYPE, "")
-        var amountType = prefProvider.getValue(Constants.AMOUNT_TYPE, "")
-        var rateorAmount = prefProvider.getValue(Constants.RATE_OR_AMOUNT, "0")
-        if (optionType == "CashDiscount") {
-            if (amountType == "Dollar") {
-                if (subTotalPrice > 0) {
-                    return rateorAmount.toDouble().also { cashDiscount = it }
-                } else {
-                    return 0.00
-                }
-            } else if (amountType == "Percentage") {
-                if (subTotalPrice > 0) {
-                    return (viewModel.subTotalAmount * 100 / rateorAmount.toDouble()).also {
-                        cashDiscount = it
-                    }
-                } else {
-                    return 0.00
-                }
-            }
-        } else {
-            return 0.00
-        }
-        return 0.00
-    }
 
     private fun getCustomerList() {
         viewModel.customer().observe(viewLifecycleOwner, {
@@ -528,57 +508,48 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         val txtTotalTax: AppCompatTextView = popupView.findViewById(R.id.txtTotalTax)
         val txttotalCashDiscount: AppCompatTextView = popupView.findViewById(R.id.txtcashDiscount)
         val txtTotalcashAdj: AppCompatTextView = popupView.findViewById(R.id.txtnoncashadj)
+        val chkLoyaltyAmount: CheckBox = popupView.findViewById(R.id.chkLoyaltyAmount)
+        val groupLoyalty: Group = popupView.findViewById(R.id.groupLoyalty)
+        chkLoyaltyAmount.visibility = View.GONE
+        groupLoyalty.visibility = View.GONE
+
         val linearCCashDiscount: LinearLayoutCompat =
             popupView.findViewById(R.id.lineaarCashDiscount)
         val linear_NonCashDiscount: LinearLayoutCompat =
             popupView.findViewById(R.id.linear_NonCashDiscount)
-
         var optionType = prefProvider.getValue(Constants.OPTION_TYPE, "")
-        var amountType = prefProvider.getValue(Constants.AMOUNT_TYPE, "")
-        var rateorAmount = prefProvider.getValue(Constants.RATE_OR_AMOUNT, "0")
 
+        if (prefProvider.getValueboolean(Constants.CASHDIS_SURCHARGEENABLE, false)) {
+            if (optionType == "CashDiscount") {
+                linearCCashDiscount.visibility = View.VISIBLE
+                linear_NonCashDiscount.visibility = View.GONE
 
-        if (optionType == "CashDiscount") {
-            if (amountType == "Dollar") {
-                if (viewModel.subTotalAmount > 0) {
-                    cashDiscount = rateorAmount.toDouble()
-                } else {
-                    cashDiscount = 0.00
-                }
-            } else if (amountType == "Percentage") {
-                if (viewModel.subTotalAmount > 0) {
-                    cashDiscount = (viewModel.subTotalAmount * 100 / rateorAmount.toDouble())
-                } else {
-                    cashDiscount = 0.00
-                }
+                txttotalCashDiscount.text = "- $" + String.format(
+                    "%.2f", MethodUtils.calculateCashDiscount(
+                        subTotalWT,
+                        prefProvider,
+                        requireContext()
+                    )
+                )
+                txtTotalcashAdj.text = "- $" + String.format("%.2f", 0.0)
+            } else {
+                linearCCashDiscount.visibility = View.GONE
+                linear_NonCashDiscount.visibility = View.GONE
+
+                txttotalCashDiscount.text = "- $" + String.format("%.2f", 0.0)
+                txtTotalcashAdj.text = "- $" + String.format(
+                    "%.2f", MethodUtils.calculateCashDiscount(
+                        subTotalWT,
+                        prefProvider,
+                        requireContext()
+                    )
+                )
             }
-            linearCCashDiscount.visibility = View.VISIBLE
-            linear_NonCashDiscount.visibility = View.GONE
-            txttotalCashDiscount.text = "- $" + String.format("%.2f", cashDiscount)
-            txtTotalcashAdj.text = "- $" + String.format("%.2f", 0.00)
-        } else if (optionType == "SurCharge") {
-            if (amountType == "Dollar") {
-                if (viewModel.subTotalAmount > 0) {
-                    cashDiscount = rateorAmount.toDouble()
-                } else {
-                    cashDiscount = 0.00
-                }
-            } else if (amountType == "Percentage") {
-                if (viewModel.subTotalAmount > 0) {
-                    cashDiscount = (viewModel.subTotalAmount * 100 / rateorAmount.toDouble())
-                } else {
-                    cashDiscount = 0.00
-                }
-            }
+        } else {
             linearCCashDiscount.visibility = View.GONE
             linear_NonCashDiscount.visibility = View.GONE
-            txttotalCashDiscount.text = "- $" + String.format("%.2f", 0.00)
-            txtTotalcashAdj.text = "- $" + String.format("%.2f", cashDiscount)
-        }else{
-            linearCCashDiscount.visibility = View.GONE
-            linear_NonCashDiscount.visibility = View.GONE
-            cashDiscount = 0.00
         }
+
 
 
 
@@ -622,6 +593,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 //        }
 
     }
+
 
     private fun observeShowProgress() {
 
@@ -1367,6 +1339,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     var WTServiceCharge: Double = 0.0
 
 
+
+
                     for (i in 1 until dineInList.size) {
 
                         if (dineInList.get(i).isHeader == 1) {
@@ -1420,6 +1394,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                         }
                     }
+                    val divideCashDisCount = MethodUtils.calculateCashDiscount(
+                        subTotalWT,
+                        prefProvider,
+                        requireContext()
+                    )
+                    Log.d("yash", "navigateDineInOrder: " + divideCashDisCount)
+
                     serviceChargeList.forEach {
                         WTServiceCharge += (WTSubTotal * it.percentage) / 100
 
@@ -1430,6 +1411,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     Log.e(TAG, "WTServiceCharge:  ${WTServiceCharge}")
                     Log.e(TAG, "totalDiscount:  ${baseResponse.totalDiscount}")
                     Log.e(TAG, "itemsDiscount:  ${itemsDiscount}")
+
+
                     var orderDiscount = 0.0
                     if (baseResponse.totalDiscount >= itemsDiscount) {
                         orderDiscount = baseResponse.totalDiscount - itemsDiscount
@@ -1437,9 +1420,21 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     dineInList.get(0).guestDividedAmt =
                         MethodUtils.roundOffAmountDouble((WTSubTotal + WTTaxes + WTServiceCharge - orderDiscount) / (baseResponse.guestAttributes.size - 1))
 
-                    WholeTableAmount = MethodUtils.roundOffAmountDouble(
-                        (WTSubTotal + WTTaxes + WTServiceCharge - orderDiscount)
-                    )
+                    if (prefProvider.getValueboolean(Constants.CASHDIS_SURCHARGEENABLE, false)) {
+                        if (optionType == "CashDiscount") {
+                            WholeTableAmount = MethodUtils.roundOffAmountDouble(
+                                (WTSubTotal + WTTaxes + WTServiceCharge - orderDiscount - MethodUtils.calculateCashDiscount(
+                                    WTSubTotal,
+                                    prefProvider,
+                                    requireContext()
+                                ))
+                            )
+                        }
+                    } else {
+                        WholeTableAmount = MethodUtils.roundOffAmountDouble(
+                            (WTSubTotal + WTTaxes + WTServiceCharge - orderDiscount)
+                        )
+                    }
 
                     var service: Double = 0.0
                     var serviceSubTotal = subTotalWT - itemsDiscount
@@ -1567,6 +1562,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
                     //     binding.txtTotalAmountNew.setText("${MethodUtils.roundOffAmount(totalAmount)}")
+
                     totalPrice = MethodUtils.roundOffAmountDouble(totalAmount)
 
 
@@ -1681,13 +1677,30 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         var myShare = unpaidCount * divShare
 
                         var finalAmt =
-                            guestSubTotal + serviceChargeGu + totalTaxAmt + myShare - getDiscountCashData()
+                            guestSubTotal + serviceChargeGu + totalTaxAmt + myShare
                         viewModel.totalTaxAmount = totalAmount
                         serviceCharge = serviceChargeGu
                         subTotalWT = guestSubTotal + myShare
                         finalTaxAmt = totalTaxAmt
 
-                        binding.txtTotalAmountNew.setText(MethodUtils.roundOffAmount(finalAmt))
+                        if (prefProvider.getValueboolean(
+                                Constants.CASHDIS_SURCHARGEENABLE,
+                                false
+                            )
+                        ) {
+                            if (optionType == "CashDiscount") {
+                                binding.txtTotalAmountNew.text = MethodUtils.roundOffAmount(
+                                    finalAmt - MethodUtils.calculateCashDiscount(
+                                        subTotalWT,
+                                        prefProvider,
+                                        requireContext()
+                                    )
+                                )
+
+                            }
+                        } else {
+                            binding.txtTotalAmountNew.text = finalAmt.toString()
+                        }
 
                         toFinalAmt = finalAmt
 

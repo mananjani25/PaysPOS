@@ -12,6 +12,8 @@ import com.android.pos.MainApplication
 import com.android.pos.R
 import com.android.pos.data.model.requestModel.CreateCategoryRequestModel
 import com.android.pos.data.model.requestModel.CreateItemRequestModel
+import com.android.pos.data.remote.Constants
+import com.android.pos.di.PrefProvider
 import com.android.pos.utils.extensions.toMultiPartRequestBody
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -218,25 +220,51 @@ class MethodUtils {
 
         var mLastClickTime = 0L
 
-        fun isDoubleClick(): Boolean{
+        fun isDoubleClick(): Boolean {
             if (SystemClock.elapsedRealtime() - mLastClickTime < 1000) {
                 return true
             }
             mLastClickTime = SystemClock.elapsedRealtime()
             return false
         }
-    }
 
-    /*fun addItemsForDineIn(list: ArrayList<DineInModel>): ArrayList<DineInModel> {
-        for (i in 0 until list.size) {
-            if (list.get(i).items.isNotEmpty()) {
-                list[i].items.forEach {
-
-                }
-            }
-
+        fun isEnableCashDiscount(context: Context): Boolean {
+            val prefProvider: PrefProvider = PrefProvider(context)
+            return prefProvider.getValueboolean(Constants.CASHDIS_SURCHARGEENABLE, false)
         }
 
-
-    }*/
+        fun calculateCashDiscount(
+            subTotal: Double,
+            prefProvider: PrefProvider,
+            context: Context
+        ): Double {
+            var amountType = prefProvider.getValue(Constants.AMOUNT_TYPE, "")
+            var rateorAmount = prefProvider.getValue(Constants.RATE_OR_AMOUNT, "0")
+            if (amountType == "Dollar") {
+                if (subTotal.toDouble() > 0) {
+                    return rateorAmount.toDouble()
+                } else {
+                    return 0.00
+                }
+            } else if (amountType == "Percentage") {
+                if (subTotal.toDouble() > 0) {
+                    return (subTotal * 100 / rateorAmount.toDouble())
+                }
+            }
+            return 0.00
+        }
+    }
 }
+
+/*fun addItemsForDineIn(list: ArrayList<DineInModel>): ArrayList<DineInModel> {
+    for (i in 0 until list.size) {
+        if (list.get(i).items.isNotEmpty()) {
+            list[i].items.forEach {
+
+            }
+        }
+
+    }
+
+
+}*/
