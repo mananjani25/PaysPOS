@@ -30,7 +30,13 @@ class CustomerDetails : Fragment() {
     lateinit var customerModel: TbCustomer
     val TAG = "CustomerDetails"
     private val viewModel by viewModels<CustomerListViewModel>()
-    private val orderHistoryAdapter by lazy { OrderHistoryAdapter() }
+    private val orderHistoryAdapter by lazy {
+        OrderHistoryAdapter { view, order ->
+            //order
+            val bundle: Bundle = bundleOf("orderId" to "${order.id}")
+            findNavController().navigate(R.id.action_customer_to_dashboardCategoryNew, bundle)
+        }
+    }
 
     companion object {
         private val CUSTOMER_MODEL = "customer_model"
