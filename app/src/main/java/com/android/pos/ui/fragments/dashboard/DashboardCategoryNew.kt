@@ -896,12 +896,16 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             dialog.dismiss()
         }
         linearTeam.setOnClickListener {
-            findNavController().navigate(R.id.action_dashboardCategoryNew_to_teamList)
-            dialog.dismiss()
+            if (rolePermission.hasEmployeePermission(binding.root)) {
+                findNavController().navigate(R.id.action_dashboardCategoryNew_to_teamList)
+                dialog.dismiss()
+            }
         }
         linearInventory.setOnClickListener {
-            findNavController().navigate(R.id.action_dashboardCategoryNew_to_inventory)
-            dialog.dismiss()
+            if (rolePermission.hasInventoryPermission(binding.root)) {
+                findNavController().navigate(R.id.action_dashboardCategoryNew_to_inventory)
+                dialog.dismiss()
+            }
         }
         linearSetting.setOnClickListener {
             findNavController().navigate(R.id.action_dashboardCategoryNew_to_settings)
@@ -914,12 +918,16 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             dialog.dismiss()
         }
         linearTransaction.setOnClickListener {
-            findNavController().navigate(R.id.action_dashboardCategoryNew_to_transactionFragment)
-            dialog.dismiss()
+            if (rolePermission.hasTransactionPermission(binding.root)) {
+                findNavController().navigate(R.id.action_dashboardCategoryNew_to_transactionFragment)
+                dialog.dismiss()
+            }
         }
         linearCash.setOnClickListener {
-            findNavController().navigate(R.id.action_dashboardCategoryNew_to_cashLogFragment)
-            dialog.dismiss()
+            if (rolePermission.hasCashLogPermission(binding.root)) {
+                findNavController().navigate(R.id.action_dashboardCategoryNew_to_cashLogFragment)
+                dialog.dismiss()
+            }
         }
 
 
