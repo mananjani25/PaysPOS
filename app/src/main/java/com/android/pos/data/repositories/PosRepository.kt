@@ -704,6 +704,10 @@ class PosRepository @Inject constructor(
     suspend fun getOrderHistory(id: String) =
         apiHelperNew.getOrderHistory(id)
 
+    suspend fun deleteCustomer() {
+        appDatabase.customerDao().deleteCustomerTb()
+    }
+
     suspend fun clearTable() {
 
         Log.e("clear Db Table", "-------")

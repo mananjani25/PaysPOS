@@ -37,13 +37,21 @@ public class CustomerListViewModel @Inject constructor(
     private val _orderHistory = MutableLiveData<Event<List<Orders>?>>()
     val orderHistory: LiveData<Event<List<Orders>?>> = _orderHistory
 
-    fun customerList(data: LinkedHashMap<String, String>)= posRepository.customerListPagination(data)
+    fun customerList(data: LinkedHashMap<String, String>) =
+        posRepository.customerListPagination(data)
 
 
     fun getData() {
         _showProgress.value = Event(true)
 
 
+    }
+
+    fun deleteTbl() {
+        viewModelScope.launch {
+
+            posRepository.deleteCustomer()
+        }
     }
 
     fun delete(id: Int?) {

@@ -398,10 +398,12 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                             }
                         }
                     }
-
+                    cashDiscountType = cashDiscountData.option_type
+                    setupData(cashDiscountData.option_type)
+                } else {
+                    setupData("")
                 }
-                cashDiscountType = cashDiscountData.option_type
-                setupData(cashDiscountData.option_type)
+
             })
 
 
