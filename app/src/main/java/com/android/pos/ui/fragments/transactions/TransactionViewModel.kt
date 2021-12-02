@@ -80,7 +80,7 @@ class TransactionViewModel @Inject constructor(
         startDate.value = sdf.format(myCalendar.time) + " " + SimpleDateFormat(
             "hh:mm a",
             Locale.getDefault()
-        ).format(Date())
+        ).format(Date(System.currentTimeMillis() - 60000 * 30))
         endDate.value = sdf.format(myCalendar.time) + " " + SimpleDateFormat(
             "hh:mm a",
             Locale.getDefault()

@@ -333,7 +333,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
     fun timeCalculateForStartEndTime(hour: Int, minute: Int, isStart: String): String {
         var timestring = ""
         var hoursfinal: Int = 0
-        if ((hour == 12 && minute > 0) || (hour > 12 && minute > 0)) {
+        if ((hour == 12 && minute > 0) || (hour > 12 && minute > 0) || (hour > 12 && minute == 0)) {
             if (hour == 12) {
                 hoursfinal = hour
             } else {

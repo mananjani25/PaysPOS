@@ -463,7 +463,7 @@
     <string name="clock">clock</string>
     <string name="custom_item">Custom Item</string>
     <string name="menu">Menu</string>
-    <string name="name_phone_email_or_company">Name, Mobile, Email or Company</string>
+    <string name="name_phone_email_or_company">Name, Phone, Email or Company</string>
     <string name="add_custom_item_name">Add Custom Item Name</string>
     <string name="set_up_item_grid">Set up Item Grid</string>
     <string name="hardware">Hardware</string>
@@ -644,6 +644,8 @@
     <string name="loyalty_amount">Loyalty Amount</string>
     <string name="used_loyalty_points">Used Loyalty Points</string>
     <string name="loyalty_rewards">Loyalty Rewards</string>
+    <string name="end_date_amp_time"><![CDATA[End Date & Time]]></string>
+    <string name="start_date_amp_time"><![CDATA[Start Date & Time]]></string>
     <string name="terminal_login_id_tap_to_copy_unique_id">Terminal Login ID (Tap to copy Unique id)</string>
 
     <string name="items_title">Items</string>
