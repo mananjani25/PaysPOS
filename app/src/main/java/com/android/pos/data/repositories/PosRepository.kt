@@ -106,6 +106,7 @@ class PosRepository @Inject constructor(
     )
 
     suspend fun saveDatabase(response: VenueDataResponse) {
+        appDatabase.customerDao().deleteCustomerTb()
         appDatabase.categoryDao().delete()
         appDatabase.itemDao().delete()
         appDatabase.modifierSetDao().delete()
