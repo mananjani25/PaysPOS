@@ -647,6 +647,7 @@
     <string name="end_date_amp_time"><![CDATA[End Date & Time]]></string>
     <string name="start_date_amp_time"><![CDATA[Start Date & Time]]></string>
     <string name="terminal_login_id_tap_to_copy_unique_id">Terminal Login ID (Tap to copy Unique id)</string>
+    <string name="error_order_id_not_available">Order id is not available.</string>
 
     <string name="items_title">Items</string>
     <string name="inventory_title">Inventory</string>

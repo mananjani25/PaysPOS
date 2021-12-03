@@ -42,17 +42,17 @@
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txtUsedLoyaltyPoints"
-            style="@style/HistoryItemHeaderText"
+            style="@style/HistoryItemText"
             android:gravity="center"
             android:visibility="gone"
             tools:text="200" />
 
-        <!--<androidx.appcompat.widget.AppCompatTextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txtReorder"
             style="@style/HistoryItemText"
             android:gravity="center"
             android:text="@string/reorder"
-            android:textColor="@color/txt_color_blue" />-->
+            android:textColor="@color/txt_color_blue" />
 
     </LinearLayout>
 </layout>

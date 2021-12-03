@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.data.model.responseModel.BaseResponse
+import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.data.model.responseModel.orderhistory.Orders
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
@@ -26,6 +27,9 @@ public class CustomerListViewModel @Inject constructor(
 
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
+
+    private val _orderResponse = MutableLiveData<Event<GetOrderDetailsResponse.Data>>()
+    val orderResponse: LiveData<Event<GetOrderDetailsResponse.Data>> = _orderResponse
 
     private val mdata = MutableLiveData<Event<BaseResponse?>>()
     val data: LiveData<Event<BaseResponse?>> = mdata
@@ -119,4 +123,41 @@ public class CustomerListViewModel @Inject constructor(
         }
     }
 
+    fun apiCallOrderDetails(orderId: Int) {
+        viewModelScope.launch {
+
+            _showProgress.value = Event(true)
+            val resource = posRepository.orderDetailsById(orderId)
+
+
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+                    resource.data.let { logInResponse ->
+                        if (logInResponse?.status == 200) {
+                            resource.data?.data?.let { order ->
+                                _orderResponse.value = Event(order)
+                                //_data.value = Event(createTaxResponse)
+                            }
+                        } else {
+                            _snackbarText.value = Event(resource.message)
+                        }
+                    }
+                }
+
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
+                }
+
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
+            }
+        }
+    }
+
+    fun showError( message: String){
+        _snackbarText.value = Event(message)
+    }
 }
