@@ -63,7 +63,6 @@ class DineInOrderTableViewModel @Inject constructor(
     var totalServiceChargeAmount = 0.0
 
 
-
     fun getTipsList() = posRepository.getTipsList()
     fun getCustomerPrinterList(): LiveData<Resource<List<PrinterResponse.Data.CustomerReceiptPrinters>>> {
         return posRepository.getCustomerPrinters()
@@ -73,7 +72,12 @@ class DineInOrderTableViewModel @Inject constructor(
         return posRepository.getKitchenPrinters()
     }
 
-    fun payByGuest(id: Int, model: GuestPaymentRequest, isAllPaymentComplete: Boolean, orderReq: DineInOrderPayment) {
+    fun payByGuest(
+        id: Int,
+        model: GuestPaymentRequest,
+        isAllPaymentComplete: Boolean,
+        orderReq: DineInOrderPayment
+    ) {
         _showProgress.value = Event(true)
         viewModelScope.launch {
             val resource: Resource<BaseResponse> =
@@ -132,9 +136,8 @@ class DineInOrderTableViewModel @Inject constructor(
     }
 
     fun apiCallOrderDetails(orderId: Int) {
+        _showProgress.value = Event(true)
         viewModelScope.launch {
-
-            _showProgress.value = Event(true)
             val resource = posRepository.orderDetailsById(orderId)
 
 

@@ -621,9 +621,10 @@ interface ApiService {
     @POST(MERGE_FLOOR_TABLE)
     suspend fun mergeFloorTable(
         @Path("id") parentTableId: Int,
-        @Query("child_table_ids") childTableIds: String,
-        @Query("order_id")order_id:Int?=null,
-        @Body orderReq:MergeTableRequest?
+        @Query("child_table_ids") childTableIds:String,
+        @Query("order_id") order_id: Int? = null,
+        @Query("merged_order_ids") mergedOrderIds: String?,
+        @Body orderReq: MergeTableRequest?
     ): MergeTableResponse
 
     @DELETE(UNMERGE_TABLE)

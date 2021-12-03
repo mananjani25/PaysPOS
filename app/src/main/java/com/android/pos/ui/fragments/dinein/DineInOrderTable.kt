@@ -165,7 +165,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         viewModel.getServiceChargeList.observe(viewLifecycleOwner, {
             if (it.data?.isNotEmpty() == true) {
                 serviceChargeList = it.data.toCollection(arrayListOf())
-                Log.e(TAG, "serviceChargeList:  ${Gson().toJson(serviceChargeList)}")
+
 
             }
 
@@ -403,7 +403,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 "dine_in_list",
                 newList
             )
-            Log.e(TAG, "DashDiscount ${totalDiscount}")
+
             bundle.putDouble("totalDiscount", totalDiscount)
             bundle.putParcelable("tableDetails", getOrderDetailsResponse?.floorPlanTable)
 
@@ -829,7 +829,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         subTotal += dineInTableAdapter.getList().get(0).guestDividedAmt
 
         var total = subTotal + totalTax
-        Log.e(TAG, "orderIdGuest  ${orderId}")
+
 
         val paymentAttr = GuestPaymentAttributes().apply {
             amount = totalGuest
@@ -907,8 +907,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         }
 
-        Log.e(TAG, "totalAmount  ${getOrderDetailsResponse?.totalAmount!!}")
-        Log.e(TAG, "totalGuest ${totalGuest}")
+
         if (getOrderDetailsResponse?.totalAmount != null) {
             var totalPaid = 0.0
 
@@ -1421,11 +1420,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                     }
 
-                    Log.e(TAG, "WTSubTotal:  ${WTSubTotal}")
+                   /* Log.e(TAG, "WTSubTotal:  ${WTSubTotal}")
                     Log.e(TAG, "WTTaxes:  ${WTTaxes}")
                     Log.e(TAG, "WTServiceCharge:  ${WTServiceCharge}")
                     Log.e(TAG, "totalDiscount:  ${baseResponse.totalDiscount}")
-                    Log.e(TAG, "itemsDiscount:  ${itemsDiscount}")
+                    Log.e(TAG, "itemsDiscount:  ${itemsDiscount}")*/
                     var orderDiscount = 0.0
                     if (baseResponse.totalDiscount >= itemsDiscount) {
                         orderDiscount = baseResponse.totalDiscount - itemsDiscount
@@ -1593,7 +1592,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                         }
 
                                         if (it.taxes?.isNotEmpty() == true) {
-                                            Log.e(TAG, "taxesList:  ${Gson().toJson(it.taxes)}")
+
                                             it.taxes?.forEach { tax ->
                                                 if (tax.isActive) {
                                                     totalTaxAmt += if (tax.taxType == "Percentage") {
@@ -2395,14 +2394,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         Builder.COLOR_1
                     )
 
-                    Log.e(
-                        TAG,
-                        "ConvertDateTime:  ${
-                            Constants.getReceiptFormatDateFromUTCServer(
-                                getOrderDetailsResponse?.createdAt.toString()
-                            )
-                        }"
-                    )
+
                     builder.addText(
                         padLine(
                             if (customerSettingModel.showTeam) {
@@ -2444,14 +2436,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             Builder.COLOR_1
                         )
 
-                        Log.e(
-                            TAG,
-                            "ConvertDateTime:  ${
-                                Constants.getReceiptFormatDateFromUTCServer(
-                                    getOrderDetailsResponse?.createdAt.toString()
-                                )
-                            }"
-                        )
+
                         builder.addText(
                             padLine(
                                 if (customerSettingModel.showTeam) {
@@ -3109,7 +3094,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         var dimen = if (width < height) width else height
         dimen = dimen * 3 / 4
 
-        Log.e(TAG, "getDimen:  ${dimen}")
+
         return net.glxn.qrgen.android.QRCode.from(qrcodeStaticUrl).bitmap()
 
 
@@ -3197,7 +3182,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     ) {
         var builder: Builder? = null
         try {
-            Log.e(TAG, "KitchenPrinterName ${customerReceiptPrinters.name}")
+
             val pname = if (customerReceiptPrinters.name.substring(0, 6).toString()
                     .lowercase() == "TM-m30".lowercase()
             ) {
@@ -3303,14 +3288,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 Builder.COLOR_1
             )
 
-            Log.e(
-                TAG,
-                "ConvertDateTime:  ${
-                    Constants.getReceiptFormatDateFromUTCServer(
-                        customerSettingModel.createdAt.toString()
-                    )
-                }"
-            )
+
             builder.addText(
                 padLine(
                     Constants.getReceiptFormatDateFromUTCServer(getOrderDetailsResponse?.createdAt.toString()),

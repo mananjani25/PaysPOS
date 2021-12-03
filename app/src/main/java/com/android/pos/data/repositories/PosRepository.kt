@@ -670,9 +670,10 @@ class PosRepository @Inject constructor(
         parentTableId: Int,
         childIds: String,
         orderModel: MergeTableRequest?,
+        childOrderIds:String?,
         orderId:Int?=null
     ) =
-        apiHelperNew.mergeFloorTable(parentTableId, childIds,orderModel,orderId)
+        apiHelperNew.mergeFloorTable(parentTableId, childIds,orderModel,childOrderIds,orderId)
 
     suspend fun unMergeTable(id: Int) = apiHelperNew.unMergeTable(id)
     suspend fun payByGuest(
