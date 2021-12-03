@@ -153,6 +153,7 @@ class AddEditCustomer : Fragment() {
         }
         if (isEdit) {
             binding.txtCustomerType.text = getString(com.android.pos.R.string.update_customer)
+            binding.txtSave.text = getString(com.android.pos.R.string.update)
 
             val editModel: TbCustomer? =
                 requireArguments().getParcelable<TbCustomer>(
