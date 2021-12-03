@@ -1146,7 +1146,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         binding.layoutMenu.txtKeypad.setOnClickListener {
 
             if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
-                findNavController().navigate(R.id.action_dashboardCategoryNew_to_manualSales)
+                if (rolePermission.hasManualSalesPermission(binding.root)) {
+                    findNavController().navigate(R.id.action_dashboardCategoryNew_to_manualSales)
+                }
             } else {
                 clickManualSales = true
                 orderTypeDialog()
