@@ -518,7 +518,8 @@
             app:popUpToInclusive="true">
             <argument
                 android:name="orderId"
-                app:argType="String" />
+                app:argType="string"
+                android:defaultValue=""/>
         </action>
         <action
             android:id="@+id/action_customer_to_addEditCustomer"

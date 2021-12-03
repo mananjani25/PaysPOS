@@ -42,7 +42,7 @@
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txtUsedLoyaltyPoints"
-            style="@style/HistoryItemHeaderText"
+            style="@style/HistoryItemText"
             android:gravity="center"
             android:visibility="gone"
             tools:text="200" />
