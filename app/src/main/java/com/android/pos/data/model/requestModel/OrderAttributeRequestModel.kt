@@ -114,6 +114,9 @@ class OrderAttributeRequestModel {
     @SerializedName("used_reward_points")
     var used_reward_points: Int? = 0
 
+    @SerializedName("merged_order_ids")
+    var mergedOrderIds: ArrayList<Int> = arrayListOf()
+
     @SerializedName("is_loyalty_applied")
     var is_loyalty_applied: Boolean? = false
 

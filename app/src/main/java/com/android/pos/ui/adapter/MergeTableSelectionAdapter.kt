@@ -62,12 +62,17 @@ class MergeTableSelectionAdapter : RecyclerView.Adapter<MergeTableSelectionAdapt
                     )
                     Log.e(
                         TAG,
-                        "selectedTableID  ${(binding.spnTable.adapter.getItem(position) as MergeTableModel).id}"
+                        "selectedORderID  ${(binding.spnTable.adapter.getItem(position) as MergeTableModel).orderId}"
                     )
                     Log.e(TAG, "selectedTablePosition  ${position}")
                     list.get(layoutPosition).tableSelectedPosition = position
                     list.get(layoutPosition).tableChairCount =
                         (binding.spnTable.adapter.getItem(position) as MergeTableModel).chairCount
+
+                    list.get(0).orderId =
+                        (binding.spnTable.adapter.getItem(position) as MergeTableModel).orderId
+
+
                     //list[layoutPosition].table =  (binding.spnTable.adapter.getItem(position) as MergeTableModel)
 
                 }
@@ -75,7 +80,6 @@ class MergeTableSelectionAdapter : RecyclerView.Adapter<MergeTableSelectionAdapt
                 override fun onNothingSelected(parent: AdapterView<*>?) {
 
                 }
-
 
 
             }
@@ -107,12 +111,12 @@ class MergeTableSelectionAdapter : RecyclerView.Adapter<MergeTableSelectionAdapt
                         tableAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                         binding.spnTable.adapter = tableAdapter
 
-                       /* tableAdapter.clear()
-                        tableAdapter.addAll(tempTableList)
-                        tableAdapter.notifyDataSetChanged()
-                        binding.spnTable.isSelected = true
-                        binding.spnTable.setSelection(0)
-*/
+                        /* tableAdapter.clear()
+                         tableAdapter.addAll(tempTableList)
+                         tableAdapter.notifyDataSetChanged()
+                         binding.spnTable.isSelected = true
+                         binding.spnTable.setSelection(0)
+ */
 
 
                     }

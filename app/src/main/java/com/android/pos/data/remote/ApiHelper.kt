@@ -447,9 +447,11 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
         parentTableId: Int,
         childIds: String,
         orderModel: MergeTableRequest?,
+        mergedOrderIds:String?,
         orderId: Int?=null
     ) =
-        getResult { apiService.mergeFloorTable(parentTableId, childIds, orderId, orderModel) }
+        getResult { apiService.mergeFloorTable(parentTableId, childIds, orderId,
+            mergedOrderIds, orderModel) }
 
     suspend fun unMergeTable(id: Int) = getResult { apiService.unMergeTable(id) }
 
