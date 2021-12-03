@@ -55,8 +55,6 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
             false
         )
 
-        viewModel.deleteTbl()
-
         data["page"] = currentpage.toString()
         data["per_page"] = perpagedata.toString()
 
