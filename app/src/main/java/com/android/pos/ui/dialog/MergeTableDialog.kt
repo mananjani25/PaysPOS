@@ -41,6 +41,9 @@ class MergeTableDialog : DialogFragment() {
     private var listOrdersMerged: ArrayList<GetOrderDetailsResponse.Data> = arrayListOf()
     private var orderList: ArrayList<GetFloorPlanDetailResponse.OrderDetails> = arrayListOf()
 
+    var listTable: ArrayList<MergeTableModel> = arrayListOf()
+    var listFloor: ArrayList<MergeFloorModel> = arrayListOf()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -54,6 +57,7 @@ class MergeTableDialog : DialogFragment() {
         )
         observeMergeTable()
         observeShowProgress()
+
         dialog?.setCanceledOnTouchOutside(false)
         return binding.root
     }
@@ -88,9 +92,9 @@ class MergeTableDialog : DialogFragment() {
 
     private fun setData() {
         listFloorPlan = requireArguments().getParcelableArrayList("floorList")
+        listFloor = arrayListOf()
+        listTable = arrayListOf()
 
-        var listTable: ArrayList<MergeTableModel> = arrayListOf()
-        var listFloor: ArrayList<MergeFloorModel> = arrayListOf()
 
         listFloorPlan?.forEach {
             listFloor.add(MergeFloorModel(it.id, it.name))
@@ -179,11 +183,15 @@ class MergeTableDialog : DialogFragment() {
         binding.imgBack.setOnClickListener {
             dismiss()
         }
+        binding.txtAddMore.setOnClickListener {
+            //adapter.addItem(MergeTableListModel())
+
+        }
         binding.txtSave.setOnClickListener {
             var primaryTable = tableAdapter.getItem(tableSelectedPos)
             val parentTableId = tableAdapter.getItem(tableSelectedPos)?.id
             val childIds: String = adapter.getList().get(0).selectedTableId.toString()
-            Log.e(TAG, "childIds:  ${childIds}")
+
             var secondaryTable =
                 adapter.getList().get(0).tableSelectedPosition?.let { it1 ->
                     adapter.getList().get(0).listTable.get(
@@ -254,7 +262,7 @@ class MergeTableDialog : DialogFragment() {
                 }
 
             } else {
-                Log.e(TAG, "primaryTable:  ${Gson().toJson(primaryTable)}")
+
 
                 parentTableId?.let { it1 ->
                     viewModel.mergeTable(

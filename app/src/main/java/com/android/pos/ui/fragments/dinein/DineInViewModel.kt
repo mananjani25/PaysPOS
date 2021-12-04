@@ -8,7 +8,9 @@ import androidx.lifecycle.viewModelScope
 import com.android.pos.data.model.DineInOrderDetailAttributes
 import com.android.pos.data.model.MergeTableModel
 import com.android.pos.data.model.requestModel.*
-import com.android.pos.data.model.responseModel.*
+import com.android.pos.data.model.responseModel.CreateNoteResponse
+import com.android.pos.data.model.responseModel.GetFloorPlanDetailResponse
+import com.android.pos.data.model.responseModel.GetFloorPlanResponse
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.remote.Constants.TERMINAL_ID
@@ -248,6 +250,7 @@ class DineInViewModel @Inject constructor(
             orderItemsAttr.add(model)
         }
         secondaryOrder.order_items.forEach {
+
             var model = OrderItemsAttribute()
             model.timestamp = it.timestamp
             model.category_id = it.categoryId
@@ -300,10 +303,9 @@ class DineInViewModel @Inject constructor(
                 model.orderItemModifiersAttributes = modifierList
             }
 
-
             orderItemsAttr.add(model)
-        }
 
+        }
         model.orderItemsAttributes = orderItemsAttr
 
         //Guest Attributes
