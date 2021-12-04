@@ -245,7 +245,22 @@ class DineInViewModel @Inject constructor(
                 model.orderItemModifiersAttributes = modifierList
             }
 
+            var itemTaxList: ArrayList<OrderItemTaxesAttribute> = arrayListOf()
 
+            it.orderItemTaxes.forEach {
+                var model = OrderItemTaxesAttribute()
+                model.taxId = it.taxId
+                model.isDefault = it.isDefault
+                model.isTaxRemoved = it.isTaxRemoved
+                model.name = it.name
+                model.rate = it.rate
+                model.taxTotalAmount = it.taxTotalAmount
+                model.taxType = it.taxType
+                itemTaxList.add(model)
+
+            }
+
+            model.orderItemTaxesAttributes = itemTaxList
 
             orderItemsAttr.add(model)
         }
@@ -297,11 +312,44 @@ class DineInViewModel @Inject constructor(
                 //orderModifier.orderId = modifier.orderId
                 //orderModifier.order_item_id = modifier.orderItemId
 
+                var itemTaxList: ArrayList<OrderItemTaxesAttribute> = arrayListOf()
+
+                it.orderItemTaxes.forEach {
+                    var model = OrderItemTaxesAttribute()
+                    model.taxId = it.taxId
+                    model.isDefault = it.isDefault
+                    model.isTaxRemoved = it.isTaxRemoved
+                    model.name = it.name
+                    model.rate = it.rate
+                    model.taxTotalAmount = it.taxTotalAmount
+                    model.taxType = it.taxType
+                    itemTaxList.add(model)
+
+                }
+
+                model.orderItemTaxesAttributes = itemTaxList
 
                 modifierList.add(orderModifier)
 
                 model.orderItemModifiersAttributes = modifierList
             }
+
+            var itemTaxList: ArrayList<OrderItemTaxesAttribute> = arrayListOf()
+
+            it.orderItemTaxes.forEach {
+                var model = OrderItemTaxesAttribute()
+                model.taxId = it.taxId
+                model.isDefault = it.isDefault
+                model.isTaxRemoved = it.isTaxRemoved
+                model.name = it.name
+                model.rate = it.rate
+                model.taxTotalAmount = it.taxTotalAmount
+                model.taxType = it.taxType
+                itemTaxList.add(model)
+
+            }
+
+            model.orderItemTaxesAttributes = itemTaxList
 
             orderItemsAttr.add(model)
 
@@ -536,6 +584,23 @@ class DineInViewModel @Inject constructor(
 
                 model.orderItemModifiersAttributes = modifierList
             }
+
+            var itemTaxList: ArrayList<OrderItemTaxesAttribute> = arrayListOf()
+
+            it.orderItemTaxes.forEach {
+                var model = OrderItemTaxesAttribute()
+                model.taxId = it.taxId
+                model.isDefault = it.isDefault
+                model.isTaxRemoved = it.isTaxRemoved
+                model.name = it.name
+                model.rate = it.rate
+                model.taxTotalAmount = it.taxTotalAmount
+                model.taxType = it.taxType
+                itemTaxList.add(model)
+
+            }
+
+            model.orderItemTaxesAttributes = itemTaxList
 
 
             orderItemsAttr.add(model)

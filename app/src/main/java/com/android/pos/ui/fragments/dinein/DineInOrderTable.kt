@@ -28,6 +28,7 @@ import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.LOCATION_ID
+import com.android.pos.data.remote.Constants.MERGEDANDOCCUPIED
 import com.android.pos.data.remote.Constants.ORDER_TYPE_NAME
 import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.databinding.FragmentDineInOrderTableBinding
@@ -114,6 +115,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         observeTipsList()
 
         navigateDineInOrder()
+        observeUnMergeTable()
         return binding.root
     }
 
@@ -223,6 +225,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     }
 
     private fun onClick() {
+
+        binding.imgMergeTable.setOnClickListener {
+            getOrderDetailsResponse?.floorPlanTable?.id?.let { it1 -> viewModel.unMergeTable(it1) }
+        }
 
         binding.imgPrintAll.setOnClickListener {
             getCustomerPrinters()
@@ -1137,6 +1143,15 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     serviceCharge = 0.0
                     totalDiscount = 0.0
 
+                    if (baseResponse.floorPlanTable.status == MERGEDANDOCCUPIED) {
+                        binding.imgMergeTable.setImageDrawable(
+                            requireContext().resources.getDrawable(
+                                R.drawable.ic_unmerge
+                            )
+                        )
+                    }
+
+
                     getOrderDetailsResponse = baseResponse
                     var list: ArrayList<DineInModel> = arrayListOf()
 
@@ -1420,11 +1435,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                     }
 
-                   /* Log.e(TAG, "WTSubTotal:  ${WTSubTotal}")
-                    Log.e(TAG, "WTTaxes:  ${WTTaxes}")
-                    Log.e(TAG, "WTServiceCharge:  ${WTServiceCharge}")
-                    Log.e(TAG, "totalDiscount:  ${baseResponse.totalDiscount}")
-                    Log.e(TAG, "itemsDiscount:  ${itemsDiscount}")*/
+                    /* Log.e(TAG, "WTSubTotal:  ${WTSubTotal}")
+                     Log.e(TAG, "WTTaxes:  ${WTTaxes}")
+                     Log.e(TAG, "WTServiceCharge:  ${WTServiceCharge}")
+                     Log.e(TAG, "totalDiscount:  ${baseResponse.totalDiscount}")
+                     Log.e(TAG, "itemsDiscount:  ${itemsDiscount}")*/
                     var orderDiscount = 0.0
                     if (baseResponse.totalDiscount >= itemsDiscount) {
                         orderDiscount = baseResponse.totalDiscount - itemsDiscount
@@ -3491,6 +3506,20 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
     }
 
+    private fun observeUnMergeTable() {
+        viewModel.unMergeStatusUpdate.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let { status ->
+
+                AlertUtils.showCustomAlertWithListenerWithOK(
+                    requireContext(), status.toString()
+                ) { _, _ ->
+                    findNavController().navigate(R.id.action_dineInOrderTable_to_dashboardCategoryNew)
+                }
+
+
+            }
+        })
+    }
 
 }
 

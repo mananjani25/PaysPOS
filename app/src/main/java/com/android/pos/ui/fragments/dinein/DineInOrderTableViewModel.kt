@@ -47,6 +47,10 @@ class DineInOrderTableViewModel @Inject constructor(
     val _guestPayment = MutableLiveData<Event<String>>()
     val onPayment: LiveData<Event<String>> = _guestPayment
 
+    val _unMergeStatus = MutableLiveData<Event<String>>()
+    val unMergeStatusUpdate: LiveData<Event<String>> = _unMergeStatus
+
+
     val getServiceChargeList = posRepository.serviceChargeList()
 
     fun getCustomerReceiptSettings() = posRepository.getCustomerReceiptSettings()
@@ -230,8 +234,37 @@ class DineInOrderTableViewModel @Inject constructor(
         }
     }
 
+
     fun customer(): LiveData<List<TbCustomer>> {
         return appDatabase.customerDao().allCustomer
+    }
+
+    fun unMergeTable(id: Int) {
+        _showProgress.value = Event(true)
+        viewModelScope.launch {
+            val resource = posRepository.unMergeTable(id)
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+                    _unMergeStatus.value = Event(resource.data?.message.toString())
+
+                }
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message.toString())
+                    _showProgress.value = Event(false)
+
+
+                }
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+
+                }
+
+            }
+
+        }
+
+
     }
 
 
