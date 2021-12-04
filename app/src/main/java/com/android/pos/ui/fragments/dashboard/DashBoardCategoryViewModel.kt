@@ -51,6 +51,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     private val rolePermission: RolePermission
 ) : ViewModel() {
 
+
     val TAG = "DashBoardCateViewModel"
     var totalPrice: Double = 0.0
     var totalCount = 0
@@ -104,6 +105,9 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     val _tableStatus = MutableLiveData<Event<String>>()
     val tableCheck: LiveData<Event<String>> = _tableStatus
+
+    val _callCashDiscount = MutableLiveData<Event<Boolean>>()
+    val callCashDiscount: LiveData<Event<Boolean>> = _callCashDiscount
 
 
     val _Basedata = MutableLiveData<Event<CreateOrderResponse.Data?>>()
@@ -1497,6 +1501,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     it.data.businessWebsite.toString()
                                 )
 
+                                posRepository.addCashDiscountsFromDb(it.data.cash_discounts)
                                 taxServiceChargeRepository.deleteTaxFromDb()
                                 taxServiceChargeRepository.addAllTaxDatabase(it.data.taxes)
                                 posRepository.deleteNotesFromDb()
@@ -1520,6 +1525,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 posRepository.deleteTeamRoleFromDb()
                                 posRepository.addTeamRoleFromDb(it.data.teamRoles)
                                 rolePermission.findCurrentUserRoleAndSave(it.data.teamRoles)
+                                _callCashDiscount.value = Event(true)
+
                             }
 
                             prefProvider.setValueboolean(Constants.SYNC_DATA, true)
