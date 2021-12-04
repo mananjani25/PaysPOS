@@ -1515,6 +1515,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 posRepository.addKitchenReceiptSettings(it.data.kitchenReceipt)
                                 posRepository.deleteLoyaltyProgramFromDb()
                                 posRepository.addLoyaltyProgramFromDb(it.data.loyaltyPrograms)
+                                posRepository.deleteSurcharge()
                                 posRepository.addCashDiscountsFromDb(it.data.cash_discounts)
                                 posRepository.deleteTeamRoleFromDb()
                                 posRepository.addTeamRoleFromDb(it.data.teamRoles)

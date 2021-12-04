@@ -257,13 +257,19 @@ class PosRepository @Inject constructor(
         appDatabase.loyaltyProgramsDao().addAll(data)
     }
 
-    fun getActiveLoyaltyProgramFromDb() =  performGetOperationDatabase(databaseQuery = { appDatabase.loyaltyProgramsDao().findActiveLoyalty(active = true) })
+    fun getActiveLoyaltyProgramFromDb() = performGetOperationDatabase(databaseQuery = {
+        appDatabase.loyaltyProgramsDao().findActiveLoyalty(active = true)
+    })
 
-    suspend fun deleteTeamRoleFromDb(){
+    suspend fun deleteTeamRoleFromDb() {
         appDatabase.teamRoleDao().delete()
     }
 
-    suspend fun addTeamRoleFromDb(teamRoleList: List<TeamRole>){
+    suspend fun deleteSurcharge() {
+        appDatabase.cashDiscountDao().delete()
+    }
+
+    suspend fun addTeamRoleFromDb(teamRoleList: List<TeamRole>) {
         appDatabase.teamRoleDao().addAllRolesSuspend(teamRoleList)
     }
 
