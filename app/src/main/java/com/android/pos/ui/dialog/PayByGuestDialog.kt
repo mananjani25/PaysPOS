@@ -565,14 +565,30 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                 binding.linnearCashDiscounnt.visibility = View.GONE
                 binding.linearNonCashAdjamounnt.visibility = View.VISIBLE
                 binding.txtCashdiscount.text = "- $" + String.format("%.2f", 0.0)
-                cardPaymentAmount = totalPrice
+                cardPaymentAmount = totalPrice + tipAmount + cashSurcharge
                 binding.txtNoncashAdj.text = "+ $" + String.format("%.2f", cashSurcharge)
+                MethodUtils.setPriceTextView(
+                    binding.txtTotal,
+                    (totalPrice + tipAmount) + cashSurcharge
+                )
+                MethodUtils.setPriceTextView(
+                    binding.txtTotalAmount,
+                    (totalPrice + tipAmount) + cashSurcharge
+                )
             } else if (optionType == "CashDiscount") {
                 binding.linnearCashDiscounnt.visibility = View.GONE
                 binding.linearNonCashAdjamounnt.visibility = View.GONE
                 binding.txtCashdiscount.text = "- $" + String.format("%.2f", cashSurcharge)
-                cardPaymentAmount = totalPrice
+                cardPaymentAmount = totalPrice + tipAmount + cashSurcharge
                 binding.txtNoncashAdj.text = "- $" + String.format("%.2f", 0.0)
+                MethodUtils.setPriceTextView(
+                    binding.txtTotal,
+                    (totalPrice + tipAmount) + cashSurcharge
+                )
+                MethodUtils.setPriceTextView(
+                    binding.txtTotalAmount,
+                    (totalPrice + tipAmount) + cashSurcharge
+                )
             } else {
                 binding.linnearCashDiscounnt.visibility = View.GONE
                 binding.linearNonCashAdjamounnt.visibility = View.GONE
@@ -583,11 +599,28 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                 binding.linearNonCashAdjamounnt.visibility = View.GONE
                 binding.txtCashdiscount.text = "- $" + String.format("%.2f", 0.0)
                 binding.txtNoncashAdj.text = "- $" + String.format("%.2f", cashSurcharge)
+                MethodUtils.setPriceTextView(
+                    binding.txtTotal,
+                    (totalPrice + tipAmount) + cashSurcharge
+                )
+                MethodUtils.setPriceTextView(
+                    binding.txtTotalAmount,
+                    (totalPrice + tipAmount) + cashSurcharge
+                )
+
             } else if (optionType == "CashDiscount") {
                 binding.linnearCashDiscounnt.visibility = View.VISIBLE
                 binding.linearNonCashAdjamounnt.visibility = View.GONE
                 binding.txtCashdiscount.text = "- $" + String.format("%.2f", cashSurcharge)
                 binding.txtNoncashAdj.text = "- $" + String.format("%.2f", 0.0)
+                MethodUtils.setPriceTextView(
+                    binding.txtTotal,
+                    (totalPrice + tipAmount)
+                )
+                MethodUtils.setPriceTextView(
+                    binding.txtTotalAmount,
+                    (totalPrice + tipAmount)
+                )
             } else {
                 binding.linnearCashDiscounnt.visibility = View.GONE
                 binding.linearNonCashAdjamounnt.visibility = View.GONE

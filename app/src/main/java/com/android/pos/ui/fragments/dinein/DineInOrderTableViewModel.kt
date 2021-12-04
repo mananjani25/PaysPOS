@@ -43,6 +43,7 @@ class DineInOrderTableViewModel @Inject constructor(
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
 
     val _Basedata = MutableLiveData<Event<GetOrderDetailsResponse.Data?>>()
+    val Basedata: LiveData<Event<GetOrderDetailsResponse.Data?>> = _Basedata
 
 
     val _guestPayment = MutableLiveData<Event<String>>()
@@ -64,7 +65,6 @@ class DineInOrderTableViewModel @Inject constructor(
     var totalServiceChargeAmount = 0.0
 
 
-
     fun getTipsList() = posRepository.getTipsList()
     fun getCustomerPrinterList(): LiveData<Resource<List<PrinterResponse.Data.CustomerReceiptPrinters>>> {
         return posRepository.getCustomerPrinters()
@@ -73,11 +73,17 @@ class DineInOrderTableViewModel @Inject constructor(
     fun getCashDiscountDetails(active: Int): LiveData<CashDiscountModel>? {
         return posRepository.getCashDisDetail(active)
     }
+
     fun getKitchenPrinterList(): LiveData<Resource<List<PrinterResponse.Data.KitchenReceiptPrinters>>> {
         return posRepository.getKitchenPrinters()
     }
 
-    fun payByGuest(id: Int, model: GuestPaymentRequest, isAllPaymentComplete: Boolean, orderReq: DineInOrderPayment) {
+    fun payByGuest(
+        id: Int,
+        model: GuestPaymentRequest,
+        isAllPaymentComplete: Boolean,
+        orderReq: DineInOrderPayment
+    ) {
         _showProgress.value = Event(true)
         viewModelScope.launch {
             val resource: Resource<BaseResponse> =
