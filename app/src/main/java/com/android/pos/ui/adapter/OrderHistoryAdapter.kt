@@ -17,7 +17,7 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.ViewOrderHistoryBinding
 import com.android.pos.utils.MethodUtils.Companion.getFormattedDateTime
 
-class OrderHistoryAdapter :
+class OrderHistoryAdapter (val callBack: (View, Orders) -> Unit ) :
     RecyclerView.Adapter<OrderHistoryAdapter.MyViewHolder>() {
 
     private var arrayList = ArrayList<Orders>()
@@ -54,9 +54,14 @@ class OrderHistoryAdapter :
                 binding.txtUsedLoyaltyPoints.text = "${order.used_reward_points ?: 0}"
             } else {
                 binding.txtLoyaltyPoints.visibility = View.GONE
-
             }
 
+            //Reorder
+            binding.txtReorder.setOnClickListener {view->
+                view?.let {
+                    callBack.invoke(it, arrayList[absoluteAdapterPosition])
+                }
+            }
         }
 
         private fun setupAmountPayType(total: Double?, paymentDetails: List<PaymentDetail>?) {

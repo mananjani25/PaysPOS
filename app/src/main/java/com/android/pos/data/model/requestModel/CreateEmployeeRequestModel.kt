@@ -18,5 +18,9 @@ data class CreateEmployeeRequestModel(
     @SerializedName("passcode")
     var passcode: String = "",
     @SerializedName("is_active")
-    var isActive: Boolean = false
+    var isActive: Boolean = false,
+    @SerializedName("hourly_wages")
+    var hourly_wages: Double = 0.0,
+    @SerializedName("team_role_id")
+    var team_role_id: Int? = null
 )

@@ -8,11 +8,17 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.databinding.FragmentEmployeeBinding
+import com.android.pos.di.RolePermission
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class TeamMemberSettings : Fragment() {
     private lateinit var binding: FragmentEmployeeBinding
+
+    @Inject
+    lateinit var rolePermission : RolePermission
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -27,7 +33,9 @@ class TeamMemberSettings : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.llTimeTracking.setOnClickListener {
-            findNavController().navigate(R.id.action_settings_to_teamMemberTimeSheetFragment)
+            if (rolePermission.hasEmployeeTimesheetPermission(binding.root)) {
+                findNavController().navigate(R.id.action_settings_to_teamMemberTimeSheetFragment)
+            }
         }
 
         binding.llUserAccessPermission.setOnClickListener {

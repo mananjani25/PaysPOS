@@ -106,6 +106,7 @@ class PosRepository @Inject constructor(
     )
 
     suspend fun saveDatabase(response: VenueDataResponse) {
+        appDatabase.customerDao().deleteCustomerTb()
         appDatabase.categoryDao().delete()
         appDatabase.itemDao().delete()
         appDatabase.modifierSetDao().delete()
@@ -266,7 +267,6 @@ class PosRepository @Inject constructor(
         appDatabase.teamRoleDao().addAllRolesSuspend(teamRoleList)
     }
 
-    fun getCurrentUserTeamRoleFromDb() =  performGetOperationDatabase(databaseQuery = { appDatabase.teamRoleDao().roleById(id = prefProvider.getEmployeeRoleId()) })
 
     suspend fun addCashDiscountsFromDb(data: List<CashDiscountModel>) {
         appDatabase.cashDiscountDao().addAll(data)
@@ -670,9 +670,10 @@ class PosRepository @Inject constructor(
         parentTableId: Int,
         childIds: String,
         orderModel: MergeTableRequest?,
+        childOrderIds:String?,
         orderId:Int?=null
     ) =
-        apiHelperNew.mergeFloorTable(parentTableId, childIds,orderModel,orderId)
+        apiHelperNew.mergeFloorTable(parentTableId, childIds,orderModel,childOrderIds,orderId)
 
     suspend fun unMergeTable(id: Int) = apiHelperNew.unMergeTable(id)
     suspend fun payByGuest(
@@ -703,6 +704,10 @@ class PosRepository @Inject constructor(
 
     suspend fun getOrderHistory(id: String) =
         apiHelperNew.getOrderHistory(id)
+
+    suspend fun deleteCustomer() {
+        appDatabase.customerDao().deleteCustomerTb()
+    }
 
     suspend fun clearTable() {
 

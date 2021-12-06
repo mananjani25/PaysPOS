@@ -21,6 +21,7 @@ import com.android.pos.data.remote.Constants.ORDER_RECEIPTS
 import com.android.pos.data.remote.Constants.PRINTER
 import com.android.pos.data.remote.Constants.TEAM_MEMBER
 import com.android.pos.databinding.FragmentSettingsBinding
+import com.android.pos.di.RolePermission
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.BusinessSettingAdapter
 import com.android.pos.ui.fragments.settings.discount.DiscountList
@@ -33,9 +34,14 @@ import com.android.pos.ui.fragments.settings.tax.TaxesList
 import com.android.pos.ui.fragments.settings.tip.TipsList
 import com.android.pos.utils.extensions.styleBold
 import com.android.pos.utils.extensions.styleNormal
+import javax.inject.Inject
 
 class Settings : Fragment() {
     private lateinit var binding: FragmentSettingsBinding
+
+    @Inject
+    lateinit var rolePermission: RolePermission
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -301,11 +307,11 @@ class Settings : Fragment() {
                 loadFragment(orderReceipts)
             }
             3 -> {
-                binding.commonToolbar.txtSubTitle.text = "Discount"
-                val discount: Fragment = DiscountList()
-                loadFragment(discount)
-
-
+                if (rolePermission.hasDiscountPermission(binding.root)) {
+                    binding.commonToolbar.txtSubTitle.text = "Discount"
+                    val discount: Fragment = DiscountList()
+                    loadFragment(discount)
+                }
             }
             4 -> {
 
@@ -354,6 +360,7 @@ class Settings : Fragment() {
                         loadFragment(orderReceipts)
                     }
                     3 -> {
+
                         binding.commonToolbar.txtSubTitle.setText("Discount")
                         val discount: Fragment = DiscountList()
                         loadFragment(discount)

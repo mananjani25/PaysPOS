@@ -142,9 +142,8 @@ class DineInOrderTableViewModel @Inject constructor(
     }
 
     fun apiCallOrderDetails(orderId: Int) {
+        _showProgress.value = Event(true)
         viewModelScope.launch {
-
-            _showProgress.value = Event(true)
             val resource = posRepository.orderDetailsById(orderId)
 
 

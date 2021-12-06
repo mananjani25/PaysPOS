@@ -80,15 +80,18 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                 binding.tvRefundPaymentDetails.visibility = View.VISIBLE
                 binding.tvRefundItemDetails.visibility = View.GONE
 
-                if (paymentOrderDetailsResponse.data.order.refund_detail.refunded_amount.equals(0.0)) {
+                val mData = paymentOrderDetailsResponse.data
+
+                if (mData.order.refund_detail.refunded_amount.equals(0.0)) {
+
                     MethodUtils.setRefundPriceTextView(
                         binding.tvTotalRefundAmount,
-                        (paymentOrderDetailsResponse.data.sub_total + paymentOrderDetailsResponse.data.tips + paymentOrderDetailsResponse.data.tax_amount + paymentOrderDetailsResponse.data.service_charge_amount)
+                        (mData.sub_total + mData.tips + mData.tax_amount + mData.service_charge_amount - (mData.loyalty_amount!! + mData.cash_discount_or_surcharge + mData.total_discount))
                     )
                 } else {
                     MethodUtils.setRefundPriceTextView(
                         binding.tvTotalRefundAmount,
-                        ((paymentOrderDetailsResponse.data.amount - paymentOrderDetailsResponse.data.tips) - paymentOrderDetailsResponse.data.order.refund_detail.refunded_amount)
+                        ((mData.amount - mData.tips) - mData.order.refund_detail.refunded_amount)
                     )
                 }
 
@@ -110,6 +113,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                             employeeId = paymentOrderDetailsResponse.data.employee_id
                             terminalId = paymentOrderDetailsResponse.data.terminal_id
                             taxRefunded = totalTax
+                            tipsRefunded = paymentOrderDetailsResponse.data.tips
                             serviceChargeRefunded = totalServiceCharge
                         }
                     }
@@ -228,6 +232,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                 orderItemRefundsAttributes = orderItemRefundsAttributesList
                 taxRefunded = totalTax
                 serviceChargeRefunded = totalServiceCharge
+                tipsRefunded = paymentOrderDetailsResponse.data.tips
             }
         }
     }

@@ -27,9 +27,9 @@
                 android:fontFamily="@font/sf_pro_display_medium"
                 android:lines="1"
                 android:maxLines="1"
-                android:text="SnacksSnacksSnacksSnacks"
+                tools:text="SnacksSnacksSnacksSnacks"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_8mdpi" />
+                android:textSize="@dimen/_6mdpi" />
 
             <TextView
                 android:id="@+id/txtCat"
@@ -40,7 +40,7 @@
                 android:fontFamily="@font/sf_pro_display_regular"
                 android:lines="1"
                 android:maxLines="1"
-                android:text="in Snacks"
+                tools:text="in Snacks"
                 android:textColor="@color/cool_grey"
                 android:textSize="@dimen/_6ssp" />
 

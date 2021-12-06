@@ -1,7 +1,6 @@
 package com.android.pos.ui.fragments.team
 
 import android.text.TextUtils
-import android.util.Log
 import android.util.Patterns
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -10,11 +9,10 @@ import androidx.lifecycle.viewModelScope
 import com.android.pos.R
 import com.android.pos.data.entities.Employee
 import com.android.pos.data.model.requestModel.CreateEmployeeRequestModel
-import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.model.responseModel.CreateEmployeeResponse
-import com.android.pos.data.model.responseModel.EmployeeListResponse
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.repositories.PosRepository
+import com.android.pos.data.repositories.TaxServiceChargeRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Resource
@@ -25,6 +23,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CreateTeamViewModel @Inject constructor(
+    private val taxServiceChargeRepository: TaxServiceChargeRepository,
     private val posRepository: PosRepository,
     private val prefProvider: PrefProvider
 ) : ViewModel() {
@@ -33,6 +32,7 @@ class CreateTeamViewModel @Inject constructor(
 
     val locationId = prefProvider.getValueInt(LOCATION_ID, 0)
     private var taxId: Int = -1
+    private var roleId: Int = -1
 
     private var isEdit: Boolean = false
 
@@ -48,17 +48,23 @@ class CreateTeamViewModel @Inject constructor(
     val createTaxDetails = MutableLiveData(CreateEmployeeRequestModel())
     private lateinit var resource: Resource<CreateEmployeeResponse>
 
+    val roleList = taxServiceChargeRepository.getTeamRoleListFromDatabase()
+
+    fun roleNameById(taxId: Int) = taxServiceChargeRepository.getCurrentUserTeamRoleFromDb(taxId)
+
 
     fun setTaxData(employeeModel: Employee) {
 
         createTaxDetails.value?.firstName = employeeModel.firstName
         createTaxDetails.value?.lastName = employeeModel.lastName
-        createTaxDetails.value?.email = employeeModel.email?:""
+        createTaxDetails.value?.email = employeeModel.email ?: ""
         createTaxDetails.value?.phoneNumber =
             employeeModel.phoneNumber.toString()
         createTaxDetails.value?.locationId = employeeModel.locationId
-        createTaxDetails.value?.passcode = employeeModel.passcode?:""
+        createTaxDetails.value?.passcode = employeeModel.passcode ?: ""
         createTaxDetails.value?.isActive = employeeModel.isActive
+        createTaxDetails.value?.hourly_wages = employeeModel.hourlyWages
+        roleId = employeeModel.teamRoleId!!
 
     }
 
@@ -90,19 +96,23 @@ class CreateTeamViewModel @Inject constructor(
             _snackbarText.value = Event(R.string.phone_no_validate)
         } else if (value?.phoneNumber?.length!! < 14) {
             _snackbarText.value = Event(R.string.valid_phone_no_validate)
+        } else if (roleId == -1 || roleId == 0) {
+            _snackbarText.value = Event("Please choose permission")
         } else {
             _showProgress.value = Event(true)
 
 
             createEmployeeData = CreateEmployeeRequestModel().apply {
                 if (isEdit) id = taxId
-                firstName = value!!.firstName
+                firstName = value.firstName
                 lastName = value.lastName
                 phoneNumber = value.phoneNumber.replace(("[\\D]").toRegex(), "")
                 email = value.email
                 locationId = prefProvider.getValueInt(LOCATION_ID, -1)
                 passcode = value.passcode
                 isActive = true
+                team_role_id = roleId
+                hourly_wages = value.hourly_wages
             }
 
 
@@ -123,25 +133,7 @@ class CreateTeamViewModel @Inject constructor(
 
                                 resource.data?.let { createEmployeeResponse ->
 
-
-                                    val employee = Employee(
-                                        email = createEmployeeResponse.data.employee.email,
-                                        firstName = createEmployeeResponse.data.employee.firstName,
-                                        lastName = createEmployeeResponse.data.employee.lastName,
-                                        id = createEmployeeResponse.data.employee.id,
-                                        isActive = createEmployeeResponse.data.employee.isActive,
-                                        isClockedIn = true,
-                                        locationId = createEmployeeResponse.data.employee.locationId,
-                                        loggedinTerminalId = -1,
-                                        name = createEmployeeResponse.data.employee.firstName + " " + createEmployeeResponse.data.employee.lastName,
-                                        passcode = createEmployeeResponse.data.employee.passcode,
-                                        phoneNumber = createEmployeeResponse.data.employee.phoneNumber,
-                                        teamRoleId = createEmployeeResponse.data.employee.teamRoleId,
-                                        hourlyWages = createEmployeeResponse.data.employee.hourlyWages,
-                                        createdAt = "",
-                                        updatedAt = ""
-                                    )
-                                    posRepository.createEmployeeDatabase(employee)
+                                    posRepository.createEmployeeDatabase(createEmployeeResponse.data.employee)
                                     _data.value = Event(createEmployeeResponse)
 
                                 }
@@ -164,6 +156,10 @@ class CreateTeamViewModel @Inject constructor(
 
         }
 
+    }
+
+    fun setRoleId(roleId: Int) {
+        this.roleId = roleId
     }
 
 

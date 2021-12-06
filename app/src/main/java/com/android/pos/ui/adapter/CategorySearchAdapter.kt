@@ -10,19 +10,24 @@ import android.widget.Filter
 import android.widget.ImageView
 import android.widget.TextView
 import com.android.pos.R
+import com.android.pos.data.entities.TbCategory
 import com.android.pos.data.model.CategorySearchData
 import com.bumptech.glide.Glide
+import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 class CategorySearchAdapter @Inject constructor(
     val mcon: Context,
     val resourceId: Int,
-    val list: ArrayList<CategorySearchData>
+    var list: ArrayList<CategorySearchData>
 ) : ArrayAdapter<CategorySearchData>(mcon, resourceId, list) {
 
-    private lateinit var items: List<CategorySearchData>
-    private lateinit var tempItems: List<CategorySearchData>
-    private lateinit var suggestions: MutableList<CategorySearchData>
+    private var suggestions = ArrayList<CategorySearchData>()
+
+    init {
+        suggestions = list
+    }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var view: View? = convertView
@@ -34,8 +39,8 @@ class CategorySearchAdapter @Inject constructor(
                 val txtCategory: TextView = view.findViewById(R.id.txtCategoryName)
                 val imgCategory: ImageView = view.findViewById(R.id.imgCategory)
                 val txtCat: TextView = view.findViewById(R.id.txtCat)
-                txtCategory.setText(model.title)
-                txtCat.setText("in " + model.categoryName)
+                txtCategory.text = model.title
+                txtCat.text = "in " + model.categoryName
                 Glide.with(mcon).load(model.imgUrl).centerCrop().into(imgCategory)
             }
 
@@ -49,11 +54,11 @@ class CategorySearchAdapter @Inject constructor(
 
 
     override fun getItem(position: Int): CategorySearchData {
-        return list.get(position)
+        return suggestions.get(position)
     }
 
     override fun getCount(): Int {
-        return list.size
+        return suggestions.size
     }
 
     override fun getItemId(position: Int): Long {
@@ -71,58 +76,40 @@ class CategorySearchAdapter @Inject constructor(
             return model.title
         }
 
-        override fun performFiltering(charSequence: CharSequence?): FilterResults {
-            return if (charSequence != null) {
-                suggestions.clear()
-                for (model in tempItems) {
-                    if (model.title.toLowerCase()
-                            .startsWith(charSequence.toString().toLowerCase())
-                    ) {
+        override fun performFiltering(charSequence: CharSequence): FilterResults {
+            return run {
+                if (charSequence.isEmpty()) {
+                    suggestions = list
+                } else {
+                    val fList = ArrayList<CategorySearchData>()
+                    for (model in list) {
+                        if (model.title.lowercase(Locale.getDefault())
+                                .startsWith(charSequence.toString().lowercase(Locale.getDefault()))
+                        ) {
 
-                        suggestions.add(model)
+                            fList.add(model)
+                        }
+
                     }
-
+                    suggestions = fList
                 }
                 val filterResult = FilterResults()
                 filterResult.values = suggestions
-                filterResult.count = suggestions.size
                 filterResult
 
-            } else {
-                FilterResults()
             }
 
         }
 
         override fun publishResults(charSequence: CharSequence?, results: FilterResults?) {
+
             if (results != null && results.count > 0) {
-                clear()
-
-                val filteredList: ArrayList<CategorySearchData> =
-                    results.values as ArrayList<CategorySearchData>
-                if (results != null && results.count > 0) {
-                    clear()
-                    for (c in filteredList) {
-                        add(c)
-                    }
-                    notifyDataSetChanged()
-                }
-                notifyDataSetChanged()
-
-            } else {
-                clear()
-                notifyDataSetChanged()
+                suggestions = results.values as ArrayList<CategorySearchData>
             }
+            notifyDataSetChanged()
 
         }
 
-    }
-
-    init {
-
-        this.items = list
-        tempItems = ArrayList(items)
-        suggestions = ArrayList()
     }
 
 

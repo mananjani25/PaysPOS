@@ -101,7 +101,7 @@
                 android:layout_gravity="center"
                 android:layout_marginLeft="@dimen/_5sdp"
                 android:layout_marginRight="@dimen/_5sdp"
-                android:text="@string/tv_start_date"
+                android:text="@string/start_date_amp_time"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_5mdpi" />
 
@@ -147,7 +147,7 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/_8sdp"
                 android:layout_marginEnd="@dimen/_5sdp"
-                android:text="@string/tv_end_date"
+                android:text="@string/end_date_amp_time"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_5mdpi" />
 
@@ -206,9 +206,9 @@
                 android:layout_marginEnd="@dimen/_5sdp"
                 android:padding="@dimen/_4sdp"
                 android:text="@string/search"
-                android:visibility="gone"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textSize="@dimen/_5mdpi"
+                android:visibility="gone" />
 
         </LinearLayout>
 
@@ -272,8 +272,8 @@
                 android:id="@+id/linReports"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:visibility="gone">
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtSalesSummary"
@@ -400,7 +400,9 @@
                     style="@style/ReportTitleStyle"
                     android:text="@string/employee_data" />
 
-                <include android:id="@+id/ilEmployeeData" layout="@layout/view_employee_header" />
+                <include
+                    android:id="@+id/ilEmployeeData"
+                    layout="@layout/view_employee_header" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvEmployeeData"
@@ -414,7 +416,9 @@
                     style="@style/ReportTitleStyle"
                     android:text="@string/payment_details" />
 
-                <include android:id="@+id/ilPaymentDetails" layout="@layout/view_payment_details_header" />
+                <include
+                    android:id="@+id/ilPaymentDetails"
+                    layout="@layout/view_payment_details_header" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvPaymentDetails"
@@ -466,7 +470,9 @@
                     style="@style/ReportTitleStyle"
                     android:text="@string/tips_details" />
 
-                <include android:id="@+id/ilTipsDetails" layout="@layout/view_payment_details_header" />
+                <include
+                    android:id="@+id/ilTipsDetails"
+                    layout="@layout/view_payment_details_header" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvTipsDetails"
