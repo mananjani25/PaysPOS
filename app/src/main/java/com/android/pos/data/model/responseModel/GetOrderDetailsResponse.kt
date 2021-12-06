@@ -128,7 +128,11 @@ data class GetOrderDetailsResponse(
             @SerializedName("last_name")
             val lastName: String,
             @SerializedName("phones")
-            val phones: List<Phone>
+            val phones: List<Phone>,
+            @SerializedName("enroll_to_loyalty")
+            val enroll_to_loyalty: Boolean?,
+            @SerializedName("final_reward")
+            val final_reward: Int? = 0
         ) : Parcelable {
             @Parcelize
             data class Addresse(
@@ -203,24 +207,24 @@ data class GetOrderDetailsResponse(
 
         @Parcelize
         data class FloorPlanTable(
-            @SerializedName("id") var id: Int?=null,
-            @SerializedName("x_position") var xPosition: Double?=null,
-            @SerializedName("y_position") var yPosition: Double?=null,
-            @SerializedName("table_name") var tableName: String?=null,
-            @SerializedName("table_number") var tableNumber: Int?=null,
-            @SerializedName("chair_count") var chairCount: Int?=null,
-            @SerializedName("floor_plan_id") var floorPlanId: Int?=null,
-            @SerializedName("table_type") var tableType: String?=null,
-            @SerializedName("status") var status: String?=null,
-            @SerializedName("height") var height: Double?=null,
-            @SerializedName("width") var width: Double?=null,
-            @SerializedName("style") var style: String?=null,
-            @SerializedName("created_at") var createdAt: String?=null,
-            @SerializedName("updated_at") var updatedAt: String?=null,
-            @SerializedName("merged_floor_plan_table_id") var mergedFloorPlanTableId: String?=null,
-            @SerializedName("lock_by_id") var lockById: Int?=null,
-            @SerializedName("lock_by_name") var lockByName: String?=null,
-            @SerializedName("terminal_id") var terminalId: Int?=null
+            @SerializedName("id") var id: Int? = null,
+            @SerializedName("x_position") var xPosition: Double? = null,
+            @SerializedName("y_position") var yPosition: Double? = null,
+            @SerializedName("table_name") var tableName: String? = null,
+            @SerializedName("table_number") var tableNumber: Int? = null,
+            @SerializedName("chair_count") var chairCount: Int? = null,
+            @SerializedName("floor_plan_id") var floorPlanId: Int? = null,
+            @SerializedName("table_type") var tableType: String? = null,
+            @SerializedName("status") var status: String? = null,
+            @SerializedName("height") var height: Double? = null,
+            @SerializedName("width") var width: Double? = null,
+            @SerializedName("style") var style: String? = null,
+            @SerializedName("created_at") var createdAt: String? = null,
+            @SerializedName("updated_at") var updatedAt: String? = null,
+            @SerializedName("merged_floor_plan_table_id") var mergedFloorPlanTableId: String? = null,
+            @SerializedName("lock_by_id") var lockById: Int? = null,
+            @SerializedName("lock_by_name") var lockByName: String? = null,
+            @SerializedName("terminal_id") var terminalId: Int? = null
 
         ) : Parcelable
 
@@ -280,8 +284,38 @@ data class GetOrderDetailsResponse(
             val refundedQuantity: Int,
             @SerializedName("refunded_amount")
             val refundedAmount: Double,
-            var isChecked: Boolean = false
+            var isChecked: Boolean = false,
+            @SerializedName("order_item_variation")
+            val order_item_variation: OrderItemVariationAttribute?,
         ) : Parcelable {
+
+            @Parcelize
+            class OrderItemVariationAttribute() : Parcelable {
+                @SerializedName("id")
+                var id: Int? = null
+
+                @SerializedName("order_item_id")
+                var order_item_id: Int? = null
+
+                @SerializedName("name")
+                var name: String = ""
+
+                @SerializedName("order_id")
+                var orderId: Int? = null
+
+                @SerializedName("unit_price")
+                var price: Double = 0.0
+
+                @SerializedName("total_price")
+                var totalPrice: Double = 0.0
+
+                @SerializedName("quantity")
+                var quantity: Int = 0
+
+                @SerializedName("variation_id")
+                var variationId: Int = 0
+            }
+
             @Parcelize
             data class OrderItemModifier(
                 @SerializedName("category_id")

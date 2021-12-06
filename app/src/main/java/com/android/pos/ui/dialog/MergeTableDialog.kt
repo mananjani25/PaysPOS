@@ -181,11 +181,15 @@ class MergeTableDialog : DialogFragment() {
         }
         binding.txtSave.setOnClickListener {
             var primaryTable = tableAdapter.getItem(tableSelectedPos)
-            var list = adapter.getList()
-
-
             val parentTableId = tableAdapter.getItem(tableSelectedPos)?.id
-            val childIds = adapter.getList().get(0).selectedTableId.toString()
+            val childIds: String = adapter.getList().get(0).selectedTableId.toString()
+            Log.e(TAG, "childIds:  ${childIds}")
+            var secondaryTable =
+                adapter.getList().get(0).tableSelectedPosition?.let { it1 ->
+                    adapter.getList().get(0).listTable.get(
+                        it1
+                    )
+                }
             var listofOrderIds: ArrayList<Int> = arrayListOf()
 
             if (primaryTable?.orderId != null) {
@@ -213,26 +217,37 @@ class MergeTableDialog : DialogFragment() {
 
             var orderModel: OrderAttributeRequestModel = OrderAttributeRequestModel()
             if (primaryTable?.orderDetails != null) {
-                orderModel = viewModel.createMergeOrderRequest(
-                    primaryTable?.orderDetails!!,
-                    tableMergeList
-                )
+
+                if (secondaryTable?.orderDetails != null) {
+                    orderModel = viewModel.mergeTwoOrders(
+                        primaryOrder = primaryTable?.orderDetails!!,
+                        secondaryOrder = secondaryTable.orderDetails!!
+                    )
+
+
+                } else {
+
+                    orderModel = viewModel.createMergeOrderRequest(
+                        primaryTable?.orderDetails!!,
+                        tableMergeList
+                    )
+                }
             }
 
 
+            if (primaryTable?.orderDetails != null && secondaryTable?.orderDetails != null) {
+                val mergedChildOrderIds: String =
+                    primaryTable.orderDetails?.id.toString() + "," + secondaryTable.orderDetails?.id.toString()
+                Log.e(TAG, "primaryTableID  ${primaryTable.orderDetails?.id}")
+                Log.e(TAG, "secondaryTableID  ${secondaryTable.orderDetails?.id}")
 
-            primaryTable?.orderDetails?.let { it1 ->
-                viewModel.createMergeOrderRequest(
-                    it1,
-                    tableMergeList
-                )
-            }
 
-            if (primaryTable?.orderDetails != null) {
+                viewModel.mergeTable(parentTableId!!, childIds, mergedChildOrderIds, orderModel)
+            } else if (primaryTable?.orderDetails != null) {
                 parentTableId?.let { it1 ->
                     orderModel.id?.let { it2 ->
                         viewModel.mergeTable(
-                            it1, childIds, orderModel,
+                            it1, childIds, null, orderModel,
                             it2
                         )
                     }

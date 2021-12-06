@@ -152,7 +152,8 @@ class AddEditCustomer : Fragment() {
             viewModel.enroll_to_loyalty.value = binding.chkIsLoyalty.isChecked
         }
         if (isEdit) {
-            binding.txtCustomerType.setText("Edit Customer")
+            binding.txtCustomerType.text = getString(com.android.pos.R.string.update_customer)
+            binding.txtSave.text = getString(com.android.pos.R.string.update)
 
             val editModel: TbCustomer? =
                 requireArguments().getParcelable<TbCustomer>(
@@ -163,7 +164,6 @@ class AddEditCustomer : Fragment() {
                 viewModel.isEditData(isEdit, editModel?.id!!)
             }
 
-            Log.e(TAG, "editModel  ${Gson().toJson(editModel)}")
             viewModel.addCustomerDetails.value?.data?.first_name = editModel?.first_name.toString()
             viewModel.addCustomerDetails.value?.data?.last_name = editModel?.last_name.toString()
             viewModel.addCustomerDetails.value?.data?.enroll_to_loyalty =

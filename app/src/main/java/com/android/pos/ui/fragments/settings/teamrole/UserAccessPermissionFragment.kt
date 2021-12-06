@@ -1,6 +1,7 @@
 package com.android.pos.ui.fragments.settings.teamrole
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -35,6 +36,10 @@ class UserAccessPermissionFragment : Fragment() {
     private lateinit var userPermissionObject: TeamRole
     var isEdit: Boolean = false
     private lateinit var employeeListGlobal: List<Employee>
+    private var deliverModuleResponse: Boolean = false
+    private var deliverRolesResponse: Boolean = false
+    private var deliverEmployeesResponse: Boolean = false
+    private val TAG = "UserAccessPermission"
 
 
     override fun onCreateView(
@@ -146,29 +151,27 @@ class UserAccessPermissionFragment : Fragment() {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
-                        ProgressUtils.dismissProgressDialog()
+                        Log.e(TAG,"deliverEmployeesResponse: $deliverEmployeesResponse")
+                        deliverEmployeesResponse = true
+                        manageProgress(false)
                         binding.rvAllMember.visibility = View.VISIBLE
                         resource.data?.let { employeeList ->
                             employeeListGlobal = employeeList
                             setEmployeeData(employeeListGlobal)
                             viewModel.setEmployeeList(employeeListGlobal)
 
-                            if (isEdit) {
-                                userPermissionObject =
-                                    arguments?.getParcelable("userPermissionObject")!!
-                                viewModel.setUserPermissionData(userPermissionObject)
-                                viewModel.setModuleData(userPermissionObject)
-                            }
+                            setEditData()
                         }
                     }
                     Status.ERROR -> {
-                        ProgressUtils.dismissProgressDialog()
+                        deliverEmployeesResponse = true
+                        manageProgress(false)
                         binding.rvAllMember.visibility = View.VISIBLE
                         binding.root.showAlert(resource.message)
 
                     }
                     Status.LOADING -> {
-                        ProgressUtils.showProgressDialog(requireActivity())
+                        manageProgress(true)
                         binding.rvAllMember.visibility = View.GONE
                     }
                 }
@@ -181,21 +184,27 @@ class UserAccessPermissionFragment : Fragment() {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
-                        ProgressUtils.dismissProgressDialog()
+                        Log.e(TAG,"deliverModuleResponse: $deliverModuleResponse")
+                        deliverModuleResponse = true
+                        manageProgress(false)
                         binding.rvAllMember.visibility = View.VISIBLE
                         resource.data?.let { moduleList ->
                             allPermissionModuleAdapter.addPermissionModule(moduleList)
                             viewModel.setModuleList(moduleList)
 
                         }
+
+                        setEditData()
                     }
                     Status.ERROR -> {
-                        ProgressUtils.dismissProgressDialog()
+                        deliverModuleResponse = true
+                        manageProgress(false)
                         binding.rvAllMember.visibility = View.VISIBLE
                         binding.root.showAlert(resource.message)
 
                     }
                     Status.LOADING -> {
+                        manageProgress(true)
                         ProgressUtils.showProgressDialog(requireActivity())
                         binding.rvAllMember.visibility = View.GONE
                     }
@@ -210,21 +219,26 @@ class UserAccessPermissionFragment : Fragment() {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
-                        ProgressUtils.dismissProgressDialog()
+                        Log.e(TAG,"deliverRolesResponse: $deliverRolesResponse")
+                        deliverRolesResponse = true
+                        manageProgress(false)
                         binding.rvAssignRole.visibility = View.VISIBLE
                         resource.data?.let { tipList ->
                             assignTeamListAdapter.addPermissionList(
                                 tipList
                             )
                         }
+
+                        setEditData()
                     }
                     Status.ERROR -> {
-                        ProgressUtils.dismissProgressDialog()
+                        deliverRolesResponse = true
+                        manageProgress(false)
                         binding.rvAssignRole.visibility = View.VISIBLE
                         binding.root.showAlert(resource.message)
                     }
                     Status.LOADING -> {
-                        ProgressUtils.showProgressDialog(requireActivity())
+                        manageProgress(true)
                         binding.rvAssignRole.visibility = View.GONE
                     }
                 }
@@ -250,7 +264,8 @@ class UserAccessPermissionFragment : Fragment() {
                         if (!isEdit) {
                             binding.tvRoleName.setText("")
                         }
-                        getUserPermissionListObserver()
+                        findNavController().navigateUp()
+                        //getUserPermissionListObserver()
                     }
                 }
 
@@ -262,11 +277,7 @@ class UserAccessPermissionFragment : Fragment() {
 
         viewModel.showProgress.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
-                if (it) {
-                    ProgressUtils.showProgressDialog(requireActivity())
-                } else {
-                    ProgressUtils.dismissProgressDialog()
-                }
+                manageProgress(it)
             }
         })
     }
@@ -286,6 +297,25 @@ class UserAccessPermissionFragment : Fragment() {
 
             }
         })
+    }
+
+    private fun manageProgress(show: Boolean){
+        if(show){
+            ProgressUtils.showProgressDialog(requireActivity())
+        }else if(deliverModuleResponse && deliverRolesResponse && deliverEmployeesResponse){
+            //close progress after getting all responses
+            ProgressUtils.dismissProgressDialog()
+        }
+    }
+
+    private fun setEditData(){
+        //load result after getting all responses
+        if (isEdit && deliverEmployeesResponse && deliverModuleResponse && deliverModuleResponse) {
+            userPermissionObject =
+                arguments?.getParcelable("userPermissionObject")!!
+            viewModel.setUserPermissionData(userPermissionObject)
+            viewModel.setModuleData(userPermissionObject)
+        }
     }
 
     private fun setupSnackbar() =

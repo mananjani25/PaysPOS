@@ -225,6 +225,7 @@
                     android:textSize="@dimen/_7mdpi" />
 
                 <LinearLayout
+                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
@@ -323,7 +324,7 @@
                         android:layout_gravity="center"
                         android:layout_marginTop="@dimen/_3sdp"
                         android:layout_marginBottom="@dimen/_3sdp"
-                        android:text="Owner"
+                        tools:text="Owner"
                         android:textColor="@color/colorB9"
                         android:textSize="@dimen/_6mdpi" />
 
