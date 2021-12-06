@@ -596,7 +596,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                 binding.linnearCashDiscounnt.visibility = View.GONE
                 binding.linearNonCashAdjamounnt.visibility = View.GONE
                 binding.txtCashdiscount.text = "- $" + String.format("%.2f", cashSurcharge)
-                cardPaymentAmount = totalPrice + tipAmount + cashSurcharge
+                cardPaymentAmount = totalPrice + tipAmount
                 binding.txtNoncashAdj.text = "- $" + String.format("%.2f", 0.0)
                 MethodUtils.setPriceTextView(
                     binding.txtTotal,
@@ -607,6 +607,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                     (totalPrice + tipAmount)
                 )
             } else {
+                cardPaymentAmount = totalPrice + tipAmount
                 binding.linnearCashDiscounnt.visibility = View.GONE
                 binding.linearNonCashAdjamounnt.visibility = View.GONE
             }
@@ -624,6 +625,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                     binding.txtTotalAmount,
                     (totalPrice + tipAmount)
                 )
+                cardPaymentAmount = totalPrice + tipAmount
 
             } else if (optionType == "CashDiscount") {
                 binding.linnearCashDiscounnt.visibility = View.VISIBLE
@@ -638,7 +640,9 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                     binding.txtTotalAmount,
                     (totalPrice + tipAmount)
                 )
+                cardPaymentAmount = totalPrice + tipAmount
             } else {
+                cardPaymentAmount = totalPrice + tipAmount
                 binding.linnearCashDiscounnt.visibility = View.GONE
                 binding.linearNonCashAdjamounnt.visibility = View.GONE
             }

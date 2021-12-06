@@ -159,6 +159,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     binding.txtTotalAmount,
                     totalPrice
                 )
+                cardPaymentAmount = totalPrice + tipAmount
             } else if (cashDiscountType == "CashDiscount") {
                 binding.linearCashdiiscount.visibility = View.VISIBLE
                 binding.linearnoncashAdj.visibility = View.GONE
@@ -175,6 +176,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     binding.txtTotalAmount,
                     totalPrice
                 )
+                cardPaymentAmount = totalPrice + tipAmount
             }
         } else if (paymentType == "Card") {
             if (cashDiscountType == "SurCharge") {
@@ -193,6 +195,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     binding.txtTotalAmount,
                     totalPrice
                 )
+                cardPaymentAmount = totalPrice + tipAmount
             } else if (cashDiscountType == "CashDiscount") {
                 binding.linearCashdiiscount.visibility = View.GONE
                 binding.linearnoncashAdj.visibility = View.GONE
@@ -209,7 +212,9 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     binding.txtTotalAmount,
                     totalPrice
                 )
+                cardPaymentAmount = totalPrice + tipAmount
             }
+
         }
         if (redeemLoyaltyInfo?.needToApplyLoyalty == true) {
             binding.llLoyalty.visible()
@@ -501,7 +506,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             binding.txtTotal,
             (totalPrice + tipAmount)
         )
-
+        cardPaymentAmount = totalPrice + tipAmount
         getCashPaymentOptionList((totalPrice + tipAmount))
 
     }
@@ -653,7 +658,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
             R.id.llCash -> {
                 if (paymentType == "Card") {
-                    if(totalPrice>cashDiscountSurcharge){
+                    if (totalPrice > cashDiscountSurcharge) {
                         totalPrice -= cashDiscountSurcharge
                     }
                     setCashCreditData(cashDiscountType)
