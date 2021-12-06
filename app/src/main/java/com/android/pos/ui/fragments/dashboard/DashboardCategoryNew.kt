@@ -103,6 +103,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private var orderId: Int? = null
     private var paymentId: Int? = null
     private var isOrderUpdate: Boolean = false
+    private var isReOrder: Boolean = false
     private var future_delivery_time: String = ""
     private var popupWindow: PopupWindow? = null
     private var orderType: TbOrderType? = null
@@ -188,6 +189,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             }
 
         }
+
+        isReOrder = requireArguments().getBoolean("reorder")
 
         viewModel.getCashDiscountDetails(active = 1)
             ?.observe(viewLifecycleOwner, { cashDiscountData ->
@@ -530,6 +533,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             future_delivery_time = bundle.getString("TIME").toString()
             prefProvider.setValueInt(ORDER_TYPE_ID, orderType!!.id)
             prefProvider.setValue(ORDER_TYPE_NAME, orderType!!.name)
+            Log.e("!_@_","523 ${orderType!!.orderType}")
             prefProvider.setValue(ORDER_TYPE, orderType!!.orderType)
             hideOrderType()
         }
@@ -698,10 +702,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             binding.layoutCart.txtTotalAmount, getDiscountCashData()
                         )
 
-                        if (prefProvider.getValue(ORDER_TYPE, "")
-                                .toString() == TAKEOUT || prefProvider.getValue(ORDER_TYPE, "")
-                                .toString() == Constants.DINE_IN
-                        ) {
+                        val orderType = prefProvider.getValue(ORDER_TYPE, "")
+                        Log.e("!_@_","rlSave -------- $orderType ")
+                        if (orderType == TAKEOUT || orderType == Constants.DINE_IN) {
+                            Log.e("!_@_","rlSave -- GONE ")
                             binding.layoutCart.rlSave.visibility = View.GONE
                             if (prefProvider.getValue(ORDER_TYPE, "").toString() == DINE_IN) {
                                 binding.layoutCart.txtTotalAmount.visibility = View.GONE
@@ -716,6 +720,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             } else {
                                 binding.layoutCart.txtDineInProceed.visibility = View.GONE
                             }
+                        } else {
+                            Log.e("!_@_","rlSave -- VISIBLE ")
+                            binding.layoutCart.rlSave.visibility = View.VISIBLE
                         }
 
                         if (prefProvider.getValueInt("ORDER_ID", -1) != -1) {
