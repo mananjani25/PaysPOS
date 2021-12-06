@@ -29,6 +29,8 @@ data class DineInModel(
     var guestDividerAmt: Double = 0.0,
     var serviceChargeList: ArrayList<TbServiceCharge>? = null,
     var floorPlanTable: GetOrderDetailsResponse.Data.FloorPlanTable? = null,
-    var empName:String = ""
+    var empName: String = "",
+    var cashSurchargeDiscount: Double = 0.0
 
-) : Parcelable
+) : Parcelable {
+}
