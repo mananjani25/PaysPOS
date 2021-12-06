@@ -219,7 +219,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                     MethodUtils.roundOffAmountDouble(finalAmt),
                     MethodUtils.roundOffAmountDouble(totalTaxAmt),
                     MethodUtils.roundOffAmountDouble(totalServiceCharge),
-                    list.get(0).cashSurchargeDiscount
+                    list.get(0).cashSurchargeDiscount,
                 )
             }
 

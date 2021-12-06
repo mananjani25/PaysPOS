@@ -71,6 +71,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
     private var splitModel: DineInOrderPayment? = null
     private var floorPlanModel: GetFloorPlanResponse.Data.FloorPlanTable? = null
     private var isLastPayment: Boolean? = false
+    private var totalGuestCount: Int = 0
 
     private var isSplitByNo: Boolean = false
     private var isSplitByAmount: Boolean = false
@@ -131,6 +132,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
             guestId = requireArguments().getInt("id")
             guestRequestModel = requireArguments().getParcelable("model")
             isLastPayment = requireArguments().getBoolean("isLastPayment")
+            totalGuestCount = requireArguments().getInt("totalGuestCount")
             isGuestPay = requireArguments().getBoolean("isGuestPay")
             Log.e(TAG, "isLastPayment  ${isLastPayment}")
             splitModel = requireArguments().getParcelable("orderPayment")
@@ -543,7 +545,22 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
             totalTax = it
         }
         totalServiceCharge = requireArguments().getDouble("totalServiceCharge")
-        var cashSurcharge = requireArguments().getDouble("cashSurcharge")
+        var cashSurcharge: Double = 0.0
+        if (isGuestPay) {
+            cashSurcharge = MethodUtils.calculateCashDiscount(
+                subTotalPrice,
+                prefProvider,
+                requireContext()
+            ) / totalGuestCount
+        } else {
+            cashSurcharge = MethodUtils.calculateCashDiscount(
+                subTotalPrice,
+                prefProvider,
+                requireContext()
+            ) / totalGuestCount
+
+
+        }
         totaldiscount = requireArguments().getDouble("totalDiscount")
         future_delivery_time = requireArguments().getString("future_delivery_time").toString()
         future_delivery_date = requireArguments().getString("future_delivery_date").toString()
@@ -583,11 +600,11 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                 binding.txtNoncashAdj.text = "- $" + String.format("%.2f", 0.0)
                 MethodUtils.setPriceTextView(
                     binding.txtTotal,
-                    (totalPrice + tipAmount) + cashSurcharge
+                    (totalPrice + tipAmount)
                 )
                 MethodUtils.setPriceTextView(
                     binding.txtTotalAmount,
-                    (totalPrice + tipAmount) + cashSurcharge
+                    (totalPrice + tipAmount)
                 )
             } else {
                 binding.linnearCashDiscounnt.visibility = View.GONE
@@ -601,11 +618,11 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                 binding.txtNoncashAdj.text = "- $" + String.format("%.2f", cashSurcharge)
                 MethodUtils.setPriceTextView(
                     binding.txtTotal,
-                    (totalPrice + tipAmount) + cashSurcharge
+                    (totalPrice + tipAmount)
                 )
                 MethodUtils.setPriceTextView(
                     binding.txtTotalAmount,
-                    (totalPrice + tipAmount) + cashSurcharge
+                    (totalPrice + tipAmount)
                 )
 
             } else if (optionType == "CashDiscount") {

@@ -70,6 +70,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     var cashDiscount: Double = 0.0
     private var totalTax: Double = 0.0
     private var totalServiceCharge: Double = 0.0
+    var totalGuestCount = 0
     private var paymentAmount: Double = 0.0
     private var subTotalWT = 0.0
     private var subTotalDInin = 0.0
@@ -836,7 +837,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             cardType = ""
             cashDiscount = 0.0
             cashDiscountFee = 0.0
-            cash_discount_or_surcharge = cashSurcharge
+            cash_discount_or_surcharge = cashSurcharge/totalGuestCount
             employeeId = prefProvider.getValueInt(EMPLOYEE_ID, 0)
             taxAmount = taxGuest
             subTotalPrice = subTotalGuest
@@ -853,7 +854,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 cardType = ""
                 cashDiscount = 0.0
                 cashDiscountFee = 0.0
-                cash_discount_or_surcharge = cash_discount_or_surcharge
+                cash_discount_or_surcharge = cashSurcharge/totalGuestCount
                 employeeId = prefProvider.getValueInt(EMPLOYEE_ID, 0)
                 taxAmount = taxGuest
                 subTotalPrice = subTotalGuest
@@ -882,6 +883,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         bundle.putParcelable("cartList", cartList)
         bundle.putDouble("totalPrice", totalGuest)
         bundle.putDouble("cashSurcharge", cashSurcharge)
+        bundle.putInt("totalGuestCount", totalGuestCount)
         bundle.putDouble("subTotalPrice", subTotalGuest)
         bundle.putDouble("totalTax", taxGuest)
         bundle.putParcelable("model", model)
@@ -1246,8 +1248,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                 prefProvider,
                                 requireContext()
                             ) / (baseResponse.guestAttributes.size - 1)
-                            Log.d(TAG, "navigateDineInOrder: " + cashDisSurcharge)
-                            model.cashSurchargeDiscount = cashDisSurcharge
+                            if (optionType == "CashDiscount") {
+                                model.cashSurchargeDiscount = cashDisSurcharge
+                                Log.d(TAG, "navigateDineInOrder: $cashDisSurcharge")
+                            } else if (optionType == "SurCharge") {
+                                model.cashSurchargeDiscount = 0.0
+                            }
                         } else {
                             model.cashSurchargeDiscount = 0.0
                         }
@@ -1365,7 +1371,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     }
 
                     //paid and unpaid guest count
-                    var totalGuestCount = baseResponse.guestAttributes.size - 1
+                    totalGuestCount = baseResponse.guestAttributes.size - 1
                     var totalGuestPaidCount = 0.0
 
                     //Whole Table Calculation
@@ -1604,9 +1610,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                         guestSubTotal += (it.itemQuantity * it.price) - it.discountPrice
                                         if (it.modifiers.isNotEmpty()) {
                                             it.modifiers.forEach { it ->
-
                                                 guestAmt += it.itemQuantity * it.price
                                                 guestSubTotal += it.itemQuantity * it.price
+                                                Log.d("yash", "navigateDineInOrder: " + guestAmt)
+                                                Log.d(
+                                                    "yash",
+                                                    "navigateDineInOrder: " + guestSubTotal
+                                                )
 
                                             }
                                         }
@@ -1702,7 +1712,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         subTotalWT = guestSubTotal + myShare
                         finalTaxAmt = totalTaxAmt
                         toFinalAmt = finalAmt
-                        subTotalDInin = guestAmt+guestSubTotal
+                        subTotalDInin = WTSubTotal + guestSubTotal
                         if (prefProvider.getValueboolean(
                                 Constants.CASHDIS_SURCHARGEENABLE,
                                 false

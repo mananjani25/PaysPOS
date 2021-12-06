@@ -245,31 +245,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         })
     }
 
-    fun getDiscountCashData(): Double {
-        var optionType = prefProvider.getValue(OPTION_TYPE, "")
-        var amountType = prefProvider.getValue(AMOUNT_TYPE, "")
-        var rateorAmount = prefProvider.getValue(RATE_OR_AMOUNT, "0")
-        if (optionType == "CashDiscount") {
-            if (amountType == "Dollar") {
-                if (viewModel.subTotalPrice.toDouble() > 0) {
-                    return rateorAmount.toDouble().also { cashDiscount = it }
-                } else {
-                    return 0.00
-                }
-            } else if (amountType == "Percentage") {
-                if (viewModel.subTotalPrice.toDouble() > 0) {
-                    return (viewModel.subTotalPrice * 100 / rateorAmount.toDouble()).also {
-                        cashDiscount = it
-                    }
-                } else {
-                    return 0.00
-                }
-            }
-        } else {
-            return 0.00
-        }
-        return 0.00
-    }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -374,7 +349,11 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                 MethodUtils.setPriceTextView(
                     binding.layoutCart.txtTotalAmount,
-                    price - getDiscountCashData()
+                    price - MethodUtils.calculateCashDiscount(
+                        viewModel.subTotalPrice,
+                        prefProvider,
+                        requireContext()
+                    )
                 )
                 if (cartList.isNotEmpty()) {
                     cartList[0].discountPrice = orderDiscount
@@ -2322,11 +2301,23 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 //                    (viewModel.redeemLoyaltyInfo.remainingLoyaltyAmount + (viewModel.redeemLoyaltyInfo.cashDiscount
 //                        ?: 0.0)),
 
+                    var totalAmountTobeSave = 0.0
+                    if (viewModel.redeemLoyaltyInfo.isLoyaltyApplied == true) {
+                        totalAmountTobeSave =
+                            (viewModel.redeemLoyaltyInfo.getAmountToBePaid() + (viewModel.redeemLoyaltyInfo.cashDiscount
+                                ?: 0.0))
+                    } else {
+                        totalAmountTobeSave =
+                            (binding.layoutCart.txtTotalAmount.text.toString().subSequence(
+                                2,
+                                binding.layoutCart.txtTotalAmount.text.length
+                            ) as String).toDouble()
+                    }
+
                     val request = viewModelPayment.createOrderRequest(
                         cartList,
                         viewModel.subTotalPrice,
-                        (viewModel.redeemLoyaltyInfo.getAmountToBePaid() + (viewModel.redeemLoyaltyInfo.cashDiscount
-                            ?: 0.0)),
+                        totalAmountTobeSave,
                         viewModel.totalServiceCharge,
                         viewModel.totalTax,
                         OPEN_ORDER,

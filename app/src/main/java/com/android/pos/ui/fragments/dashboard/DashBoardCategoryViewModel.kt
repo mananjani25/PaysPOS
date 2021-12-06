@@ -512,7 +512,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 amountToBePaid = totalPrice - cartList[0].discountPrice - cashdiscount
 
-
+                MethodUtils.setPriceTextView(txtTotalAmount, amountToBePaid)
             } else {
 
 
@@ -540,22 +540,21 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 //loyalty point and price calculation
                 amountToBePaid = totalPrice - cartList[0].discountPrice
-                redeemLoyaltyInfo =
-                    checkAppliedLoyaltyProgram(selectedCustomer, amountToBePaid, cashdiscount)
-                amountToBePaid = redeemLoyaltyInfo.getAmountToBePaid()
-                Log.e(TAG, Gson().toJson(redeemLoyaltyInfo))
+                checkAppliedLoyaltyProgram(selectedCustomer, amountToBePaid, cashdiscount,txtTotalAmount)
+
             }
         }
         //totalAmmount = totalPrice-cartList[0].discountPrice
-        MethodUtils.setPriceTextView(txtTotalAmount, amountToBePaid)
+
 
     }
 
     private fun checkAppliedLoyaltyProgram(
         customer: TbCustomer?,
         total: Double,
-        cashdiscount: Double
-    ): RedeemLoyaltyInfo {
+        cashdiscount: Double,
+        txtTotalAmount: AppCompatTextView
+    ) {
 
         Log.e("Loyalty", "checkAppliedLoyaltyProgram..")
 
@@ -603,8 +602,8 @@ class DashBoardCategoryViewModel @Inject constructor(
             redeemLoyaltyInfo.usedLoyaltyAmount = 0.0
             //redeemLoyaltyInfo.isLoyaltyApplied = false
         }
+        MethodUtils.setPriceTextView(txtTotalAmount, redeemLoyaltyInfo.getAmountToBePaid())
 
-        return redeemLoyaltyInfo
     }
 
     private fun serviceChargeCalculation(cartList: List<CartModel>) {
