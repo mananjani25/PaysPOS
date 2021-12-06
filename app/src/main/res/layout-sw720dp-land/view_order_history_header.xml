@@ -46,11 +46,11 @@
             android:visibility="gone"
             android:text="@string/redeemed_loyalty_points" />
 
-        <!--<androidx.appcompat.widget.AppCompatTextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txtReorder"
             style="@style/HistoryItemHeaderText"
             android:gravity="center"
-            android:text="@string/reorder" />-->
+            android:text="@string/reorder" />
 
     </LinearLayout>
 </layout>

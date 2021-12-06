@@ -106,6 +106,7 @@ class PosRepository @Inject constructor(
     )
 
     suspend fun saveDatabase(response: VenueDataResponse) {
+        appDatabase.customerDao().deleteCustomerTb()
         appDatabase.categoryDao().delete()
         appDatabase.itemDao().delete()
         appDatabase.modifierSetDao().delete()
@@ -256,15 +257,13 @@ class PosRepository @Inject constructor(
         appDatabase.loyaltyProgramsDao().addAll(data)
     }
 
-    fun getActiveLoyaltyProgramFromDb() = performGetOperationDatabase(databaseQuery = {
-        appDatabase.loyaltyProgramsDao().findActiveLoyalty(active = true)
-    })
+    fun getActiveLoyaltyProgramFromDb() =  performGetOperationDatabase(databaseQuery = { appDatabase.loyaltyProgramsDao().findActiveLoyalty(active = true) })
 
-    suspend fun deleteTeamRoleFromDb() {
+    suspend fun deleteTeamRoleFromDb(){
         appDatabase.teamRoleDao().delete()
     }
 
-    suspend fun addTeamRoleFromDb(teamRoleList: List<TeamRole>) {
+    suspend fun addTeamRoleFromDb(teamRoleList: List<TeamRole>){
         appDatabase.teamRoleDao().addAllRolesSuspend(teamRoleList)
     }
 
@@ -659,7 +658,8 @@ class PosRepository @Inject constructor(
         id: Int,
         isFired: Boolean,
         items: String
-    ) = apiHelperNew.updateKitchenFireStatus(id, isFired, items)
+    ) =
+        apiHelperNew.updateKitchenFireStatus(id, isFired, items)
 
     suspend fun getTableStatus(
         tableId: Int,
@@ -673,10 +673,10 @@ class PosRepository @Inject constructor(
         parentTableId: Int,
         childIds: String,
         orderModel: MergeTableRequest?,
-        childOrderIds: String?,
-        orderId: Int? = null
+        childOrderIds:String?,
+        orderId:Int?=null
     ) =
-        apiHelperNew.mergeFloorTable(parentTableId, childIds, orderModel, childOrderIds, orderId)
+        apiHelperNew.mergeFloorTable(parentTableId, childIds,orderModel,childOrderIds,orderId)
 
     suspend fun unMergeTable(id: Int) = apiHelperNew.unMergeTable(id)
     suspend fun payByGuest(

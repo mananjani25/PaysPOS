@@ -27,6 +27,7 @@ import com.android.pos.data.remote.Constants.PRINT_PAID
 import com.android.pos.data.remote.Constants.PRINT_UNPAID
 import com.android.pos.databinding.FragmentActiveOrdersBinding
 import com.android.pos.di.PrefProvider
+import com.android.pos.di.RolePermission
 import com.android.pos.ui.adapter.OpenOrderAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.utils.*
@@ -58,6 +59,9 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
 
     @Inject
     lateinit var prefProvider: PrefProvider
+
+    @Inject
+    lateinit var rolePermission: RolePermission
 
     companion object {
         @JvmStatic
@@ -264,18 +268,19 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
             }
 
             else -> {
+                if (rolePermission.hasCancelOrderPermission(binding.root)) {
+                    alert(
+                        getString(R.string.app_name),
+                        getString(R.string.cancel_order_message)
+                    ) {
+                        positiveButton(getString(R.string.yes)) {
 
-                alert(
-                    getString(R.string.app_name),
-                    getString(R.string.cancel_order_message)
-                ) {
-                    positiveButton(getString(R.string.yes)) {
-
-                        itemPos = pos
-                        viewModel.cancelOrder(order.id)
-                    }
-                    negativeButton(R.string.no) {
-                        // Do negative stuff here
+                            itemPos = pos
+                            viewModel.cancelOrder(order.id)
+                        }
+                        negativeButton(R.string.no) {
+                            // Do negative stuff here
+                        }
                     }
                 }
             }

@@ -8,15 +8,20 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.android.pos.R
 import com.android.pos.data.entities.Employee
-import com.android.pos.data.model.responseModel.EmployeeListResponse
 import com.android.pos.databinding.FragmentTeamDetailsBinding
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.MethodUtils
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class TeamDetails : Fragment() {
 
     private var model: Employee? = null
+
+    private val viewModel by viewModels<CreateTeamViewModel>()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -51,6 +56,16 @@ class TeamDetails : Fragment() {
         binding.txtEmail.text = model?.email
         binding.txtPhone.text = model?.phoneNumber?.let { AlertUtils.usNumberFormat(it) }
         binding.txtPersonalPasscode.text = model?.passcode
+
+        model?.hourlyWages?.let { MethodUtils.setPriceTextView(binding.txtHourlyRate, it) }
+
+        binding.txtPersonalPasscode.text = model?.passcode
+
+        model?.teamRoleId?.let { viewModel.roleNameById(it) }?.observe(viewLifecycleOwner,
+            {
+                binding.txtPermissionSet.text = it.data?.name
+            })
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

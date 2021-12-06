@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.data.db.AppDatabase
+import com.android.pos.data.entities.CashDiscountModel
 import com.android.pos.data.entities.TbCustomer
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.requestModel.DineInOrderPayment
@@ -72,6 +73,9 @@ class DineInOrderTableViewModel @Inject constructor(
         return posRepository.getCustomerPrinters()
     }
 
+    fun getCashDiscountDetails(active: Int): LiveData<CashDiscountModel>? {
+        return posRepository.getCashDisDetail(active)
+    }
     fun getKitchenPrinterList(): LiveData<Resource<List<PrinterResponse.Data.KitchenReceiptPrinters>>> {
         return posRepository.getKitchenPrinters()
     }

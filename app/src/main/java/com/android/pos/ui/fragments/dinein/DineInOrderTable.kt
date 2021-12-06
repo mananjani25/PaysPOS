@@ -120,8 +120,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     }
 
     fun getDiscountCashData(): Double {
-        var optionType = prefProvider.getValue(Constants.OPTION_TYPE, "CashDiscount")
-        var amountType = prefProvider.getValue(Constants.AMOUNT_TYPE, "Dollar")
+        var optionType = prefProvider.getValue(Constants.OPTION_TYPE, "")
+        var amountType = prefProvider.getValue(Constants.AMOUNT_TYPE, "")
         var rateorAmount = prefProvider.getValue(Constants.RATE_OR_AMOUNT, "0")
         if (optionType == "CashDiscount") {
             if (amountType == "Dollar") {
@@ -539,8 +539,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         val linear_NonCashDiscount: LinearLayoutCompat =
             popupView.findViewById(R.id.linear_NonCashDiscount)
 
-        var optionType = prefProvider.getValue(Constants.OPTION_TYPE, "CashDiscount")
-        var amountType = prefProvider.getValue(Constants.AMOUNT_TYPE, "Dollar")
+        var optionType = prefProvider.getValue(Constants.OPTION_TYPE, "")
+        var amountType = prefProvider.getValue(Constants.AMOUNT_TYPE, "")
         var rateorAmount = prefProvider.getValue(Constants.RATE_OR_AMOUNT, "0")
 
 
@@ -580,6 +580,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             linear_NonCashDiscount.visibility = View.GONE
             txttotalCashDiscount.text = "- $" + String.format("%.2f", 0.00)
             txtTotalcashAdj.text = "- $" + String.format("%.2f", cashDiscount)
+        }else{
+            linearCCashDiscount.visibility = View.GONE
+            linear_NonCashDiscount.visibility = View.GONE
+            cashDiscount = 0.00
         }
 
 

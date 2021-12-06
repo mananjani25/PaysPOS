@@ -7,7 +7,6 @@ import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.provider.Settings
 import android.util.Log
 import android.view.*
 import android.view.ViewGroup
@@ -104,6 +103,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private var orderId: Int? = null
     private var paymentId: Int? = null
     private var isOrderUpdate: Boolean = false
+    private var isReOrder: Boolean = false
     private var future_delivery_time: String = ""
     private var popupWindow: PopupWindow? = null
     private var orderType: TbOrderType? = null
@@ -135,7 +135,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private val viewModelPayment by viewModels<PaymentViewModel>()
     private lateinit var dineInCartAdapter: DineInAdapter
     lateinit var cashDiscountModel: CashDiscountModel
-    var cashDiscountType = "CashDiscount"
+    var cashDiscountType = ""
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -163,14 +163,18 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             paymentId = requireArguments().getInt("paymentId")
             paymentOfflineId = requireArguments().getString("paymentOfflineId").toString()
             orderOfflineId = requireArguments().getString("orderOfflineId").toString()
-            viewModel.redeemLoyaltyInfo.needToApplyLoyalty = requireArguments().getBoolean("isLoyaltyApplied")
+            viewModel.redeemLoyaltyInfo.needToApplyLoyalty =
+                requireArguments().getBoolean("isLoyaltyApplied")
 
             //save pref
             prefProvider.setValueboolean(IS_ORDER_UPDATE, value = true)
             prefProvider.setValueInt(BUNDLE_ORDER_ID, value = orderId ?: 0)
             prefProvider.setValueInt(BUNDLE_PAYMENT_ID, value = paymentId ?: 0)
             prefProvider.setValue(BUNDLE_PAYMENT_OFFLINE_ID, value = paymentOfflineId)
-            prefProvider.setValueboolean(BUNDLE_ISLOYALTYAPPLIED, value = viewModel.redeemLoyaltyInfo.needToApplyLoyalty)
+            prefProvider.setValueboolean(
+                BUNDLE_ISLOYALTYAPPLIED,
+                value = viewModel.redeemLoyaltyInfo.needToApplyLoyalty
+            )
         } else {
             //check pref
             if (prefProvider.getValueboolean(IS_ORDER_UPDATE, defaultValue = false)) {
@@ -180,15 +184,18 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 paymentOfflineId =
                     prefProvider.getValue(BUNDLE_PAYMENT_OFFLINE_ID, defaultValue = "")
                 orderOfflineId = prefProvider.getValue(BUNDLE_ORDER_OFFLINE_ID, defaultValue = "")
-                viewModel.redeemLoyaltyInfo.needToApplyLoyalty = prefProvider.getValueboolean(BUNDLE_ISLOYALTYAPPLIED,false)
+                viewModel.redeemLoyaltyInfo.needToApplyLoyalty =
+                    prefProvider.getValueboolean(BUNDLE_ISLOYALTYAPPLIED, false)
             }
 
         }
 
+        isReOrder = requireArguments().getBoolean("reorder")
+
         viewModel.getCashDiscountDetails(active = 1)
             ?.observe(viewLifecycleOwner, { cashDiscountData ->
-                cashDiscountData?.let {
-                    cashDiscountModel = it
+                if (cashDiscountData != null) {
+                    cashDiscountModel = cashDiscountData
                     prefProvider.setValue(AMOUNT_TYPE, cashDiscountData.amount_type)
                     prefProvider.setValue(OPTION_TYPE, cashDiscountData.option_type)
                     prefProvider.setValue(
@@ -198,6 +205,15 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     prefProvider.setValueboolean(CASH_DIS_STORED, true)
                     cashDiscountType = cashDiscountData.option_type
                     Log.d(TAG, "onCreateView: " + cashDiscountModel.rate_or_amount)
+                } else {
+                    prefProvider.setValue(AMOUNT_TYPE, "")
+                    prefProvider.setValue(OPTION_TYPE, "")
+                    prefProvider.setValue(
+                        RATE_OR_AMOUNT,
+                        "0"
+                    )
+                    prefProvider.setValueboolean(CASH_DIS_STORED, true)
+                    cashDiscountType = ""
                 }
             })
 
@@ -255,8 +271,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     }
 
     fun getDiscountCashData(): Double {
-        var optionType = prefProvider.getValue(OPTION_TYPE, "CashDiscount")
-        var amountType = prefProvider.getValue(AMOUNT_TYPE, "Dollar")
+        var optionType = prefProvider.getValue(OPTION_TYPE, "")
+        var amountType = prefProvider.getValue(AMOUNT_TYPE, "")
         var rateorAmount = prefProvider.getValue(RATE_OR_AMOUNT, "0")
         if (optionType == "CashDiscount") {
             if (amountType == "Dollar") {
@@ -517,6 +533,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             future_delivery_time = bundle.getString("TIME").toString()
             prefProvider.setValueInt(ORDER_TYPE_ID, orderType!!.id)
             prefProvider.setValue(ORDER_TYPE_NAME, orderType!!.name)
+            Log.e("!_@_","523 ${orderType!!.orderType}")
             prefProvider.setValue(ORDER_TYPE, orderType!!.orderType)
             hideOrderType()
         }
@@ -685,10 +702,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             binding.layoutCart.txtTotalAmount, getDiscountCashData()
                         )
 
-                        if (prefProvider.getValue(ORDER_TYPE, "")
-                                .toString() == TAKEOUT || prefProvider.getValue(ORDER_TYPE, "")
-                                .toString() == Constants.DINE_IN
-                        ) {
+                        val orderType = prefProvider.getValue(ORDER_TYPE, "")
+                        Log.e("!_@_","rlSave -------- $orderType ")
+                        if (orderType == TAKEOUT || orderType == Constants.DINE_IN) {
+                            Log.e("!_@_","rlSave -- GONE ")
                             binding.layoutCart.rlSave.visibility = View.GONE
                             if (prefProvider.getValue(ORDER_TYPE, "").toString() == DINE_IN) {
                                 binding.layoutCart.txtTotalAmount.visibility = View.GONE
@@ -703,6 +720,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             } else {
                                 binding.layoutCart.txtDineInProceed.visibility = View.GONE
                             }
+                        } else {
+                            Log.e("!_@_","rlSave -- VISIBLE ")
+                            binding.layoutCart.rlSave.visibility = View.VISIBLE
                         }
 
                         if (prefProvider.getValueInt("ORDER_ID", -1) != -1) {
@@ -781,23 +801,20 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private fun searchCategory() {
 
         searchList = arrayListOf()
-
-
-        for (i in 0 until categoryList1.size) {
-            for (j in categoryList1[i].inventoryLists!!.indices) {
+        categoryList1.forEach { categories ->
+            val itemList = categories.inventoryLists
+            itemList?.filter { it?.isHide == true }?.forEach { tbItem ->
                 searchList.add(
                     CategorySearchData(
-                        categoryList1[i].inventoryLists?.get(j)?.itemId ?: 0,
-                        categoryList1[i].inventoryLists?.get(j)?.name ?: "",
-                        categoryList1.get(i).inventoryLists?.get(j)?.imageUrl.toString(),
-                        categoryList1.get(i).category.name ?: "",
-                        categoryList1[i].category.id
+                        tbItem?.itemId ?: 0,
+                        tbItem?.name ?: "",
+                        tbItem?.imageUrl.toString(),
+                        categories.category.name ?: "",
+                        categories.category.id
                     )
                 )
             }
-
         }
-
         searchAdapter =
             CategorySearchAdapter(
                 requireActivity(),
@@ -896,12 +913,16 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             dialog.dismiss()
         }
         linearTeam.setOnClickListener {
-            findNavController().navigate(R.id.action_dashboardCategoryNew_to_teamList)
-            dialog.dismiss()
+            if (rolePermission.hasEmployeePermission(binding.root)) {
+                findNavController().navigate(R.id.action_dashboardCategoryNew_to_teamList)
+                dialog.dismiss()
+            }
         }
         linearInventory.setOnClickListener {
-            findNavController().navigate(R.id.action_dashboardCategoryNew_to_inventory)
-            dialog.dismiss()
+            if (rolePermission.hasInventoryPermission(binding.root)) {
+                findNavController().navigate(R.id.action_dashboardCategoryNew_to_inventory)
+                dialog.dismiss()
+            }
         }
         linearSetting.setOnClickListener {
             findNavController().navigate(R.id.action_dashboardCategoryNew_to_settings)
@@ -914,12 +935,16 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             dialog.dismiss()
         }
         linearTransaction.setOnClickListener {
-            findNavController().navigate(R.id.action_dashboardCategoryNew_to_transactionFragment)
-            dialog.dismiss()
+            if (rolePermission.hasTransactionPermission(binding.root)) {
+                findNavController().navigate(R.id.action_dashboardCategoryNew_to_transactionFragment)
+                dialog.dismiss()
+            }
         }
         linearCash.setOnClickListener {
-            findNavController().navigate(R.id.action_dashboardCategoryNew_to_cashLogFragment)
-            dialog.dismiss()
+            if (rolePermission.hasCashLogPermission(binding.root)) {
+                findNavController().navigate(R.id.action_dashboardCategoryNew_to_cashLogFragment)
+                dialog.dismiss()
+            }
         }
 
 
@@ -1137,7 +1162,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         binding.layoutMenu.txtKeypad.setOnClickListener {
 
             if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
-                findNavController().navigate(R.id.action_dashboardCategoryNew_to_manualSales)
+                if (rolePermission.hasManualSalesPermission(binding.root)) {
+                    findNavController().navigate(R.id.action_dashboardCategoryNew_to_manualSales)
+                }
             } else {
                 clickManualSales = true
                 orderTypeDialog()
@@ -1301,8 +1328,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         var totalAmounnt = 0.0
 
-        var optionType = prefProvider.getValue(OPTION_TYPE, "CashDiscount")
-        var amountType = prefProvider.getValue(AMOUNT_TYPE, "Dollar")
+        var optionType = prefProvider.getValue(OPTION_TYPE, "")
+        var amountType = prefProvider.getValue(AMOUNT_TYPE, "")
         var rateorAmount = prefProvider.getValue(RATE_OR_AMOUNT, "0")
 
 
@@ -1765,12 +1792,34 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         llPlus.setOnClickListener {
 
             qty += 1
+            txtQty.setText(qty.toString())
 
-            if (data.quantity >= qty) {
-                txtQty.setText(qty.toString())
+            if (data.variationsAttributes.isNotEmpty()) {
+
+                val stockQty = variationAdapter?.getItem()?.stockQty
+
+                if (stockQty?.isNotEmpty() == true) {
+
+                    if (stockQty.toInt() >= qty) {
+                        txtQty.setText(qty.toString())
+                    } else {
+                        qty -= 1
+                        stockValidationAlert(qty, txtQty)
+                    }
+
+                } else {
+                    qty -= 1
+                    stockValidationAlert(qty, txtQty)
+                }
+
             } else {
-                qty -= 1
-                AlertUtils.showCustomAlert(requireActivity(), getString(R.string.qty_validation))
+
+                if (data.quantity >= qty) {
+                    txtQty.setText(qty.toString())
+                } else {
+                    qty -= 1
+                    stockValidationAlert(qty, txtQty)
+                }
             }
 
 
@@ -1857,6 +1906,14 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         dialog.setCanceledOnTouchOutside(false)
         dialog.show()
+    }
+
+    private fun stockValidationAlert(qty: Int, txtQty: AppCompatEditText) {
+        txtQty.setText(qty.toString())
+        AlertUtils.showCustomAlert(
+            requireActivity(),
+            getString(R.string.qty_validation)
+        )
     }
 
 
@@ -2233,7 +2290,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         0.00,
                         -1,
                         viewModel.redeemLoyaltyInfo,
-                        cashDiscount,
+                        getDiscountCashData(),
                         false,
                         "Cash",
                         cashDiscountType
@@ -3030,8 +3087,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         })
 
     }
-
-
 
 
     private fun dineInUpdateOrder() {
