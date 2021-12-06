@@ -189,11 +189,111 @@ class MergeTableDialog : DialogFragment() {
         }
         binding.txtSave.setOnClickListener {
             var primaryTable = tableAdapter.getItem(tableSelectedPos)
-            val parentTableId = tableAdapter.getItem(tableSelectedPos)?.id
-            val childIds: String = adapter.getList().get(0).selectedTableId.toString()
+            var totalChairCount = 0
+
             var listSecondary = adapter.getList()
             var listSecondaryOrderDetails: ArrayList<GetFloorPlanDetailResponse.OrderDetails> =
                 arrayListOf()
+
+            val parentTableId = tableAdapter.getItem(tableSelectedPos)?.id
+            var childIds: String = ""
+            for (i in 0 until listSecondary.size) {
+                childIds +=
+                    listSecondary.get(i).listTable.get(listSecondary.get(i).tableSelectedPosition!!).id.toString()
+                if (i != listSecondary.size - 1) {
+                    childIds += ","
+                }
+
+                totalChairCount += listSecondary.get(i).listTable.get(
+                    listSecondary.get(i).tableSelectedPosition ?: 0
+                ).chairCount
+                    ?: 0
+            }
+
+
+            var tableMergeList: ArrayList<MergeTableModel> = arrayListOf()
+            for (i in 0 until totalChairCount) {
+
+                tableMergeList.add(
+                    MergeTableModel(
+                        id = adapter.getList().get(0).tableSelectedPosition?.let { it1 ->
+                            adapter.getList().get(0).listTable.get(
+                                it1
+                            ).id
+                        }!!, name = "", floorId = 0, floorName = ""
+                    )
+                )
+            }
+
+            Log.e(TAG, "childIds:  ${childIds}")
+            Log.e(TAG, "totalChairCount:  ${totalChairCount}")
+
+
+
+            listSecondary.add(
+                MergeTableListModel(
+                    listTable = listTable,
+                    listFloor,
+                    tableSelectedPosition = tableSelectedPos
+                )
+            )
+
+            for (i in 0 until listSecondary.size) {
+                if (listSecondary.get(i).orderId != null) {
+
+                    listSecondary[i]?.listTable[listSecondary[i]?.tableSelectedPosition!!]?.orderDetails?.let { it1 ->
+                        listSecondaryOrderDetails.add(
+                            it1
+                        )
+                    }
+                }
+
+            }
+
+            if (listSecondaryOrderDetails.size == 0) {
+                //This is for Every Empty Table for both Primary and Secondary
+                parentTableId?.let { it1 ->
+                    viewModel.mergeTable(
+                        it1,
+                        childIds,
+                        null,
+                        null
+                    )
+                }
+
+
+            } else if (listSecondaryOrderDetails.size == 1) {
+                //One Occupied and Other's Available
+
+                var orderModel: OrderAttributeRequestModel = OrderAttributeRequestModel()
+                orderModel = viewModel.createMergeOrderRequest(
+                    primaryTable?.orderDetails!!,
+                    tableMergeList
+                )
+
+                viewModel.mergeTable(
+                    parentTableId ?: 0,
+                    childIds,
+                    orderModel = orderModel,
+                    orderId = orderModel.id
+
+                )
+
+            } else {
+                //Multiple Occupied and Other's Available
+                var orderModel =
+                    viewModel.createMultipleMergeOrder(listSecondaryOrderDetails, tableMergeList)
+                /* var Mergedids =listSecondaryOrderDetails.filter {
+                        it.id
+                }
+*/
+                viewModel.mergeTable(parentTableId ?: 0, childIds)
+
+
+            }
+
+
+            //OLD Code
             if (listSecondary.size > 1) {
                 for (i in 0 until listSecondary.size) {
                     if (listSecondary.get(i).orderId != null) {
@@ -208,34 +308,10 @@ class MergeTableDialog : DialogFragment() {
                 }
 
                 if (listSecondaryOrderDetails.size == 0) {
-                    var totalChairCount = 0
-                    listSecondaryOrderDetails.forEach {
-                        totalChairCount += it.floor_plan_table.chair_count
 
-                    }
-
-                    var tableMergeList: ArrayList<MergeTableModel> = arrayListOf()
-                    for (i in 0 until totalChairCount) {
-
-                        tableMergeList.add(
-                            MergeTableModel(
-                                id = adapter.getList().get(0).tableSelectedPosition?.let { it1 ->
-                                    adapter.getList().get(0).listTable.get(
-                                        it1
-                                    ).id
-                                }!!, name = "", floorId = 0, floorName = ""
-                            )
-                        )
-                    }
 
                     //This is for Every Empty Table for both Primary and Secondary
 
-                    var childIDList: ArrayList<String> = arrayListOf()
-                    listSecondary.forEach {
-                        childIDList.add(it.listTable.get(it.tableSelectedPosition!!).id.toString())
-
-                    }
-                    Log.e(TAG, "childIDListMultipleMerge:  ${Gson().toJson(childIDList)}")
 
                     parentTableId?.let { it1 ->
                         viewModel.mergeTable(
@@ -246,6 +322,13 @@ class MergeTableDialog : DialogFragment() {
                         )
                     }
 
+
+                } else if (listSecondaryOrderDetails.size == 1) {
+                    var orderModel: OrderAttributeRequestModel = OrderAttributeRequestModel()
+                    orderModel = viewModel.createMergeOrderRequest(
+                        primaryTable?.orderDetails!!,
+                        arrayListOf()
+                    )
 
                 }
 

@@ -169,6 +169,7 @@ class DineInViewModel @Inject constructor(
 
     }
 
+
     fun mergeTwoOrders(
         primaryOrder: GetFloorPlanDetailResponse.OrderDetails,
         secondaryOrder: GetFloorPlanDetailResponse.OrderDetails
@@ -507,6 +508,220 @@ class DineInViewModel @Inject constructor(
 
 
         return model
+    }
+
+    fun createMultipleMergeOrder(
+        list: ArrayList<GetFloorPlanDetailResponse.OrderDetails>,
+        mergeTableLists: ArrayList<MergeTableModel>
+    ): OrderAttributeRequestModel {
+        var model = OrderAttributeRequestModel()
+        model.date = list[0].date
+//        model.deliveryType = orderDetails.delivery_type
+        model.employeeId = list[0].employee_id
+        //model.mergedTableNumbers = totalGuestCount
+/*
+        model.futureDeliveryDate = orderDetails.future_delivery_date
+        model.futureDeliveryTime = orderDetails.future_delivery_time
+*/
+        model.id = list[0].id
+        model.locationId = list[0].location_id
+        model.note = list[0].note
+        model.offlineId = list[0].offline_id
+
+        var orderItemsAttr: ArrayList<OrderItemsAttribute> = arrayListOf()
+        var listGuestAttr: ArrayList<GuestsAttributes> = arrayListOf()
+        var listServiceCharge: ArrayList<OrderServiceChargesAttribute> = arrayListOf()
+
+        var subTotal = 0.0
+        var total_amount = 0.0
+        var total_discount = 0.0
+        var total_tax_amount = 0.0
+        var total_tips = 0.0
+        var total_service_charges = 0.0
+
+        for (i in 0 until list.size) {
+            //Order Items Attributes
+            subTotal += list[i].sub_total
+            total_amount += list[i].total_amount
+            total_tax_amount += list[i].total_tax_amount
+            total_discount += list[i].total_discount
+            total_tips += list[i].total_tips
+            total_service_charges += list[i].total_service_charges
+
+            list.get(i).order_items.forEach {
+                var model = OrderItemsAttribute()
+                model.timestamp = it.timestamp
+                model.category_id = it.categoryId
+                model.discountAmount = it.discountAmount
+                model.discountId = it.discountId
+                model.discountType = it.discountType
+                model.editTimestamp = it.timestamp
+                model.employeeId = it.employeeId
+                model.id = it.id
+                model.isPaid = it.isPaid
+                model.itemId = it.itemId
+                model.itemName = it.itemName
+                model.note = it.note
+                model.quantity = it.quantity
+                model.totalPrice = it.totalPrice
+                model.price = it.price
+
+                var modifierList: ArrayList<OrderItemModifierAttribute> = arrayListOf()
+                it.orderItemModifiers.forEach { modifier ->
+                    var orderModifier = OrderItemModifierAttribute()
+                    orderModifier.id = modifier.id
+                    orderModifier.price = modifier.price
+                    orderModifier.quantity = modifier.quantity
+                    orderModifier.name = modifier.name
+                    orderModifier.totalPrice = modifier.price
+                    var itemTaxes: ArrayList<OrderModifierTaxesAttribute> = arrayListOf()
+                    modifier.orderItemTaxes.forEach { tax ->
+                        var modifierTax = OrderModifierTaxesAttribute()
+                        modifierTax.name = tax.name
+                        modifierTax.tax_id = tax.taxId
+                        modifierTax.amount = tax.amount
+                        modifierTax.id = tax.id
+                        modifierTax.isDefault = tax.isDefault
+                        modifierTax.order_id = tax.orderId
+                        modifierTax.order_item_id = tax.orderItemId
+                        modifierTax.order_item_modifier_id = tax.orderItemModifierId
+                        modifierTax.taxType = tax.taxType
+                        modifierTax.is_tax_removed = tax.isTaxRemoved
+                        modifierTax.taxTotalAmount = tax.taxTotalAmount
+                        itemTaxes.add(modifierTax)
+
+
+                    }
+                    orderModifier.order_item_taxes_attributes = itemTaxes
+                    orderModifier.orderId = modifier.orderId
+                    orderModifier.order_item_id = modifier.orderItemId
+
+
+
+                    modifierList.add(orderModifier)
+
+                    model.orderItemModifiersAttributes = modifierList
+                }
+
+                var itemTaxList: ArrayList<OrderItemTaxesAttribute> = arrayListOf()
+
+                it.orderItemTaxes.forEach {
+                    var model = OrderItemTaxesAttribute()
+                    model.taxId = it.taxId
+                    model.isDefault = it.isDefault
+                    model.isTaxRemoved = it.isTaxRemoved
+                    model.name = it.name
+                    model.rate = it.rate
+                    model.taxTotalAmount = it.taxTotalAmount
+                    model.taxType = it.taxType
+                    itemTaxList.add(model)
+
+                }
+
+                model.orderItemTaxesAttributes = itemTaxList
+
+
+                orderItemsAttr.add(model)
+            }
+
+            //Guest Attributes
+            list[i].guest_attributes.forEach {
+                var guestModel = GuestsAttributes()
+                guestModel.customerAttributes?.id = it.customerId
+                guestModel.customerId = it.id
+                guestModel.name = it.name
+                guestModel.cashDiscount = it.cashDiscount
+                guestModel.orderId = it.orderId
+                guestModel.isPaid = it.isPaid
+                guestModel.id = it.id
+                guestModel.totalAmount = it.totalAmount
+                guestModel.totalDiscount = it.totalDiscount
+                guestModel.totalServiceCharge = it.totalServiceCharge
+                guestModel.totalTax = it.totalTax
+                guestModel.subTotal = it.subTotal
+                guestModel.totalTips = it.totalTips
+
+                var guestItemList: ArrayList<GuestItemsAttributes> = arrayListOf()
+                it.guestItemAttributes.forEach {
+                    var guestItemAttr = GuestItemsAttributes()
+                    guestItemAttr.id = it.id
+                    guestItemAttr.amount = it.amount
+                    guestItemAttr.isPaid = it.isPaid
+                    guestItemAttr.orderItemId = it.orderItemId
+                    guestItemAttr.orderId = it.orderId
+                    guestItemAttr.guestId = it.guestId
+                    guestItemAttr.itemId = it.itemId
+                    guestItemAttr.quantity = it.quantity
+                    guestItemAttr.timestamp = it.timestamp
+                    guestItemList.add(guestItemAttr)
+
+
+                }
+                guestModel.guestItemsAttributes = guestItemList
+                listGuestAttr.add(guestModel)
+
+            }
+
+
+
+            list[i].order_service_charges.forEach {
+                var serviceModel = OrderServiceChargesAttribute()
+                serviceModel.amount = it.amount
+                serviceModel.id = it.id
+                serviceModel.name = it.name
+                serviceModel.orderId = it.orderId
+                serviceModel.rate = it.rate
+                serviceModel.serviceChargeId = it.serviceChargeId
+
+                listServiceCharge.add(serviceModel)
+            }
+
+
+        }
+
+
+        model.orderTypeId = list.get(0).order_type_id
+
+        //--------------------NEED TO ADD PAYMENT ATTRIBUTE-----------------------//
+
+        //  model.paymentStatus = orderDetails.payment_status
+        model.serviceChargeEnabled = list.get(0).service_charge_enabled
+
+        model.subTotal = subTotal
+        // model.taxEnabled = orderDetails.tax_enabled
+        model.terminalId = list.get(0).terminal_id
+        model.totalAmount = total_amount
+        model.totalDiscount = total_discount
+        model.totalServiceCharges = total_service_charges
+        model.totalTaxAmount = total_tax_amount
+        model.totalTips = total_tips
+        //model.customer_id = orderDetails.customer_id
+        //model.discount_id = orderDetails.discount_id
+
+        for (i in 0 until mergeTableLists.size) {
+
+            var guestModel = GuestsAttributes()
+            var guestCount = listGuestAttr.size
+
+            guestModel.name = "Guest ${guestCount}"
+
+            guestModel.orderId = listGuestAttr.get(0).orderId
+            guestModel.isChildGuest = true
+            guestModel.childMergeId = mergeTableLists[i].id
+
+            /*var guestItemList: ArrayList<GuestItemsAttributes> = arrayListOf()
+            guestModel.guestItemsAttributes = guestItemList
+*/            listGuestAttr.add(guestModel)
+
+
+        }
+        model.orderItemsAttributes = orderItemsAttr
+        model.guestsAttributes = listGuestAttr
+        model.orderServiceChargesAttributes = listServiceCharge
+
+        return model
+
+
     }
 
     fun createMergeOrderRequest(
