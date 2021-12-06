@@ -574,7 +574,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             linear_NonCashDiscount.visibility = View.GONE
             txttotalCashDiscount.text = "- $" + String.format("%.2f", 0.00)
             txtTotalcashAdj.text = "- $" + String.format("%.2f", cashDiscount)
-        }else{
+        } else {
             linearCCashDiscount.visibility = View.GONE
             linear_NonCashDiscount.visibility = View.GONE
             cashDiscount = 0.00
@@ -1424,11 +1424,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                     }
 
-                   /* Log.e(TAG, "WTSubTotal:  ${WTSubTotal}")
-                    Log.e(TAG, "WTTaxes:  ${WTTaxes}")
-                    Log.e(TAG, "WTServiceCharge:  ${WTServiceCharge}")
-                    Log.e(TAG, "totalDiscount:  ${baseResponse.totalDiscount}")
-                    Log.e(TAG, "itemsDiscount:  ${itemsDiscount}")*/
+                    /* Log.e(TAG, "WTSubTotal:  ${WTSubTotal}")
+                     Log.e(TAG, "WTTaxes:  ${WTTaxes}")
+                     Log.e(TAG, "WTServiceCharge:  ${WTServiceCharge}")
+                     Log.e(TAG, "totalDiscount:  ${baseResponse.totalDiscount}")
+                     Log.e(TAG, "itemsDiscount:  ${itemsDiscount}")*/
                     var orderDiscount = 0.0
                     if (baseResponse.totalDiscount >= itemsDiscount) {
                         orderDiscount = baseResponse.totalDiscount - itemsDiscount

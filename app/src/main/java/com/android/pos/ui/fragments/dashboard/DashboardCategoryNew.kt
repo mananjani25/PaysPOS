@@ -533,7 +533,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             future_delivery_time = bundle.getString("TIME").toString()
             prefProvider.setValueInt(ORDER_TYPE_ID, orderType!!.id)
             prefProvider.setValue(ORDER_TYPE_NAME, orderType!!.name)
-            Log.e("!_@_","523 ${orderType!!.orderType}")
+            Log.e("!_@_", "523 ${orderType!!.orderType}")
             prefProvider.setValue(ORDER_TYPE, orderType!!.orderType)
             hideOrderType()
         }
@@ -703,9 +703,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         )
 
                         val orderType = prefProvider.getValue(ORDER_TYPE, "")
-                        Log.e("!_@_","rlSave -------- $orderType ")
+                        Log.e("!_@_", "rlSave -------- $orderType ")
                         if (orderType == TAKEOUT || orderType == Constants.DINE_IN) {
-                            Log.e("!_@_","rlSave -- GONE ")
+                            Log.e("!_@_", "rlSave -- GONE ")
                             binding.layoutCart.rlSave.visibility = View.GONE
                             if (prefProvider.getValue(ORDER_TYPE, "").toString() == DINE_IN) {
                                 binding.layoutCart.txtTotalAmount.visibility = View.GONE
@@ -721,7 +721,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                                 binding.layoutCart.txtDineInProceed.visibility = View.GONE
                             }
                         } else {
-                            Log.e("!_@_","rlSave -- VISIBLE ")
+                            Log.e("!_@_", "rlSave -- VISIBLE ")
                             binding.layoutCart.rlSave.visibility = View.VISIBLE
                         }
 
@@ -1374,6 +1374,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             linear_NonCashDiscount.visibility = View.GONE
             txttotalCashDiscount.text = "- $" + String.format("%.2f", 0.0)
             txtTotalcashAdj.text = "- $" + String.format("%.2f", cashDiscount)
+        } else {
+            totalAmounnt = viewModel.totalPrice
         }
 
 
@@ -1393,6 +1395,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         )
 
         val total = totalAmounnt - cartList[0].discountPrice
+        Log.e(TAG, "totaltotalPrice  ${total}")
+        Log.e(TAG, "totaltotalAmounnt  ${totalAmounnt}")
+        Log.e(TAG, "totalDiscount  ${cartList[0].discountPrice}")
         var amountToBepaid = total
 
         //  txtTotalAmount.text = total.toString()
