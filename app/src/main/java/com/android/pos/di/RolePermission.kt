@@ -3,6 +3,7 @@ package com.android.pos.di
 import android.content.Context
 import android.view.View
 import com.android.pos.data.entities.TeamRole
+import com.android.pos.data.remote.Constants
 import com.android.pos.utils.extensions.showAlert
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
@@ -57,6 +58,18 @@ class RolePermission @Inject constructor(
         } else {
             root?.showAlert("You do not have permission to access this feature.")
             false
+        }
+    }
+
+    fun hasUserAccessPermission(name: String, root: View?): Boolean {
+        return if (name.equals(Constants.ROLE_MANAGER, true)
+            || name.equals(Constants.ROLE_OWNER, true)
+            || name.equals(Constants.ROLE_EMPLOYEE, true)
+        ) {
+            root?.showAlert("This is the system generated default user role. You cant delete it !!")
+            false
+        } else {
+            true
         }
     }
 
