@@ -31,7 +31,7 @@ data class GetTransactionListResponse(
             @SerializedName("card_type")
             val cardType: String,
             @SerializedName("cash_discount_or_surcharge")
-            val cash_discount_or_surcharge: Int,
+            val cash_discount_or_surcharge: Double,
             @SerializedName("created_at")
             val createdAt: String,
             @SerializedName("customer")
