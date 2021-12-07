@@ -455,7 +455,6 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
 
     suspend fun unMergeTable(id: Int) = getResult { apiService.unMergeTable(id) }
 
-
     suspend fun orderCancel(id: Int, data: OrderCancelRequest) =
         getResult { apiService.cancelOrder(id, data) }
 
