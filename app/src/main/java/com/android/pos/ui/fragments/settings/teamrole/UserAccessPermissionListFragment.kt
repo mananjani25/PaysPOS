@@ -62,14 +62,9 @@ class UserAccessPermissionListFragment : Fragment() {
         observeShowProgress()
 
         binding.txtAddNewRole.setOnClickListener {
-            //TODO user permission
-            if (prefProvider.isManager()) {
-                findNavController().navigate(
-                    R.id.action_userAccessPermissionListFragment_to_userAccessPermissionFragment
-                )
-            }else{
-                binding.root.showAlert("")
-            }
+            findNavController().navigate(
+                R.id.action_userAccessPermissionListFragment_to_userAccessPermissionFragment
+            )
         }
 
         binding.imgClose.setOnClickListener {

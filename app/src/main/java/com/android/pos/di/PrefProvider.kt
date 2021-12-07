@@ -152,6 +152,14 @@ class PrefProvider @Inject constructor(@ApplicationContext context: Context) {
         return getValue(Constants.EMPLOYEE_ROLE, "").equals("Manager",true)
     }
 
+    fun isOwner(): Boolean {
+        return getValue(Constants.EMPLOYEE_ROLE, "").equals("Owner",true)
+    }
+    fun isEmployee(): Boolean {
+        return getValue(Constants.EMPLOYEE_ROLE, "").equals("Employee ",true)
+    }
+
+
     /* fun setCustomObject(
          context: Context,
          key: String?,

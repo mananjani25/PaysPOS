@@ -49,6 +49,17 @@ class RolePermission @Inject constructor(
         return false
     }
 
+    fun hasUserAccessPermission(root: View?): Boolean {
+        val permission =
+            prefProvider.isManager() || prefProvider.isOwner() || prefProvider.isEmployee()
+        return if (permission) {
+            true
+        } else {
+            root?.showAlert("You do not have permission to access this feature.")
+            false
+        }
+    }
+
     fun hasCustomerPermission(root: View?): Boolean {
         return checkPermission(root, MODULE_CUSTOMER)
     }
