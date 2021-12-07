@@ -15,6 +15,9 @@ import com.android.pos.data.model.responseModel.GetFloorPlanResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.DINE_IN_TABLE_ID
+import com.android.pos.data.remote.Constants.MERGED
+import com.android.pos.data.remote.Constants.MERGEDANDOCCUPIED
+import com.android.pos.data.remote.Constants.OCCUPIED
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.ORDER_TYPE_NAME
 import com.android.pos.databinding.FragmentDineInGuestBinding
@@ -114,8 +117,16 @@ class DineInGuestFragment : Fragment(), GuestListAdapter.GuestListner {
     override fun onGuestSelected(numberOfGuest: Int) {
         guestCount = numberOfGuest
 
+        Log.e(TAG,"DineMergeStatus  ${dineInFloorTableModel.status}")
 
-        viewModel.getTableStatus(dineInFloorTableModel.id, "Occupied")
+        if (dineInFloorTableModel.status == MERGED){
+            viewModel.getTableStatus(dineInFloorTableModel.id, MERGED)
+        }
+        else{
+            viewModel.getTableStatus(dineInFloorTableModel.id, OCCUPIED)
+        }
+
+
 
 
         /*

@@ -23,4 +23,7 @@ interface CashDiscountsDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addAll(cashDiscountModel: List<CashDiscountModel>)
+
+    @Query("DELETE FROM CashDiscount")
+    suspend fun delete()
 }

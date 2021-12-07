@@ -54,7 +54,7 @@ class MergeTableSelectionAdapter : RecyclerView.Adapter<MergeTableSelectionAdapt
                     id: Long
                 ) {
                     binding.spnTable.setSelection(position)
-                    list.get(0).selectedTableId =
+                    list.get(bindingAdapterPosition).selectedTableId =
                         (parent?.adapter?.getItem(position) as MergeTableModel).id
                     Log.e(
                         TAG,
@@ -65,11 +65,11 @@ class MergeTableSelectionAdapter : RecyclerView.Adapter<MergeTableSelectionAdapt
                         "selectedORderID  ${(binding.spnTable.adapter.getItem(position) as MergeTableModel).orderId}"
                     )
                     Log.e(TAG, "selectedTablePosition  ${position}")
-                    list.get(layoutPosition).tableSelectedPosition = position
-                    list.get(layoutPosition).tableChairCount =
+                    list.get(bindingAdapterPosition).tableSelectedPosition = position
+                    list.get(bindingAdapterPosition).tableChairCount =
                         (binding.spnTable.adapter.getItem(position) as MergeTableModel).chairCount
 
-                    list.get(0).orderId =
+                    list.get(bindingAdapterPosition).orderId =
                         (binding.spnTable.adapter.getItem(position) as MergeTableModel).orderId
 
 
@@ -149,6 +149,19 @@ class MergeTableSelectionAdapter : RecyclerView.Adapter<MergeTableSelectionAdapt
 
         }
 
+        init {
+
+            binding.imgDelete.setOnClickListener {
+                if (layoutPosition != 0) {
+                    list.removeAt(layoutPosition)
+                    notifyItemRemoved(layoutPosition)
+                    notifyItemChanged(layoutPosition, list.size)
+
+
+                }
+            }
+        }
+
     }
 
     override fun onCreateViewHolder(
@@ -168,6 +181,12 @@ class MergeTableSelectionAdapter : RecyclerView.Adapter<MergeTableSelectionAdapt
 
     override fun getItemCount(): Int {
         return list.size
+
+    }
+
+    fun addItem(model: MergeTableListModel) {
+        list.add(model)
+        notifyDataSetChanged()
 
     }
 

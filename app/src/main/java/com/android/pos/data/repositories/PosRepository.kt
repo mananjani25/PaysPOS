@@ -257,16 +257,25 @@ class PosRepository @Inject constructor(
         appDatabase.loyaltyProgramsDao().addAll(data)
     }
 
-    fun getActiveLoyaltyProgramFromDb() =  performGetOperationDatabase(databaseQuery = { appDatabase.loyaltyProgramsDao().findActiveLoyalty(active = true) })
+    fun getActiveLoyaltyProgramFromDb() = performGetOperationDatabase(databaseQuery = {
+        appDatabase.loyaltyProgramsDao().findActiveLoyalty(active = true)
+    })
 
-    suspend fun deleteTeamRoleFromDb(){
+    suspend fun deleteTeamRoleFromDb() {
         appDatabase.teamRoleDao().delete()
     }
 
-    suspend fun addTeamRoleFromDb(teamRoleList: List<TeamRole>){
+    suspend fun deleteSurcharge() {
+        appDatabase.cashDiscountDao().delete()
+    }
+
+    suspend fun addTeamRoleFromDb(teamRoleList: List<TeamRole>) {
         appDatabase.teamRoleDao().addAllRolesSuspend(teamRoleList)
     }
 
+    fun getCurrentUserTeamRoleFromDb() = performGetOperationDatabase(databaseQuery = {
+        appDatabase.teamRoleDao().roleById(id = prefProvider.getEmployeeRoleId())
+    })
 
     suspend fun addCashDiscountsFromDb(data: List<CashDiscountModel>) {
         appDatabase.cashDiscountDao().addAll(data)
@@ -704,10 +713,6 @@ class PosRepository @Inject constructor(
 
     suspend fun getOrderHistory(id: String) =
         apiHelperNew.getOrderHistory(id)
-
-    suspend fun deleteCustomer() {
-        appDatabase.customerDao().deleteCustomerTb()
-    }
 
     suspend fun clearTable() {
 

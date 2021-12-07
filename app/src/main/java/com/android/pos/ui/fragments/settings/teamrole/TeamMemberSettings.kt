@@ -17,7 +17,7 @@ class TeamMemberSettings : Fragment() {
     private lateinit var binding: FragmentEmployeeBinding
 
     @Inject
-    lateinit var rolePermission : RolePermission
+    lateinit var rolePermission: RolePermission
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,7 +39,9 @@ class TeamMemberSettings : Fragment() {
         }
 
         binding.llUserAccessPermission.setOnClickListener {
-            findNavController().navigate(R.id.action_settings_to_userAccessPermissionListFragment)
+            if (rolePermission.hasUserAccessPermission(binding.root)) {
+                findNavController().navigate(R.id.action_settings_to_userAccessPermissionListFragment)
+            }
         }
     }
 }

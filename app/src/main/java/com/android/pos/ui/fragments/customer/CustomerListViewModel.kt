@@ -54,7 +54,7 @@ public class CustomerListViewModel @Inject constructor(
     fun deleteTbl() {
         viewModelScope.launch {
 
-            posRepository.deleteCustomer()
+            //   posRepository.deleteCustomer()
         }
     }
 
@@ -157,7 +157,7 @@ public class CustomerListViewModel @Inject constructor(
         }
     }
 
-    fun showError( message: String){
+    fun showError(message: String) {
         _snackbarText.value = Event(message)
     }
 }

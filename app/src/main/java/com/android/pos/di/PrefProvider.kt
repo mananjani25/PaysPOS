@@ -6,6 +6,9 @@ import com.android.pos.R
 import com.android.pos.data.entities.TbCustomer
 import com.android.pos.data.entities.TeamRole
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.ROLE_EMPLOYEE
+import com.android.pos.data.remote.Constants.ROLE_MANAGER
+import com.android.pos.data.remote.Constants.ROLE_OWNER
 import com.google.gson.Gson
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
@@ -149,8 +152,16 @@ class PrefProvider @Inject constructor(@ApplicationContext context: Context) {
     }
 
     fun isManager(): Boolean {
-        return getValue(Constants.EMPLOYEE_ROLE, "").equals("Manager",true)
+        return getValue(Constants.EMPLOYEE_ROLE, "").equals(ROLE_MANAGER,true)
     }
+
+    fun isOwner(): Boolean {
+        return getValue(Constants.EMPLOYEE_ROLE, "").equals(ROLE_OWNER,true)
+    }
+    fun isEmployee(): Boolean {
+        return getValue(Constants.EMPLOYEE_ROLE, "").equals(ROLE_EMPLOYEE,true)
+    }
+
 
     /* fun setCustomObject(
          context: Context,
