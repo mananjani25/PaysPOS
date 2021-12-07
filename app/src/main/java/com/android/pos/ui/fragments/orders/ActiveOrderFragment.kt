@@ -213,6 +213,15 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
 
                 val bundle = Bundle()
                 bundle.putDouble("totalPrice", order.totalAmount)
+                bundle.putDouble("finalprice",order.totalAmount)
+                bundle.putDouble(
+                    "cashDiscountSurcharge",
+                    MethodUtils.calculateCashDiscount(
+                        order.subTotal,
+                        prefProvider,
+                        requireContext()
+                    )
+                )
                 bundle.putDouble("subTotalPrice", order.subTotal)
                 bundle.putDouble("totalTax", order.totalTaxAmount)
                 bundle.putDouble("totalDiscount", order.totalDiscount)

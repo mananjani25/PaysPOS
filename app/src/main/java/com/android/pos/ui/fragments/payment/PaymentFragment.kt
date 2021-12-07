@@ -145,7 +145,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         if (paymentType == "Cash") {
             if (cashDiscountType == "SurCharge") {
                 binding.linearCashdiiscount.visibility = View.GONE
-                binding.linearnoncashAdj.visibility = View.VISIBLE
+                binding.linearnoncashAdj.visibility = View.GONE
                 binding.txtNoncashAdj.text = "+ $" + String.format("%.2f", cashDiscountSurcharge)
                 MethodUtils.setPriceTextView(binding.txtSubTotal, subTotalPrice)
                 MethodUtils.setPriceTextView(binding.txtTax, totalTax)
@@ -159,6 +159,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     binding.txtTotalAmount,
                     totalPrice
                 )
+                cardPaymentAmount = totalPrice + tipAmount
             } else if (cashDiscountType == "CashDiscount") {
                 binding.linearCashdiiscount.visibility = View.VISIBLE
                 binding.linearnoncashAdj.visibility = View.GONE
@@ -175,6 +176,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     binding.txtTotalAmount,
                     totalPrice
                 )
+                cardPaymentAmount = totalPrice + tipAmount
             }
         } else if (paymentType == "Card") {
             if (cashDiscountType == "SurCharge") {
@@ -193,8 +195,9 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     binding.txtTotalAmount,
                     totalPrice
                 )
+                cardPaymentAmount = totalPrice + tipAmount
             } else if (cashDiscountType == "CashDiscount") {
-                binding.linearCashdiiscount.visibility = View.VISIBLE
+                binding.linearCashdiiscount.visibility = View.GONE
                 binding.linearnoncashAdj.visibility = View.GONE
                 binding.txtCashdiscount.text = "- $" + String.format("%.2f", cashDiscountSurcharge)
                 MethodUtils.setPriceTextView(binding.txtSubTotal, subTotalPrice)
@@ -209,7 +212,9 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     binding.txtTotalAmount,
                     totalPrice
                 )
+                cardPaymentAmount = totalPrice + tipAmount
             }
+
         }
         if (redeemLoyaltyInfo?.needToApplyLoyalty == true) {
             binding.llLoyalty.visible()
@@ -497,7 +502,11 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             binding.txtSubTotal,
             subTotalPrice
         )
-
+        MethodUtils.setPriceTextView(
+            binding.txtTotal,
+            (totalPrice + tipAmount)
+        )
+        cardPaymentAmount = totalPrice + tipAmount
         getCashPaymentOptionList((totalPrice + tipAmount))
 
     }
@@ -649,7 +658,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
             R.id.llCash -> {
                 if (paymentType == "Card") {
-                    if(totalPrice>cashDiscountSurcharge){
+                    if (totalPrice > cashDiscountSurcharge) {
                         totalPrice -= cashDiscountSurcharge
                     }
                     setCashCreditData(cashDiscountType)
