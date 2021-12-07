@@ -1450,9 +1450,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                         }
                     }
-
-                    serviceChargeList.forEach {
-                        WTServiceCharge += (WTSubTotal * it.percentage) / 100
+                    if (dineInList[0].serviceChargeList?.isNotEmpty() == true) {
+                        dineInList[0].serviceChargeList?.forEach {
+                            if (it.isEnabled) {
+                                WTServiceCharge += (WTSubTotal * it.percentage) / 100
+                            }
+                        }
 
                     }
 
