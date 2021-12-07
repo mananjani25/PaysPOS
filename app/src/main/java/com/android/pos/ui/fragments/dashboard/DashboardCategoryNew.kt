@@ -193,7 +193,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         isReOrder = requireArguments().getBoolean("reorder")
 
-
+        viewModel.isOrderUpdate = isOrderUpdate
         if (isOrderUpdate) {
             binding.layoutCart.txtSave.text = getString(R.string.update)
         } else {
@@ -571,8 +571,12 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             viewModel.mAllWords(prefProvider.getValue(ORDER_TYPE, "").toString()).observe(
                 requireActivity(), {
                     cartList = it as ArrayList<CartModel>
+                    viewModel.destroyedList.clear()
 
                     if (cartList.isNotEmpty()) {
+                        cartList[0].items?.filter { item -> item.isDestroy }?.let {
+                            viewModel.destroyedList.addAll(it)
+                        }
 
                         if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
                             viewModel.setServiceCharges(serviceChargesList)
@@ -647,6 +651,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             binding.layoutCart.rvCartDineIn.visibility = View.GONE
                             binding.layoutCart.llPayment.visibility = View.VISIBLE
 
+                            Log.e(TAG, "cartList[0].items > ${cartList[0].items?.size}")
+                            Log.e(TAG, "viewModel.destroyedList > ${viewModel.destroyedList?.size}")
                             cartAdapter.addCart(cartList[0].items)
                         }
 
@@ -1826,7 +1832,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         }
         btnRemove.setOnClickListener {
 
-
+            makeItemEdited(data)
             viewModel.cartLogic(cartList, data, DELETE)
             dialog.dismiss()
         }
@@ -2279,8 +2285,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                 if (prefProvider.getValue(ORDER_TYPE, "") != DINE_IN) {
 
-                    val cartList = cartList[0]
-
+                    val cartList = viewModel.generateCombinedItems(cartList[0])
                     if (!isOrderUpdate)
                         cartList.customer = assignCustomer
 
@@ -2412,7 +2417,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 bundle.putString("future_delivery_date", future_delivery_date)
                 bundle.putString("future_delivery_time", future_delivery_time)
                 cartList[0].customer = assignCustomer
-                bundle.putParcelable("cartList", cartList[0])
+                val cartModel = viewModel.generateCombinedItems(cartList[0])
+                bundle.putParcelable("cartList", cartModel)
 
                 if (isOrderUpdate) {
                     bundle.putBoolean("update", true)
@@ -2538,7 +2544,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         positiveButton(getString(R.string.tv_delete)) {
                             // Do positive stuff here
                             val item = cartAdapter.getItem(position)
-                            cartAdapter.removeItem(position)
+                            //cartAdapter.removeItem(position)
+                            makeItemEdited(item)
                             viewModel.cartLogic(cartList, item, DELETE)
                         }
                         negativeButton(R.string.tv_cancel) {

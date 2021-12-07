@@ -26,9 +26,9 @@ import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.TaxServiceChargeRepository
 import com.android.pos.data.repositories.TipDiscountRepository
 import com.android.pos.di.PrefProvider
+import com.android.pos.di.RolePermission
 import com.android.pos.utils.Event
 import com.android.pos.utils.MethodUtils
-import com.android.pos.di.RolePermission
 import com.android.pos.utils.TimeFormatUtils
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
@@ -66,6 +66,8 @@ class DashBoardCategoryViewModel @Inject constructor(
     var activeLoyaltyProgram: LoyaltyProgramsModel? = null
     var redeemLoyaltyInfo: RedeemLoyaltyInfo = RedeemLoyaltyInfo()
     var paymentType: String = "cash"
+    var destroyedList: ArrayList<TbItem> = arrayListOf()
+    var isOrderUpdate: Boolean = false
 
     private val _updateOrder = MutableLiveData<Event<Any?>>()
     val updateOrder: LiveData<Event<Any?>> = _updateOrder
@@ -128,13 +130,25 @@ class DashBoardCategoryViewModel @Inject constructor(
     fun addCart(cartModel: CartModel) {
 
         viewModelScope.launch {
-            posRepository.addItemCart(cartModel)
+            posRepository.addItemCart(generateCombinedItems(cartModel))
+            destroyedList.clear()
         }
+    }
+
+    fun generateCombinedItems(cartModel :CartModel) : CartModel{
+        val combinedItems = arrayListOf<TbItem>()
+        cartModel.items?.let { combinedItems.addAll(it) }
+        if (cartModel.isOpenOrder && isOrderUpdate) {
+            combinedItems.addAll(destroyedList)
+        }
+        cartModel.items = combinedItems
+        return cartModel
     }
 
     fun deleteCart() {
         viewModelScope.launch {
             posRepository.deleteCart()
+            destroyedList.clear()
         }
     }
 
@@ -379,7 +393,31 @@ class DashBoardCategoryViewModel @Inject constructor(
                             }
                         }
                     } else if (type == DELETE) {
-                        list.remove(item)
+
+                        var index = -1
+
+                        list.forEachIndexed { pos, tbItem ->
+                            if (item != null) {
+                                if (tbItem.itemId == item.itemId) {
+                                    index = pos
+                                    return@forEachIndexed
+                                }
+                            }
+                        }
+                        if (index != -1) {
+                            val model = cartList[0].items?.get(index)
+                            if (model != null) {
+                                //delete from cart
+                                if (item?.isEdited == true) {
+                                    model.isEdited = item.isEdited
+                                    model.isDestroy = true
+                                } else {
+                                    list.remove(item)
+                                }
+                            }
+                        } else {
+                            //list.remove(item)
+                        }
                     }
 
                     val cartModel = cartList[0]
@@ -540,7 +578,12 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 //loyalty point and price calculation
                 amountToBePaid = totalPrice - cartList[0].discountPrice
-                checkAppliedLoyaltyProgram(selectedCustomer, amountToBePaid, cashdiscount,txtTotalAmount)
+                checkAppliedLoyaltyProgram(
+                    selectedCustomer,
+                    amountToBePaid,
+                    cashdiscount,
+                    txtTotalAmount
+                )
 
             }
         }
