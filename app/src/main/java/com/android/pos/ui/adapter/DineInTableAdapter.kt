@@ -204,7 +204,9 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             }
 
             var finalAmt =
-                guestSubTotal + totalServiceCharge + totalTaxAmt + list.get(0).guestDividedAmt
+                guestSubTotal + totalServiceCharge + totalTaxAmt + (list.get(0).guestDividedAmt - list.get(
+                    0
+                ).cashSurchargeDiscount)
 
             binding.txtPay.setText("Pay " + MethodUtils.roundOffAmount(finalAmt))
 
@@ -216,7 +218,8 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                     MethodUtils.roundOffAmountDouble(guestSubTotal + list.get(0).guestDividedAmt),
                     MethodUtils.roundOffAmountDouble(finalAmt),
                     MethodUtils.roundOffAmountDouble(totalTaxAmt),
-                    MethodUtils.roundOffAmountDouble(totalServiceCharge)
+                    MethodUtils.roundOffAmountDouble(totalServiceCharge),
+                    list.get(0).cashSurchargeDiscount,
                 )
             }
 
@@ -336,11 +339,14 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
 
                             Log.e(TAG, "idStr:  $ids")
-                            ids?.let { list[bindingAdapterPosition].item?.let { it1 ->
-                                listner.singleItemFired(it, layoutPosition,
-                                    it1
-                                )
-                            } }
+                            ids?.let {
+                                list[bindingAdapterPosition].item?.let { it1 ->
+                                    listner.singleItemFired(
+                                        it, layoutPosition,
+                                        it1
+                                    )
+                                }
+                            }
                             binding.chkIsFired.isEnabled = false
                             list[bindingAdapterPosition].item = itemsNew
 
@@ -496,7 +502,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             subTotal: Double,
             total: Double,
             tax: Double,
-            serviceCharge: Double
+            serviceCharge: Double, cashSurcharge: Double
         )
 
         fun onSendItemToKitchen(item: TbItem)

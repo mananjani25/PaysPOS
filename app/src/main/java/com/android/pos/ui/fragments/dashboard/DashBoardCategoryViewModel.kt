@@ -51,6 +51,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     private val rolePermission: RolePermission
 ) : ViewModel() {
 
+
     val TAG = "DashBoardCateViewModel"
     var totalPrice: Double = 0.0
     var totalCount = 0
@@ -104,6 +105,9 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     val _tableStatus = MutableLiveData<Event<String>>()
     val tableCheck: LiveData<Event<String>> = _tableStatus
+
+    val _callCashDiscount = MutableLiveData<Event<Boolean>>()
+    val callCashDiscount: LiveData<Event<Boolean>> = _callCashDiscount
 
 
     val _Basedata = MutableLiveData<Event<CreateOrderResponse.Data?>>()
@@ -508,7 +512,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 amountToBePaid = totalPrice - cartList[0].discountPrice - cashdiscount
 
-
+                MethodUtils.setPriceTextView(txtTotalAmount, amountToBePaid)
             } else {
 
 
@@ -536,22 +540,21 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 //loyalty point and price calculation
                 amountToBePaid = totalPrice - cartList[0].discountPrice
-                redeemLoyaltyInfo =
-                    checkAppliedLoyaltyProgram(selectedCustomer, amountToBePaid, cashdiscount)
-                amountToBePaid = redeemLoyaltyInfo.getAmountToBePaid()
-                Log.e(TAG, Gson().toJson(redeemLoyaltyInfo))
+                checkAppliedLoyaltyProgram(selectedCustomer, amountToBePaid, cashdiscount,txtTotalAmount)
+
             }
         }
         //totalAmmount = totalPrice-cartList[0].discountPrice
-        MethodUtils.setPriceTextView(txtTotalAmount, amountToBePaid)
+
 
     }
 
     private fun checkAppliedLoyaltyProgram(
         customer: TbCustomer?,
         total: Double,
-        cashdiscount: Double
-    ): RedeemLoyaltyInfo {
+        cashdiscount: Double,
+        txtTotalAmount: AppCompatTextView
+    ) {
 
         Log.e("Loyalty", "checkAppliedLoyaltyProgram..")
 
@@ -599,8 +602,8 @@ class DashBoardCategoryViewModel @Inject constructor(
             redeemLoyaltyInfo.usedLoyaltyAmount = 0.0
             //redeemLoyaltyInfo.isLoyaltyApplied = false
         }
+        MethodUtils.setPriceTextView(txtTotalAmount, redeemLoyaltyInfo.getAmountToBePaid())
 
-        return redeemLoyaltyInfo
     }
 
     private fun serviceChargeCalculation(cartList: List<CartModel>) {
@@ -1497,6 +1500,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     it.data.businessWebsite.toString()
                                 )
 
+                                posRepository.addCashDiscountsFromDb(it.data.cash_discounts)
                                 taxServiceChargeRepository.deleteTaxFromDb()
                                 taxServiceChargeRepository.addAllTaxDatabase(it.data.taxes)
                                 posRepository.deleteNotesFromDb()
@@ -1515,10 +1519,13 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 posRepository.addKitchenReceiptSettings(it.data.kitchenReceipt)
                                 posRepository.deleteLoyaltyProgramFromDb()
                                 posRepository.addLoyaltyProgramFromDb(it.data.loyaltyPrograms)
+                                posRepository.deleteSurcharge()
                                 posRepository.addCashDiscountsFromDb(it.data.cash_discounts)
                                 posRepository.deleteTeamRoleFromDb()
                                 posRepository.addTeamRoleFromDb(it.data.teamRoles)
                                 rolePermission.findCurrentUserRoleAndSave(it.data.teamRoles)
+                                _callCashDiscount.value = Event(true)
+
                             }
 
                             prefProvider.setValueboolean(Constants.SYNC_DATA, true)

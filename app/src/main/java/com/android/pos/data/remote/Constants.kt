@@ -68,6 +68,7 @@ object Constants {
     const val AMOUNT_TYPE = "amountType"
     const val RATE_OR_AMOUNT = "rateAmount"
     const val OPTION_TYPE = "optionType"
+    const val CASHDIS_SURCHARGEENABLE = "cashdisurchargeenable"
     const val CASH_DIS_STORED= "cashDisStore"
 
 
@@ -342,4 +343,9 @@ object Constants {
     const val DINE_IN_SPLIT_FLAG = "dine_in_split_flag"
 
     const val UNIQUE_ID = "unique_id"
+
+    //user role
+    const val ROLE_MANAGER = "Manager"
+    const val ROLE_OWNER = "Owner"
+    const val ROLE_EMPLOYEE = "Employee"
 }

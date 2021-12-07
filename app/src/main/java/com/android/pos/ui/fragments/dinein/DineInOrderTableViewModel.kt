@@ -43,6 +43,7 @@ class DineInOrderTableViewModel @Inject constructor(
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
 
     val _Basedata = MutableLiveData<Event<GetOrderDetailsResponse.Data?>>()
+    val Basedata: LiveData<Event<GetOrderDetailsResponse.Data?>> = _Basedata
 
 
     val _guestPayment = MutableLiveData<Event<String>>()
@@ -76,6 +77,7 @@ class DineInOrderTableViewModel @Inject constructor(
     fun getCashDiscountDetails(active: Int): LiveData<CashDiscountModel>? {
         return posRepository.getCashDisDetail(active)
     }
+
     fun getKitchenPrinterList(): LiveData<Resource<List<PrinterResponse.Data.KitchenReceiptPrinters>>> {
         return posRepository.getKitchenPrinters()
     }

@@ -326,7 +326,19 @@ class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.locationId = cartModel.locationId
         orderAttributeRequestModel.terminalId = cartModel.terminalId
         orderAttributeRequestModel.note = cartModel.note
-        orderAttributeRequestModel.cash_discount_or_surcharge = finaldiscount
+        if (paymentType == "Cash") {
+            if (cashdiscountType == "SurCharge") {
+                orderAttributeRequestModel.cash_discount_or_surcharge = 0.0
+            } else if (cashdiscountType == "CashDiscount") {
+                orderAttributeRequestModel.cash_discount_or_surcharge = finaldiscount
+            }
+        } else if (paymentType == "Card") {
+            if (cashdiscountType == "SurCharge") {
+                orderAttributeRequestModel.cash_discount_or_surcharge = finaldiscount
+            } else if (cashdiscountType == "CashDiscount") {
+                orderAttributeRequestModel.cash_discount_or_surcharge = 0.0
+            }
+        }
         orderAttributeRequestModel.cash_discount_type = cashdiscountType
         orderAttributeRequestModel.offlineId =
             if (isUpdateOrder) orderOfflineId.toString() else randomOfflineId()
@@ -921,8 +933,23 @@ class PaymentViewModel @Inject constructor(
 //            cardName = ""
 //            cardNumber = ""
 //            cardType = 0
-            cash_discount_or_surcharge = finalcashdiscount
-            total_cash_discount = finalcashdiscount
+            if (paymentType == "Cash") {
+                if (cashdiscountType == "SurCharge") {
+                    cash_discount_or_surcharge = 0.0
+                    total_cash_discount =0.0
+                } else if (cashdiscountType == "CashDiscount") {
+                    cash_discount_or_surcharge = finalcashdiscount
+                    total_cash_discount = finalcashdiscount
+                }
+            } else if (paymentType == "Card") {
+                if (cashdiscountType == "SurCharge") {
+                    cash_discount_or_surcharge = finalcashdiscount
+                    total_cash_discount = finalcashdiscount
+                } else if (cashdiscountType == "CashDiscount") {
+                    cash_discount_or_surcharge = 0.0
+                    total_cash_discount =0.0
+                }
+            }
             cashDiscountFee = 0.0
             cash_discount_type = cashdiscountType
             employeeId = cartModel.employeeID

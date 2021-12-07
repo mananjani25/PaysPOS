@@ -16,6 +16,7 @@ import com.android.pos.data.entities.TeamRole
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentUserAccessPermissionListBinding
 import com.android.pos.di.PrefProvider
+import com.android.pos.di.RolePermission
 import com.android.pos.ui.adapter.UserPermissionListAdapter
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
@@ -40,6 +41,9 @@ class UserAccessPermissionListFragment : Fragment() {
     @Inject
     lateinit var prefProvider: PrefProvider
 
+    @Inject
+    lateinit var rolePermission: RolePermission
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -62,14 +66,9 @@ class UserAccessPermissionListFragment : Fragment() {
         observeShowProgress()
 
         binding.txtAddNewRole.setOnClickListener {
-            //TODO user permission
-            if (prefProvider.isManager()) {
-                findNavController().navigate(
-                    R.id.action_userAccessPermissionListFragment_to_userAccessPermissionFragment
-                )
-            }else{
-                binding.root.showAlert("")
-            }
+            findNavController().navigate(
+                R.id.action_userAccessPermissionListFragment_to_userAccessPermissionFragment
+            )
         }
 
         binding.imgClose.setOnClickListener {
@@ -124,18 +123,19 @@ class UserAccessPermissionListFragment : Fragment() {
                 ) { pos ->
 
                     position = pos
-
-                    alert(
-                        getString(R.string.app_name),
-                        getString(R.string.delete_employee_role_message)
-                    ) {
-                        positiveButton(getString(R.string.tv_delete)) {
-                            // Do positive stuff here
-                            userPermissionObject = userPermissionListAdapter.getItem(pos)
-                            viewModel.delete(userPermissionListAdapter.getItem(pos).id)
-                        }
-                        negativeButton(R.string.tv_cancel) {
-                            // Do negative stuff here
+                    if (rolePermission.hasUserAccessPermission(userPermissionListAdapter.getItem(pos).name, binding.root)) {
+                        alert(
+                            getString(R.string.app_name),
+                            getString(R.string.delete_employee_role_message)
+                        ) {
+                            positiveButton(getString(R.string.tv_delete)) {
+                                // Do positive stuff here
+                                userPermissionObject = userPermissionListAdapter.getItem(pos)
+                                viewModel.delete(userPermissionListAdapter.getItem(pos).id)
+                            }
+                            negativeButton(R.string.tv_cancel) {
+                                // Do negative stuff here
+                            }
                         }
                     }
                 })
