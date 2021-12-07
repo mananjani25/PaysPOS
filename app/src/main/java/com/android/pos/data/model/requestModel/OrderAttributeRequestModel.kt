@@ -320,7 +320,7 @@ class OrderItemsAttribute {
     @SerializedName("variation_id")
     var variationId: Int? = null
 
-    @SerializedName("is_destroy")
+    @SerializedName("_destroy")
     var isDestroy: Boolean = false
 }
 

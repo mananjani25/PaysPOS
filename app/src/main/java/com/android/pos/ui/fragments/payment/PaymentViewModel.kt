@@ -671,6 +671,7 @@ class PaymentViewModel @Inject constructor(
             orderItemsAttribute.employeeId = cartModel.employeeID
             orderItemsAttribute.isCount = 0
             orderItemsAttribute.isEdited = item.isEdited
+            orderItemsAttribute.isDestroy = item.isDestroy
             orderItemsAttribute.isPaid = false
             orderItemsAttribute.isPrinted = true
             orderItemsAttribute.isTaxRemoved = false
@@ -749,7 +750,7 @@ class PaymentViewModel @Inject constructor(
                 price = it.price
                 order_item_id = item.orderItemId
                 totalPrice = MethodUtils.roundOffAmountDouble(it.price * it.itemQuantity)
-                modifier_set_id = it.modifierSetId!!
+                modifier_set_id = it.modifierSetId?:0
                 quantity = it.itemQuantity
                 order_item_taxes_attributes = arrayListOf()
             }
