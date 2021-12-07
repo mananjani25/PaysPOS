@@ -197,18 +197,17 @@ class MergeTableDialog : DialogFragment() {
 
             val parentTableId = tableAdapter.getItem(tableSelectedPos)?.id
             var childIds: String = ""
+            var arrayChildIds: ArrayList<String> = arrayListOf()
+
             for (i in 0 until listSecondary.size) {
-                childIds +=
-                    listSecondary.get(i).listTable.get(listSecondary.get(i).tableSelectedPosition!!).id.toString()
-                if (i != listSecondary.size - 1) {
-                    childIds += ","
-                }
+                arrayChildIds.add(listSecondary.get(i).selectedTableId.toString())
 
                 totalChairCount += listSecondary.get(i).listTable.get(
                     listSecondary.get(i).tableSelectedPosition ?: 0
                 ).chairCount
                     ?: 0
             }
+            childIds = android.text.TextUtils.join(",", arrayChildIds)
 
 
             var tableMergeList: ArrayList<MergeTableModel> = arrayListOf()
@@ -234,24 +233,22 @@ class MergeTableDialog : DialogFragment() {
                 MergeTableListModel(
                     listTable = listTable,
                     listFloor,
-                    tableSelectedPosition = tableSelectedPos
+                    tableSelectedPosition = tableSelectedPos,
+                    orderDetails = primaryTable?.orderDetails
                 )
             )
 
             for (i in 0 until listSecondary.size) {
-                if (listSecondary.get(i).orderId != null) {
-
-                    listSecondary[i]?.listTable[listSecondary[i]?.tableSelectedPosition!!]?.orderDetails?.let { it1 ->
-                        listSecondaryOrderDetails.add(
-                            it1
-                        )
-                    }
+                if (listSecondary[i].orderDetails != null) {
+                    listSecondary[i].orderDetails?.let { it1 -> listSecondaryOrderDetails.add(it1) }
                 }
 
             }
+            Log.e(TAG, "listSecondaryOrderDetailsSize:  ${listSecondaryOrderDetails.size}")
 
             if (listSecondaryOrderDetails.size == 0) {
                 //This is for Every Empty Table for both Primary and Secondary
+
                 parentTableId?.let { it1 ->
                     viewModel.mergeTable(
                         it1,
@@ -267,7 +264,7 @@ class MergeTableDialog : DialogFragment() {
 
                 var orderModel: OrderAttributeRequestModel = OrderAttributeRequestModel()
                 orderModel = viewModel.createMergeOrderRequest(
-                    primaryTable?.orderDetails!!,
+                    listSecondaryOrderDetails.get(0),
                     tableMergeList
                 )
 
@@ -295,11 +292,13 @@ class MergeTableDialog : DialogFragment() {
 
                     }
                 }
+                var listOrderIds:ArrayList<String> = arrayListOf()
                 listSecondaryOrderDetails.forEach {
-
+                    listOrderIds.add(it.id.toString())
                 }
+                var mergedOrderIds = android.text.TextUtils.join(",",listOrderIds)
 
-                viewModel.mergeTable(parentTableId ?: 0, childIds)
+                viewModel.mergeTable(parentTableId ?: 0, childIds,mergedOrderIds,orderModel)
 
 
             }
