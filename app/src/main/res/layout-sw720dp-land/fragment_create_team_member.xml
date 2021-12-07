@@ -304,6 +304,13 @@
                             android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi" />
 
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:text="$ "
+                            android:layout_gravity="center"
+                            android:textColor="@color/txtColor"
+                            android:textSize="@dimen/_5mdpi"
+                            android:layout_height="wrap_content"></TextView>
                         <androidx.appcompat.widget.AppCompatEditText
                             style="@style/CustomFontSemiBold"
                             android:layout_width="wrap_content"
@@ -313,7 +320,7 @@
                             android:hint="None"
                             android:imeOptions="actionNext"
                             android:inputType="numberDecimal"
-                            android:padding="@dimen/_5sdp"
+                            android:paddingVertical="@dimen/_5mdpi"
                             android:textColor="@color/txtColor"
                             android:textColorHint="@color/cool_grey"
                             android:textSize="@dimen/_5mdpi" />
