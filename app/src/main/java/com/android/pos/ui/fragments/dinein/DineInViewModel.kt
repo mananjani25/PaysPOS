@@ -538,6 +538,9 @@ class DineInViewModel @Inject constructor(
         var total_tax_amount = 0.0
         var total_tips = 0.0
         var total_service_charges = 0.0
+        var listWholeTbItems: ArrayList<GuestItemsAttributes> =
+            arrayListOf()
+        var guestModelWT = GuestsAttributes()
 
         for (i in 0 until list.size) {
             //Order Items Attributes
@@ -557,7 +560,7 @@ class DineInViewModel @Inject constructor(
                 model.discountType = it.discountType
                 model.editTimestamp = it.timestamp
                 model.employeeId = it.employeeId
-                model.id = it.id
+                //model.id = it.id
                 model.isPaid = it.isPaid
                 model.itemId = it.itemId
                 model.itemName = it.itemName
@@ -569,7 +572,7 @@ class DineInViewModel @Inject constructor(
                 var modifierList: ArrayList<OrderItemModifierAttribute> = arrayListOf()
                 it.orderItemModifiers.forEach { modifier ->
                     var orderModifier = OrderItemModifierAttribute()
-                    orderModifier.id = modifier.id
+                    //  orderModifier.id = modifier.id
                     orderModifier.price = modifier.price
                     orderModifier.quantity = modifier.quantity
                     orderModifier.name = modifier.name
@@ -580,9 +583,9 @@ class DineInViewModel @Inject constructor(
                         modifierTax.name = tax.name
                         modifierTax.tax_id = tax.taxId
                         modifierTax.amount = tax.amount
-                        modifierTax.id = tax.id
+                        //    modifierTax.id = tax.id
                         modifierTax.isDefault = tax.isDefault
-                        modifierTax.order_id = tax.orderId
+                        //  modifierTax.order_id = tax.orderId
                         modifierTax.order_item_id = tax.orderItemId
                         modifierTax.order_item_modifier_id = tax.orderItemModifierId
                         modifierTax.taxType = tax.taxType
@@ -593,7 +596,7 @@ class DineInViewModel @Inject constructor(
 
                     }
                     orderModifier.order_item_taxes_attributes = itemTaxes
-                    orderModifier.orderId = modifier.orderId
+                    // orderModifier.orderId = modifier.orderId
                     orderModifier.order_item_id = modifier.orderItemId
 
 
@@ -625,41 +628,79 @@ class DineInViewModel @Inject constructor(
             }
 
             //Guest Attributes
+
+
             list[i].guest_attributes.forEach {
-                var guestModel = GuestsAttributes()
-                guestModel.customerAttributes?.id = it.customerId
-                guestModel.customerId = it.id
-                guestModel.name = it.name
-                guestModel.cashDiscount = it.cashDiscount
-                guestModel.orderId = it.orderId
-                guestModel.isPaid = it.isPaid
-                guestModel.id = it.id
-                guestModel.totalAmount = it.totalAmount
-                guestModel.totalDiscount = it.totalDiscount
-                guestModel.totalServiceCharge = it.totalServiceCharge
-                guestModel.totalTax = it.totalTax
-                guestModel.subTotal = it.subTotal
-                guestModel.totalTips = it.totalTips
+                if (it.name.trim().lowercase() != "Whole Table".trim().lowercase()) {
+                    var guestModel = GuestsAttributes()
+                    guestModel.customerAttributes?.id = it.customerId
+                    guestModel.customerId = it.id
+                    guestModel.name = it.name
+                    guestModel.cashDiscount = it.cashDiscount
+                    guestModel.orderId = it.orderId
+                    guestModel.isPaid = it.isPaid
+                    // guestModel.id = it.id
+                    guestModel.totalAmount = it.totalAmount
+                    guestModel.totalDiscount = it.totalDiscount
+                    guestModel.totalServiceCharge = it.totalServiceCharge
+                    guestModel.totalTax = it.totalTax
+                    guestModel.subTotal = it.subTotal
+                    guestModel.totalTips = it.totalTips
 
-                var guestItemList: ArrayList<GuestItemsAttributes> = arrayListOf()
-                it.guestItemAttributes.forEach {
-                    var guestItemAttr = GuestItemsAttributes()
-                    guestItemAttr.id = it.id
-                    guestItemAttr.amount = it.amount
-                    guestItemAttr.isPaid = it.isPaid
-                    guestItemAttr.orderItemId = it.orderItemId
-                    guestItemAttr.orderId = it.orderId
-                    guestItemAttr.guestId = it.guestId
-                    guestItemAttr.itemId = it.itemId
-                    guestItemAttr.quantity = it.quantity
-                    guestItemAttr.timestamp = it.timestamp
-                    guestItemList.add(guestItemAttr)
+                    var guestItemList: ArrayList<GuestItemsAttributes> = arrayListOf()
+                    it.guestItemAttributes.forEach {
+                        var guestItemAttr = GuestItemsAttributes()
+                        //   guestItemAttr.id = it.id
+                        guestItemAttr.amount = it.amount
+                        guestItemAttr.isPaid = it.isPaid
+                        guestItemAttr.orderItemId = it.orderItemId
+                        guestItemAttr.orderId = it.orderId
+                        guestItemAttr.guestId = it.guestId
+                        guestItemAttr.itemId = it.itemId
+                        guestItemAttr.quantity = it.quantity
+                        guestItemAttr.timestamp = it.timestamp
+                        guestItemList.add(guestItemAttr)
 
+
+                    }
+                    guestModel.guestItemsAttributes = guestItemList
+                    listGuestAttr.add(guestModel)
+
+                } else {
+
+
+                    guestModelWT.name = it.name
+                    guestModelWT.cashDiscount?.plus(it.cashDiscount)
+                    guestModelWT.orderId = it.orderId
+
+                    // guestModel.id = it.id
+                    guestModelWT.totalAmount?.plus(it.totalAmount)
+                    guestModelWT.totalDiscount?.plus(it.totalDiscount)
+                    guestModelWT.totalServiceCharge?.plus(it.totalServiceCharge)
+                    guestModelWT.totalTax?.plus(it.totalTax)
+                    guestModelWT.subTotal?.plus(it.subTotal)
+                    guestModelWT.totalTips?.plus(it.totalTips)
+
+                    var guestItemList: ArrayList<GuestItemsAttributes> = arrayListOf()
+                    it.guestItemAttributes.forEach {
+                        var guestItemAttr = GuestItemsAttributes()
+                        //   guestItemAttr.id = it.id
+                        guestItemAttr.amount = it.amount
+                        guestItemAttr.isPaid = it.isPaid
+                        guestItemAttr.orderItemId = it.orderItemId
+                        guestItemAttr.orderId = it.orderId
+                        guestItemAttr.guestId = it.guestId
+                        guestItemAttr.itemId = it.itemId
+                        guestItemAttr.quantity = it.quantity
+                        guestItemAttr.timestamp = it.timestamp
+                        guestItemList.add(guestItemAttr)
+
+
+                    }
+
+                    listWholeTbItems.addAll(guestItemList)
 
                 }
-                guestModel.guestItemsAttributes = guestItemList
-                listGuestAttr.add(guestModel)
-
             }
 
 
@@ -667,7 +708,7 @@ class DineInViewModel @Inject constructor(
             list[i].order_service_charges.forEach {
                 var serviceModel = OrderServiceChargesAttribute()
                 serviceModel.amount = it.amount
-                serviceModel.id = it.id
+                //  serviceModel.id = it.id
                 serviceModel.name = it.name
                 serviceModel.orderId = it.orderId
                 serviceModel.rate = it.rate
@@ -687,6 +728,7 @@ class DineInViewModel @Inject constructor(
         //  model.paymentStatus = orderDetails.payment_status
         model.serviceChargeEnabled = list.get(0).service_charge_enabled
 
+
         model.subTotal = subTotal
         // model.taxEnabled = orderDetails.tax_enabled
         model.terminalId = list.get(0).terminal_id
@@ -705,7 +747,7 @@ class DineInViewModel @Inject constructor(
 
             guestModel.name = "Guest ${guestCount}"
 
-            guestModel.orderId = listGuestAttr.get(0).orderId
+            // guestModel.orderId = listGuestAttr.get(0).orderId
             guestModel.isChildGuest = true
             guestModel.childMergeId = mergeTableLists[i].id
 
@@ -715,9 +757,29 @@ class DineInViewModel @Inject constructor(
 
 
         }
+
+        guestModelWT.guestItemsAttributes = listWholeTbItems
+        listGuestAttr.add(0,guestModelWT)
+
+
         model.orderItemsAttributes = orderItemsAttr
         model.guestsAttributes = listGuestAttr
         model.orderServiceChargesAttributes = listServiceCharge
+
+        var dineInOrderDetails = DineInOrderDetailAttributes()
+        dineInOrderDetails.chairCount = list[list.size - 1].floor_plan_table.chair_count
+        //dineInOrderDetails.id = orderDetails.floor_plan_table.id
+        //dineInOrderDetails.totalGuestCount = totalGuestCount
+        dineInOrderDetails.orderId =
+            list[list.size - 1].floor_plan_table.order_details?.order_type_id
+        dineInOrderDetails.floorPlanId = list[list.size - 1].floor_plan_table.floor_plan_id
+        dineInOrderDetails.floorPlanTableId = list[list.size - 1].floor_plan_table.id
+        dineInOrderDetails.tableType = list[list.size - 1].floor_plan_table.table_type
+        dineInOrderDetails.tableNumber = list[list.size - 1].floor_plan_table.table_number
+        dineInOrderDetails.tableName = list[list.size - 1].floor_plan_table.table_name
+        // dineInOrderDetails.floorPlanName = orderDetails.floor_plan_table.order_details.floor_plan_table.na
+        model.dineInOrderDetailsAttr = dineInOrderDetails
+
 
         return model
 

@@ -109,7 +109,10 @@ data class GetOrderDetailsResponse(
         @SerializedName("updated_at")
         val updatedAt: String,
         @SerializedName("venue_website")
-        val venueWebsite: String
+        val venueWebsite: String,
+        @SerializedName("merged_table_nos")
+        val mergedTableNos: String = ""
+
     ) : Parcelable {
         @Parcelize
         data class Customer(
@@ -224,7 +227,8 @@ data class GetOrderDetailsResponse(
             @SerializedName("merged_floor_plan_table_id") var mergedFloorPlanTableId: String? = null,
             @SerializedName("lock_by_id") var lockById: Int? = null,
             @SerializedName("lock_by_name") var lockByName: String? = null,
-            @SerializedName("terminal_id") var terminalId: Int? = null
+            @SerializedName("terminal_id") var terminalId: Int? = null,
+            @SerializedName("merged_child_table_details") val merged_child_table_details: List<GetFloorPlanResponse.Data.FloorPlanTable.MergedChildTableDetails> = listOf()
 
         ) : Parcelable
 
