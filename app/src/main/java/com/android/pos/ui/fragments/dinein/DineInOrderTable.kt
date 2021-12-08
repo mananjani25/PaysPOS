@@ -181,7 +181,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             } else {
                 orderId = floorPlanModel?.currentOrderDetails?.orderId
                 floorPlanModel?.currentOrderDetails?.orderId?.let { viewModel.apiCallOrderDetails(it) }
-                binding.txtTitle.setText("" + floorPlanModel?.tableName)
+                // binding.txtTitle.setText("" + floorPlanModel?.tableName)
             }
 
 
@@ -189,7 +189,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             orderId = arguments?.getInt("orderId")
             orderId?.let { viewModel.apiCallOrderDetails(it) }
-            binding.txtTitle.setText("Order Details")
+            //  binding.txtTitle.setText("Order Details")
 
         }
         onClick()
@@ -843,7 +843,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             cardType = ""
             cashDiscount = 0.0
             cashDiscountFee = 0.0
-            cash_discount_or_surcharge = cashSurcharge/totalGuestCount
+            cash_discount_or_surcharge = cashSurcharge / totalGuestCount
             employeeId = prefProvider.getValueInt(EMPLOYEE_ID, 0)
             taxAmount = taxGuest
             subTotalPrice = subTotalGuest
@@ -860,7 +860,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 cardType = ""
                 cashDiscount = 0.0
                 cashDiscountFee = 0.0
-                cash_discount_or_surcharge = cashSurcharge/totalGuestCount
+                cash_discount_or_surcharge = cashSurcharge / totalGuestCount
                 employeeId = prefProvider.getValueInt(EMPLOYEE_ID, 0)
                 taxAmount = taxGuest
                 subTotalPrice = subTotalGuest
@@ -1147,15 +1147,34 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     totalDiscount = 0.0
 
                     if (baseResponse.floorPlanTable.status == MERGEDANDOCCUPIED) {
+                        binding.imgMergeTable.visibility = View.VISIBLE
                         binding.imgMergeTable.setImageDrawable(
                             requireContext().resources.getDrawable(
                                 R.drawable.ic_unmerge
                             )
                         )
+                    } else {
+                        binding.imgMergeTable.visibility = View.GONE
+                    }
+
+                    if (baseResponse.floorPlanTable.status == MERGEDANDOCCUPIED) {
+
+                        var listTableMerge: ArrayList<String> = arrayListOf()
+                        listTableMerge.add(baseResponse.floorPlanTable.tableNumber.toString())
+                        baseResponse.floorPlanTable.merged_child_table_details.forEach {
+                            listTableMerge.add(it.table_number.toString())
+
+                        }
+                        var txtMergedTbNo = android.text.TextUtils.join(",", listTableMerge)
+                        binding.txtTitle.text = "Table " + txtMergedTbNo
+
+                    } else {
+                        binding.txtTitle.text = baseResponse.floorPlanTable.tableName
                     }
 
 
                     getOrderDetailsResponse = baseResponse
+                    /*binding.txtTitle.text = baseResponse.*/
                     var list: ArrayList<DineInModel> = arrayListOf()
 
                     var wholeTableAmt = 0.0
@@ -1450,9 +1469,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                         }
                     }
-
-                    serviceChargeList.forEach {
-                        WTServiceCharge += (WTSubTotal * it.percentage) / 100
+                    if (dineInList[0].serviceChargeList?.isNotEmpty() == true) {
+                        dineInList[0].serviceChargeList?.forEach {
+                            if (it.isEnabled) {
+                                WTServiceCharge += (WTSubTotal * it.percentage) / 100
+                            }
+                        }
 
                     }
 

@@ -56,6 +56,7 @@ class MergeTableSelectionAdapter : RecyclerView.Adapter<MergeTableSelectionAdapt
                     binding.spnTable.setSelection(position)
                     list.get(bindingAdapterPosition).selectedTableId =
                         (parent?.adapter?.getItem(position) as MergeTableModel).id
+                    list[bindingAdapterPosition].orderDetails = (parent?.adapter?.getItem(position) as MergeTableModel).orderDetails
                     Log.e(
                         TAG,
                         "selectedTableParetnID ${(parent?.adapter?.getItem(position) as MergeTableModel).id}"
