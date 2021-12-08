@@ -934,7 +934,7 @@ class PaymentViewModel @Inject constructor(
 //            cardName = ""
 //            cardNumber = ""
 //            cardType = 0
-            if (paymentType == "Cash") {
+            if (paymentTypeStatus == "Cash") {
                 if (cashdiscountType == "SurCharge") {
                     cash_discount_or_surcharge = 0.0
                     total_cash_discount =0.0
@@ -942,7 +942,7 @@ class PaymentViewModel @Inject constructor(
                     cash_discount_or_surcharge = finalcashdiscount
                     total_cash_discount = finalcashdiscount
                 }
-            } else if (paymentType == "Card") {
+            } else if (paymentTypeStatus == "Card") {
                 if (cashdiscountType == "SurCharge") {
                     cash_discount_or_surcharge = finalcashdiscount
                     total_cash_discount = finalcashdiscount

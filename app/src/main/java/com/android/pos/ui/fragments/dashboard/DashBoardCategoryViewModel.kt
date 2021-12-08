@@ -135,7 +135,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
     }
 
-    fun generateCombinedItems(cartModel :CartModel) : CartModel{
+    fun generateCombinedItems(cartModel: CartModel): CartModel {
         val combinedItems = arrayListOf<TbItem>()
         cartModel.items?.let { combinedItems.addAll(it) }
         if (cartModel.isOpenOrder && isOrderUpdate) {
@@ -503,7 +503,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     fun itemCalculation(
         cartList: List<CartModel>?,
         txtTotalAmount: AppCompatTextView,
-        cashdiscount: Double
+        cashSurChargediscount: Double
     ) {
 
 
@@ -548,7 +548,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 totalPrice = (subTotalPrice + totalTax + totalServiceCharge)
 
-                amountToBePaid = totalPrice - cartList[0].discountPrice - cashdiscount
+                amountToBePaid = totalPrice - cartList[0].discountPrice - cashSurChargediscount
 
                 MethodUtils.setPriceTextView(txtTotalAmount, amountToBePaid)
             } else {
@@ -578,12 +578,17 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 //loyalty point and price calculation
                 amountToBePaid = totalPrice - cartList[0].discountPrice
-                checkAppliedLoyaltyProgram(
-                    selectedCustomer,
-                    amountToBePaid,
-                    cashdiscount,
-                    txtTotalAmount
-                )
+                if (selectedCustomer == null) {
+                    MethodUtils.setPriceTextView(txtTotalAmount, amountToBePaid - cashSurChargediscount)
+                } else {
+                    checkAppliedLoyaltyProgram(
+                        selectedCustomer,
+                        amountToBePaid - cashSurChargediscount,
+                        cashSurChargediscount,
+                        txtTotalAmount
+                    )
+                }
+
 
             }
         }
@@ -602,7 +607,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         Log.e("Loyalty", "checkAppliedLoyaltyProgram..")
 
         redeemLoyaltyInfo.cashDiscount = cashdiscount
-        redeemLoyaltyInfo.total = total - cashdiscount
+        redeemLoyaltyInfo.total = total
         val availablePoints = customer?.final_reward ?: 0
 
         if (customer == null) {
