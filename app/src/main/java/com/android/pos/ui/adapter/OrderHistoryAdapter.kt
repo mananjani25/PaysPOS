@@ -74,7 +74,7 @@ class OrderHistoryAdapter (val callBack: (View, Orders) -> Unit ) :
 
                 val totalFormatted = "$" + String.format(
                     "%.2f",
-                    total ?: 0.0
+                    it.amount ?: 0.0
                 )
                 val ssTotal = SpannableStringBuilder(totalFormatted)
                 ssTotal.setSpan(
@@ -83,11 +83,11 @@ class OrderHistoryAdapter (val callBack: (View, Orders) -> Unit ) :
                     ssTotal.length,
                     Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
                 )
-                val payType = if (paymentDetails.isNotEmpty()) {
+                val payType = it.paymentType/*if (paymentDetails.isNotEmpty()) {
                     paymentDetails[0].paymentType ?: ""
                 } else {
                     ""
-                }
+                }*/
                 val ssPayType = SpannableStringBuilder(payType)
                 ssPayType.setSpan(
                     TextAppearanceSpan(MainApplication.getInstance(), R.style.TimeStyle),

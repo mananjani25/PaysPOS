@@ -1,7 +1,6 @@
 package com.android.pos.ui.fragments.settings
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,15 +26,17 @@ import com.android.pos.ui.adapter.BusinessSettingAdapter
 import com.android.pos.ui.fragments.settings.discount.DiscountList
 import com.android.pos.ui.fragments.settings.hardware.Hardware
 import com.android.pos.ui.fragments.settings.loyaltypoints.LoyaltyPointFragment
-import com.android.pos.ui.fragments.settings.teamrole.TeamMemberSettings
 import com.android.pos.ui.fragments.settings.notes.Notes
 import com.android.pos.ui.fragments.settings.servicecharge.ServiceChargeList
 import com.android.pos.ui.fragments.settings.tax.TaxesList
+import com.android.pos.ui.fragments.settings.teamrole.TeamMemberSettings
 import com.android.pos.ui.fragments.settings.tip.TipsList
 import com.android.pos.utils.extensions.styleBold
 import com.android.pos.utils.extensions.styleNormal
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class Settings : Fragment() {
     private lateinit var binding: FragmentSettingsBinding
 
@@ -174,7 +175,7 @@ class Settings : Fragment() {
 
                     }
 
-                    CREATELOYALTY->{
+                    CREATELOYALTY -> {
                         binding.txtBusiness.styleBold()
                         binding.txtHardware.styleNormal()
                         binding.txtSecurity.styleNormal()
@@ -361,9 +362,11 @@ class Settings : Fragment() {
                     }
                     3 -> {
 
-                        binding.commonToolbar.txtSubTitle.setText("Discount")
-                        val discount: Fragment = DiscountList()
-                        loadFragment(discount)
+                        if (rolePermission.hasDiscountPermission(binding.root)) {
+                            binding.commonToolbar.txtSubTitle.setText("Discount")
+                            val discount: Fragment = DiscountList()
+                            loadFragment(discount)
+                        }
 
                     }
                     4 -> {

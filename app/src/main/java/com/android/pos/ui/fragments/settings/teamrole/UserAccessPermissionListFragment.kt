@@ -74,6 +74,9 @@ class UserAccessPermissionListFragment : Fragment() {
         binding.imgClose.setOnClickListener {
             backPressManage()
         }
+        binding.txtHome.setOnClickListener {
+            findNavController().navigate(R.id.action_userAccessPermissionListFragment_to_dashboardCategory)
+        }
 
         val callback: OnBackPressedCallback =
             object : OnBackPressedCallback(true /* enabled by default */) {
