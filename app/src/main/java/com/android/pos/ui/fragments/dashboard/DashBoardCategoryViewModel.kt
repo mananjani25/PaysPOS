@@ -1,6 +1,7 @@
 package com.android.pos.ui.fragments.dashboard
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.util.Log
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.lifecycle.*
@@ -503,7 +504,9 @@ class DashBoardCategoryViewModel @Inject constructor(
     fun itemCalculation(
         cartList: List<CartModel>?,
         txtTotalAmount: AppCompatTextView,
-        cashSurChargediscount: Double
+        cashSurChargediscount: Double,
+        optionType: String,
+        context: Context
     ) {
 
 
@@ -517,6 +520,9 @@ class DashBoardCategoryViewModel @Inject constructor(
         totalServiceCharge = 0.0
 
         var amountToBePaid = 0.0
+
+        var cashDiscountFinal: Double = 0.0
+
 
         if (cartList != null && cartList.isNotEmpty()) {
             if (cartList.get(0).orderType == DINE_IN) {
@@ -547,8 +553,19 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
                 totalPrice = (subTotalPrice + totalTax + totalServiceCharge)
+                if (MethodUtils.isEnableCashDiscount(context)) {
+                    if (optionType == "CashDiscount") {
+                        cashDiscountFinal = MethodUtils.calculateCashDiscount(subTotalPrice,prefProvider,context)
+                    } else if (optionType == "SurCharge") {
+                        cashDiscountFinal = 0.0
+                    } else {
+                        cashDiscountFinal = 0.0
+                    }
+                } else {
+                    cashDiscountFinal = 0.0
+                }
 
-                amountToBePaid = totalPrice - cartList[0].discountPrice - cashSurChargediscount
+                amountToBePaid = totalPrice - cartList[0].discountPrice - cashDiscountFinal
 
                 MethodUtils.setPriceTextView(txtTotalAmount, amountToBePaid)
             } else {
@@ -574,17 +591,33 @@ class DashBoardCategoryViewModel @Inject constructor(
                 }.sum()
 
                 totalPrice = (subTotalPrice + totalTax + totalServiceCharge)
+                if (MethodUtils.isEnableCashDiscount(context)) {
+                    if (optionType == "CashDiscount") {
+                        cashDiscountFinal = MethodUtils.calculateCashDiscount(subTotalPrice,prefProvider,context)
+                    } else if (optionType == "SurCharge") {
+                        cashDiscountFinal = 0.0
+                    } else {
+                        cashDiscountFinal = 0.0
+                    }
+                } else {
+                    cashDiscountFinal = 0.0
+                }
 
 
                 //loyalty point and price calculation
                 amountToBePaid = totalPrice - cartList[0].discountPrice
                 if (selectedCustomer == null) {
-                    MethodUtils.setPriceTextView(txtTotalAmount, amountToBePaid - cashSurChargediscount)
+                    var fnAmount = amountToBePaid - cashDiscountFinal
+                    MethodUtils.setPriceTextView(
+                        txtTotalAmount,
+                        fnAmount
+                    )
                 } else {
+                    var fnAmount = amountToBePaid - cashDiscountFinal
                     checkAppliedLoyaltyProgram(
                         selectedCustomer,
-                        amountToBePaid - cashSurChargediscount,
-                        cashSurChargediscount,
+                        fnAmount,
+                        cashDiscountFinal,
                         txtTotalAmount
                     )
                 }
@@ -1014,7 +1047,8 @@ class DashBoardCategoryViewModel @Inject constructor(
 
             if (it.customer != null) {
                 model.customerId = it.customer?.id
-                var addressList: ArrayList<CustomerAttributes.AddressesAttribute> = arrayListOf()
+                var addressList: ArrayList<CustomerAttributes.AddressesAttribute> =
+                    arrayListOf()
                 var phoneList: ArrayList<CustomerAttributes.PhonesAttribute> = arrayListOf()
                 for (i in 0.until(it.customer?.addresses?.size!!)) {
 
@@ -1035,7 +1069,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                     val phoneModel = CustomerAttributes.PhonesAttribute()
                     phoneModel.id = it.customer?.phones?.get(i)?.id
                     phoneModel.customerId = it.customer?.id
-                    phoneModel.phoneNumber = it.customer?.phones?.get(i)?.phone_number.toString()
+                    phoneModel.phoneNumber =
+                        it.customer?.phones?.get(i)?.phone_number.toString()
                     phoneList.add(phoneModel)
                 }
                 val customerModel = CustomerAttributes()
@@ -1087,7 +1122,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                 orderItemsAttribute.isPaid = item.isPaid
                 orderItemsAttribute.isPrinted = true
                 orderItemsAttribute.isTaxRemoved = false
-                orderItemsAttribute.itemId = if (item.isManualSales) item.itemId else item.itemId
+                orderItemsAttribute.itemId =
+                    if (item.isManualSales) item.itemId else item.itemId
                 orderItemsAttribute.is_manual_sales = item.isManualSales
                 orderItemsAttribute.itemName = item.name
                 orderItemsAttribute.note = item.note

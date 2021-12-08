@@ -135,6 +135,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private lateinit var cartAdapter: CartAdapter
     private lateinit var orderTypeAdapter: OrderTypeAdapter
     private val viewModelPayment by viewModels<PaymentViewModel>()
+    private var optionType: String = ""
     private lateinit var dineInCartAdapter: DineInAdapter
     lateinit var cashDiscountModel: CashDiscountModel
     var cashDiscountType = ""
@@ -160,6 +161,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         getLoyaltyPrograms()
 
         isOrderUpdate = requireArguments().getBoolean("update")
+        optionType = prefProvider.getValue(OPTION_TYPE, "")
         if (isOrderUpdate) {
             orderId = requireArguments().getInt("orderId")
             paymentId = requireArguments().getInt("paymentId")
@@ -658,34 +660,17 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             Log.e(TAG, "viewModel.destroyedList > ${viewModel.destroyedList?.size}")
                             cartAdapter.addCart(cartList[0].items)
                         }
-
-
-                        if (MethodUtils.isEnableCashDiscount(requireContext())) {
-                            if (prefProvider.getValue(OPTION_TYPE, "") == "CashDiscount") {
-                                viewModel.itemCalculation(
-                                    cartList,
-                                    binding.layoutCart.txtTotalAmount,
-                                    MethodUtils.calculateCashDiscount(
-                                        viewModel.subTotalPrice,
-                                        prefProvider,
-                                        requireContext()
-                                    )
-                                )
-                            } else if (prefProvider.getValue(OPTION_TYPE, "") == "SurCharge") {
-                                viewModel.itemCalculation(
-                                    cartList,
-                                    binding.layoutCart.txtTotalAmount,
-                                    0.0
-                                )
-                            }
-                        } else {
-                            viewModel.itemCalculation(
-                                cartList,
-                                binding.layoutCart.txtTotalAmount,
-                                0.0
-                            )
-                        }
-
+                        viewModel.itemCalculation(
+                            cartList,
+                            binding.layoutCart.txtTotalAmount,
+                            MethodUtils.calculateCashDiscount(
+                                viewModel.subTotalPrice,
+                                prefProvider,
+                                requireContext()
+                            ),
+                            optionType,
+                            requireContext(),
+                        )
 
                         val orderType = prefProvider.getValue(ORDER_TYPE, "")
                         Log.e("!_@_", "rlSave -------- $orderType ")
@@ -714,31 +699,17 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             gotoPayment()
                         }
                     } else {
-                        if (MethodUtils.isEnableCashDiscount(requireContext())) {
-                            if (prefProvider.getValue(OPTION_TYPE, "") == "CashDiscount") {
-                                viewModel.itemCalculation(
-                                    cartList,
-                                    binding.layoutCart.txtTotalAmount,
-                                    MethodUtils.calculateCashDiscount(
-                                        viewModel.subTotalPrice,
-                                        prefProvider,
-                                        requireContext()
-                                    )
-                                )
-                            } else if (prefProvider.getValue(OPTION_TYPE, "") == "SurCharge") {
-                                viewModel.itemCalculation(
-                                    cartList,
-                                    binding.layoutCart.txtTotalAmount,
-                                    0.0
-                                )
-                            }
-                        } else {
-                            viewModel.itemCalculation(
-                                cartList,
-                                binding.layoutCart.txtTotalAmount,
-                                0.0
-                            )
-                        }
+                        viewModel.itemCalculation(
+                            cartList,
+                            binding.layoutCart.txtTotalAmount,
+                            MethodUtils.calculateCashDiscount(
+                                viewModel.subTotalPrice,
+                                prefProvider,
+                                requireContext()
+                            ),
+                            optionType,
+                            requireContext(),
+                        )
 
 
 
@@ -3593,31 +3564,17 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     }
 
     private fun refreshItemCalculation() {
-        if (MethodUtils.isEnableCashDiscount(requireContext())) {
-            if (prefProvider.getValue(OPTION_TYPE, "") == "CashDiscount") {
-                viewModel.itemCalculation(
-                    cartList,
-                    binding.layoutCart.txtTotalAmount,
-                    MethodUtils.calculateCashDiscount(
-                        viewModel.subTotalPrice,
-                        prefProvider,
-                        requireContext()
-                    )
-                )
-            } else if (prefProvider.getValue(OPTION_TYPE, "") == "SurCharge") {
-                viewModel.itemCalculation(
-                    cartList,
-                    binding.layoutCart.txtTotalAmount,
-                    0.0
-                )
-            }
-        } else {
-            viewModel.itemCalculation(
-                cartList,
-                binding.layoutCart.txtTotalAmount,
-                0.0
-            )
-        }
+        viewModel.itemCalculation(
+            cartList,
+            binding.layoutCart.txtTotalAmount,
+            MethodUtils.calculateCashDiscount(
+                viewModel.subTotalPrice,
+                prefProvider,
+                requireContext()
+            ),
+            optionType,
+            requireContext(),
+        )
     }
 
     private fun refreshOrderTypeLabel() {
