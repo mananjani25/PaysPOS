@@ -1742,6 +1742,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                         var myShare = unpaidCount * divShare
 
+
+                        if (paidGuestCount > 0) {
+                            subTotalDInin = subTotalWT + guestSubTotal
+                        } else {
+                            subTotalDInin = WTSubTotal + guestSubTotal
+                        }
+
                         var finalAmt =
                             guestSubTotal + serviceChargeGu + totalTaxAmt + myShare
                         viewModel.totalTaxAmount = totalAmount
@@ -1749,19 +1756,32 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         subTotalWT = guestSubTotal + myShare
                         finalTaxAmt = totalTaxAmt
                         toFinalAmt = finalAmt
-                        subTotalDInin = WTSubTotal + guestSubTotal
+
+
                         if (prefProvider.getValueboolean(
                                 Constants.CASHDIS_SURCHARGEENABLE,
                                 false
                             )
                         ) {
                             if (optionType == "CashDiscount") {
-                                binding.txtTotalAmountNew.text = MethodUtils.roundOffAmount(
-                                    finalAmt - MethodUtils.calculateCashDiscount(
+                                var divideCashDiscount = 0.0
+                                if (paidGuestCount > 0) {
+                                    divideCashDiscount =
+                                        MethodUtils.calculateCashDiscount(
+                                            subTotalDInin,
+                                            prefProvider,
+                                            requireContext()
+                                        ) / (baseResponse.guestAttributes.size - 1)
+                                } else {
+                                    divideCashDiscount = MethodUtils.calculateCashDiscount(
                                         subTotalDInin,
                                         prefProvider,
                                         requireContext()
                                     )
+                                }
+
+                                binding.txtTotalAmountNew.text = MethodUtils.roundOffAmount(
+                                    finalAmt - divideCashDiscount
                                 )
 
                             } else {

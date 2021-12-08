@@ -150,6 +150,9 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 } else {
                     break
                 }
+                if (list.get(i).isHeader == 0) {
+                    isPaid = list.get(i).isPaid
+                }
             }
             guestAmt += list.get(0).guestDividedAmt
             Log.e(TAG, "customerAdapter  ${list.get(position).customer}")
