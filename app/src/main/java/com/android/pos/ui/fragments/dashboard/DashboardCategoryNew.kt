@@ -59,6 +59,7 @@ import com.android.pos.data.remote.Constants.IS_ORDER_UPDATE
 import com.android.pos.data.remote.Constants.MANUALSALE
 import com.android.pos.data.remote.Constants.MERGED
 import com.android.pos.data.remote.Constants.OPEN_ORDER
+import com.android.pos.data.remote.Constants.OPEN_ORDER_
 import com.android.pos.data.remote.Constants.OPTION_TYPE
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
@@ -577,6 +578,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         cartList[0].items?.filter { item -> item.isDestroy }?.let {
                             viewModel.destroyedList.addAll(it)
                         }
+
+                        refreshOrderTypeLabel()
 
                         if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
                             viewModel.setServiceCharges(serviceChargesList)
@@ -3615,7 +3618,15 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 0.0
             )
         }
+    }
 
-
+    private fun refreshOrderTypeLabel() {
+        //set order type label
+        var label = prefProvider.getValue(ORDER_TYPE, TAKEOUT).toString()
+        if (label.equals(OPEN_ORDER, true) || label.equals(OPEN_ORDER_, true)) {
+            label = OPEN_ORDER_
+        }
+        Log.e(TAG, "OrderType Label : $label")
+        binding.layoutCart.txtOrderType.text = label
     }
 }

@@ -14,6 +14,7 @@ import com.android.pos.data.entities.Employee
 import com.android.pos.data.entities.ModulePermission
 import com.android.pos.data.entities.TeamRole
 import com.android.pos.databinding.FragmentUserAccessPermissionBinding
+import com.android.pos.di.RolePermission
 import com.android.pos.ui.adapter.*
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
@@ -22,6 +23,7 @@ import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.statusUtils.Status
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class UserAccessPermissionFragment : Fragment() {
@@ -41,6 +43,8 @@ class UserAccessPermissionFragment : Fragment() {
     private var deliverEmployeesResponse: Boolean = false
     private val TAG = "UserAccessPermission"
 
+    @Inject
+    lateinit var rolePermission: RolePermission
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -61,14 +65,22 @@ class UserAccessPermissionFragment : Fragment() {
 
         isEdit = arguments?.getBoolean("isEdit")!!
 
+        var roleLabel = getString(R.string.tv_add_new_role_name)
         if (isEdit) {
             binding.addRole.text = getString(R.string.update_role)
             userPermissionObject = arguments?.getParcelable("userPermissionObject")!!
             viewModel.setUserPermissionData(userPermissionObject)
             // viewModel.setModuleData(userPermissionObject)
             viewModel.isEditData(isEdit, userPermissionObject.id)
+
+            //role
+            if(rolePermission.isDefaultUserRoleWithoutAlert(userPermissionObject.name)){
+                roleLabel = getString(R.string.role_name)
+                binding.tvRoleName.isEnabled = false
+            }
         }
 
+        binding.tvRoleNameLabel.text = roleLabel
 
         setUpRecyclerView()
         setupSnackbar()
