@@ -72,6 +72,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     private var totalTax: Double = 0.0
     private var totalServiceCharge: Double = 0.0
     var totalGuestCount = 0
+    var divideCashDiscount = 0.0
     private var paymentAmount: Double = 0.0
     private var subTotalWT = 0.0
     private var subTotalDInin = 0.0
@@ -91,6 +92,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     var dragFrom = -1
     var dragTo = -1
     var notPayAnyAmount: Boolean = false
+    var paidGuestAmount = 0
     var serviceChargeList: ArrayList<TbServiceCharge> = arrayListOf()
     private var tipsList: List<GetTipReponse.Data> = listOf()
     private var kitchenPrinterList: List<PrinterResponse.Data.KitchenReceiptPrinters> = listOf()
@@ -320,11 +322,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 bundle.putDouble(
                     "totalPrice",
                     MethodUtils.roundOffAmountDouble(
-                        toFinalAmt - MethodUtils.calculateCashDiscount(
-                            subTotalDInin,
-                            prefProvider,
-                            requireContext()
-                        )
+                        toFinalAmt - divideCashDiscount
                     )
                 )
             } else {
@@ -339,13 +337,14 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 "subTotalPrice",
                 MethodUtils.roundOffAmountDouble(subTotalDInin)
             )
-            bundle.putDouble("totalTax", MethodUtils.roundOffAmountDouble(finalTaxAmt + WTOnlyTax))
+            bundle.putDouble("totalTax", MethodUtils.roundOffAmountDouble(finalTaxAmt))
             bundle.putParcelable("model", model)
+            bundle.putDouble("divideCashDiscount", divideCashDiscount)
             bundle.putParcelable("floorPlan", floorPlanModel)
             bundle.putBoolean("isTotalPayment", true)
             bundle.putDouble(
                 "totalServiceCharge",
-                MethodUtils.roundOffAmountDouble(serviceCharge + WTServiceTax)
+                MethodUtils.roundOffAmountDouble(serviceCharge)
             )
             bundle.putDouble("totalDiscount", totalDiscount)
             bundle.putBoolean("isTotalPayment", true)
@@ -551,14 +550,23 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             if (optionType == "CashDiscount") {
                 linearCCashDiscount.visibility = View.VISIBLE
                 linear_NonCashDiscount.visibility = View.GONE
-
-                txttotalCashDiscount.text = "- $" + String.format(
-                    "%.2f", MethodUtils.calculateCashDiscount(
-                        subTotalDInin,
-                        prefProvider,
-                        requireContext()
+                if (paidGuestAmount > 0) {
+                    txttotalCashDiscount.text = "- $" + String.format(
+                        "%.2f", MethodUtils.calculateCashDiscount(
+                            subTotalDInin,
+                            prefProvider,
+                            requireContext()
+                        ) / totalGuestCount
                     )
-                )
+                } else {
+                    txttotalCashDiscount.text = "- $" + String.format(
+                        "%.2f", MethodUtils.calculateCashDiscount(
+                            subTotalDInin,
+                            prefProvider,
+                            requireContext()
+                        )
+                    )
+                }
                 txtTotalcashAdj.text = "- $" + String.format("%.2f", 0.0)
             } else {
                 linearCCashDiscount.visibility = View.GONE
@@ -587,7 +595,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         )
         txtServiceCharge.text = "$" + String.format(
             "%.2f",
-            serviceCharge + WTServiceTax
+            serviceCharge
         )
         txtDiscount.text = "- $" + String.format(
             "%.2f",
@@ -598,7 +606,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         txtTotalAmount.text = binding.txtTotalAmountNew.text.toString()
         txtTotalTax.text = "$" + String.format(
             "%.2f",
-            finalTaxAmt + WTOnlyTax
+            finalTaxAmt
         )
 
 //        if (popupWindow == null) {
@@ -1744,17 +1752,31 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
                         if (paidGuestCount > 0) {
-                            subTotalDInin = subTotalWT + guestSubTotal
+                            paidGuestAmount = paidGuestCount
+                            subTotalDInin =
+                                WTSubTotal / (baseResponse.guestAttributes.size - 1) + guestSubTotal
                         } else {
                             subTotalDInin = WTSubTotal + guestSubTotal
                         }
+                        Log.d(TAG, "navigateDineInOrder: " + subTotalDInin)
+
+                        if (paidGuestCount > 0) {
+                            serviceCharge =
+                                WTServiceCharge / (baseResponse.guestAttributes.size - 1) + serviceChargeGu
+                            myShare -= WTServiceCharge / (baseResponse.guestAttributes.size - 1)
+                        } else {
+                            serviceCharge = WTServiceCharge + serviceChargeGu
+                            myShare -= WTServiceCharge
+                        }
+                        Log.d(TAG, "navigateDineInOrder: " + serviceCharge)
 
                         var finalAmt =
-                            guestSubTotal + serviceChargeGu + totalTaxAmt + myShare
+                            guestSubTotal + serviceCharge + totalTaxAmt + myShare
+
+                        Log.d(TAG, "navigateDineInOrder: " + finalAmt)
                         viewModel.totalTaxAmount = totalAmount
-                        serviceCharge = serviceChargeGu
                         subTotalWT = guestSubTotal + myShare
-                        finalTaxAmt = totalTaxAmt
+                        finalTaxAmt = totalTaxAmt + WTTaxes
                         toFinalAmt = finalAmt
 
 
@@ -1764,7 +1786,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             )
                         ) {
                             if (optionType == "CashDiscount") {
-                                var divideCashDiscount = 0.0
+
                                 if (paidGuestCount > 0) {
                                     divideCashDiscount =
                                         MethodUtils.calculateCashDiscount(
@@ -1785,11 +1807,17 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                 )
 
                             } else {
+                                divideCashDiscount = MethodUtils.calculateCashDiscount(
+                                    subTotalDInin,
+                                    prefProvider,
+                                    requireContext()
+                                )
                                 binding.txtTotalAmountNew.text = MethodUtils.roundOffAmount(
                                     finalAmt
                                 )
                             }
                         } else {
+                            divideCashDiscount = 0.0
                             binding.txtTotalAmountNew.text = MethodUtils.roundOffAmount(
                                 finalAmt
                             )
