@@ -657,5 +657,6 @@
     <string name="hidden_categories_title">Hidden Categories</string>
     <string name="hidden_items_title">Hidden Items</string>
     <string name="update_customer">Update Customer</string>
+    <string name="scan_gun">Scan Gun</string>
 
 </resources>
