@@ -635,7 +635,14 @@ class DineInViewModel @Inject constructor(
                     var guestModel = GuestsAttributes()
                     guestModel.customerAttributes?.id = it.customerId
                     guestModel.customerId = it.id
-                    guestModel.name = it.name
+                    if (listGuestAttr.isNotEmpty()) {
+
+                        guestModel.name =
+                            "Guest " + getCurrenGuestCount(listGuestAttr)
+                    } else {
+                        guestModel.name = it.name
+                    }
+
                     guestModel.cashDiscount = it.cashDiscount
                     guestModel.orderId = it.orderId
                     guestModel.isPaid = it.isPaid
@@ -759,7 +766,7 @@ class DineInViewModel @Inject constructor(
         }
 
         guestModelWT.guestItemsAttributes = listWholeTbItems
-        listGuestAttr.add(0,guestModelWT)
+        listGuestAttr.add(0, guestModelWT)
 
 
         model.orderItemsAttributes = orderItemsAttr
@@ -997,6 +1004,16 @@ class DineInViewModel @Inject constructor(
 
 
         return model
+    }
+
+    fun getCurrenGuestCount(
+        guestAttributes: ArrayList<GuestsAttributes>
+    ): Int {
+        var count = guestAttributes.get(guestAttributes.size - 1).name.substring(guestAttributes.get(guestAttributes.size - 1).name.length - 1).toInt()
+        Log.e(TAG,"count  ${count}")
+        count++
+        return count
+
     }
 
 }

@@ -202,10 +202,12 @@ class MergeTableDialog : DialogFragment() {
             for (i in 0 until listSecondary.size) {
                 arrayChildIds.add(listSecondary.get(i).selectedTableId.toString())
 
-                totalChairCount += listSecondary.get(i).listTable.get(
-                    listSecondary.get(i).tableSelectedPosition ?: 0
-                ).chairCount
-                    ?: 0
+                if (listSecondary[i].orderDetails == null) {
+                    totalChairCount += listSecondary.get(i).listTable.get(
+                        listSecondary.get(i).tableSelectedPosition ?: 0
+                    ).chairCount
+                        ?: 0
+                }
             }
             childIds = android.text.TextUtils.join(",", arrayChildIds)
 
@@ -292,13 +294,13 @@ class MergeTableDialog : DialogFragment() {
 
                     }
                 }
-                var listOrderIds:ArrayList<String> = arrayListOf()
+                var listOrderIds: ArrayList<String> = arrayListOf()
                 listSecondaryOrderDetails.forEach {
                     listOrderIds.add(it.id.toString())
                 }
-                var mergedOrderIds = android.text.TextUtils.join(",",listOrderIds)
+                var mergedOrderIds = android.text.TextUtils.join(",", listOrderIds)
 
-                viewModel.mergeTable(parentTableId ?: 0, childIds,mergedOrderIds,orderModel)
+                viewModel.mergeTable(parentTableId ?: 0, childIds, mergedOrderIds, orderModel)
 
 
             }

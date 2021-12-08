@@ -219,7 +219,7 @@ class GuestsAttributes(
     @SerializedName("guest_items_attributes") var guestItemsAttributes: List<GuestItemsAttributes> = emptyList(),
     @SerializedName("customer_attributes") var customerAttributes: CustomerAttributes? = null,
     @SerializedName("is_child_guest") var isChildGuest: Boolean = false,
-    @SerializedName("child_merge_id") var childMergeId: Int? = null
+    @SerializedName("child_merge_id") var childMergeId: Int? = null,
 
 
 )
