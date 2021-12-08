@@ -59,10 +59,15 @@ class TeamMemberSheetViewModel @Inject constructor(
     fun setCurrentDate(myCalendar: Calendar) {
         val myFormat = "MM/dd/yyyy" //In which you need put here
         val sdf = SimpleDateFormat(myFormat, Locale.getDefault())
-        myCalendar.add(Calendar.DAY_OF_YEAR, -7)
-        val startDateCalender = myCalendar.time
-        startDate.value = sdf.format(startDateCalender.time)
-        endDate.value = sdf.format(Calendar.getInstance().time)
+        startDate.value = sdf.format(myCalendar.time) + " " + SimpleDateFormat(
+            "hh:mm a",
+            Locale.getDefault()
+        ).format(Date(System.currentTimeMillis() - 60000 * 30))
+        endDate.value = sdf.format(myCalendar.time) + " " + SimpleDateFormat(
+            "hh:mm a",
+            Locale.getDefault()
+        ).format(Date())
+
     }
 
     fun datePicker(selectPicker: Boolean) {
