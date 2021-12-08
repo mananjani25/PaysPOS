@@ -406,6 +406,7 @@
     <string name="tv_permission">Permission</string>
     <string name="tv_email">Email</string>
     <string name="tv_add_new_role_name">Add New Role Name</string>
+    <string name="role_name">Role Name</string>
     <string name="tv_assign_member">Assign Member</string>
     <string name="clear_items">Clear Cart</string>
     <string name="split_amount">Split Amount</string>

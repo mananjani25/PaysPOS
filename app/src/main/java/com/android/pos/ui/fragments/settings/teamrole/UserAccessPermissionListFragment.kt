@@ -123,7 +123,7 @@ class UserAccessPermissionListFragment : Fragment() {
                 ) { pos ->
 
                     position = pos
-                    if (rolePermission.hasUserAccessPermission(userPermissionListAdapter.getItem(pos).name, binding.root)) {
+                    if (rolePermission.isDefaultUserRole(userPermissionListAdapter.getItem(pos).name.trim(), binding.root)) {
                         alert(
                             getString(R.string.app_name),
                             getString(R.string.delete_employee_role_message)
