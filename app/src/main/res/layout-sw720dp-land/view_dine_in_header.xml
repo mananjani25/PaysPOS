@@ -104,12 +104,12 @@
             <ImageView
                 android:id="@+id/imgPrint"
                 android:layout_width="@dimen/_10sdp"
-                android:visibility="invisible"
                 android:layout_height="@dimen/_10sdp"
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="@dimen/_12sdp"
                 android:layout_toStartOf="@+id/refViewLine"
-                android:src="@drawable/print" />
+                android:src="@drawable/print"
+                android:visibility="visible" />
 
             <View
                 android:id="@+id/refViewLine"
