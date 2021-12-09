@@ -337,6 +337,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         if (isSpilt) {
             if (isDineIn) {
+                if(paymentType=="Card"){
+                    prefProvider.setValue(Constants.SPLIT_PAY_TYPE_DINE_IN,Constants.SPLIT_NO_DINE_IN)
+                }
                 findNavController().popBackStack()
             } else {
                 findNavController().popBackStack()
@@ -346,6 +349,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 if (!isLastPayment) {
                     val bundle = Bundle()
                     bundle.putInt("orderId", orderID)
+
                     findNavController().navigate(
                         R.id.action_orderCompleteFragment_to_dineInOrderTable,
                         bundle
