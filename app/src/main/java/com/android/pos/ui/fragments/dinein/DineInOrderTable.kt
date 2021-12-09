@@ -319,12 +319,21 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             val bundle = Bundle()
             if (optionType == "CashDiscount") {
-                bundle.putDouble(
-                    "totalPrice",
-                    MethodUtils.roundOffAmountDouble(
-                        toFinalAmt - divideCashDiscount
+                if (paidGuestAmount > 0) {
+                    bundle.putDouble(
+                        "totalPrice",
+                        MethodUtils.roundOffAmountDouble(
+                            toFinalAmt - (divideCashDiscount * (totalGuestCount - paidGuestAmount))
+                        )
                     )
-                )
+                } else {
+                    bundle.putDouble(
+                        "totalPrice",
+                        MethodUtils.roundOffAmountDouble(
+                            toFinalAmt - divideCashDiscount
+                        )
+                    )
+                }
             } else {
                 bundle.putDouble(
                     "totalPrice",
@@ -339,7 +348,17 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             )
             bundle.putDouble("totalTax", MethodUtils.roundOffAmountDouble(finalTaxAmt))
             bundle.putParcelable("model", model)
-            bundle.putDouble("divideCashDiscount", divideCashDiscount)
+            if (paidGuestAmount > 0) {
+                bundle.putDouble(
+                    "divideCashDiscount",
+                    divideCashDiscount * (totalGuestCount - paidGuestAmount)
+                )
+            } else {
+                bundle.putDouble(
+                    "divideCashDiscount",
+                    divideCashDiscount
+                )
+            }
             bundle.putParcelable("floorPlan", floorPlanModel)
             bundle.putBoolean("isTotalPayment", true)
             bundle.putDouble(
@@ -552,11 +571,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 linear_NonCashDiscount.visibility = View.GONE
                 if (paidGuestAmount > 0) {
                     txttotalCashDiscount.text = "- $" + String.format(
-                        "%.2f", MethodUtils.calculateCashDiscount(
-                            subTotalDInin,
-                            prefProvider,
-                            requireContext()
-                        ) / totalGuestCount
+                        "%.2f", divideCashDiscount * (totalGuestCount - paidGuestAmount)
                     )
                 } else {
                     txttotalCashDiscount.text = "- $" + String.format(
@@ -857,7 +872,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             subTotalPrice = subTotalGuest
             offlineId = randomOfflineId()
             payableType = "GuestTab"
-            paymentType = "Cash"
+            paymentType = paymentType
             transactionId = randomOfflineId()
             terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
             order_id = orderId
@@ -874,7 +889,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 subTotalPrice = subTotalGuest
                 offlineId = randomOfflineId()
                 payableType = "GuestTab"
-                paymentType = "Cash"
+                paymentType = paymentType
                 transactionId = randomOfflineId()
                 terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
                 order_id = orderId
@@ -925,18 +940,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         }
 
 
-        if (getOrderDetailsResponse?.totalAmount != null) {
-            var totalPaid = 0.0
-
-            getOrderDetailsResponse?.payments?.forEach {
-                totalPaid += it.amount
-            }
-
-            if (totalGuest == (getOrderDetailsResponse?.totalAmount!! - totalPaid)) {
-                bundle.putBoolean("isLastPayment", true)
-            } else {
-                bundle.putBoolean("isLastPayment", false)
-            }
+        if (totalGuestCount.minus(1) == paidGuestAmount) {
+            bundle.putBoolean("isLastPayment", true)
         } else {
             bundle.putBoolean("isLastPayment", false)
         }
@@ -1754,29 +1759,41 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         if (paidGuestCount > 0) {
                             paidGuestAmount = paidGuestCount
                             subTotalDInin =
-                                WTSubTotal / (baseResponse.guestAttributes.size - 1) + guestSubTotal
+                                (WTSubTotal / totalG) * unpaidCount + guestSubTotal
                         } else {
                             subTotalDInin = WTSubTotal + guestSubTotal
                         }
+
+
                         Log.d(TAG, "navigateDineInOrder: " + subTotalDInin)
 
                         if (paidGuestCount > 0) {
                             serviceCharge =
-                                WTServiceCharge / (baseResponse.guestAttributes.size - 1) + serviceChargeGu
-                            myShare -= WTServiceCharge / (baseResponse.guestAttributes.size - 1)
+                                (WTServiceCharge / totalG) * unpaidCount + serviceChargeGu
+                            myShare -= WTServiceCharge / totalG * unpaidCount
                         } else {
                             serviceCharge = WTServiceCharge + serviceChargeGu
                             myShare -= WTServiceCharge
                         }
                         Log.d(TAG, "navigateDineInOrder: " + serviceCharge)
 
+                        if (paidGuestCount > 0) {
+                            finalTaxAmt = (WTTaxes / totalG) * unpaidCount + totalTaxAmt
+                            myShare -= WTTaxes / totalG * unpaidCount
+                        } else {
+                            finalTaxAmt = WTTaxes + totalTaxAmt
+                            myShare -= WTTaxes
+                        }
+                        Log.d(TAG, "navigateDineInOrder: " + finalTaxAmt)
+                        Log.d(TAG, "navigateDineInOrder: " + myShare)
+                        Log.d(TAG, "navigateDineInOrder: " + guestSubTotal)
+
                         var finalAmt =
-                            guestSubTotal + serviceCharge + totalTaxAmt + myShare
+                            guestSubTotal + serviceCharge + finalTaxAmt + myShare
 
                         Log.d(TAG, "navigateDineInOrder: " + finalAmt)
                         viewModel.totalTaxAmount = totalAmount
                         subTotalWT = guestSubTotal + myShare
-                        finalTaxAmt = totalTaxAmt + WTTaxes
                         toFinalAmt = finalAmt
 
 
@@ -1794,17 +1811,21 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                             prefProvider,
                                             requireContext()
                                         ) / (baseResponse.guestAttributes.size - 1)
+                                    binding.txtTotalAmountNew.text = MethodUtils.roundOffAmount(
+                                        finalAmt - (divideCashDiscount * unpaidCount)
+                                    )
+
                                 } else {
                                     divideCashDiscount = MethodUtils.calculateCashDiscount(
                                         subTotalDInin,
                                         prefProvider,
                                         requireContext()
                                     )
+                                    binding.txtTotalAmountNew.text = MethodUtils.roundOffAmount(
+                                        finalAmt - divideCashDiscount
+                                    )
                                 }
 
-                                binding.txtTotalAmountNew.text = MethodUtils.roundOffAmount(
-                                    finalAmt - divideCashDiscount
-                                )
 
                             } else {
                                 divideCashDiscount = MethodUtils.calculateCashDiscount(
@@ -1812,6 +1833,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                     prefProvider,
                                     requireContext()
                                 )
+
                                 binding.txtTotalAmountNew.text = MethodUtils.roundOffAmount(
                                     finalAmt
                                 )

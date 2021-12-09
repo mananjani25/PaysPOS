@@ -143,7 +143,6 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
     private fun setCashCreditData(cashDiscountType: String) {
 
 
-
         isUpdate = requireArguments().getBoolean("update")
         if (isUpdate) {
 
@@ -690,6 +689,9 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 paymentType = "Card"
                 if (totalPrice > 0) {
                     totalPrice += cashDiscountSurcharge
+                }
+                if (isSplitByAmount || isSplitByNo) {
+                    cardPaymentAmount = splitAfterAmount
                 }
                 setCashCreditData(cashDiscountType)
 

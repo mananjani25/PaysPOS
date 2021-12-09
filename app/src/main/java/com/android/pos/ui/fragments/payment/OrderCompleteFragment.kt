@@ -53,7 +53,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private var remainingAmount: Double = 0.0
     private var splitPaidAmount: Double = 0.0
     private var splitValue: Int = -1
+
     private var isSpilt: Boolean = false
+    private var isLastPayment: Boolean = false
     private var isDineIn: Boolean = false
     private var kitchenPrinterList: List<PrinterResponse.Data.KitchenReceiptPrinters> = listOf()
     private var orderID: Int = 0
@@ -152,6 +154,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         orderID = requireArguments().getInt("orderID")
         isSpilt = requireArguments().getBoolean("isSpilt")
         paymentType = requireArguments().getString("paymentType", "")
+        isLastPayment = requireArguments().getBoolean("isLastPayment", false)
         isDineIn = requireArguments().getBoolean("isDineIn")
         if (!isDineIn)
             receiptModel = requireArguments().getParcelable("receiptData")
@@ -339,16 +342,19 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 findNavController().popBackStack()
             }
         } else {
-
             if (isGuest) {
-                val bundle = Bundle()
-                bundle.putInt("orderId", orderID)
-                findNavController().navigate(
-                    R.id.action_orderCompleteFragment_to_dineInOrderTable,
-                    bundle
-                )
+                if (!isLastPayment) {
+                    val bundle = Bundle()
+                    bundle.putInt("orderId", orderID)
+                    findNavController().navigate(
+                        R.id.action_orderCompleteFragment_to_dineInOrderTable,
+                        bundle
+                    )
+                } else {
+                    removeCustomer()
+                    findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
+                }
             } else {
-
                 removeCustomer()
                 findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
             }
