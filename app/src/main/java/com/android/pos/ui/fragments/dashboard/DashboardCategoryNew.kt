@@ -2916,27 +2916,13 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         btnRemove.setOnClickListener {
 
             cartList[0].orderType = DINE_IN
+            viewModel.cartLogic(
+                cartList,
+                data,
+                DELETE,
+                dineInList = dineInCartAdapter.getList()
+            )
 
-            if (prefProvider.getValueboolean(DINE_IN_UPDATE, false)) {
-
-
-                val list = dineInCartAdapter.getList()
-                val item: TbItem = list[headerPosition].items[position]
-                item.isEdited = true
-                item.isDestroy = true
-                list[headerPosition].items[position] = item
-                viewModel.dineInCartUpdate(cartList, list)
-
-
-            } else {
-
-                viewModel.cartLogic(
-                    cartList,
-                    data,
-                    DELETE,
-                    dineInList = dineInCartAdapter.getList()
-                )
-            }
             dialog.dismiss()
         }
         btnAddDiscount.setOnClickListener {

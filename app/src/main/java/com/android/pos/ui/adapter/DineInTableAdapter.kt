@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.entities.TbItem
+import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.model.DineInModel
 import com.android.pos.databinding.*
 import com.android.pos.utils.MethodUtils
@@ -21,6 +22,7 @@ import kotlin.collections.ArrayList
 
 class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private var list: ArrayList<DineInModel> = arrayListOf()
+    private var serviceChargeList: ArrayList<TbServiceCharge> = arrayListOf()
     private lateinit var itemAdapter: DineInTableItemAdapter
     private lateinit var listner: DineInTableListner
     private val TAG = "DineInTableAdapter"
@@ -196,14 +198,14 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
             var totalServiceCharge = 0.0
 
-            if (list[0].serviceChargeList?.isNotEmpty() == true) {
-                list[0].serviceChargeList?.forEach {
+
+            if (serviceChargeList?.isNotEmpty() == true) {
+                serviceChargeList?.forEach {
                     if (it.isEnabled) {
                         totalServiceCharge += (guestSubTotal * it.percentage) / 100
+
                     }
                 }
-
-
             }
 
             var finalAmt =
@@ -213,18 +215,18 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
             binding.txtPay.setText("Pay " + MethodUtils.roundOffAmount(finalAmt))
 
-            binding.btnPay.setOnClickListener {
-                Log.e(TAG, "OnPayClicked")
-                listner.onGuestPay(
-                    list[position],
-                    position,
-                    MethodUtils.roundOffAmountDouble(guestSubTotal + list.get(0).guestDividedAmt),
-                    MethodUtils.roundOffAmountDouble(finalAmt),
-                    MethodUtils.roundOffAmountDouble(totalTaxAmt),
-                    MethodUtils.roundOffAmountDouble(totalServiceCharge),
-                    list.get(0).cashSurchargeDiscount,
-                )
-            }
+                        binding . btnPay . setOnClickListener {
+                    Log.e(TAG, "OnPayClicked")
+                    listner.onGuestPay(
+                        list[position],
+                        position,
+                        MethodUtils.roundOffAmountDouble(guestSubTotal + list.get(0).guestDividedAmt),
+                        MethodUtils.roundOffAmountDouble(finalAmt),
+                        MethodUtils.roundOffAmountDouble(totalTaxAmt),
+                        MethodUtils.roundOffAmountDouble(totalServiceCharge),
+                        list.get(0).cashSurchargeDiscount,
+                    )
+                }
 
 
         }
@@ -584,6 +586,11 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
             list[clickedPos].item?.isFired = true
         }
+        notifyDataSetChanged()
+    }
+
+    fun setSurchargeList(serviceChargeListt: java.util.ArrayList<TbServiceCharge>) {
+        this.serviceChargeList = serviceChargeListt
         notifyDataSetChanged()
     }
 
