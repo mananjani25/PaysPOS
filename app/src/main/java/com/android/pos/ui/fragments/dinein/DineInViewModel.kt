@@ -523,7 +523,7 @@ class DineInViewModel @Inject constructor(
         model.futureDeliveryDate = orderDetails.future_delivery_date
         model.futureDeliveryTime = orderDetails.future_delivery_time
 */
-        model.id = list[0].id
+       // model.id = list[0].id
         model.locationId = list[0].location_id
         model.note = list[0].note
         model.offlineId = list[0].offline_id
@@ -586,8 +586,8 @@ class DineInViewModel @Inject constructor(
                         //    modifierTax.id = tax.id
                         modifierTax.isDefault = tax.isDefault
                         //  modifierTax.order_id = tax.orderId
-                        modifierTax.order_item_id = tax.orderItemId
-                        modifierTax.order_item_modifier_id = tax.orderItemModifierId
+                      //  modifierTax.order_item_id = tax.orderItemId
+                      //  modifierTax.order_item_modifier_id = tax.orderItemModifierId
                         modifierTax.taxType = tax.taxType
                         modifierTax.is_tax_removed = tax.isTaxRemoved
                         modifierTax.taxTotalAmount = tax.taxTotalAmount
@@ -597,7 +597,7 @@ class DineInViewModel @Inject constructor(
                     }
                     orderModifier.order_item_taxes_attributes = itemTaxes
                     // orderModifier.orderId = modifier.orderId
-                    orderModifier.order_item_id = modifier.orderItemId
+               //     orderModifier.order_item_id = modifier.orderItemId
 
 
 
@@ -634,7 +634,7 @@ class DineInViewModel @Inject constructor(
                 if (it.name.trim().lowercase() != "Whole Table".trim().lowercase()) {
                     var guestModel = GuestsAttributes()
                     guestModel.customerAttributes?.id = it.customerId
-                    guestModel.customerId = it.id
+                 //   guestModel.customerId = it.id
                     if (listGuestAttr.isNotEmpty()) {
 
                         guestModel.name =
@@ -644,7 +644,7 @@ class DineInViewModel @Inject constructor(
                     }
 
                     guestModel.cashDiscount = it.cashDiscount
-                    guestModel.orderId = it.orderId
+                  //  guestModel.orderId = it.orderId
                     guestModel.isPaid = it.isPaid
                     // guestModel.id = it.id
                     guestModel.totalAmount = it.totalAmount
@@ -660,9 +660,9 @@ class DineInViewModel @Inject constructor(
                         //   guestItemAttr.id = it.id
                         guestItemAttr.amount = it.amount
                         guestItemAttr.isPaid = it.isPaid
-                        guestItemAttr.orderItemId = it.orderItemId
-                        guestItemAttr.orderId = it.orderId
-                        guestItemAttr.guestId = it.guestId
+                       // guestItemAttr.orderItemId = it.orderItemId
+                        //guestItemAttr.orderId = it.orderId
+                        //guestItemAttr.guestId = it.guestId
                         guestItemAttr.itemId = it.itemId
                         guestItemAttr.quantity = it.quantity
                         guestItemAttr.timestamp = it.timestamp
@@ -678,7 +678,7 @@ class DineInViewModel @Inject constructor(
 
                     guestModelWT.name = it.name
                     guestModelWT.cashDiscount?.plus(it.cashDiscount)
-                    guestModelWT.orderId = it.orderId
+                    //guestModelWT.orderId = it.orderId
 
                     // guestModel.id = it.id
                     guestModelWT.totalAmount?.plus(it.totalAmount)
@@ -694,9 +694,9 @@ class DineInViewModel @Inject constructor(
                         //   guestItemAttr.id = it.id
                         guestItemAttr.amount = it.amount
                         guestItemAttr.isPaid = it.isPaid
-                        guestItemAttr.orderItemId = it.orderItemId
-                        guestItemAttr.orderId = it.orderId
-                        guestItemAttr.guestId = it.guestId
+                      //  guestItemAttr.orderItemId = it.orderItemId
+                       // guestItemAttr.orderId = it.orderId
+                        //guestItemAttr.guestId = it.guestId
                         guestItemAttr.itemId = it.itemId
                         guestItemAttr.quantity = it.quantity
                         guestItemAttr.timestamp = it.timestamp
@@ -717,7 +717,7 @@ class DineInViewModel @Inject constructor(
                 serviceModel.amount = it.amount
                 //  serviceModel.id = it.id
                 serviceModel.name = it.name
-                serviceModel.orderId = it.orderId
+                //serviceModel.orderId = it.orderId
                 serviceModel.rate = it.rate
                 serviceModel.serviceChargeId = it.serviceChargeId
 
