@@ -76,7 +76,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     inner class HeaderViewHolder(private val binding: ViewDineInHeaderBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(model: DineInModel, position: Int) {
-            var tbList: ArrayList<TbItem> = arrayListOf()
+
             var guestAmt = 0.0
             var isPaid = true
             var isAllFired = true
@@ -155,7 +155,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 }
             }
             guestAmt += list.get(0).guestDividedAmt
-            Log.e(TAG, "customerAdapter  ${list.get(position).customer}")
+
 
             if (list.get(position).customer != null) {
                 binding.txtTableName.setText(
@@ -214,7 +214,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             binding.txtPay.setText("Pay " + MethodUtils.roundOffAmount(finalAmt))
 
             binding.btnPay.setOnClickListener {
-                Log.e(TAG, "OnPayClicked")
+
                 listner.onGuestPay(
                     list[position],
                     position,
@@ -230,6 +230,26 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         }
 
         init {
+
+            binding.imgPrint.setOnClickListener {
+                var fisrtTime: Boolean = false
+                var listItem: ArrayList<TbItem> = arrayListOf()
+                for (i in bindingAdapterPosition + 1 until list.size) {
+                    if (list.get(i).isHeader == 1) {
+
+                        list[i].item?.let { it1 -> listItem.add(it1) }
+                    } else {
+                        break;
+                    }
+
+                }
+
+                if (listItem.isNotEmpty()) {
+                    listner.onGuestPrint(listItem)
+                }
+
+
+            }
             binding.chkIsFired.setOnCheckedChangeListener { buttonView, isChecked ->
 
                 if (buttonView.isPressed) {
@@ -257,7 +277,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
 
                         }
-                        Log.e(TAG, "builderbuilder:  ${builder}")
+
                         listner.onWholeTableToKitchen(builder.toString())
                         binding.chkIsFired.isChecked = true
                         binding.chkIsFired.isEnabled = false
@@ -331,7 +351,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             binding.chkIsFired.setOnCheckedChangeListener { buttonView, isChecked ->
 
                 if (buttonView.isPressed) {
-                    Log.e("chkIsFired", isChecked.toString())
+
                     if (isChecked) {
                         if (list.get(layoutPosition).item != null) {
                             var itemsNew = list[bindingAdapterPosition].item
@@ -340,8 +360,6 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                             itemsNew?.isFired = true
 
 
-
-                            Log.e(TAG, "idStr:  $ids")
                             ids?.let {
                                 list[bindingAdapterPosition].item?.let { it1 ->
                                     listner.singleItemFired(
@@ -487,7 +505,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         }
 
         override fun onSendOrderToKitchen(item: TbItem) {
-            Log.e(TAG, "onItwdetewt  ${Gson().toJson(item)}")
+
             listner.onSendItemToKitchen(item)
         }
 
@@ -511,6 +529,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         fun onSendItemToKitchen(item: TbItem)
         fun onWholeTableToKitchen(ids: String)
         fun singleItemFired(id: String, position: Int, item: TbItem)
+        fun onGuestPrint(listItem: ArrayList<TbItem>)
     }
 
     fun getList(): List<DineInModel> {

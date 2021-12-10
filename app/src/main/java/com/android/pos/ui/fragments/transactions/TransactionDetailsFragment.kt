@@ -142,13 +142,19 @@ class TransactionDetailsFragment : Fragment() {
 
                 paymentDetailsResponse = it
                 binding.tvDate.text =
-                    convertCurrentDate(it.data.order.created_at, context) + " " + convertCurrentTime(
+                    convertCurrentDate(
+                        it.data.order.created_at,
+                        context
+                    ) + " " + convertCurrentTime(
                         it.data.order.created_at,
                         context
                     )
 
                 binding.tvTransactionDate.text =
-                    convertCurrentTime(it.data.order.created_at, context) + "\n" + convertCurrentDate(
+                    convertCurrentTime(
+                        it.data.order.created_at,
+                        context
+                    ) + "\n" + convertCurrentDate(
                         it.data.order.created_at,
                         context
                     )
@@ -205,7 +211,7 @@ class TransactionDetailsFragment : Fragment() {
                     if (paymentDetailsResponse.data.cash_discount_type == "CashDiscount") {
                         binding.linearCashDiscount.visibility = View.GONE
                         binding.liinearNoncashAdj.visibility = View.GONE
-                    }else{
+                    } else {
                         binding.linearCashDiscount.visibility = View.GONE
                         binding.liinearNoncashAdj.visibility = View.VISIBLE
                         binding.txtNonCashAdjamount.text = "+ $" + String.format(
@@ -221,7 +227,7 @@ class TransactionDetailsFragment : Fragment() {
                             "%.2f",
                             paymentDetailsResponse.data.cash_discount_or_surcharge
                         )
-                    }else{
+                    } else {
                         binding.linearCashDiscount.visibility = View.GONE
                         binding.liinearNoncashAdj.visibility = View.GONE
                     }
@@ -644,14 +650,6 @@ class TransactionDetailsFragment : Fragment() {
                         Builder.COLOR_1
                     )
 
-                    Log.e(
-                        TAG,
-                        "ConvertDateTime:  ${
-                            Constants.getReceiptFormatDateFromUTCServer(
-                                paymentDetailsResponse?.data.order?.created_at.toString()
-                            )
-                        }"
-                    )
                     builder.addText(
                         padLine(
                             if (customerSettingModel.showTeam) {
