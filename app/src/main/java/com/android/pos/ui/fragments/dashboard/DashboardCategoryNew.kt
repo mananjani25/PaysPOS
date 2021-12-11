@@ -208,6 +208,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         dineInUpdateOrder()
         getCustomerReceiptSettings()
         getKitchenReceiptSettings()
+        prefProvider.setValue(Constants.SPLIT_PAY_AMOUNT_DINE_IN,"")
+        prefProvider.setValue(Constants.SPLIT_PAY_TYPE_DINE_IN,"")
+        prefProvider.setValueInt(Constants.SPLIT_NO_DINE_IN,-1)
+
 
         binding.footer.imgClock.setOnClickListener {
             alert(
@@ -695,9 +699,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             binding.layoutCart.rlSave.visibility = View.VISIBLE
                         }
 
-                        if (prefProvider.getValueInt("ORDER_ID", -1) != -1) {
-                            gotoPayment()
-                        }
+//                        if (prefProvider.getValueInt("ORDER_ID", -1) != -1) {
+//                            gotoPayment()
+//                        }
                     } else {
                         viewModel.itemCalculation(
                             cartList,
@@ -2739,6 +2743,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             txtQty.setText(qty.toString())
             btnRemove.visibility = View.GONE
             btnAddDiscount.visibility = View.GONE
+        } else {
+            btnRemove.visibility = View.VISIBLE
+            btnAddDiscount.visibility = View.VISIBLE
         }
 
         if (data.modifier_set_ids.isNotEmpty()) {

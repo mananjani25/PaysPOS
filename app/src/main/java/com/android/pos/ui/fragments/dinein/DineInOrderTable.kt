@@ -914,6 +914,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         bundle.putDouble("totalPrice", totalGuest)
         bundle.putDouble("cashSurcharge", cashSurcharge)
         bundle.putInt("totalGuestCount", totalGuestCount)
+        bundle.putInt("paidGuestCount",paidGuestAmount)
         bundle.putDouble("subTotalPrice", subTotalGuest)
         bundle.putDouble("totalTax", taxGuest)
         bundle.putParcelable("model", model)

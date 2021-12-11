@@ -209,11 +209,8 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
 
             }
-
             var finalAmt =
-                guestSubTotal + totalServiceCharge + totalTaxAmt + (list.get(0).guestDividedAmt - list.get(
-                    0
-                ).cashSurchargeDiscount)
+                guestSubTotal + totalServiceCharge + totalTaxAmt + (list.get(0).guestDividedAmt - list.get(0).cashSurchargeDiscount)
 
             binding.txtPay.setText("Pay " + MethodUtils.roundOffAmount(finalAmt))
 
@@ -222,7 +219,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 listner.onGuestPay(
                     list[position],
                     position,
-                    MethodUtils.roundOffAmountDouble(guestSubTotal + list.get(0).guestDividedAmt),
+                    MethodUtils.roundOffAmountDouble(guestSubTotal),
                     MethodUtils.roundOffAmountDouble(finalAmt),
                     MethodUtils.roundOffAmountDouble(totalTaxAmt),
                     MethodUtils.roundOffAmountDouble(totalServiceCharge),
