@@ -711,7 +711,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
                     AlertUtils.showCustomAlert(
                         requireActivity(),
-                        "You can't split amount less then 1."
+                        "You can't split amount less then $ 1.00"
                     )
 
                 } else {

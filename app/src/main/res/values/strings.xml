@@ -645,8 +645,8 @@
     <string name="loyalty_amount">Loyalty Amount</string>
     <string name="used_loyalty_points">Used Loyalty Points</string>
     <string name="loyalty_rewards">Loyalty Rewards</string>
-    <string name="end_date_amp_time"><![CDATA[End Date & Time]]></string>
-    <string name="start_date_amp_time"><![CDATA[Start Date & Time]]></string>
+    <string name="end_date_amp_time"><![CDATA[End Date \n& Time]]></string>
+    <string name="start_date_amp_time"><![CDATA[Start Date \n& Time]]></string>
     <string name="terminal_login_id_tap_to_copy_unique_id">Terminal Login ID (Tap to copy Unique id)</string>
     <string name="error_order_id_not_available">Order id is not available.</string>
 

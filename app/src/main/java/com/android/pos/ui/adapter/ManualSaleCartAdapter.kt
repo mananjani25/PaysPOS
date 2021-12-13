@@ -24,21 +24,22 @@ class ManualSaleCartAdapter : RecyclerView.Adapter<ManualSaleCartAdapter.MyViewH
     inner class MyViewHolder(private val binding: ViewManualSaleItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        val txtItem: TextView = binding.root.findViewById(R.id.txtItem)
+        private val txtItem: TextView = binding.root.findViewById(R.id.txtItem)
         fun bind(model: TbItem, pos: Int) {
-            binding.txtQuantity.setText("x ${model.itemQuantity}")
+            binding.txtQuantity.text = "x ${model.itemQuantity}"
             MethodUtils.setPriceTextView(binding.txtItemPrice, (model.price * model.itemQuantity))
 
 
-            txtItem.setText(list[pos].name)
+            txtItem.text = list[pos].name
             if (list[pos].discountPrice != 0.0) {
-                binding.txtItemPrice.setPaintFlags(binding.txtItemPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG)
-                val dPrice = list[pos].price - list[pos].discountPrice
+                binding.txtItemPrice.paintFlags =
+                    binding.txtItemPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+                val dPrice = (list[pos].price * list[pos].itemQuantity) - list[pos].discountPrice
 
                 MethodUtils.setPriceTextView(binding.txtDiscountPrice, dPrice)
             } else {
-                binding.txtItemPrice.setPaintFlags(0)
-                binding.txtDiscountPrice.setText("")
+                binding.txtItemPrice.paintFlags = 0
+                binding.txtDiscountPrice.text = ""
             }
 
             binding.model = model
@@ -47,7 +48,7 @@ class ManualSaleCartAdapter : RecyclerView.Adapter<ManualSaleCartAdapter.MyViewH
 
         init {
             binding.root.setOnClickListener {
-                listnerCall.onItemClicked(list.get(layoutPosition), layoutPosition)
+                listnerCall.onItemClicked(list[layoutPosition], layoutPosition)
 
             }
 

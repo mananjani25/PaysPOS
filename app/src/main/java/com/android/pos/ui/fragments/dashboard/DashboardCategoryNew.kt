@@ -1709,7 +1709,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                                 * txtQty.text.toString().toInt()
                                 )
                     } else {
-                        data.discountPrice = discountPrice
+                        //data.discountPrice = discountPrice
                     }
 
                 }
@@ -1818,41 +1818,45 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             setFragmentResultListener("request_key_discount_details") { requestKey: String, bundle: Bundle ->
                 val result = bundle.getParcelable<TbDiscount>("data")
                 if (result != null) {
-                    if (result.discountType == requireContext().getString(R.string.disc_percentage)) {
+                    when {
+                        result.discountType == requireContext().getString(R.string.disc_percentage) -> {
 
-                        data.discountPrice = calculateDiscountPercentage(
-                            totalPrice(data),
-                            result.percentage
-                        )
-                        discountPrice = data.discountPrice / data.itemQuantity
-                        data.discountId = result.id
-                        data.discountType = result.discountType
-                        data.isManualSales = false
-                        txtTitle.text = data.name + "  $" + String.format(
-                            "%.2f",
-                            (totalPrice(data) - data.discountPrice)
-                        )
+                            data.discountPrice = calculateDiscountPercentage(
+                                totalPrice(data),
+                                result.percentage
+                            )
+                            discountPrice = data.discountPrice / data.itemQuantity
+                            data.discountId = result.id
+                            data.discountType = result.discountType
+                            data.isManualSales = false
+                            txtTitle.text = data.name + "  $" + String.format(
+                                "%.2f",
+                                (totalPrice(data) - data.discountPrice)
+                            )
 
-                    } else if (data.price > result.percentage) {
+                        }
+                        totalPrice(data) > result.percentage -> {
 
-                        data.discountPrice = result.percentage
-                        data.discountId = 0
-                        data.discountType = result.discountType
-                        data.isManualSales = false
-                        discountPrice = data.discountPrice / data.itemQuantity
+                            data.discountPrice = result.percentage
+                            data.discountId = 0
+                            data.discountType = result.discountType
+                            data.isManualSales = false
+                            discountPrice = data.discountPrice / data.itemQuantity
 
-                        //viewModel.cartLogic(cartList, data, Constants.UPDATE)
-                        txtTitle.text = data.name + "  $" + String.format(
-                            "%.2f",
-                            (totalPrice(data) - data.discountPrice)
-                        )
-                    } else {
-                        /*  data.discountPrice = 0.0
-                          data.discountType = ""
-                          data.isManualSales = false
-                          data.discountId = 0
-                          discountPrice = data.discountPrice*/
+                            //viewModel.cartLogic(cartList, data, Constants.UPDATE)
+                            txtTitle.text = data.name + "  $" + String.format(
+                                "%.2f",
+                                (totalPrice(data) - data.discountPrice)
+                            )
+                        }
+                        else -> {
+                            /*  data.discountPrice = 0.0
+                                          data.discountType = ""
+                                          data.isManualSales = false
+                                          data.discountId = 0
+                                          discountPrice = data.discountPrice*/
 
+                        }
                     }
 
                 } else {
@@ -1892,6 +1896,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     }
 
 
+    @SuppressLint("SetTextI18n")
     private fun showPriceTitle(
         variationsAttribute: VariationsAttribute?,
         variationAdapter: VariationDashboardListAdapter?,

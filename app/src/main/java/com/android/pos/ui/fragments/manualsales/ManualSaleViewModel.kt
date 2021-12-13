@@ -75,86 +75,113 @@ class ManualSaleViewModel @Inject constructor(
     }
 
     fun cartLogic(cartList: List<CartModel>?, item: TbItem, type: String) {
+
         if (cartList != null && cartList.isEmpty()) {
+
             val model = addCartModel(item)
-            Log.e(TAG, "AddCartModel:  ${Gson().toJson(model)}")
             addCart(model)
         } else {
             val list = cartList?.get(0)?.items?.toMutableList()
-            Log.e(TAG, "ViewModellist:  ${Gson().toJson(item)}")
+
             if (list != null && list.isNotEmpty()) {
-                if (type == ADD) {
-                    item.itemQuantity = 1
-                    list.add(item)
 
-                } else if (type == UPDATE) {
+                if (type == ADD || type == UPDATE) {
                     var index = -1
-                    list.forEachIndexed { pos, tbItem ->
-                        if (tbItem.customItemID == item.customItemID) {
-                            index = pos
-                            return@forEachIndexed
-                        }
 
+                    list.forEachIndexed { pos, tbItem ->
+                        if (item != null) {
+                            if (tbItem.itemId == item.itemId) {
+                                index = pos
+                                return@forEachIndexed
+                            }
+                        }
                     }
-                    Log.e(TAG, "indexValue ${index}")
-                    val model = cartList[0].items?.get(index)
                     if (index != -1) {
+                        val model = cartList[0].items?.get(index)
                         if (model != null) {
                             if (type == "UPDATE") {
-                                model.itemQuantity = item.itemQuantity
-                                model.discountPrice = item.discountPrice
-                                model.price = item.price
-                                model.discountId = item.discountId
-
-                                list.set(index, model)
-
-
+                                if (item != null) {
+                                    model.itemQuantity = item.itemQuantity
+                                    if (item.isEdited) {
+                                        model.isEdited = item.isEdited
+                                    }
+                                }
+                                list[index] = model
                             } else {
-                                model.itemQuantity = model.itemQuantity++
+                                if (index != -1) {
+                                    if (item != null) {
+                                        model.itemQuantity =
+                                            item.itemQuantity + model.itemQuantity
+                                    }
 
+                                    list[index] = model
+                                } else {
+                                    if (item != null) {
+                                        model.itemQuantity = item.itemQuantity
+                                        if (item.isEdited) {
+                                            model.isEdited = item.isEdited
+                                        }
+                                    }
+                                    list[index] = model
+                                }
                             }
 
                         }
+                    } else {
+                        if (item != null) {
+                            list.add(item)
+                        }
                     }
-
                 } else if (type == DELETE) {
-                    list.remove(item)
-                    Log.e(TAG, "InsideListSize:  ${list.size}")
 
+                    var index = -1
 
+                    list.forEachIndexed { pos, tbItem ->
+                        if (item != null) {
+                            if (tbItem.itemId == item.itemId) {
+                                index = pos
+                                return@forEachIndexed
+                            }
+                        }
+                    }
+                    if (index != -1) {
+                        val model = cartList[0].items?.get(index)
+                        if (model != null) {
+                            //delete from cart
+                            if (item.isEdited) {
+                                model.isEdited = item.isEdited
+                                model.isDestroy = true
+                            } else {
+                                list.remove(item)
+                            }
+                        }
+                    } else {
+                        //list.remove(item)
+                    }
                 }
 
-                if (list.size == 0 && type == DELETE) {
+                val cartModel = cartList[0]
+                cartModel.items = list
+                addCart(cartModel)
+
+                if (list.isEmpty()) {
+                    // delete carts
+                    deleteCart()
+                }
+            } else {
+
+                if (type == DELETE) {
                     deleteCart()
                 } else {
-
-
-                    val cartModel = cartList[0]
-                    cartModel.items = list
-                    cartModel.isMaual = true
-                    addCart(cartModel)
-
-
-//                val cartModel = CartModel().apply {
-//                    cartId = cartList[0].cartId
-//                    items = list
-//                    isMaual = true
-//
-//                }
-
-                    Log.e(TAG, "cartModel:  ${Gson().toJson(cartModel)}")
-
-                    addCart(cartModel)
-                }
-                /*if (list.isEmpty()) {
-                    deleteCart()
+                    val cartModel = cartList?.get(0)
+                    cartModel?.items = listOf(item)
+                    if (cartModel != null) {
+                        addCart(cartModel)
+                    }
                 }
 
-    */
             }
-
         }
-
 
     }
 

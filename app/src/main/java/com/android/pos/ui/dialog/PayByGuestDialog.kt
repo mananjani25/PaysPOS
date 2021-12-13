@@ -1208,6 +1208,8 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
             val requestModel = createRequestForTotalAmount()
             requestModel.order.paymentAttributes = paymentAttributes()
 
+            paymentViewModel.totalPayAmount(paymentAmount)
+
             orderId?.let { paymentViewModel.dineInWholePayment(requestModel, it, splitValue) }
         } else {
 
