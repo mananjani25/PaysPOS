@@ -182,7 +182,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 binding.btnPaid.visibility = View.INVISIBLE
 
             }
-            if (list[layoutPosition].title?.lowercase() == "Whole Table".lowercase()) {
+            if (list[layoutPosition].title?.lowercase() == "Whole Table".lowercase() || list.get(0).totalGuestCount == 1) {
                 binding.btnPay.visibility = View.GONE
                 binding.btnPaid.visibility = View.INVISIBLE
                 //  binding.txtTotal.visibility = View.INVISIBLE
@@ -209,13 +209,16 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
 
             }
+
+
             var finalAmt =
-                guestSubTotal + totalServiceCharge + totalTaxAmt + (list.get(0).guestDividedAmt - list.get(0).cashSurchargeDiscount)
+                guestSubTotal + totalServiceCharge + totalTaxAmt + (list.get(0).guestDividedAmt - list.get(
+                    0
+                ).cashSurchargeDiscount)
 
             binding.txtPay.setText("Pay " + MethodUtils.roundOffAmount(finalAmt))
 
             binding.btnPay.setOnClickListener {
-
                 listner.onGuestPay(
                     list[position],
                     position,

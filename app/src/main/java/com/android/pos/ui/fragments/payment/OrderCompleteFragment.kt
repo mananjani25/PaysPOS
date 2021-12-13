@@ -71,6 +71,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     private var isGuestPaymentTotal = false
 
+
     @Inject
     lateinit var prefProvider: PrefProvider
     private lateinit var binding: FragmentOrderCompletBinding
@@ -93,7 +94,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         if (requireArguments().getBoolean("isSpilt")) {
             observeSplitList()
         }
-
         return binding.root
     }
 
@@ -358,7 +358,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         if (isSpilt) {
             if (isDineIn) {
-                findNavController().popBackStack()
+                val navController = findNavController()
+                navController.previousBackStackEntry?.savedStateHandle?.set("isNextPayment", true)
+                navController.popBackStack()
             } else {
                 findNavController().popBackStack()
             }

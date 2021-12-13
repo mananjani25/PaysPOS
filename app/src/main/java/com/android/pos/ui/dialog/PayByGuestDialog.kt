@@ -89,7 +89,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
 
     @Inject
     lateinit var prefProvider: PrefProvider
-
+    var isNextPayment = false
 
     companion object {
         fun newInstance() = PayByGuestDialog()
@@ -116,11 +116,17 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
         amountType = prefProvider.getValue(Constants.AMOUNT_TYPE, "")
         rateorAmount = prefProvider.getValue(Constants.RATE_OR_AMOUNT, "0")
 
+        var navControll = findNavController()
+        navControll.currentBackStackEntry?.savedStateHandle?.getLiveData<Boolean>("isNextPayment")
+            ?.observe(viewLifecycleOwner) {
+                isNextPayment = it
+            }
         requireArguments().getDouble("totalPrice")?.let {
             wholeTotalFromDinein = it
         }
         if (isTotalPayment) {
             isTotalPayment = true
+            isLastPayment = true
             orderId = requireArguments().getInt("orderId")
             setTotalPaymentData()
             binding.txtCustom.setOnClickListener(this)
@@ -135,7 +141,6 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
         } else {
             floorPlanModel = requireArguments().getParcelable("floorPlan")
             orderId = requireArguments().getInt("orderId")
-
             cartList = requireArguments().getParcelable("cartList")
             guestId = requireArguments().getInt("id")
             guestRequestModel = requireArguments().getParcelable("model")
@@ -386,7 +391,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                     // bundle.putParcelable("receiptData", it.data)
                     bundle.putBoolean("isSpilt", true)
                     bundle.putInt("splitValue", splitValue)
-                    bundle.putDouble("remainingAmount", wholeTotalFromDinein-totalPrice)
+                    bundle.putDouble("remainingAmount", wholeTotalFromDinein - totalPrice)
                     bundle.putBoolean("isDineIn", true)
                     bundle.putBoolean("isGuest", isGuestPay)
                     bundle.putBoolean("isTotalPayment", isTotalPayment)
@@ -638,7 +643,6 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
     }
 
     private fun setupData() {
-
         requireArguments().getDouble("totalPrice")?.let {
             totalPrice = it
         }
@@ -726,6 +730,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
 
             }
         }
+        Log.d("yash", "setupData: after splited "+totalPrice)
         MethodUtils.setPriceTextView(binding.txtSubTotal, subTotalPrice)
         MethodUtils.setPriceTextView(binding.txtTax, totalTax)
         //MethodUtils.setPriceTextView(binding.txtDiscount, totalDiscount)
@@ -889,9 +894,10 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                         makePaymentCreditCard()
                     } else {
                         guestPaySpit()
+                        var finallLastPayment = isLastPayment && isGuestPaymentTotal
                         guestRequestModel?.let {
                             guestId?.let { it1 ->
-                                isLastPayment?.let { it2 ->
+                                finallLastPayment?.let { it2 ->
                                     splitModel?.let { it3 ->
                                         viewModel.payByGuest(
                                             it1, it,
@@ -939,10 +945,10 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                     } else {
 
                         guestPaySpit()
-
+                       var finallLastPayment = isLastPayment && isGuestPaymentTotal
                         guestRequestModel?.let {
                             guestId?.let { it1 ->
-                                isLastPayment?.let { it2 ->
+                                    finallLastPayment?.let { it2 ->
                                     splitModel?.let { it3 ->
                                         viewModel.payByGuest(
                                             it1, it,
@@ -976,10 +982,10 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
 
                 } else {
                     guestPaySpit()
-
+                    var finallLastPayment = isLastPayment && isGuestPaymentTotal
                     guestRequestModel?.let {
                         guestId?.let { it1 ->
-                            isLastPayment?.let { it2 ->
+                            finallLastPayment?.let { it2 ->
                                 splitModel?.let { it3 ->
                                     viewModel.payByGuest(
                                         it1, it,
@@ -1001,9 +1007,10 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
 
                 } else {
                     guestPaySpit()
+                    var finallLastPayment = isLastPayment && isGuestPaymentTotal
                     guestRequestModel?.let {
                         guestId?.let { it1 ->
-                            isLastPayment?.let { it2 ->
+                            finallLastPayment?.let { it2 ->
                                 splitModel?.let { it3 ->
                                     viewModel.payByGuest(
                                         it1, it,
@@ -1023,9 +1030,10 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                     makePayment(0.0)
                 } else {
                     guestPaySpit()
+                    var finallLastPayment = isLastPayment && isGuestPaymentTotal
                     guestRequestModel?.let {
                         guestId?.let { it1 ->
-                            isLastPayment?.let { it2 ->
+                            finallLastPayment?.let { it2 ->
                                 splitModel?.let { it3 ->
                                     viewModel.payByGuest(
                                         it1, it,
@@ -1046,9 +1054,10 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
 
                 } else {
                     guestPaySpit()
+                    var finallLastPayment = isLastPayment && isGuestPaymentTotal
                     guestRequestModel?.let {
                         guestId?.let { it1 ->
-                            isLastPayment?.let { it2 ->
+                            finallLastPayment?.let { it2 ->
                                 splitModel?.let { it3 ->
                                     viewModel.payByGuest(
                                         it1, it,
@@ -1428,7 +1437,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                 orderTypeId = 2
                 paymentStatus = 1
                 subTotal = subTotalPrice
-                totalAmount = totalPrice+tipAmount
+                totalAmount = totalPrice + tipAmount
                 totalDiscount = totaldiscount
                 totalServiceCharges = totalServiceCharge
                 totalTaxAmount = totalTax

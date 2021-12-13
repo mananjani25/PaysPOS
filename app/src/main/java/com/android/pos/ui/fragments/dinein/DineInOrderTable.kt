@@ -1518,6 +1518,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     }
                     dineInList.get(0).guestDividedAmt =
                         MethodUtils.roundOffAmountDouble((WTSubTotal + WTTaxes + WTServiceCharge - orderDiscount) / (baseResponse.guestAttributes.size - 1))
+                    dineInList.get(0).totalGuestCount = baseResponse.guestAttributes.size - 1
+
 
                     Log.d(
                         "guestDivide",
