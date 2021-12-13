@@ -56,6 +56,7 @@ import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
 import com.android.pos.data.remote.Constants.HORIZONTAL
 import com.android.pos.data.remote.Constants.IS_ORDER_UPDATE
+import com.android.pos.data.remote.Constants.LOYALTY_ADDED
 import com.android.pos.data.remote.Constants.MANUALSALE
 import com.android.pos.data.remote.Constants.MERGED
 import com.android.pos.data.remote.Constants.OPEN_ORDER
@@ -108,6 +109,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private var isReOrder: Boolean = false
     private var future_delivery_time: String = ""
     private var popupWindow: PopupWindow? = null
+    private var totalDiscountMannualAdded = 0.0
     private var orderType: TbOrderType? = null
     private var future_delivery_date: String = ""
     private var assignCustomer: TbCustomer? = null
@@ -282,6 +284,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         binding.layoutCart.llCartMenu.setOnClickListener(this)
         binding.layoutCart.imgOrderMenu.setOnClickListener(this)
         binding.layoutCart.txtAddDiscount.setOnClickListener(this)
+//
+//        if (prefProvider.getValueboolean(LOYALTY_ADDED, false)) {
+//            refreshItemCalculation()
+//        }
         binding.footer.txtEmployeeName.text = prefProvider.getValue(EMPLOYEE_NAME, "")
 
         binding.root.setOnClickListener {
@@ -1261,9 +1267,20 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         val chkLoyalty: CheckBox = popupView.findViewById(R.id.chkLoyaltyAmount)
         chkLoyalty.setOnCheckedChangeListener { _, p1 ->
             viewModel.redeemLoyaltyInfo.needToApplyLoyalty = p1
+            prefProvider.setValueboolean(LOYALTY_ADDED, p1)
             //refresh pop up data and final calculation
             setPopUpData(popupView)
             refreshItemCalculation()
+        }
+
+        if (prefProvider.getValueboolean(LOYALTY_ADDED, false)) {
+            if (!chkLoyalty.isChecked) {
+                chkLoyalty.isChecked = true
+                setPopUpData(popupView)
+                refreshItemCalculation()
+            }
+        } else {
+            chkLoyalty.isChecked = false
         }
 
         popupWindow = PopupWindow(
@@ -1724,6 +1741,11 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 }
 
                 //check is_edited flag
+                if(totalDiscountMannualAdded>0){
+                    data.discountPrice = totalDiscountMannualAdded
+                }else{
+                    data.discountPrice = totalDiscountMannualAdded
+                }
                 makeItemEdited(data)
 
                 if (isItemClick) {
@@ -1820,6 +1842,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             totalPrice(data),
                             result.percentage
                         )
+                        totalDiscountMannualAdded = data.discountPrice
+
                         discountPrice = data.discountPrice / data.itemQuantity
                         data.discountId = result.id
                         data.discountType = result.discountType
@@ -1830,7 +1854,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         )
 
                     } else if (data.price > result.percentage) {
-
+                        totalDiscountMannualAdded = data.discountPrice
                         data.discountPrice = result.percentage
                         data.discountId = 0
                         data.discountType = result.discountType
@@ -2184,6 +2208,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             }
             R.id.txtCrtNewCustomer -> {
                 if (prefProvider.getValue(CUSTOMER_NAME, "").toString().isNotEmpty()) {
+                    prefProvider.setValueboolean(LOYALTY_ADDED, false)
                     clearCustomer()
                 } else {
                     findNavController().navigate(
@@ -2239,6 +2264,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             hideOrderType()
                             hideOrderMenu()
                             clearUpdateFlag()
+                            prefProvider.setValueboolean(LOYALTY_ADDED, false)
                         }
                     }
                     negativeButton(R.string.tv_cancel) {
