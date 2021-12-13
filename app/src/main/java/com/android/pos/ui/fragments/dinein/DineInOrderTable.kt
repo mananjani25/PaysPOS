@@ -54,6 +54,7 @@ import kotlin.math.log
 
 @AndroidEntryPoint
 class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
+    private var customerList: List<PrinterResponse.Data.CustomerReceiptPrinters> = listOf()
     private var toFinalAmt: Double = 0.0
     private var totalTaxAmt: Double = 0.0
     private var isFireAll: Boolean = false
@@ -1131,11 +1132,15 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
     override fun onGuestPrint(listItem: ArrayList<TbItem>) {
         if (listItem[0].isPaid == true) {
-            getCustomerPrinters("Paid")
+            guestPrint("Paid")
         } else {
-            getCustomerPrinters("Unpaid")
+            guestPrint("Unpaid")
 
         }
+
+    }
+
+    private fun guestPrint(paymentStatus: String) {
 
     }
 
@@ -2252,7 +2257,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 Status.SUCCESS -> {
                     ProgressUtils.dismissProgressDialog()
                     if (it.data != null) {
-                        val customerList = it.data
+                        customerList = it.data
 
                         customerList.forEach {
                             initPrinter(it, Constants.CUSTOMER, paymentType)
