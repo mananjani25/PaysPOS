@@ -216,6 +216,12 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                     0
                 ).cashSurchargeDiscount)
 
+            Log.e(TAG, "guestSubTotal  ${guestSubTotal}")
+            Log.e(TAG, "guesttotalServiceCharge  ${totalServiceCharge}")
+            Log.e(TAG, "guesttotalTaxAmt  ${totalTaxAmt}")
+            Log.e(TAG, "guestguestDividedAmt  ${list.get(0).guestDividedAmt}")
+            Log.e(TAG, "guestcashSurchargeDiscount  ${list.get(0).cashSurchargeDiscount}")
+
             binding.txtPay.setText("Pay " + MethodUtils.roundOffAmount(finalAmt))
 
             binding.btnPay.setOnClickListener {
@@ -249,7 +255,13 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 }
 
                 if (listItem.isNotEmpty()) {
-                    listner.onGuestPrint(listItem)
+                    var guestName = ""
+                    if (list[bindingAdapterPosition].customer != null) {
+                        guestName = list[bindingAdapterPosition].customer?.first_name.toString()
+                    } else {
+                        guestName = list[bindingAdapterPosition].title.toString()
+                    }
+                    listner.onGuestPrint(listItem, guestName)
                 }
 
 
@@ -533,7 +545,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         fun onSendItemToKitchen(item: TbItem)
         fun onWholeTableToKitchen(ids: String)
         fun singleItemFired(id: String, position: Int, item: TbItem)
-        fun onGuestPrint(listItem: ArrayList<TbItem>)
+        fun onGuestPrint(listItem: ArrayList<TbItem>, guestName: String)
     }
 
     fun getList(): List<DineInModel> {
