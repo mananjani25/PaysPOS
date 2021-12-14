@@ -43,8 +43,8 @@ class CreateModifierViewModel @Inject constructor(
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
-    private var _data = MutableLiveData<Event<Boolean>>()
-    val data: LiveData<Event<Boolean>> = _data
+    private var _data = MutableLiveData<Event<String>>()
+    val data: LiveData<Event<String>> = _data
 
     fun setItemIds(itemIds: ArrayList<Int>) {
         this.itemIdsViewModel = itemIds
@@ -95,7 +95,7 @@ class CreateModifierViewModel @Inject constructor(
                             if (modifierSetResponse?.status == 200) {
                                 resource.data?.let {
 
-                                    _data.value = Event(true)
+                                    _data.value = Event(it.message)
                                     posRepository.addModifierSets(it.data.modifierSet)
                                 }
                             } else {
