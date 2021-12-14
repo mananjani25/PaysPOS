@@ -54,6 +54,7 @@ import kotlin.math.log
 
 @AndroidEntryPoint
 class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
+    private var customerList: List<PrinterResponse.Data.CustomerReceiptPrinters> = listOf()
     private var toFinalAmt: Double = 0.0
     private var totalTaxAmt: Double = 0.0
     private var isFireAll: Boolean = false
@@ -153,7 +154,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         viewModel.getServiceChargeList.observe(viewLifecycleOwner, {
             if (it.data?.isNotEmpty() == true) {
                 serviceChargeList = it.data.toCollection(arrayListOf())
-
+                dineInTableAdapter.setSurchargeList(serviceChargeList)
 
             }
 
@@ -440,6 +441,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             prefProvider.setValue(ORDER_TYPE_NAME, DINE_IN)
             prefProvider.setValueInt(Constants.DINE_IN_TABLE_ID, 2)
             prefProvider.setValueboolean(Constants.DINE_IN_STATUS, true)
+
             /*   prefProvider.setValu
             e(Constants.ORDER_TYPE, DINE_IN)
                prefProvider.setValue(ORDER_TYPE_NAME, DINE_IN)
@@ -913,6 +915,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         bundle.putDouble("totalPrice", totalGuest)
         bundle.putDouble("cashSurcharge", cashSurcharge)
         bundle.putInt("totalGuestCount", totalGuestCount)
+        bundle.putInt("paidGuestCount",paidGuestAmount)
         bundle.putDouble("subTotalPrice", subTotalGuest)
         bundle.putDouble("totalTax", taxGuest)
         bundle.putParcelable("model", model)
@@ -1129,11 +1132,15 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
     override fun onGuestPrint(listItem: ArrayList<TbItem>) {
         if (listItem[0].isPaid == true) {
-            getCustomerPrinters("Paid")
+            guestPrint("Paid")
         } else {
-            getCustomerPrinters("Unpaid")
+            guestPrint("Unpaid")
 
         }
+
+    }
+
+    private fun guestPrint(paymentStatus: String) {
 
     }
 
@@ -1215,7 +1222,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     for (i in 0 until baseResponse.guestAttributes.size) {
                         val model = DineInModel()
                         var totalGuestPrice = 0.0
-                        var wholeTableAmt = 0.0
                         var guestItem = baseResponse.guestAttributes.get(i).guestItemAttributes
                         //model.isPaid = listTbItem.get(0).isPaid
 
@@ -1303,13 +1309,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                         var dividedAmt = subTotalWT / (baseResponse.guestAttributes.size - 1)
                         model.guestDividedAmt = dividedAmt
+                        Log.d("one", "navigateDineInOrder: " + model.guestDividedAmt)
                         totalGuestPrice +=
                             fullAmt / (baseResponse.guestAttributes.size - 1)
 
                         model.totalGuestPrice = totalGuestPrice
                         if (serviceChargeList.isNotEmpty()) {
                             model.serviceChargeList = serviceChargeList
-
                         }
 
                         model.id = baseResponse.guestAttributes[i].id
@@ -1477,8 +1483,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                         }
                     }
-                    if (dineInList[0].serviceChargeList?.isNotEmpty() == true) {
-                        dineInList[0].serviceChargeList?.forEach {
+                    if (serviceChargeList?.isNotEmpty() == true) {
+                        serviceChargeList?.forEach {
                             if (it.isEnabled) {
                                 WTServiceCharge += (WTSubTotal * it.percentage) / 100
                             }
@@ -1502,7 +1508,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     }
                     dineInList.get(0).guestDividedAmt =
                         MethodUtils.roundOffAmountDouble((WTSubTotal + WTTaxes + WTServiceCharge - orderDiscount) / (baseResponse.guestAttributes.size - 1))
+                    dineInList.get(0).totalGuestCount = baseResponse.guestAttributes.size - 1
 
+
+                    Log.d(
+                        "guestDivide",
+                        "navigateDineInOrder: " + (WTSubTotal + WTTaxes + WTServiceCharge - orderDiscount) / (baseResponse.guestAttributes.size - 1)
+                    )
                     WholeTableAmount = MethodUtils.roundOffAmountDouble(
                         (WTSubTotal + WTTaxes + WTServiceCharge - orderDiscount)
                     )
@@ -1585,7 +1597,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         var dividedAmt: Double =
                             wholeTableAmt / (baseResponse.guestAttributes.size - 1)
 
-                        list.get(0).guestDividedAmt = dividedAmt
+//                        list.get(0).guestDividedAmt = dividedAmt
 
                         //  dineInTableAdapter.setList(list)
                         cartList = getCartModel(list)
@@ -1645,6 +1657,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     var serviceChargeGu = 0.0
                     var paidGuestCount = 0
                     var isFirstHeader = false
+
                     if (dineInList.isNotEmpty()) {
 
                         for (i in 0 until dineInList.size) {
@@ -1911,6 +1924,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         var oldList = dineInTableAdapter.getList()
         var newList: ArrayList<DineInModel> = arrayListOf()
         var wholeTableAmt = 0.0
+        var WTTax = 0.0
+        var WTServiceCharge = 0.0
         var totalPaid = 0.0
         var guestShare = 0.0
         var totalTablePrice = 0.0
@@ -1961,14 +1976,55 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                         }
                     }
+                    if (it.taxes?.isNotEmpty() == true) {
+                        it.taxes?.forEach { tax ->
+                            if (tax.isActive) {
+                                WTTax += if (tax.taxType == "Percentage") {
+
+                                    var modifierPrice = 0.0
+                                    val price =
+                                        (it.price * it.itemQuantity) - it.discountPrice
+
+                                    it.modifiers.forEach {
+                                        modifierPrice += (it.price * it.itemQuantity)
+                                    }
+
+                                    val totalPrice = price + modifierPrice
+
+                                    val itemTaxPrice =
+                                        (tax.rate * totalPrice) / 100
+                                    Log.e("itemTaxPrice", "" + itemTaxPrice)
+                                    String.format("%.2f", itemTaxPrice)
+                                        .toDouble()
+                                } else {
+
+                                    String.format(
+                                        "%.2f",
+                                        tax.rate * it.itemQuantity
+                                    )
+                                        .toDouble()
+                                }
+                            }
+                        }
+                    }
                 }
+
 
             } else {
 
                 break
             }
+
         }
-        guestShare += wholeTableAmt / (guestCount - 1)
+        if (serviceChargeList?.isNotEmpty() == true) {
+            serviceChargeList?.forEach {
+                if (it.isEnabled) {
+                    WTServiceCharge += (wholeTableAmt * it.percentage) / 100
+                }
+            }
+
+        }
+        guestShare += (wholeTableAmt + WTServiceCharge + WTTax) / (guestCount - 1)
 
         for (i in 0 until oldList.size) {
             var model = DineInModel()
@@ -1982,6 +2038,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 model.customer = oldList.get(i).customer
 
                 model.guestDividedAmt = guestShare
+                Log.d("two", "navigateDineInOrder: " + model.guestDividedAmt)
             }
             model.isHeader = oldList.get(i).isHeader
             newList.add(model)
@@ -2204,7 +2261,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 Status.SUCCESS -> {
                     ProgressUtils.dismissProgressDialog()
                     if (it.data != null) {
-                        val customerList = it.data
+                        customerList = it.data
 
                         customerList.forEach {
                             initPrinter(it, Constants.CUSTOMER, paymentType)
