@@ -874,7 +874,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             subTotalPrice = subTotalGuest
             offlineId = randomOfflineId()
             payableType = "GuestTab"
-            paymentType = paymentType
+            paymentType = "Cash"
             transactionId = randomOfflineId()
             terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
             order_id = orderId
@@ -891,7 +891,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 subTotalPrice = subTotalGuest
                 offlineId = randomOfflineId()
                 payableType = "GuestTab"
-                paymentType = paymentType
+                paymentType = "Cash"
                 transactionId = randomOfflineId()
                 terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
                 order_id = orderId
@@ -1305,21 +1305,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         fullAmt += serviceCharge
                         totalPay += fullAmt
 
-                        if (MethodUtils.isEnableCashDiscount(requireContext())) {
-                            var cashDisSurcharge = MethodUtils.calculateCashDiscount(
-                                subTotalWT,
-                                prefProvider,
-                                requireContext()
-                            ) / (baseResponse.guestAttributes.size - 1)
-                            if (optionType == "CashDiscount") {
-                                model.cashSurchargeDiscount = cashDisSurcharge
-                                Log.d(TAG, "navigateDineInOrder: $cashDisSurcharge")
-                            } else if (optionType == "SurCharge") {
-                                model.cashSurchargeDiscount = 0.0
-                            }
-                        } else {
-                            model.cashSurchargeDiscount = 0.0
-                        }
 
 
                         var dividedAmt = subTotalWT / (baseResponse.guestAttributes.size - 1)
@@ -1810,6 +1795,25 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         Log.d(TAG, "navigateDineInOrder: " + finalTaxAmt)
                         Log.d(TAG, "navigateDineInOrder: " + myShare)
                         Log.d(TAG, "navigateDineInOrder: " + guestSubTotal)
+
+                        if (MethodUtils.isEnableCashDiscount(requireContext())) {
+                            var cashDisSurcharge = MethodUtils.calculateCashDiscount(
+                                subTotalWT,
+                                prefProvider,
+                                requireContext()
+                            ) / (baseResponse.guestAttributes.size - 1)
+                            if (optionType == "CashDiscount") {
+                                dineInList.get(0).cashSurchargeDiscount = cashDisSurcharge
+                                Log.d(TAG, "navigateDineInOrder: $cashDisSurcharge")
+                            } else if (optionType == "SurCharge") {
+                                dineInList.get(0).cashSurchargeDiscount = 0.0
+                            }
+                        } else {
+                            dineInList.get(0).cashSurchargeDiscount = 0.0
+                        }
+
+
+
 
                         var finalAmt =
                             guestSubTotal + serviceCharge + finalTaxAmt + myShare

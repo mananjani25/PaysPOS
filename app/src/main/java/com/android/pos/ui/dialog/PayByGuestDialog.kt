@@ -1169,7 +1169,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                 totaldiscount
             guestRequestModel?.paymentAttributes!!.cash_discount_or_surcharge = cashSurcharge
             guestRequestModel?.paymentAttributes!!.paymentType = paymentType
-
+            guestRequestModel?.paymentAttributes!!.cash_discount_or_surcharge= guestRequestModel?.paymentAttributes!!.cash_discount_or_surcharge
 
             val guestPaymentAttributes = GuestPaymentAttributes()
             guestPaymentAttributes.amount =
@@ -1192,7 +1192,47 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                 guestRequestModel?.paymentAttributes!!.cash_discount_or_surcharge
             guestPaymentAttributes.offlineId = guestRequestModel?.paymentAttributes!!.offlineId
             guestPaymentAttributes.order_id = guestRequestModel?.paymentAttributes!!.order_id
+            guestPaymentAttributes.cash_discount_type = guestRequestModel?.paymentAttributes!!.cash_discount_type
 
+
+            guestRequestModel?.paymentAttributes!!.paymentAttributes =
+                listOf(guestPaymentAttributes)
+        } else if (paymentType == "Cash") {
+            guestRequestModel?.paymentAttributes!!.amount =
+                totalPrice
+            guestRequestModel?.paymentAttributes!!.serviceChargeAmount =
+                totalServiceCharge
+            guestRequestModel?.paymentAttributes!!.subTotal =
+                subTotalPrice
+            guestRequestModel?.paymentAttributes!!.taxAmount =
+                totalTax
+            guestRequestModel?.paymentAttributes!!.tips =
+                tipAmount
+            guestRequestModel?.paymentAttributes!!.totalDiscount =
+                totaldiscount
+            guestRequestModel?.paymentAttributes!!.cash_discount_or_surcharge = cashSurcharge
+            guestRequestModel?.paymentAttributes!!.cash_discount_type= cashDiscountType
+
+            val guestPaymentAttributes = GuestPaymentAttributes()
+            guestPaymentAttributes.amount =
+                totalPrice
+            guestPaymentAttributes.serviceChargeAmount =
+                totalServiceCharge
+            guestPaymentAttributes.subTotal =
+                subTotalPrice
+            guestPaymentAttributes.taxAmount =
+                totalTax
+            guestPaymentAttributes.tips =
+                tipAmount
+            guestPaymentAttributes.totalDiscount =
+                totaldiscount
+            guestPaymentAttributes.payableType = guestRequestModel?.paymentAttributes!!.payableType
+            guestPaymentAttributes.paymentType = guestRequestModel?.paymentAttributes!!.paymentType
+            guestPaymentAttributes.offlineId = guestRequestModel?.paymentAttributes!!.offlineId
+            guestPaymentAttributes.cash_discount_or_surcharge =
+                guestRequestModel?.paymentAttributes!!.cash_discount_or_surcharge
+            guestPaymentAttributes.order_id = guestRequestModel?.paymentAttributes!!.order_id
+//            guestPaymentAttributes.cash_discount_type = guestRequestModel?.paymentAttributes!!.cash_discount_type
 
             guestRequestModel?.paymentAttributes!!.paymentAttributes =
                 listOf(guestPaymentAttributes)

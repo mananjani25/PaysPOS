@@ -90,6 +90,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         getCustomerReceiptSettings()
         getKitchenReceiptSettings()
         splitAdapter = SplitListAdapter()
+        prefProvider.setValueboolean(Constants.IS_ORDER_UPDATE, value = false)
         binding.rvSplits.adapter = splitAdapter
         if (requireArguments().getBoolean("isSpilt")) {
             observeSplitList()
