@@ -218,10 +218,10 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:gravity="center"
-                        android:padding="@dimen/_7sdp"
+                        android:padding="@dimen/_5sdp"
                         android:text="@string/add_customer"
                         android:textColor="@color/white"
-                        android:textSize="@dimen/_7mdpi" />
+                        android:textSize="@dimen/_5mdpi" />
 
                     <View
                         android:layout_width="match_parent"

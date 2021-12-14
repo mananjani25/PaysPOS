@@ -13,7 +13,6 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_5sdp"
             android:orientation="horizontal">
 
             <androidx.appcompat.widget.AppCompatImageView
@@ -21,6 +20,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:padding="@dimen/_5sdp"
                 android:layout_marginStart="@dimen/_5sdp"
                 android:src="@drawable/ic_cancel_black" />
 
@@ -42,8 +42,8 @@
                 style="@style/CustomFontBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/_10sdp"
-                android:padding="@dimen/_3sdp"
+                android:layout_marginEnd="@dimen/_5sdp"
+                android:padding="@dimen/_4sdp"
                 android:text="@string/tv_home"
                 android:textColor="@color/txt_color_blue"
                 android:textSize="@dimen/_7mdpi" />
@@ -52,7 +52,6 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
-            android:layout_marginTop="@dimen/_5sdp"
             android:layout_marginBottom="@dimen/_5sdp"
             android:background="@color/gray_rect" />
 

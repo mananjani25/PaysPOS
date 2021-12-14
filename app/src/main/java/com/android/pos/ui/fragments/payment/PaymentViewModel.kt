@@ -149,10 +149,9 @@ class PaymentViewModel @Inject constructor(
 
                                 if (onlySave) {
                                     _data.value = Event(createOrderResponse)
-                                } else {
-                                    if (createOrderResponse.data.order.orderType != "Dine In") {
-                                        cashLogApi(createOrderResponse, "in")
-                                    }
+                                }
+                                if (createOrderResponse.data.order.orderType != "Dine In") {
+                                    cashLogApi(createOrderResponse, "in")
                                 }
 
                                 _msgText.value = Event(response.message)
