@@ -100,7 +100,7 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
             }
 
             item.orderItemTaxes.forEach { tax ->
-                tax.amount?.let {
+                tax.taxTotalAmount.let {
                     totalTax += it
                 }
             }

@@ -2063,6 +2063,21 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             }
         }
 
+        if (MethodUtils.isEnableCashDiscount(requireContext())) {
+            var cashDisSurcharge = MethodUtils.calculateCashDiscount(
+                subTotalWT,
+                prefProvider,
+                requireContext()
+            ) / totalGuestCount
+            if (optionType == "CashDiscount") {
+                newList.get(0).cashSurchargeDiscount = cashDisSurcharge
+                Log.d(TAG, "navigateDineInOrder: $cashDisSurcharge")
+            } else if (optionType == "SurCharge") {
+                newList.get(0).cashSurchargeDiscount = 0.0
+            }
+        } else {
+            newList.get(0).cashSurchargeDiscount = 0.0
+        }
         dineInTableAdapter.setList(newList)
 
         updateOrderCall()
