@@ -26,6 +26,7 @@ import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.HashSet
 
 @AndroidEntryPoint
 class MergeTableDialog : DialogFragment() {
@@ -188,126 +189,151 @@ class MergeTableDialog : DialogFragment() {
 
         }
         binding.txtSave.setOnClickListener {
-            var primaryTable = tableAdapter.getItem(tableSelectedPos)
-            var totalChairCount = 0
-
             var listSecondary = adapter.getList()
-            var listSecondaryOrderDetails: ArrayList<GetFloorPlanDetailResponse.OrderDetails> =
-                arrayListOf()
+            var allIds: ArrayList<Int?> = arrayListOf()
+            var isDuplicateIdTrue = false
 
-            val parentTableId = tableAdapter.getItem(tableSelectedPos)?.id
-            var childIds: String = ""
-            var arrayChildIds: ArrayList<String> = arrayListOf()
-
-            for (i in 0 until listSecondary.size) {
-                arrayChildIds.add(listSecondary.get(i).selectedTableId.toString())
-
-                if (listSecondary[i].orderDetails == null) {
-                    totalChairCount += listSecondary.get(i).listTable.get(
-                        listSecondary.get(i).tableSelectedPosition ?: 0
-                    ).chairCount
-                        ?: 0
-                }
+            listSecondary.forEach {
+                allIds.add(it.selectedTableId)
             }
-            childIds = android.text.TextUtils.join(",", arrayChildIds)
+            allIds.add(tableAdapter.getItem(tableSelectedPos)?.id)
 
-
-            var tableMergeList: ArrayList<MergeTableModel> = arrayListOf()
-            for (i in 0 until totalChairCount) {
-
-                tableMergeList.add(
-                    MergeTableModel(
-                        id = adapter.getList().get(0).tableSelectedPosition?.let { it1 ->
-                            adapter.getList().get(0).listTable.get(
-                                it1
-                            ).id
-                        }!!, name = "", floorId = 0, floorName = ""
-                    )
-                )
-            }
-
-            Log.e(TAG, "childIds:  ${childIds}")
-            Log.e(TAG, "totalChairCount:  ${totalChairCount}")
-
-
-
-            listSecondary.add(
-                MergeTableListModel(
-                    listTable = listTable,
-                    listFloor,
-                    tableSelectedPosition = tableSelectedPos,
-                    orderDetails = primaryTable?.orderDetails
-                )
-            )
-
-            for (i in 0 until listSecondary.size) {
-                if (listSecondary[i].orderDetails != null) {
-                    listSecondary[i].orderDetails?.let { it1 -> listSecondaryOrderDetails.add(it1) }
-                }
-
-            }
-            Log.e(TAG, "listSecondaryOrderDetailsSize:  ${listSecondaryOrderDetails.size}")
-
-            if (listSecondaryOrderDetails.size == 0) {
-                //This is for Every Empty Table for both Primary and Secondary
-
-                parentTableId?.let { it1 ->
-                    viewModel.mergeTable(
-                        it1,
-                        childIds,
-                        null,
-                        null
-                    )
-                }
-
-
-            } else if (listSecondaryOrderDetails.size == 1) {
-                //One Occupied and Other's Available
-
-                var orderModel: OrderAttributeRequestModel = OrderAttributeRequestModel()
-                orderModel = viewModel.createMergeOrderRequest(
-                    listSecondaryOrderDetails.get(0),
-                    tableMergeList
-                )
-
-                viewModel.mergeTable(
-                    parentTableId ?: 0,
-                    childIds,
-                    orderModel = orderModel,
-                    orderId = orderModel.id
-
-                )
-
+            var setIds: Set<Int> = HashSet<Int>(allIds)
+            if (setIds.size < allIds.size) {
+                isDuplicateIdTrue = true
             } else {
-                //Multiple Occupied and Other's Available
-                var orderModel =
-                    viewModel.createMultipleMergeOrder(listSecondaryOrderDetails, tableMergeList)
-                var mergedChildsOrderIds = ""
-                for (i in 0 until listSecondaryOrderDetails.size) {
-                    if (listSecondaryOrderDetails.get(i).id != primaryTable?.orderId) {
+                isDuplicateIdTrue = false
+            }
 
-                        mergedChildsOrderIds += listSecondaryOrderDetails.get(i).id
-                        if (i != listSecondaryOrderDetails.size - 1) {
-                            mergedChildsOrderIds += ","
 
-                        }
+            if (!isDuplicateIdTrue) {
+                var primaryTable = tableAdapter.getItem(tableSelectedPos)
+                var totalChairCount = 0
 
+
+                var listSecondaryOrderDetails: ArrayList<GetFloorPlanDetailResponse.OrderDetails> =
+                    arrayListOf()
+
+                val parentTableId = tableAdapter.getItem(tableSelectedPos)?.id
+                var childIds: String = ""
+                var arrayChildIds: ArrayList<String> = arrayListOf()
+
+                for (i in 0 until listSecondary.size) {
+                    arrayChildIds.add(listSecondary.get(i).selectedTableId.toString())
+
+                    if (listSecondary[i].orderDetails == null) {
+                        totalChairCount += listSecondary.get(i).listTable.get(
+                            listSecondary.get(i).tableSelectedPosition ?: 0
+                        ).chairCount
+                            ?: 0
                     }
                 }
-                var listOrderIds: ArrayList<String> = arrayListOf()
-                listSecondaryOrderDetails.forEach {
-                    listOrderIds.add(it.id.toString())
+                childIds = android.text.TextUtils.join(",", arrayChildIds)
+
+
+                var tableMergeList: ArrayList<MergeTableModel> = arrayListOf()
+                for (i in 0 until totalChairCount) {
+
+                    tableMergeList.add(
+                        MergeTableModel(
+                            id = adapter.getList().get(0).tableSelectedPosition?.let { it1 ->
+                                adapter.getList().get(0).listTable.get(
+                                    it1
+                                ).id
+                            }!!, name = "", floorId = 0, floorName = ""
+                        )
+                    )
                 }
-                var mergedOrderIds = android.text.TextUtils.join(",", listOrderIds)
 
-                viewModel.mergeTable(parentTableId ?: 0, childIds, mergedOrderIds, orderModel)
-
-
-            }
+                Log.e(TAG, "childIds:  ${childIds}")
+                Log.e(TAG, "totalChairCount:  ${totalChairCount}")
 
 
-            //OLD Code
-            /* if (listSecondary.size > 1) {
+
+                listSecondary.add(
+                    MergeTableListModel(
+                        listTable = listTable,
+                        listFloor,
+                        tableSelectedPosition = tableSelectedPos,
+                        orderDetails = primaryTable?.orderDetails
+                    )
+                )
+
+                for (i in 0 until listSecondary.size) {
+                    if (listSecondary[i].orderDetails != null) {
+                        listSecondary[i].orderDetails?.let { it1 ->
+                            listSecondaryOrderDetails.add(
+                                it1
+                            )
+                        }
+                    }
+
+                }
+                Log.e(TAG, "listSecondaryOrderDetailsSize:  ${listSecondaryOrderDetails.size}")
+
+                if (listSecondaryOrderDetails.size == 0) {
+                    //This is for Every Empty Table for both Primary and Secondary
+
+                    parentTableId?.let { it1 ->
+                        viewModel.mergeTable(
+                            it1,
+                            childIds,
+                            null,
+                            null
+                        )
+                    }
+
+
+                } else if (listSecondaryOrderDetails.size == 1) {
+                    //One Occupied and Other's Available
+
+                    var orderModel: OrderAttributeRequestModel = OrderAttributeRequestModel()
+                    orderModel = viewModel.createMergeOrderRequest(
+                        listSecondaryOrderDetails.get(0),
+                        tableMergeList
+                    )
+
+                    viewModel.mergeTable(
+                        parentTableId ?: 0,
+                        childIds,
+                        orderModel = orderModel,
+                        orderId = orderModel.id
+
+                    )
+
+                } else {
+                    //Multiple Occupied and Other's Available
+                    var orderModel =
+                        viewModel.createMultipleMergeOrder(
+                            listSecondaryOrderDetails,
+                            tableMergeList
+                        )
+                    var mergedChildsOrderIds = ""
+                    for (i in 0 until listSecondaryOrderDetails.size) {
+                        if (listSecondaryOrderDetails.get(i).id != primaryTable?.orderId) {
+
+                            mergedChildsOrderIds += listSecondaryOrderDetails.get(i).id
+                            if (i != listSecondaryOrderDetails.size - 1) {
+                                mergedChildsOrderIds += ","
+
+                            }
+
+                        }
+                    }
+                    var listOrderIds: ArrayList<String> = arrayListOf()
+                    listSecondaryOrderDetails.forEach {
+                        listOrderIds.add(it.id.toString())
+                    }
+                    var mergedOrderIds = android.text.TextUtils.join(",", listOrderIds)
+
+                    viewModel.mergeTable(parentTableId ?: 0, childIds, mergedOrderIds, orderModel)
+
+
+                }
+
+
+                //OLD Code
+                /* if (listSecondary.size > 1) {
                  for (i in 0 until listSecondary.size) {
                      if (listSecondary.get(i).orderId != null) {
 
@@ -435,6 +461,7 @@ class MergeTableDialog : DialogFragment() {
 
 
              }*/
+            }
         }
     }
 
