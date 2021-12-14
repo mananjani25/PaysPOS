@@ -210,9 +210,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         dineInUpdateOrder()
         getCustomerReceiptSettings()
         getKitchenReceiptSettings()
-        prefProvider.setValue(Constants.SPLIT_PAY_AMOUNT_DINE_IN,"")
-        prefProvider.setValue(Constants.SPLIT_PAY_TYPE_DINE_IN,"")
-        prefProvider.setValueInt(Constants.SPLIT_NO_DINE_IN,-1)
+        prefProvider.setValue(Constants.SPLIT_PAY_AMOUNT_DINE_IN, "")
+        prefProvider.setValue(Constants.SPLIT_PAY_TYPE_DINE_IN, "")
+        prefProvider.setValueInt(Constants.SPLIT_NO_DINE_IN, -1)
 
 
         binding.footer.imgClock.setOnClickListener {
@@ -1745,9 +1745,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 }
 
                 //check is_edited flag
-                if(totalDiscountMannualAdded>0){
+                if (totalDiscountMannualAdded > 0) {
                     data.discountPrice = totalDiscountMannualAdded
-                }else{
+                } else {
                     data.discountPrice = totalDiscountMannualAdded
                 }
                 makeItemEdited(data)
@@ -1865,19 +1865,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             data.discountType = result.discountType
                             data.isManualSales = false
                             discountPrice = data.discountPrice / data.itemQuantity
-                    } else if (data.price > result.percentage) {
-                        totalDiscountMannualAdded = data.discountPrice
-                        data.discountPrice = result.percentage
-                        data.discountId = 0
-                        data.discountType = result.discountType
-                        data.isManualSales = false
-                        discountPrice = data.discountPrice / data.itemQuantity
-
-                            //viewModel.cartLogic(cartList, data, Constants.UPDATE)
-                            txtTitle.text = data.name + "  $" + String.format(
-                                "%.2f",
-                                (totalPrice(data) - data.discountPrice)
-                            )
                         }
                         else -> {
                             /*  data.discountPrice = 0.0
