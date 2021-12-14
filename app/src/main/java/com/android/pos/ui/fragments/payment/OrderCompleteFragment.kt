@@ -360,7 +360,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         if (isSpilt) {
             if (isDineIn) {
                 val navController = findNavController()
-                navController.previousBackStackEntry?.savedStateHandle?.set("isNextPayment", true)
+                var bundle = Bundle()
+                bundle.putBoolean("isNextPayment", true)
+                bundle.putDouble("splitPaidAmount", paymentAmount)
+                navController.previousBackStackEntry?.savedStateHandle?.set("data", bundle)
                 navController.popBackStack()
             } else {
                 findNavController().popBackStack()

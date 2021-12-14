@@ -251,6 +251,22 @@
                         android:textColor="@color/drawerBack"
                         android:textSize="@dimen/_6mdpi" />
 
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtCardAmount"
+                        style="@style/CustomFontBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:background="?attr/selectableItemBackground"
+                        android:gravity="start"
+                        android:visibility="gone"
+                        android:padding="@dimen/_10sdp"
+                        android:layout_marginLeft="@dimen/_10sdp"
+                        android:textColor="@color/btnColorDark_"
+                        android:textSize="@dimen/_6mdpi" />
+
+
                     <include layout="@layout/right_side_arrow" />
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
