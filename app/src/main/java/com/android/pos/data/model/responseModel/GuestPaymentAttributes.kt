@@ -25,6 +25,13 @@ class GuestPaymentAttributes : Parcelable {
     @SerializedName("cash_discount_fee")
     var cashDiscountFee: Double = 0.0
 
+    @SerializedName("cash_discount_type")
+    var cash_discount_type: String = ""
+
+    @SerializedName("total_cash_discount")
+    var total_cash_discount: Double = 0.0
+
+
     @SerializedName("employee_id")
     var employeeId: Int = 0
 

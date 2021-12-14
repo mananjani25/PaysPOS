@@ -237,7 +237,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                     prefProvider.setValueInt(Constants.SPLIT_NO_DINE_IN, -1)
                     prefProvider.setValue(Constants.SPLIT_PAY_TYPE_DINE_IN, "")
                     prefProvider.setValueInt("ORDER_ID", -1)
-                } else if(isSplitByAmount) {
+                } else if (isSplitByAmount) {
                     val bundle = Bundle()
                     bundle.putDouble("totalPrice", cardPaymentAmount)
                     bundle.putDouble("paymentAmount", cardPaymentAmount)
@@ -253,7 +253,10 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                     ) {
 
                         bundle.putBoolean("isSpilt", true)
-                        bundle.putDouble("remainingAmount", wholeTotalFromDinein - cardPaymentAmount)
+                        bundle.putDouble(
+                            "remainingAmount",
+                            wholeTotalFromDinein - cardPaymentAmount
+                        )
 
 
                         val splitPayAmount = prefProvider.getValue(
@@ -275,7 +278,10 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                     } else {
                         bundle.putBoolean("isSpilt", false)
                         bundle.putBoolean("isLastPayment", isLastPayment)
-                        bundle.putDouble("remainingAmount", wholeTotalFromDinein - cardPaymentAmount)
+                        bundle.putDouble(
+                            "remainingAmount",
+                            wholeTotalFromDinein - cardPaymentAmount
+                        )
 
                         prefProvider.setValue(Constants.SPLIT_PAY_AMOUNT_DINE_IN, "")
                         prefProvider.setValueInt(Constants.SPLIT_NO_DINE_IN, -1)
@@ -288,7 +294,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                         bundle
                     )
 
-                }else{
+                } else {
                     val bundle = Bundle()
                     bundle.putDouble("totalPrice", cardPaymentAmount)
                     bundle.putDouble("paymentAmount", cardPaymentAmount)
@@ -1113,6 +1119,8 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                 tipAmount / splitValue
             guestRequestModel?.paymentAttributes!!.totalDiscount =
                 totaldiscount / splitValue
+            guestRequestModel?.paymentAttributes!!.cash_discount_or_surcharge = cashSurcharge
+            guestRequestModel?.paymentAttributes!!.cash_discount_type= cashDiscountType
 
             val guestPaymentAttributes = GuestPaymentAttributes()
             guestPaymentAttributes.amount =
@@ -1130,7 +1138,10 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
             guestPaymentAttributes.payableType = guestRequestModel?.paymentAttributes!!.payableType
             guestPaymentAttributes.paymentType = guestRequestModel?.paymentAttributes!!.paymentType
             guestPaymentAttributes.offlineId = guestRequestModel?.paymentAttributes!!.offlineId
+            guestPaymentAttributes.cash_discount_or_surcharge =
+                guestRequestModel?.paymentAttributes!!.cash_discount_or_surcharge
             guestPaymentAttributes.order_id = guestRequestModel?.paymentAttributes!!.order_id
+            guestPaymentAttributes.cash_discount_type = guestRequestModel?.paymentAttributes!!.cash_discount_type
 
             guestRequestModel?.paymentAttributes!!.paymentAttributes =
                 listOf(guestPaymentAttributes)
@@ -1149,7 +1160,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                 totaldiscount
             guestRequestModel?.paymentAttributes!!.cash_discount_or_surcharge = cashSurcharge
             guestRequestModel?.paymentAttributes!!.paymentType = paymentType
-
+            guestRequestModel?.paymentAttributes!!.cash_discount_type= cashDiscountType
 
             val guestPaymentAttributes = GuestPaymentAttributes()
             guestPaymentAttributes.amount =
@@ -1170,7 +1181,47 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                 guestRequestModel?.paymentAttributes!!.cash_discount_or_surcharge
             guestPaymentAttributes.offlineId = guestRequestModel?.paymentAttributes!!.offlineId
             guestPaymentAttributes.order_id = guestRequestModel?.paymentAttributes!!.order_id
+            guestPaymentAttributes.cash_discount_type = guestRequestModel?.paymentAttributes!!.cash_discount_type
 
+
+            guestRequestModel?.paymentAttributes!!.paymentAttributes =
+                listOf(guestPaymentAttributes)
+        } else if (paymentType == "Cash") {
+            guestRequestModel?.paymentAttributes!!.amount =
+                totalPrice
+            guestRequestModel?.paymentAttributes!!.serviceChargeAmount =
+                totalServiceCharge
+            guestRequestModel?.paymentAttributes!!.subTotal =
+                subTotalPrice
+            guestRequestModel?.paymentAttributes!!.taxAmount =
+                totalTax
+            guestRequestModel?.paymentAttributes!!.tips =
+                tipAmount
+            guestRequestModel?.paymentAttributes!!.totalDiscount =
+                totaldiscount
+            guestRequestModel?.paymentAttributes!!.cash_discount_or_surcharge = cashSurcharge
+            guestRequestModel?.paymentAttributes!!.cash_discount_type= cashDiscountType
+
+            val guestPaymentAttributes = GuestPaymentAttributes()
+            guestPaymentAttributes.amount =
+                totalPrice
+            guestPaymentAttributes.serviceChargeAmount =
+                totalServiceCharge
+            guestPaymentAttributes.subTotal =
+                subTotalPrice
+            guestPaymentAttributes.taxAmount =
+                totalTax
+            guestPaymentAttributes.tips =
+                tipAmount
+            guestPaymentAttributes.totalDiscount =
+                totaldiscount
+            guestPaymentAttributes.payableType = guestRequestModel?.paymentAttributes!!.payableType
+            guestPaymentAttributes.paymentType = guestRequestModel?.paymentAttributes!!.paymentType
+            guestPaymentAttributes.offlineId = guestRequestModel?.paymentAttributes!!.offlineId
+            guestPaymentAttributes.cash_discount_or_surcharge =
+                guestRequestModel?.paymentAttributes!!.cash_discount_or_surcharge
+            guestPaymentAttributes.order_id = guestRequestModel?.paymentAttributes!!.order_id
+            guestPaymentAttributes.cash_discount_type = guestRequestModel?.paymentAttributes!!.cash_discount_type
 
             guestRequestModel?.paymentAttributes!!.paymentAttributes =
                 listOf(guestPaymentAttributes)

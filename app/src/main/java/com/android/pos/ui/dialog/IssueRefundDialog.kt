@@ -11,7 +11,6 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.android.pos.R
-import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.databinding.DialogIssueRefundBinding
 import com.android.pos.ui.fragments.transactions.TransactionDetailsViewModel
 import com.android.pos.utils.MethodUtils
@@ -159,7 +158,10 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
 
         refundItemListAdapter.addItems(
             paymentOrderDetailsResponse.data.order.order_items,
-            paymentOrderDetailsResponse.data.service_charge_amount
+            paymentOrderDetailsResponse.data.service_charge_amount,
+            paymentOrderDetailsResponse.data.cash_discount_or_surcharge,
+            paymentOrderDetailsResponse.data.cash_discount_type,
+            paymentOrderDetailsResponse.data.payment_type
         )
 
         refundItemListAdapter.showItemSubTotal = {
@@ -221,6 +223,20 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
             orderItemRefundsAttributesList.add(orderItemRefundsAttributeModel)
         }
         totalItemPrice += totalTax + totalServiceCharge
+
+
+        if (paymentOrderDetailsResponse.data.payment_type == "Cash") {
+            if (paymentOrderDetailsResponse.data.cash_discount_type == "CashDiscount") {
+                totalItemPrice -= paymentOrderDetailsResponse.data.cash_discount_or_surcharge
+            }
+        } else if (paymentOrderDetailsResponse.data.payment_type == "Card") {
+            if (paymentOrderDetailsResponse.data.cash_discount_type == "SurCharge") {
+                totalItemPrice += paymentOrderDetailsResponse.data.cash_discount_or_surcharge
+            }
+        }
+
+
+
 
         refundData = RefundRequestModel().apply {
             paymentRefund = RefundRequestModel.PaymentRefund().apply {
