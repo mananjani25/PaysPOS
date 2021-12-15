@@ -265,12 +265,20 @@ class PosRepository @Inject constructor(
         appDatabase.teamRoleDao().delete()
     }
 
+    suspend fun deleteOrderTypeFromDb() {
+        appDatabase.orderTypeDao().delete()
+    }
+
     suspend fun deleteSurcharge() {
         appDatabase.cashDiscountDao().delete()
     }
 
     suspend fun addTeamRoleFromDb(teamRoleList: List<TeamRole>) {
         appDatabase.teamRoleDao().addAllRolesSuspend(teamRoleList)
+    }
+
+    suspend fun addOrderType(OrderTypeList: List<TbOrderType>) {
+        appDatabase.orderTypeDao().addAll(OrderTypeList)
     }
 
     fun getCurrentUserTeamRoleFromDb() = performGetOperationDatabase(databaseQuery = {
@@ -365,6 +373,11 @@ class PosRepository @Inject constructor(
         },
         networkCall = { apiHelperNew.orderTypes() },
         saveCallResult = { appDatabase.orderTypeDao().addAll(it.data) })
+
+    fun orderTypesDb() = performGetOperationDatabase(
+        databaseQuery = {
+            appDatabase.orderTypeDao().orderTypes
+        })
 
     fun orderTypesfromDatabase() = performGetOperationDatabase(
         databaseQuery = {

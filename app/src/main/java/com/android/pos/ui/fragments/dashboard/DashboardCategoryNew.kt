@@ -2321,6 +2321,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             ) as String).toDouble()
                     }
 
+                    if (cartList.futureDeliveryDate.isNotEmpty()) {
+                        future_delivery_date = cartList.futureDeliveryDate
+                    }
+
                     val request = viewModelPayment.createOrderRequest(
                         cartList,
                         viewModel.subTotalPrice,

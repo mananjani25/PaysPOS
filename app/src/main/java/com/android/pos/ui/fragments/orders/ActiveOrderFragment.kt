@@ -305,7 +305,7 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
             orderTypeId = order.orderTypeId
             orderType = order.orderType
             orderTypeName = order.orderType
-            futureDeliveryDate = order.date
+            futureDeliveryDate = order.futureDeliveryDate
             isOpenOrder = true
             serviceCharge = serviceChargesList(order)
             customer = assignCustomer(order)
