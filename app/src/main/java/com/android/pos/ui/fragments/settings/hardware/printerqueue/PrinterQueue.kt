@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.android.pos.data.model.PrinterQueueModel
 import com.android.pos.databinding.FragmentPrinterQueueBinding
 import com.android.pos.ui.adapter.PrinterQueueListAdapter
@@ -27,7 +28,14 @@ class PrinterQueue : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setAdapter()
+        onClick()
 
+    }
+
+    private fun onClick() {
+        binding.imgClose.setOnClickListener {
+            findNavController().popBackStack()
+        }
     }
 
     private fun setAdapter() {
