@@ -1317,7 +1317,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         totalPay += fullAmt
 
 
-
                         var dividedAmt = subTotalWT / (baseResponse.guestAttributes.size - 1)
                         model.guestDividedAmt = dividedAmt
                         Log.d("one", "navigateDineInOrder: " + model.guestDividedAmt)
@@ -1822,8 +1821,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         } else {
                             dineInList.get(0).cashSurchargeDiscount = 0.0
                         }
-
-
 
 
                         var finalAmt =
@@ -2875,7 +2872,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             builder.addText(
                 padLine(
                     "Sub Total",
-                    "$" + MethodUtils.roundOffAmountString(guestSubTotal),
+                    "$" + MethodUtils.roundOffAmountString(
+                        guestSubTotal + dineInTableAdapter.getList().get(0).guestDividedAmt
+                    ),
                     if (customerSettingModel.fonts == Constants.LARGE) {
                         24
                     } else {
@@ -3832,7 +3831,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 builder.addText(
                     padLine(
                         "Tax",
-                        "$" + MethodUtils.roundOffAmountString(viewModel.totalTaxAmount),
+                        "$" + MethodUtils.roundOffAmountString(finalTaxAmt),
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             24
                         } else {
@@ -3960,7 +3959,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 Builder.COLOR_1
             )
             var totalAmt =
-                MethodUtils.roundOffAmountDouble(subTotalWT + serviceCharge + viewModel.totalTaxAmount - getOrderDetailsResponse?.totalDiscount!!)
+                MethodUtils.roundOffAmountDouble(subTotalWT + serviceCharge + finalTaxAmt )
 
 
 
