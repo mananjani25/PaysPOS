@@ -83,12 +83,10 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
 
         isEdit = arguments?.getBoolean("isEdit")!!
 
-        if (isEdit) {
-            optionSetList =
-                arguments?.getParcelableArrayList("optionSets")
+        optionSetList = if (isEdit) {
+            arguments?.getParcelableArrayList("optionSets")
         } else {
-            optionSetList =
-                arguments?.getParcelableArrayList("optionSets")
+            arguments?.getParcelableArrayList("optionSets")
         }
 
         binding.imgBack.setOnClickListener {

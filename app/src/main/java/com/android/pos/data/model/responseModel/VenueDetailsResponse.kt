@@ -66,6 +66,8 @@ data class VenueDetailsResponse(
         val kitchenReceipt: GetKitchenReceiptSettingsResponse.Data,
         @SerializedName("team_roles")
         val teamRoles: List<TeamRole>,
+        @SerializedName("order_types")
+        val orderTypes: List<TbOrderType>,
 
         ) {
         data class CancelOrderReason(

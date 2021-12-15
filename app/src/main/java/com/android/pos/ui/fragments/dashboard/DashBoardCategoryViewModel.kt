@@ -83,7 +83,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     fun orderTypes(): LiveData<Resource<List<TbOrderType>>> {
-        return posRepository.orderTypes()
+        return posRepository.orderTypesDb()
     }
 
     val serviceCharges = posRepository.serviceChargeList()
@@ -1608,6 +1608,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 posRepository.deleteTeamRoleFromDb()
                                 posRepository.addTeamRoleFromDb(it.data.teamRoles)
                                 rolePermission.findCurrentUserRoleAndSave(it.data.teamRoles)
+                                posRepository.deleteOrderTypeFromDb()
+                                posRepository.addOrderType(it.data.orderTypes)
                                 _callCashDiscount.value = Event(true)
 
                             }
