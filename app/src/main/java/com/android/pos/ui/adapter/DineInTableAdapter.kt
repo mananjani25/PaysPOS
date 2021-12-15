@@ -86,6 +86,11 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             var guestSubTotal = 0.0
             var totalTaxAmt: Double = 0.0
 
+            if (list[position].title?.trim()?.lowercase() == "Whole Table".trim().lowercase()) {
+                binding.imgPrint.visibility = View.GONE
+            } else {
+                binding.imgPrint.visibility = View.VISIBLE
+            }
             for (i in position + 1 until list.size) {
 
                 if (list.get(i).isHeader == 1) {
@@ -244,6 +249,14 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             binding.imgPrint.setOnClickListener {
                 var fisrtTime: Boolean = false
                 var listItem: ArrayList<TbItem> = arrayListOf()
+                var listItemWT: ArrayList<TbItem> = arrayListOf()
+                for (i in 1 until list.size) {
+                    if (list.get(i).isHeader == 1) {
+                        list.get(i).item?.let { it1 -> listItemWT.add(it1) }
+                    } else {
+                        break
+                    }
+                }
                 for (i in bindingAdapterPosition + 1 until list.size) {
                     if (list.get(i).isHeader == 1) {
 
@@ -261,7 +274,9 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                     } else {
                         guestName = list[bindingAdapterPosition].title.toString()
                     }
-                    listner.onGuestPrint(listItem, guestName)
+
+
+                    listner.onGuestPrint(listItem, guestName, listItemWT)
                 }
 
 
@@ -545,7 +560,11 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         fun onSendItemToKitchen(item: TbItem)
         fun onWholeTableToKitchen(ids: String)
         fun singleItemFired(id: String, position: Int, item: TbItem)
-        fun onGuestPrint(listItem: ArrayList<TbItem>, guestName: String)
+        fun onGuestPrint(
+            listItem: ArrayList<TbItem>,
+            guestName: String,
+            listWTitems: ArrayList<TbItem>
+        )
     }
 
     fun getList(): List<DineInModel> {

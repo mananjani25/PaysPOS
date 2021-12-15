@@ -1129,11 +1129,16 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
     }
 
-    override fun onGuestPrint(listItem: ArrayList<TbItem>, guestName: String) {
+    override fun onGuestPrint(
+        listItem: ArrayList<TbItem>,
+        guestName: String,
+        listWTitems: ArrayList<TbItem>
+    ) {
+        Log.e(TAG, "")
         if (listItem[0].isPaid == true) {
-            guestPrint("Paid", listItem, guestName)
+            guestPrint("Paid", listItem, guestName, listWTitems)
         } else {
-            guestPrint("Unpaid", listItem, guestName)
+            guestPrint("Unpaid", listItem, guestName, listWTitems)
 
         }
 
@@ -1142,13 +1147,22 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     private fun guestPrint(
         paymentStatus: String,
         listGuestItem: ArrayList<TbItem>,
-        guestName: String
+        guestName: String,
+        wtItems: ArrayList<TbItem>
     ) {
 
         Log.e(TAG, "customerListSize  ${customerList.size}")
         if (customerList.isNotEmpty()) {
             customerList.forEach {
-                initPrinter(it, Constants.CUSTOMER, paymentStatus, true, listGuestItem, guestName)
+                initPrinter(
+                    it,
+                    Constants.CUSTOMER,
+                    paymentStatus,
+                    true,
+                    listGuestItem,
+                    guestName,
+                    wtItems
+                )
 
             }
         }
@@ -2293,7 +2307,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                 paymentType,
                                 false,
                                 arrayListOf(),
-                                ""
+                                "",
+                                arrayListOf()
                             )
 
 
@@ -2326,7 +2341,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         paymentType: String,
         guestPrint: Boolean,
         listGuestItem: ArrayList<TbItem>,
-        guestName: String
+        guestName: String,
+        listWTitems: ArrayList<TbItem>
     ) {
 
         PrinterClass.closePrinter()
@@ -2372,7 +2388,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             type,
                             paymentType,
                             listGuestItem,
-                            guestName
+                            guestName,
+                            listWTitems
                         )
 
                     } else {
@@ -2397,12 +2414,18 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         type: String,
         paymentType: String,
         listGuestItem: ArrayList<TbItem>,
-        guestName: String
+        guestName: String,
+        listWTitems: ArrayList<TbItem>
     ) {
         var guestSubTotal = 0.0
         var guestTaxes = 0.0
         var guestServiceCharge = 0.0
         var guestDiscount = 0.0
+
+        val guestCount = dineInTableAdapter.getList().size - 1
+        Log.e(TAG, "guestCount:  ${guestCount}")
+
+
 
         listGuestItem.forEach {
             guestSubTotal += (it.price * it.itemQuantity) - it.discountPrice
@@ -2580,7 +2603,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     Builder.COLOR_1
                 )
 
-                builder.addText("ReceiptID:" + getOrderDetailsResponse?.offlineId)
+                builder.addText("ReceiptID:" + if (getOrderDetailsResponse?.offlineId?.isEmpty() == true) {
+                    "ENTJKOIJH8745"
+                } else {
+                    getOrderDetailsResponse?.offlineId
+                })
 
                 if (customerSettingModel.showTeam) {
                     builder.addTextLineSpace(30)
@@ -2672,7 +2699,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         } else {
                             ""
                         },
-                        "ReceiptID:" + getOrderDetailsResponse?.offlineId,
+                        "ReceiptID:" + if (getOrderDetailsResponse?.offlineId?.isEmpty() == true) {
+                            "ENTJKOIJH8745"
+                        } else {
+                            getOrderDetailsResponse?.offlineId
+                        },
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             24
                         } else {
@@ -2793,6 +2824,26 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             builder.addFeedLine(1)
 
             addHorizontalLine(builder)
+
+
+            for (i in 0 until listWTitems.size) {
+                builder.addFeedLine(1)
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addTextFont(Builder.FONT_E)
+                // builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+
+                addWholeTbItemToGuest(builder,listWTitems.get(i), customerSettingModel.fonts,
+                    customerSettingModel.showModifiers,totalGuestCount,serviceChargeList)
+            }
 
 
             builder.addFeedLine(1)
@@ -3489,7 +3540,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     Builder.COLOR_1
                 )
 
-                builder.addText("ReceiptID:" + getOrderDetailsResponse?.offlineId)
+                builder.addText("ReceiptID:" + if (getOrderDetailsResponse?.offlineId?.isEmpty() == true) {
+                    "ENTJKOIJH8745"
+                } else {
+                    getOrderDetailsResponse?.offlineId
+                })
 
                 if (customerSettingModel.showTeam) {
                     builder.addTextLineSpace(30)
@@ -3581,7 +3636,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         } else {
                             ""
                         },
-                        "ReceiptID:" + getOrderDetailsResponse?.offlineId,
+                        "ReceiptID:" + if (getOrderDetailsResponse?.offlineId?.isEmpty() == true) {
+                            "ENTJKOIJH8745"
+                        } else {
+                            getOrderDetailsResponse?.offlineId
+                        },
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             24
                         } else {
@@ -3959,7 +4018,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 Builder.COLOR_1
             )
             var totalAmt =
-                MethodUtils.roundOffAmountDouble(subTotalWT + serviceCharge + finalTaxAmt )
+                MethodUtils.roundOffAmountDouble(subTotalWT + serviceCharge + finalTaxAmt)
 
 
 
@@ -4498,7 +4557,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             builder.addText(
                 padLine(
-                    "ReceiptID:" + getOrderDetailsResponse?.offlineId,
+                    "ReceiptID:" + if (getOrderDetailsResponse?.offlineId?.isEmpty() == true) {
+                        "ENTJKOIJH8745"
+                    } else {
+                        getOrderDetailsResponse?.offlineId
+                    },
                     "",
                     33
                 )
