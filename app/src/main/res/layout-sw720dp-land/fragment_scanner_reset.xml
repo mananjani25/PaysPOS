@@ -65,35 +65,38 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingStart="@dimen/_30sdp"
+                android:paddingStart="@dimen/_100sdp"
                 android:paddingTop="@dimen/_15sdp"
-                android:paddingEnd="@dimen/_30sdp">
+                android:paddingEnd="@dimen/_100sdp">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="\n1. Scan the Reset Factory Defaults barcode below:"
                     android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_5mdpi" />
+                    android:textSize="@dimen/_6mdpi" />
 
                 <FrameLayout
                     android:id="@+id/flBarCodeReset"
                     android:layout_width="wrap_content"
-                    android:layout_height="@dimen/_100sdp"
-                    android:layout_gravity="center" />
+                    android:layout_height="@dimen/_60sdp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/_10sdp" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp"
                     android:text="2. Scan the barcode below to pair:"
                     android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_5mdpi" />
+                    android:textSize="@dimen/_6mdpi" />
 
                 <FrameLayout
                     android:id="@+id/flBarCode"
                     android:layout_width="wrap_content"
-                    android:layout_height="@dimen/_100sdp"
-                    android:layout_gravity="center" />
+                    android:layout_height="@dimen/_60sdp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/_10sdp" />
 
             </LinearLayout>
 

@@ -1,8 +1,8 @@
 package com.android.pos.ui.activities
 
 import android.annotation.SuppressLint
-import android.bluetooth.BluetoothAdapter
 import android.content.*
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Point
 import android.os.*
@@ -31,7 +31,10 @@ abstract class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcs
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        initializeScanner()
+        val isBluetoothSupported = packageManager.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH)
+        if (isBluetoothSupported) {
+            initializeScanner()
+        }
     }
 
     /*Scanner Implementation*/
