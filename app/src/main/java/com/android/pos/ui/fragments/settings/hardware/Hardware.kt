@@ -37,6 +37,7 @@ class Hardware : Fragment(), HardwareListAdapter.HardwareListner {
         list.add(HardwareModel(0, "Scan Gun"))
         list.add(HardwareModel(0, "Terminal"))
         list.add(HardwareModel(0, "Kitchen Display"))
+        list.add(HardwareModel(0, "Printer Queue"))
         val adapter = HardwareListAdapter(requireContext(), list)
         adapter.setListner(this)
         binding.rvHardwareList.adapter = adapter
@@ -49,6 +50,9 @@ class Hardware : Fragment(), HardwareListAdapter.HardwareListner {
             "Printer" -> {
                 findNavController().navigate(R.id.action_settings_to_printer)
 
+            }
+            "Printer Queue" ->{
+                findNavController().navigate(R.id.action_settings_to_printerQueue)
             }
 
         }

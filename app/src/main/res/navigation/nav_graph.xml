@@ -269,6 +269,10 @@
         <action
             android:id="@+id/action_settings_to_createLoyaltyPointFragment"
             app:destination="@id/createLoyaltyPointFragment" />
+        <action
+            android:id="@+id/action_settings_to_printerQueue"
+            app:destination="@id/printerQueue"
+            app:enterAnim="@anim/nav_default_enter_anim" />
 
 
     </fragment>
@@ -518,8 +522,8 @@
             app:popUpToInclusive="true">
             <argument
                 android:name="orderId"
-                app:argType="string"
-                android:defaultValue=""/>
+                android:defaultValue=""
+                app:argType="string" />
         </action>
         <action
             android:id="@+id/action_customer_to_addEditCustomer"
@@ -991,5 +995,9 @@
         android:id="@+id/mergeTableDialog"
         android:name="com.android.pos.ui.dialog.MergeTableDialog"
         android:label="MergeTableDialog" />
+    <fragment
+        android:id="@+id/printerQueue"
+        android:name="com.android.pos.ui.fragments.settings.hardware.printerqueue.PrinterQueue"
+        android:label="PrinterQueue" />
 
 </navigation>
