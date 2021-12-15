@@ -267,6 +267,10 @@
             app:destination="@id/printer"
             app:enterAnim="@anim/nav_default_enter_anim" />
         <action
+            android:id="@+id/action_settings_to_scannerListFragment"
+            app:destination="@id/scannerListFragment"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
             android:id="@+id/action_settings_to_createLoyaltyPointFragment"
             app:destination="@id/createLoyaltyPointFragment" />
 
@@ -518,8 +522,8 @@
             app:popUpToInclusive="true">
             <argument
                 android:name="orderId"
-                app:argType="string"
-                android:defaultValue=""/>
+                android:defaultValue=""
+                app:argType="string" />
         </action>
         <action
             android:id="@+id/action_customer_to_addEditCustomer"
@@ -986,5 +990,18 @@
         android:id="@+id/mergeTableDialog"
         android:name="com.android.pos.ui.dialog.MergeTableDialog"
         android:label="MergeTableDialog" />
+
+    <fragment
+        android:id="@+id/scannerListFragment"
+        android:name="com.android.pos.ui.fragments.settings.hardware.scangun.ScannerListFragment">
+        <action
+            android:id="@+id/action_scannerListFragment_to_scannerResetFragment"
+            app:destination="@id/scannerResetFragment" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/scannerResetFragment"
+        android:name="com.android.pos.ui.fragments.settings.hardware.scangun.ScannerResetFragment" />
 
 </navigation>

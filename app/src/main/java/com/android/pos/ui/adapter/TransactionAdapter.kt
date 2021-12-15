@@ -67,7 +67,7 @@ class TransactionAdapter(val viewModel: TransactionViewModel) :
                 )
 
             itemBinding.txtCustomerName.text =
-                (model.customer.firstName ?: "") + " " + (model.customer.lastName ?: "")
+                (model.customer?.firstName ?: "") + " " + (model.customer?.lastName ?: "")
 
             if (model.refundedAmount != 0.0) {
                 itemBinding.tvRefundedAmount.visibility = View.VISIBLE

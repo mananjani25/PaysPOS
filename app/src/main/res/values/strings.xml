@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">POS Android</string>
+    <string name="PREF_BARCODE_SCANNER">BarcodeScannerPrefs</string>
     <string name="tv_pos">POS</string>
     <string name="tv_Info">Enterprise Cloud Point of Sale</string>
     <string name="tv_hint_email">Email Address<font color='#E90C0C'>*</font></string>
@@ -658,5 +659,17 @@
     <string name="hidden_items_title">Hidden Items</string>
     <string name="update_customer">Update Customer</string>
     <string name="scan_gun">Scan Gun</string>
+
+    <!--Scanner-->
+    <string name="virtual_tether_notification_channel_id">virtual_tether</string>
+    <string name="virtual_tether_notification_channel_name">Virtual Tether Notification Channel</string>
+    <string name="virtual_tether_notification_channel_description">Virtual Tether Notification Channel is used to alarm the user when the virtual tether event occurs.</string>
+    <string name="scan_gun_list">Scan Gun List</string>
+    <string name="connect">Connect</string>
+    <string name="disconnect">Disconnect</string>
+    <string name="connected_devices">Connected Devices</string>
+    <string name="no_scanner_found">No scanner found.</string>
+    <string name="other_scanners">Other Scanners</string>
+    <string name="connected_scanner">Connected Scanner</string>
 
 </resources>

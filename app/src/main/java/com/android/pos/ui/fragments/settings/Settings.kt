@@ -19,6 +19,7 @@ import com.android.pos.data.remote.Constants.CREATE_TIP
 import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.data.remote.Constants.ORDER_RECEIPTS
 import com.android.pos.data.remote.Constants.PRINTER
+import com.android.pos.data.remote.Constants.SCAN_GUN
 import com.android.pos.data.remote.Constants.TEAM_MEMBER
 import com.android.pos.databinding.FragmentSettingsBinding
 import com.android.pos.di.RolePermission
@@ -159,7 +160,7 @@ class Settings : Fragment() {
 
 
                     }
-                    PRINTER -> {
+                    PRINTER, SCAN_GUN -> {
 
                         binding.txtBusiness.styleNormal()
                         binding.txtHardware.styleBold()

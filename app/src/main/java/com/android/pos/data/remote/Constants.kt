@@ -156,6 +156,7 @@ object Constants {
     const val CREATEOPTION = "create_option"
     const val CREATEITEM = "create_item"
     const val PRINTER = "printer"
+    const val SCAN_GUN = "scan_gun"
     const val GUESTPAID = "guest_paid"
     const val MANUAL_SALE_CATEGORY_ID = "manual_sale_category_id"
     const val MANUAL_SALE_ITEM_ID = "manual_sale_item_id"
@@ -311,6 +312,7 @@ object Constants {
     //request codes
     var REQUEST_GET_IMAGE_GALLERY = 1
     var REQUEST_GET_IMAGE_CAMERA = 2
+    val REQUEST_LOCATION_PERMISSION = 3
 
 
     var SPLIT_PAY_TYPE = "split_pay_type"
@@ -348,4 +350,11 @@ object Constants {
     const val ROLE_MANAGER = "Manager"
     const val ROLE_OWNER = "Owner"
     const val ROLE_EMPLOYEE = "Employee"
+
+    //hardware
+    const val HARDWARE_PRINTER = "Printer"
+    const val HARDWARE_CREDIT_CARD_MACHINE = "Credit Card Machine"
+    const val HARDWARE_SCAN_GUN = "Scan Gun"
+    const val HARDWARE_TERMINAL = "Terminal"
+    const val HARDWARE_KITCHEN_DISPLAY = "Kitchen Display"
 }

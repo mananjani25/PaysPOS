@@ -4,13 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingDefaultResource">
 
-    <data>
-
-        <variable
-            name="viewModel"
-            type="com.android.pos.ui.fragments.report.ReportViewModel" />
-    </data>
-
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -55,6 +48,15 @@
                 android:textColor="@color/viewTextColor"
                 android:textSize="@dimen/_6mdpi" />
 
+            <TextView
+                android:id="@+id/txtResetDevice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/_4sdp"
+                android:text="Reset Device"
+                android:textColor="@color/txt_color_blue"
+                android:textSize="@dimen/_6mdpi" />
+
         </LinearLayout>
 
         <View
@@ -64,17 +66,78 @@
             android:background="@color/gray_rect" />
 
         <androidx.core.widget.NestedScrollView
-            android:id="@+id/nsvReport"
+            android:id="@+id/nsvScanner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:paddingStart="@dimen/_15sdp"
+                android:paddingTop="@dimen/_15sdp"
+                android:paddingEnd="@dimen/_15sdp">
 
+                <FrameLayout
+                    android:id="@+id/flBarCode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/_100sdp"
+                    android:layout_gravity="center"
+                    android:visibility="gone" />
 
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtConnectedScanner"
+                    style="@style/CustomFontBold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/_6sdp"
+                    android:background="@drawable/background_gray_with_border"
+                    android:gravity="start"
+                    android:padding="@dimen/_5sdp"
+                    android:text="@string/connected_scanner"
+                    android:textColor="@color/viewTextColor"
+                    android:textSize="@dimen/_6mdpi"
+                    app:textAllCaps="true" />
 
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvConnectedScanner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtOtherScanner"
+                    style="@style/CustomFontBold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:background="@drawable/background_gray_with_border"
+                    android:gravity="start"
+                    android:padding="@dimen/_5sdp"
+                    android:text="@string/other_scanners"
+                    android:textColor="@color/viewTextColor"
+                    android:textSize="@dimen/_6mdpi"
+                    app:textAllCaps="true" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvOtherScanners"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+                <TextView
+                    android:id="@+id/txtNoScannerMessage"
+                    style="@style/CustomFontBold"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:text="@string/no_scanner_found"
+                    android:textSize="@dimen/_6mdpi"
+                    android:visibility="gone" />
 
             </LinearLayout>
 

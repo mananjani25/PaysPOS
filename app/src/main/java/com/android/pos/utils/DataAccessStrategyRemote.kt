@@ -6,7 +6,10 @@ import androidx.lifecycle.liveData
 import androidx.lifecycle.map
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 fun <T> performGetOperationNew(
 /*databaseQuery: () -> LiveData<T>,*/
@@ -100,3 +103,15 @@ fun <T> performGetOperationNew1(
             Log.d("exception123", "::" + e.message)
         }
     }
+
+fun <T> CoroutineScope.executeAsyncTask(
+    onPreExecute: () -> Unit,
+    doInBackground: () -> T,
+    onPostExecute: (T) -> Unit
+) = launch {
+    onPreExecute()
+    val result = withContext(Dispatchers.IO) { // runs in background thread without blocking the Main Thread
+        doInBackground()
+    }
+    onPostExecute(result)
+}

@@ -1,17 +1,22 @@
 package com.android.pos.ui.activities
 
+import android.Manifest
 import android.app.Dialog
 import android.content.ClipData
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
@@ -20,10 +25,12 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.android.pos.BuildConfig
+import com.android.pos.MainApplication
 import com.android.pos.R
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.repositories.UserRepository
 import com.android.pos.databinding.ParentActivityBinding
+import com.android.pos.di.BarcodePrefProvider
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.utils.FileUtils
@@ -35,7 +42,7 @@ import java.io.IOException
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseScannerActivity() {
 
     private var cameraUri: Uri? = null
     private var selectedFilePath: String? = ""
@@ -51,6 +58,9 @@ class MainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var repo: UserRepository
+
+    @Inject
+    lateinit var barcodePrefProvider: BarcodePrefProvider
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -202,11 +212,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onSupportNavigateUp(): Boolean {
-        navController?.navigateUp()
-        return super.onSupportNavigateUp()
-    }
-
     private fun clearPreferences() {
         prefProvider.setClear()
     }
@@ -296,5 +301,89 @@ class MainActivity : AppCompatActivity() {
 
     interface ActivityResultCallBack {
         fun onReceivedCameraCapturedPath(mediaType: Int, mediaPath: String?)
+    }
+
+    fun requestLocationPermissions(): Boolean {
+        val permissionsLocation = arrayOf<String>(
+            Manifest.permission.ACCESS_FINE_LOCATION
+        )
+        return if ((ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED)
+        ) {
+            true
+        } else {
+            ActivityCompat.requestPermissions(
+                this,
+                permissionsLocation,
+                Constants.REQUEST_LOCATION_PERMISSION
+            )
+            false
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        Log.e("!_@_", "$requestCode")
+        when (requestCode) {
+            Constants.REQUEST_LOCATION_PERMISSION ->
+                if (permissions.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    //permission with request code 1 granted
+                    Log.e("!_@_", "Permission Granted")
+                    requestCallBack?.invoke()
+                } else {
+                    //permission with request code 1 was not granted
+                    Log.e("!_@_", "Permission not granted")
+                }
+            else -> super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        }
+    }
+
+    fun getRequestCallBack(requestGrantedCallBack: (() -> Unit)) {
+        this.requestCallBack = requestGrantedCallBack
+    }
+
+    private var requestCallBack: (() -> Unit)? = null
+    var notifyAdaptersCallBack: ((Boolean) -> Unit)? = null
+
+    /*Scanner Implementation*/
+
+    override fun notifyAdapters(connectedScanner: Boolean) {
+        notifyAdaptersCallBack?.invoke(connectedScanner)
+    }
+
+    override fun getScannerPref(): BarcodePrefProvider {
+        return barcodePrefProvider
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        navController?.navigateUp()
+        return super.onSupportNavigateUp()
+    }
+
+    override fun scannerHasAppeared(scannerID: Int): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override fun scannerHasDisappeared(scannerID: Int): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override fun scannerHasConnected(scannerID: Int): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override fun scannerHasDisconnected(scannerID: Int): Boolean {
+        //pairNewScannerMenu.setTitle(R.string.menu_item_device_pair)
+        MainApplication.isAnyScannerConnected = false
+        MainApplication.currentConnectedScannerID = -1
+        MainApplication.lastConnectedScanner = MainApplication.currentConnectedScanner
+        MainApplication.currentConnectedScanner = null
+        return false
     }
 }
