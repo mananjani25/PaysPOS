@@ -22,7 +22,6 @@ import com.android.pos.utils.scanner.helpers.*
 import com.google.gson.Gson
 import com.zebra.scannercontrol.*
 import com.zebra.scannercontrol.DCSSDKDefs.*
-import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 
 
@@ -34,8 +33,8 @@ abstract class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcs
         val isBluetoothSupported = packageManager.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH)
         if (isBluetoothSupported) {
             initializeScanner()
-        } else{
-            Toast.makeText(this,"Bluetooth is not supported !!", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(this, "Bluetooth is not supported !!", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -272,7 +271,7 @@ abstract class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcs
         delegate?.let {
             mDevEventsDelegates?.add(it)
         }
-        Log.e(TAG,"mDevEventsDelegates.size ADD : ${mDevEventsDelegates?.size?:0}")
+        Log.e(TAG, "mDevEventsDelegates.size ADD : ${mDevEventsDelegates?.size ?: 0}")
     }
 
     override fun removeDevListDelegate(delegate: ScannerAppEngine.IScannerAppEngineDevListDelegate?) {
@@ -285,7 +284,7 @@ abstract class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcs
         if (mDevConnDelegates != null) {
             mDevConnDelegates?.remove(delegate)
         }
-        Log.e(TAG,"mDevEventsDelegates.size REMOVE : ${mDevEventsDelegates?.size?:0}")
+        Log.e(TAG, "mDevEventsDelegates.size REMOVE : ${mDevEventsDelegates?.size ?: 0}")
     }
 
     override fun removeDevEventsDelegate(delegate: ScannerAppEngine.IScannerAppEngineDevEventsDelegate?) {
@@ -437,7 +436,7 @@ abstract class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcs
     }
 
     override fun configureOperationalMode(mode: DCSSDKDefs.DCSSDK_MODE?) {
-        Log.e(TAG,"")
+        Log.e(TAG, "")
         initializeDcsSdk()
         //MainApplication.sdkHandler?.dcssdkSetOperationalMode(DCSSDK_MODE.DCSSDK_OPMODE_BT_LE)
     }
@@ -569,9 +568,10 @@ abstract class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcs
                             device.isAutoCommunicationSessionReestablishment,
                             device.connectionType
                         )
-                        MainApplication.currentConnectedScanner = device
-                        MainApplication.lastConnectedScanner =
-                            MainApplication.currentConnectedScanner
+
+                        //save connected scanner data
+                        saveScanner(device, true)
+
                         availableScanner.isConnectable = true
                         addToLastConnectedScannerList(availableScanner)
                         enableLastScannerConnection = true
@@ -1114,10 +1114,10 @@ abstract class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcs
 
     private fun initializeDcsSdk() {
         MainApplication.sdkHandler?.dcssdkEnableAvailableScannersDetection(true)
-        MainApplication.sdkHandler?.dcssdkSetOperationalMode(DCSSDK_MODE.DCSSDK_OPMODE_BT_NORMAL)
-        MainApplication.sdkHandler?.dcssdkSetOperationalMode(DCSSDK_MODE.DCSSDK_OPMODE_SNAPI)
-        MainApplication.sdkHandler?.dcssdkSetOperationalMode(DCSSDK_MODE.DCSSDK_OPMODE_BT_LE)
+        /*MainApplication.sdkHandler?.dcssdkSetOperationalMode(DCSSDK_MODE.DCSSDK_OPMODE_BT_NORMAL)
+        MainApplication.sdkHandler?.dcssdkSetOperationalMode(DCSSDK_MODE.DCSSDK_OPMODE_BT_LE)*/
         MainApplication.sdkHandler?.dcssdkSetOperationalMode(DCSSDK_MODE.DCSSDK_OPMODE_USB_CDC)
+        MainApplication.sdkHandler?.dcssdkSetOperationalMode(DCSSDK_MODE.DCSSDK_OPMODE_SNAPI)
     }
 
     public fun ConnectToScanner(availableScanner: AvailableScanner?) {
@@ -1212,9 +1212,9 @@ abstract class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcs
         /*val bluetoothAdapter: BluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
         val address = bluetoothAdapter.address
         Log.e("!_@_ MAC :", address.toString())*/
-        //"04:c8:07:be:ac:e2"
+        return "04:c8:07:be:ac:e2"
         //0c:25:76:b4:0b:95
-        return "0c:25:76:b4:0b:95"
+//        return "0c:25:76:b4:0b:95"
     }
 
 
@@ -1247,11 +1247,24 @@ abstract class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcs
 
     override fun scannerHasDisconnected(scannerID: Int): Boolean {
         //pairNewScannerMenu.setTitle(R.string.menu_item_device_pair)
-        MainApplication.isAnyScannerConnected = false
-        MainApplication.currentConnectedScannerID = -1
-        MainApplication.lastConnectedScanner = MainApplication.currentConnectedScanner
-        MainApplication.currentConnectedScanner = null
+        saveScanner(null, false)
         return false
+    }
+
+    //save scanner data
+    fun saveScanner(device: DCSScannerInfo?, connect: Boolean) {
+        if (connect) {
+            MainApplication.isAnyScannerConnected = true
+            MainApplication.currentConnectedScanner = device
+            //getScannerPref().saveScannerData(device)
+            MainApplication.lastConnectedScanner = device
+            MainApplication.currentConnectedScannerID = device?.scannerID ?: -1
+        } else {
+            MainApplication.lastConnectedScanner = MainApplication.currentConnectedScanner
+            MainApplication.currentConnectedScanner = null
+            MainApplication.currentConnectedScannerID = -1
+            MainApplication.isAnyScannerConnected = false
+        }
     }
 
 }

@@ -6,9 +6,12 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.android.pos.MainApplication
 import com.android.pos.R
+import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentScannerListBinding
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.utils.extensions.gone
@@ -47,12 +50,12 @@ class ScannerListFragment : Fragment(),
     ): View? {
         binding = FragmentScannerListBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
+        initControls()
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initControls()
     }
 
     private fun initControls() {
@@ -63,7 +66,11 @@ class ScannerListFragment : Fragment(),
         binding.txtResetDevice.setOnClickListener {
             findNavController().navigate(R.id.action_scannerListFragment_to_scannerResetFragment)
         }
+        binding.imgBack.setOnClickListener {
+            backPressManage()
+        }
 
+        MainApplication.sdkHandler?.dcssdkSetDelegate((activity as MainActivity))
         //get all connected bluetooth devices
         (activity as MainActivity).updateScannerListView()
 
@@ -73,6 +80,24 @@ class ScannerListFragment : Fragment(),
         (activity as MainActivity).getRequestCallBack {
             initScanner()
         }
+
+        //back press manage
+        val callback: OnBackPressedCallback =
+            object : OnBackPressedCallback(true /* enabled by default */) {
+                override fun handleOnBackPressed() {
+                    backPressManage()
+                }
+            }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+    }
+
+    private fun backPressManage() {
+        val navController = findNavController()
+        navController.previousBackStackEntry?.savedStateHandle?.set(
+            Constants.KEY,
+            Constants.SCAN_GUN
+        )
+        navController.popBackStack()
     }
 
     private fun initScanner() {

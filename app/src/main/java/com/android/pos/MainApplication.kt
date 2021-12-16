@@ -25,6 +25,8 @@ class MainApplication : Application() {
 
         Foreground.init(this)
         createNotificationChannel()
+        sdkHandler = SDKHandler(this, true)
+
     }
 
     companion object {

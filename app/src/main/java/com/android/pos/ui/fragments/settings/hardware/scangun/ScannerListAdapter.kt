@@ -5,7 +5,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.databinding.ViewScannerBinding
-import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.scanner.helpers.AvailableScanner
 
@@ -27,9 +26,12 @@ class ScannerListAdapter(
                 "${availableScanner.scannerName} : (${availableScanner.scannerAddress})"
 
             //connect, disconnect
-            binding.txtDisConnect.gone()
+            binding.txtDisConnect.visible()
             if (isConnectedList) {
+                binding.txtDisConnect.text = "Disconnect"
                 binding.txtDisConnect.visible()
+            } else {
+                binding.txtDisConnect.text = "Connect"
             }
             /*if (isConnectedList) {
                 binding.txtConnect.gone()

@@ -3,6 +3,10 @@ package com.android.pos.di
 import android.content.Context
 import android.content.SharedPreferences
 import com.android.pos.R
+import com.android.pos.data.entities.TbCustomer
+import com.android.pos.data.remote.Constants
+import com.google.gson.Gson
+import com.zebra.scannercontrol.DCSScannerInfo
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -111,6 +115,17 @@ class BarcodePrefProvider @Inject constructor(@ApplicationContext context: Conte
         val prefsPrivateEditor = sharedPreferences!!.edit()
         prefsPrivateEditor!!.clear().apply()
         sharedPreferences = null
+    }
+
+    fun saveScannerData(scannerInfo: DCSScannerInfo?) {
+        setValue(Constants.PREF_CURRENT_SCANNER, Gson().toJson(scannerInfo))
+    }
+
+    fun getScannerData(): DCSScannerInfo? {
+        return Gson().fromJson(
+            getValue(Constants.PREF_CURRENT_SCANNER, ""),
+            DCSScannerInfo::class.java
+        )
     }
 
 }
