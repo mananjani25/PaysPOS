@@ -25,7 +25,7 @@ import com.zebra.scannercontrol.DCSSDKDefs.*
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 
-@AndroidEntryPoint
+
 abstract class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkApiDelegate,
     ScannerAppEngine.IScannerAppEngineDevConnectionsDelegate {
 
@@ -34,6 +34,8 @@ abstract class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcs
         val isBluetoothSupported = packageManager.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH)
         if (isBluetoothSupported) {
             initializeScanner()
+        } else{
+            Toast.makeText(this,"Bluetooth is not supported !!", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -142,8 +144,8 @@ abstract class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcs
 
     override fun onPause() {
         super.onPause()
-        removeDevConnectiosDelegate(this)
-        unregisterReceiver(onNotification)
+        //removeDevConnectiosDelegate(this)
+        //unregisterReceiver(onNotification)
     }
 
     protected abstract fun notifyAdapters(connectedScanner: Boolean)
@@ -270,6 +272,7 @@ abstract class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcs
         delegate?.let {
             mDevEventsDelegates?.add(it)
         }
+        Log.e(TAG,"mDevEventsDelegates.size ADD : ${mDevEventsDelegates?.size?:0}")
     }
 
     override fun removeDevListDelegate(delegate: ScannerAppEngine.IScannerAppEngineDevListDelegate?) {
@@ -282,6 +285,7 @@ abstract class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcs
         if (mDevConnDelegates != null) {
             mDevConnDelegates?.remove(delegate)
         }
+        Log.e(TAG,"mDevEventsDelegates.size REMOVE : ${mDevEventsDelegates?.size?:0}")
     }
 
     override fun removeDevEventsDelegate(delegate: ScannerAppEngine.IScannerAppEngineDevEventsDelegate?) {
@@ -433,7 +437,9 @@ abstract class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcs
     }
 
     override fun configureOperationalMode(mode: DCSSDKDefs.DCSSDK_MODE?) {
-        MainApplication.sdkHandler?.dcssdkSetOperationalMode(DCSSDK_MODE.DCSSDK_OPMODE_BT_LE)
+        Log.e(TAG,"")
+        initializeDcsSdk()
+        //MainApplication.sdkHandler?.dcssdkSetOperationalMode(DCSSDK_MODE.DCSSDK_OPMODE_BT_LE)
     }
 
     override fun executeCommand(
@@ -651,55 +657,7 @@ abstract class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcs
         updateScannersHandler.sendMessage(msg)
     }
 
-    override fun dcssdkEventScannerAppeared(availableScanner: DCSScannerInfo?) {
-        dataHandler.obtainMessage(Constants.SCANNER_APPEARED, availableScanner).sendToTarget()
-    }
-
-    override fun dcssdkEventScannerDisappeared(scannerID: Int) {
-        dataHandler.obtainMessage(Constants.SCANNER_DISAPPEARED, scannerID).sendToTarget()
-    }
-
-    override fun dcssdkEventCommunicationSessionEstablished(activeScanner: DCSScannerInfo?) {
-        dataHandler.obtainMessage(Constants.SESSION_ESTABLISHED, activeScanner).sendToTarget()
-        resetVirtualTetherHostConfigurations()
-        scannersListHasBeenUpdated()
-    }
-
-    override fun dcssdkEventCommunicationSessionTerminated(scannerID: Int) {
-        dataHandler.obtainMessage(Constants.SESSION_TERMINATED, scannerID).sendToTarget()
-        scannersListHasBeenUpdated()
-    }
-
-    override fun dcssdkEventBarcode(barcodeData: ByteArray?, barcodeType: Int, fromScannerID: Int) {
-        val barcode = barcodeData?.let { Barcode(it, barcodeType, fromScannerID) }
-        dataHandler.obtainMessage(Constants.BARCODE_RECEIVED, barcode).sendToTarget()
-    }
-
-    override fun dcssdkEventImage(imageData: ByteArray?, fromScannerID: Int) {
-        dataHandler.obtainMessage(Constants.IMAGE_RECEIVED, imageData).sendToTarget()
-    }
-
-    override fun dcssdkEventVideo(videoFrame: ByteArray?, fromScannerID: Int) {
-        dataHandler.obtainMessage(Constants.VIDEO_RECEIVED, videoFrame).sendToTarget()
-    }
-
-    override fun dcssdkEventBinaryData(binaryData: ByteArray?, fromScannerID: Int) {
-        Log.e(
-            TAG,
-            "BinaryData Event received no.of bytes : " + binaryData?.size + " for Scanner ID : " + fromScannerID
-        )
-    }
-
-    override fun dcssdkEventFirmwareUpdate(firmwareUpdateEvent: FirmwareUpdateEvent?) {
-        dataHandler.obtainMessage(Constants.FW_UPDATE_EVENT, firmwareUpdateEvent).sendToTarget()
-    }
-
-    override fun dcssdkEventAuxScannerAppeared(
-        newTopology: DCSScannerInfo?,
-        auxScanner: DCSScannerInfo?
-    ) {
-        dataHandler.obtainMessage(Constants.AUX_SCANNER_CONNECTED, auxScanner).sendToTarget()
-    }
+    //TODO scanner remove
 
     //Handler to show the data on UI
     protected var dataHandler: Handler = object : Handler(Looper.getMainLooper()) {
@@ -1254,7 +1212,9 @@ abstract class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcs
         /*val bluetoothAdapter: BluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
         val address = bluetoothAdapter.address
         Log.e("!_@_ MAC :", address.toString())*/
-        return "04:c8:07:be:ac:e2"
+        //"04:c8:07:be:ac:e2"
+        //0c:25:76:b4:0b:95
+        return "0c:25:76:b4:0b:95"
     }
 
 
@@ -1271,6 +1231,27 @@ abstract class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcs
             //Abort the broadcast since it has been handled.
             abortBroadcast()
         }
+    }
+
+    override fun scannerHasAppeared(scannerID: Int): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override fun scannerHasDisappeared(scannerID: Int): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override fun scannerHasConnected(scannerID: Int): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override fun scannerHasDisconnected(scannerID: Int): Boolean {
+        //pairNewScannerMenu.setTitle(R.string.menu_item_device_pair)
+        MainApplication.isAnyScannerConnected = false
+        MainApplication.currentConnectedScannerID = -1
+        MainApplication.lastConnectedScanner = MainApplication.currentConnectedScanner
+        MainApplication.currentConnectedScanner = null
+        return false
     }
 
 }

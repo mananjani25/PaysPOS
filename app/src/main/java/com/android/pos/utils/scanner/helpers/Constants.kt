@@ -1,20 +1,6 @@
 package com.android.pos.utils.scanner.helpers
 
 import android.util.Log
-import com.android.pos.utils.scanner.helpers.CustomProgressDialog
-import com.android.pos.utils.scanner.helpers.Foreground
-import com.android.pos.utils.scanner.helpers.ManagedVibrator
-import com.zebra.scannercontrol.FirmwareUpdateEvent
-import com.android.pos.utils.scanner.helpers.ScannerAppEngine.IScannerAppEngineDevListDelegate
-import com.android.pos.utils.scanner.helpers.ScannerAppEngine.IScannerAppEngineDevConnectionsDelegate
-import com.android.pos.utils.scanner.helpers.ScannerAppEngine.IScannerAppEngineDevEventsDelegate
-import com.zebra.scannercontrol.DCSScannerInfo
-import com.zebra.scannercontrol.DCSSDKDefs.DCSSDK_RESULT
-import com.zebra.scannercontrol.DCSSDKDefs.DCSSDK_MODE
-import com.zebra.scannercontrol.DCSSDKDefs.DCSSDK_COMMAND_OPCODE
-import com.android.pos.utils.scanner.helpers.SSASymbologyType
-import com.zebra.scannercontrol.RMDAttributes
-import com.android.pos.utils.scanner.helpers.Symbology
 
 /**
  * Created by mfv347 on 6/20/2014.
@@ -57,13 +43,13 @@ object Constants {
     const val NOTIFICATIONS_ID = "notifications_id"
 
     //Action strings for various RFID Events
-    const val ACTION_SCANNER_CONNECTED = "com.zebra.scannercontrol.connected"
-    const val ACTION_SCANNER_DISCONNECTED = "com.zebra.scannercontrol.disconnected"
-    const val ACTION_SCANNER_AVAILABLE = "com.zebra.scannercontrol.available"
-    const val ACTION_SCANNER_CONN_FAILED = "com.zebra.scannercontrol.conn.failed"
-    const val ACTION_SCANNER_BARCODE_RECEIVED = "com.zebra.scannercontrol.barcode.received"
-    const val ACTION_SCANNER_IMAGE_RECEIVED = "com.zebra.scannercontrol.image.received"
-    const val ACTION_SCANNER_VIDEO_RECEIVED = "com.zebra.scannercontrol.video.received"
+    const val ACTION_SCANNER_CONNECTED = "com.android.pos.connected"
+    const val ACTION_SCANNER_DISCONNECTED = "com.android.pos.disconnected"
+    const val ACTION_SCANNER_AVAILABLE = "com.android.pos.available"
+    const val ACTION_SCANNER_CONN_FAILED = "com.android.pos.conn.failed"
+    const val ACTION_SCANNER_BARCODE_RECEIVED = "com.android.pos.barcode.received"
+    const val ACTION_SCANNER_IMAGE_RECEIVED = "com.android.pos.image.received"
+    const val ACTION_SCANNER_VIDEO_RECEIVED = "com.android.pos.video.received"
 
     //Data regarding bluetooth
     const val DATA_BLUETOOTH_DEVICE = "com.zebra.scannercontrol.data.bluetooth.device"
