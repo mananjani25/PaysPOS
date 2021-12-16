@@ -25,6 +25,9 @@ import com.android.pos.data.remote.Constants.BUSINESS_PHONE_NO
 import com.android.pos.data.remote.Constants.CUSTOMER
 import com.android.pos.data.remote.Constants.KITCHEN
 import com.android.pos.data.remote.Constants.LARGE
+import com.android.pos.data.remote.Constants.SPLIT_NO
+import com.android.pos.data.remote.Constants.SPLIT_PAY_AMOUNT
+import com.android.pos.data.remote.Constants.SPLIT_PAY_TYPE
 import com.android.pos.data.remote.Constants.getReceiptFormatDateFromUTCServer
 import com.android.pos.databinding.FragmentOrderCompletBinding
 import com.android.pos.di.PrefProvider
@@ -55,6 +58,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private var splitValue: Int = -1
 
     private var isSpilt: Boolean = false
+    private var isSplitByAmount: Boolean = false
+    private var isSplitByNo: Boolean = false
     private var isLastPayment: Boolean = false
     private var isDineIn: Boolean = false
     private var kitchenPrinterList: List<PrinterResponse.Data.KitchenReceiptPrinters> = listOf()
@@ -157,6 +162,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         orderID = requireArguments().getInt("orderID")
         isGuestPaymentTotal = requireArguments().getBoolean("isGuestPaymentTotal")
         isSpilt = requireArguments().getBoolean("isSpilt")
+        isSplitByNo = requireArguments().getBoolean("isSplitByNo")
+        isSplitByAmount = requireArguments().getBoolean("isSplitByAmount")
         paymentType = requireArguments().getString("paymentType", "")
         isLastPayment = requireArguments().getBoolean("isLastPayment", false)
         isDineIn = requireArguments().getBoolean("isDineIn")
@@ -362,11 +369,44 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 val navController = findNavController()
                 var bundle = Bundle()
                 bundle.putBoolean("isNextPayment", true)
+                val splitPayType = prefProvider.getValue(SPLIT_PAY_TYPE, "")
+                val splitPayAmount = prefProvider.getValue(SPLIT_PAY_AMOUNT, "")
+
+                if (splitPayType == SPLIT_NO) {
+                    val splitNo = prefProvider.getValueInt(SPLIT_NO, -1)
+                    bundle.putInt("splitvalue", splitValue + splitNo)
+                } else if (splitPayType == Constants.SPLIT_PAY_AMOUNT) {
+                    bundle.putInt("splitvalue", splitValue + splitPayAmount.toInt())
+                }else{
+                    bundle.putInt("splitvalue", splitValue )
+                }
                 bundle.putDouble("splitPaidAmount", paymentAmount)
+                bundle.putDouble("remainingAmount", remainingAmount)
+
                 navController.previousBackStackEntry?.savedStateHandle?.set("data", bundle)
                 navController.popBackStack()
             } else {
-                findNavController().popBackStack()
+                val navController = findNavController()
+                var bundle = Bundle()
+                bundle.putBoolean("isNextPayment", true)
+                bundle.putDouble("splitPaidAmount", paymentAmount)
+                bundle.putDouble("remainingAmount", remainingAmount)
+
+                val splitPayType = prefProvider.getValue(SPLIT_PAY_TYPE, "")
+                val splitPayAmount = prefProvider.getValue(SPLIT_PAY_AMOUNT, "")
+
+                if (splitPayType == SPLIT_NO) {
+                    val splitNo = prefProvider.getValueInt(SPLIT_NO, -1)
+                    bundle.putInt("splitvalue", splitValue + splitNo)
+                } else if (splitPayType == Constants.SPLIT_PAY_AMOUNT) {
+                    bundle.putInt("splitvalue", splitValue + splitPayAmount.toInt())
+                }else{
+                    bundle.putInt("splitvalue", splitValue )
+                }
+                bundle.putBoolean("isSplitByNo", isSplitByNo)
+                bundle.putBoolean("isSplitByAmount", isSplitByAmount)
+                navController.previousBackStackEntry?.savedStateHandle?.set("data", bundle)
+                navController.popBackStack()
             }
         } else {
             if (isGuest) {

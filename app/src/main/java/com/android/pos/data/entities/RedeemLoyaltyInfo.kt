@@ -8,7 +8,6 @@ class RedeemLoyaltyInfo() {
     var remainingAmount: Double = 0.0
     var usedLoyaltyAmount: Double = 0.0
     var isLoyaltyApplied: Boolean? = false
-    var cashDiscount: Double? = 0.0
     var amountToBePaid: Double? = 0.0
     var needToApplyLoyalty: Boolean = false
 

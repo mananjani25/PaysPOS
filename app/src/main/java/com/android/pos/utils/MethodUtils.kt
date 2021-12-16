@@ -241,16 +241,16 @@ class MethodUtils {
         }
 
         fun calculateCashDiscount(
-            subTotal: Double,
+            finalAmount: Double,
             prefProvider: PrefProvider,
             context: Context
         ): Double {
             var amountType = prefProvider.getValue(Constants.AMOUNT_TYPE, "")
             var rateorAmount = prefProvider.getValue(Constants.RATE_OR_AMOUNT, "0")
             if (amountType == "Dollar") {
-                if (subTotal.toDouble() > 0) {
-                    if (subTotal <= rateorAmount.toDouble()) {
-                        return subTotal
+                if (finalAmount.toDouble() > 0) {
+                    if (finalAmount <= rateorAmount.toDouble()) {
+                        return finalAmount
                     } else {
                         return rateorAmount.toDouble()
                     }
@@ -258,11 +258,11 @@ class MethodUtils {
                     return 0.00
                 }
             } else if (amountType == "Percentage") {
-                if (subTotal.toDouble() > 0) {
+                if (finalAmount.toDouble() > 0) {
                     if (rateorAmount.toDouble() >= 100) {
-                        return subTotal
+                        return finalAmount
                     } else {
-                        return (subTotal * 100 / rateorAmount.toDouble())
+                        return (finalAmount * 100 / rateorAmount.toDouble())
                     }
                 }
             }
