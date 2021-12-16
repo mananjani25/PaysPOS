@@ -24,7 +24,6 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.android.pos.BuildConfig
-import com.android.pos.MainApplication
 import com.android.pos.R
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.repositories.UserRepository
@@ -35,9 +34,6 @@ import com.android.pos.di.RolePermission
 import com.android.pos.utils.FileUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.alert
-import com.android.pos.utils.scanner.helpers.Barcode
-import com.zebra.scannercontrol.DCSScannerInfo
-import com.zebra.scannercontrol.FirmwareUpdateEvent
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 import java.io.IOException
@@ -65,11 +61,7 @@ class MainActivity : BaseScannerActivity() {
     @Inject
     lateinit var repo: UserRepository
 
-    @Inject
-    lateinit var barcodePrefProvider: BarcodePrefProvider
-
     override fun onCreate(savedInstanceState: Bundle?) {
-        initScanner()
         super.onCreate(savedInstanceState)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -184,25 +176,6 @@ class MainActivity : BaseScannerActivity() {
 
     }
 
-    private fun initScanner() {
-
-        /* if (MainApplication.sdkHandler == null) {
-             MainApplication.sdkHandler = SDKHandler(this, true)
-         }
-
-         if (requestLocationPermissions()) {
-             initScannerCallBack()
-         }
-         getRequestCallBack {
-             initScannerCallBack()
-         }*/
-    }
-
-    private fun initScannerCallBack() {
-        //set the delegates method
-        MainApplication.sdkHandler?.dcssdkSetDelegate(this)
-    }
-
     fun alertLogout() {
         alert("", "Are you sure you want to Logout?") {
             this.positiveButton("Logout") {
@@ -223,8 +196,6 @@ class MainActivity : BaseScannerActivity() {
     override fun onResume() {
         super.onResume()
         navController?.addOnDestinationChangedListener(listner)
-
-        initScanner()
     }
 
     override fun onPause() {
@@ -386,106 +357,9 @@ class MainActivity : BaseScannerActivity() {
     }
 
     private var requestCallBack: (() -> Unit)? = null
-    var notifyAdaptersCallBack: ((Boolean) -> Unit)? = null
-
-    /*Scanner Implementation*/
-
-    override fun notifyAdapters(connectedScanner: Boolean) {
-        notifyAdaptersCallBack?.invoke(connectedScanner)
-    }
-
-    override fun getScannerPref(): BarcodePrefProvider {
-        return barcodePrefProvider
-    }
 
     override fun onSupportNavigateUp(): Boolean {
         navController?.navigateUp()
         return super.onSupportNavigateUp()
-    }
-
-    override fun dcssdkEventScannerAppeared(availableScanner: DCSScannerInfo?) {
-        Log.e(TAG, "Event: dcssdkEventScannerAppeared")
-        dataHandler.obtainMessage(
-            com.android.pos.utils.scanner.helpers.Constants.SCANNER_APPEARED,
-            availableScanner
-        ).sendToTarget()
-    }
-
-    override fun dcssdkEventScannerDisappeared(scannerID: Int) {
-        Log.e(TAG, "Event: dcssdkEventScannerDisappeared")
-        dataHandler.obtainMessage(
-            com.android.pos.utils.scanner.helpers.Constants.SCANNER_DISAPPEARED,
-            scannerID
-        ).sendToTarget()
-    }
-
-    override fun dcssdkEventCommunicationSessionEstablished(activeScanner: DCSScannerInfo?) {
-        Log.e(TAG, "Event: dcssdkEventCommunicationSessionEstablished")
-        dataHandler.obtainMessage(
-            com.android.pos.utils.scanner.helpers.Constants.SESSION_ESTABLISHED,
-            activeScanner
-        ).sendToTarget()
-        resetVirtualTetherHostConfigurations()
-        scannersListHasBeenUpdated()
-    }
-
-    override fun dcssdkEventCommunicationSessionTerminated(scannerID: Int) {
-        Log.e(TAG, "Event: dcssdkEventCommunicationSessionTerminated")
-        dataHandler.obtainMessage(
-            com.android.pos.utils.scanner.helpers.Constants.SESSION_TERMINATED,
-            scannerID
-        ).sendToTarget()
-        scannersListHasBeenUpdated()
-    }
-
-    override fun dcssdkEventBarcode(barcodeData: ByteArray?, barcodeType: Int, fromScannerID: Int) {
-        Log.e(TAG, "Event: dcssdkEventBarcode")
-        val barcode = barcodeData?.let { Barcode(it, barcodeType, fromScannerID) }
-        dataHandler.obtainMessage(
-            com.android.pos.utils.scanner.helpers.Constants.BARCODE_RECEIVED,
-            barcode
-        ).sendToTarget()
-    }
-
-    override fun dcssdkEventImage(imageData: ByteArray?, fromScannerID: Int) {
-        Log.e(TAG, "Event: dcssdkEventImage")
-        dataHandler.obtainMessage(
-            com.android.pos.utils.scanner.helpers.Constants.IMAGE_RECEIVED,
-            imageData
-        ).sendToTarget()
-    }
-
-    override fun dcssdkEventVideo(videoFrame: ByteArray?, fromScannerID: Int) {
-        Log.e(TAG, "Event: dcssdkEventVideo")
-        dataHandler.obtainMessage(
-            com.android.pos.utils.scanner.helpers.Constants.VIDEO_RECEIVED,
-            videoFrame
-        ).sendToTarget()
-    }
-
-    override fun dcssdkEventBinaryData(binaryData: ByteArray?, fromScannerID: Int) {
-        Log.e(
-            TAG,
-            "BinaryData Event received no.of bytes : " + binaryData?.size + " for Scanner ID : " + fromScannerID
-        )
-    }
-
-    override fun dcssdkEventFirmwareUpdate(firmwareUpdateEvent: FirmwareUpdateEvent?) {
-        Log.e(TAG, "Event: dcssdkEventFirmwareUpdate")
-        dataHandler.obtainMessage(
-            com.android.pos.utils.scanner.helpers.Constants.FW_UPDATE_EVENT,
-            firmwareUpdateEvent
-        ).sendToTarget()
-    }
-
-    override fun dcssdkEventAuxScannerAppeared(
-        newTopology: DCSScannerInfo?,
-        auxScanner: DCSScannerInfo?
-    ) {
-        Log.e(TAG, "Event: dcssdkEventAuxScannerAppeared")
-        dataHandler.obtainMessage(
-            com.android.pos.utils.scanner.helpers.Constants.AUX_SCANNER_CONNECTED,
-            auxScanner
-        ).sendToTarget()
     }
 }

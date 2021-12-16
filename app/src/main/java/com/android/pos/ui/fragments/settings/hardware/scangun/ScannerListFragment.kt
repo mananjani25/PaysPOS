@@ -16,13 +16,10 @@ import com.android.pos.databinding.FragmentScannerListBinding
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.visible
-import com.android.pos.utils.scanner.helpers.ScannerAppEngine
-import com.zebra.scannercontrol.FirmwareUpdateEvent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ScannerListFragment : Fragment(),
-    ScannerAppEngine.IScannerAppEngineDevEventsDelegate {
+class ScannerListFragment : Fragment() {
 
     private lateinit var binding: FragmentScannerListBinding
     private val TAG = "ScannerListFragment"
@@ -101,7 +98,6 @@ class ScannerListFragment : Fragment(),
     }
 
     private fun initScanner() {
-        (activity as MainActivity).addDevEventsDelegate(this)
         broadcastSCAisListening()
     }
 
@@ -122,20 +118,6 @@ class ScannerListFragment : Fragment(),
         val intent = Intent()
         intent.action = "com.android.pos.LISTENING_STARTED"
         activity?.sendBroadcast(intent)
-    }
-
-    override fun scannerBarcodeEvent(barcodeData: ByteArray?, barcodeType: Int, scannerID: Int) {
-        Log.e(TAG, "scannerBarcodeEvent: ${barcodeData?.let { String(it) }}")
-        //We need to pass product code to api from here
-    }
-
-    override fun scannerFirmwareUpdateEvent(firmwareUpdateEvent: FirmwareUpdateEvent?) {
-    }
-
-    override fun scannerImageEvent(imageData: ByteArray?) {
-    }
-
-    override fun scannerVideoEvent(videoData: ByteArray?) {
     }
 
     private fun notifyAdapters(connectedScanner: Boolean) {

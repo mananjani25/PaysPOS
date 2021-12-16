@@ -42,6 +42,7 @@ class CreateItemViewModel @Inject constructor(
     private var stockViewModel: Int = 0
     private var imageViewModel: String? = ""
     private var body2ViewModel: String? = ""
+    private var productCodeModel: String? = ""
     private lateinit var variationAttributeModel: ArrayList<VariationsAttribute>
 
     private val _snackbarText = MutableLiveData<Event<Any?>>()
@@ -132,6 +133,7 @@ class CreateItemViewModel @Inject constructor(
                 variationsAttributes = variationAttributeModel
                 locationId = prefProvider.getValueInt(LOCATION_ID, -1)
                 taxIds = selectedTaxList
+                productCode = productCodeModel?:""
 
             }
 
@@ -203,13 +205,15 @@ class CreateItemViewModel @Inject constructor(
         itemPrice: Double?,
         desc: String,
         sku: String,
-        stock: Int
+        stock: Int,
+        productCode: String
     ) {
         this.imageViewModel = filePath
         this.itemPriceViewModel = itemPrice
         this.descViewModel = desc
         this.skuViewModel = sku
         this.stockViewModel = stock
+        this.productCodeModel = productCode
     }
 
 

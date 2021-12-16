@@ -22,10 +22,13 @@ import com.android.pos.utils.scanner.helpers.*
 import com.google.gson.Gson
 import com.zebra.scannercontrol.*
 import com.zebra.scannercontrol.DCSSDKDefs.*
+import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
+import javax.inject.Inject
 
 
-abstract class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkApiDelegate,
+@AndroidEntryPoint
+open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkApiDelegate,
     ScannerAppEngine.IScannerAppEngineDevConnectionsDelegate {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,8 +61,14 @@ abstract class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcs
     val scannersList: ArrayList<AvailableScanner> = arrayListOf()
     val lastConnectedScannerList: ArrayList<AvailableScanner> = arrayListOf()
 
+    var notifyAdaptersCallBack: ((Boolean) -> Unit)? = null
+    var barcodeEventCallBack: ((String) -> Unit)? = null
+
     private val EVENT = 2
     private val TAG = "BaseScannerActivity"
+
+    @Inject
+    lateinit var barcodePrefProvider: BarcodePrefProvider
 
     private fun initializeScanner() {
         mScannerInfoList = MainApplication.mScannerInfoList
@@ -146,9 +155,6 @@ abstract class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcs
         //removeDevConnectiosDelegate(this)
         //unregisterReceiver(onNotification)
     }
-
-    protected abstract fun notifyAdapters(connectedScanner: Boolean)
-    protected abstract fun getScannerPref(): BarcodePrefProvider
 
     protected fun addToAvailableScannerList(availableScanner: AvailableScanner) {
         if (!scannersList.contains(availableScanner)) {
@@ -1251,6 +1257,92 @@ abstract class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcs
         return false
     }
 
+    override fun dcssdkEventScannerAppeared(availableScanner: DCSScannerInfo?) {
+        Log.e(TAG, "Event: dcssdkEventScannerAppeared")
+        dataHandler.obtainMessage(
+            com.android.pos.utils.scanner.helpers.Constants.SCANNER_APPEARED,
+            availableScanner
+        ).sendToTarget()
+    }
+
+    override fun dcssdkEventScannerDisappeared(scannerID: Int) {
+        Log.e(TAG, "Event: dcssdkEventScannerDisappeared")
+        dataHandler.obtainMessage(
+            com.android.pos.utils.scanner.helpers.Constants.SCANNER_DISAPPEARED,
+            scannerID
+        ).sendToTarget()
+    }
+
+    override fun dcssdkEventCommunicationSessionEstablished(activeScanner: DCSScannerInfo?) {
+        Log.e(TAG, "Event: dcssdkEventCommunicationSessionEstablished")
+        dataHandler.obtainMessage(
+            com.android.pos.utils.scanner.helpers.Constants.SESSION_ESTABLISHED,
+            activeScanner
+        ).sendToTarget()
+        resetVirtualTetherHostConfigurations()
+        scannersListHasBeenUpdated()
+    }
+
+    override fun dcssdkEventCommunicationSessionTerminated(scannerID: Int) {
+        Log.e(TAG, "Event: dcssdkEventCommunicationSessionTerminated")
+        dataHandler.obtainMessage(
+            com.android.pos.utils.scanner.helpers.Constants.SESSION_TERMINATED,
+            scannerID
+        ).sendToTarget()
+        scannersListHasBeenUpdated()
+    }
+
+    override fun dcssdkEventBarcode(barcodeData: ByteArray?, barcodeType: Int, fromScannerID: Int) {
+        Log.e(TAG, "Event: dcssdkEventBarcode")
+        val barcode = barcodeData?.let { Barcode(it, barcodeType, fromScannerID) }
+        dataHandler.obtainMessage(
+            com.android.pos.utils.scanner.helpers.Constants.BARCODE_RECEIVED,
+            barcode
+        ).sendToTarget()
+    }
+
+    override fun dcssdkEventImage(imageData: ByteArray?, fromScannerID: Int) {
+        Log.e(TAG, "Event: dcssdkEventImage")
+        dataHandler.obtainMessage(
+            com.android.pos.utils.scanner.helpers.Constants.IMAGE_RECEIVED,
+            imageData
+        ).sendToTarget()
+    }
+
+    override fun dcssdkEventVideo(videoFrame: ByteArray?, fromScannerID: Int) {
+        Log.e(TAG, "Event: dcssdkEventVideo")
+        dataHandler.obtainMessage(
+            com.android.pos.utils.scanner.helpers.Constants.VIDEO_RECEIVED,
+            videoFrame
+        ).sendToTarget()
+    }
+
+    override fun dcssdkEventBinaryData(binaryData: ByteArray?, fromScannerID: Int) {
+        Log.e(
+            TAG,
+            "BinaryData Event received no.of bytes : " + binaryData?.size + " for Scanner ID : " + fromScannerID
+        )
+    }
+
+    override fun dcssdkEventFirmwareUpdate(firmwareUpdateEvent: FirmwareUpdateEvent?) {
+        Log.e(TAG, "Event: dcssdkEventFirmwareUpdate")
+        dataHandler.obtainMessage(
+            com.android.pos.utils.scanner.helpers.Constants.FW_UPDATE_EVENT,
+            firmwareUpdateEvent
+        ).sendToTarget()
+    }
+
+    override fun dcssdkEventAuxScannerAppeared(
+        newTopology: DCSScannerInfo?,
+        auxScanner: DCSScannerInfo?
+    ) {
+        Log.e(TAG, "Event: dcssdkEventAuxScannerAppeared")
+        dataHandler.obtainMessage(
+            com.android.pos.utils.scanner.helpers.Constants.AUX_SCANNER_CONNECTED,
+            auxScanner
+        ).sendToTarget()
+    }
+
     //save scanner data
     fun saveScanner(device: DCSScannerInfo?, connect: Boolean) {
         if (connect) {
@@ -1267,4 +1359,11 @@ abstract class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcs
         }
     }
 
+    open fun notifyAdapters(connectedScanner: Boolean) {
+        notifyAdaptersCallBack?.invoke(connectedScanner)
+    }
+
+    open fun getScannerPref(): BarcodePrefProvider {
+        return barcodePrefProvider
+    }
 }

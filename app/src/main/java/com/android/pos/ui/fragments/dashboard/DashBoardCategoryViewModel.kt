@@ -115,11 +115,14 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     val _Basedata = MutableLiveData<Event<CreateOrderResponse.Data?>>()
 
+    var barcodeFoundDbItemLiveData: LiveData<Resource<TbItem>>? = null
+
 
     fun modifierSet(intArray: IntArray) = posRepository.modifierSetList(intArray)
 
     fun getItemsbyId(itemId: Int) = posRepository.getItemsbyId(itemId)
 
+    fun getItemByProductCode(productCode: String) =  posRepository.getItemByProductCode(productCode)
 
     fun mAllWords(orderType: String): LiveData<List<CartModel>> {
         return posRepository.getCartList(orderType)
@@ -555,7 +558,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                 totalPrice = (subTotalPrice + totalTax + totalServiceCharge)
                 if (MethodUtils.isEnableCashDiscount(context)) {
                     if (optionType == "CashDiscount") {
-                        cashDiscountFinal = MethodUtils.calculateCashDiscount(subTotalPrice,prefProvider,context)
+                        cashDiscountFinal =
+                            MethodUtils.calculateCashDiscount(subTotalPrice, prefProvider, context)
                     } else if (optionType == "SurCharge") {
                         cashDiscountFinal = 0.0
                     } else {
@@ -593,7 +597,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                 totalPrice = (subTotalPrice + totalTax + totalServiceCharge)
                 if (MethodUtils.isEnableCashDiscount(context)) {
                     if (optionType == "CashDiscount") {
-                        cashDiscountFinal = MethodUtils.calculateCashDiscount(subTotalPrice,prefProvider,context)
+                        cashDiscountFinal =
+                            MethodUtils.calculateCashDiscount(subTotalPrice, prefProvider, context)
                     } else if (optionType == "SurCharge") {
                         cashDiscountFinal = 0.0
                     } else {

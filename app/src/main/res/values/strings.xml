@@ -679,5 +679,6 @@
     <string name="no_scanner_found">No scanner found.</string>
     <string name="other_scanners">Other Scanners</string>
     <string name="connected_scanner">Connected Scanner</string>
+    <string name="product_code">Product Code</string>
 
 </resources>

@@ -142,6 +142,29 @@
                 android:background="@color/white"
                 android:orientation="vertical">
 
+                <TextView
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:paddingTop="@dimen/_5sdp"
+                    android:paddingBottom="@dimen/_3sdp"
+                    android:text="@string/product_code"
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/hintColor"
+                    android:textSize="@dimen/_5mdpi" />
+
+                <TextView
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/edt_border_light_gray"
+                    android:padding="@dimen/_5sdp"
+                    android:text="@={createItemVewModel.itemDetails.productCode}"
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/hintColor"
+                    android:textSize="@dimen/_5mdpi" />
+
                 <androidx.appcompat.widget.AppCompatEditText
                     style="@style/CustomFontSemiBold"
                     android:layout_width="match_parent"

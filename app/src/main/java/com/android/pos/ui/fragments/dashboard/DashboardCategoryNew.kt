@@ -73,6 +73,7 @@ import com.android.pos.data.remote.Constants.VERTICAL
 import com.android.pos.databinding.FragmentDashboardCategoryNewBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
+import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.activities.SwipeHelper
 import com.android.pos.ui.adapter.*
 import com.android.pos.ui.fragments.payment.PaymentViewModel
@@ -82,11 +83,13 @@ import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.callback.MyCallback
 import com.android.pos.utils.extensions.*
 import com.android.pos.utils.printer.PrinterClass
+import com.android.pos.utils.scanner.helpers.ScannerAppEngine
 import com.android.pos.utils.statusUtils.Status
 import com.epson.eposprint.Builder
 import com.epson.eposprint.Print
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
+import com.zebra.scannercontrol.FirmwareUpdateEvent
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -94,7 +97,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, MyCallback,
     DineInAdapter.DineInCallback, CategoryTabAdapter1.TabListner,
-    ItemCallback, View.OnClickListener {
+    ItemCallback, View.OnClickListener, ScannerAppEngine.IScannerAppEngineDevEventsDelegate {
 
     private var orderDiscount: Double = 0.0
     private var categoryItemAdapter1: CategoryItemAdapter1? = null
@@ -379,7 +382,35 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             }
         }
 
+        //barcode events
+        initScanner()
+    }
 
+    private fun initScanner() {
+        //barcode event listener
+        (activity as MainActivity).addDevEventsDelegate(this)
+
+        /*viewModel.barcodeFoundDbItemLiveData?.observe(viewLifecycleOwner, {
+            it?.let { resource ->
+                when (resource.status) {
+                    Status.SUCCESS -> {
+                        if (resource.data != null) {
+                            //data found. | Add in cart
+                        } else {
+                            //data not found. Create New Item
+                            val bundle = Bundle()
+                            bundle.putString("productCode", resource.data?.productCode)
+                            findNavController().navigate(R.id.action_dashboardCategoryNew_to_createItem)
+                        }
+                    }
+                    Status.ERROR -> {
+                    }
+                    Status.LOADING -> {
+
+                    }
+                }
+            }
+        })*/
     }
 
     private fun syncData() {
@@ -3606,5 +3637,52 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         }
         Log.e(TAG, "OrderType Label : $label")
         binding.layoutCart.txtOrderType.text = label
+    }
+
+    override fun scannerBarcodeEvent(barcodeData: ByteArray?, barcodeType: Int, scannerID: Int) {
+        Log.e(TAG, "scannerBarcodeEvent: ${barcodeData?.let { String(it) }}")
+
+        //Check product code in db
+        val productCode = barcodeData?.let { String(it) }
+        productCode?.let { viewModel.getItemByProductCode(it) }
+
+        viewModel.getItemByProductCode(productCode ?: "")?.observe(viewLifecycleOwner, {
+            it?.let { resource ->
+                when (resource.status) {
+                    Status.SUCCESS -> {
+                        if (resource.data != null) {
+                            //data found. | Add in cart
+                        } else {
+                            //data not found. Create New Item
+                            if (findNavController().currentDestination?.id == R.id.dashboardCategoryNew) {
+                                val bundle = Bundle()
+                                bundle.putString("productCode", productCode ?: "")
+                                findNavController().navigate(
+                                    R.id.action_dashboardCategoryNew_to_createItem,
+                                    bundle
+                                )
+                            }
+                        }
+                    }
+                    Status.ERROR -> {
+                    }
+                    Status.LOADING -> {
+
+                    }
+                }
+            }
+        })
+    }
+
+    override fun scannerFirmwareUpdateEvent(firmwareUpdateEvent: FirmwareUpdateEvent?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun scannerImageEvent(imageData: ByteArray?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun scannerVideoEvent(videoData: ByteArray?) {
+        TODO("Not yet implemented")
     }
 }

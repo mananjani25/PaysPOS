@@ -112,6 +112,10 @@
             app:destination="@id/editVariationDialog" />
 
         <argument
+            android:name="productCode"
+            android:defaultValue=""
+            app:argType="string" />
+        <argument
             android:name="isEdit"
             android:defaultValue="false"
             app:argType="boolean" />
