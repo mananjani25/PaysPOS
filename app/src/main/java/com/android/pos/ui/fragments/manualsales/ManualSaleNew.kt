@@ -1,5 +1,6 @@
 package com.android.pos.ui.fragments.manualsales
 
+import android.annotation.SuppressLint
 import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
@@ -149,6 +150,10 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
 
                     cartAdapter.clearList()
 
+                    viewModel.itemCalculation(
+                        null,
+                        binding.txtTotalAmount
+                    )
                 }
 
 
@@ -701,6 +706,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
 
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onItemClicked(model: TbItem, position: Int) {
         Log.e(TAG, "Itemmodel: ${Gson().toJson(model)}")
         val dialog = Dialog(requireContext())
@@ -749,21 +755,13 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
 
         txtSave.setOnClickListener {
             dialog.dismiss()
-            val itemCost = (model.price / model.itemQuantity)
+            val itemCost = model.price
 
-            Log.e(TAG, "discountOriginal ${model.discountPrice}")
             if (model.discountPrice != 0.0) {
                 val dis = model.discountPrice / model.itemQuantity
-                Log.e(TAG, "discountdis:  ${dis}")
 
                 model.discountPrice =
                     String.format("%.2f", (dis * txtQty.text.toString().toInt())).toDouble()
-                Log.e(
-                    TAG,
-                    "discountCountPrice  ${
-                        String.format("%.2f", (dis * txtQty.text.toString().toInt())).toDouble()
-                    }"
-                )
             }
 
 
@@ -802,29 +800,29 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
                     if (result.discountType == requireContext().getString(R.string.disc_percentage)) {
 
                         model.discountPrice = calculateDiscountPercentage(
-                            model.price,
+                            model.price * model.itemQuantity,
                             result.percentage
                         )
                         model.discountId = result.id
                         model.discountType = result.discountType
                         model.isManualSales = true
-                        Log.e(TAG, "insideDiscountmodel:  ${Gson().toJson(model)}")
                         viewModel.cartLogic(cartList, model, Constants.UPDATE)
                         txtTitle.text = model.name + "  $" + String.format(
                             "%.2f",
-                            (model.price - model.discountPrice)
+                            ((model.price * model.itemQuantity) - model.discountPrice)
                         )
 
-                    } else if (model.price > result.percentage) {
+                    } else if ((model.price * model.itemQuantity) > result.percentage) {
 
                         model.discountPrice = result.percentage
+                        model.discountId = 0
                         model.discountType = result.discountType
                         model.isManualSales = true
 
                         viewModel.cartLogic(cartList, model, Constants.UPDATE)
                         txtTitle.text = model.name + "  $" + String.format(
                             "%.2f",
-                            (model.price - model.discountPrice)
+                            ((model.price * model.itemQuantity) - model.discountPrice)
                         )
                     }
                 } else {

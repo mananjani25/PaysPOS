@@ -61,7 +61,13 @@ class RolePermission @Inject constructor(
         }
     }
 
-    fun hasUserAccessPermission(name: String, root: View?): Boolean {
+    fun isDefaultUserRoleWithoutAlert(name: String): Boolean {
+        return (name.equals(Constants.ROLE_MANAGER, true)
+                || name.equals(Constants.ROLE_OWNER, true)
+                || name.equals(Constants.ROLE_EMPLOYEE, true))
+    }
+
+    fun isDefaultUserRole(name: String, root: View?): Boolean {
         return if (name.equals(Constants.ROLE_MANAGER, true)
             || name.equals(Constants.ROLE_OWNER, true)
             || name.equals(Constants.ROLE_EMPLOYEE, true)

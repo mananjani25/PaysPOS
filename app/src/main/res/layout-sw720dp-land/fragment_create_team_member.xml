@@ -373,7 +373,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_weight="1"
-                        android:text="@string/tv_personal_passcode"
+                        android:text="@string/tv_personal_passcode_"
                         android:textColor="@color/txtColor"
                         android:textSize="@dimen/_5mdpi" />
 

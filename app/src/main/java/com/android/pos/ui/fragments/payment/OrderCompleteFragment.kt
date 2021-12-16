@@ -53,7 +53,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private var remainingAmount: Double = 0.0
     private var splitPaidAmount: Double = 0.0
     private var splitValue: Int = -1
+
     private var isSpilt: Boolean = false
+    private var isLastPayment: Boolean = false
     private var isDineIn: Boolean = false
     private var kitchenPrinterList: List<PrinterResponse.Data.KitchenReceiptPrinters> = listOf()
     private var orderID: Int = 0
@@ -66,6 +68,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private var customerSettingModel = GetCustomerReceiptSettingsResponse.Data()
     private var kitchenSettingModel = GetKitchenReceiptSettingsResponse.Data()
     private var splitList: ArrayList<SplitDetailListModel> = arrayListOf()
+
+    private var isGuestPaymentTotal = false
+
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -85,11 +90,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         getCustomerReceiptSettings()
         getKitchenReceiptSettings()
         splitAdapter = SplitListAdapter()
+        prefProvider.setValueboolean(Constants.IS_ORDER_UPDATE, value = false)
         binding.rvSplits.adapter = splitAdapter
         if (requireArguments().getBoolean("isSpilt")) {
             observeSplitList()
         }
-
         return binding.root
     }
 
@@ -150,8 +155,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         totalPrice = requireArguments().getDouble("totalPrice")
         paymentAmount = requireArguments().getDouble("paymentAmount")
         orderID = requireArguments().getInt("orderID")
+        isGuestPaymentTotal = requireArguments().getBoolean("isGuestPaymentTotal")
         isSpilt = requireArguments().getBoolean("isSpilt")
         paymentType = requireArguments().getString("paymentType", "")
+        isLastPayment = requireArguments().getBoolean("isLastPayment", false)
         isDineIn = requireArguments().getBoolean("isDineIn")
         if (!isDineIn)
             receiptModel = requireArguments().getParcelable("receiptData")
@@ -168,29 +175,29 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             splitValue = requireArguments().getInt("splitValue")
             remainingAmount = requireArguments().getDouble("remainingAmount")
             splitPaidAmount = requireArguments().getDouble("payAmount")
-
-
-
-
             binding.txtRemainingAmount.text = MethodUtils.roundOffAmount(remainingAmount)
-
             binding.txtRemainingAmount.visibility = View.VISIBLE
             binding.txtRemainingAmountLabel.visibility = View.VISIBLE
             binding.llHome.visibility = View.GONE
             binding.llNoReceipt.text = "Next Payment"
             binding.txtHome.text = "Next Payment"
-
-
             var title = "Split "
-
             viewModel.addSplitToDatabase(title, splitPaidAmount, remainingAmount)
 
         } else {
+            if (isGuestPaymentTotal && isDineIn && !isLastPayment) {
+                binding.llCheckOut.visibility = View.VISIBLE
+                binding.txtHome.visibility = View.GONE
+                binding.llNoReceipt.visibility = View.GONE
+            } else {
+                binding.llHome.visibility = View.VISIBLE
+                binding.txtHome.visibility = View.VISIBLE
+                binding.llNoReceipt.visibility = View.VISIBLE
+            }
             binding.viewSplitLine.visibility = View.GONE
             binding.constraintSplit.visibility = View.GONE
             binding.txtRemainingAmount.visibility = View.GONE
             binding.txtRemainingAmountLabel.visibility = View.GONE
-            binding.llHome.visibility = View.VISIBLE
             binding.llNoReceipt.text = getString(R.string.no_receipt)
             binding.txtHome.text = getString(R.string.tv_home)
             viewModel.deleteSplitDb()
@@ -222,6 +229,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         binding.txtSend.setOnClickListener(this)
         binding.imgBack.setOnClickListener(this)
         binding.llHome.setOnClickListener(this)
+        binding.llCheckOut.setOnClickListener(this)
 
         setFragmentResultListener("request_key_customer") { requestKey: String, bundle: Bundle ->
             val result = bundle.getParcelable<TbCustomer>("data")
@@ -275,6 +283,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
             R.id.txtAddCustomer -> {
                 findNavController().navigate(R.id.action_orderCompleteFragment_to_assignCustomerOrderFragment)
+            }
+            R.id.llCheckOut -> {
+                moveToCheckOut()
             }
             R.id.llMessage -> {
                 type = "Message"
@@ -330,25 +341,48 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         }
     }
 
-    private fun moveToDashboard() {
-
-        if (isSpilt) {
-            if (isDineIn) {
-                findNavController().popBackStack()
-            } else {
-                findNavController().popBackStack()
-            }
-        } else {
-
-            if (isGuest) {
+    private fun moveToCheckOut() {
+        if (isDineIn) {
+            if (isGuestPaymentTotal) {
                 val bundle = Bundle()
                 bundle.putInt("orderId", orderID)
+
                 findNavController().navigate(
                     R.id.action_orderCompleteFragment_to_dineInOrderTable,
                     bundle
                 )
-            } else {
+            }
+        }
+    }
 
+    private fun moveToDashboard() {
+
+        if (isSpilt) {
+            if (isDineIn) {
+                val navController = findNavController()
+                var bundle = Bundle()
+                bundle.putBoolean("isNextPayment", true)
+                bundle.putDouble("splitPaidAmount", paymentAmount)
+                navController.previousBackStackEntry?.savedStateHandle?.set("data", bundle)
+                navController.popBackStack()
+            } else {
+                findNavController().popBackStack()
+            }
+        } else {
+            if (isGuest) {
+                if (!isLastPayment) {
+                    val bundle = Bundle()
+                    bundle.putInt("orderId", orderID)
+
+                    findNavController().navigate(
+                        R.id.action_orderCompleteFragment_to_dineInOrderTable,
+                        bundle
+                    )
+                } else {
+                    removeCustomer()
+                    findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
+                }
+            } else {
                 removeCustomer()
                 findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
             }

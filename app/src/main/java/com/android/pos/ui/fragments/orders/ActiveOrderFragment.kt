@@ -201,7 +201,7 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
                     bundle.putString("paymentOfflineId", order.payments[0].offlineId)
                 }
                 bundle.putString("orderOfflineId", order.offlineId)
-                bundle.putBoolean("isLoyaltyApplied",order.isLoyaltyApplied)
+                bundle.putBoolean("isLoyaltyApplied", order.isLoyaltyApplied)
                 findNavController().navigate(
                     R.id.action_orders_to_dashboardCategoryNew, bundle
                 )
@@ -213,7 +213,7 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
 
                 val bundle = Bundle()
                 bundle.putDouble("totalPrice", order.totalAmount)
-                bundle.putDouble("finalprice",order.totalAmount)
+                bundle.putDouble("finalprice", order.totalAmount)
                 bundle.putDouble(
                     "cashDiscountSurcharge",
                     MethodUtils.calculateCashDiscount(
@@ -305,7 +305,7 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
             orderTypeId = order.orderTypeId
             orderType = order.orderType
             orderTypeName = order.orderType
-            futureDeliveryDate = order.date
+            futureDeliveryDate = order.futureDeliveryDate
             isOpenOrder = true
             serviceCharge = serviceChargesList(order)
             customer = assignCustomer(order)

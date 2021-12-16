@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.entities.TbItem
+import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.model.DineInModel
 import com.android.pos.databinding.*
 import com.android.pos.utils.MethodUtils
@@ -21,6 +22,7 @@ import kotlin.collections.ArrayList
 
 class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private var list: ArrayList<DineInModel> = arrayListOf()
+    private var serviceChargeList: ArrayList<TbServiceCharge> = arrayListOf()
     private lateinit var itemAdapter: DineInTableItemAdapter
     private lateinit var listner: DineInTableListner
     private val TAG = "DineInTableAdapter"
@@ -76,7 +78,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     inner class HeaderViewHolder(private val binding: ViewDineInHeaderBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(model: DineInModel, position: Int) {
-            var tbList: ArrayList<TbItem> = arrayListOf()
+
             var guestAmt = 0.0
             var isPaid = true
             var isAllFired = true
@@ -84,6 +86,11 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             var guestSubTotal = 0.0
             var totalTaxAmt: Double = 0.0
 
+            if (list[position].title?.trim()?.lowercase() == "Whole Table".trim().lowercase()) {
+                binding.imgPrint.visibility = View.GONE
+            } else {
+                binding.imgPrint.visibility = View.VISIBLE
+            }
             for (i in position + 1 until list.size) {
 
                 if (list.get(i).isHeader == 1) {
@@ -150,9 +157,12 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 } else {
                     break
                 }
+                if (list.get(i).isHeader == 0) {
+                    isPaid = list.get(i).isPaid
+                }
             }
             guestAmt += list.get(0).guestDividedAmt
-            Log.e(TAG, "customerAdapter  ${list.get(position).customer}")
+
 
             if (list.get(position).customer != null) {
                 binding.txtTableName.setText(
@@ -177,7 +187,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 binding.btnPaid.visibility = View.INVISIBLE
 
             }
-            if (list[layoutPosition].title?.lowercase() == "Whole Table".lowercase()) {
+            if (list[layoutPosition].title?.lowercase() == "Whole Table".lowercase() || list.get(0).totalGuestCount == 1) {
                 binding.btnPay.visibility = View.GONE
                 binding.btnPaid.visibility = View.INVISIBLE
                 //  binding.txtTotal.visibility = View.INVISIBLE
@@ -193,29 +203,37 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
             var totalServiceCharge = 0.0
 
-            if (list[0].serviceChargeList?.isNotEmpty() == true) {
-                list[0].serviceChargeList?.forEach {
+
+            if (serviceChargeList?.isNotEmpty() == true) {
+                serviceChargeList?.forEach {
                     if (it.isEnabled) {
                         totalServiceCharge += (guestSubTotal * it.percentage) / 100
+
                     }
                 }
 
 
             }
 
+
             var finalAmt =
                 guestSubTotal + totalServiceCharge + totalTaxAmt + (list.get(0).guestDividedAmt - list.get(
                     0
                 ).cashSurchargeDiscount)
 
+            Log.e(TAG, "guestSubTotal  ${guestSubTotal}")
+            Log.e(TAG, "guesttotalServiceCharge  ${totalServiceCharge}")
+            Log.e(TAG, "guesttotalTaxAmt  ${totalTaxAmt}")
+            Log.e(TAG, "guestguestDividedAmt  ${list.get(0).guestDividedAmt}")
+            Log.e(TAG, "guestcashSurchargeDiscount  ${list.get(0).cashSurchargeDiscount}")
+
             binding.txtPay.setText("Pay " + MethodUtils.roundOffAmount(finalAmt))
 
             binding.btnPay.setOnClickListener {
-                Log.e(TAG, "OnPayClicked")
                 listner.onGuestPay(
                     list[position],
                     position,
-                    MethodUtils.roundOffAmountDouble(guestSubTotal + list.get(0).guestDividedAmt),
+                    MethodUtils.roundOffAmountDouble(guestSubTotal),
                     MethodUtils.roundOffAmountDouble(finalAmt),
                     MethodUtils.roundOffAmountDouble(totalTaxAmt),
                     MethodUtils.roundOffAmountDouble(totalServiceCharge),
@@ -227,6 +245,42 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         }
 
         init {
+
+            binding.imgPrint.setOnClickListener {
+                var fisrtTime: Boolean = false
+                var listItem: ArrayList<TbItem> = arrayListOf()
+                var listItemWT: ArrayList<TbItem> = arrayListOf()
+                for (i in 1 until list.size) {
+                    if (list.get(i).isHeader == 1) {
+                        list.get(i).item?.let { it1 -> listItemWT.add(it1) }
+                    } else {
+                        break
+                    }
+                }
+                for (i in bindingAdapterPosition + 1 until list.size) {
+                    if (list.get(i).isHeader == 1) {
+
+                        list[i].item?.let { it1 -> listItem.add(it1) }
+                    } else {
+                        break;
+                    }
+
+                }
+
+                if (listItem.isNotEmpty()) {
+                    var guestName = ""
+                    if (list[bindingAdapterPosition].customer != null) {
+                        guestName = list[bindingAdapterPosition].customer?.first_name.toString()
+                    } else {
+                        guestName = list[bindingAdapterPosition].title.toString()
+                    }
+
+
+                    listner.onGuestPrint(listItem, guestName, listItemWT)
+                }
+
+
+            }
             binding.chkIsFired.setOnCheckedChangeListener { buttonView, isChecked ->
 
                 if (buttonView.isPressed) {
@@ -254,7 +308,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
 
                         }
-                        Log.e(TAG, "builderbuilder:  ${builder}")
+
                         listner.onWholeTableToKitchen(builder.toString())
                         binding.chkIsFired.isChecked = true
                         binding.chkIsFired.isEnabled = false
@@ -328,7 +382,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             binding.chkIsFired.setOnCheckedChangeListener { buttonView, isChecked ->
 
                 if (buttonView.isPressed) {
-                    Log.e("chkIsFired", isChecked.toString())
+
                     if (isChecked) {
                         if (list.get(layoutPosition).item != null) {
                             var itemsNew = list[bindingAdapterPosition].item
@@ -337,8 +391,6 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                             itemsNew?.isFired = true
 
 
-
-                            Log.e(TAG, "idStr:  $ids")
                             ids?.let {
                                 list[bindingAdapterPosition].item?.let { it1 ->
                                     listner.singleItemFired(
@@ -484,7 +536,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         }
 
         override fun onSendOrderToKitchen(item: TbItem) {
-            Log.e(TAG, "onItwdetewt  ${Gson().toJson(item)}")
+
             listner.onSendItemToKitchen(item)
         }
 
@@ -508,6 +560,11 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         fun onSendItemToKitchen(item: TbItem)
         fun onWholeTableToKitchen(ids: String)
         fun singleItemFired(id: String, position: Int, item: TbItem)
+        fun onGuestPrint(
+            listItem: ArrayList<TbItem>,
+            guestName: String,
+            listWTitems: ArrayList<TbItem>
+        )
     }
 
     fun getList(): List<DineInModel> {
@@ -581,6 +638,11 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
             list[clickedPos].item?.isFired = true
         }
+        notifyDataSetChanged()
+    }
+
+    fun setSurchargeList(serviceChargeListt: java.util.ArrayList<TbServiceCharge>) {
+        this.serviceChargeList = serviceChargeListt
         notifyDataSetChanged()
     }
 

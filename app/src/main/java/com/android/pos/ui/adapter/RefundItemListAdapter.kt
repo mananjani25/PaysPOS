@@ -18,6 +18,9 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
     var selectedItemList = ArrayList<GetOrderDetailsResponse.Data.OrderItem>()
     var noteList = ArrayList<GetOrderDetailsResponse.Data.OrderItem>()
     var serviceCharge: Double = 0.0
+    var cashdiscountType: String = ""
+    var paymentType: String = ""
+    var cash_discount_or_surcharge: Double = 0.0
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -30,8 +33,14 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
 
     fun addItems(
         noteList: List<GetOrderDetailsResponse.Data.OrderItem>,
-        serviceCharge: Double
+        serviceCharge: Double,
+        cash_discount_or_surcharge: Double,
+        cashDiscountType: String,
+        paymentType: String
     ) {
+        this.cash_discount_or_surcharge = cash_discount_or_surcharge
+        this.cashdiscountType = cashDiscountType
+        this.paymentType = paymentType
         this.noteList.apply {
             clear()
             addAll(noteList)
@@ -78,11 +87,20 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
             var totalTax = 0.0
             var totalServiceCharge = 0.0
 
-            var totalItemPrice: Double = (item.totalPrice - item.discountAmount).toDouble()
 
+            var totalItemPrice: Double = (item.totalPrice - item.discountAmount).toDouble()
+            if (paymentType == "Cash") {
+                if (cashdiscountType == "CashDiscount") {
+                    totalItemPrice -= cash_discount_or_surcharge
+                }
+            } else if (paymentType == "Card") {
+                if (cashdiscountType == "SurCharge") {
+                    totalItemPrice += cash_discount_or_surcharge
+                }
+            }
 
             item.orderItemTaxes.forEach { tax ->
-                tax.amount?.let {
+                tax.taxTotalAmount.let {
                     totalTax += it
                 }
             }

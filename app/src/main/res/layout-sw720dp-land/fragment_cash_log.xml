@@ -191,7 +191,7 @@
             </LinearLayout>
 
             <RelativeLayout
-                android:layout_width="@dimen/_80sdp"
+                android:layout_width="@dimen/_70sdp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_5sdp"
                 android:background="@drawable/bg_border"

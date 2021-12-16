@@ -170,6 +170,7 @@ object Constants {
     const val ADD_SERVICE_CHARGE = "add_service_charge"
 
     const val TEAM_MEMBER = "team_member"
+    const val LOYALTY_ADDED = "loyaltyAdded"
 
     const val DIALOG_KEY = "dialog_key"
     const val DIALOG_KEY_OPTIONS = "dialog_key_options"

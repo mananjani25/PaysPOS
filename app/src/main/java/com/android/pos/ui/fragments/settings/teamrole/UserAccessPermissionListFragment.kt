@@ -74,6 +74,9 @@ class UserAccessPermissionListFragment : Fragment() {
         binding.imgClose.setOnClickListener {
             backPressManage()
         }
+        binding.txtHome.setOnClickListener {
+            findNavController().navigate(R.id.action_userAccessPermissionListFragment_to_dashboardCategory)
+        }
 
         val callback: OnBackPressedCallback =
             object : OnBackPressedCallback(true /* enabled by default */) {
@@ -123,7 +126,7 @@ class UserAccessPermissionListFragment : Fragment() {
                 ) { pos ->
 
                     position = pos
-                    if (rolePermission.hasUserAccessPermission(userPermissionListAdapter.getItem(pos).name, binding.root)) {
+                    if (rolePermission.isDefaultUserRole(userPermissionListAdapter.getItem(pos).name.trim(), binding.root)) {
                         alert(
                             getString(R.string.app_name),
                             getString(R.string.delete_employee_role_message)

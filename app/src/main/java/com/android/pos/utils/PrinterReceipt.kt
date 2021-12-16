@@ -10,6 +10,7 @@ import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import com.android.pos.data.entities.TbItem
+import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.data.model.responseModel.GetTipReponse
@@ -506,6 +507,130 @@ fun addOrderItemOpenOrder(
     return builder
 
 
+}
+
+fun addWholeTbItemToGuest(
+    builder: Builder,
+    list: TbItem,
+    font: String,
+    showModifiers: Boolean,
+    guestCount: Int,
+    serviceChargeList: ArrayList<TbServiceCharge>
+): Builder {
+
+    val obj = list
+    builder.addTextLineSpace(30)
+    builder.addFeedUnit(30)
+    builder.addTextFont(Builder.FONT_E)
+    // builder.addTextAlign(Builder.ALIGN_LEFT)
+    builder.addTextLang(Builder.LANG_EN)
+    addCustomerTextSize(builder, font)
+    builder.addTextStyle(
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.COLOR_1
+    )
+
+
+    val subTotal = (obj.price * obj.itemQuantity).toDouble()
+    var WTTaxes = 0.0
+    var serviceCharge = 0.0
+
+
+    obj.taxes?.forEach { tax ->
+        if (tax.isActive) {
+            WTTaxes += if (tax.taxType == "Percentage") {
+
+                var modifierPrice = 0.0
+                val price =
+                    (obj.price * obj.itemQuantity) - obj.discountPrice
+
+                obj.modifiers.forEach {
+                    modifierPrice += (it.price * it.itemQuantity)
+                }
+
+                val totalPrice = price + modifierPrice
+
+                val itemTaxPrice =
+                    (tax.rate * totalPrice) / 100
+                Log.e("itemTaxPrice", "" + itemTaxPrice)
+                String.format("%.2f", itemTaxPrice)
+                    .toDouble()
+            } else {
+
+                String.format(
+                    "%.2f",
+                    tax.rate * obj.itemQuantity
+                )
+                    .toDouble()
+            }
+        }
+
+
+    }
+
+    if (serviceChargeList?.isNotEmpty() == true) {
+        serviceChargeList?.forEach {
+            if (it.isEnabled) {
+                serviceCharge += (subTotal * it.percentage) / 100
+            }
+        }
+
+        Log.e(TAG,"serviceCharge  ${serviceCharge}")
+        Log.e(TAG,"serviceWTTaxes  ${WTTaxes}")
+        Log.e(TAG,"serviceSubTotal  ${subTotal}")
+    }
+
+    var finalAmt = MethodUtils.roundOffAmount((subTotal+WTTaxes +serviceCharge)/guestCount)
+    builder.addText(
+        padLineCustomerItem(
+            obj.itemQuantity.toString() + "x " + obj.name,
+            "" +finalAmt,
+            if (font == Constants.LARGE) {
+                24
+            } else {
+                48
+            }
+        )
+    )
+
+
+    /*if (obj.modifiers.isNotEmpty() && showModifiers) {
+        for (j in 0 until obj.modifiers.size) {
+            val modifierObj = obj.modifiers.get(j)
+            builder.addTextLineSpace(30)
+            builder.addFeedUnit(30)
+            builder.addTextFont(Builder.FONT_E)
+            //builder.addTextAlign(Builder.ALIGN_LEFT)
+            builder.addTextLang(Builder.LANG_EN)
+            addCustomerTextSize(builder, font)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.COLOR_1
+            )
+            builder.addTextPosition(4)
+            builder.addText(
+                padLineCustomerItem(
+                    "   " + modifierObj.name,
+                    "$" + MethodUtils.roundOffAmountString(modifierObj.price.toDouble() * modifierObj.itemQuantity),
+                    if (font == Constants.LARGE) {
+                        23
+                    } else {
+                        47
+                    }
+                )
+            )
+
+
+        }
+
+
+    }*/
+
+    return builder
 }
 
 fun addOrderItemForDineIn(

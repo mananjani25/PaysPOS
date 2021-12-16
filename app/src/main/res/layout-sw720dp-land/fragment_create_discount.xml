@@ -159,7 +159,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:background="@null"
-                                android:hint="@string/discount_name"
+                                android:hint="@string/discount_name_"
                                 android:imeOptions="actionNext"
                                 android:inputType="textCapWords"
                                 android:padding="@dimen/_5sdp"

@@ -369,10 +369,26 @@
                             android:layout_weight="1"
                             android:background="@color/btnColorDark_"
                             android:gravity="center"
-
                             android:minWidth="@dimen/_245sdp"
                             android:padding="@dimen/_5sdp"
                             android:text="@string/tv_home"
+                            android:visibility="gone"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/_7mdpi" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/llCheckOut"
+                            style="@style/CustomFontBold"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="@dimen/_3sdp"
+                            android:layout_weight="1"
+                            android:background="@color/btnColorDark_"
+                            android:gravity="center"
+                            android:visibility="gone"
+                            android:minWidth="@dimen/_245sdp"
+                            android:padding="@dimen/_5sdp"
+                            android:text="@string/checkout"
                             android:textColor="@color/white"
                             android:textSize="@dimen/_7mdpi" />
 

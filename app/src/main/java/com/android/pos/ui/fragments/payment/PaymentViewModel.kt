@@ -149,10 +149,9 @@ class PaymentViewModel @Inject constructor(
 
                                 if (onlySave) {
                                     _data.value = Event(createOrderResponse)
-                                } else {
-                                    if (createOrderResponse.data.order.orderType != "Dine In") {
-                                        cashLogApi(createOrderResponse, "in")
-                                    }
+                                }
+                                if (createOrderResponse.data.order.orderType != "Dine In") {
+                                    cashLogApi(createOrderResponse, "in")
                                 }
 
                                 _msgText.value = Event(response.message)
@@ -750,7 +749,7 @@ class PaymentViewModel @Inject constructor(
                 price = it.price
                 order_item_id = item.orderItemId
                 totalPrice = MethodUtils.roundOffAmountDouble(it.price * it.itemQuantity)
-                modifier_set_id = it.modifierSetId?:0
+                modifier_set_id = it.modifierSetId ?: 0
                 quantity = it.itemQuantity
                 order_item_taxes_attributes = arrayListOf()
             }
@@ -934,21 +933,25 @@ class PaymentViewModel @Inject constructor(
 //            cardName = ""
 //            cardNumber = ""
 //            cardType = 0
-            if (paymentType == "Cash") {
+            if (paymentTypeStatus == "Cash") {
                 if (cashdiscountType == "SurCharge") {
                     cash_discount_or_surcharge = 0.0
-                    total_cash_discount =0.0
+                    total_cash_discount = 0.0
                 } else if (cashdiscountType == "CashDiscount") {
-                    cash_discount_or_surcharge = finalcashdiscount
-                    total_cash_discount = finalcashdiscount
+                    cash_discount_or_surcharge =
+                        if (splitValue == -1) finalcashdiscount else finalcashdiscount / splitValue
+                    total_cash_discount =
+                        if (splitValue == -1) finalcashdiscount else finalcashdiscount / splitValue
                 }
-            } else if (paymentType == "Card") {
+            } else if (paymentTypeStatus == "Card") {
                 if (cashdiscountType == "SurCharge") {
-                    cash_discount_or_surcharge = finalcashdiscount
-                    total_cash_discount = finalcashdiscount
+                    cash_discount_or_surcharge =
+                        if (splitValue == -1) finalcashdiscount else finalcashdiscount / splitValue
+                    total_cash_discount =
+                        if (splitValue == -1) finalcashdiscount else finalcashdiscount / splitValue
                 } else if (cashdiscountType == "CashDiscount") {
                     cash_discount_or_surcharge = 0.0
-                    total_cash_discount =0.0
+                    total_cash_discount = 0.0
                 }
             }
             cashDiscountFee = 0.0
@@ -985,8 +988,14 @@ class PaymentViewModel @Inject constructor(
             is_loyalty_applied = redeemLoyaltyInfo?.needToApplyLoyalty
             if (is_loyalty_applied == true) {
                 loyalty_program_id = "${redeemLoyaltyInfo?.loyaltyProgramsModel?.id}"
-                loyalty_amount = redeemLoyaltyInfo?.usedLoyaltyAmount
-                used_reward_points = redeemLoyaltyInfo?.usedLoyaltyPoints
+                loyalty_amount =
+                    if (splitValue == -1) redeemLoyaltyInfo?.usedLoyaltyAmount else redeemLoyaltyInfo?.usedLoyaltyAmount?.div(
+                        splitValue
+                    )
+                used_reward_points =
+                    if (splitValue == -1) redeemLoyaltyInfo?.usedLoyaltyPoints else redeemLoyaltyInfo?.usedLoyaltyPoints?.div(
+                        splitValue
+                    )
                 is_loyalty_applied = redeemLoyaltyInfo?.needToApplyLoyalty
             }
 

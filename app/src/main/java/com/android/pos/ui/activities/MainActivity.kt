@@ -31,6 +31,7 @@ import com.android.pos.data.repositories.UserRepository
 import com.android.pos.databinding.ParentActivityBinding
 import com.android.pos.di.BarcodePrefProvider
 import com.android.pos.di.PrefProvider
+import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.utils.FileUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.alert
@@ -59,6 +60,9 @@ class MainActivity : BaseScannerActivity() {
 
     @Inject
     lateinit var prefProvider: PrefProvider
+
+    @Inject
+    lateinit var rolePermission: RolePermission
 
     @Inject
     lateinit var repo: UserRepository
@@ -119,13 +123,17 @@ class MainActivity : BaseScannerActivity() {
                 }
                 R.id.menuTransactions -> {
                     disableDrawer()
-                    navController?.navigate(R.id.action_global_transactionFragment)
-                    return@setNavigationItemSelectedListener true
+                    if (rolePermission.hasTransactionPermission(binding.root)) {
+                        navController?.navigate(R.id.action_global_transactionFragment)
+                        return@setNavigationItemSelectedListener true
+                    }
                 }
                 R.id.menuCashLog -> {
                     disableDrawer()
-                    navController?.navigate(R.id.action_global_cashLogFragment)
-                    return@setNavigationItemSelectedListener true
+                    if (rolePermission.hasCashLogPermission(binding.root)) {
+                        navController?.navigate(R.id.action_global_cashLogFragment)
+                        return@setNavigationItemSelectedListener true
+                    }
                 }
                 R.id.menuReports -> {
                     disableDrawer()
@@ -135,8 +143,10 @@ class MainActivity : BaseScannerActivity() {
 
                 R.id.menuCustomers -> {
                     disableDrawer()
-                    navController?.navigate(R.id.action_global_customer)
-                    return@setNavigationItemSelectedListener true
+                    if (rolePermission.hasCustomerPermission(binding.root)) {
+                        navController?.navigate(R.id.action_global_customer)
+                        return@setNavigationItemSelectedListener true
+                    }
                 }
                 R.id.menuTeam -> {
                     disableDrawer()
@@ -145,8 +155,10 @@ class MainActivity : BaseScannerActivity() {
                 }
                 R.id.memuInventory -> {
                     disableDrawer()
-                    navController?.navigate(R.id.action_global_inventory)
-                    return@setNavigationItemSelectedListener true
+                    if (rolePermission.hasInventoryPermission(binding.root)) {
+                        navController?.navigate(R.id.action_global_inventory)
+                        return@setNavigationItemSelectedListener true
+                    }
                 }
                 R.id.menuSettings -> {
                     disableDrawer()

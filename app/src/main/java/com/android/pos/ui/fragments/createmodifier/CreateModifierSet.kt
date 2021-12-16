@@ -20,6 +20,7 @@ import com.android.pos.data.entities.TbItem
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.CreateModifierSetBinding
 import com.android.pos.ui.adapter.ModifierAdapter
+import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.getNavigationResultLiveData
 import com.android.pos.utils.extensions.liveSnackBar
@@ -255,15 +256,23 @@ class CreateModifierSet : Fragment(), TextWatcher {
     private fun observeData() {
 
         viewModel.data.observe(viewLifecycleOwner, { event ->
-            event.getContentIfNotHandled()?.let {
-                if (it) {
-                    val navControll = findNavController()
-                    navControll.previousBackStackEntry?.savedStateHandle?.set(
-                        Constants.KEY,
-                        Constants.CREATEMODIFIER
-                    )
-                    navControll.popBackStack()
+            event.getContentIfNotHandled()?.let { message ->
+
+                activity?.let {
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        it, message
+                    ) { _, _ ->
+                        findNavController().navigateUp()
+                    }
                 }
+
+                val navControll = findNavController()
+                navControll.previousBackStackEntry?.savedStateHandle?.set(
+                    Constants.KEY,
+                    Constants.CREATEMODIFIER
+                )
+                navControll.popBackStack()
+
             }
         })
     }

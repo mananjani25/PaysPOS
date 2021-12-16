@@ -56,9 +56,11 @@ import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
 import com.android.pos.data.remote.Constants.HORIZONTAL
 import com.android.pos.data.remote.Constants.IS_ORDER_UPDATE
+import com.android.pos.data.remote.Constants.LOYALTY_ADDED
 import com.android.pos.data.remote.Constants.MANUALSALE
 import com.android.pos.data.remote.Constants.MERGED
 import com.android.pos.data.remote.Constants.OPEN_ORDER
+import com.android.pos.data.remote.Constants.OPEN_ORDER_
 import com.android.pos.data.remote.Constants.OPTION_TYPE
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
@@ -107,6 +109,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private var isReOrder: Boolean = false
     private var future_delivery_time: String = ""
     private var popupWindow: PopupWindow? = null
+    private var totalDiscountMannualAdded = 0.0
     private var orderType: TbOrderType? = null
     private var future_delivery_date: String = ""
     private var assignCustomer: TbCustomer? = null
@@ -134,6 +137,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private lateinit var cartAdapter: CartAdapter
     private lateinit var orderTypeAdapter: OrderTypeAdapter
     private val viewModelPayment by viewModels<PaymentViewModel>()
+    private var optionType: String = ""
     private lateinit var dineInCartAdapter: DineInAdapter
     lateinit var cashDiscountModel: CashDiscountModel
     var cashDiscountType = ""
@@ -159,6 +163,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         getLoyaltyPrograms()
 
         isOrderUpdate = requireArguments().getBoolean("update")
+        optionType = prefProvider.getValue(OPTION_TYPE, "")
         if (isOrderUpdate) {
             orderId = requireArguments().getInt("orderId")
             paymentId = requireArguments().getInt("paymentId")
@@ -205,6 +210,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         dineInUpdateOrder()
         getCustomerReceiptSettings()
         getKitchenReceiptSettings()
+        prefProvider.setValue(Constants.SPLIT_PAY_AMOUNT_DINE_IN, "")
+        prefProvider.setValue(Constants.SPLIT_PAY_TYPE_DINE_IN, "")
+        prefProvider.setValueInt(Constants.SPLIT_NO_DINE_IN, -1)
+
 
         binding.footer.imgClock.setOnClickListener {
             alert(
@@ -279,6 +288,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         binding.layoutCart.llCartMenu.setOnClickListener(this)
         binding.layoutCart.imgOrderMenu.setOnClickListener(this)
         binding.layoutCart.txtAddDiscount.setOnClickListener(this)
+//
+//        if (prefProvider.getValueboolean(LOYALTY_ADDED, false)) {
+//            refreshItemCalculation()
+//        }
         binding.footer.txtEmployeeName.text = prefProvider.getValue(EMPLOYEE_NAME, "")
 
         binding.root.setOnClickListener {
@@ -578,6 +591,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             viewModel.destroyedList.addAll(it)
                         }
 
+                        refreshOrderTypeLabel()
+
                         if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
                             viewModel.setServiceCharges(serviceChargesList)
                             cartList.get(0).serviceCharge = serviceChargesList
@@ -655,34 +670,17 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             Log.e(TAG, "viewModel.destroyedList > ${viewModel.destroyedList?.size}")
                             cartAdapter.addCart(cartList[0].items)
                         }
-
-
-                        if (MethodUtils.isEnableCashDiscount(requireContext())) {
-                            if (prefProvider.getValue(OPTION_TYPE, "") == "CashDiscount") {
-                                viewModel.itemCalculation(
-                                    cartList,
-                                    binding.layoutCart.txtTotalAmount,
-                                    MethodUtils.calculateCashDiscount(
-                                        viewModel.subTotalPrice,
-                                        prefProvider,
-                                        requireContext()
-                                    )
-                                )
-                            } else if (prefProvider.getValue(OPTION_TYPE, "") == "SurCharge") {
-                                viewModel.itemCalculation(
-                                    cartList,
-                                    binding.layoutCart.txtTotalAmount,
-                                    0.0
-                                )
-                            }
-                        } else {
-                            viewModel.itemCalculation(
-                                cartList,
-                                binding.layoutCart.txtTotalAmount,
-                                0.0
-                            )
-                        }
-
+                        viewModel.itemCalculation(
+                            cartList,
+                            binding.layoutCart.txtTotalAmount,
+                            MethodUtils.calculateCashDiscount(
+                                viewModel.subTotalPrice,
+                                prefProvider,
+                                requireContext()
+                            ),
+                            optionType,
+                            requireContext(),
+                        )
 
                         val orderType = prefProvider.getValue(ORDER_TYPE, "")
                         Log.e("!_@_", "rlSave -------- $orderType ")
@@ -707,35 +705,21 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             binding.layoutCart.rlSave.visibility = View.VISIBLE
                         }
 
-                        if (prefProvider.getValueInt("ORDER_ID", -1) != -1) {
-                            gotoPayment()
-                        }
+//                        if (prefProvider.getValueInt("ORDER_ID", -1) != -1) {
+//                            gotoPayment()
+//                        }
                     } else {
-                        if (MethodUtils.isEnableCashDiscount(requireContext())) {
-                            if (prefProvider.getValue(OPTION_TYPE, "") == "CashDiscount") {
-                                viewModel.itemCalculation(
-                                    cartList,
-                                    binding.layoutCart.txtTotalAmount,
-                                    MethodUtils.calculateCashDiscount(
-                                        viewModel.subTotalPrice,
-                                        prefProvider,
-                                        requireContext()
-                                    )
-                                )
-                            } else if (prefProvider.getValue(OPTION_TYPE, "") == "SurCharge") {
-                                viewModel.itemCalculation(
-                                    cartList,
-                                    binding.layoutCart.txtTotalAmount,
-                                    0.0
-                                )
-                            }
-                        } else {
-                            viewModel.itemCalculation(
-                                cartList,
-                                binding.layoutCart.txtTotalAmount,
-                                0.0
-                            )
-                        }
+                        viewModel.itemCalculation(
+                            cartList,
+                            binding.layoutCart.txtTotalAmount,
+                            MethodUtils.calculateCashDiscount(
+                                viewModel.subTotalPrice,
+                                prefProvider,
+                                requireContext()
+                            ),
+                            optionType,
+                            requireContext(),
+                        )
 
 
 
@@ -1287,9 +1271,20 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         val chkLoyalty: CheckBox = popupView.findViewById(R.id.chkLoyaltyAmount)
         chkLoyalty.setOnCheckedChangeListener { _, p1 ->
             viewModel.redeemLoyaltyInfo.needToApplyLoyalty = p1
+            prefProvider.setValueboolean(LOYALTY_ADDED, p1)
             //refresh pop up data and final calculation
             setPopUpData(popupView)
             refreshItemCalculation()
+        }
+
+        if (prefProvider.getValueboolean(LOYALTY_ADDED, false)) {
+            if (!chkLoyalty.isChecked) {
+                chkLoyalty.isChecked = true
+                setPopUpData(popupView)
+                refreshItemCalculation()
+            }
+        } else {
+            chkLoyalty.isChecked = false
         }
 
         popupWindow = PopupWindow(
@@ -1731,7 +1726,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                                 * txtQty.text.toString().toInt()
                                 )
                     } else {
-                        data.discountPrice = discountPrice
+                        //data.discountPrice = discountPrice
                     }
 
                 }
@@ -1750,6 +1745,11 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 }
 
                 //check is_edited flag
+                if (totalDiscountMannualAdded > 0) {
+                    data.discountPrice = totalDiscountMannualAdded
+                } else {
+                    data.discountPrice = totalDiscountMannualAdded
+                }
                 makeItemEdited(data)
 
                 if (isItemClick) {
@@ -1840,41 +1840,40 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             setFragmentResultListener("request_key_discount_details") { requestKey: String, bundle: Bundle ->
                 val result = bundle.getParcelable<TbDiscount>("data")
                 if (result != null) {
-                    if (result.discountType == requireContext().getString(R.string.disc_percentage)) {
+                    when {
+                        result.discountType == requireContext().getString(R.string.disc_percentage) -> {
 
-                        data.discountPrice = calculateDiscountPercentage(
-                            totalPrice(data),
-                            result.percentage
-                        )
-                        discountPrice = data.discountPrice / data.itemQuantity
-                        data.discountId = result.id
-                        data.discountType = result.discountType
-                        data.isManualSales = false
-                        txtTitle.text = data.name + "  $" + String.format(
-                            "%.2f",
-                            (totalPrice(data) - data.discountPrice)
-                        )
+                            data.discountPrice = calculateDiscountPercentage(
+                                totalPrice(data),
+                                result.percentage
+                            )
+                            totalDiscountMannualAdded = data.discountPrice
+                            discountPrice = data.discountPrice / data.itemQuantity
+                            data.discountId = result.id
+                            data.discountType = result.discountType
+                            data.isManualSales = false
+                            txtTitle.text = data.name + "  $" + String.format(
+                                "%.2f",
+                                (totalPrice(data) - data.discountPrice)
+                            )
 
-                    } else if (data.price > result.percentage) {
+                        }
+                        totalPrice(data) > result.percentage -> {
+                            totalDiscountMannualAdded = data.discountPrice
+                            data.discountPrice = result.percentage
+                            data.discountId = 0
+                            data.discountType = result.discountType
+                            data.isManualSales = false
+                            discountPrice = data.discountPrice / data.itemQuantity
+                        }
+                        else -> {
+                            /*  data.discountPrice = 0.0
+                                          data.discountType = ""
+                                          data.isManualSales = false
+                                          data.discountId = 0
+                                          discountPrice = data.discountPrice*/
 
-                        data.discountPrice = result.percentage
-                        data.discountId = 0
-                        data.discountType = result.discountType
-                        data.isManualSales = false
-                        discountPrice = data.discountPrice / data.itemQuantity
-
-                        //viewModel.cartLogic(cartList, data, Constants.UPDATE)
-                        txtTitle.text = data.name + "  $" + String.format(
-                            "%.2f",
-                            (totalPrice(data) - data.discountPrice)
-                        )
-                    } else {
-                        /*  data.discountPrice = 0.0
-                          data.discountType = ""
-                          data.isManualSales = false
-                          data.discountId = 0
-                          discountPrice = data.discountPrice*/
-
+                        }
                     }
 
                 } else {
@@ -1914,6 +1913,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     }
 
 
+    @SuppressLint("SetTextI18n")
     private fun showPriceTitle(
         variationsAttribute: VariationsAttribute?,
         variationAdapter: VariationDashboardListAdapter?,
@@ -2210,6 +2210,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             }
             R.id.txtCrtNewCustomer -> {
                 if (prefProvider.getValue(CUSTOMER_NAME, "").toString().isNotEmpty()) {
+                    prefProvider.setValueboolean(LOYALTY_ADDED, false)
                     clearCustomer()
                 } else {
                     findNavController().navigate(
@@ -2265,6 +2266,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             hideOrderType()
                             hideOrderMenu()
                             clearUpdateFlag()
+                            prefProvider.setValueboolean(LOYALTY_ADDED, false)
                         }
                     }
                     negativeButton(R.string.tv_cancel) {
@@ -2317,6 +2319,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                                 2,
                                 binding.layoutCart.txtTotalAmount.text.length
                             ) as String).toDouble()
+                    }
+
+                    if (cartList.futureDeliveryDate.isNotEmpty()) {
+                        future_delivery_date = cartList.futureDeliveryDate
                     }
 
                     val request = viewModelPayment.createOrderRequest(
@@ -2765,6 +2771,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             txtQty.setText(qty.toString())
             btnRemove.visibility = View.GONE
             btnAddDiscount.visibility = View.GONE
+        } else {
+            btnRemove.visibility = View.VISIBLE
+            btnAddDiscount.visibility = View.VISIBLE
         }
 
         if (data.modifier_set_ids.isNotEmpty()) {
@@ -2942,27 +2951,13 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         btnRemove.setOnClickListener {
 
             cartList[0].orderType = DINE_IN
+            viewModel.cartLogic(
+                cartList,
+                data,
+                DELETE,
+                dineInList = dineInCartAdapter.getList()
+            )
 
-            if (prefProvider.getValueboolean(DINE_IN_UPDATE, false)) {
-
-
-                val list = dineInCartAdapter.getList()
-                val item: TbItem = list[headerPosition].items[position]
-                item.isEdited = true
-                item.isDestroy = true
-                list[headerPosition].items[position] = item
-                viewModel.dineInCartUpdate(cartList, list)
-
-
-            } else {
-
-                viewModel.cartLogic(
-                    cartList,
-                    data,
-                    DELETE,
-                    dineInList = dineInCartAdapter.getList()
-                )
-            }
             dialog.dismiss()
         }
         btnAddDiscount.setOnClickListener {
@@ -3590,32 +3585,26 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     }
 
     private fun refreshItemCalculation() {
-        if (MethodUtils.isEnableCashDiscount(requireContext())) {
-            if (prefProvider.getValue(OPTION_TYPE, "") == "CashDiscount") {
-                viewModel.itemCalculation(
-                    cartList,
-                    binding.layoutCart.txtTotalAmount,
-                    MethodUtils.calculateCashDiscount(
-                        viewModel.subTotalPrice,
-                        prefProvider,
-                        requireContext()
-                    )
-                )
-            } else if (prefProvider.getValue(OPTION_TYPE, "") == "SurCharge") {
-                viewModel.itemCalculation(
-                    cartList,
-                    binding.layoutCart.txtTotalAmount,
-                    0.0
-                )
-            }
-        } else {
-            viewModel.itemCalculation(
-                cartList,
-                binding.layoutCart.txtTotalAmount,
-                0.0
-            )
+        viewModel.itemCalculation(
+            cartList,
+            binding.layoutCart.txtTotalAmount,
+            MethodUtils.calculateCashDiscount(
+                viewModel.subTotalPrice,
+                prefProvider,
+                requireContext()
+            ),
+            optionType,
+            requireContext(),
+        )
+    }
+
+    private fun refreshOrderTypeLabel() {
+        //set order type label
+        var label = prefProvider.getValue(ORDER_TYPE, TAKEOUT).toString()
+        if (label.equals(OPEN_ORDER, true) || label.equals(OPEN_ORDER_, true)) {
+            label = OPEN_ORDER_
         }
-
-
+        Log.e(TAG, "OrderType Label : $label")
+        binding.layoutCart.txtOrderType.text = label
     }
 }

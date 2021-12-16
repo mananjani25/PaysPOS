@@ -249,13 +249,21 @@ class MethodUtils {
             var rateorAmount = prefProvider.getValue(Constants.RATE_OR_AMOUNT, "0")
             if (amountType == "Dollar") {
                 if (subTotal.toDouble() > 0) {
-                    return rateorAmount.toDouble()
+                    if (subTotal <= rateorAmount.toDouble()) {
+                        return subTotal
+                    } else {
+                        return rateorAmount.toDouble()
+                    }
                 } else {
                     return 0.00
                 }
             } else if (amountType == "Percentage") {
                 if (subTotal.toDouble() > 0) {
-                    return (subTotal * 100 / rateorAmount.toDouble())
+                    if (rateorAmount.toDouble() >= 100) {
+                        return subTotal
+                    } else {
+                        return (subTotal * 100 / rateorAmount.toDouble())
+                    }
                 }
             }
             return 0.00

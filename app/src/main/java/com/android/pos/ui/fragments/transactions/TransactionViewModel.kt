@@ -84,7 +84,7 @@ class TransactionViewModel @Inject constructor(
         endDate.value = sdf.format(myCalendar.time) + " " + SimpleDateFormat(
             "hh:mm a",
             Locale.getDefault()
-        ).format(Date())
+        ).format(Date(System.currentTimeMillis() + 300000))
 
     }
 
@@ -145,6 +145,8 @@ class TransactionViewModel @Inject constructor(
             orderTypeIdViewModel = ""
         }
 
+        Log.e("startDate", startDate.value.toString())
+        Log.e("endDate", endDate.value.toString())
 
         _showProgress.value = Event(true)
 
