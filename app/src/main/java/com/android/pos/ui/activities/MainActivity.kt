@@ -31,15 +31,13 @@ import com.android.pos.data.repositories.UserRepository
 import com.android.pos.databinding.ParentActivityBinding
 import com.android.pos.di.BarcodePrefProvider
 import com.android.pos.di.PrefProvider
-import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.android.pos.di.RolePermission
 import com.android.pos.utils.FileUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.scanner.helpers.Barcode
 import com.zebra.scannercontrol.DCSScannerInfo
 import com.zebra.scannercontrol.FirmwareUpdateEvent
-import com.zebra.scannercontrol.IDcsSdkApiDelegate
-import com.zebra.scannercontrol.SDKHandler
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 import java.io.IOException
@@ -188,19 +186,19 @@ class MainActivity : BaseScannerActivity() {
 
     private fun initScanner() {
 
-       /* if (MainApplication.sdkHandler == null) {
-            MainApplication.sdkHandler = SDKHandler(this, true)
-        }
+        /* if (MainApplication.sdkHandler == null) {
+             MainApplication.sdkHandler = SDKHandler(this, true)
+         }
 
-        if (requestLocationPermissions()) {
-            initScannerCallBack()
-        }
-        getRequestCallBack {
-            initScannerCallBack()
-        }*/
+         if (requestLocationPermissions()) {
+             initScannerCallBack()
+         }
+         getRequestCallBack {
+             initScannerCallBack()
+         }*/
     }
 
-    private fun initScannerCallBack(){
+    private fun initScannerCallBack() {
         //set the delegates method
         MainApplication.sdkHandler?.dcssdkSetDelegate(this)
     }

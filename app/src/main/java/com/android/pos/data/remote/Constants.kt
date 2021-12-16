@@ -359,4 +359,5 @@ object Constants {
     const val HARDWARE_SCAN_GUN = "Scan Gun"
     const val HARDWARE_TERMINAL = "Terminal"
     const val HARDWARE_KITCHEN_DISPLAY = "Kitchen Display"
+    const val HARDWARE_PRINTER_QUEUE = "Printer Queue"
 }
