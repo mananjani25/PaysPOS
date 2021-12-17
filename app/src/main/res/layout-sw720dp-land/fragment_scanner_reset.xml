@@ -64,40 +64,68 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingStart="@dimen/_100sdp"
-                android:paddingTop="@dimen/_15sdp"
-                android:paddingEnd="@dimen/_100sdp">
+                android:orientation="horizontal">
 
-                <TextView
-                    android:layout_width="match_parent"
+                <View
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="\n1. Scan the Reset Factory Defaults barcode below:"
-                    android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_6mdpi" />
+                    android:layout_weight="1" />
 
-                <FrameLayout
-                    android:id="@+id/flBarCodeReset"
-                    android:layout_width="wrap_content"
-                    android:layout_height="@dimen/_60sdp"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="@dimen/_10sdp" />
-
-                <TextView
-                    android:layout_width="match_parent"
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_10sdp"
-                    android:text="2. Scan the barcode below to pair:"
-                    android:textColor="@color/viewTextColor"
-                    android:textSize="@dimen/_6mdpi" />
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:paddingTop="@dimen/_15sdp">
 
-                <FrameLayout
-                    android:id="@+id/flBarCode"
-                    android:layout_width="wrap_content"
-                    android:layout_height="@dimen/_60sdp"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="@dimen/_10sdp" />
+                    <TextView
+                        style="@style/ResetStyle"
+                        android:text="1. If previously paired, use Bluetooth Settings to unpair the DS2278." />
 
+                    <TextView
+                        style="@style/ResetStyle"
+                        android:text="\n2. Scan the Reset Factory Defaults barcode below:" />
+
+                    <FrameLayout
+                        android:id="@+id/flBarCodeReset"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/_30sdp"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="@dimen/_10sdp" />
+
+                    <TextView
+                        style="@style/ResetStyle"
+                        android:text="3. Scan the barcode below to pair:" />
+
+                    <FrameLayout
+                        android:id="@+id/flBarCode"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/_30sdp"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="@dimen/_10sdp" />
+
+                    <TextView
+                        style="@style/ResetStyle"
+                        android:text="4. Enable Bluetooth on the device." />
+
+                    <TextView
+                        style="@style/ResetStyle"
+                        android:text="5. Go to the &quot;Scan Gun List&quot; and wait for the DS2278 to appear in the list." />
+
+                    <TextView
+                        style="@style/ResetStyle"
+                        android:text="6. Tap the DS2278 to initiate pairing." />
+
+                    <TextView
+                        style="@style/ResetStyle"
+                        android:text="7. Tap the &quot;Pair&quot; button when the Bluetooth Pairing Request prompt appears." />
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
             </LinearLayout>
 
         </androidx.core.widget.NestedScrollView>

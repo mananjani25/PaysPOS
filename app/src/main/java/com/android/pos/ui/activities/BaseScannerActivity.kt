@@ -33,8 +33,7 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val isBluetoothSupported = packageManager.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH)
-        if (isBluetoothSupported) {
+        if (checkBluetoothAvailable()) {
             initializeScanner()
         } else {
             Toast.makeText(this, "Bluetooth is not supported !!", Toast.LENGTH_SHORT).show()
@@ -100,6 +99,9 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
     }
 
     fun resetConnectionThroughBarcode(flBarcode: FrameLayout?) {
+        if (!checkBluetoothAvailable()) {
+            return
+        }
         val layoutParams = LinearLayout.LayoutParams(-1, -1)
         val data2encode = (3.toChar()) + "92"
         val barcode = GenerateBarcode128B(data2encode)
@@ -116,6 +118,9 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
     }
 
     fun generatePairingBarcode(flBarcode: FrameLayout?) {
+        if (!checkBluetoothAvailable()) {
+            return
+        }
         val layoutParams = LinearLayout.LayoutParams(-1, -1)
         // SDK was not able to determine Bluetooth MAC. So call the dcssdkGetPairingBarcode with BT Address.
         MainApplication.sdkHandler?.dcssdkSetSTCEnabledState(true)
@@ -133,6 +138,10 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
         } else {
             flBarcode?.removeAllViews()
         }
+    }
+
+    private fun checkBluetoothAvailable(): Boolean {
+        return packageManager.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH)
     }
 
     override fun onResume() {

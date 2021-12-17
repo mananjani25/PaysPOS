@@ -360,4 +360,9 @@ object Constants {
     const val HARDWARE_TERMINAL = "Terminal"
     const val HARDWARE_KITCHEN_DISPLAY = "Kitchen Display"
     const val HARDWARE_PRINTER_QUEUE = "Printer Queue"
+
+    //fragment keys
+    const val FRAGMENT_HARDWARE = 1
+    const val FRAGMENT_SCANNER_LIST = 2
+    const val FRAGMENT_RESET_SCANNER = 3
 }
