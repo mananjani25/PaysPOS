@@ -146,4 +146,7 @@ dependencies {
     //Generate QR Code
     implementation 'com.github.kenglxn.QRGen:android:2.6.0'
 
+    //Action Cable
+    implementation 'com.github.hosopy:actioncable-client-java:0.1.2'
+
 }
