@@ -27,6 +27,8 @@ class TaxServiceChargeRepository @Inject constructor(
     suspend fun editLoyaltyPoint(loyaltyPointRequest: LoyaltyPointRequest) =
         apiHelperNew.editLoyaltyPoint(loyaltyPointRequest)
 
+
+
     fun getTaxList() =
         performGetOperation(
             databaseQuery = { appDatabase.taxDao().allTax },

@@ -85,6 +85,9 @@ class PosRepository @Inject constructor(
     suspend fun createPrinter(data: CreatePrinterRequestModel) =
         apiHelperNew.createPrinter(data)
 
+    suspend fun createQueuePrinter(createQueuePrinterRequest: CreateQueuePrinterRequestModel) =
+        apiHelperNew.createQueuePrinter(createQueuePrinterRequest)
+
     suspend fun deletePrinter(id: Int) = apiHelperNew.deletePrinter(id)
 
     suspend fun updatePrinter(id: Int, model: CreatePrinterRequestModel) =
@@ -692,10 +695,10 @@ class PosRepository @Inject constructor(
         parentTableId: Int,
         childIds: String,
         orderModel: MergeTableRequest?,
-        childOrderIds:String?,
-        orderId:Int?=null
+        childOrderIds: String?,
+        orderId: Int? = null
     ) =
-        apiHelperNew.mergeFloorTable(parentTableId, childIds,orderModel,childOrderIds,orderId)
+        apiHelperNew.mergeFloorTable(parentTableId, childIds, orderModel, childOrderIds, orderId)
 
     suspend fun unMergeTable(id: Int) = apiHelperNew.unMergeTable(id)
     suspend fun payByGuest(

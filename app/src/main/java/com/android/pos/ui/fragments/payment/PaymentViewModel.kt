@@ -1100,4 +1100,31 @@ class PaymentViewModel @Inject constructor(
             }
         }
     }
+
+    private fun createQueuePrinter(createQueuePrinterModel: CreateQueuePrinterRequestModel) {
+        _showProgress.value = Event(true)
+
+        viewModelScope.launch {
+            val resource = posRepository.createQueuePrinter(createQueuePrinterModel)
+
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+
+                }
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+
+                }
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
+                }
+            }
+
+
+        }
+
+
+    }
 }
