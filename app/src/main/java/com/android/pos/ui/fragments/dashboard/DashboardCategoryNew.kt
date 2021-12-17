@@ -168,6 +168,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         prefProvider.setValueInt(Constants.SPLIT_NO, -1)
         prefProvider.setValue(Constants.SPLIT_PAY_TYPE, "")
         isOrderUpdate = requireArguments().getBoolean("update")
+        prefProvider.setValue("PaidAmount","")
+        prefProvider.setValue("WholeTotalPrice", "")
         optionType = prefProvider.getValue(OPTION_TYPE, "")
         if (isOrderUpdate) {
             orderId = requireArguments().getInt("orderId")
