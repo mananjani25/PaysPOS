@@ -1171,7 +1171,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     }
 
     private fun configureDrawer() {
-        binding.layoutMenu.txtKeypad.setOnClickListener {
+
+
+        binding.layoutMenu.txtKeypad.setOnSingleClickListener {
 
             if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
                 if (rolePermission.hasManualSalesPermission(binding.root)) {
