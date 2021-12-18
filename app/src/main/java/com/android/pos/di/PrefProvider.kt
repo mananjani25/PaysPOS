@@ -3,6 +3,7 @@ package com.android.pos.di
 import android.content.Context
 import android.content.SharedPreferences
 import com.android.pos.R
+import com.android.pos.data.entities.LoyaltyProgramsModel
 import com.android.pos.data.entities.TbCustomer
 import com.android.pos.data.entities.TeamRole
 import com.android.pos.data.remote.Constants
@@ -130,6 +131,17 @@ class PrefProvider @Inject constructor(@ApplicationContext context: Context) {
         return Gson().fromJson(
             getValue(Constants.PREF_CUSTOMER, ""),
             TbCustomer::class.java
+        )
+    }
+
+    fun saveActiveLoyaltyData(loyaltyProgramsModel: LoyaltyProgramsModel?) {
+        setValue(Constants.PREF_ACTIVE_LOYALTY_PROGRAM, Gson().toJson(loyaltyProgramsModel))
+    }
+
+    fun getActiveLoyaltyData(): LoyaltyProgramsModel? {
+        return Gson().fromJson(
+            getValue(Constants.PREF_ACTIVE_LOYALTY_PROGRAM, ""),
+            LoyaltyProgramsModel::class.java
         )
     }
 

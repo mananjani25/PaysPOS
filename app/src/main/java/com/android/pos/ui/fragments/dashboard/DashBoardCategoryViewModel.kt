@@ -651,6 +651,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             redeemLoyaltyInfo.usedLoyaltyAmount = 0.0
             //redeemLoyaltyInfo.isLoyaltyApplied = false
         }
+        Log.e("Loyalty", "txtTotalAmount : ${redeemLoyaltyInfo.getAmountToBePaid()}")
         MethodUtils.setPriceTextView(txtTotalAmount, redeemLoyaltyInfo.getAmountToBePaid())
 
     }

@@ -27,6 +27,7 @@ import com.android.pos.data.entities.*
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ADD
 import com.android.pos.data.remote.Constants.CUSTOMER_NAME
+import com.android.pos.data.remote.Constants.LOYALTY_ADDED
 import com.android.pos.data.remote.Constants.MANUAL_SALE_CATEGORY_ID
 import com.android.pos.data.remote.Constants.MANUAL_SALE_ITEM_ID
 import com.android.pos.databinding.FragmentManualSaleNewBinding
@@ -104,7 +105,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
 
         binding.layoutMenu.imgSearch.visibility = View.GONE
         binding.layoutMenu.autoSearch.visibility = View.GONE
-
+        viewModel.redeemLoyaltyInfo.needToApplyLoyalty = prefProvider.getValueboolean(LOYALTY_ADDED,false)
         //    prefProvider.setValue(CUSTOMER_NAME, "")
 
 
@@ -131,9 +132,11 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
 
     private fun getLoyaltyPrograms() {
         Log.e("Loyalty", "getLoyaltyPrograms called..")
+        viewModel.activeLoyaltyProgram = prefProvider.getActiveLoyaltyData()
         viewModel.activeLoyaltyProgramLiveData.observe(requireActivity(), {
             if (it.data != null) {
                 Log.e("Loyalty", "getLoyaltyPrograms fetched..")
+                prefProvider.saveActiveLoyaltyData(it.data)
                 viewModel.activeLoyaltyProgram = it.data
             }
         })
@@ -220,6 +223,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
         prefProvider.saveCustomerData(null)
         prefProvider.setValue(CUSTOMER_NAME, "")
         prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
+        prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
         binding.txtCustomerName.text = "Add Customer"
         binding.txtCrtNewCustomer.text = "Add Customer"
         binding.txtLoyaltyPoints.gone()

@@ -252,6 +252,7 @@ class ManualSaleViewModel @Inject constructor(
     ) {
 
         Log.e("Loyalty", "checkAppliedLoyaltyProgram..")
+        Log.e("Loyalty", "Active loyalty Program : ${Gson().toJson(activeLoyaltyProgram)}")
 
         redeemLoyaltyInfo.total = total
         val availablePoints = customer?.final_reward ?: 0
@@ -259,6 +260,7 @@ class ManualSaleViewModel @Inject constructor(
         if (customer == null) {
             //loyalty cant be applied if customer is not selected.
             redeemLoyaltyInfo.needToApplyLoyalty = false
+            Log.e("Loyalty", "needToApplyLoyalty == false")
         } else if (customer.enroll_to_loyalty == true
             && activeLoyaltyProgram != null && activeLoyaltyProgram?.rewardPoint ?: 0 <= availablePoints
         ) {
@@ -287,15 +289,19 @@ class ManualSaleViewModel @Inject constructor(
                     redeemLoyaltyInfo.remainingAmount =
                         redeemLoyaltyInfo.total - redeemLoyaltyInfo.usedLoyaltyAmount
                 }
+                Log.e("Loyalty", "needToApplyLoyalty == true")
                 //redeemLoyaltyInfo.isLoyaltyApplied = true
             }
         } else {
+            Log.e("Loyalty", "else portion.")
             redeemLoyaltyInfo.remainingAmount = redeemLoyaltyInfo.total
             redeemLoyaltyInfo.remainingLoyaltyPoints = availablePoints
             redeemLoyaltyInfo.usedLoyaltyPoints = 0
             redeemLoyaltyInfo.usedLoyaltyAmount = 0.0
             //redeemLoyaltyInfo.isLoyaltyApplied = false
         }
+        Log.e("Loyalty Manual Sales", "redeemLoyaltyInfo : ${Gson().toJson(redeemLoyaltyInfo)}")
+        Log.e("Loyalty Manual Sales", "txtTotalAmount : ${redeemLoyaltyInfo.getAmountToBePaid()}")
         MethodUtils.setPriceTextView(txtTotalAmount, redeemLoyaltyInfo.getAmountToBePaid())
 
     }

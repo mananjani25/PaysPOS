@@ -256,9 +256,11 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     private fun getLoyaltyPrograms() {
         Log.e("Loyalty", "getLoyaltyPrograms called..")
+        viewModel.activeLoyaltyProgram = prefProvider.getActiveLoyaltyData()
         viewModel.activeLoyaltyProgramLiveData.observe(requireActivity(), {
             if (it.data != null) {
                 Log.e("Loyalty", "getLoyaltyPrograms fetched..")
+                prefProvider.saveActiveLoyaltyData(it.data)
                 viewModel.activeLoyaltyProgram = it.data
             }
         })

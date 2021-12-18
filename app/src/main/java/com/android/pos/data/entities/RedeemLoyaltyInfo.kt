@@ -1,5 +1,7 @@
 package com.android.pos.data.entities
 
+import android.util.Log
+
 class RedeemLoyaltyInfo() {
     var loyaltyProgramsModel: LoyaltyProgramsModel? = null
     var total: Double = 0.0
