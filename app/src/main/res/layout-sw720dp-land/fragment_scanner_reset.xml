@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingDefaultResource">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="@dimen/_10sdp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/imgBack"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_gravity="center"
+                    android:background="?attr/selectableItemBackground"
+                    android:padding="@dimen/_4sdp"
+                    app:srcCompat="@drawable/ic_arrow_back"
+                    app:tint="@color/viewTextColor" />
+
+            </RelativeLayout>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtTitle"
+                style="@style/CustomFontBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="@dimen/_10sdp"
+                android:layout_marginRight="@dimen/_10sdp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:padding="@dimen/_3sdp"
+                android:text="Reset Scan Gun"
+                android:textColor="@color/viewTextColor"
+                android:textSize="@dimen/_6mdpi" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_marginBottom="@dimen/_5sdp"
+            android:background="@color/gray_rect" />
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/nsvScanner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:paddingTop="@dimen/_15sdp">
+
+                    <TextView
+                        style="@style/ResetStyle"
+                        android:text="1. If previously paired, use Bluetooth Settings to unpair the DS2278." />
+
+                    <TextView
+                        style="@style/ResetStyle"
+                        android:text="\n2. Scan the Reset Factory Defaults barcode below:" />
+
+                    <FrameLayout
+                        android:id="@+id/flBarCodeReset"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/_30sdp"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="@dimen/_10sdp" />
+
+                    <TextView
+                        style="@style/ResetStyle"
+                        android:text="3. Scan the barcode below to pair:" />
+
+                    <FrameLayout
+                        android:id="@+id/flBarCode"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/_30sdp"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="@dimen/_10sdp" />
+
+                    <TextView
+                        style="@style/ResetStyle"
+                        android:text="4. Enable Bluetooth on the device." />
+
+                    <TextView
+                        style="@style/ResetStyle"
+                        android:text="5. Go to the &quot;Scan Gun List&quot; and wait for the DS2278 to appear in the list." />
+
+                    <TextView
+                        style="@style/ResetStyle"
+                        android:text="6. Tap the DS2278 to initiate pairing." />
+
+                    <TextView
+                        style="@style/ResetStyle"
+                        android:text="7. Tap the &quot;Pair&quot; button when the Bluetooth Pairing Request prompt appears." />
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+            </LinearLayout>
+
+        </androidx.core.widget.NestedScrollView>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+</layout>

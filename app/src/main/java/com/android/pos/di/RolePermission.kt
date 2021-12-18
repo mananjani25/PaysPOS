@@ -52,7 +52,7 @@ class RolePermission @Inject constructor(
 
     fun hasUserAccessPermission(root: View?): Boolean {
         val permission =
-            prefProvider.isManager() || prefProvider.isOwner() || prefProvider.isEmployee()
+            prefProvider.isManager() || prefProvider.isOwner() || prefProvider.isAdmin()
         return if (permission) {
             true
         } else {
@@ -64,13 +64,13 @@ class RolePermission @Inject constructor(
     fun isDefaultUserRoleWithoutAlert(name: String): Boolean {
         return (name.equals(Constants.ROLE_MANAGER, true)
                 || name.equals(Constants.ROLE_OWNER, true)
-                || name.equals(Constants.ROLE_EMPLOYEE, true))
+                || name.equals(Constants.ROLE_ADMIN, true))
     }
 
     fun isDefaultUserRole(name: String, root: View?): Boolean {
         return if (name.equals(Constants.ROLE_MANAGER, true)
             || name.equals(Constants.ROLE_OWNER, true)
-            || name.equals(Constants.ROLE_EMPLOYEE, true)
+            || name.equals(Constants.ROLE_ADMIN, true)
         ) {
             root?.showAlert("This is the system generated default user role. You cant delete it !!")
             false

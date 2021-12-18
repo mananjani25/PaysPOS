@@ -7,14 +7,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.data.db.AppDatabase
-import com.android.pos.data.entities.CartModel
-import com.android.pos.data.entities.TbItem
+import com.android.pos.data.entities.*
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ADD
 import com.android.pos.data.remote.Constants.DELETE
 import com.android.pos.data.remote.Constants.UPDATE
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
+import com.android.pos.utils.MethodUtils
 import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -30,12 +30,9 @@ class ManualSaleViewModel @Inject constructor(
     private val TAG = "ManualSaleViewModel"
 
     val serviceCharge = posRepository.serviceChargeList()
-
     val cartList = posRepository.getManualSaleList()
-
-
     val returnedVal = posRepository.getManualCategoryId()
-
+    val activeLoyaltyProgramLiveData = posRepository.getActiveLoyaltyProgramFromDb()
 
     var totalPrice: Double = 0.0
     var totalCount = 0
@@ -43,6 +40,9 @@ class ManualSaleViewModel @Inject constructor(
     var totalTax = 0.0
     var totalDiscount = 0.0
     var totalServiceCharge = 0.0
+    var selectedCustomer: TbCustomer? = null
+    var activeLoyaltyProgram: LoyaltyProgramsModel? = null
+    var redeemLoyaltyInfo: RedeemLoyaltyInfo = RedeemLoyaltyInfo()
 
     init {
         deleteCart()
@@ -232,10 +232,80 @@ class ManualSaleViewModel @Inject constructor(
 
         totalPrice = (subTotalPrice + totalTax + totalServiceCharge) - totalDiscount
 
-        txtTotalAmount.text = "$" + String.format(
+        //loyalty point and price calculation
+        checkAppliedLoyaltyProgram(
+            customer = selectedCustomer,
+            total = totalPrice,
+            txtTotalAmount = txtTotalAmount
+        )
+
+        /*txtTotalAmount.text = "$" + String.format(
             "%.2f",
             totalPrice
-        )
+        )*/
+    }
+
+    fun loyaltyPointCondition(customer: TbCustomer?): Boolean {
+        return (customer?.enroll_to_loyalty == true && activeLoyaltyProgram != null && activeLoyaltyProgram?.rewardPoint ?: 0 <= customer.final_reward ?: 0)
+    }
+
+    private fun checkAppliedLoyaltyProgram(
+        customer: TbCustomer?,
+        total: Double,
+        txtTotalAmount: TextView
+    ) {
+
+        Log.e("Loyalty", "checkAppliedLoyaltyProgram..")
+        Log.e("Loyalty", "Active loyalty Program : ${Gson().toJson(activeLoyaltyProgram)}")
+
+        redeemLoyaltyInfo.total = total
+        val availablePoints = customer?.final_reward ?: 0
+
+        if (customer == null) {
+            //loyalty cant be applied if customer is not selected.
+            redeemLoyaltyInfo.needToApplyLoyalty = false
+            Log.e("Loyalty", "needToApplyLoyalty == false")
+        } else if (loyaltyPointCondition(customer)) {
+            activeLoyaltyProgram?.let {
+                redeemLoyaltyInfo.loyaltyProgramsModel = activeLoyaltyProgram
+
+                //if customer has more points than required(minimum limit)
+                val availableLoyaltyAmount =
+                    availablePoints * it.amount / it.rewardPoint
+                if (availableLoyaltyAmount > redeemLoyaltyInfo.total) {
+                    //if loyalty amount is more than total price
+
+                    redeemLoyaltyInfo.usedLoyaltyPoints =
+                        (redeemLoyaltyInfo.total * it.rewardPoint / it.amount).toInt()
+                    redeemLoyaltyInfo.usedLoyaltyAmount =
+                        (redeemLoyaltyInfo.usedLoyaltyPoints * it.amount / it.rewardPoint)
+                    redeemLoyaltyInfo.remainingAmount =
+                        redeemLoyaltyInfo.total - redeemLoyaltyInfo.usedLoyaltyAmount
+                    redeemLoyaltyInfo.remainingLoyaltyPoints =
+                        availablePoints - redeemLoyaltyInfo.usedLoyaltyPoints
+                } else {
+                    redeemLoyaltyInfo.usedLoyaltyAmount =
+                        (availablePoints * it.amount / it.rewardPoint)
+                    redeemLoyaltyInfo.usedLoyaltyPoints = availablePoints
+                    redeemLoyaltyInfo.remainingLoyaltyPoints = 0
+                    redeemLoyaltyInfo.remainingAmount =
+                        redeemLoyaltyInfo.total - redeemLoyaltyInfo.usedLoyaltyAmount
+                }
+                Log.e("Loyalty", "needToApplyLoyalty == true")
+                //redeemLoyaltyInfo.isLoyaltyApplied = true
+            }
+        } else {
+            Log.e("Loyalty", "else portion.")
+            redeemLoyaltyInfo.remainingAmount = redeemLoyaltyInfo.total
+            redeemLoyaltyInfo.remainingLoyaltyPoints = availablePoints
+            redeemLoyaltyInfo.usedLoyaltyPoints = 0
+            redeemLoyaltyInfo.usedLoyaltyAmount = 0.0
+            //redeemLoyaltyInfo.isLoyaltyApplied = false
+        }
+        Log.e("Loyalty Manual Sales", "redeemLoyaltyInfo : ${Gson().toJson(redeemLoyaltyInfo)}")
+        Log.e("Loyalty Manual Sales", "txtTotalAmount : ${redeemLoyaltyInfo.getAmountToBePaid()}")
+        MethodUtils.setPriceTextView(txtTotalAmount, redeemLoyaltyInfo.getAmountToBePaid())
+
     }
 
     private fun addCartModel(item: TbItem): CartModel {

@@ -4,7 +4,6 @@ import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.text.TextUtils
-import android.util.Base64
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -45,11 +44,11 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import java.io.ByteArrayOutputStream
 
 @AndroidEntryPoint
 class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
 
+    private var productCode: String? = ""
     private var imagePath: String? = ""
     private var variationList1: ArrayList<VariationsAttribute>? = null
     private var variationListApi = ArrayList<VariationsAttribute>()
@@ -80,6 +79,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
         binding.createItemVewModel = viewModel
 
         isEdit = arguments?.getBoolean("isEdit")!!
+        productCode = arguments?.getString("productCode")
         setAdapter()
         setupData()
         setupSnackbar()
@@ -299,7 +299,8 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
                 null,
                 binding.etDesc.text.toString(),
                 "",
-                0
+                0,
+                productCode?:""
             )
         } else {
             val itemPrice: Double?
@@ -320,7 +321,8 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
                 itemPrice,
                 binding.etDesc.text.toString(),
                 binding.etSku.text.toString(),
-                stock
+                stock,
+                productCode?:""
             )
         }
 
@@ -411,6 +413,8 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
             //profile image
             viewProfile(itemObject.imageUrl)
 
+        } else {
+            viewModel.itemDetails.value?.productCode = productCode?:""
         }
 
         binding.etItemPrice.addTextChangedListener(
@@ -539,7 +543,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
     }
 
     override fun onItemClickListener(position: Int, variation: VariationsAttribute) {
-        if(isDoubleClick()) return
+        if (isDoubleClick()) return
         position1 = position
         val bundle = Bundle().apply {
             putParcelable("variationAttributeList", variation)

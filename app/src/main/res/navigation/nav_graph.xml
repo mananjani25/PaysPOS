@@ -112,6 +112,10 @@
             app:destination="@id/editVariationDialog" />
 
         <argument
+            android:name="productCode"
+            android:defaultValue=""
+            app:argType="string" />
+        <argument
             android:name="isEdit"
             android:defaultValue="false"
             app:argType="boolean" />
@@ -265,6 +269,10 @@
         <action
             android:id="@+id/action_settings_to_printer"
             app:destination="@id/printer"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_settings_to_scannerListFragment"
+            app:destination="@id/scannerListFragment"
             app:enterAnim="@anim/nav_default_enter_anim" />
         <action
             android:id="@+id/action_settings_to_createLoyaltyPointFragment"
@@ -999,5 +1007,18 @@
         android:id="@+id/printerQueue"
         android:name="com.android.pos.ui.fragments.settings.hardware.printerqueue.PrinterQueue"
         android:label="PrinterQueue" />
+
+    <fragment
+        android:id="@+id/scannerListFragment"
+        android:name="com.android.pos.ui.fragments.settings.hardware.scangun.ScannerListFragment">
+        <action
+            android:id="@+id/action_scannerListFragment_to_scannerResetFragment"
+            app:destination="@id/scannerResetFragment" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/scannerResetFragment"
+        android:name="com.android.pos.ui.fragments.settings.hardware.scangun.ScannerResetFragment" />
 
 </navigation>

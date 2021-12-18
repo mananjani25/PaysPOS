@@ -146,4 +146,7 @@ dependencies {
     //Generate QR Code
     implementation 'com.github.kenglxn.QRGen:android:2.6.0'
 
+    //scanner
+    implementation project(':BarcodeScannerLibrary')
+
 }

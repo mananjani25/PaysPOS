@@ -1,3 +1,4 @@
 rootProject.name = "POS Android"
 include ':app'
 include ':passcodeview'
+include ':BarcodeScannerLibrary'

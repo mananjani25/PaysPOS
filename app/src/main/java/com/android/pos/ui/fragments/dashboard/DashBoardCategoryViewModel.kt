@@ -115,11 +115,14 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     val _Basedata = MutableLiveData<Event<CreateOrderResponse.Data?>>()
 
+    var barcodeFoundDbItemLiveData: LiveData<Resource<TbItem>>? = null
+
 
     fun modifierSet(intArray: IntArray) = posRepository.modifierSetList(intArray)
 
     fun getItemsbyId(itemId: Int) = posRepository.getItemsbyId(itemId)
 
+    fun getItemByProductCode(productCode: String) = posRepository.getItemByProductCode(productCode)
 
     fun mAllWords(orderType: String): LiveData<List<CartModel>> {
         return posRepository.getCartList(orderType)
@@ -598,6 +601,10 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     }
 
+    fun loyaltyPointCondition(customer: TbCustomer?): Boolean {
+        return (customer?.enroll_to_loyalty == true && activeLoyaltyProgram != null && activeLoyaltyProgram?.rewardPoint ?: 0 <= customer.final_reward ?: 0)
+    }
+
     private fun checkAppliedLoyaltyProgram(
         customer: TbCustomer?,
         total: Double,
@@ -611,9 +618,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         if (customer == null) {
             //loyalty cant be applied if customer is not selected.
             redeemLoyaltyInfo.needToApplyLoyalty = false
-        } else if (customer.enroll_to_loyalty == true
-            && activeLoyaltyProgram != null && activeLoyaltyProgram?.rewardPoint ?: 0 <= availablePoints
-        ) {
+        } else if (loyaltyPointCondition(customer)) {
             activeLoyaltyProgram?.let {
                 redeemLoyaltyInfo.loyaltyProgramsModel = activeLoyaltyProgram
 
@@ -648,6 +653,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             redeemLoyaltyInfo.usedLoyaltyAmount = 0.0
             //redeemLoyaltyInfo.isLoyaltyApplied = false
         }
+        Log.e("Loyalty", "txtTotalAmount : ${redeemLoyaltyInfo.getAmountToBePaid()}")
         MethodUtils.setPriceTextView(txtTotalAmount, redeemLoyaltyInfo.getAmountToBePaid())
 
     }

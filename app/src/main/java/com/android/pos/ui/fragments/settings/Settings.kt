@@ -1,6 +1,7 @@
 package com.android.pos.ui.fragments.settings
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,6 +19,7 @@ import com.android.pos.data.remote.Constants.CREATE_TIP
 import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.data.remote.Constants.ORDER_RECEIPTS
 import com.android.pos.data.remote.Constants.PRINTER
+import com.android.pos.data.remote.Constants.SCAN_GUN
 import com.android.pos.data.remote.Constants.TEAM_MEMBER
 import com.android.pos.databinding.FragmentSettingsBinding
 import com.android.pos.di.RolePermission
@@ -59,6 +61,7 @@ class Settings : Fragment() {
         init()
         onClick()
         setAdapter(0)
+        setCallBack()
 
     }
 
@@ -160,7 +163,7 @@ class Settings : Fragment() {
 
 
                     }
-                    PRINTER -> {
+                    PRINTER, SCAN_GUN -> {
 
                         binding.txtBusiness.styleNormal()
                         binding.txtHardware.styleBold()
@@ -400,5 +403,12 @@ class Settings : Fragment() {
         val fm: FragmentManager = requireActivity().supportFragmentManager
         fm.beginTransaction().replace(binding.frameLayout.id, frag).commit()
 
+    }
+
+    fun setCallBack() {
+        ((activity as MainActivity).fragmentCallBack) = { fragment ->
+            Log.e("!_@_", "fragment callback")
+            fragment?.let { loadFragment(it) }
+        }
     }
 }

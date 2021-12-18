@@ -26,6 +26,8 @@ object Constants {
     const val EMAIL = "email"
     const val USERNAME = "userName"
     const val PREF_CUSTOMER = "pref_customer"
+    const val PREF_ACTIVE_LOYALTY_PROGRAM = "pref_active_loyalty_program"
+    const val PREF_CURRENT_SCANNER = "pref_current_scanner"
     const val CUSTOMER_NAME = "customer_name"
     const val SALE_CUSTOMER_NAME = "sale_customer_name"
     const val IS_CLOCKOUT = "isClockout"
@@ -156,6 +158,7 @@ object Constants {
     const val CREATEOPTION = "create_option"
     const val CREATEITEM = "create_item"
     const val PRINTER = "printer"
+    const val SCAN_GUN = "scan_gun"
     const val GUESTPAID = "guest_paid"
     const val MANUAL_SALE_CATEGORY_ID = "manual_sale_category_id"
     const val MANUAL_SALE_ITEM_ID = "manual_sale_item_id"
@@ -312,6 +315,7 @@ object Constants {
     //request codes
     var REQUEST_GET_IMAGE_GALLERY = 1
     var REQUEST_GET_IMAGE_CAMERA = 2
+    val REQUEST_LOCATION_PERMISSION = 3
 
 
     var SPLIT_PAY_TYPE = "split_pay_type"
@@ -349,4 +353,18 @@ object Constants {
     const val ROLE_MANAGER = "Manager"
     const val ROLE_OWNER = "Owner"
     const val ROLE_EMPLOYEE = "Employee"
+    const val ROLE_ADMIN = "Admin"
+
+    //hardware
+    const val HARDWARE_PRINTER = "Printer"
+    const val HARDWARE_CREDIT_CARD_MACHINE = "Credit Card Machine"
+    const val HARDWARE_SCAN_GUN = "Scan Gun"
+    const val HARDWARE_TERMINAL = "Terminal"
+    const val HARDWARE_KITCHEN_DISPLAY = "Kitchen Display"
+    const val HARDWARE_PRINTER_QUEUE = "Printer Queue"
+
+    //fragment keys
+    const val FRAGMENT_HARDWARE = 1
+    const val FRAGMENT_SCANNER_LIST = 2
+    const val FRAGMENT_RESET_SCANNER = 3
 }

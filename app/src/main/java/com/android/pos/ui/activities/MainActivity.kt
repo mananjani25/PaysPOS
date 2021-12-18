@@ -1,21 +1,26 @@
 package com.android.pos.ui.activities
 
+import android.Manifest
 import android.app.Dialog
 import android.content.ClipData
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
@@ -26,6 +31,7 @@ import com.android.pos.data.repositories.UserRepository
 import com.android.pos.databinding.ParentActivityBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
+import com.android.pos.ui.fragments.settings.hardware.Hardware
 import com.android.pos.utils.FileUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.alert
@@ -35,7 +41,7 @@ import java.io.IOException
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseScannerActivity() {
 
     private var cameraUri: Uri? = null
     private var selectedFilePath: String? = ""
@@ -45,6 +51,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var listner: NavController.OnDestinationChangedListener
     private val viewModel by viewModels<MainViewModel>()
     var activityResultCallBack: ActivityResultCallBack? = null
+    private val TAG = "MainActivity"
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -167,6 +174,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         observeShowProgress()
+
     }
 
     fun alertLogout() {
@@ -211,11 +219,6 @@ class MainActivity : AppCompatActivity() {
         } else {
             super.onBackPressed()
         }
-    }
-
-    override fun onSupportNavigateUp(): Boolean {
-        navController?.navigateUp()
-        return super.onSupportNavigateUp()
     }
 
     private fun clearPreferences() {
@@ -307,5 +310,75 @@ class MainActivity : AppCompatActivity() {
 
     interface ActivityResultCallBack {
         fun onReceivedCameraCapturedPath(mediaType: Int, mediaPath: String?)
+    }
+
+    fun requestLocationPermissions(): Boolean {
+        val permissionsLocation = arrayOf<String>(
+            Manifest.permission.ACCESS_FINE_LOCATION
+        )
+        return if ((ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED)
+        ) {
+            true
+        } else {
+            ActivityCompat.requestPermissions(
+                this,
+                permissionsLocation,
+                Constants.REQUEST_LOCATION_PERMISSION
+            )
+            false
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        Log.e("!_@_", "$requestCode")
+        when (requestCode) {
+            Constants.REQUEST_LOCATION_PERMISSION ->
+                if (permissions.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    //permission with request code 1 granted
+                    Log.e("!_@_", "Permission Granted")
+                    requestCallBack?.invoke()
+                } else {
+                    //permission with request code 1 was not granted
+                    Log.e("!_@_", "Permission not granted")
+                }
+            else -> super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        }
+    }
+
+    fun getRequestCallBack(requestGrantedCallBack: (() -> Unit)) {
+        this.requestCallBack = requestGrantedCallBack
+    }
+
+    private var requestCallBack: (() -> Unit)? = null
+
+    override fun onSupportNavigateUp(): Boolean {
+        navController?.navigateUp()
+        return super.onSupportNavigateUp()
+    }
+
+    fun getSpecificFragment(fragmentTag: Int): Fragment? {
+        val navHostFragment: Fragment? = supportFragmentManager.findFragmentById(R.id.navHostFrag)
+        if (navHostFragment?.childFragmentManager != null) {
+            val fragmentList: List<Fragment> = navHostFragment.childFragmentManager.fragments
+            for (fragment in fragmentList) {
+                if (Constants.FRAGMENT_HARDWARE == fragmentTag && fragment is Hardware) {
+                    return (fragment as Hardware)
+                }
+            }
+        }
+        return null
+    }
+
+    public var fragmentCallBack :((Fragment?)->Unit)?= null
+    fun loadFragmentInSettings(fragment: Fragment?) {
+        fragmentCallBack?.invoke(fragment)
     }
 }

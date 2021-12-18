@@ -30,7 +30,7 @@ data class CreateItemRequestModel(
     @SerializedName("price_type")
     var priceType: String = "",
     @SerializedName("product_code")
-    var productCode: String = "",
+    var productCode: String = "", //here
     @SerializedName("quantity")
     var quantity: Int? = 0,
     @SerializedName("sku")

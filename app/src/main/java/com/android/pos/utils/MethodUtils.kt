@@ -6,6 +6,7 @@ import android.content.Context
 import android.os.SystemClock
 import android.text.TextUtils
 import android.view.inputmethod.InputMethodManager
+import android.widget.TextView
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatTextView
 import com.android.pos.MainApplication
@@ -40,6 +41,15 @@ class MethodUtils {
 
         @SuppressLint("SetTextI18n")
         fun setPriceTextView(appCompatTextView: AppCompatTextView, price: Double) {
+            appCompatTextView.text = MainApplication.getInstance()!!.getText(R.string.symbole)
+                .toString() + String.format(
+                "%.2f", price
+            )
+
+        }
+
+        @SuppressLint("SetTextI18n")
+        fun setPriceTextView(appCompatTextView: TextView, price: Double) {
             appCompatTextView.text = MainApplication.getInstance()!!.getText(R.string.symbole)
                 .toString() + String.format(
                 "%.2f", price
@@ -131,7 +141,7 @@ class MethodUtils {
             createItemRequestMap["name"] = data.name.toString().toMultiPartRequestBody()
             createItemRequestMap["price"] = data.price.toString().toMultiPartRequestBody()
             createItemRequestMap["priceType"] = data.priceType.toString().toMultiPartRequestBody()
-            createItemRequestMap["productCode"] =
+            createItemRequestMap["product_code"] =
                 data.productCode.toString().toMultiPartRequestBody()
             createItemRequestMap["quantity"] = data.quantity.toString().toMultiPartRequestBody()
             createItemRequestMap["sku"] = data.sku.toString().toMultiPartRequestBody()
