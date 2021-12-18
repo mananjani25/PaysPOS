@@ -234,10 +234,9 @@ class ManualSaleViewModel @Inject constructor(
 
         //loyalty point and price calculation
         checkAppliedLoyaltyProgram(
-            selectedCustomer,
-            totalPrice,
-            0.0,
-            txtTotalAmount
+            customer = selectedCustomer,
+            total = totalPrice,
+            txtTotalAmount = txtTotalAmount
         )
 
         /*txtTotalAmount.text = "$" + String.format(
@@ -249,13 +248,11 @@ class ManualSaleViewModel @Inject constructor(
     private fun checkAppliedLoyaltyProgram(
         customer: TbCustomer?,
         total: Double,
-        cashdiscount: Double,
         txtTotalAmount: TextView
     ) {
 
         Log.e("Loyalty", "checkAppliedLoyaltyProgram..")
 
-        redeemLoyaltyInfo.cashDiscount = cashdiscount
         redeemLoyaltyInfo.total = total
         val availablePoints = customer?.final_reward ?: 0
 
