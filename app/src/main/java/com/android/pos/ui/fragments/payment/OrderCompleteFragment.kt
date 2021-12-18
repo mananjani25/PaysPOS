@@ -25,6 +25,9 @@ import com.android.pos.data.remote.Constants.BUSINESS_PHONE_NO
 import com.android.pos.data.remote.Constants.CUSTOMER
 import com.android.pos.data.remote.Constants.KITCHEN
 import com.android.pos.data.remote.Constants.LARGE
+import com.android.pos.data.remote.Constants.SPLIT_NO
+import com.android.pos.data.remote.Constants.SPLIT_PAY_AMOUNT
+import com.android.pos.data.remote.Constants.SPLIT_PAY_TYPE
 import com.android.pos.data.remote.Constants.getReceiptFormatDateFromUTCServer
 import com.android.pos.databinding.FragmentOrderCompletBinding
 import com.android.pos.di.PrefProvider
@@ -55,6 +58,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private var splitValue: Int = -1
 
     private var isSpilt: Boolean = false
+    private var isSplitByAmount: Boolean = false
+    private var isSplitByNo: Boolean = false
     private var isLastPayment: Boolean = false
     private var isDineIn: Boolean = false
     private var kitchenPrinterList: List<PrinterResponse.Data.KitchenReceiptPrinters> = listOf()
@@ -63,6 +68,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private var type: String = ""
     private var totalPrice: Double = 0.0
     private var paymentAmount: Double = 0.0
+    private var paidAmountValue: Double = 0.0
+    private var WholetotalPrice: Double = 0.0
     private val viewModel by viewModels<OrderCompleteViewModel>()
     private var receiptModel: CreateOrderResponse.Data? = null
     private var customerSettingModel = GetCustomerReceiptSettingsResponse.Data()
@@ -154,9 +161,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         totalPrice = requireArguments().getDouble("totalPrice")
         paymentAmount = requireArguments().getDouble("paymentAmount")
+        paidAmountValue = requireArguments().getDouble("paidAmountValue")
+        WholetotalPrice = requireArguments().getDouble("WholetotalPrice")
         orderID = requireArguments().getInt("orderID")
         isGuestPaymentTotal = requireArguments().getBoolean("isGuestPaymentTotal")
         isSpilt = requireArguments().getBoolean("isSpilt")
+        isSplitByNo = requireArguments().getBoolean("isSplitByNo")
+        isSplitByAmount = requireArguments().getBoolean("isSplitByAmount")
         paymentType = requireArguments().getString("paymentType", "")
         isLastPayment = requireArguments().getBoolean("isLastPayment", false)
         isDineIn = requireArguments().getBoolean("isDineIn")
@@ -175,14 +186,19 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             splitValue = requireArguments().getInt("splitValue")
             remainingAmount = requireArguments().getDouble("remainingAmount")
             splitPaidAmount = requireArguments().getDouble("payAmount")
-            binding.txtRemainingAmount.text = MethodUtils.roundOffAmount(remainingAmount)
+            binding.txtRemainingAmount.text =
+                MethodUtils.roundOffAmount(prefProvider.getValue("WholeTotalPrice","0.0").toDouble() - paidAmountValue)
             binding.txtRemainingAmount.visibility = View.VISIBLE
             binding.txtRemainingAmountLabel.visibility = View.VISIBLE
             binding.llHome.visibility = View.GONE
             binding.llNoReceipt.text = "Next Payment"
             binding.txtHome.text = "Next Payment"
             var title = "Split "
-            viewModel.addSplitToDatabase(title, splitPaidAmount, remainingAmount)
+            viewModel.addSplitToDatabase(
+                title,
+                splitPaidAmount,
+                prefProvider.getValue("WholeTotalPrice","0.0").toDouble() - paidAmountValue
+            )
 
         } else {
             if (isGuestPaymentTotal && isDineIn && !isLastPayment) {
@@ -362,11 +378,24 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 val navController = findNavController()
                 var bundle = Bundle()
                 bundle.putBoolean("isNextPayment", true)
+                bundle.putInt("splitvalue", splitValue)
                 bundle.putDouble("splitPaidAmount", paymentAmount)
+                bundle.putDouble("remainingAmount", remainingAmount)
+                bundle.putBoolean("isSplitByNo", isSplitByNo)
+                bundle.putBoolean("isSplitByAmount", isSplitByAmount)
                 navController.previousBackStackEntry?.savedStateHandle?.set("data", bundle)
                 navController.popBackStack()
             } else {
-                findNavController().popBackStack()
+                val navController = findNavController()
+                var bundle = Bundle()
+                bundle.putBoolean("isNextPayment", true)
+                bundle.putDouble("splitPaidAmount", paymentAmount)
+                bundle.putDouble("remainingAmount", remainingAmount)
+                bundle.putInt("splitvalue", splitValue)
+                bundle.putBoolean("isSplitByNo", isSplitByNo)
+                bundle.putBoolean("isSplitByAmount", isSplitByAmount)
+                navController.previousBackStackEntry?.savedStateHandle?.set("data", bundle)
+                navController.popBackStack()
             }
         } else {
             if (isGuest) {
@@ -1840,7 +1869,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     fun removeCustomer() {
         prefProvider.setValue(Constants.CUSTOMER_NAME, "")
-
+        prefProvider.setValue("PaidAmount", "")
+        prefProvider.setValue("WholeTotalPrice", "")
 
     }
 

@@ -507,8 +507,6 @@ class DashBoardCategoryViewModel @Inject constructor(
     fun itemCalculation(
         cartList: List<CartModel>?,
         txtTotalAmount: AppCompatTextView,
-        cashSurChargediscount: Double,
-        optionType: String,
         context: Context
     ) {
 
@@ -521,12 +519,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         totalDiscount = 0.0
         totalTax = 0.0
         totalServiceCharge = 0.0
-
         var amountToBePaid = 0.0
-
-        var cashDiscountFinal: Double = 0.0
-
-
         if (cartList != null && cartList.isNotEmpty()) {
             if (cartList.get(0).orderType == DINE_IN) {
 
@@ -556,20 +549,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
                 totalPrice = (subTotalPrice + totalTax + totalServiceCharge)
-                if (MethodUtils.isEnableCashDiscount(context)) {
-                    if (optionType == "CashDiscount") {
-                        cashDiscountFinal =
-                            MethodUtils.calculateCashDiscount(subTotalPrice, prefProvider, context)
-                    } else if (optionType == "SurCharge") {
-                        cashDiscountFinal = 0.0
-                    } else {
-                        cashDiscountFinal = 0.0
-                    }
-                } else {
-                    cashDiscountFinal = 0.0
-                }
-
-                amountToBePaid = totalPrice - cartList[0].discountPrice - cashDiscountFinal
+                amountToBePaid = totalPrice - cartList[0].discountPrice
 
                 MethodUtils.setPriceTextView(txtTotalAmount, amountToBePaid)
             } else {
@@ -595,34 +575,20 @@ class DashBoardCategoryViewModel @Inject constructor(
                 }.sum()
 
                 totalPrice = (subTotalPrice + totalTax + totalServiceCharge)
-                if (MethodUtils.isEnableCashDiscount(context)) {
-                    if (optionType == "CashDiscount") {
-                        cashDiscountFinal =
-                            MethodUtils.calculateCashDiscount(subTotalPrice, prefProvider, context)
-                    } else if (optionType == "SurCharge") {
-                        cashDiscountFinal = 0.0
-                    } else {
-                        cashDiscountFinal = 0.0
-                    }
-                } else {
-                    cashDiscountFinal = 0.0
-                }
-
 
                 //loyalty point and price calculation
                 amountToBePaid = totalPrice - cartList[0].discountPrice
                 if (selectedCustomer == null) {
-                    var fnAmount = amountToBePaid - cashDiscountFinal
+                    var fnAmount = amountToBePaid
                     MethodUtils.setPriceTextView(
                         txtTotalAmount,
                         fnAmount
                     )
                 } else {
-                    var fnAmount = amountToBePaid - cashDiscountFinal
+                    var fnAmount = amountToBePaid
                     checkAppliedLoyaltyProgram(
                         selectedCustomer,
                         fnAmount,
-                        cashDiscountFinal,
                         txtTotalAmount
                     )
                 }
@@ -638,13 +604,10 @@ class DashBoardCategoryViewModel @Inject constructor(
     private fun checkAppliedLoyaltyProgram(
         customer: TbCustomer?,
         total: Double,
-        cashdiscount: Double,
         txtTotalAmount: AppCompatTextView
     ) {
 
         Log.e("Loyalty", "checkAppliedLoyaltyProgram..")
-
-        redeemLoyaltyInfo.cashDiscount = cashdiscount
         redeemLoyaltyInfo.total = total
         val availablePoints = customer?.final_reward ?: 0
 
