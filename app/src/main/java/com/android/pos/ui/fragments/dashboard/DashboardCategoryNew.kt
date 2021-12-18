@@ -6,6 +6,7 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
+import android.opengl.Visibility
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -117,6 +118,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private var future_delivery_date: String = ""
     private var assignCustomer: TbCustomer? = null
     var cashDiscount: Double = 0.0
+    var amountToBepaid = 0.0
     private var serviceChargesList: List<TbServiceCharge>? = null
     private var singleItem: TbItem? = null
     private var cartList: ArrayList<CartModel> = arrayListOf()
@@ -165,7 +167,12 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         binding.lifecycleOwner = this
         getLoyaltyPrograms()
 
+        prefProvider.setValue(Constants.SPLIT_PAY_AMOUNT, "")
+        prefProvider.setValueInt(Constants.SPLIT_NO, -1)
+        prefProvider.setValue(Constants.SPLIT_PAY_TYPE, "")
         isOrderUpdate = requireArguments().getBoolean("update")
+        prefProvider.setValue("PaidAmount","")
+        prefProvider.setValue("WholeTotalPrice", "")
         optionType = prefProvider.getValue(OPTION_TYPE, "")
         if (isOrderUpdate) {
             orderId = requireArguments().getInt("orderId")
@@ -365,11 +372,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                 MethodUtils.setPriceTextView(
                     binding.layoutCart.txtTotalAmount,
-                    price - MethodUtils.calculateCashDiscount(
-                        viewModel.subTotalPrice,
-                        prefProvider,
-                        requireContext()
-                    )
+                    price
                 )
                 if (cartList.isNotEmpty()) {
                     cartList[0].discountPrice = orderDiscount
@@ -704,13 +707,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         viewModel.itemCalculation(
                             cartList,
                             binding.layoutCart.txtTotalAmount,
-                            MethodUtils.calculateCashDiscount(
-                                viewModel.subTotalPrice,
-                                prefProvider,
-                                requireContext()
-                            ),
-                            optionType,
-                            requireContext(),
+                            requireContext()
                         )
 
                         val orderType = prefProvider.getValue(ORDER_TYPE, "")
@@ -743,13 +740,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         viewModel.itemCalculation(
                             cartList,
                             binding.layoutCart.txtTotalAmount,
-                            MethodUtils.calculateCashDiscount(
-                                viewModel.subTotalPrice,
-                                prefProvider,
-                                requireContext()
-                            ),
-                            optionType,
-                            requireContext(),
+                            requireContext()
                         )
 
 
@@ -1349,62 +1340,17 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         val chkLoyalty: CheckBox = popupView.findViewById(R.id.chkLoyaltyAmount)
         val txtLoyaltyPoints: AppCompatTextView = popupView.findViewById(R.id.txtLoyaltyPoints)
         Log.e(TAG, "subTotalPrice:   ${viewModel.subTotalPrice - (cartList[0].discountPrice)}")
-        val txttotalCashDiscount: AppCompatTextView = popupView.findViewById(R.id.txtcashDiscount)
+
+
         val txtTotalcashAdj: AppCompatTextView = popupView.findViewById(R.id.txtnoncashadj)
         val linearCCashDiscount: LinearLayoutCompat =
             popupView.findViewById(R.id.lineaarCashDiscount)
         val linear_NonCashDiscount: LinearLayoutCompat =
             popupView.findViewById(R.id.linear_NonCashDiscount)
 
-
-        var totalAmounnt = 0.0
-
-
-        var optionType = prefProvider.getValue(OPTION_TYPE, "")
-        if (prefProvider.getValueboolean(Constants.CASHDIS_SURCHARGEENABLE, false)) {
-            if (optionType == "CashDiscount") {
-                totalAmounnt = viewModel.totalPrice - MethodUtils.calculateCashDiscount(
-                    viewModel.subTotalPrice,
-                    prefProvider,
-                    requireContext()
-                )
-                linearCCashDiscount.visibility = View.VISIBLE
-                linear_NonCashDiscount.visibility = View.GONE
-
-                txttotalCashDiscount.text = "- $" + String.format(
-                    "%.2f", MethodUtils.calculateCashDiscount(
-                        viewModel.subTotalPrice,
-                        prefProvider,
-                        requireContext()
-                    )
-                )
-                txtTotalcashAdj.text = "- $" + String.format("%.2f", 0.0)
-            } else {
-                totalAmounnt = viewModel.totalPrice
-                linearCCashDiscount.visibility = View.GONE
-                linear_NonCashDiscount.visibility = View.GONE
-
-                txttotalCashDiscount.text = "- $" + String.format("%.2f", 0.0)
-                txtTotalcashAdj.text = "- $" + String.format(
-                    "%.2f", MethodUtils.calculateCashDiscount(
-                        viewModel.subTotalPrice,
-                        prefProvider,
-                        requireContext()
-                    )
-                )
-            }
-        } else {
-            totalAmounnt = viewModel.totalPrice
-            linearCCashDiscount.visibility = View.GONE
-            linear_NonCashDiscount.visibility = View.GONE
-        }
-
-
-
-
         txtSubTotal.text = "$" + String.format(
             "%.2f",
-            viewModel.subTotalPrice - (cartList[0].discountPrice)
+            viewModel.subTotalPrice
         )
         txtServiceCharge.text = "$" + String.format(
             "%.2f",
@@ -1415,8 +1361,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             viewModel.totalDiscount + cartList[0].discountPrice
         )
 
-        val total = totalAmounnt - cartList[0].discountPrice
-        var amountToBepaid = total
 
         //  txtTotalAmount.text = total.toString()
         txtTotalTax.text = "$" + String.format(
@@ -1437,14 +1381,29 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             groupLoyalty.visible()
             chkLoyalty.visible()
             chkLoyalty.isChecked = viewModel.redeemLoyaltyInfo.needToApplyLoyalty
-
         } else {
+            amountToBepaid = viewModel.totalPrice
             groupLoyalty.gone()
             chkLoyalty.gone()
         }
 
         //display total price to be paid
-        MethodUtils.setPriceTextView(txtTotalAmount, amountToBepaid)
+        if (prefProvider.getValueboolean(Constants.CASHDIS_SURCHARGEENABLE, false)) {
+            linear_NonCashDiscount.visibility = View.VISIBLE
+            txtTotalcashAdj.text = "$" + String.format(
+                "%.2f",
+                MethodUtils.calculateCashDiscount(
+                    amountToBepaid - cartList[0].discountPrice,
+                    prefProvider,
+                    requireContext()
+                )
+            )
+        } else {
+            linear_NonCashDiscount.visibility = View.GONE
+        }
+
+
+        MethodUtils.setPriceTextView(txtTotalAmount, amountToBepaid - cartList[0].discountPrice)
     }
 
     private fun resetTabbySearch(model: CategorySearchData) {
@@ -2342,8 +2301,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     var totalAmountTobeSave = 0.0
                     if (viewModel.redeemLoyaltyInfo.isLoyaltyApplied == true) {
                         totalAmountTobeSave =
-                            (viewModel.redeemLoyaltyInfo.getAmountToBePaid() + (viewModel.redeemLoyaltyInfo.cashDiscount
-                                ?: 0.0))
+                            (viewModel.redeemLoyaltyInfo.getAmountToBePaid())
                     } else {
                         totalAmountTobeSave =
                             (binding.layoutCart.txtTotalAmount.text.toString().subSequence(
@@ -2371,7 +2329,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         -1,
                         viewModel.redeemLoyaltyInfo,
                         MethodUtils.calculateCashDiscount(
-                            viewModel.subTotalPrice,
+                            viewModel.totalPrice,
                             prefProvider,
                             requireContext()
                         ),
@@ -2420,43 +2378,22 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                 val bundle = Bundle()
 
-                bundle.putDouble(
-                    "totalPrice",
-                    (viewModel.redeemLoyaltyInfo.getAmountToBePaid() + (viewModel.redeemLoyaltyInfo.cashDiscount
-                        ?: 0.0))
-                )
+                var final_total = (binding.layoutCart.txtTotalAmount.text.toString().subSequence(2, binding.layoutCart.txtTotalAmount.text.length) as String).toDouble()
+                bundle.putDouble("totalPrice",final_total)
                 bundle.putString(
                     "redeemLoyalty",
                     Gson().toJson(viewModel.redeemLoyaltyInfo)
                 )
-                bundle.putDouble(
-                    "finalprice",
-                    (binding.layoutCart.txtTotalAmount.text.toString().subSequence(
-                        2,
-                        binding.layoutCart.txtTotalAmount.text.length
-                    ) as String).toDouble()
-                )
-                bundle.putDouble(
-                    "cashDiscountSurcharge",
-                    MethodUtils.calculateCashDiscount(
-                        viewModel.subTotalPrice,
-                        prefProvider,
-                        requireContext()
-                    )
-                )
+                bundle.putDouble("cashDiscountSurcharge", MethodUtils.calculateCashDiscount(final_total, prefProvider, requireContext()))
                 bundle.putDouble("subTotalPrice", viewModel.subTotalPrice)
                 bundle.putDouble("totalTax", viewModel.totalTax)
-                bundle.putDouble(
-                    "totalDiscount",
-                    viewModel.totalDiscount + cartList[0].discountPrice
-                )
+                bundle.putDouble("totalDiscount", viewModel.totalDiscount + cartList[0].discountPrice)
                 bundle.putDouble("totalServiceCharge", viewModel.totalServiceCharge)
                 bundle.putString("future_delivery_date", future_delivery_date)
                 bundle.putString("future_delivery_time", future_delivery_time)
                 cartList[0].customer = assignCustomer
                 val cartModel = viewModel.generateCombinedItems(cartList[0])
                 bundle.putParcelable("cartList", cartModel)
-
                 if (isOrderUpdate) {
                     bundle.putBoolean("update", true)
                     orderId?.let { bundle.putInt("orderId", it) }
@@ -2464,7 +2401,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     bundle.putString("paymentOfflineId", paymentOfflineId)
                     bundle.putString("orderOfflineId", orderOfflineId)
                 }
-
                 if (prefProvider.getValue(ORDER_TYPE, "").toString() == DINE_IN) {
 
                     createDineInRequest()
@@ -3619,13 +3555,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         viewModel.itemCalculation(
             cartList,
             binding.layoutCart.txtTotalAmount,
-            MethodUtils.calculateCashDiscount(
-                viewModel.subTotalPrice,
-                prefProvider,
-                requireContext()
-            ),
-            optionType,
-            requireContext(),
+            requireContext()
         )
     }
 
