@@ -245,6 +245,10 @@ class ManualSaleViewModel @Inject constructor(
         )*/
     }
 
+    fun loyaltyPointCondition(customer: TbCustomer?): Boolean {
+        return (customer?.enroll_to_loyalty == true && activeLoyaltyProgram != null && activeLoyaltyProgram?.rewardPoint ?: 0 <= customer.final_reward ?: 0)
+    }
+
     private fun checkAppliedLoyaltyProgram(
         customer: TbCustomer?,
         total: Double,
@@ -261,9 +265,7 @@ class ManualSaleViewModel @Inject constructor(
             //loyalty cant be applied if customer is not selected.
             redeemLoyaltyInfo.needToApplyLoyalty = false
             Log.e("Loyalty", "needToApplyLoyalty == false")
-        } else if (customer.enroll_to_loyalty == true
-            && activeLoyaltyProgram != null && activeLoyaltyProgram?.rewardPoint ?: 0 <= availablePoints
-        ) {
+        } else if (loyaltyPointCondition(customer)) {
             activeLoyaltyProgram?.let {
                 redeemLoyaltyInfo.loyaltyProgramsModel = activeLoyaltyProgram
 

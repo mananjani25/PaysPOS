@@ -202,7 +202,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
             binding.txtCrtNewCustomer.text = "Remove Customer"
 
             //set loyalty
-            if (customer.enroll_to_loyalty == true) {
+            if (viewModel.loyaltyPointCondition(customer)) {
                 binding.txtLoyaltyPoints.visible()
                 "${getString(R.string.loyalty_points)}: ${customer.final_reward}".also {
                     binding.txtLoyaltyPoints.text = it
@@ -227,6 +227,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
         binding.txtCustomerName.text = "Add Customer"
         binding.txtCrtNewCustomer.text = "Add Customer"
         binding.txtLoyaltyPoints.gone()
+        refreshItemCalculation()
     }
 
     private fun <TbItem> merge(first: List<TbItem>, second: List<TbItem>): List<TbItem> {
@@ -930,7 +931,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
         val customer = viewModel.selectedCustomer
         Log.e(TAG, Gson().toJson(viewModel.redeemLoyaltyInfo))
         var amountToBepaid = viewModel.redeemLoyaltyInfo.getAmountToBePaid()
-        if (customer != null && customer.enroll_to_loyalty == true) {
+        if (viewModel.loyaltyPointCondition(customer)) {
 
             txtLoyaltyAmount.text =
                 "- $${String.format("%.2f", viewModel.redeemLoyaltyInfo.usedLoyaltyAmount)}"
