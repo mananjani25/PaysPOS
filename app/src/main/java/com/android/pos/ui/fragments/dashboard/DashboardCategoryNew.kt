@@ -3639,9 +3639,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         binding.layoutCart.txtOrderType.text = label
     }
 
-    private fun addItemInCartThroughBarcode(productCode: String) {
-        if (productCode.isNotEmpty()) {
-
+    private fun addItemInCartThroughBarcode(item: TbItem?) {
+        item?.let {
+            ItemPopup(item, true)
         }
     }
 
@@ -3666,7 +3666,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             if (findNavController().currentDestination?.id == R.id.dashboardCategoryNew) {
                                 //add item in the cart
                                 if (prefProvider.getValue(ORDER_TYPE, "").trim() != "") {
-                                    addItemInCartThroughBarcode(productCode ?: "")
+                                    addItemInCartThroughBarcode(resource.data)
                                 } else {
                                     orderTypeDialog()
                                 }

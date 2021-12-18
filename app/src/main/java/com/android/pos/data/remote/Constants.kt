@@ -27,6 +27,7 @@ object Constants {
     const val USERNAME = "userName"
     const val PREF_CUSTOMER = "pref_customer"
     const val PREF_CURRENT_SCANNER = "pref_current_scanner"
+    const val PREF_CURRENT_SCANNER_ID = "pref_current_scanner_id"
     const val CUSTOMER_NAME = "customer_name"
     const val SALE_CUSTOMER_NAME = "sale_customer_name"
     const val IS_CLOCKOUT = "isClockout"
