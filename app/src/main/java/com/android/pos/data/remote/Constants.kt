@@ -352,6 +352,7 @@ object Constants {
     const val ROLE_MANAGER = "Manager"
     const val ROLE_OWNER = "Owner"
     const val ROLE_EMPLOYEE = "Employee"
+    const val ROLE_ADMIN = "Admin"
 
     //hardware
     const val HARDWARE_PRINTER = "Printer"

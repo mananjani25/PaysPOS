@@ -8,14 +8,12 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.PopupWindow
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.constraintlayout.widget.Group
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -39,6 +37,8 @@ import com.android.pos.utils.AmountTextWatcher
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.SwipeHelper
 import com.android.pos.utils.extensions.alert
+import com.android.pos.utils.extensions.gone
+import com.android.pos.utils.extensions.visible
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -72,6 +72,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
     ): View? {
         binding = FragmentManualSaleNewBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
+        getLoyaltyPrograms()
         binding.footer.imgInfo.visibility = View.GONE
         binding.footer.imgDelete.visibility = View.GONE
         getServiceCharge()
@@ -126,8 +127,16 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
             }
 
         })
+    }
 
-
+    private fun getLoyaltyPrograms() {
+        Log.e("Loyalty", "getLoyaltyPrograms called..")
+        viewModel.activeLoyaltyProgramLiveData.observe(requireActivity(), {
+            if (it.data != null) {
+                Log.e("Loyalty", "getLoyaltyPrograms fetched..")
+                viewModel.activeLoyaltyProgram = it.data
+            }
+        })
     }
 
     private fun getCartList() {
@@ -171,18 +180,49 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
         setFragmentResultListener("request_key_customer") { requestKey: String, bundle: Bundle ->
             val result = bundle.getParcelable<TbCustomer>("data")
             if (result != null) {
-                prefProvider.setValue(
-                    CUSTOMER_NAME,
-                    result.first_name + " " + result.last_name
-                )
-                binding.txtCustomerName.text = result.first_name + " " + result.last_name
-                binding.txtCrtNewCustomer.text = "Remove Customer"
-
-                assignCustomer = result
-
-                result.id?.let { prefProvider.setValueInt(Constants.CUSTOMER_ID, it) }
+                setUpCustomer(result)
             }
         }
+    }
+
+
+    private fun setUpCustomer(customer: TbCustomer?) {
+        //set customer
+        if (customer != null) {
+            viewModel.selectedCustomer = customer
+            assignCustomer = customer
+            prefProvider.saveCustomerData(customer)
+            prefProvider.setValue(CUSTOMER_NAME, customer.first_name + " " + customer.last_name)
+            customer.id?.let { prefProvider.setValueInt(Constants.CUSTOMER_ID, it) }
+
+            binding.txtCustomerName.text = customer.first_name + " " + customer.last_name
+            binding.txtCrtNewCustomer.text = "Remove Customer"
+
+            //set loyalty
+            if (customer.enroll_to_loyalty == true) {
+                binding.txtLoyaltyPoints.visible()
+                "${getString(R.string.loyalty_points)}: ${customer.final_reward}".also {
+                    binding.txtLoyaltyPoints.text = it
+                }
+            } else {
+                binding.txtLoyaltyPoints.gone()
+            }
+            refreshItemCalculation()
+        } else {
+            clearCustomer()
+            refreshItemCalculation()
+        }
+    }
+
+    private fun clearCustomer() {
+        viewModel.selectedCustomer = null
+        assignCustomer = null
+        prefProvider.saveCustomerData(null)
+        prefProvider.setValue(CUSTOMER_NAME, "")
+        prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
+        binding.txtCustomerName.text = "Add Customer"
+        binding.txtCrtNewCustomer.text = "Add Customer"
+        binding.txtLoyaltyPoints.gone()
     }
 
     private fun <TbItem> merge(first: List<TbItem>, second: List<TbItem>): List<TbItem> {
@@ -292,13 +332,18 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
 
             if (binding.txtTotalAmount.text.toString() != "$0.00") {
                 val bundle = Bundle()
-                bundle.putDouble("totalPrice", viewModel.totalPrice)
+                Log.e("!_@_","Total Price: ${viewModel.redeemLoyaltyInfo.getAmountToBePaid()}")
+                bundle.putDouble("totalPrice", viewModel.redeemLoyaltyInfo.getAmountToBePaid())
                 bundle.putDouble("subTotalPrice", viewModel.subTotalPrice)
                 bundle.putDouble("totalTax", viewModel.totalTax)
                 bundle.putDouble("totalDiscount", viewModel.totalDiscount)
                 bundle.putDouble("totalServiceCharge", viewModel.totalServiceCharge)
                 cartList?.get(0)?.customer = assignCustomer
                 bundle.putParcelable("cartList", cartList?.get(0))
+                bundle.putString(
+                    "redeemLoyalty",
+                    Gson().toJson(viewModel.redeemLoyaltyInfo)
+                )
 
                 findNavController().navigate(R.id.action_manualSaleNew_to_paymentFragment, bundle)
             }
@@ -333,9 +378,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
         }
         binding.txtCrtNewCustomer.setOnClickListener {
             if (prefProvider.getValue(CUSTOMER_NAME, "").toString().isNotEmpty()) {
-                binding.txtCrtNewCustomer.text = "Add Customer"
-                binding.txtCustomerName.text = "Add Customer"
-                prefProvider.setValue(CUSTOMER_NAME, "")
+                clearCustomer()
             } else {
                 findNavController().navigate(R.id.action_manualSaleNew_to_assignCustomerOrderFragment)
 
@@ -506,13 +549,10 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
     private fun onConfig() {
         binding.txtAmount.addTextChangedListener(AmountTextWatcher(binding.txtAmount, true))
         binding.txtAmount.setText("0.00")
-        if (prefProvider.getValue(CUSTOMER_NAME, "").toString().isNotEmpty()) {
-            binding.txtCustomerName.text = prefProvider.getValue(CUSTOMER_NAME, "")
-            binding.txtCrtNewCustomer.text = "Remove Customer"
-        } else {
-            binding.txtCustomerName.text = "Add Customer"
-            binding.txtCrtNewCustomer.text = "Add Customer"
-        }
+
+        //set customer data
+        setUpCustomer(prefProvider.getCustomerData())
+
         cartAdapter = ManualSaleCartAdapter()
         cartAdapter.setCallBack(this)
         binding.rvSaleCart.adapter = cartAdapter
@@ -853,11 +893,53 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
 
         val popupView: View = layoutInflater.inflate(R.layout.info_popup_window, null)
 
+        val chkLoyalty: CheckBox = popupView.findViewById(R.id.chkLoyaltyAmount)
         val txtSubTotal: AppCompatTextView = popupView.findViewById(R.id.txtSubTotal)
         val txtServiceCharge: AppCompatTextView = popupView.findViewById(R.id.txtServiceCharge)
         val txtDiscount: AppCompatTextView = popupView.findViewById(R.id.txtDiscount)
         val txtTotalAmount: AppCompatTextView = popupView.findViewById(R.id.txtTotalAmount)
         val txtTotalTax: AppCompatTextView = popupView.findViewById(R.id.txtTotalTax)
+        val txtLoyaltyAmount: AppCompatTextView = popupView.findViewById(R.id.txtLoyaltyAmount)
+        val groupLoyalty: Group = popupView.findViewById(R.id.groupLoyalty)
+        val txtLoyaltyPoints: AppCompatTextView = popupView.findViewById(R.id.txtLoyaltyPoints)
+
+        //listeners
+        chkLoyalty.setOnCheckedChangeListener { _, p1 ->
+            viewModel.redeemLoyaltyInfo.needToApplyLoyalty = p1
+            prefProvider.setValueboolean(Constants.LOYALTY_ADDED, p1)
+            //refresh pop up data and final calculation
+            //setPopUpData(popupView)
+            refreshItemCalculation()
+            //display total price to be paid
+            MethodUtils.setPriceTextView(txtTotalAmount, viewModel.redeemLoyaltyInfo.getAmountToBePaid())
+        }
+
+        if (prefProvider.getValueboolean(Constants.LOYALTY_ADDED, false)) {
+            if (!chkLoyalty.isChecked) {
+                chkLoyalty.isChecked = true
+            }
+        } else {
+            chkLoyalty.isChecked = false
+        }
+
+        //display the loyalty point
+        val customer = viewModel.selectedCustomer
+        Log.e(TAG, Gson().toJson(viewModel.redeemLoyaltyInfo))
+        var amountToBepaid = viewModel.redeemLoyaltyInfo.getAmountToBePaid()
+        if (customer != null && customer.enroll_to_loyalty == true) {
+
+            txtLoyaltyAmount.text =
+                "- $${String.format("%.2f", viewModel.redeemLoyaltyInfo.usedLoyaltyAmount)}"
+            txtLoyaltyPoints.text = "${viewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
+
+            groupLoyalty.visible()
+            chkLoyalty.visible()
+            chkLoyalty.isChecked = viewModel.redeemLoyaltyInfo.needToApplyLoyalty
+
+        } else {
+            groupLoyalty.gone()
+            chkLoyalty.gone()
+        }
 
         txtSubTotal.text = "$" + String.format(
             "%.2f",
@@ -871,11 +953,14 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
             "%.2f",
             viewModel.totalDiscount
         )
-        txtTotalAmount.text = binding.txtTotalAmount.text.toString()
+        //txtTotalAmount.text = binding.txtTotalAmount.text.toString()
         txtTotalTax.text = "$" + String.format(
             "%.2f",
             viewModel.totalTax
         )
+
+        //display total price to be paid
+        MethodUtils.setPriceTextView(txtTotalAmount, amountToBepaid)
 
         val popupWindow = PopupWindow(
             popupView,
@@ -890,6 +975,17 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
             //TODO do sth here on dismiss
         })
         popupWindow.showAtLocation(view, Gravity.TOP, 600, 650);
+    }
+
+    private fun refreshItemCalculation() {
+        viewModel.itemCalculation(
+            if (cartList?.isNotEmpty() == true) {
+                cartList?.get(0)?.items
+            } else {
+                null
+            },
+            binding.txtTotalAmount
+        )
     }
 
     private fun dialogPOSMenu() {
