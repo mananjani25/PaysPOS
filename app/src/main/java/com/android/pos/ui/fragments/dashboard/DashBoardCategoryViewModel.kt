@@ -1639,4 +1639,8 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
 
     }
+
+    fun showErrorMessage(errorMessage : String){
+        _snackbarText.value = Event(errorMessage)
+    }
 }

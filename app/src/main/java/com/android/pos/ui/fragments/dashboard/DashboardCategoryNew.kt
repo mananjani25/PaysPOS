@@ -3639,11 +3639,22 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         binding.layoutCart.txtOrderType.text = label
     }
 
+    private fun addItemInCartThroughBarcode(productCode: String) {
+        if (productCode.isNotEmpty()) {
+
+        }
+    }
+
     override fun scannerBarcodeEvent(barcodeData: ByteArray?, barcodeType: Int, scannerID: Int) {
         Log.e(TAG, "scannerBarcodeEvent: ${barcodeData?.let { String(it) }}")
 
         //Check product code in db
         val productCode = barcodeData?.let { String(it) }
+
+        if (productCode.isNullOrEmpty()) {
+            viewModel.showErrorMessage("Product code is not available !!")
+            return
+        }
         productCode?.let { viewModel.getItemByProductCode(it) }
 
         viewModel.getItemByProductCode(productCode ?: "")?.observe(viewLifecycleOwner, {
@@ -3653,7 +3664,12 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         if (resource.data != null) {
                             //data found. | Add in cart
                             if (findNavController().currentDestination?.id == R.id.dashboardCategoryNew) {
-                               //add item in the cart
+                                //add item in the cart
+                                if (prefProvider.getValue(ORDER_TYPE, "").trim() != "") {
+                                    addItemInCartThroughBarcode(productCode ?: "")
+                                } else {
+                                    orderTypeDialog()
+                                }
                             }
                         } else {
                             //data not found. Create New Item
