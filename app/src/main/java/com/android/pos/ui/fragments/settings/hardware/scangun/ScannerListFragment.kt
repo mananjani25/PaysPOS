@@ -61,6 +61,7 @@ class ScannerListFragment : Fragment() {
         setupAdapter()
 
         binding.txtResetDevice.setOnClickListener {
+            //(activity as MainActivity).loadFragmentInSettings(fragment = ScannerResetFragment())
             findNavController().navigate(R.id.action_scannerListFragment_to_scannerResetFragment)
         }
         binding.imgBack.setOnClickListener {

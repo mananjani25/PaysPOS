@@ -20,6 +20,7 @@ import androidx.core.content.FileProvider
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
@@ -28,9 +29,9 @@ import com.android.pos.R
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.repositories.UserRepository
 import com.android.pos.databinding.ParentActivityBinding
-import com.android.pos.di.BarcodePrefProvider
 import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
+import com.android.pos.ui.fragments.settings.hardware.Hardware
 import com.android.pos.utils.FileUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.alert
@@ -361,5 +362,23 @@ class MainActivity : BaseScannerActivity() {
     override fun onSupportNavigateUp(): Boolean {
         navController?.navigateUp()
         return super.onSupportNavigateUp()
+    }
+
+    fun getSpecificFragment(fragmentTag: Int): Fragment? {
+        val navHostFragment: Fragment? = supportFragmentManager.findFragmentById(R.id.navHostFrag)
+        if (navHostFragment?.childFragmentManager != null) {
+            val fragmentList: List<Fragment> = navHostFragment.childFragmentManager.fragments
+            for (fragment in fragmentList) {
+                if (Constants.FRAGMENT_HARDWARE == fragmentTag && fragment is Hardware) {
+                    return (fragment as Hardware)
+                }
+            }
+        }
+        return null
+    }
+
+    public var fragmentCallBack :((Fragment?)->Unit)?= null
+    fun loadFragmentInSettings(fragment: Fragment?) {
+        fragmentCallBack?.invoke(fragment)
     }
 }

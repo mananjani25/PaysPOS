@@ -1,6 +1,7 @@
 package com.android.pos.ui.fragments.settings
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -60,6 +61,7 @@ class Settings : Fragment() {
         init()
         onClick()
         setAdapter(0)
+        setCallBack()
 
     }
 
@@ -401,5 +403,12 @@ class Settings : Fragment() {
         val fm: FragmentManager = requireActivity().supportFragmentManager
         fm.beginTransaction().replace(binding.frameLayout.id, frag).commit()
 
+    }
+
+    fun setCallBack() {
+        ((activity as MainActivity).fragmentCallBack) = { fragment ->
+            Log.e("!_@_", "fragment callback")
+            fragment?.let { loadFragment(it) }
+        }
     }
 }

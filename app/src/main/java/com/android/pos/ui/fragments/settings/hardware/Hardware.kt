@@ -6,11 +6,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.android.pos.MainApplication
 import com.android.pos.R
 import com.android.pos.data.model.HardwareModel
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentHardwareBinding
+import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.HardwareListAdapter
+import com.android.pos.ui.fragments.settings.hardware.scangun.ScannerListFragment
 
 class Hardware : Fragment(), HardwareListAdapter.HardwareListner {
     private lateinit var binding: FragmentHardwareBinding
@@ -51,6 +54,7 @@ class Hardware : Fragment(), HardwareListAdapter.HardwareListner {
                 findNavController().navigate(R.id.action_settings_to_printer)
             }
             Constants.HARDWARE_SCAN_GUN -> {
+                //(activity as MainActivity).loadFragmentInSettings(fragment = ScannerListFragment())
                 findNavController().navigate(R.id.action_settings_to_scannerListFragment)
             }
             Constants.HARDWARE_PRINTER_QUEUE -> {

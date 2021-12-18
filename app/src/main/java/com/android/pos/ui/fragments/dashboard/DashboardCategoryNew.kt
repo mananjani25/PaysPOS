@@ -3652,6 +3652,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     Status.SUCCESS -> {
                         if (resource.data != null) {
                             //data found. | Add in cart
+                            if (findNavController().currentDestination?.id == R.id.dashboardCategoryNew) {
+                               //add item in the cart
+                            }
                         } else {
                             //data not found. Create New Item
                             if (findNavController().currentDestination?.id == R.id.dashboardCategoryNew) {
