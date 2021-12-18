@@ -18,3 +18,4 @@ local.properties
 /.idea/
 /app/release/output-metadata.json
 keystore
+/BarcodeScannerLibrary/build/
