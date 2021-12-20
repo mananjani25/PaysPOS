@@ -64,9 +64,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private var isDineIn: Boolean = false
     private var kitchenPrinterList: List<PrinterResponse.Data.KitchenReceiptPrinters> = listOf()
     private var orderID: Int = 0
+    private var isCustomCash = false
     var paymentType: String = ""
     private var type: String = ""
     private var totalPrice: Double = 0.0
+    private var finalPrice: Double = 0.0
     private var paymentAmount: Double = 0.0
     private var paidAmountValue: Double = 0.0
     private var WholetotalPrice: Double = 0.0
@@ -160,6 +162,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
         totalPrice = requireArguments().getDouble("totalPrice")
+        finalPrice = requireArguments().getDouble("finalPrice")
+        isCustomCash = requireArguments().getBoolean("isCustomCash")
         paymentAmount = requireArguments().getDouble("paymentAmount")
         paidAmountValue = requireArguments().getDouble("paidAmountValue")
         WholetotalPrice = requireArguments().getDouble("WholetotalPrice")
@@ -180,6 +184,18 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         setLabelData()
 
 
+        if (totalPrice != paymentAmount) {
+            binding.txtChangeAmount.text =
+                MethodUtils.roundOffAmount(
+                    prefProvider.getValue("WholeTotalPrice", "0.0").toDouble() - totalPrice
+                ) + " Change"
+        } else if (isCustomCash) {
+            binding.txtChangeAmount.text =
+                MethodUtils.roundOffAmount(
+                    totalPrice - finalPrice
+                ) + " Change"
+        }
+
         if (isSpilt) {
             binding.constraintSplit.visibility = View.VISIBLE
             binding.viewSplitLine.visibility = View.VISIBLE
@@ -187,7 +203,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             remainingAmount = requireArguments().getDouble("remainingAmount")
             splitPaidAmount = requireArguments().getDouble("payAmount")
             binding.txtRemainingAmount.text =
-                MethodUtils.roundOffAmount(prefProvider.getValue("WholeTotalPrice","0.0").toDouble() - paidAmountValue)
+                MethodUtils.roundOffAmount(
+                    prefProvider.getValue("WholeTotalPrice", "0.0").toDouble() - paidAmountValue
+                )
             binding.txtRemainingAmount.visibility = View.VISIBLE
             binding.txtRemainingAmountLabel.visibility = View.VISIBLE
             binding.llHome.visibility = View.GONE
@@ -197,7 +215,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             viewModel.addSplitToDatabase(
                 title,
                 splitPaidAmount,
-                prefProvider.getValue("WholeTotalPrice","0.0").toDouble() - paidAmountValue
+                prefProvider.getValue("WholeTotalPrice", "0.0").toDouble() - paidAmountValue
             )
 
         } else {
@@ -223,10 +241,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         binding.txtTitle.text =
             MethodUtils.roundOffAmount(paymentAmount)
 
-        if (totalPrice != paymentAmount) {
-            binding.txtChangeAmount.text =
-                MethodUtils.roundOffAmount(paymentAmount - totalPrice) + " Change"
-        }
+
         binding.txtPaymentAmount.text = "Out of " + MethodUtils.roundOffAmount(paymentAmount)
 
         if (prefProvider.getValue(Constants.CUSTOMER_NAME, "").toString().isNotEmpty()) {

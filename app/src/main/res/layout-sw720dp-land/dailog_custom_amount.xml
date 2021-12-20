@@ -53,25 +53,23 @@
             android:visibility="visible">
 
 
+
             <androidx.appcompat.widget.AppCompatEditText
                 android:id="@+id/edtAmount"
                 style="@style/CustomFontSemiBold"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="0.00"
                 android:layout_gravity="center"
-                android:layout_marginTop="@dimen/_20sdp"
-                android:layout_weight="0.1"
-                android:background="@drawable/background_square_border_grey"
-                android:hint="$0.00"
-                android:inputType="numberDecimal"
-                android:imeOptions="actionDone"
                 android:minWidth="@dimen/_250sdp"
+                android:layout_marginTop="@dimen/_20sdp"
+                android:background="@drawable/background_square_border_grey"
+                android:imeOptions="actionDone"
+                android:inputType="numberDecimal"
                 android:padding="@dimen/_7sdp"
                 android:textColor="@color/txtColor"
                 android:textColorHint="@color/hintColor"
-                android:textSize="@dimen/_6mdpi"
-                app:textAllCaps="true" />
-
+                android:textSize="@dimen/_6mdpi" />
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
                 android:layout_width="wrap_content"
@@ -81,6 +79,7 @@
                 android:layout_marginTop="@dimen/_10sdp"
                 android:background="@color/btnColorDark_"
                 android:gravity="center"
+                android:id="@+id/txt_send"
                 android:minWidth="@dimen/_250sdp"
                 android:paddingStart="@dimen/_15sdp"
                 android:paddingTop="@dimen/_5sdp"
