@@ -1,19 +1,43 @@
 package com.android.pos.ui.fragments.settings.hardware.printerqueue
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.android.pos.R
 import com.android.pos.data.model.PrinterQueueModel
+import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.databinding.FragmentPrinterQueueBinding
+import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.PrinterQueueListAdapter
+import com.google.gson.Gson
+import com.hosopy.actioncable.ActionCable
+import com.hosopy.actioncable.Channel
+import com.hosopy.actioncable.Consumer
+import com.hosopy.actioncable.Subscription
+import java.net.URI
+import com.hosopy.actioncable.ActionCableException
 
+import com.google.gson.JsonElement
+import com.hosopy.actioncable.Subscription.*
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
+import com.google.gson.JsonObject
+
+
+
+
+@AndroidEntryPoint
 class PrinterQueue : Fragment() {
     private lateinit var binding: FragmentPrinterQueueBinding
     private val list: ArrayList<PrinterQueueModel> = arrayListOf()
     private lateinit var adapter: PrinterQueueListAdapter
+    private val TAG = "PrinterQueue"
+    @Inject
+    lateinit var prefProvider: PrefProvider
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -29,12 +53,52 @@ class PrinterQueue : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setAdapter()
         onClick()
+        connectActionCable()
+
+    }
+
+    private fun connectActionCable() {
+        // 1. Setup
+        val uri = URI("wss://possoft.io/cable")
+        val consumer: Consumer = ActionCable.createConsumer(uri)
+
+        // 2. Create subscription
+        val appearanceChannel = Channel("KitchenChannel")
+       // appearanceChannel.addParam("id",prefProvider.getValueInt(LOCATION_ID,0))
+        val subscription: Subscription = consumer.subscriptions.create(appearanceChannel)
+
+        subscription
+            .onConnected {
+                Log.e(TAG,"onActionConnected")
+                val params = JsonObject()
+                params.addProperty("id", prefProvider.getValueInt(LOCATION_ID,0))
+                subscription.perform("received", params)
+            }.onRejected {
+                Log.e(TAG,"onActiononRejected")
+            }.onReceived {
+                Log.e(TAG,"onActiononReceived  "+Gson().toJson(it))
+            }.onDisconnected {
+                Log.e(TAG,"onActiononDisconnected")
+            }.onFailed {
+                Log.e(TAG,"onActiononFailed")
+            }
+
+
+
+        // 3. Establish connection
+        consumer.connect();
+
+
 
     }
 
     private fun onClick() {
         binding.imgClose.setOnClickListener {
             findNavController().popBackStack()
+        }
+
+        binding.txtHome.setOnClickListener {
+            findNavController().navigate(R.id.action_printerQueue_to_dashboardCategoryNew)
         }
     }
 

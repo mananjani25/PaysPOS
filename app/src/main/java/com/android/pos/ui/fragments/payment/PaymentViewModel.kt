@@ -43,6 +43,10 @@ class PaymentViewModel @Inject constructor(
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
 
+    private var _queuePrinter = MutableLiveData<Event<String>>()
+    val queuePrinter: LiveData<Event<String>> = _queuePrinter
+
+
     private val _msgText = MutableLiveData<Event<String>>()
     val msgText: LiveData<Event<String>> = _msgText
 
@@ -1099,5 +1103,33 @@ class PaymentViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun createQueuePrinter(createQueuePrinterModel: CreateQueuePrinterRequestModel) {
+        _showProgress.value = Event(true)
+
+        viewModelScope.launch {
+            val resource = posRepository.createQueuePrinter(createQueuePrinterModel)
+
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+                    _queuePrinter.value = Event(resource?.data?.message.toString())
+
+                }
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+
+                }
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
+                }
+            }
+
+
+        }
+
+
     }
 }

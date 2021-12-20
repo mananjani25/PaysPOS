@@ -7,6 +7,7 @@ import android.os.SystemClock
 import android.text.TextUtils
 import android.util.Log
 import android.view.inputmethod.InputMethodManager
+import android.widget.TextView
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatTextView
 import com.android.pos.MainApplication
@@ -41,6 +42,15 @@ class MethodUtils {
 
         @SuppressLint("SetTextI18n")
         fun setPriceTextView(appCompatTextView: AppCompatTextView, price: Double) {
+            appCompatTextView.text = MainApplication.getInstance()!!.getText(R.string.symbole)
+                .toString() + String.format(
+                "%.2f", price
+            )
+
+        }
+
+        @SuppressLint("SetTextI18n")
+        fun setPriceTextView(appCompatTextView: TextView, price: Double) {
             appCompatTextView.text = MainApplication.getInstance()!!.getText(R.string.symbole)
                 .toString() + String.format(
                 "%.2f", price

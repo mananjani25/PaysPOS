@@ -256,9 +256,11 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     private fun getLoyaltyPrograms() {
         Log.e("Loyalty", "getLoyaltyPrograms called..")
+        viewModel.activeLoyaltyProgram = prefProvider.getActiveLoyaltyData()
         viewModel.activeLoyaltyProgramLiveData.observe(requireActivity(), {
             if (it.data != null) {
                 Log.e("Loyalty", "getLoyaltyPrograms fetched..")
+                prefProvider.saveActiveLoyaltyData(it.data)
                 viewModel.activeLoyaltyProgram = it.data
             }
         })
@@ -303,7 +305,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 //            refreshItemCalculation()
 //        }
         binding.footer.txtEmployeeName.text = prefProvider.getValue(EMPLOYEE_NAME, "")
-
         binding.root.setOnClickListener {
             if (binding.layoutCart.llCustomerDialog.visibility == View.VISIBLE) {
                 binding.layoutCart.llCustomerDialog.visibility = View.GONE
@@ -325,7 +326,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             val customer = prefProvider.getCustomerData()
             customer?.let {
                 viewModel.selectedCustomer = customer
-                if (it.enroll_to_loyalty == true) {
+                if (viewModel.loyaltyPointCondition(customer)) {
                     binding.layoutCart.txtLoyaltyPoints.visible()
                     "${getString(R.string.loyalty_points)}: ${customer.final_reward}".also {
                         binding.layoutCart.txtLoyaltyPoints.text = it
@@ -502,7 +503,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         binding.layoutCart.txtCustomerName.text = result.first_name + " " + result.last_name
         saveCustomerData(result)
         //loyalty
-        if (result.enroll_to_loyalty == true) {
+        if (viewModel.loyaltyPointCondition(result)) {
             binding.layoutCart.txtLoyaltyPoints.visible()
             binding.layoutCart.txtLoyaltyPoints.text =
                 "${getString(R.string.loyalty_points)}: ${result.final_reward}"
@@ -1170,7 +1171,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     }
 
     private fun configureDrawer() {
-        binding.layoutMenu.txtKeypad.setOnClickListener {
+
+
+        binding.layoutMenu.txtKeypad.setOnSingleClickListener {
 
             if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
                 if (rolePermission.hasManualSalesPermission(binding.root)) {
@@ -1370,7 +1373,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         //display the loyalty point
         val customer = viewModel.selectedCustomer
-        if (customer != null && customer.enroll_to_loyalty == true) {
+        if (viewModel.loyaltyPointCondition(customer)) {
 
             Log.e(TAG, Gson().toJson(viewModel.redeemLoyaltyInfo))
             amountToBepaid = viewModel.redeemLoyaltyInfo.getAmountToBePaid()

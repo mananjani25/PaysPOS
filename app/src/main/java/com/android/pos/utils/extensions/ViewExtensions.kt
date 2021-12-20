@@ -27,6 +27,7 @@ import androidx.navigation.fragment.findNavController
 import com.android.pos.data.entities.VariationsAttribute
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.Event
+import com.android.pos.utils.OnSingleClickListener
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -146,5 +147,12 @@ fun String.toMultiPartRequestBody(): RequestBody =
 
 class NoInternetException(message: String) : IOException(message)
 
+fun View.setOnSingleClickListener(l: View.OnClickListener) {
+    setOnClickListener(OnSingleClickListener(l))
+}
+
+fun View.setOnSingleClickListener(l: (View) -> Unit) {
+    setOnClickListener(OnSingleClickListener(l))
+}
 
 

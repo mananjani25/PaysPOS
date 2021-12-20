@@ -3,9 +3,11 @@ package com.android.pos.di
 import android.content.Context
 import android.content.SharedPreferences
 import com.android.pos.R
+import com.android.pos.data.entities.LoyaltyProgramsModel
 import com.android.pos.data.entities.TbCustomer
 import com.android.pos.data.entities.TeamRole
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.ROLE_ADMIN
 import com.android.pos.data.remote.Constants.ROLE_EMPLOYEE
 import com.android.pos.data.remote.Constants.ROLE_MANAGER
 import com.android.pos.data.remote.Constants.ROLE_OWNER
@@ -132,7 +134,18 @@ class PrefProvider @Inject constructor(@ApplicationContext context: Context) {
         )
     }
 
-    fun saveCurrentRoleDetails(teamRole: TeamRole){
+    fun saveActiveLoyaltyData(loyaltyProgramsModel: LoyaltyProgramsModel?) {
+        setValue(Constants.PREF_ACTIVE_LOYALTY_PROGRAM, Gson().toJson(loyaltyProgramsModel))
+    }
+
+    fun getActiveLoyaltyData(): LoyaltyProgramsModel? {
+        return Gson().fromJson(
+            getValue(Constants.PREF_ACTIVE_LOYALTY_PROGRAM, ""),
+            LoyaltyProgramsModel::class.java
+        )
+    }
+
+    fun saveCurrentRoleDetails(teamRole: TeamRole) {
         setValue(Constants.CURRENT_EMPLOYEE_ROLE, Gson().toJson(teamRole))
     }
 
@@ -152,14 +165,19 @@ class PrefProvider @Inject constructor(@ApplicationContext context: Context) {
     }
 
     fun isManager(): Boolean {
-        return getValue(Constants.EMPLOYEE_ROLE, "").equals(ROLE_MANAGER,true)
+        return getValue(Constants.EMPLOYEE_ROLE, "").equals(ROLE_MANAGER, true)
     }
 
     fun isOwner(): Boolean {
-        return getValue(Constants.EMPLOYEE_ROLE, "").equals(ROLE_OWNER,true)
+        return getValue(Constants.EMPLOYEE_ROLE, "").equals(ROLE_OWNER, true)
     }
+
     fun isEmployee(): Boolean {
-        return getValue(Constants.EMPLOYEE_ROLE, "").equals(ROLE_EMPLOYEE,true)
+        return getValue(Constants.EMPLOYEE_ROLE, "").equals(ROLE_EMPLOYEE, true)
+    }
+
+    fun isAdmin(): Boolean {
+        return getValue(Constants.EMPLOYEE_ROLE, "").equals(ROLE_ADMIN, true)
     }
 
 

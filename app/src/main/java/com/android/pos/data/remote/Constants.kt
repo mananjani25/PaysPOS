@@ -26,6 +26,7 @@ object Constants {
     const val EMAIL = "email"
     const val USERNAME = "userName"
     const val PREF_CUSTOMER = "pref_customer"
+    const val PREF_ACTIVE_LOYALTY_PROGRAM = "pref_active_loyalty_program"
     const val PREF_CURRENT_SCANNER = "pref_current_scanner"
     const val PREF_CURRENT_SCANNER_ID = "pref_current_scanner_id"
     const val CUSTOMER_NAME = "customer_name"
@@ -97,6 +98,7 @@ object Constants {
     const val GET_PRINTERS = "printers"
     const val DELETE_UPDATE_PRINTER = "printers/{id}"
     const val UPDATE_PRINTER_STATUS = "printers/{id}/update_printer_status"
+    const val CREATE_QUEUE_PRINTER = "printer_queues"
 
 
     const val TAXES = "taxes"
@@ -353,6 +355,7 @@ object Constants {
     const val ROLE_MANAGER = "Manager"
     const val ROLE_OWNER = "Owner"
     const val ROLE_EMPLOYEE = "Employee"
+    const val ROLE_ADMIN = "Admin"
 
     //hardware
     const val HARDWARE_PRINTER = "Printer"
