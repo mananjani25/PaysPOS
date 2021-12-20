@@ -16,12 +16,14 @@ import com.android.pos.R
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.CashDiscountModel
 import com.android.pos.data.entities.RedeemLoyaltyInfo
-import com.android.pos.data.model.requestModel.SpitByOrderPaymentModel
-import com.android.pos.data.model.requestModel.SpitByOrderRequestModel
+import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.LOCATION_ID
+import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.SPLIT_NO
 import com.android.pos.data.remote.Constants.SPLIT_PAY_AMOUNT
 import com.android.pos.data.remote.Constants.SPLIT_PAY_TYPE
+import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.databinding.PaymentFragmentBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.AlertUtils
@@ -155,11 +157,13 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         binding.txtThirdAmount.setOnClickListener(this)
         binding.txtFourthAmount.setOnClickListener(this)
         binding.txtAddTips.setOnClickListener(this)
+        binding.linearMore.setOnClickListener(this)
 
         Log.d(TAG, "onClick: $cardPaymentAmount")
         callbackSetup()
         observeShowProgress()
         observeData()
+        queuePrinterObserver()
 
 
         return binding.root
@@ -581,6 +585,10 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
     override fun onClick(v: View?) {
         when (v?.id) {
+            R.id.linearMore -> {
+                createQueuePrinter()
+            }
+
             R.id.imgBack -> {
 
                 if (prefProvider.getValue(SPLIT_PAY_AMOUNT, "") == "") {
@@ -749,6 +757,42 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             }
         }
 
+
+    }
+
+    private fun createQueuePrinter() {
+        val listPrinter: List<Int> = listOf()
+        val orderRequest = cartList?.let {
+
+            viewModel.createOrderRequest(
+                it,
+                subTotalPrice,
+                (totalPrice + tipAmount),
+                totalServiceCharge,
+                totalTax,
+                prefProvider.getValue(Constants.ORDER_TYPE, "").toString(),
+                future_delivery_date,
+                future_delivery_date,
+                true,
+                totalDiscount,
+                tipAmount,
+                splitValue,
+                redeemLoyaltyInfo,
+                cashDiscountSurcharge,
+                true,
+                paymentType, cashDiscountType
+            )
+        }
+        val createRequest = CreateQueuePrinterRequestModel(
+            location_id = prefProvider.getValueInt(LOCATION_ID, 0),
+            order_type = prefProvider.getValue(ORDER_TYPE, ""),
+            printer_id = listPrinter,
+            order_item_attributes = orderRequest?.order?.orderItemsAttributes ?: listOf(),
+            order_data = orderRequest?.order ?: OrderAttributeRequestModel(),
+            terminal_id = prefProvider.getValueInt(TERMINAL_ID, 0)
+
+        )
+        viewModel.createQueuePrinter(createRequest)
     }
 
     private fun makePaymentCreditCard() {
@@ -1171,5 +1215,21 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             }
         })
 
+    }
+
+    private fun queuePrinterObserver() {
+        viewModel.queuePrinter.observe(requireActivity(), {
+            it.getContentIfNotHandled()?.let { data ->
+                activity?.let {
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        it, data.toString()
+                    ) { _, _ ->
+                        val navController = findNavController()
+                        navController.popBackStack()
+                    }
+                }
+
+            }
+        })
     }
 }

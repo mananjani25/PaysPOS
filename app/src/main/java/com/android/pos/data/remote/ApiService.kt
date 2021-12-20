@@ -16,6 +16,7 @@ import com.android.pos.data.remote.Constants.CASH_EVENTS
 import com.android.pos.data.remote.Constants.CATEGORY
 import com.android.pos.data.remote.Constants.CATEGORY_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.CLOCK_OUT
+import com.android.pos.data.remote.Constants.CREATE_QUEUE_PRINTER
 import com.android.pos.data.remote.Constants.CUSTOMERS
 import com.android.pos.data.remote.Constants.CUSTOMER_RECEIPTS_UPDATE_SETTINGS
 import com.android.pos.data.remote.Constants.CUSTOMER_RECEIPT_SETTINGS
@@ -675,4 +676,7 @@ interface ApiService {
         @Path("id") id: String,
         @Body loyaltyPointRequest: LoyaltyPointRequest
     ): CreateLoyaltyPointResponse
+
+    @POST(CREATE_QUEUE_PRINTER)
+    suspend fun createQueuePrinter(@Body createPrinterQueueRequest:CreateQueuePrinterRequestModel):BaseResponse
 }

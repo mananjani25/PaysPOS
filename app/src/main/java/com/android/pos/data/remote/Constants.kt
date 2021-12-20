@@ -97,6 +97,7 @@ object Constants {
     const val GET_PRINTERS = "printers"
     const val DELETE_UPDATE_PRINTER = "printers/{id}"
     const val UPDATE_PRINTER_STATUS = "printers/{id}/update_printer_status"
+    const val CREATE_QUEUE_PRINTER = "printer_queues"
 
 
     const val TAXES = "taxes"

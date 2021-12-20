@@ -296,6 +296,7 @@
                 <include layout="@layout/divider" />
 
                 <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/linearMore"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">

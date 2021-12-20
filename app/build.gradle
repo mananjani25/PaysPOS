@@ -149,4 +149,7 @@ dependencies {
     //scanner
     implementation project(':BarcodeScannerLibrary')
 
+    //Action Cable
+    implementation 'com.github.hosopy:actioncable-client-java:0.1.2'
+
 }
