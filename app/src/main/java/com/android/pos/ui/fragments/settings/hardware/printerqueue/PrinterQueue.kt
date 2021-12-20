@@ -1,18 +1,25 @@
 package com.android.pos.ui.fragments.settings.hardware.printerqueue
 
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.model.PrinterQueueModel
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.databinding.FragmentPrinterQueueBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.PrinterQueueListAdapter
+import com.android.pos.ui.fragments.settings.hardware.printer.PrinterViewModel
+import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.SwipeHelper
+import com.android.pos.utils.extensions.alert
 import com.google.gson.Gson
 import com.hosopy.actioncable.ActionCable
 import com.hosopy.actioncable.Channel
@@ -28,16 +35,17 @@ import javax.inject.Inject
 import com.google.gson.JsonObject
 
 
-
-
 @AndroidEntryPoint
 class PrinterQueue : Fragment() {
     private lateinit var binding: FragmentPrinterQueueBinding
     private val list: ArrayList<PrinterQueueModel> = arrayListOf()
     private lateinit var adapter: PrinterQueueListAdapter
     private val TAG = "PrinterQueue"
+
     @Inject
     lateinit var prefProvider: PrefProvider
+
+    private val viewModel by viewModels<PrinterQueueViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -46,6 +54,7 @@ class PrinterQueue : Fragment() {
     ): View? {
         binding = FragmentPrinterQueueBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
+        observeShowProgress()
         return binding.root
     }
 
@@ -64,30 +73,28 @@ class PrinterQueue : Fragment() {
 
         // 2. Create subscription
         val appearanceChannel = Channel("KitchenChannel")
-       // appearanceChannel.addParam("id",prefProvider.getValueInt(LOCATION_ID,0))
+        // appearanceChannel.addParam("id",prefProvider.getValueInt(LOCATION_ID,0))
         val subscription: Subscription = consumer.subscriptions.create(appearanceChannel)
 
         subscription
             .onConnected {
-                Log.e(TAG,"onActionConnected")
+                Log.e(TAG, "onActionConnected")
                 val params = JsonObject()
-                params.addProperty("id", prefProvider.getValueInt(LOCATION_ID,0))
+                params.addProperty("id", prefProvider.getValueInt(LOCATION_ID, 0))
                 subscription.perform("received", params)
             }.onRejected {
-                Log.e(TAG,"onActiononRejected")
+                Log.e(TAG, "onActiononRejected")
             }.onReceived {
-                Log.e(TAG,"onActiononReceived  "+Gson().toJson(it))
+                Log.e(TAG, "onActiononReceived  " + Gson().toJson(it))
             }.onDisconnected {
-                Log.e(TAG,"onActiononDisconnected")
+                Log.e(TAG, "onActiononDisconnected")
             }.onFailed {
-                Log.e(TAG,"onActiononFailed")
+                Log.e(TAG, "onActiononFailed")
             }
-
 
 
         // 3. Establish connection
         consumer.connect();
-
 
 
     }
@@ -155,5 +162,46 @@ class PrinterQueue : Fragment() {
         binding.rvPrinterQueueList.adapter = adapter
         adapter.setList(list)
 
+        object : SwipeHelper(activity, binding.rvPrinterQueueList) {
+            override fun instantiateUnderlayButton(
+                viewHolder: RecyclerView.ViewHolder?,
+                underlayButtons: MutableList<UnderlayButton>?
+            ) {
+                underlayButtons?.add(UnderlayButton("Delete", 0, Color.parseColor("#FF3C30")) {
+                    Log.e(TAG, "position  ${it}")
+                    deletePrinterQueue(adapter.getList().get(it).id)
+                })
+            }
+
+        }
+
+    }
+
+    private fun observeShowProgress() {
+
+        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    ProgressUtils.showProgressDialog(requireActivity())
+                } else {
+                    ProgressUtils.dismissProgressDialog()
+                }
+            }
+        })
+    }
+
+    private fun deletePrinterQueue(id: Int) {
+        alert(
+            getString(R.string.tv_pos),
+            getString(R.string.delete_printer_message)
+        ) {
+            positiveButton(getString(R.string.tv_delete)) {
+                viewModel.deleteQueuePrinter(id)
+
+            }
+            negativeButton(R.string.tv_cancel) {
+
+            }
+        }
     }
 }

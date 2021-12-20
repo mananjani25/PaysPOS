@@ -47,4 +47,7 @@ class PrinterQueueListAdapter : RecyclerView.Adapter<PrinterQueueListAdapter.MyV
     }
 
 
+    fun getList(): List<PrinterQueueModel> {
+        return list
+    }
 }

@@ -21,6 +21,7 @@ import com.android.pos.data.remote.Constants.CUSTOMERS
 import com.android.pos.data.remote.Constants.CUSTOMER_RECEIPTS_UPDATE_SETTINGS
 import com.android.pos.data.remote.Constants.CUSTOMER_RECEIPT_SETTINGS
 import com.android.pos.data.remote.Constants.CUSTOMER_UPDATE
+import com.android.pos.data.remote.Constants.DELETE_QUEUE_PRINTER
 import com.android.pos.data.remote.Constants.DELETE_UPDATE_PRINTER
 import com.android.pos.data.remote.Constants.DISCOUNTS
 import com.android.pos.data.remote.Constants.DISCOUNTS_ACTIVE
@@ -139,6 +140,10 @@ interface ApiService {
     suspend fun deletePrinter(
         @Path("id") Id: Int,
     ): DeletePrinterResponseModel
+
+
+    @DELETE(DELETE_QUEUE_PRINTER)
+    suspend fun deletePrinterQueue(@Path("id") Id: Int): BaseResponse
 
     @PUT(DELETE_UPDATE_PRINTER)
     suspend fun updatePrinter(
@@ -663,6 +668,7 @@ interface ApiService {
         @Query("terminal_id") terminalId: String
     ): ReportSummaryResponse
 
+
     @GET(ORDER_HISTORY)
     suspend fun getCustomerOrderHistory(
         @Path("id") id: String
@@ -678,5 +684,5 @@ interface ApiService {
     ): CreateLoyaltyPointResponse
 
     @POST(CREATE_QUEUE_PRINTER)
-    suspend fun createQueuePrinter(@Body createPrinterQueueRequest:CreateQueuePrinterRequestModel):BaseResponse
+    suspend fun createQueuePrinter(@Body createPrinterQueueRequest: CreateQueuePrinterRequestModel): BaseResponse
 }
