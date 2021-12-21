@@ -233,14 +233,14 @@ data class CreateOrderResponse(
                     @SerializedName("id") var id: Int,
                     @SerializedName("order_item_id") var orderItemId: Int,
                     @SerializedName("name") var name: String,
-                    @SerializedName("price") var price: Int,
+                    @SerializedName("price") var price: Double,
                     @SerializedName("quantity") var quantity: Int,
                     @SerializedName("order_id") var orderId: Int,
                     @SerializedName("modifier_set_id") var modifierSetId: Int,
                     @SerializedName("is_modifier") var isModifier: Boolean,
                     @SerializedName("created_at") var createdAt: String,
                     @SerializedName("updated_at") var updatedAt: String,
-                    @SerializedName("total_price") var totalPrice: Int
+                    @SerializedName("total_price") var totalPrice: Double
 
                 )
             }
