@@ -1533,7 +1533,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     dineInList.get(0).guestDividedAmt =
                         MethodUtils.roundOffAmountDouble((WTSubTotal + WTTaxes + WTServiceCharge - orderDiscount) / (baseResponse.guestAttributes.size - 1))
                     dineInList.get(0).totalGuestCount = baseResponse.guestAttributes.size - 1
-
+                    dineInList.get(0).wholeTableSubTotal = WTSubTotal/dineInList.get(0).totalGuestCount
+                    dineInList.get(0).wholeTableTax = WTTaxes/dineInList.get(0).totalGuestCount
+                    dineInList.get(0).wholeTableSurTax = WTServiceCharge/dineInList.get(0).totalGuestCount
 
                     Log.d(
                         "guestDivide",
@@ -2603,11 +2605,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     Builder.COLOR_1
                 )
 
-                builder.addText("ReceiptID:" + if (getOrderDetailsResponse?.offlineId?.isEmpty() == true) {
-                    "ENTJKOIJH8745"
-                } else {
-                    getOrderDetailsResponse?.offlineId
-                })
+                builder.addText(
+                    "ReceiptID:" + if (getOrderDetailsResponse?.offlineId?.isEmpty() == true) {
+                        "ENTJKOIJH8745"
+                    } else {
+                        getOrderDetailsResponse?.offlineId
+                    }
+                )
 
                 if (customerSettingModel.showTeam) {
                     builder.addTextLineSpace(30)
@@ -2841,8 +2845,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     Builder.COLOR_1
                 )
 
-                addWholeTbItemToGuest(builder,listWTitems.get(i), customerSettingModel.fonts,
-                    customerSettingModel.showModifiers,totalGuestCount,serviceChargeList)
+                addWholeTbItemToGuest(
+                    builder, listWTitems.get(i), customerSettingModel.fonts,
+                    customerSettingModel.showModifiers, totalGuestCount, serviceChargeList
+                )
             }
 
 
@@ -3540,11 +3546,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     Builder.COLOR_1
                 )
 
-                builder.addText("ReceiptID:" + if (getOrderDetailsResponse?.offlineId?.isEmpty() == true) {
-                    "ENTJKOIJH8745"
-                } else {
-                    getOrderDetailsResponse?.offlineId
-                })
+                builder.addText(
+                    "ReceiptID:" + if (getOrderDetailsResponse?.offlineId?.isEmpty() == true) {
+                        "ENTJKOIJH8745"
+                    } else {
+                        getOrderDetailsResponse?.offlineId
+                    }
+                )
 
                 if (customerSettingModel.showTeam) {
                     builder.addTextLineSpace(30)

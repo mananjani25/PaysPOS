@@ -233,10 +233,10 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 listner.onGuestPay(
                     list[position],
                     position,
-                    MethodUtils.roundOffAmountDouble(guestSubTotal),
+                    MethodUtils.roundOffAmountDouble(guestSubTotal + list.get(0).wholeTableSubTotal),
                     MethodUtils.roundOffAmountDouble(finalAmt),
-                    MethodUtils.roundOffAmountDouble(totalTaxAmt),
-                    MethodUtils.roundOffAmountDouble(totalServiceCharge),
+                    MethodUtils.roundOffAmountDouble(totalTaxAmt + list.get(0).wholeTableTax),
+                    MethodUtils.roundOffAmountDouble(totalServiceCharge + list.get(0).wholeTableSurTax),
                     list.get(0).cashSurchargeDiscount,
                 )
             }
