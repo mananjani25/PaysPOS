@@ -186,17 +186,12 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             getCashPaymentOptionList(totalPrice / splitValue)
         } else if (isSplitByAmount) {
             if (MethodUtils.isEnableCashDiscount(requireContext())) {
-                if (cashDiscountType == "CashDiscount") {
-                    binding.txtCardAmount.text = "$ " + String.format("%.2f", totalPrice)
-                } else if (cashDiscountType == "SurCharge") {
-                    binding.txtCardAmount.text =
-                        "$ " + String.format("%.2f", totalPrice + cashDiscountSurcharge)
-                }
+                binding.txtCardAmount.text =
+                    "$ " + String.format("%.2f", totalPrice + cashDiscountSurcharge)
             } else {
                 binding.txtCardAmount.text =
                     "$" + String.format("%.2f", totalPrice)
             }
-
             MethodUtils.setPriceTextView(binding.txtTotalAmount, totalPrice)
         }
 
@@ -365,22 +360,16 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 isSplitByAmount = false
                 splitAfterAmount = ((totalPrice + tipAmount)) / splitValue
                 val totalAmountFormat = MethodUtils.roundOffAmount(totalPrice)
-
                 binding.txtSplitValue.text =
                     "Out of $totalAmountFormat Total, Payment 1 of $splitValue"
                 setSplitData()
-//                getCashPaymentOptionList(splitAfterAmount)
             } else {
-//                splitDataWithAmount()
                 isSplitByAmount = true
                 isSplitByNo = false
                 val splitValue = bundle.getDouble("splitByAmount")
-                splitAfterAmount = splitValue
-                val totalAmountFormat = MethodUtils.roundOffAmount(totalPrice)
-                binding.txtSplitValue.text =
-                    "Out of $totalAmountFormat Total, Payment 1 of $splitValue"
+                splitAfterAmount = (totalPrice + tipAmount) - splitValue
+                totalPrice -= splitValue
                 setSplitData()
-//                getCashPaymentOptionList(splitAfterAmount)
             }
         }
         setFragmentResultListener("request_for_customAmount") { requestKey: String, bundle: Bundle ->
