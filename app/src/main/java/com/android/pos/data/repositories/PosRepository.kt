@@ -90,6 +90,8 @@ class PosRepository @Inject constructor(
 
     suspend fun deletePrinter(id: Int) = apiHelperNew.deletePrinter(id)
 
+    suspend fun deleteQueuePrinter(id: Int) = apiHelperNew.deleteQueuePrinter(id)
+
     suspend fun updatePrinter(id: Int, model: CreatePrinterRequestModel) =
         apiHelperNew.updatePrinter(id, model)
 
