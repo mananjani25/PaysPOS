@@ -60,6 +60,8 @@ data class VenueDetailsResponse(
         val timeZone: String,
         @SerializedName("user_id")
         val userId: Int,
+        @SerializedName("is_printer_queue_enable")
+        val isPrinterQueueEnable: Boolean,
         @SerializedName("customer_receipt")
         val customerReceipt: GetCustomerReceiptSettingsResponse.Data,
         @SerializedName("kitchen_receipt")

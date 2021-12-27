@@ -1,5 +1,6 @@
 package com.android.pos.ui.adapter
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -9,6 +10,7 @@ import com.android.pos.databinding.ViewPrinterQueueListBinding
 class PrinterQueueListAdapter : RecyclerView.Adapter<PrinterQueueListAdapter.MyViewHolder>() {
     private var list: ArrayList<PrinterQueueModel> = arrayListOf()
 
+    @SuppressLint("NotifyDataSetChanged")
     fun setList(listQueue: ArrayList<PrinterQueueModel>) {
         this.list = listQueue
         notifyDataSetChanged()
@@ -18,7 +20,7 @@ class PrinterQueueListAdapter : RecyclerView.Adapter<PrinterQueueListAdapter.MyV
         RecyclerView.ViewHolder(binding.root) {
         fun bind(model: PrinterQueueModel) {
             binding.txtOfflineId.text = model.offlineId
-            binding.txtOrderId.text = model.orderId
+            binding.txtOrderId.text = ""+model.orderId
             binding.txtOrderType.text = model.orderType
             binding.txtTerminalName.text = model.terminalName
             binding.txtTotalAmt.text = "$" + model.totalAmt
@@ -27,6 +29,8 @@ class PrinterQueueListAdapter : RecyclerView.Adapter<PrinterQueueListAdapter.MyV
         }
 
     }
+
+
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -49,5 +53,11 @@ class PrinterQueueListAdapter : RecyclerView.Adapter<PrinterQueueListAdapter.MyV
 
     fun getList(): List<PrinterQueueModel> {
         return list
+    }
+
+    fun clearList() {
+        list.clear()
+        list = arrayListOf()
+        notifyDataSetChanged()
     }
 }

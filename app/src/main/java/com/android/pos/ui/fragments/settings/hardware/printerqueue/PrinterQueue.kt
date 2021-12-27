@@ -12,24 +12,25 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.model.PrinterQueueModel
+import com.android.pos.data.model.responseModel.CreateOrderResponse
+import com.android.pos.data.model.responseModel.PrinterQueueReponse
+import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.remote.Constants.LOCATION_ID
+import com.android.pos.data.remote.Constants.PENDING
 import com.android.pos.databinding.FragmentPrinterQueueBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.PrinterQueueListAdapter
-import com.android.pos.ui.fragments.settings.hardware.printer.PrinterViewModel
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.SwipeHelper
 import com.android.pos.utils.extensions.alert
 import com.google.gson.Gson
+import com.google.gson.JsonElement
 import com.hosopy.actioncable.ActionCable
 import com.hosopy.actioncable.Channel
 import com.hosopy.actioncable.Consumer
 import com.hosopy.actioncable.Subscription
 import java.net.URI
-import com.hosopy.actioncable.ActionCableException
 
-import com.google.gson.JsonElement
-import com.hosopy.actioncable.Subscription.*
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import com.google.gson.JsonObject
@@ -86,6 +87,8 @@ class PrinterQueue : Fragment() {
                 Log.e(TAG, "onActiononRejected")
             }.onReceived {
                 Log.e(TAG, "onActiononReceived  " + Gson().toJson(it))
+                getQueueDataResponse(it.asJsonObject.get("printer_queue"))
+
             }.onDisconnected {
                 Log.e(TAG, "onActiononDisconnected")
             }.onFailed {
@@ -96,6 +99,98 @@ class PrinterQueue : Fragment() {
         // 3. Establish connection
         consumer.connect();
 
+
+    }
+
+    private fun getQueueDataResponse(model: JsonElement) {
+
+        var dataList = model.asJsonObject.get("data").asJsonArray
+
+        var printerQueuelist: ArrayList<PrinterQueueModel> = arrayListOf()
+        dataList.forEach {
+            val printerQueueModel: PrinterQueueModel = PrinterQueueModel()
+
+            val obj = it.asJsonObject.get("order_data").asJsonObject
+            Log.e(TAG, "getOrderData: ${Gson().toJson(obj)}")
+
+            var itemArray = obj.asJsonObject.get("order_items_attributes").asJsonArray
+            var itemAttribute: ArrayList<CreateOrderResponse.Data.Order.OrderItem> = arrayListOf()
+            var itemModifiers: ArrayList<CreateOrderResponse.Data.Order.OrderItem.OrderItemModifiers> =
+                arrayListOf()
+
+
+            itemArray.forEach {
+                var modifiersList =
+                    it.asJsonObject.get("order_item_modifiers_attributes").asJsonArray
+
+                if (modifiersList.size() != 0) {
+                    modifiersList.forEach {
+                        val jsonObj = it.asJsonObject
+                        itemModifiers.add(
+                            CreateOrderResponse.Data.Order.OrderItem.OrderItemModifiers(
+                                name = jsonObj.get("name").asString,
+                                id = 0,
+                                orderItemId = 0,
+                                orderId = 0,
+                                quantity = jsonObj.get("quantity").asInt,
+                                price = 0.0,
+                                modifierSetId = 0,
+                                updatedAt = "",
+                                createdAt = "",
+                                totalPrice = 0.0,
+                                isModifier = false
+                            )
+                        )
+
+
+                    }
+
+                }
+                var orderItem = CreateOrderResponse.Data.Order.OrderItem(
+                    categoryId = it.asJsonObject.get("category_id").asInt,
+                    completedInKitchen = false,
+                    discountAmount = 0.0,
+                    discountId = 0,
+                    discountType = "",
+                    employeeId = it.asJsonObject.get("employee_id").asInt,
+                    float = 0.0,
+                    id = 0,
+                    isPaid = false,
+                    isPrinted = false,
+                    itemId = it.asJsonObject.get("item_id").asInt,
+                    itemName = it.asJsonObject.get("item_name").asString,
+                    note = it.asJsonObject.get("note").asString,
+                    orderItemModifiers = itemModifiers,
+                    price = it.asJsonObject.get("price").asDouble,
+                    quantity = it.asJsonObject.get("quantity").asInt,
+                    timestamp = "",
+                    totalPrice = 0.0,
+                    orderId = 0
+                )
+
+                itemAttribute.add(orderItem)
+                printerQueueModel.orderItems = itemAttribute
+                printerQueueModel.terminalName = ""
+                printerQueueModel.orderType = obj.asJsonObject.get("open_order_type").asString
+                printerQueueModel.offlineId = obj.asJsonObject.get("offline_id").asString
+                printerQueueModel.paymentType = "Cash"
+                printerQueueModel.status = PENDING
+                printerQueueModel.totalAmt = obj.asJsonObject.get("total_amount").asDouble
+                printerQueueModel.terminalName =
+                    it.asJsonObject.get("terminal_name")?.asString ?: ""
+
+                printerQueuelist.add(printerQueueModel)
+
+            }
+            requireActivity().runOnUiThread {
+                if (printerQueuelist.isNotEmpty()) {
+                    adapter.setList(printerQueuelist)
+                }
+
+            }
+
+
+        }
 
     }
 
@@ -110,54 +205,7 @@ class PrinterQueue : Fragment() {
     }
 
     private fun setAdapter() {
-        list.add(
-            PrinterQueueModel(
-                0,
-                "BKJH976LO65",
-                "54",
-                "Open Order",
-                45.00,
-                "CREDIT CARD",
-                "Terminal One",
-                "IN PROCESS"
-            )
-        )
-        list.add(
-            PrinterQueueModel(
-                0,
-                "BKJH976LO65",
-                "55",
-                "Dine In",
-                114.49,
-                "CREDIT CARD",
-                "Terminal One",
-                "PENDING"
-            )
-        )
-        list.add(
-            PrinterQueueModel(
-                0,
-                "BKJH976LO65",
-                "56",
-                "Take Out",
-                123.69,
-                "CREDIT CARD",
-                "Terminal One",
-                "IN PROCESS"
-            )
-        )
-        list.add(
-            PrinterQueueModel(
-                0,
-                "BKJH976LO65",
-                "54",
-                "Open Order",
-                67.00,
-                "CASH",
-                "Terminal One",
-                "IN PROCESS"
-            )
-        )
+
         adapter = PrinterQueueListAdapter()
         binding.rvPrinterQueueList.adapter = adapter
         adapter.setList(list)
@@ -169,7 +217,7 @@ class PrinterQueue : Fragment() {
             ) {
                 underlayButtons?.add(UnderlayButton("Delete", 0, Color.parseColor("#FF3C30")) {
                     Log.e(TAG, "position  ${it}")
-                    deletePrinterQueue(adapter.getList().get(it).id)
+                    // deletePrinterQueue(adapter.getList().get(it).id)
                 })
             }
 

@@ -240,12 +240,17 @@ object Constants {
     const val BUSINESS_ADDRESS = "business_address"
     const val BUSINESS_PHONE_NO = "business_phone_no"
     const val BUSINESS_WEBSITE = "business_website"
+    const val IS_PRINTER_QUEUE_ENABLE = "is_printer_queue_enable"
 
     const val CUSTOMER_ID = "customer_id"
 
     const val OCCUPIED = "Occupied"
 
     const val MERGEDANDOCCUPIED = "MergedAndOccupied"
+
+    const val PENDING = "PENDING"
+    const val IN_PROCESS = "IN PROCESS"
+    const val COMPLETED = "COMPLETED"
 
     fun createRequestModelForUpdatePrinter(
         model: ArrayList<PrinterResponse.Data.OrderTypes>,

@@ -21,6 +21,7 @@ import com.android.pos.data.remote.Constants.DELETE
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.DINE_IN_LIST_EDIT
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
+import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.remote.Constants.SYSTEM_TIMEZONE
 import com.android.pos.data.remote.Constants.UPDATE
 import com.android.pos.data.repositories.PosRepository
@@ -1550,6 +1551,11 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 prefProvider.setValue(BUSINESS_NAME, it.data.businessName)
                                 prefProvider.setValue(SYSTEM_TIMEZONE, it.data.timeZone)
                                 prefProvider.setValue(BUSINESS_PHONE_NO, it.data.phoneNumber)
+                                prefProvider.setValueboolean(
+                                    IS_PRINTER_QUEUE_ENABLE,
+                                    it.data.isPrinterQueueEnable
+                                )
+
                                 prefProvider.setValue(
                                     BUSINESS_WEBSITE,
                                     it.data.businessWebsite.toString()

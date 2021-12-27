@@ -188,6 +188,7 @@ data class CreateOrderResponse(
                 )
             }
 
+            @Parcelize
             data class OrderItem(
                 @SerializedName("category_id")
                 val categoryId: Int,
@@ -196,7 +197,7 @@ data class CreateOrderResponse(
                 @SerializedName("discount_amount")
                 val discountAmount: Double,
                 @SerializedName("discount_id")
-                val discountId: Any,
+                val discountId: Int,
                 @SerializedName("discount_type")
                 val discountType: String,
                 @SerializedName("employee_id")
@@ -227,7 +228,8 @@ data class CreateOrderResponse(
                 val timestamp: String,
                 @SerializedName("total_price")
                 val totalPrice: Double
-            ) {
+            ) : Parcelable {
+                @Parcelize
                 data class OrderItemModifiers(
 
                     @SerializedName("id") var id: Int,
@@ -242,7 +244,7 @@ data class CreateOrderResponse(
                     @SerializedName("updated_at") var updatedAt: String,
                     @SerializedName("total_price") var totalPrice: Double
 
-                )
+                ) : Parcelable
             }
 
             data class Employee(

@@ -1,7 +1,9 @@
 package com.android.pos.data.model.requestModel
 
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.parcelize.Parcelize
 
 data class OrderCancelRequest(
 
@@ -9,6 +11,7 @@ data class OrderCancelRequest(
     val order: OrderData
 
 ) {
+    @Parcelize
     class OrderData(
 
         @SerializedName("payment_status")
@@ -17,5 +20,5 @@ data class OrderCancelRequest(
         val cancel_order_reason: String,
         @SerializedName("cancel_order_reason_id")
         val cancel_order_reason_id: Int?
-    )
+    ):Parcelable
 }
