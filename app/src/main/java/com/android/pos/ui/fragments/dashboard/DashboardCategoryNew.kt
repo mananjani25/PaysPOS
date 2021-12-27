@@ -173,6 +173,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         isOrderUpdate = requireArguments().getBoolean("update")
         prefProvider.setValue("PaidAmount","")
         prefProvider.setValue("WholeTotalPrice", "")
+        prefProvider.setValueInt("cardCount", 0)
         optionType = prefProvider.getValue(OPTION_TYPE, "")
         if (isOrderUpdate) {
             orderId = requireArguments().getInt("orderId")
@@ -2381,16 +2382,25 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                 val bundle = Bundle()
 
-                var final_total = (binding.layoutCart.txtTotalAmount.text.toString().subSequence(2, binding.layoutCart.txtTotalAmount.text.length) as String).toDouble()
-                bundle.putDouble("totalPrice",final_total)
+                var final_total = (binding.layoutCart.txtTotalAmount.text.toString().subSequence(
+                    2,
+                    binding.layoutCart.txtTotalAmount.text.length
+                ) as String).toDouble()
+                bundle.putDouble("totalPrice", final_total)
                 bundle.putString(
                     "redeemLoyalty",
                     Gson().toJson(viewModel.redeemLoyaltyInfo)
                 )
-                bundle.putDouble("cashDiscountSurcharge", MethodUtils.calculateCashDiscount(final_total, prefProvider, requireContext()))
+                bundle.putDouble(
+                    "cashDiscountSurcharge",
+                    MethodUtils.calculateCashDiscount(final_total, prefProvider, requireContext())
+                )
                 bundle.putDouble("subTotalPrice", viewModel.subTotalPrice)
                 bundle.putDouble("totalTax", viewModel.totalTax)
-                bundle.putDouble("totalDiscount", viewModel.totalDiscount + cartList[0].discountPrice)
+                bundle.putDouble(
+                    "totalDiscount",
+                    viewModel.totalDiscount + cartList[0].discountPrice
+                )
                 bundle.putDouble("totalServiceCharge", viewModel.totalServiceCharge)
                 bundle.putString("future_delivery_date", future_delivery_date)
                 bundle.putString("future_delivery_time", future_delivery_time)
@@ -3586,7 +3596,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         if (resource.data != null) {
                             //data found. | Add in cart
                             if (findNavController().currentDestination?.id == R.id.dashboardCategoryNew) {
-                               //add item in the cart
+                                //add item in the cart
                             }
                         } else {
                             //data not found. Create New Item
