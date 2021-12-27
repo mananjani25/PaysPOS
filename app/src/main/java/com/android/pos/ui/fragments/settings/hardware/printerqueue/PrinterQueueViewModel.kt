@@ -5,9 +5,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.data.db.AppDatabase
+import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
+import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -24,6 +26,11 @@ class PrinterQueueViewModel @Inject constructor(
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
+    fun getKitchenPrinterList(): LiveData<Resource<List<PrinterResponse.Data.KitchenReceiptPrinters>>> {
+        return posRepository.getKitchenPrinters()
+    }
+
+    fun getKitchenReceiptSettings() = posRepository.getKitchenReceiptSettings()
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
 
