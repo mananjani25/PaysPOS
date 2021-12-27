@@ -25,6 +25,7 @@ import com.android.pos.utils.*
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.statusUtils.Status
+import com.epson.eposprint.BatteryStatusChangeEventListener
 import com.epson.eposprint.Builder
 import com.epson.eposprint.Print
 import com.epson.eposprint.StatusChangeEventListener
@@ -42,7 +43,8 @@ import com.google.gson.JsonObject
 
 
 @AndroidEntryPoint
-class PrinterQueue : Fragment(), StatusChangeEventListener {
+class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeEventListener {
+    private var consumer: Consumer? = null
     private lateinit var binding: FragmentPrinterQueueBinding
     private val list: ArrayList<PrinterQueueModel> = arrayListOf()
     private lateinit var adapter: PrinterQueueListAdapter
@@ -62,6 +64,7 @@ class PrinterQueue : Fragment(), StatusChangeEventListener {
     ): View? {
         binding = FragmentPrinterQueueBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
+        PrinterClass.setPrinter(null)
         observeShowProgress()
         getKitchenReceiptSettings()
 
@@ -76,42 +79,58 @@ class PrinterQueue : Fragment(), StatusChangeEventListener {
         onClick()
         connectActionCable()
 
+
     }
 
 
     private fun connectActionCable() {
         // 1. Setup
         val uri = URI("wss://possoft.io/cable")
-        val consumer: Consumer = ActionCable.createConsumer(uri)
+        consumer = ActionCable.createConsumer(uri)
 
         // 2. Create subscription
         val appearanceChannel = Channel("KitchenChannel")
         // appearanceChannel.addParam("id",prefProvider.getValueInt(LOCATION_ID,0))
-        val subscription: Subscription = consumer.subscriptions.create(appearanceChannel)
+        val subscription: Subscription? = consumer?.subscriptions?.create(appearanceChannel)
 
-        subscription
-            .onConnected {
-                Log.e(TAG, "onActionConnected")
-                val params = JsonObject()
-                params.addProperty("id", prefProvider.getValueInt(LOCATION_ID, 0))
-                subscription.perform("received", params)
-            }.onRejected {
-                Log.e(TAG, "onActiononRejected")
-            }.onReceived {
-                Log.e(TAG, "onActiononReceived  " + Gson().toJson(it))
-                getQueueDataResponse(it.asJsonObject.get("printer_queue"))
+        if (subscription != null) {
+            subscription
+                .onConnected {
+                    Log.e(TAG, "onActionConnected")
+                    val params = JsonObject()
+                    params.addProperty("id", prefProvider.getValueInt(LOCATION_ID, 0))
+                    subscription.perform("received", params)
+                }.onRejected {
+                    Log.e(TAG, "onActiononRejected")
+                }.onReceived {
+                    Log.e(TAG, "onActiononReceived  " + Gson().toJson(it))
+                    if (it != null) {
 
-            }.onDisconnected {
-                Log.e(TAG, "onActiononDisconnected")
-            }.onFailed {
-                Log.e(TAG, "onActiononFailed")
-            }
+                        if (it.asJsonObject.has("printer_queue")) {
+                            requireActivity().runOnUiThread {
+                                getQueueDataResponse(it.asJsonObject.get("printer_queue"))
+                            }
+                        }
+
+                    }
+
+                }.onDisconnected {
+                    Log.e(TAG, "onActiononDisconnected")
+                }.onFailed {
+                    Log.e(TAG, "onActiononFailed")
+                }
+        }
 
 
         // 3. Establish connection
-        consumer.connect();
+        consumer?.connect();
 
 
+    }
+
+    override fun onPause() {
+        consumer?.disconnect()
+        super.onPause()
     }
 
     private fun getQueueDataResponse(model: JsonElement) {
@@ -194,19 +213,18 @@ class PrinterQueue : Fragment(), StatusChangeEventListener {
                 printerQueuelist.add(printerQueueModel)
 
             }
-            requireActivity().runOnUiThread {
-                if (printerQueuelist.isNotEmpty()) {
-                    adapter.setList(printerQueuelist)
-                    printerQueuelist.forEach {
-                        configurePrinter(it)
-                    }
+
+            if (printerQueuelist.isNotEmpty()) {
+                adapter.setList(printerQueuelist)
 
 
-                }
 
             }
 
 
+        }
+        printerQueuelist.forEach {
+            configurePrinter(it)
         }
 
     }
@@ -258,6 +276,8 @@ class PrinterQueue : Fragment(), StatusChangeEventListener {
                     ProgressUtils.dismissProgressDialog()
                     if (it.data != null) {
                         kitchenPrinterList = it.data
+
+
                     }
 
                 }
@@ -306,45 +326,43 @@ class PrinterQueue : Fragment(), StatusChangeEventListener {
         data: PrinterResponse.Data.KitchenReceiptPrinters,
         printerQueueModel: PrinterQueueModel
     ) {
-        if (PrinterClass.getPrinter() == null) {
-            var printer: Print? = Print(requireContext())
-            if (printer != null) {
-//                printer.setStatusChangeEventCallback(this)
-//                printer.setBatteryStatusChangeEventCallback(this)
-            }
 
-            val enabled = Print.TRUE
 
-            try {
-
-                printer?.openPrinter(
-                    if (data.printer_type == Constants.BLUETOOTH) {
-                        Print.DEVTYPE_BLUETOOTH
-                    } else {
-                        Print.DEVTYPE_TCP
-                    },
-                    data.ipAddress,
-                    enabled,
-                    1000
-                )
-                printer?.setStatusChangeEventCallback(this)
-
-            } catch (e: Exception) {
-                Log.e(TAG, "PrinterException: " + e.message)
-                printer = null
-                return
-            }
-
-            if (printer != null) {
-                PrinterClass.setPrinter(printer)
-
-                generateKitchenReceipt(data, "", printerQueueModel)
-
-            }
-
-        } else {
-            Log.e(TAG, "PrinterIsNotNull:")
+        var printer: Print? = Print(requireContext())
+        if (printer != null) {
+            printer.setStatusChangeEventCallback(this)
+            printer.setBatteryStatusChangeEventCallback(this)
+            printer.setStatusChangeEventCallback(this)
         }
+
+        val enabled = Print.TRUE
+
+        try {
+            printer?.openPrinter(
+                if (data.printer_type == Constants.BLUETOOTH) {
+                    Print.DEVTYPE_BLUETOOTH
+                } else {
+                    Print.DEVTYPE_TCP
+                },
+                data.ipAddress,
+                enabled,
+                1000
+            )
+
+
+        } catch (e: Exception) {
+            Log.e(TAG, "PrinterException: " + e.message)
+            printer = null
+            return
+        }
+
+        if (printer != null) {
+            PrinterClass.setPrinter(printer)
+
+            generateKitchenReceipt(data, "", printerQueueModel)
+
+        }
+
 
     }
 
@@ -461,10 +479,7 @@ class PrinterQueue : Fragment(), StatusChangeEventListener {
                 Builder.COLOR_1
             )
 
-            Log.e(
-                TAG,
-                "ConvertDateTime:  ${Constants.getReceiptFormatDateFromUTCServer("")}"
-            )
+
             /*  builder.addText(
                   padLine(
                       Constants.getReceiptFormatDateFromUTCServer(receiptModel?.order?.createdAt.toString()),
@@ -678,6 +693,10 @@ class PrinterQueue : Fragment(), StatusChangeEventListener {
                 getKitchenPrinters()
             }
         })
+    }
+
+    override fun onBatteryStatusChangeEvent(p0: String?, p1: Int) {
+
     }
 
 }
