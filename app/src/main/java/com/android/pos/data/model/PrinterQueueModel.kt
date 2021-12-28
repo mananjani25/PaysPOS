@@ -4,7 +4,7 @@ import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.model.responseModel.PrinterQueueReponse
 
 data class PrinterQueueModel(
-    val id: Int? = null,
+    var id: Int? = null,
     var offlineId: String = "",
     var orderId: Int? = null,
     var orderType: String = "",

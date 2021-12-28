@@ -60,4 +60,10 @@ class PrinterQueueListAdapter : RecyclerView.Adapter<PrinterQueueListAdapter.MyV
         list = arrayListOf()
         notifyDataSetChanged()
     }
+    fun removeItemAt(position:Int){
+        this.list.removeAt(position)
+        notifyItemRemoved(position)
+
+    }
+
 }

@@ -71,8 +71,7 @@ object Constants {
     const val RATE_OR_AMOUNT = "rateAmount"
     const val OPTION_TYPE = "optionType"
     const val CASHDIS_SURCHARGEENABLE = "cashdisurchargeenable"
-    const val CASH_DIS_STORED= "cashDisStore"
-
+    const val CASH_DIS_STORED = "cashDisStore"
 
 
     //Api End Points

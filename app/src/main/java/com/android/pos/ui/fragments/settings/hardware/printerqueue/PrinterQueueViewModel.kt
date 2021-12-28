@@ -1,5 +1,6 @@
 package com.android.pos.ui.fragments.settings.hardware.printerqueue
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -26,6 +27,10 @@ class PrinterQueueViewModel @Inject constructor(
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
+    val _deleteQueue = MutableLiveData<Event<Int>>()
+    val deleteQueue: LiveData<Event<Int>> = _deleteQueue
+
+
     fun getKitchenPrinterList(): LiveData<Resource<List<PrinterResponse.Data.KitchenReceiptPrinters>>> {
         return posRepository.getKitchenPrinters()
     }
@@ -35,23 +40,25 @@ class PrinterQueueViewModel @Inject constructor(
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
 
 
-    fun deleteQueuePrinter(id: Int) {
-        _showProgress.value = Event(true)
+    fun deleteQueuePrinter(id: Int, pos: Int) {
+        //_showProgress.value = Event(true)
         viewModelScope.launch {
             val resource = posRepository.deleteQueuePrinter(id)
 
             when (resource.status) {
                 Status.SUCCESS -> {
-                    _showProgress.value = Event(false)
+                    // _showProgress.value = Event(false)
+                    Log.e(TAG, "pos:  ${pos}")
+                    _deleteQueue.value = Event(pos)
 
                 }
                 Status.LOADING -> {
-                    _showProgress.value = Event(true)
+                    //  _showProgress.value = Event(true)
 
                 }
                 Status.ERROR -> {
                     _snackbarText.value = Event(resource.message)
-                    _showProgress.value = Event(false)
+                    // _showProgress.value = Event(false)
 
                 }
             }

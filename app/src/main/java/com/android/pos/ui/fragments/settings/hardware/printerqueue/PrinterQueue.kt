@@ -11,6 +11,10 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
+import com.android.pos.data.entities.Modifier
+import com.android.pos.data.entities.TaxData
+import com.android.pos.data.entities.TbItem
+import com.android.pos.data.model.DineInModel
 import com.android.pos.data.model.PrinterQueueModel
 import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
@@ -67,6 +71,7 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
         PrinterClass.setPrinter(null)
         observeShowProgress()
         getKitchenReceiptSettings()
+        deleteQueueItemObserver()
 
         getKitchenPrinters()
 
@@ -107,9 +112,9 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
                     if (it != null) {
 
                         if (it.asJsonObject.has("printer_queue")) {
-                            requireActivity().runOnUiThread {
-                                getQueueDataResponse(it.asJsonObject.get("printer_queue"))
-                            }
+
+                            getQueueDataResponse(it.asJsonObject.get("printer_queue"))
+
                         }
 
                     }
@@ -200,45 +205,66 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
                 )
 
                 itemAttribute.add(orderItem)
-                printerQueueModel.orderItems = itemAttribute
-                printerQueueModel.terminalName = ""
-                printerQueueModel.orderType = obj.asJsonObject.get("open_order_type").asString
-                printerQueueModel.offlineId = obj.asJsonObject.get("offline_id").asString
-                printerQueueModel.paymentType = "Cash"
-                printerQueueModel.status = PENDING
-                printerQueueModel.totalAmt = obj.asJsonObject.get("total_amount").asDouble
-                printerQueueModel.terminalName =
-                    it.asJsonObject.get("terminal_name")?.asString ?: ""
 
-                printerQueuelist.add(printerQueueModel)
 
             }
+            printerQueueModel.orderItems = itemAttribute
+            printerQueueModel.terminalName = ""
+            printerQueueModel.orderType = obj.asJsonObject.get("open_order_type").asString
+            printerQueueModel.id = it.asJsonObject.get("id").asInt
+            printerQueueModel.offlineId = obj.asJsonObject.get("offline_id").asString
+            printerQueueModel.paymentType = "Cash"
+            printerQueueModel.status = PENDING
+            printerQueueModel.totalAmt = obj.asJsonObject.get("total_amount").asDouble
+            printerQueueModel.terminalName =
+                obj.asJsonObject.get("terminal_name")?.asString ?: ""
+
+            printerQueuelist.add(printerQueueModel)
+
 
             if (printerQueuelist.isNotEmpty()) {
-                adapter.setList(printerQueuelist)
-
+                requireActivity().runOnUiThread {
+                    adapter.setList(printerQueuelist)
+                }
 
 
             }
 
 
         }
-        printerQueuelist.forEach {
-            configurePrinter(it)
+
+        var clearPosition = 0
+
+        for (i in 0 until adapter.getList().size) {
+            configurePrinter(adapter.getList().get(i), i)
         }
+        /*printerQueuelist.forEachIndexed { index, printerQueueModel ->
+            configurePrinter(printerQueueModel, index)
+        }*/
 
     }
 
-    private fun configurePrinter(printerQueueModel: PrinterQueueModel) {
+    private fun configurePrinter(printerQueueModel: PrinterQueueModel, pos: Int) {
         kitchenPrinterList.forEach {
 
-            initKitchenPrinter(it, printerQueueModel)
+            initKitchenPrinter(it, printerQueueModel, pos)
 
         }
 
     }
 
     private fun onClick() {
+        binding.imgSync.setOnClickListener {
+            var printerQueuelist = adapter.getList()
+            for (i in 0 until printerQueuelist.size) {
+                configurePrinter(printerQueuelist[i], i)
+            }
+
+            /*   printerQueuelist.forEachIndexed { index, printerQueueModel ->
+                   configurePrinter(printerQueueModel, index)
+               }*/
+
+        }
         binding.imgClose.setOnClickListener {
             findNavController().popBackStack()
         }
@@ -261,7 +287,7 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
             ) {
                 underlayButtons?.add(UnderlayButton("Delete", 0, Color.parseColor("#FF3C30")) {
                     Log.e(TAG, "position  ${it}")
-                    // deletePrinterQueue(adapter.getList().get(it).id)
+                    adapter.getList().get(it).id?.let { it1 -> deletePrinterQueue(it1, it) }
                 })
             }
 
@@ -307,13 +333,13 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
         })
     }
 
-    private fun deletePrinterQueue(id: Int) {
+    private fun deletePrinterQueue(id: Int, pos: Int) {
         alert(
             getString(R.string.tv_pos),
             getString(R.string.delete_printer_message)
         ) {
             positiveButton(getString(R.string.tv_delete)) {
-                viewModel.deleteQueuePrinter(id)
+                viewModel.deleteQueuePrinter(id, pos)
 
             }
             negativeButton(R.string.tv_cancel) {
@@ -324,7 +350,8 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
 
     private fun initKitchenPrinter(
         data: PrinterResponse.Data.KitchenReceiptPrinters,
-        printerQueueModel: PrinterQueueModel
+        printerQueueModel: PrinterQueueModel,
+        pos: Int
     ) {
 
 
@@ -346,7 +373,7 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
                 },
                 data.ipAddress,
                 enabled,
-                1000
+                10000
             )
 
 
@@ -359,7 +386,7 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
         if (printer != null) {
             PrinterClass.setPrinter(printer)
 
-            generateKitchenReceipt(data, "", printerQueueModel)
+            generateKitchenReceipt(data, "", printerQueueModel, pos)
 
         }
 
@@ -369,7 +396,8 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
     private fun generateKitchenReceipt(
         customerReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
         type: String,
-        printerQueueModel: PrinterQueueModel
+        printerQueueModel: PrinterQueueModel,
+        pos: Int
     ) {
         var builder: Builder? = null
         try {
@@ -662,16 +690,16 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
             try {
                 PrinterClass.getPrinter()?.sendData(
                     builder,
-                    PrinterClass.SEND_TIMEOUT, status, battery
+                    PrinterClass.TEST_PRINT_LAN_TIME, status, battery
                 )
 
                 PrinterClass.closePrinter()
+                printerQueueModel.id?.let { viewModel.deleteQueuePrinter(it, pos) }
 
                 //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
             } catch (e: Exception) {
                 PrinterClass.closePrinter()
                 e.printStackTrace()
-                Log.e(TAG, "PrinterError: " + e.localizedMessage)
             }
 
 
@@ -697,6 +725,16 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
 
     override fun onBatteryStatusChangeEvent(p0: String?, p1: Int) {
 
+    }
+
+    private fun deleteQueueItemObserver() {
+        viewModel.deleteQueue.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let { position ->
+                adapter.removeItemAt(0)
+
+
+            }
+        })
     }
 
 }

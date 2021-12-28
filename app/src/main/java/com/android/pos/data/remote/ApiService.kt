@@ -685,4 +685,5 @@ interface ApiService {
 
     @POST(CREATE_QUEUE_PRINTER)
     suspend fun createQueuePrinter(@Body createPrinterQueueRequest: CreateQueuePrinterRequestModel): BaseResponse
+
 }
