@@ -48,6 +48,7 @@ import com.google.gson.JsonObject
 
 @AndroidEntryPoint
 class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeEventListener {
+    private var subscription: Subscription? = null
     private var consumer: Consumer? = null
     private lateinit var binding: FragmentPrinterQueueBinding
     private val list: ArrayList<PrinterQueueModel> = arrayListOf()
@@ -72,7 +73,7 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
         observeShowProgress()
         getKitchenReceiptSettings()
         deleteQueueItemObserver()
-
+        deleteAllQueueObserver()
         getKitchenPrinters()
 
         return binding.root
@@ -96,34 +97,33 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
         // 2. Create subscription
         val appearanceChannel = Channel("KitchenChannel")
         // appearanceChannel.addParam("id",prefProvider.getValueInt(LOCATION_ID,0))
-        val subscription: Subscription? = consumer?.subscriptions?.create(appearanceChannel)
+        subscription = consumer?.subscriptions?.create(appearanceChannel)
 
         if (subscription != null) {
-            subscription
-                .onConnected {
-                    Log.e(TAG, "onActionConnected")
-                    val params = JsonObject()
-                    params.addProperty("id", prefProvider.getValueInt(LOCATION_ID, 0))
-                    subscription.perform("received", params)
-                }.onRejected {
-                    Log.e(TAG, "onActiononRejected")
-                }.onReceived {
-                    Log.e(TAG, "onActiononReceived  " + Gson().toJson(it))
-                    if (it != null) {
+            subscription?.onConnected {
+                Log.e(TAG, "onActionConnected")
+                val params = JsonObject()
+                params.addProperty("id", prefProvider.getValueInt(LOCATION_ID, 0))
+                subscription?.perform("received", params)
+            }?.onRejected {
+                Log.e(TAG, "onActiononRejected")
+            }?.onReceived {
+                Log.e(TAG, "onActiononReceived  " + Gson().toJson(it))
+                if (it != null) {
 
-                        if (it.asJsonObject.has("printer_queue")) {
+                    if (it.asJsonObject.has("printer_queue")) {
 
-                            getQueueDataResponse(it.asJsonObject.get("printer_queue"))
-
-                        }
+                        getQueueDataResponse(it.asJsonObject.get("printer_queue"))
 
                     }
 
-                }.onDisconnected {
-                    Log.e(TAG, "onActiononDisconnected")
-                }.onFailed {
-                    Log.e(TAG, "onActiononFailed")
                 }
+
+            }?.onDisconnected {
+                Log.e(TAG, "onActiononDisconnected")
+            }?.onFailed {
+                Log.e(TAG, "onActiononFailed")
+            }
         }
 
 
@@ -222,18 +222,20 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
             printerQueuelist.add(printerQueueModel)
 
 
+        }
+        requireActivity().runOnUiThread {
             if (printerQueuelist.isNotEmpty()) {
-                requireActivity().runOnUiThread {
-                    adapter.setList(printerQueuelist)
-                }
 
-
+                adapter.setList(printerQueuelist)
+            } else {
+                adapter.clearList()
             }
 
 
         }
 
-        var clearPosition = 0
+
+
 
         for (i in 0 until adapter.getList().size) {
             configurePrinter(adapter.getList().get(i), i)
@@ -263,6 +265,20 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
             /*   printerQueuelist.forEachIndexed { index, printerQueueModel ->
                    configurePrinter(printerQueueModel, index)
                }*/
+
+        }
+        binding.txtDelete.setOnClickListener {
+            val list = adapter.getList()
+            var ids: ArrayList<Int> = arrayListOf()
+            list.forEachIndexed { index, printerQueueModel ->
+                printerQueueModel.id?.let { it1 -> ids.add(it1) }
+            }
+
+
+            if (ids.isNotEmpty()) {
+                var deleteQueueIds: Array<Int> = ids.toTypedArray()
+                viewModel.deleteAllQueuePrinter(deleteQueueIds)
+            }
 
         }
         binding.imgClose.setOnClickListener {
@@ -732,6 +748,24 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
             event.getContentIfNotHandled()?.let { position ->
                 adapter.removeItemAt(0)
 
+
+            }
+        })
+    }
+
+    private fun deleteAllQueueObserver() {
+        viewModel.deleteAllQueue.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let { data ->
+                activity?.let {
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        it, data.toString()
+                    ) { _, _ ->
+                        val params = JsonObject()
+                        params.addProperty("id", prefProvider.getValueInt(LOCATION_ID, 0))
+                        subscription?.perform("received", params)
+
+                    }
+                }
 
             }
         })

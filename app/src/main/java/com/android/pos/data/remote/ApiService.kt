@@ -21,6 +21,7 @@ import com.android.pos.data.remote.Constants.CUSTOMERS
 import com.android.pos.data.remote.Constants.CUSTOMER_RECEIPTS_UPDATE_SETTINGS
 import com.android.pos.data.remote.Constants.CUSTOMER_RECEIPT_SETTINGS
 import com.android.pos.data.remote.Constants.CUSTOMER_UPDATE
+import com.android.pos.data.remote.Constants.DELETE_ALL_QUEUE_PRINTER
 import com.android.pos.data.remote.Constants.DELETE_QUEUE_PRINTER
 import com.android.pos.data.remote.Constants.DELETE_UPDATE_PRINTER
 import com.android.pos.data.remote.Constants.DISCOUNTS
@@ -144,6 +145,9 @@ interface ApiService {
 
     @DELETE(DELETE_QUEUE_PRINTER)
     suspend fun deletePrinterQueue(@Path("id") Id: Int): BaseResponse
+
+    @GET(DELETE_ALL_QUEUE_PRINTER)
+    suspend fun deleteAllPrinterQueue(@Query("printer_ids") ids: Array<Int>) : BaseResponse
 
     @PUT(DELETE_UPDATE_PRINTER)
     suspend fun updatePrinter(

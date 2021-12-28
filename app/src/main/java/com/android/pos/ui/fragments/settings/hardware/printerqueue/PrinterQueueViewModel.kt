@@ -30,6 +30,9 @@ class PrinterQueueViewModel @Inject constructor(
     val _deleteQueue = MutableLiveData<Event<Int>>()
     val deleteQueue: LiveData<Event<Int>> = _deleteQueue
 
+    val _deleteAllQueue = MutableLiveData<Event<String>>()
+    val deleteAllQueue: LiveData<Event<String>> = _deleteAllQueue
+
 
     fun getKitchenPrinterList(): LiveData<Resource<List<PrinterResponse.Data.KitchenReceiptPrinters>>> {
         return posRepository.getKitchenPrinters()
@@ -40,6 +43,28 @@ class PrinterQueueViewModel @Inject constructor(
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
 
 
+    fun deleteAllQueuePrinter(id: Array<Int>) {
+        _showProgress.value = Event(true)
+        viewModelScope.launch {
+            val resource = posRepository.deleteAllQueuePrinter(id)
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+                    _deleteAllQueue.value = Event(resource.message.toString())
+
+                }
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
+                }
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
+
+            }
+        }
+    }
+
     fun deleteQueuePrinter(id: Int, pos: Int) {
         //_showProgress.value = Event(true)
         viewModelScope.launch {
@@ -48,7 +73,6 @@ class PrinterQueueViewModel @Inject constructor(
             when (resource.status) {
                 Status.SUCCESS -> {
                     // _showProgress.value = Event(false)
-                    Log.e(TAG, "pos:  ${pos}")
                     _deleteQueue.value = Event(pos)
 
                 }

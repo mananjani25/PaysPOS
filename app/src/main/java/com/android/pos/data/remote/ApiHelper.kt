@@ -39,6 +39,8 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
 
     suspend fun deleteQueuePrinter(id: Int) = getResult { apiService.deletePrinterQueue(id) }
 
+    suspend fun deleteAllQueuePrinter(id:Array<Int>) = getResult { apiService.deleteAllPrinterQueue(id) }
+
     suspend fun updatePrinter(id: Int, model: CreatePrinterRequestModel) =
         getResult { apiService.updatePrinter(id, model) }
 
