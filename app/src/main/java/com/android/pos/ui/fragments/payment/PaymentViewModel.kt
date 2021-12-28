@@ -1067,26 +1067,19 @@ class PaymentViewModel @Inject constructor(
             val totalPP = MethodUtils.roundOffAmountDouble(totalPrice)
             val totalDC = MethodUtils.roundOffAmountDouble(tipAmount)
             val totalAM = totalPP - totalDC
-            amount = if (splitValue == -1) totalAM else totalAM / splitValue
-//            cardName = ""
-//            cardNumber = ""
-//            cardType = 0
+            amount = totalAM
             if (paymentTypeStatus == "Cash") {
                 if (cashdiscountType == "SurCharge") {
                     cash_discount_or_surcharge = 0.0
                     total_cash_discount = 0.0
                 } else if (cashdiscountType == "CashDiscount") {
-                    cash_discount_or_surcharge =
-                        if (splitValue == -1) finalcashdiscount else finalcashdiscount / splitValue
-                    total_cash_discount =
-                        if (splitValue == -1) finalcashdiscount else finalcashdiscount / splitValue
+                    cash_discount_or_surcharge = finalcashdiscount
+                    total_cash_discount = finalcashdiscount
                 }
             } else if (paymentTypeStatus == "Card") {
                 if (cashdiscountType == "SurCharge") {
-                    cash_discount_or_surcharge =
-                        if (splitValue == -1) finalcashdiscount else finalcashdiscount / splitValue
-                    total_cash_discount =
-                        if (splitValue == -1) finalcashdiscount else finalcashdiscount / splitValue
+                    cash_discount_or_surcharge = finalcashdiscount
+                    total_cash_discount = finalcashdiscount
                 } else if (cashdiscountType == "CashDiscount") {
                     cash_discount_or_surcharge = 0.0
                     total_cash_discount = 0.0
@@ -1098,26 +1091,14 @@ class PaymentViewModel @Inject constructor(
             offlineId = if (isUpdateOrder) paymentOfflineId.toString() else randomOfflineId()
             payableType = "Order"
             paymentType = paymentTypeStatus
-            serviceChargeAmount =
-                if (splitValue == -1) MethodUtils.roundOffAmountDouble(totalServiceCharge) else MethodUtils.roundOffAmountDouble(
-                    totalServiceCharge
-                ) / splitValue
-            subTotal =
-                if (splitValue == -1) MethodUtils.roundOffAmountDouble(subTotalPrice) else MethodUtils.roundOffAmountDouble(
-                    subTotalPrice
-                ) / splitValue
-            taxAmount =
-                if (splitValue == -1) MethodUtils.roundOffAmountDouble(totalTax) else MethodUtils.roundOffAmountDouble(
-                    totalTax
-                ) / splitValue
+            serviceChargeAmount =MethodUtils.roundOffAmountDouble(totalServiceCharge)
+            subTotal =MethodUtils.roundOffAmountDouble(subTotalPrice)
+            taxAmount =MethodUtils.roundOffAmountDouble(totalTax)
             terminalId = cartModel.terminalId
             tips = MethodUtils.roundOffAmountDouble(tipAmount)
-
             tipsAdjusted = false
-            totalDiscount =
-                if (splitValue == -1) MethodUtils.roundOffAmountDouble(totalDis) else MethodUtils.roundOffAmountDouble(
-                    totalDis
-                ) / splitValue
+            totalDiscount =MethodUtils.roundOffAmountDouble(totalDis)
+
 
             if (isUpdateOrder && orderId != null) {
                 order_id = orderId
@@ -1173,13 +1154,13 @@ class PaymentViewModel @Inject constructor(
             payableType = "Order"
             paymentType = paymentTypeStatus
             serviceChargeAmount = totalServiceCharge
-            subTotal =subTotalPrice
-            taxAmount =totalTax
+            subTotal = subTotalPrice
+            taxAmount = totalTax
             terminalId = cartModel.terminalId
             tips = MethodUtils.roundOffAmountDouble(tipAmount)
 
             tipsAdjusted = false
-            totalDiscount =totalDis
+            totalDiscount = totalDis
 
 
             if (isUpdateOrder && orderId != null) {

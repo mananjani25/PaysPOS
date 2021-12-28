@@ -8,6 +8,8 @@ import android.view.*
 import android.widget.EditText
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.setFragmentResult
+import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.databinding.DailogCustomAmountBinding
 import com.android.pos.utils.AmountTextWatcher
@@ -19,6 +21,7 @@ import java.text.NumberFormat
 class CustomAmountFragment : DialogFragment() {
 
     private lateinit var binding: DailogCustomAmountBinding
+    var totalprice: Double = 0.0
 
     companion object {
         fun newInstance() = CustomAmountFragment()
@@ -32,10 +35,23 @@ class CustomAmountFragment : DialogFragment() {
         binding.lifecycleOwner = this
 
 
-        binding.edtAmount.addTextChangedListener(AmountTextWatcher(binding.edtAmount,false))
+        binding.edtAmount.addTextChangedListener(AmountTextWatcher(binding.edtAmount, false))
+        totalprice = requireArguments().getDouble("totalprice")
+        binding.txtAmount.text = "$ " + String.format(
+            "%.2f",
+            totalprice
+        ) + " Cash"
 
-
-
+        binding.imgBack.setOnClickListener {
+            dismiss()
+        }
+        binding.txtSend.setOnClickListener {
+            val result = Bundle().apply {
+                putDouble("amount", binding.edtAmount.text.toString().replace("$", "").toDouble())
+            }
+            setFragmentResult("request_for_customAmount", result)
+            findNavController().navigateUp()
+        }
         return binding.root
     }
 

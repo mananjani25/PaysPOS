@@ -73,6 +73,7 @@
                 app:textAllCaps="true" />
 
             <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txt_send"
                 style="@style/CustomFontSemiBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
