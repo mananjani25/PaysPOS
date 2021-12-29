@@ -251,7 +251,7 @@ class PaymentViewModel @Inject constructor(
         val order = createOrderResponse.data.order
 
         val cashLogRequest = CashLogRequest(
-            MethodUtils.roundOffAmountDouble(totalPayAmounts - createOrderResponse.data.order.totalAmount),
+            MethodUtils.roundOffAmountDouble(totalPayAmounts),
             order.employeeId,
             event,
             order.id,

@@ -1410,7 +1410,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         }
 
 
-        MethodUtils.setPriceTextView(txtTotalAmount, amountToBepaid - cartList[0].discountPrice)
+        MethodUtils.setPriceTextView(txtTotalAmount, amountToBepaid -viewModel.totalDiscount )
     }
 
     private fun resetTabbySearch(model: CategorySearchData) {
