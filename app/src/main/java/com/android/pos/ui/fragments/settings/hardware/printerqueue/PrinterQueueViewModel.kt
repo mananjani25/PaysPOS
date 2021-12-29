@@ -50,7 +50,7 @@ class PrinterQueueViewModel @Inject constructor(
             when (resource.status) {
                 Status.SUCCESS -> {
                     _showProgress.value = Event(false)
-                    _deleteAllQueue.value = Event(resource.message.toString())
+                    _deleteAllQueue.value = Event(resource.data?.message.toString())
 
                 }
                 Status.ERROR -> {

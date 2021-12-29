@@ -13,5 +13,6 @@ data class PrinterQueueModel(
     var terminalName: String = "",
     var status: String = "",
     val data: PrinterQueueReponse.Data? = null,
-    var orderItems: ArrayList<CreateOrderResponse.Data.Order.OrderItem>? = null
+    var orderItems: ArrayList<CreateOrderResponse.Data.Order.OrderItem>? = null,
+    var position: Int = 0
 )
