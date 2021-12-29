@@ -1171,8 +1171,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     AlertUtils.showCustomAlertWithListenerWithOK(
                         it, data.toString()
                     ) { _, _ ->
-                        val navController = findNavController()
-                        navController.popBackStack()
+//                        val navController = findNavController()
+//                        navController.popBackStack()
                     }
                 }
 
