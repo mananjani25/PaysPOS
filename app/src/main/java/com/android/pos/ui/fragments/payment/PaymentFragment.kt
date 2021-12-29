@@ -3,6 +3,7 @@ package com.android.pos.ui.fragments.payment
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -16,8 +17,12 @@ import com.android.pos.R
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.CashDiscountModel
 import com.android.pos.data.entities.RedeemLoyaltyInfo
-import com.android.pos.data.model.requestModel.*
+import com.android.pos.data.model.requestModel.CreateQueuePrinterRequestModel
+import com.android.pos.data.model.requestModel.OrderAttributeRequestModel
+import com.android.pos.data.model.requestModel.SpitByOrderPaymentModel
+import com.android.pos.data.model.requestModel.SpitByOrderRequestModel
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.SPLIT_NO
@@ -33,7 +38,6 @@ import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.visible
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
-import java.sql.Struct
 import javax.inject.Inject
 import kotlin.math.ceil
 import kotlin.math.floor
@@ -194,14 +198,23 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         if (isNextPayment) {
             if (isSplitByNo) {
                 if (MethodUtils.isEnableCashDiscount(requireContext())) {
+
+
+                    var last_cash_discount_surcharge =
+                        prefProvider.getValue(CASH_DISCOUNT_SURCHARGE, "")
+                    if (last_cash_discount_surcharge.isEmpty() || last_cash_discount_surcharge == "0.0") {
+                        last_cash_discount_surcharge = "0.0"
+                    }
+
                     cardPaymentAmount =
-                        (remainingAmount + prefProvider.getValue("cashDiscountSurcharge", "")
-                            .toDouble())
+                        (remainingAmount + (cashDiscountSurcharge - last_cash_discount_surcharge.toDouble()))
                     binding.txtCardAmount.text =
                         "$ " + String.format(
                             "%.2f",
                             cardPaymentAmount
                         )
+                    prefProvider.setValue(CASH_DISCOUNT_SURCHARGE, "")
+
                 } else {
                     cardPaymentAmount = remainingAmount
                     binding.txtCardAmount.text =
@@ -209,6 +222,9 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 }
                 MethodUtils.setPriceTextView(binding.txtTotalAmount, remainingAmount)
                 getCashPaymentOptionList(remainingAmount)
+
+                isSplitByNo = false
+
             } else if (isSplitByAmount) {
                 if (MethodUtils.isEnableCashDiscount(requireContext())) {
                     if (cashDiscountType == "CashDiscount") {
@@ -227,6 +243,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
                 MethodUtils.setPriceTextView(binding.txtTotalAmount, remainingAmount)
                 getCashPaymentOptionList(remainingAmount)
+
+                isSplitByAmount = false
             } else if (isCustomCash) {
                 if (MethodUtils.isEnableCashDiscount(requireContext())) {
                     if (cashDiscountType == "CashDiscount") {
@@ -712,7 +730,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 paymentAmount = when {
 
                     isSplitByNo -> {
-                        remainingAmount
+                        splitAfterAmount
                     }
                     isSplitByAmount -> {
                         splitAfterAmount
@@ -721,7 +739,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                         splitAfterAmount
                     }
                     else -> {
-                        ((totalPrice + tipAmount))
+                        remainingAmount
                     }
                 }
                 makePayment()
@@ -731,19 +749,18 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
                 paymentType = "Card"
                 setUpPaymentTypeWiseData("Card")
-                val handler = Handler()
+                val handler = Handler(Looper.getMainLooper())
                 handler.postDelayed({
-                    Log.d(TAG, "onClick: card cardPaymentAmount : " + cardPaymentAmount)
-                    Log.d(TAG, "onClick: card subTotalPrice : " + subTotalPrice)
-                    Log.d(TAG, "onClick: card totalPrice : " + totalPrice)
-                    Log.d(TAG, "onClick: card cashDiscountSurcharge : " + cashDiscountSurcharge)
 
                     when {
                         isSplitByNo -> {
+
+
                             cashDiscountSurcharge / splitValue
-                            Log.d(
-                                TAG,
-                                "onClick: card " + remainingAmount.minus(cashDiscountSurcharge)
+
+                            prefProvider.setValue(
+                                CASH_DISCOUNT_SURCHARGE,
+                                "" + cashDiscountSurcharge / splitValue
                             )
                         }
                     }
@@ -1165,16 +1182,15 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                     remainingAmount =
                                         cardPaymentAmount - WholetotalPrice - tempCashDiscount
                                 } else {
+
+                                    val dis_charge_value =
+                                        if (splitValue == -1) cashDiscountSurcharge else cashDiscountSurcharge / splitValue
+
+                                    bundle.putDouble("dis_charge_value", dis_charge_value)
                                     remainingAmount =
-                                        wholetotalPriceTemp.toDouble() - cardPaymentAmount
+                                        wholetotalPriceTemp.toDouble() + dis_charge_value - cardPaymentAmount
                                 }
-                                Log.d(
-                                    TAG,
-                                    "observeData: remaining amount : " + String.format(
-                                        "%.2f",
-                                        remainingAmount
-                                    )
-                                )
+
                                 prefProvider.setValue(
                                     "WholeTotal",
                                     String.format("%.2f", remainingAmount)
@@ -1220,6 +1236,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                     "remainingAmount",
                                     0.0
                                 )
+                                bundle.putDouble("dis_charge_value", 0.0)
                                 bundle.putInt("orderID", it.data.order.id)
                                 bundle.putParcelable("receiptData", it.data)
                                 bundle.putInt("splitValue", -1)
@@ -1291,7 +1308,14 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                             else -> {
                                 val bundle = Bundle()
                                 bundle.putBoolean("isDineIn", false)
-                                bundle.putDouble("PaidAmount", totalPrice + tipAmount)
+
+                                if (remainingAmount == 0.0) {
+                                    bundle.putDouble("PaidAmount", totalPrice + tipAmount)
+                                } else {
+                                    bundle.putDouble("PaidAmount", remainingAmount)
+                                }
+
+
                                 bundle.putDouble("WholetotalPrice", WholetotalPrice)
                                 bundle.putDouble(
                                     "remainingAmount",
@@ -1308,6 +1332,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                     R.id.action_paymentFragment_to_orderCompleteFragment,
                                     bundle
                                 )
+
+                                prefProvider.setValueInt("ORDER_ID", -1)
                             }
                         }
                     }

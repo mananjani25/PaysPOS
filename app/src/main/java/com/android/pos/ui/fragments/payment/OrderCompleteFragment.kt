@@ -52,6 +52,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEventListener,
     BatteryStatusChangeEventListener {
+    private var dis_charge_value: Double = 0.0
     private var isGuest: Boolean = false
     private var remainingAmount: Double = 0.0
     private var splitPaidAmount: Double = 0.0
@@ -185,6 +186,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             isSplitByNo = requireArguments().getBoolean("isSplitByNo")
             isSplitByAmount = requireArguments().getBoolean("isSplitByAmount")
             paymentType = requireArguments().getString("paymentType", "")
+            dis_charge_value = requireArguments().getDouble("dis_charge_value", 0.0)
         }
         setLabelData()
 
@@ -208,7 +210,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     MethodUtils.roundOffAmount(paidAmount)
                 if (remainingAmount < paidAmount) {
                     binding.txtChangeAmount.text =
-                        MethodUtils.roundOffAmount(paidAmount - remainingAmount) + " Change"
+                        MethodUtils.roundOffAmount((paidAmount - dis_charge_value) - remainingAmount) + " Change"
                 }
                 binding.txtPaymentAmount.text = "Out of " + MethodUtils.roundOffAmount(paidAmount)
             } else {
