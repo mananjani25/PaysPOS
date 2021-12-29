@@ -11,11 +11,17 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
+import com.android.pos.data.entities.Modifier
+import com.android.pos.data.entities.TaxData
+import com.android.pos.data.entities.TbItem
+import com.android.pos.data.model.DineInModel
 import com.android.pos.data.model.PrinterQueueModel
 import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.COMPLETED
+import com.android.pos.data.remote.Constants.IN_PROCESS
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.remote.Constants.PENDING
 import com.android.pos.databinding.FragmentPrinterQueueBinding
@@ -44,12 +50,15 @@ import com.google.gson.JsonObject
 
 @AndroidEntryPoint
 class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeEventListener {
+    private var printerQueuelist: ArrayList<PrinterQueueModel> = arrayListOf()
+    private var subscription: Subscription? = null
     private var consumer: Consumer? = null
     private lateinit var binding: FragmentPrinterQueueBinding
     private val list: ArrayList<PrinterQueueModel> = arrayListOf()
     private lateinit var adapter: PrinterQueueListAdapter
     private val TAG = "PrinterQueue"
     private var kitchenSettingModel = GetKitchenReceiptSettingsResponse.Data()
+    private var isPrintRunning: Boolean = false
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -65,9 +74,13 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
         binding = FragmentPrinterQueueBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
         PrinterClass.setPrinter(null)
+        adapter = PrinterQueueListAdapter()
+
+
         observeShowProgress()
         getKitchenReceiptSettings()
-
+        deleteQueueItemObserver()
+        deleteAllQueueObserver()
         getKitchenPrinters()
 
         return binding.root
@@ -91,34 +104,41 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
         // 2. Create subscription
         val appearanceChannel = Channel("KitchenChannel")
         // appearanceChannel.addParam("id",prefProvider.getValueInt(LOCATION_ID,0))
-        val subscription: Subscription? = consumer?.subscriptions?.create(appearanceChannel)
+        subscription = consumer?.subscriptions?.create(appearanceChannel)
 
         if (subscription != null) {
-            subscription
-                .onConnected {
-                    Log.e(TAG, "onActionConnected")
-                    val params = JsonObject()
-                    params.addProperty("id", prefProvider.getValueInt(LOCATION_ID, 0))
-                    subscription.perform("received", params)
-                }.onRejected {
-                    Log.e(TAG, "onActiononRejected")
-                }.onReceived {
-                    Log.e(TAG, "onActiononReceived  " + Gson().toJson(it))
-                    if (it != null) {
+            subscription?.onConnected {
+                Log.e(TAG, "onActionConnected")
+                val params = JsonObject()
+                params.addProperty("id", prefProvider.getValueInt(LOCATION_ID, 0))
+                subscription?.perform("received", params)
+            }?.onRejected {
+                Log.e(TAG, "onActiononRejected")
+            }?.onReceived {
+                Log.e(TAG, "onActiononReceived  " + Gson().toJson(it))
+                if (it != null && !isPrintRunning) {
 
-                        if (it.asJsonObject.has("printer_queue")) {
-                            requireActivity().runOnUiThread {
-                                getQueueDataResponse(it.asJsonObject.get("printer_queue"))
-                            }
-                        }
+                    if (it.asJsonObject.has("printer_queue")) {
+                        isPrintRunning = true
+
+
+                        getQueueDataResponse(it.asJsonObject.get("printer_queue"))
+
 
                     }
 
-                }.onDisconnected {
-                    Log.e(TAG, "onActiononDisconnected")
-                }.onFailed {
-                    Log.e(TAG, "onActiononFailed")
                 }
+
+            }?.onDisconnected {
+                Log.e(TAG, "onActiononDisconnected")
+            }?.onFailed {
+                Log.e(TAG, "onActiononFailed")
+                subscription = consumer?.subscriptions?.create(appearanceChannel)
+                val params = JsonObject()
+                params.addProperty("id", prefProvider.getValueInt(LOCATION_ID, 0))
+                subscription?.perform("received", params)
+
+            }
         }
 
 
@@ -137,108 +157,171 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
 
         var dataList = model.asJsonObject.get("data").asJsonArray
 
-        var printerQueuelist: ArrayList<PrinterQueueModel> = arrayListOf()
-        dataList.forEach {
+        printerQueuelist.clear()
+        printerQueuelist = arrayListOf()
+        dataList.forEachIndexed { index, it ->
             val printerQueueModel: PrinterQueueModel = PrinterQueueModel()
 
             val obj = it.asJsonObject.get("order_data").asJsonObject
             Log.e(TAG, "getOrderData: ${Gson().toJson(obj)}")
 
-            var itemArray = obj.asJsonObject.get("order_items_attributes").asJsonArray
-            var itemAttribute: ArrayList<CreateOrderResponse.Data.Order.OrderItem> = arrayListOf()
-            var itemModifiers: ArrayList<CreateOrderResponse.Data.Order.OrderItem.OrderItemModifiers> =
-                arrayListOf()
+            if (obj.asJsonObject.has("order_items_attributes")) {
+                var itemArray = obj.asJsonObject.get("order_items_attributes").asJsonArray
+                var itemAttribute: ArrayList<CreateOrderResponse.Data.Order.OrderItem> =
+                    arrayListOf()
+                var itemModifiers: ArrayList<CreateOrderResponse.Data.Order.OrderItem.OrderItemModifiers> =
+                    arrayListOf()
 
 
-            itemArray.forEach {
-                var modifiersList =
-                    it.asJsonObject.get("order_item_modifiers_attributes").asJsonArray
+                itemArray.forEach {
+                    var modifiersList =
+                        it.asJsonObject.get("order_item_modifiers_attributes").asJsonArray
 
-                if (modifiersList.size() != 0) {
-                    modifiersList.forEach {
-                        val jsonObj = it.asJsonObject
-                        itemModifiers.add(
-                            CreateOrderResponse.Data.Order.OrderItem.OrderItemModifiers(
-                                name = jsonObj.get("name").asString,
-                                id = 0,
-                                orderItemId = 0,
-                                orderId = 0,
-                                quantity = jsonObj.get("quantity").asInt,
-                                price = 0.0,
-                                modifierSetId = 0,
-                                updatedAt = "",
-                                createdAt = "",
-                                totalPrice = 0.0,
-                                isModifier = false
+                    if (modifiersList.size() != 0) {
+                        modifiersList.forEach {
+                            val jsonObj = it.asJsonObject
+                            itemModifiers.add(
+                                CreateOrderResponse.Data.Order.OrderItem.OrderItemModifiers(
+                                    name = jsonObj.get("name").asString,
+                                    id = 0,
+                                    orderItemId = 0,
+                                    orderId = 0,
+                                    quantity = jsonObj.get("quantity").asInt,
+                                    price = 0.0,
+                                    modifierSetId = 0,
+                                    updatedAt = "",
+                                    createdAt = "",
+                                    totalPrice = 0.0,
+                                    isModifier = false
+                                )
                             )
-                        )
 
+
+                        }
 
                     }
+                    var orderItem = CreateOrderResponse.Data.Order.OrderItem(
+                        categoryId = it.asJsonObject.get("category_id").asInt,
+                        completedInKitchen = false,
+                        discountAmount = 0.0,
+                        discountId = 0,
+                        discountType = "",
+                        employeeId = it.asJsonObject.get("employee_id").asInt,
+                        float = 0.0,
+                        id = 0,
+                        isPaid = false,
+                        isPrinted = false,
+                        itemId = it.asJsonObject.get("item_id").asInt,
+                        itemName = it.asJsonObject.get("item_name").asString,
+                        note = it.asJsonObject.get("note").asString,
+                        orderItemModifiers = itemModifiers,
+                        price = it.asJsonObject.get("price").asDouble,
+                        quantity = it.asJsonObject.get("quantity").asInt,
+                        timestamp = "",
+                        totalPrice = 0.0,
+                        orderId = 0
+                    )
+
+                    itemAttribute.add(orderItem)
+
 
                 }
-                var orderItem = CreateOrderResponse.Data.Order.OrderItem(
-                    categoryId = it.asJsonObject.get("category_id").asInt,
-                    completedInKitchen = false,
-                    discountAmount = 0.0,
-                    discountId = 0,
-                    discountType = "",
-                    employeeId = it.asJsonObject.get("employee_id").asInt,
-                    float = 0.0,
-                    id = 0,
-                    isPaid = false,
-                    isPrinted = false,
-                    itemId = it.asJsonObject.get("item_id").asInt,
-                    itemName = it.asJsonObject.get("item_name").asString,
-                    note = it.asJsonObject.get("note").asString,
-                    orderItemModifiers = itemModifiers,
-                    price = it.asJsonObject.get("price").asDouble,
-                    quantity = it.asJsonObject.get("quantity").asInt,
-                    timestamp = "",
-                    totalPrice = 0.0,
-                    orderId = 0
-                )
-
-                itemAttribute.add(orderItem)
                 printerQueueModel.orderItems = itemAttribute
                 printerQueueModel.terminalName = ""
                 printerQueueModel.orderType = obj.asJsonObject.get("open_order_type").asString
+                printerQueueModel.id = it.asJsonObject.get("id").asInt
                 printerQueueModel.offlineId = obj.asJsonObject.get("offline_id").asString
                 printerQueueModel.paymentType = "Cash"
                 printerQueueModel.status = PENDING
                 printerQueueModel.totalAmt = obj.asJsonObject.get("total_amount").asDouble
-                printerQueueModel.terminalName =
-                    it.asJsonObject.get("terminal_name")?.asString ?: ""
+                printerQueueModel.terminalName = ""
+                //obj.asJsonObject.get("terminal_name")?.asString ?: ""
+                printerQueueModel.position = index
+
 
                 printerQueuelist.add(printerQueueModel)
-
             }
 
+
+        }
+
+        requireActivity().runOnUiThread {
             if (printerQueuelist.isNotEmpty()) {
+
+                adapter.clearList()
+                binding.rvPrinterQueueList.adapter = adapter
+
                 adapter.setList(printerQueuelist)
+                adapter.notifyDataSetChanged()
 
 
-
+            } else {
+                adapter.clearList()
+                isPrintRunning = false
             }
+        }
 
 
-        }
-        printerQueuelist.forEach {
-            configurePrinter(it)
-        }
+
+
+
+
+            if (printerQueuelist.size != 0) {
+                for (i in 0 until printerQueuelist.size) {
+
+                    configurePrinter(printerQueuelist.get(i), i)
+                }
+            }
+        /*printerQueuelist.forEachIndexed { index, printerQueueModel ->
+            configurePrinter(printerQueueModel, index)
+        }*/
 
     }
 
-    private fun configurePrinter(printerQueueModel: PrinterQueueModel) {
-        kitchenPrinterList.forEach {
+    private fun configurePrinter(printerQueueModel: PrinterQueueModel, pos: Int) {
+        requireActivity().runOnUiThread {
+            adapter.updatePrintStatus(0, IN_PROCESS)
+            adapter.notifyDataSetChanged()
+        }
+        kitchenPrinterList.forEachIndexed { index, it ->
 
-            initKitchenPrinter(it, printerQueueModel)
+
+            initKitchenPrinter(it, printerQueueModel, pos)
 
         }
+
 
     }
 
     private fun onClick() {
+        binding.imgSync.setOnClickListener {
+            //var printerQueuelist = adapter.getList()
+
+            if (printerQueuelist.isNotEmpty() && !isPrintRunning) {
+                for (i in 0 until printerQueuelist.size) {
+                    configurePrinter(printerQueuelist[i], i)
+                }
+            }
+
+            /*   printerQueuelist.forEachIndexed { index, printerQueueModel ->
+                   configurePrinter(printerQueueModel, index)
+               }*/
+
+        }
+        binding.txtDelete.setOnClickListener {
+            val list = adapter.getList()
+            var ids: ArrayList<Int> = arrayListOf()
+            list.forEachIndexed { index, printerQueueModel ->
+                printerQueueModel.id?.let { it1 -> ids.add(it1) }
+            }
+
+
+            if (ids.isNotEmpty()) {
+                var deleteQueueIds: Array<Int> = ids.toTypedArray()
+                viewModel.deleteAllQueuePrinter(deleteQueueIds)
+            }
+
+        }
         binding.imgClose.setOnClickListener {
             findNavController().popBackStack()
         }
@@ -250,9 +333,6 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
 
     private fun setAdapter() {
 
-        adapter = PrinterQueueListAdapter()
-        binding.rvPrinterQueueList.adapter = adapter
-        adapter.setList(list)
 
         object : SwipeHelper(activity, binding.rvPrinterQueueList) {
             override fun instantiateUnderlayButton(
@@ -261,7 +341,7 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
             ) {
                 underlayButtons?.add(UnderlayButton("Delete", 0, Color.parseColor("#FF3C30")) {
                     Log.e(TAG, "position  ${it}")
-                    // deletePrinterQueue(adapter.getList().get(it).id)
+                    adapter.getList().get(it).id?.let { it1 -> deletePrinterQueue(it1, it) }
                 })
             }
 
@@ -307,13 +387,13 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
         })
     }
 
-    private fun deletePrinterQueue(id: Int) {
+    private fun deletePrinterQueue(id: Int, pos: Int) {
         alert(
             getString(R.string.tv_pos),
             getString(R.string.delete_printer_message)
         ) {
             positiveButton(getString(R.string.tv_delete)) {
-                viewModel.deleteQueuePrinter(id)
+                viewModel.deleteQueuePrinter(id, pos)
 
             }
             negativeButton(R.string.tv_cancel) {
@@ -324,7 +404,8 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
 
     private fun initKitchenPrinter(
         data: PrinterResponse.Data.KitchenReceiptPrinters,
-        printerQueueModel: PrinterQueueModel
+        printerQueueModel: PrinterQueueModel,
+        index: Int
     ) {
 
 
@@ -346,11 +427,15 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
                 },
                 data.ipAddress,
                 enabled,
-                1000
+                10000
             )
 
 
         } catch (e: Exception) {
+            isPrintRunning = false
+            requireActivity().runOnUiThread {
+                adapter.updatePrintStatus(0, "FAILED")
+            }
             Log.e(TAG, "PrinterException: " + e.message)
             printer = null
             return
@@ -359,7 +444,7 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
         if (printer != null) {
             PrinterClass.setPrinter(printer)
 
-            generateKitchenReceipt(data, "", printerQueueModel)
+            generateKitchenReceipt(data, "", printerQueueModel, index)
 
         }
 
@@ -369,7 +454,8 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
     private fun generateKitchenReceipt(
         customerReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
         type: String,
-        printerQueueModel: PrinterQueueModel
+        printerQueueModel: PrinterQueueModel,
+        index: Int
     ) {
         var builder: Builder? = null
         try {
@@ -662,22 +748,38 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
             try {
                 PrinterClass.getPrinter()?.sendData(
                     builder,
-                    PrinterClass.SEND_TIMEOUT, status, battery
+                    PrinterClass.TEST_PRINT_LAN_TIME, status, battery
                 )
 
                 PrinterClass.closePrinter()
 
+                printerQueueModel.id?.let {
+                    viewModel.deleteQueuePrinter(
+                        it,
+                        printerQueueModel.position
+                    )
+                }
+
+
                 //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
             } catch (e: Exception) {
+
+                isPrintRunning = false
                 PrinterClass.closePrinter()
                 e.printStackTrace()
-                Log.e(TAG, "PrinterError: " + e.localizedMessage)
+                val params = JsonObject()
+                params.addProperty("id", prefProvider.getValueInt(LOCATION_ID, 0))
+                subscription?.perform("received", params)
+
             }
 
 
         } catch (e: Exception) {
+
+            isPrintRunning = false
             e.printStackTrace()
         }
+
 
     }
 
@@ -697,6 +799,45 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
 
     override fun onBatteryStatusChangeEvent(p0: String?, p1: Int) {
 
+    }
+
+    private fun deleteQueueItemObserver() {
+        viewModel.deleteQueue.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let { position ->
+                requireActivity().runOnUiThread {
+                    adapter.removeItemAt(0)
+                    adapter.notifyDataSetChanged()
+                    isPrintRunning = false
+                    val params = JsonObject()
+                    params.addProperty("id", prefProvider.getValueInt(LOCATION_ID, 0))
+                    subscription?.perform("received", params)
+                }
+                /*
+  */
+
+            }
+        })
+    }
+
+    private fun deleteAllQueueObserver() {
+        viewModel.deleteAllQueue.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let { data ->
+                activity?.let {
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        it, data.toString()
+                    ) { _, _ ->
+                        requireActivity().runOnUiThread {
+                            adapter.clearList()
+                        }
+                        val params = JsonObject()
+                        params.addProperty("id", prefProvider.getValueInt(LOCATION_ID, 0))
+                        subscription?.perform("received", params)
+
+                    }
+                }
+
+            }
+        })
     }
 
 }

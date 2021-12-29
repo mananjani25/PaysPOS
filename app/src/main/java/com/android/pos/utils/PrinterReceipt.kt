@@ -241,7 +241,7 @@ fun addHorizontalKitchenLine(builder: Builder): Builder {
     for (i in 0 until 40) {
         str += "-"
     }
-    Log.e("strLine", "strLine  $str")
+
     builder.addText(str)
 
     return builder

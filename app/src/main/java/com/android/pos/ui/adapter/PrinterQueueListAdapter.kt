@@ -10,17 +10,23 @@ import com.android.pos.databinding.ViewPrinterQueueListBinding
 class PrinterQueueListAdapter : RecyclerView.Adapter<PrinterQueueListAdapter.MyViewHolder>() {
     private var list: ArrayList<PrinterQueueModel> = arrayListOf()
 
-    @SuppressLint("NotifyDataSetChanged")
+
     fun setList(listQueue: ArrayList<PrinterQueueModel>) {
-        this.list = listQueue
+        list.clear()
+        list.addAll(listQueue)
         notifyDataSetChanged()
+        //notifyItemRangeInserted(0,list.size)
+
+        //notifyItemRangeChanged(0, list.size)
+        //notifyDataSetChanged()
+
     }
 
     inner class MyViewHolder(private val binding: ViewPrinterQueueListBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(model: PrinterQueueModel) {
             binding.txtOfflineId.text = model.offlineId
-            binding.txtOrderId.text = ""+model.orderId
+            binding.txtOrderId.text = ""
             binding.txtOrderType.text = model.orderType
             binding.txtTerminalName.text = model.terminalName
             binding.txtTotalAmt.text = "$" + model.totalAmt
@@ -29,7 +35,6 @@ class PrinterQueueListAdapter : RecyclerView.Adapter<PrinterQueueListAdapter.MyV
         }
 
     }
-
 
 
     override fun onCreateViewHolder(
@@ -51,13 +56,31 @@ class PrinterQueueListAdapter : RecyclerView.Adapter<PrinterQueueListAdapter.MyV
     }
 
 
+    fun updatePrintStatus(position: Int, status: String) {
+        if (list.isNotEmpty()) {
+            list.get(position).status = status
+            notifyItemChanged(position)
+        }
+    }
+
     fun getList(): List<PrinterQueueModel> {
         return list
     }
 
     fun clearList() {
+        var tmpList = arrayListOf<PrinterQueueModel>()
+        tmpList.addAll(list)
         list.clear()
         list = arrayListOf()
-        notifyDataSetChanged()
+        notifyItemRangeRemoved(0, tmpList.size)
     }
+
+    fun removeItemAt(position: Int) {
+        if (list.isNotEmpty()) {
+            this.list.removeAt(0)
+            notifyItemRemoved(0)
+        }
+
+    }
+
 }

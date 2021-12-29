@@ -59,6 +59,9 @@ class PaymentViewModel @Inject constructor(
     private val _data1 = MutableLiveData<Event<BaseResponse?>>()
     val data1: LiveData<Event<BaseResponse?>> = _data1
 
+    private val _orderCreate = MutableLiveData<Event<Boolean>>()
+    val orderCreate: LiveData<Event<Boolean>> = _orderCreate
+
     fun submit(orderRequestModel: OrderRequestModel) {
 
         _showProgress.value = Event(true)
@@ -102,6 +105,7 @@ class PaymentViewModel @Inject constructor(
 
                                 _msgText.value = Event(response.message)
 
+                                _orderCreate.value = Event(true)
 
 //
                             }

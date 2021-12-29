@@ -92,6 +92,8 @@ class PosRepository @Inject constructor(
 
     suspend fun deleteQueuePrinter(id: Int) = apiHelperNew.deleteQueuePrinter(id)
 
+    suspend fun deleteAllQueuePrinter(id: Array<Int>) = apiHelperNew.deleteAllQueuePrinter(id)
+
     suspend fun updatePrinter(id: Int, model: CreatePrinterRequestModel) =
         apiHelperNew.updatePrinter(id, model)
 
@@ -207,7 +209,9 @@ class PosRepository @Inject constructor(
         performGetOperationDatabase(databaseQuery = { appDatabase.itemDao().itemById(itemId)!! })
 
     fun getItemByProductCode(productCode: String) =
-        performGetOperationDatabase(databaseQuery = { appDatabase.itemDao().itemByProductCode(productCode)!! })
+        performGetOperationDatabase(databaseQuery = {
+            appDatabase.itemDao().itemByProductCode(productCode)!!
+        })
 
     fun modifierSetsList() =
         performGetOperationDatabase(databaseQuery = { appDatabase.modifierSetDao().all })
