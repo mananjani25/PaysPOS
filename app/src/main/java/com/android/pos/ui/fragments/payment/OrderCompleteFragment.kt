@@ -52,23 +52,23 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEventListener,
     BatteryStatusChangeEventListener {
+    private var dis_charge_value: Double = 0.0
     private var isGuest: Boolean = false
     private var remainingAmount: Double = 0.0
     private var splitPaidAmount: Double = 0.0
     private var splitValue: Int = -1
 
     private var isSpilt: Boolean = false
+    private var isCustomCash: Boolean = false
     private var isSplitByAmount: Boolean = false
     private var isSplitByNo: Boolean = false
     private var isLastPayment: Boolean = false
     private var isDineIn: Boolean = false
     private var kitchenPrinterList: List<PrinterResponse.Data.KitchenReceiptPrinters> = listOf()
     private var orderID: Int = 0
-    private var isCustomCash = false
     var paymentType: String = ""
     private var type: String = ""
     private var totalPrice: Double = 0.0
-    private var finalPrice: Double = 0.0
     private var paymentAmount: Double = 0.0
     private var paidAmountValue: Double = 0.0
     private var WholetotalPrice: Double = 0.0
@@ -80,6 +80,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     private var isGuestPaymentTotal = false
 
+    private var paidAmount: Double = 0.0
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -158,91 +159,84 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         setupSnackbar()
         observeShowProgress()
-
-
-
-        totalPrice = requireArguments().getDouble("totalPrice")
-        finalPrice = requireArguments().getDouble("finalPrice")
-        isCustomCash = requireArguments().getBoolean("isCustomCash")
-        paymentAmount = requireArguments().getDouble("paymentAmount")
-        paidAmountValue = requireArguments().getDouble("paidAmountValue")
-        WholetotalPrice = requireArguments().getDouble("WholetotalPrice")
-        orderID = requireArguments().getInt("orderID")
-        isGuestPaymentTotal = requireArguments().getBoolean("isGuestPaymentTotal")
-        isSpilt = requireArguments().getBoolean("isSpilt")
-        isSplitByNo = requireArguments().getBoolean("isSplitByNo")
-        isSplitByAmount = requireArguments().getBoolean("isSplitByAmount")
-        paymentType = requireArguments().getString("paymentType", "")
-        isLastPayment = requireArguments().getBoolean("isLastPayment", false)
         isDineIn = requireArguments().getBoolean("isDineIn")
-        if (!isDineIn)
-            receiptModel = requireArguments().getParcelable("receiptData")
-
         if (isDineIn) {
+            totalPrice = requireArguments().getDouble("totalPrice")
+            paymentAmount = requireArguments().getDouble("paymentAmount")
+            paidAmountValue = requireArguments().getDouble("paidAmountValue")
+            WholetotalPrice = requireArguments().getDouble("WholetotalPrice")
+            orderID = requireArguments().getInt("orderID")
+            isGuestPaymentTotal = requireArguments().getBoolean("isGuestPaymentTotal")
+
+            isCustomCash = requireArguments().getBoolean("isCustomCash")
+            isSplitByNo = requireArguments().getBoolean("isSplitByNo")
+            isSplitByAmount = requireArguments().getBoolean("isSplitByAmount")
+            paymentType = requireArguments().getString("paymentType", "")
+            isLastPayment = requireArguments().getBoolean("isLastPayment", false)
             isGuest = requireArguments().getBoolean("isGuest")
+
+        } else {
+            paidAmount = requireArguments().getDouble("PaidAmount")
+            WholetotalPrice = requireArguments().getDouble("WholetotalPrice")
+            remainingAmount = requireArguments().getDouble("remainingAmount")
+            orderID = requireArguments().getInt("orderID")
+            receiptModel = requireArguments().getParcelable("receiptData")
+            splitValue = requireArguments().getInt("splitValue")
+            isSpilt = requireArguments().getBoolean("isSpilt")
+            isSplitByNo = requireArguments().getBoolean("isSplitByNo")
+            isSplitByAmount = requireArguments().getBoolean("isSplitByAmount")
+            paymentType = requireArguments().getString("paymentType", "")
+            dis_charge_value = requireArguments().getDouble("dis_charge_value", 0.0)
         }
         setLabelData()
 
-
-        if (totalPrice != paymentAmount) {
-            binding.txtChangeAmount.text =
-                MethodUtils.roundOffAmount(
-                    prefProvider.getValue("WholeTotalPrice", "0.0").toDouble() - totalPrice
-                ) + " Change"
-        } else if (isCustomCash) {
-            binding.txtChangeAmount.text =
-                MethodUtils.roundOffAmount(
-                    totalPrice - finalPrice
-                ) + " Change"
-        }
-
-        if (isSpilt) {
-            binding.constraintSplit.visibility = View.VISIBLE
-            binding.viewSplitLine.visibility = View.VISIBLE
-            splitValue = requireArguments().getInt("splitValue")
-            remainingAmount = requireArguments().getDouble("remainingAmount")
-            splitPaidAmount = requireArguments().getDouble("payAmount")
-            binding.txtRemainingAmount.text =
-                MethodUtils.roundOffAmount(
-                    prefProvider.getValue("WholeTotalPrice", "0.0").toDouble() - paidAmountValue
+        if (!isDineIn) {
+            if (isSpilt) {
+                binding.constraintSplit.visibility = View.VISIBLE
+                binding.viewSplitLine.visibility = View.VISIBLE
+                binding.txtRemainingAmount.visibility = View.VISIBLE
+                binding.txtRemainingAmountLabel.visibility = View.VISIBLE
+                binding.txtRemainingAmount.text = String.format("%.2f", remainingAmount)
+                binding.llHome.visibility = View.GONE
+                binding.llNoReceipt.text = "Next Payment"
+                binding.txtHome.text = "Next Payment"
+                var title = "Split "
+                viewModel.addSplitToDatabase(
+                    title,
+                    paidAmount,
+                    remainingAmount
                 )
-            binding.txtRemainingAmount.visibility = View.VISIBLE
-            binding.txtRemainingAmountLabel.visibility = View.VISIBLE
-            binding.llHome.visibility = View.GONE
-            binding.llNoReceipt.text = "Next Payment"
-            binding.txtHome.text = "Next Payment"
-            var title = "Split "
-            viewModel.addSplitToDatabase(
-                title,
-                splitPaidAmount,
-                prefProvider.getValue("WholeTotalPrice", "0.0").toDouble() - paidAmountValue
-            )
-
-        } else {
-            if (isGuestPaymentTotal && isDineIn && !isLastPayment) {
-                binding.llCheckOut.visibility = View.VISIBLE
-                binding.txtHome.visibility = View.GONE
-                binding.llNoReceipt.visibility = View.GONE
+                binding.txtTitle.text =
+                    MethodUtils.roundOffAmount(paidAmount)
+                if (remainingAmount < paidAmount) {
+                    binding.txtChangeAmount.text =
+                        MethodUtils.roundOffAmount((paidAmount - dis_charge_value) - remainingAmount) + " Change"
+                }
+                binding.txtPaymentAmount.text = "Out of " + MethodUtils.roundOffAmount(paidAmount)
             } else {
                 binding.llHome.visibility = View.VISIBLE
                 binding.txtHome.visibility = View.VISIBLE
                 binding.llNoReceipt.visibility = View.VISIBLE
+                binding.viewSplitLine.visibility = View.GONE
+                binding.constraintSplit.visibility = View.GONE
+                binding.txtRemainingAmount.visibility = View.GONE
+                binding.txtRemainingAmountLabel.visibility = View.GONE
+                binding.llNoReceipt.text = getString(R.string.no_receipt)
+                binding.txtHome.text = getString(R.string.tv_home)
+                viewModel.deleteSplitDb()
+                binding.txtTitle.text =
+                    MethodUtils.roundOffAmount(paidAmount)
+
+                if (remainingAmount < 0) {
+                    binding.txtChangeAmount.text =
+                        MethodUtils.roundOffAmount(remainingAmount) + " Change"
+                }
+                binding.txtPaymentAmount.text =
+                    "Out of " + MethodUtils.roundOffAmount(paidAmount)
+
+
             }
-            binding.viewSplitLine.visibility = View.GONE
-            binding.constraintSplit.visibility = View.GONE
-            binding.txtRemainingAmount.visibility = View.GONE
-            binding.txtRemainingAmountLabel.visibility = View.GONE
-            binding.llNoReceipt.text = getString(R.string.no_receipt)
-            binding.txtHome.text = getString(R.string.tv_home)
-            viewModel.deleteSplitDb()
         }
-
-
-        binding.txtTitle.text =
-            MethodUtils.roundOffAmount(paymentAmount)
-
-
-        binding.txtPaymentAmount.text = "Out of " + MethodUtils.roundOffAmount(paymentAmount)
 
         if (prefProvider.getValue(Constants.CUSTOMER_NAME, "").toString().isNotEmpty()) {
             binding.txtAddCustomer.visibility = View.GONE
@@ -388,7 +382,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     private fun moveToDashboard() {
 
-        if (isSpilt) {
+        if (isSpilt || isCustomCash) {
             if (isDineIn) {
                 val navController = findNavController()
                 var bundle = Bundle()
@@ -398,6 +392,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 bundle.putDouble("remainingAmount", remainingAmount)
                 bundle.putBoolean("isSplitByNo", isSplitByNo)
                 bundle.putBoolean("isSplitByAmount", isSplitByAmount)
+                bundle.putBoolean("isCustomCash", isCustomCash)
                 navController.previousBackStackEntry?.savedStateHandle?.set("data", bundle)
                 navController.popBackStack()
             } else {
@@ -408,6 +403,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 bundle.putDouble("remainingAmount", remainingAmount)
                 bundle.putInt("splitvalue", splitValue)
                 bundle.putBoolean("isSplitByNo", isSplitByNo)
+                bundle.putBoolean("isCustomCash", isCustomCash)
                 bundle.putBoolean("isSplitByAmount", isSplitByAmount)
                 navController.previousBackStackEntry?.savedStateHandle?.set("data", bundle)
                 navController.popBackStack()
@@ -1885,7 +1881,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     fun removeCustomer() {
         prefProvider.setValue(Constants.CUSTOMER_NAME, "")
         prefProvider.setValue("PaidAmount", "")
-        prefProvider.setValue("WholeTotalPrice", "")
+        prefProvider.setValue("WholeTotal", "")
 
     }
 

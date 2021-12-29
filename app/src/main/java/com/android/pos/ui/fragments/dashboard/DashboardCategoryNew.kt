@@ -172,7 +172,11 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         prefProvider.setValue(Constants.SPLIT_PAY_TYPE, "")
         isOrderUpdate = requireArguments().getBoolean("update")
         prefProvider.setValue("PaidAmount", "")
-        prefProvider.setValue("WholeTotalPrice", "")
+        prefProvider.setValue("WholeTotal", "")
+        prefProvider.setValueInt("cardCount", 0)
+        prefProvider.setValue(
+            "cashDiscountSurcharge", ""
+        )
         optionType = prefProvider.getValue(OPTION_TYPE, "")
         if (isOrderUpdate) {
             orderId = requireArguments().getInt("orderId")
@@ -1406,7 +1410,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         }
 
 
-        MethodUtils.setPriceTextView(txtTotalAmount, amountToBepaid - cartList[0].discountPrice)
+        MethodUtils.setPriceTextView(txtTotalAmount, amountToBepaid - viewModel.totalDiscount)
     }
 
     private fun resetTabbySearch(model: CategorySearchData) {
@@ -2394,6 +2398,17 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     "cashDiscountSurcharge",
                     MethodUtils.calculateCashDiscount(final_total, prefProvider, requireContext())
                 )
+
+                if (MethodUtils.isEnableCashDiscount(requireContext())) {
+                    prefProvider.setValue(
+                        "cashDiscountSurCharge",
+                        MethodUtils.calculateCashDiscount(
+                            final_total,
+                            prefProvider,
+                            requireContext()
+                        ).toString()
+                    )
+                }
                 bundle.putDouble("subTotalPrice", viewModel.subTotalPrice)
                 bundle.putDouble("totalTax", viewModel.totalTax)
                 bundle.putDouble(
