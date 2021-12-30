@@ -146,87 +146,75 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_weight="1"
+                        android:layout_weight="3.3"
                         android:gravity="start"
                         android:padding="@dimen/_10sdp"
                         android:text="Cash"
                         android:textColor="@color/drawerBack"
                         android:textSize="@dimen/_6mdpi" />
 
-                    <androidx.appcompat.widget.LinearLayoutCompat
-                        android:layout_width="wrap_content"
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtOriginalAmount"
+                        style="@style/CustomFontBold"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:visibility="visible">
+                        android:layout_gravity="center"
+                        android:layout_weight="1.4"
+                        android:background="?attr/selectableItemBackground"
+                        android:gravity="center"
+                        android:textColor="@color/btnColorDark_"
+                        android:textSize="@dimen/_6mdpi" />
 
-                        <androidx.appcompat.widget.AppCompatTextView
-                            android:id="@+id/txtOriginalAmount"
-                            style="@style/CustomFontBold"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_weight="1"
-                            android:background="?attr/selectableItemBackground"
-                            android:gravity="start"
-                            android:padding="@dimen/_10sdp"
-                            android:textColor="@color/btnColorDark_"
-                            android:textSize="@dimen/_6mdpi" />
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtSecondAmount"
+                        style="@style/CustomFontBold"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="1.4"
+                        android:background="?attr/selectableItemBackground"
+                        android:gravity="center"
 
-                        <androidx.appcompat.widget.AppCompatTextView
-                            android:id="@+id/txtSecondAmount"
-                            style="@style/CustomFontBold"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_weight="1"
-                            android:background="?attr/selectableItemBackground"
-                            android:gravity="start"
-                            android:padding="@dimen/_10sdp"
-                            android:textColor="@color/btnColorDark_"
-                            android:textSize="@dimen/_6mdpi" />
+                        android:textColor="@color/btnColorDark_"
+                        android:textSize="@dimen/_6mdpi" />
 
-                        <androidx.appcompat.widget.AppCompatTextView
-                            android:id="@+id/txtThirdAmount"
-                            style="@style/CustomFontBold"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_weight="1"
-                            android:background="?attr/selectableItemBackground"
-                            android:gravity="start"
-                            android:padding="@dimen/_10sdp"
-                            android:textColor="@color/btnColorDark_"
-                            android:textSize="@dimen/_6mdpi" />
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtThirdAmount"
+                        style="@style/CustomFontBold"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="1.4"
+                        android:background="?attr/selectableItemBackground"
+                        android:gravity="center"
+                        android:textColor="@color/btnColorDark_"
+                        android:textSize="@dimen/_6mdpi" />
 
-                        <androidx.appcompat.widget.AppCompatTextView
-                            android:id="@+id/txtFourthAmount"
-                            style="@style/CustomFontBold"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_weight="1"
-                            android:background="?attr/selectableItemBackground"
-                            android:gravity="start"
-                            android:padding="@dimen/_10sdp"
-                            android:textColor="@color/btnColorDark_"
-                            android:textSize="@dimen/_6mdpi" />
 
-                        <androidx.appcompat.widget.AppCompatTextView
-                            android:id="@+id/txtCustom"
-                            style="@style/CustomFontBold"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_weight="1"
-                            android:background="?attr/selectableItemBackground"
-                            android:gravity="start"
-                            android:padding="@dimen/_10sdp"
-                            android:text="@string/custom"
-                            android:textColor="@color/btnColorDark_"
-                            android:textSize="@dimen/_6mdpi" />
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtFourthAmount"
+                        style="@style/CustomFontBold"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="1.4"
+                        android:background="?attr/selectableItemBackground"
+                        android:gravity="center"
+                        android:textColor="@color/btnColorDark_"
+                        android:textSize="@dimen/_6mdpi" />
 
-                    </androidx.appcompat.widget.LinearLayoutCompat>
-
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtCustom"
+                        style="@style/CustomFontBold"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="0.9"
+                        android:background="?attr/selectableItemBackground"
+                        android:gravity="center"
+                        android:text="@string/custom"
+                        android:textColor="@color/btnColorDark_"
+                        android:textSize="@dimen/_6mdpi" />
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -237,19 +225,20 @@
                     android:id="@+id/llCredit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="?attr/selectableItemBackground"
                     android:orientation="horizontal">
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontBold"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_weight="1"
+                        android:layout_weight="3.3"
                         android:gravity="start"
                         android:padding="@dimen/_10sdp"
                         android:text="@string/manual_credit_card_entry"
                         android:textColor="@color/drawerBack"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textSize="@dimen/_5mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtCardAmount"
@@ -257,14 +246,17 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_weight="3.2"
+                        android:layout_weight="1.6"
                         android:background="?attr/selectableItemBackground"
-                        android:gravity="left"
-                        android:padding="@dimen/_10sdp"
+                        android:gravity="center"
                         android:text=""
                         android:textColor="@color/btnColorDark_"
                         android:textSize="@dimen/_6mdpi" />
 
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="4.8" />
 
                     <include layout="@layout/right_side_arrow" />
 

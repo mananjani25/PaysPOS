@@ -71,6 +71,7 @@
                 android:textColorHint="@color/hintColor"
                 android:textSize="@dimen/_6mdpi" />
             <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txt_send"
                 style="@style/CustomFontSemiBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -79,7 +80,6 @@
                 android:layout_marginTop="@dimen/_10sdp"
                 android:background="@color/btnColorDark_"
                 android:gravity="center"
-                android:id="@+id/txt_send"
                 android:minWidth="@dimen/_250sdp"
                 android:paddingStart="@dimen/_15sdp"
                 android:paddingTop="@dimen/_5sdp"
