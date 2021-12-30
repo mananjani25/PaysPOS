@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Context
 import android.os.SystemClock
 import android.text.TextUtils
+import android.util.Log
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatEditText
@@ -278,7 +279,13 @@ class MethodUtils {
             }
             return 0.00
         }
+
+        fun errorLog(tag: String, message: String) {
+            Log.e(tag, message)
+        }
     }
+
+
 }
 
 /*fun addItemsForDineIn(list: ArrayList<DineInModel>): ArrayList<DineInModel> {

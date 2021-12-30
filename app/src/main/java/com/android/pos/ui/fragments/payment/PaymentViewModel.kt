@@ -260,7 +260,7 @@ class PaymentViewModel @Inject constructor(
         val order = createOrderResponse.data.order
 
         val cashLogRequest = CashLogRequest(
-            MethodUtils.roundOffAmountDouble(totalPayAmounts - createOrderResponse.data.order.totalAmount),
+            MethodUtils.roundOffAmountDouble(totalPayAmounts),
             order.employeeId,
             event,
             order.id,
@@ -398,6 +398,140 @@ class PaymentViewModel @Inject constructor(
                 totalTax,
                 totalDiscount, tipAmount, splitValue, finaldiscount, paymentType,
                 cashdiscountType,
+                redeemLoyaltyInfo = redeemLoyaltyInfo
+            )
+        } else {
+            null
+        }
+
+        orderAttributeRequestModel.orderServiceChargesAttributes =
+            orderServiceChargesAttributes(cartModel, subTotalPrice)
+        if (cartModel.orderType == DINE_IN) {
+            orderAttributeRequestModel.guestsAttributes = getGuestsAttributes(cartModel)
+            Log.e(
+                TAG,
+                "guestsAttributesData:  ${Gson().toJson(orderAttributeRequestModel.guestsAttributes)}"
+            )
+
+            orderAttributeRequestModel.orderItemsAttributes = dineInOrderItemAttributed(cartModel)
+            Log.e(
+                TAG,
+                "dineInOrderItemData:  ${Gson().toJson(orderAttributeRequestModel.orderItemsAttributes)}"
+            )
+        } else {
+
+            orderAttributeRequestModel.orderItemsAttributes = orderItemsAttributes(cartModel)
+        }
+
+//        if (cartModel.customer != null)
+//            orderAttributeRequestModel.customerAttributes = customerAttributes(cartModel)
+
+
+        val orderRequestModel = OrderRequestModel(isPaid, orderAttributeRequestModel)
+
+        Log.e("orderRequestModel", ":  ${Gson().toJson(orderRequestModel)}")
+
+        return orderRequestModel
+    }
+
+    fun createOrderRequestForCard(
+        cartModel: CartModel,
+        subTotalPrice: Double,
+        totalPrice: Double,
+        totalServiceCharge: Double,
+        totalTax: Double,
+        ORDER_TYPE: String,
+        future_delivery_date: String,
+        future_delivery_time: String,
+        isPaid: Boolean,
+        totalDiscount: Double,
+        tipAmount: Double,
+        splitValue: Int,
+        redeemLoyaltyInfo: RedeemLoyaltyInfo?,
+        finaldiscount: Double,
+        needToAddPaymentAttributes: Boolean?,
+        paymentType: String,
+        cashdiscountType: String
+    ): OrderRequestModel {
+
+        val orderAttributeRequestModel = OrderAttributeRequestModel()
+
+
+        if (isUpdateOrder)
+            orderAttributeRequestModel.id = orderId
+
+        orderAttributeRequestModel.date = TimeFormatUtils.getCurrentDate()
+        if (future_delivery_date.isNotEmpty())
+            orderAttributeRequestModel.futureDeliveryDate = future_delivery_date
+        orderAttributeRequestModel.deliveryType = "Pickup"
+        orderAttributeRequestModel.employeeId = cartModel.employeeID
+        orderAttributeRequestModel.locationId = cartModel.locationId
+        orderAttributeRequestModel.terminalId = cartModel.terminalId
+        orderAttributeRequestModel.note = cartModel.note
+        if (paymentType == "Cash") {
+            if (cashdiscountType == "SurCharge") {
+                orderAttributeRequestModel.cash_discount_or_surcharge = 0.0
+            } else if (cashdiscountType == "CashDiscount") {
+                orderAttributeRequestModel.cash_discount_or_surcharge = finaldiscount
+            }
+        } else if (paymentType == "Card") {
+            if (cashdiscountType == "SurCharge") {
+                orderAttributeRequestModel.cash_discount_or_surcharge = finaldiscount
+            } else if (cashdiscountType == "CashDiscount") {
+                orderAttributeRequestModel.cash_discount_or_surcharge = 0.0
+            }
+        }
+        orderAttributeRequestModel.cash_discount_type = cashdiscountType
+        orderAttributeRequestModel.offlineId =
+            if (isUpdateOrder) orderOfflineId.toString() else randomOfflineId()
+        Log.e(TAG, "openOrderType: " + cartModel.orderType)
+        orderAttributeRequestModel.openOrderType = cartModel.orderType
+        orderAttributeRequestModel.orderTypeId = cartModel.orderTypeId
+        orderAttributeRequestModel.paymentStatus = if (isPaid) 1 else 0
+        orderAttributeRequestModel.serviceChargeEnabled = true
+        orderAttributeRequestModel.taxEnabled = true
+        orderAttributeRequestModel.subTotal = MethodUtils.roundOffAmountDouble(subTotalPrice)
+        orderAttributeRequestModel.totalAmount =
+            MethodUtils.roundOffAmountDouble(totalPrice) - MethodUtils.roundOffAmountDouble(
+                tipAmount
+            )
+        if (cartModel.discountId != null && cartModel.discountId != -1)
+            orderAttributeRequestModel.discount_id = cartModel.discountId
+        orderAttributeRequestModel.totalDiscount = totalDiscount
+        orderAttributeRequestModel.totalServiceCharges =
+            MethodUtils.roundOffAmountDouble(totalServiceCharge)
+        orderAttributeRequestModel.totalTaxAmount = MethodUtils.roundOffAmountDouble(totalTax)
+        orderAttributeRequestModel.totalTips = MethodUtils.roundOffAmountDouble(tipAmount)
+        orderAttributeRequestModel.is_loyalty_applied = redeemLoyaltyInfo?.needToApplyLoyalty
+        if (orderAttributeRequestModel.is_loyalty_applied == true) {
+            orderAttributeRequestModel.loyalty_program_id =
+                "${redeemLoyaltyInfo?.loyaltyProgramsModel?.id}"
+            orderAttributeRequestModel.loyalty_amount = redeemLoyaltyInfo?.usedLoyaltyAmount
+            orderAttributeRequestModel.used_reward_points = redeemLoyaltyInfo?.usedLoyaltyPoints
+        }
+
+//        if (cartModel.customer != null)
+//            orderAttributeRequestModel.customer_id = cartModel.customer?.id
+
+        val customerId = prefProvider.getValueInt(Constants.CUSTOMER_ID, -1)
+        if (customerId != -1) {
+            orderAttributeRequestModel.customer_id = customerId
+        }
+
+
+        orderAttributeRequestModel.paymentAttributes = if (needToAddPaymentAttributes == true) {
+            paymentAttributesForCard(
+                cartModel,
+                orderAttributeRequestModel.totalAmount,
+                orderAttributeRequestModel.subTotal,
+                orderAttributeRequestModel.totalServiceCharges,
+                orderAttributeRequestModel.totalTaxAmount,
+                orderAttributeRequestModel.totalDiscount,
+                orderAttributeRequestModel.totalTips,
+                splitValue,
+                orderAttributeRequestModel.cash_discount_or_surcharge,
+                paymentType,
+                orderAttributeRequestModel.cash_discount_type,
                 redeemLoyaltyInfo = redeemLoyaltyInfo
             )
         } else {
@@ -942,26 +1076,19 @@ class PaymentViewModel @Inject constructor(
             val totalPP = MethodUtils.roundOffAmountDouble(totalPrice)
             val totalDC = MethodUtils.roundOffAmountDouble(tipAmount)
             val totalAM = totalPP - totalDC
-            amount = if (splitValue == -1) totalAM else totalAM / splitValue
-//            cardName = ""
-//            cardNumber = ""
-//            cardType = 0
+            amount = totalAM
             if (paymentTypeStatus == "Cash") {
                 if (cashdiscountType == "SurCharge") {
                     cash_discount_or_surcharge = 0.0
                     total_cash_discount = 0.0
                 } else if (cashdiscountType == "CashDiscount") {
-                    cash_discount_or_surcharge =
-                        if (splitValue == -1) finalcashdiscount else finalcashdiscount / splitValue
-                    total_cash_discount =
-                        if (splitValue == -1) finalcashdiscount else finalcashdiscount / splitValue
+                    cash_discount_or_surcharge = finalcashdiscount
+                    total_cash_discount = finalcashdiscount
                 }
             } else if (paymentTypeStatus == "Card") {
                 if (cashdiscountType == "SurCharge") {
-                    cash_discount_or_surcharge =
-                        if (splitValue == -1) finalcashdiscount else finalcashdiscount / splitValue
-                    total_cash_discount =
-                        if (splitValue == -1) finalcashdiscount else finalcashdiscount / splitValue
+                    cash_discount_or_surcharge = finalcashdiscount
+                    total_cash_discount = finalcashdiscount
                 } else if (cashdiscountType == "CashDiscount") {
                     cash_discount_or_surcharge = 0.0
                     total_cash_discount = 0.0
@@ -973,26 +1100,77 @@ class PaymentViewModel @Inject constructor(
             offlineId = if (isUpdateOrder) paymentOfflineId.toString() else randomOfflineId()
             payableType = "Order"
             paymentType = paymentTypeStatus
-            serviceChargeAmount =
-                if (splitValue == -1) MethodUtils.roundOffAmountDouble(totalServiceCharge) else MethodUtils.roundOffAmountDouble(
-                    totalServiceCharge
-                ) / splitValue
-            subTotal =
-                if (splitValue == -1) MethodUtils.roundOffAmountDouble(subTotalPrice) else MethodUtils.roundOffAmountDouble(
-                    subTotalPrice
-                ) / splitValue
-            taxAmount =
-                if (splitValue == -1) MethodUtils.roundOffAmountDouble(totalTax) else MethodUtils.roundOffAmountDouble(
-                    totalTax
-                ) / splitValue
+            serviceChargeAmount = MethodUtils.roundOffAmountDouble(totalServiceCharge)
+            subTotal = MethodUtils.roundOffAmountDouble(subTotalPrice)
+            taxAmount = MethodUtils.roundOffAmountDouble(totalTax)
+            terminalId = cartModel.terminalId
+            tips = MethodUtils.roundOffAmountDouble(tipAmount)
+            tipsAdjusted = false
+            totalDiscount = MethodUtils.roundOffAmountDouble(totalDis)
+
+
+            if (isUpdateOrder && orderId != null) {
+                order_id = orderId
+            }
+            //           transactionId = ""
+            is_loyalty_applied = redeemLoyaltyInfo?.needToApplyLoyalty
+            if (is_loyalty_applied == true) {
+                loyalty_program_id = "${redeemLoyaltyInfo?.loyaltyProgramsModel?.id}"
+                loyalty_amount =
+                    if (splitValue == -1) redeemLoyaltyInfo?.usedLoyaltyAmount else redeemLoyaltyInfo?.usedLoyaltyAmount?.div(
+                        splitValue
+                    )
+                used_reward_points =
+                    if (splitValue == -1) redeemLoyaltyInfo?.usedLoyaltyPoints else redeemLoyaltyInfo?.usedLoyaltyPoints?.div(
+                        splitValue
+                    )
+                is_loyalty_applied = redeemLoyaltyInfo?.needToApplyLoyalty
+            }
+
+        }
+    }
+
+    private fun paymentAttributesForCard(
+        cartModel: CartModel,
+        totalPrice: Double,
+        subTotalPrice: Double,
+        totalServiceCharge: Double,
+        totalTax: Double,
+        totalDis: Double,
+        tipAmount: Double,
+        splitValue: Int,
+        finalcashdiscount: Double,
+        paymentTypeStatus: String,
+        cashdiscountType: String,
+        redeemLoyaltyInfo: RedeemLoyaltyInfo?
+    ): PaymentAttributes {
+        return PaymentAttributes().apply {
+//            if (isUpdateOrder)
+//                id = paymentId
+            val totalPP = MethodUtils.roundOffAmountDouble(totalPrice)
+            val totalDC = MethodUtils.roundOffAmountDouble(tipAmount)
+            val totalAM = totalPP - totalDC
+            amount = totalAM
+//            cardName = ""
+//            cardNumber = ""
+//            cardType = 0
+            cash_discount_or_surcharge = finalcashdiscount
+            total_cash_discount = finalcashdiscount
+            cashDiscountFee = 0.0
+            cash_discount_type = cashdiscountType
+            employeeId = cartModel.employeeID
+            offlineId = if (isUpdateOrder) paymentOfflineId.toString() else randomOfflineId()
+            payableType = "Order"
+            paymentType = paymentTypeStatus
+            serviceChargeAmount = totalServiceCharge
+            subTotal = subTotalPrice
+            taxAmount = totalTax
             terminalId = cartModel.terminalId
             tips = MethodUtils.roundOffAmountDouble(tipAmount)
 
             tipsAdjusted = false
-            totalDiscount =
-                if (splitValue == -1) MethodUtils.roundOffAmountDouble(totalDis) else MethodUtils.roundOffAmountDouble(
-                    totalDis
-                ) / splitValue
+            totalDiscount = totalDis
+
 
             if (isUpdateOrder && orderId != null) {
                 order_id = orderId
