@@ -50,6 +50,9 @@ class PaymentViewModel @Inject constructor(
     private val _msgText = MutableLiveData<Event<String>>()
     val msgText: LiveData<Event<String>> = _msgText
 
+    private val _queueStart = MutableLiveData<Event<CreateOrderResponse?>>()
+    val QueueStart: LiveData<Event<CreateOrderResponse?>> = _queueStart
+
     private val _data = MutableLiveData<Event<CreateOrderResponse?>>()
     val data: LiveData<Event<CreateOrderResponse?>> = _data
 
@@ -96,7 +99,8 @@ class PaymentViewModel @Inject constructor(
                                 }
 
                                 if (onlySave) {
-                                    _data.value = Event(createOrderResponse)
+                                    _queueStart.value = Event(createOrderResponse)
+                                    //_data.value = Event(createOrderResponse)
                                 } else {
                                     if (createOrderResponse.data.order.orderType != "Dine In") {
                                         cashLogApi(createOrderResponse, "in")
@@ -219,7 +223,8 @@ class PaymentViewModel @Inject constructor(
                             Log.e("INOUT : Total PayAmount", totalPayAmounts.toString())
 
                             if (order.totalAmount == totalPayAmounts) {
-                                _data.value = Event(createOrderResponse)
+                                _queueStart.value = Event(createOrderResponse)
+                                //  _data.value = Event(createOrderResponse)
                             } else {
                                 cashOutApi(createOrderResponse, "out")
                             }
@@ -275,8 +280,8 @@ class PaymentViewModel @Inject constructor(
                     if (response?.status == 200) {
 
                         resource.data?.let {
-
-                            _data.value = Event(createOrderResponse)
+                            _queueStart.value = Event(createOrderResponse)
+                            //     _data.value = Event(createOrderResponse)
 
                         }
 
@@ -1087,7 +1092,7 @@ class PaymentViewModel @Inject constructor(
                                 if (isDineIn)
                                     _msgText.value = Event(response.message)
 
-//
+
                             }
 
                         } else {
@@ -1109,7 +1114,10 @@ class PaymentViewModel @Inject constructor(
         }
     }
 
-    fun createQueuePrinter(createQueuePrinterModel: CreateQueuePrinterRequestModel) {
+    fun createQueuePrinter(
+        createQueuePrinterModel: CreateQueuePrinterRequestModel,
+        createOrder: CreateOrderResponse
+    ) {
         _showProgress.value = Event(true)
 
         viewModelScope.launch {
@@ -1118,7 +1126,9 @@ class PaymentViewModel @Inject constructor(
             when (resource.status) {
                 Status.SUCCESS -> {
                     _showProgress.value = Event(false)
-                    _queuePrinter.value = Event(resource?.data?.message.toString())
+                    _data.value = Event(createOrder)
+
+                    // _queuePrinter.value = Event(resource?.data?.message.toString())
 
                 }
                 Status.LOADING -> {

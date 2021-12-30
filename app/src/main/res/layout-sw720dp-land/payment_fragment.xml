@@ -243,27 +243,27 @@
                         style="@style/CustomFontBold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
                         android:layout_gravity="center"
+                        android:layout_weight="1"
                         android:gravity="start"
                         android:padding="@dimen/_10sdp"
                         android:text="@string/manual_credit_card_entry"
                         android:textColor="@color/drawerBack"
                         android:textSize="@dimen/_6mdpi" />
+
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtCardAmount"
                         style="@style/CustomFontBold"
                         android:layout_width="0dp"
-                        android:layout_weight="3.2"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
+                        android:layout_weight="3.2"
                         android:background="?attr/selectableItemBackground"
                         android:gravity="left"
-                        android:text=""
                         android:padding="@dimen/_10sdp"
+                        android:text=""
                         android:textColor="@color/btnColorDark_"
                         android:textSize="@dimen/_6mdpi" />
-
 
 
                     <include layout="@layout/right_side_arrow" />
@@ -449,10 +449,10 @@
                 android:background="?attr/selectableItemBackground"
                 android:orientation="horizontal"
                 android:paddingStart="@dimen/_5sdp"
-                android:visibility="gone"
                 android:paddingTop="@dimen/_3sdp"
                 android:paddingEnd="@dimen/_5sdp"
-                android:paddingBottom="@dimen/_3sdp">
+                android:paddingBottom="@dimen/_3sdp"
+                android:visibility="gone">
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontMediumStyle"
@@ -486,9 +486,9 @@
                 android:orientation="horizontal"
                 android:paddingStart="@dimen/_5sdp"
                 android:paddingTop="@dimen/_3sdp"
-                android:visibility="gone"
                 android:paddingEnd="@dimen/_5sdp"
-                android:paddingBottom="@dimen/_3sdp">
+                android:paddingBottom="@dimen/_3sdp"
+                android:visibility="gone">
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontMediumStyle"

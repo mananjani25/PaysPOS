@@ -97,7 +97,10 @@ class PasscodeViewModel @Inject constructor(
                                     prefProvider.setValueInt(EMPLOYEE_ID, it.data.employeeId)
                                     prefProvider.setValue(EMPLOYEE_NAME, it.data.employee_name)
                                     prefProvider.setValue(EMPLOYEE_ROLE, it.data.employee_role)
-                                    prefProvider.setValueInt(EMPLOYEE_ROLE_ID, it.data.team_role_id?:0)
+                                    prefProvider.setValueInt(
+                                        EMPLOYEE_ROLE_ID,
+                                        it.data.team_role_id ?: 0
+                                    )
                                     prefProvider.setValue(PASSCODE, passcode)
                                     employeeLogin(data)
 
