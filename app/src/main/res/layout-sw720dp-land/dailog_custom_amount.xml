@@ -80,7 +80,6 @@
                 android:layout_marginTop="@dimen/_10sdp"
                 android:background="@color/btnColorDark_"
                 android:gravity="center"
-                android:id="@+id/txt_send"
                 android:minWidth="@dimen/_250sdp"
                 android:paddingStart="@dimen/_15sdp"
                 android:paddingTop="@dimen/_5sdp"
