@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import android.os.Build
 import android.os.Handler
 import androidx.appcompat.app.AppCompatDelegate
+import com.android.pos.utils.scanner.helpers.AvailableScanner
 import com.android.pos.utils.scanner.helpers.Barcode
 import com.android.pos.utils.scanner.helpers.Foreground
 import com.android.pos.utils.scanner.helpers.ScannerAppEngine
@@ -50,8 +51,8 @@ class MainApplication : Application() {
 
         //Barcode data
         var barcodeData: ArrayList<Barcode> = ArrayList<Barcode>()
-        var currentConnectedScanner: DCSScannerInfo? = null
-        var lastConnectedScanner: DCSScannerInfo? = null
+        var currentConnectedScanner: AvailableScanner? = null
+        var lastConnectedScanner: AvailableScanner? = null
 
         //Instance of SDK Handler
         var sdkHandler: SDKHandler? = null

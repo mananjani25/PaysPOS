@@ -96,8 +96,16 @@ class PasscodeViewModel @Inject constructor(
                                     prefProvider.setValueboolean(IS_CLOCKOUT, true)
                                     prefProvider.setValueInt(EMPLOYEE_ID, it.data.employeeId)
                                     prefProvider.setValue(EMPLOYEE_NAME, it.data.employee_name)
-                                    prefProvider.setValue(EMPLOYEE_ROLE, it.data.employee_role)
-                                    prefProvider.setValueInt(EMPLOYEE_ROLE_ID, it.data.team_role_id?:0)
+                                    it.data.employee_role?.let { it1 ->
+                                        prefProvider.setValue(
+                                            EMPLOYEE_ROLE,
+                                            it1
+                                        )
+                                    }
+                                    prefProvider.setValueInt(
+                                        EMPLOYEE_ROLE_ID,
+                                        it.data.team_role_id ?: 0
+                                    )
                                     prefProvider.setValue(PASSCODE, passcode)
                                     employeeLogin(data)
 

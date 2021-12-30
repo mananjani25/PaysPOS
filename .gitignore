@@ -19,3 +19,4 @@ local.properties
 /app/release/output-metadata.json
 keystore
 /BarcodeScannerLibrary/build/.transforms/
+/BarcodeScannerLibrary/build/
