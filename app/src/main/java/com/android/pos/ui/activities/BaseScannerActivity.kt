@@ -96,6 +96,9 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
 
         // ...
         initializeDcsSdkWithAppSettings()
+
+        //reconnect the scanner
+        connectToScanner(getScannerPref().getScannerData())
     }
 
     fun resetConnectionThroughBarcode(flBarcode: FrameLayout?) {
@@ -585,7 +588,7 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
                         )
 
                         //save connected scanner data
-                        saveScanner(device, true)
+                        saveScanner(availableScanner, true)
 
                         availableScanner.isConnectable = true
                         addToLastConnectedScannerList(availableScanner)
@@ -1135,7 +1138,7 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
         MainApplication.sdkHandler?.dcssdkSetOperationalMode(DCSSDK_MODE.DCSSDK_OPMODE_SNAPI)
     }
 
-    public fun ConnectToScanner(availableScanner: AvailableScanner?) {
+    fun connectToScanner(availableScanner: AvailableScanner?) {
         getActualScannersList()?.let { actualScannerList ->
             for (device in actualScannerList) {
                 if (device.scannerID == availableScanner?.scannerId) {
@@ -1353,17 +1356,18 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
     }
 
     //save scanner data
-    fun saveScanner(device: DCSScannerInfo?, connect: Boolean) {
+    fun saveScanner(availableScanner: AvailableScanner?, connect: Boolean) {
         if (connect) {
             MainApplication.isAnyScannerConnected = true
-            MainApplication.currentConnectedScanner = device
-            //getScannerPref().saveScannerData(device)
-            MainApplication.lastConnectedScanner = device
-            MainApplication.currentConnectedScannerID = device?.scannerID ?: -1
+            MainApplication.currentConnectedScanner = availableScanner
+            getScannerPref().saveScannerData(availableScanner)
+            MainApplication.lastConnectedScanner = availableScanner
+            MainApplication.currentConnectedScannerID =
+                availableScanner?.scannerId ?: MainApplication.SCANNER_ID_NONE
         } else {
             MainApplication.lastConnectedScanner = MainApplication.currentConnectedScanner
             MainApplication.currentConnectedScanner = null
-            MainApplication.currentConnectedScannerID = -1
+            MainApplication.currentConnectedScannerID = MainApplication.SCANNER_ID_NONE
             MainApplication.isAnyScannerConnected = false
         }
     }

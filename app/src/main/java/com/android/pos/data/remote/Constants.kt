@@ -28,6 +28,7 @@ object Constants {
     const val PREF_CUSTOMER = "pref_customer"
     const val PREF_ACTIVE_LOYALTY_PROGRAM = "pref_active_loyalty_program"
     const val PREF_CURRENT_SCANNER = "pref_current_scanner"
+    const val PREF_CURRENT_SCANNER_ID = "pref_current_scanner_id"
     const val CUSTOMER_NAME = "customer_name"
     const val SALE_CUSTOMER_NAME = "sale_customer_name"
     const val IS_CLOCKOUT = "isClockout"
@@ -375,4 +376,7 @@ object Constants {
     const val FRAGMENT_HARDWARE = 1
     const val FRAGMENT_SCANNER_LIST = 2
     const val FRAGMENT_RESET_SCANNER = 3
+
+
+    const val CASH_DISCOUNT_SURCHARGE = "cashDiscountSurcharge"
 }

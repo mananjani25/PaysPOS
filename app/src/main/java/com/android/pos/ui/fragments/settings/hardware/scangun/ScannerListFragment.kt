@@ -36,7 +36,7 @@ class ScannerListFragment : Fragment() {
 
             // Cancel discovery because it's costly and we're about to connect
             // Get the device MAC address, which is the last 17 chars in the View
-            (activity as MainActivity).ConnectToScanner(availableScanner)
+            (activity as MainActivity).connectToScanner(availableScanner)
         }
     }
 

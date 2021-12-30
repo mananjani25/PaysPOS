@@ -1,6 +1,5 @@
 package com.android.pos.ui.dialog
 
-import android.annotation.SuppressLint
 import android.graphics.Point
 import android.os.Bundle
 import android.text.Editable
@@ -13,24 +12,20 @@ import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.databinding.DailogCustomAmountBinding
-import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.AmountTextWatcher
-import com.android.pos.utils.MethodUtils
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.NumberFormat
-import java.util.*
 
 
 @AndroidEntryPoint
 class CustomAmountFragment : DialogFragment() {
 
     private lateinit var binding: DailogCustomAmountBinding
+    var totalprice: Double = 0.0
 
     companion object {
         fun newInstance() = CustomAmountFragment()
     }
-
-    var totalprice: Double = 0.0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -39,34 +34,25 @@ class CustomAmountFragment : DialogFragment() {
         binding = DataBindingUtil.inflate(inflater, R.layout.dailog_custom_amount, container, false)
         binding.lifecycleOwner = this
 
+
         binding.edtAmount.addTextChangedListener(AmountTextWatcher(binding.edtAmount, false))
         totalprice = requireArguments().getDouble("totalprice")
-        binding.txtAmount.setText(MethodUtils.roundOffAmount(totalprice) + " Cash")
+        binding.txtAmount.text = "$ " + String.format(
+            "%.2f",
+            totalprice
+        ) + " Cash"
+
         binding.imgBack.setOnClickListener {
-            findNavController().navigateUp()
+            dismiss()
         }
         binding.txtSend.setOnClickListener {
-            val amount = binding.edtAmount.text.toString().replace("$","").toDouble()
-            if (amount <totalprice) {
-                AlertUtils.showCustomAlert(
-                    requireActivity(),
-                    "You can't enter les than Total Amount"
-                )
-
-            } else {
-                goBack(amount)
+            val result = Bundle().apply {
+                putDouble("amount", binding.edtAmount.text.toString().replace("$", "").toDouble())
             }
+            setFragmentResult("request_for_customAmount", result)
+            findNavController().navigateUp()
         }
-
         return binding.root
-    }
-
-    fun goBack(amount: Double) {
-        val result = Bundle().apply {
-            putDouble("amount", amount)
-        }
-        setFragmentResult("request_for_customAmount", result)
-        findNavController().navigateUp()
     }
 
     override fun onResume() {

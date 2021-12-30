@@ -172,7 +172,11 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         prefProvider.setValue(Constants.SPLIT_PAY_TYPE, "")
         isOrderUpdate = requireArguments().getBoolean("update")
         prefProvider.setValue("PaidAmount", "")
-        prefProvider.setValue("WholeTotalPrice", "")
+        prefProvider.setValue("WholeTotal", "")
+        prefProvider.setValueInt("cardCount", 0)
+        prefProvider.setValue(
+            "cashDiscountSurcharge", ""
+        )
         optionType = prefProvider.getValue(OPTION_TYPE, "")
         if (isOrderUpdate) {
             orderId = requireArguments().getInt("orderId")
@@ -1406,7 +1410,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         }
 
 
-        MethodUtils.setPriceTextView(txtTotalAmount, amountToBepaid - cartList[0].discountPrice)
+        MethodUtils.setPriceTextView(txtTotalAmount, amountToBepaid - viewModel.totalDiscount)
     }
 
     private fun resetTabbySearch(model: CategorySearchData) {
@@ -2394,6 +2398,17 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     "cashDiscountSurcharge",
                     MethodUtils.calculateCashDiscount(final_total, prefProvider, requireContext())
                 )
+
+                if (MethodUtils.isEnableCashDiscount(requireContext())) {
+                    prefProvider.setValue(
+                        "cashDiscountSurCharge",
+                        MethodUtils.calculateCashDiscount(
+                            final_total,
+                            prefProvider,
+                            requireContext()
+                        ).toString()
+                    )
+                }
                 bundle.putDouble("subTotalPrice", viewModel.subTotalPrice)
                 bundle.putDouble("totalTax", viewModel.totalTax)
                 bundle.putDouble(
@@ -3581,11 +3596,22 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         binding.layoutCart.txtOrderType.text = label
     }
 
+    private fun addItemInCartThroughBarcode(item: TbItem?) {
+        item?.let {
+            ItemPopup(item, true)
+        }
+    }
+
     override fun scannerBarcodeEvent(barcodeData: ByteArray?, barcodeType: Int, scannerID: Int) {
         Log.e(TAG, "scannerBarcodeEvent: ${barcodeData?.let { String(it) }}")
 
         //Check product code in db
         val productCode = barcodeData?.let { String(it) }
+
+        if (productCode.isNullOrEmpty()) {
+            viewModel.showErrorMessage("Product code is not available !!")
+            return
+        }
         productCode?.let { viewModel.getItemByProductCode(it) }
 
         viewModel.getItemByProductCode(productCode ?: "")?.observe(viewLifecycleOwner, {
@@ -3596,6 +3622,11 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             //data found. | Add in cart
                             if (findNavController().currentDestination?.id == R.id.dashboardCategoryNew) {
                                 //add item in the cart
+                                if (prefProvider.getValue(ORDER_TYPE, "").trim() != "") {
+                                    addItemInCartThroughBarcode(resource.data)
+                                } else {
+                                    orderTypeDialog()
+                                }
                             }
                         } else {
                             //data not found. Create New Item
