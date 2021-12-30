@@ -21,7 +21,6 @@ import com.android.pos.data.model.requestModel.CreateQueuePrinterRequestModel
 import com.android.pos.data.model.requestModel.OrderAttributeRequestModel
 import com.android.pos.data.model.requestModel.SpitByOrderPaymentModel
 import com.android.pos.data.model.requestModel.SpitByOrderRequestModel
-import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE
@@ -190,6 +189,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         callbackSetup()
         observeShowProgress()
         observeData()
+        observeQueueStart()
         queuePrinterObserver()
 
 
@@ -662,7 +662,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.linearMore -> {
-                createQueuePrinter()
+                //createQueuePrinter()
             }
 
             R.id.imgBack -> {
@@ -830,7 +830,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
     }
 
-    private fun createQueuePrinter() {
+    private fun createQueuePrinter(createOrder: CreateOrderResponse) {
         val listPrinter: List<Int> = listOf()
         val orderRequest = cartList?.let {
 
@@ -862,7 +862,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             terminal_id = prefProvider.getValueInt(TERMINAL_ID, 0)
 
         )
-        viewModel.createQueuePrinter(createRequest)
+        viewModel.createQueuePrinter(createRequest, createOrder)
     }
 
     private fun makePaymentCreditCard() {
@@ -1155,6 +1155,15 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
     }
 
+    private fun observeQueueStart() {
+        viewModel.QueueStart.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+                createQueuePrinter(it)
+
+
+            }
+        })
+    }
 
     private fun observeData() {
 
