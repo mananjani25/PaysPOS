@@ -21,6 +21,7 @@ import com.android.pos.data.model.requestModel.CreateQueuePrinterRequestModel
 import com.android.pos.data.model.requestModel.OrderAttributeRequestModel
 import com.android.pos.data.model.requestModel.SpitByOrderPaymentModel
 import com.android.pos.data.model.requestModel.SpitByOrderRequestModel
+import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE
 import com.android.pos.data.remote.Constants.LOCATION_ID
