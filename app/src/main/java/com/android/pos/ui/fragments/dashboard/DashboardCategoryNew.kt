@@ -3613,41 +3613,45 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             return
         }
         productCode?.let { viewModel.getItemByProductCode(it) }
+        try {
 
-        viewModel.getItemByProductCode(productCode ?: "")?.observe(viewLifecycleOwner, {
-            it?.let { resource ->
-                when (resource.status) {
-                    Status.SUCCESS -> {
-                        if (resource.data != null) {
-                            //data found. | Add in cart
-                            if (findNavController().currentDestination?.id == R.id.dashboardCategoryNew) {
-                                //add item in the cart
-                                if (prefProvider.getValue(ORDER_TYPE, "").trim() != "") {
-                                    addItemInCartThroughBarcode(resource.data)
-                                } else {
-                                    orderTypeDialog()
+            viewModel.getItemByProductCode(productCode ?: "")?.observe(viewLifecycleOwner, {
+                it?.let { resource ->
+                    when (resource.status) {
+                        Status.SUCCESS -> {
+                            if (resource.data != null) {
+                                //data found. | Add in cart
+                                if (findNavController().currentDestination?.id == R.id.dashboardCategoryNew) {
+                                    //add item in the cart
+                                    if (prefProvider.getValue(ORDER_TYPE, "").trim() != "") {
+                                        addItemInCartThroughBarcode(resource.data)
+                                    } else {
+                                        orderTypeDialog()
+                                    }
+                                }
+                            } else {
+                                //data not found. Create New Item
+                                if (findNavController().currentDestination?.id == R.id.dashboardCategoryNew) {
+                                    val bundle = Bundle()
+                                    bundle.putString("productCode", productCode ?: "")
+                                    findNavController().navigate(
+                                        R.id.action_dashboardCategoryNew_to_createItem,
+                                        bundle
+                                    )
                                 }
                             }
-                        } else {
-                            //data not found. Create New Item
-                            if (findNavController().currentDestination?.id == R.id.dashboardCategoryNew) {
-                                val bundle = Bundle()
-                                bundle.putString("productCode", productCode ?: "")
-                                findNavController().navigate(
-                                    R.id.action_dashboardCategoryNew_to_createItem,
-                                    bundle
-                                )
-                            }
+                        }
+                        Status.ERROR -> {
+                        }
+                        Status.LOADING -> {
+
                         }
                     }
-                    Status.ERROR -> {
-                    }
-                    Status.LOADING -> {
-
-                    }
                 }
-            }
-        })
+            })
+        }catch (e:Exception){
+            e.printStackTrace()
+        }
     }
 
     override fun scannerFirmwareUpdateEvent(firmwareUpdateEvent: FirmwareUpdateEvent?) {
