@@ -1132,8 +1132,8 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
 
     private fun initializeDcsSdk() {
         MainApplication.sdkHandler?.dcssdkEnableAvailableScannersDetection(true)
-        /*MainApplication.sdkHandler?.dcssdkSetOperationalMode(DCSSDK_MODE.DCSSDK_OPMODE_BT_NORMAL)
-        MainApplication.sdkHandler?.dcssdkSetOperationalMode(DCSSDK_MODE.DCSSDK_OPMODE_BT_LE)*/
+        MainApplication.sdkHandler?.dcssdkSetOperationalMode(DCSSDK_MODE.DCSSDK_OPMODE_BT_NORMAL)
+        MainApplication.sdkHandler?.dcssdkSetOperationalMode(DCSSDK_MODE.DCSSDK_OPMODE_BT_LE)
         MainApplication.sdkHandler?.dcssdkSetOperationalMode(DCSSDK_MODE.DCSSDK_OPMODE_USB_CDC)
         MainApplication.sdkHandler?.dcssdkSetOperationalMode(DCSSDK_MODE.DCSSDK_OPMODE_SNAPI)
     }
@@ -1230,7 +1230,8 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
         /*val bluetoothAdapter: BluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
         val address = bluetoothAdapter.address
         Log.e("!_@_ MAC :", address.toString())*/
-        return "04:c8:07:be:ac:e2"
+        //return "E0:D0:83:0B:B9:7A"
+        return "0c:25:76:b4:0b:95" // Sunmi Bluetooth MAC Address
         //0c:25:76:b4:0b:95
 //        return "0c:25:76:b4:0b:95"
     }
