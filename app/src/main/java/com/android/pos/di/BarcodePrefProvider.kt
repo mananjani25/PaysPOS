@@ -2,9 +2,10 @@ package com.android.pos.di
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.android.pos.MainApplication
 import com.android.pos.R
-import com.android.pos.data.entities.TbCustomer
 import com.android.pos.data.remote.Constants
+import com.android.pos.utils.scanner.helpers.AvailableScanner
 import com.google.gson.Gson
 import com.zebra.scannercontrol.DCSScannerInfo
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -117,14 +118,22 @@ class BarcodePrefProvider @Inject constructor(@ApplicationContext context: Conte
         sharedPreferences = null
     }
 
-    fun saveScannerData(scannerInfo: DCSScannerInfo?) {
-        setValue(Constants.PREF_CURRENT_SCANNER, Gson().toJson(scannerInfo))
+    fun saveScannerId(scannerId: Int?) {
+        setValueInt(Constants.PREF_CURRENT_SCANNER_ID, scannerId?:MainApplication.SCANNER_ID_NONE)
     }
 
-    fun getScannerData(): DCSScannerInfo? {
+    fun getScannerId(): Int {
+        return getValueInt(Constants.PREF_CURRENT_SCANNER_ID, MainApplication.SCANNER_ID_NONE)
+    }
+
+    fun saveScannerData(availableScanner: AvailableScanner?) {
+        setValue(Constants.PREF_CURRENT_SCANNER, Gson().toJson(availableScanner))
+    }
+
+    fun getScannerData(): AvailableScanner? {
         return Gson().fromJson(
             getValue(Constants.PREF_CURRENT_SCANNER, ""),
-            DCSScannerInfo::class.java
+            AvailableScanner::class.java
         )
     }
 
