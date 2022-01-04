@@ -1,6 +1,8 @@
 package com.android.pos.ui.activities
 
 import android.annotation.SuppressLint
+import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothManager
 import android.content.*
 import android.content.pm.PackageManager
 import android.content.res.Configuration
@@ -23,6 +25,7 @@ import com.google.gson.Gson
 import com.zebra.scannercontrol.*
 import com.zebra.scannercontrol.DCSSDKDefs.*
 import dagger.hilt.android.AndroidEntryPoint
+import java.net.NetworkInterface
 import java.util.*
 import javax.inject.Inject
 
@@ -1225,15 +1228,56 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
     }
 
     /*TODO permission*/
-    @SuppressLint("MissingPermission")
+
     private fun getMacAddress(): String? {
         /*val bluetoothAdapter: BluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
         val address = bluetoothAdapter.address
         Log.e("!_@_ MAC :", address.toString())*/
-        //return "E0:D0:83:0B:B9:7A"
-        return "0c:25:76:b4:0b:95" // Sunmi Bluetooth MAC Address
+         return "E0:D0:83:0B:B9:7A"
+        //getDeviceMacAddress()
+        //Log.e(TAG, "getMacAddress:  ${getMacAddr()}")
+       // return "A8:76:50:56:6C:51"
+        // return "0c:25:76:b4:0b:95" // Sunmi Bluetooth MAC Address
         //0c:25:76:b4:0b:95
-//        return "0c:25:76:b4:0b:95"
+           // return "0c:25:76:b4:0b:95"
+    }
+
+    @SuppressLint("ServiceCast")
+    private fun getDeviceMacAddress() {
+        runOnUiThread {
+            var bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+            Log.e(TAG,"Default:  ${bluetoothAdapter.address}")
+            val ba: BluetoothAdapter
+            ba = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                (getSystemService(BLUETOOTH_SERVICE) as BluetoothManager).adapter
+            } else {
+                BluetoothAdapter.getDefaultAdapter()
+            }
+            Log.e("TEST", "" + ba.address)
+        }
+    }
+
+    open fun getMacAddr(): String? {
+        try {
+            val all: List<NetworkInterface> =
+                Collections.list(NetworkInterface.getNetworkInterfaces())
+            Log.e(TAG, "allList:  ${Gson().toJson(all)}")
+            for (nif in all) {
+                Log.e(TAG, " getName: "+nif.name)
+                if (nif.getName().toString().lowercase() != "dummy0".lowercase()) continue
+                val macBytes: ByteArray = nif.getHardwareAddress() ?: return ""
+                val res1 = java.lang.StringBuilder()
+                for (b in macBytes) {
+                    res1.append(String.format("%02X:", b))
+                }
+                if (res1.length > 0) {
+                    res1.deleteCharAt(res1.length - 1)
+                }
+                return res1.toString()
+            }
+        } catch (ex: java.lang.Exception) {
+        }
+        return "02:00:00:00:00:00"
     }
 
 
