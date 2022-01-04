@@ -162,12 +162,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         isDineIn = requireArguments().getBoolean("isDineIn")
         if (isDineIn) {
             totalPrice = requireArguments().getDouble("totalPrice")
-            paymentAmount = requireArguments().getDouble("paymentAmount")
+            paidAmount = requireArguments().getDouble("paymentAmount")
             paidAmountValue = requireArguments().getDouble("paidAmountValue")
             WholetotalPrice = requireArguments().getDouble("WholetotalPrice")
             orderID = requireArguments().getInt("orderID")
             isGuestPaymentTotal = requireArguments().getBoolean("isGuestPaymentTotal")
-
             isCustomCash = requireArguments().getBoolean("isCustomCash")
             isSplitByNo = requireArguments().getBoolean("isSplitByNo")
             isSplitByAmount = requireArguments().getBoolean("isSplitByAmount")
@@ -184,6 +183,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             splitValue = requireArguments().getInt("splitValue")
             isSpilt = requireArguments().getBoolean("isSpilt")
             isSplitByNo = requireArguments().getBoolean("isSplitByNo")
+            isCustomCash = requireArguments().getBoolean("isCustomCash")
             isSplitByAmount = requireArguments().getBoolean("isSplitByAmount")
             paymentType = requireArguments().getString("paymentType", "")
             dis_charge_value = requireArguments().getDouble("dis_charge_value", 0.0)
@@ -208,10 +208,16 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 )
                 binding.txtTitle.text =
                     MethodUtils.roundOffAmount(paidAmount)
-                if (remainingAmount < paidAmount) {
+                if (isSplitByAmount) {
                     binding.txtChangeAmount.text =
-                        MethodUtils.roundOffAmount((paidAmount - dis_charge_value) - remainingAmount) + " Change"
+                        MethodUtils.roundOffAmount(0.0) + " Change"
+                } else {
+                    if (remainingAmount < paidAmount) {
+                        binding.txtChangeAmount.text =
+                            MethodUtils.roundOffAmount((paidAmount - dis_charge_value) - remainingAmount) + " Change"
+                    }
                 }
+
                 binding.txtPaymentAmount.text = "Out of " + MethodUtils.roundOffAmount(paidAmount)
             } else {
                 binding.llHome.visibility = View.VISIBLE
@@ -227,10 +233,74 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 binding.txtTitle.text =
                     MethodUtils.roundOffAmount(paidAmount)
 
-                if (remainingAmount < 0) {
+                if (isCustomCash) {
                     binding.txtChangeAmount.text =
                         MethodUtils.roundOffAmount(remainingAmount) + " Change"
+                } else {
+                    if (remainingAmount < 0) {
+                        binding.txtChangeAmount.text =
+                            MethodUtils.roundOffAmount(remainingAmount) + " Change"
+                    }
                 }
+
+                binding.txtPaymentAmount.text =
+                    "Out of " + MethodUtils.roundOffAmount(paidAmount)
+
+
+            }
+        }else{
+            if (isSpilt) {
+                binding.constraintSplit.visibility = View.VISIBLE
+                binding.viewSplitLine.visibility = View.VISIBLE
+                binding.txtRemainingAmount.visibility = View.VISIBLE
+                binding.txtRemainingAmountLabel.visibility = View.VISIBLE
+                binding.txtRemainingAmount.text = String.format("%.2f", remainingAmount)
+                binding.llHome.visibility = View.GONE
+                binding.llNoReceipt.text = "Next Payment"
+                binding.txtHome.text = "Next Payment"
+                var title = "Split "
+                viewModel.addSplitToDatabase(
+                    title,
+                    paidAmount,
+                    remainingAmount
+                )
+                binding.txtTitle.text =
+                    MethodUtils.roundOffAmount(paidAmount)
+                if (isSplitByAmount) {
+                    binding.txtChangeAmount.text =
+                        MethodUtils.roundOffAmount(0.0) + " Change"
+                } else {
+                    if (remainingAmount < paidAmount) {
+                        binding.txtChangeAmount.text =
+                            MethodUtils.roundOffAmount((paidAmount - dis_charge_value) - remainingAmount) + " Change"
+                    }
+                }
+
+                binding.txtPaymentAmount.text = "Out of " + MethodUtils.roundOffAmount(paidAmount)
+            } else {
+                binding.llHome.visibility = View.VISIBLE
+                binding.txtHome.visibility = View.VISIBLE
+                binding.llNoReceipt.visibility = View.VISIBLE
+                binding.viewSplitLine.visibility = View.GONE
+                binding.constraintSplit.visibility = View.GONE
+                binding.txtRemainingAmount.visibility = View.GONE
+                binding.txtRemainingAmountLabel.visibility = View.GONE
+                binding.llNoReceipt.text = getString(R.string.no_receipt)
+                binding.txtHome.text = getString(R.string.tv_home)
+                viewModel.deleteSplitDb()
+                binding.txtTitle.text =
+                    MethodUtils.roundOffAmount(paidAmount)
+
+                if (isCustomCash) {
+                    binding.txtChangeAmount.text =
+                        MethodUtils.roundOffAmount(remainingAmount) + " Change"
+                } else {
+                    if (remainingAmount < 0) {
+                        binding.txtChangeAmount.text =
+                            MethodUtils.roundOffAmount(remainingAmount) + " Change"
+                    }
+                }
+
                 binding.txtPaymentAmount.text =
                     "Out of " + MethodUtils.roundOffAmount(paidAmount)
 
@@ -382,7 +452,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     private fun moveToDashboard() {
 
-        if (isSpilt || isCustomCash) {
+        if (isSpilt) {
             if (isDineIn) {
                 val navController = findNavController()
                 var bundle = Bundle()
@@ -401,10 +471,16 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 bundle.putBoolean("isNextPayment", true)
                 bundle.putDouble("splitPaidAmount", paymentAmount)
                 bundle.putDouble("remainingAmount", remainingAmount)
-                bundle.putInt("splitvalue", splitValue)
-                bundle.putBoolean("isSplitByNo", isSplitByNo)
+                if (isSplitByAmount) {
+                    bundle.putInt("splitvalue", 2)
+                    bundle.putBoolean("isSplitByNo", true)
+                    bundle.putBoolean("isSplitByAmount", false)
+                } else {
+                    bundle.putInt("splitvalue", splitValue)
+                    bundle.putBoolean("isSplitByNo", isSplitByNo)
+                    bundle.putBoolean("isSplitByAmount", isSplitByAmount)
+                }
                 bundle.putBoolean("isCustomCash", isCustomCash)
-                bundle.putBoolean("isSplitByAmount", isSplitByAmount)
                 navController.previousBackStackEntry?.savedStateHandle?.set("data", bundle)
                 navController.popBackStack()
             }

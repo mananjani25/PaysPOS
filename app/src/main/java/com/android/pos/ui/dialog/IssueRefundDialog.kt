@@ -180,7 +180,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
             paymentOrderDetailsResponse.data.order.order_items,
             paymentOrderDetailsResponse.data.service_charge_amount,
             paymentOrderDetailsResponse.data.cash_discount_or_surcharge,
-            paymentOrderDetailsResponse.data.cash_discount_type,
+            if (paymentOrderDetailsResponse.data.cash_discount_type != null) paymentOrderDetailsResponse.data.cash_discount_type else "",
             paymentOrderDetailsResponse.data.payment_type
         )
 

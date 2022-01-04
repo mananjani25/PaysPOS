@@ -12,6 +12,7 @@ import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.databinding.DailogCustomAmountBinding
+import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.AmountTextWatcher
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.NumberFormat
@@ -46,11 +47,21 @@ class CustomAmountFragment : DialogFragment() {
             dismiss()
         }
         binding.txtSend.setOnClickListener {
-            val result = Bundle().apply {
-                putDouble("amount", binding.edtAmount.text.toString().replace("$", "").toDouble())
+            var custom_amount = binding.edtAmount.text.toString().replace("$", "").toDouble()
+            if (custom_amount > totalprice) {
+                val result = Bundle().apply {
+                    putDouble("amount", custom_amount)
+                }
+                setFragmentResult("request_for_customAmount", result)
+                findNavController().navigateUp()
+            } else {
+                AlertUtils.showCustomAlertWithListenerWithOK(
+                    requireContext(),
+                    "Please Enter Amount Greater than Actual Amount"
+                ) { _, _ ->
+                }
             }
-            setFragmentResult("request_for_customAmount", result)
-            findNavController().navigateUp()
+
         }
         return binding.root
     }
