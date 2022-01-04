@@ -225,7 +225,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 MethodUtils.setPriceTextView(binding.txtTotalAmount, remainingAmount)
                 getCashPaymentOptionList(remainingAmount)
 
-                isSplitByNo = false
+//                isSplitByNo = false
+
 
             } else if (isSplitByAmount) {
                 if (MethodUtils.isEnableCashDiscount(requireContext())) {
@@ -473,8 +474,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 } else {
                     splitAfterAmount = ((totalPrice + tipAmount)) / splitValue
                 }
-                var dividedCashDiscount = cashDiscountSurcharge / splitValue
-                var remainingCashDiscount = cashDiscountSurcharge - dividedCashDiscount
+                val dividedCashDiscount = cashDiscountSurcharge / splitValue
+                val remainingCashDiscount = cashDiscountSurcharge - dividedCashDiscount
 
                 prefProvider.setValue(
                     "cashDiscountSurcharge",
@@ -968,6 +969,16 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 orderOfflineId
             )
 
+        val orderId = prefProvider.getValueInt("ORDER_ID", -1)
+
+//        if (orderId != -1) {
+//            val availableSplitValue = prefProvider.getValueInt(SPLIT_NO, -1)
+//            if (availableSplitValue != -1) {
+//                splitValue = availableSplitValue
+//                isSplitByNo = true
+//            }
+//        }
+
         if (isSplitByNo) {
 
             val myRequest = cartList?.let {
@@ -994,8 +1005,6 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             }
             if (myRequest != null) {
                 viewModel.totalPayAmount((paymentAmount))
-
-                val orderId = prefProvider.getValueInt("ORDER_ID", -1)
 
                 if (orderId == -1) {
                     viewModel.submit(myRequest)
@@ -1057,7 +1066,6 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 }
                 if (myRequest != null) {
                     viewModel.totalPayAmount(splitAfterAmount)
-                    val orderId = prefProvider.getValueInt("ORDER_ID", -1)
                     if (orderId == -1) {
                         viewModel.submit(myRequest)
                     } else {
@@ -1106,7 +1114,6 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             }
             if (myRequest != null) {
                 viewModel.totalPayAmount(totalPrice + tipAmount)
-                val orderId = prefProvider.getValueInt("ORDER_ID", -1)
                 if (orderId == -1) {
                     viewModel.submit(myRequest)
                 } else {
@@ -1128,6 +1135,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 }
             }
         } else {
+
 
             val myRequest = cartList?.let {
 
@@ -1152,7 +1160,6 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             }
             if (myRequest != null) {
                 viewModel.totalPayAmount(paymentAmount)
-                val orderId = prefProvider.getValueInt("ORDER_ID", -1)
                 if (orderId == -1) {
                     viewModel.submit(myRequest)
                 } else {
@@ -1366,16 +1373,16 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                             isSplitByNo -> {
                                 val bundle = Bundle()
                                 bundle.putDouble("PaidAmount", splitAfterAmount)
-                                var wholetotalPriceTemp = String.format(
+                                val wholeTotalPriceTemp = String.format(
                                     "%.2f",
                                     prefProvider.getValue("WholeTotal", "").toDouble()
                                 )
 
-                                bundle.putDouble("WholetotalPrice", wholetotalPriceTemp.toDouble())
+                                bundle.putDouble("WholetotalPrice", wholeTotalPriceTemp.toDouble())
                                 var remainingAmount = 0.0
                                 remainingAmount = String.format(
                                     "%.2f",
-                                    wholetotalPriceTemp.toDouble() - splitAfterAmount
+                                    wholeTotalPriceTemp.toDouble() - splitAfterAmount
                                 ).toDouble()
                                 prefProvider.setValue(
                                     "WholeTotal",
@@ -1392,11 +1399,15 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                 if (splitValue != -1) {
                                     if (WholetotalPrice <= splitAfterAmount || remainingAmount == 0.0) {
                                         bundle.putBoolean("isSpilt", false)
+
+                                        clearOrder()
+
                                     } else {
                                         bundle.putBoolean("isSpilt", true)
                                     }
                                 } else {
                                     bundle.putBoolean("isSpilt", false)
+                                    clearOrder()
                                 }
                                 bundle.putBoolean("isSplitByNo", isSplitByNo)
                                 bundle.putBoolean("isSplitByAmount", isSplitByAmount)
@@ -1441,6 +1452,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                 bundle.putInt("splitValue", splitValue)
                                 if (WholetotalPrice <= splitAfterAmount || remainingAmount == 0.0) {
                                     bundle.putBoolean("isSpilt", false)
+                                    clearOrder()
+
                                 } else {
                                     bundle.putBoolean("isSpilt", true)
                                 }
@@ -1520,6 +1533,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                 )
 
                                 prefProvider.setValueInt("ORDER_ID", -1)
+                                prefProvider.setValueInt(SPLIT_NO, -1)
                             }
                         }
                     }
@@ -1527,6 +1541,11 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             }
         })
 
+    }
+
+    private fun clearOrder() {
+        prefProvider.setValueInt("ORDER_ID", -1)
+        prefProvider.setValueInt(SPLIT_NO, -1)
     }
 
     private fun queuePrinterObserver() {
