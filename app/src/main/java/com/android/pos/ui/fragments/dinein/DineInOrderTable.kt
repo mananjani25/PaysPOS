@@ -294,12 +294,20 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             if (MethodUtils.isEnableCashDiscount(requireContext())) {
                 var divideGuest = totalGuestCount - paidGuestAmount
-                divideCashDiscount =
-                    MethodUtils.calculateCashDiscount(
+                if (paidGuestAmount == 0) {
+                    divideCashDiscount = MethodUtils.calculateCashDiscount(
                         toFinalAmt,
                         prefProvider,
                         requireContext()
-                    ) / divideGuest
+                    )
+                } else {
+                    divideCashDiscount =
+                        MethodUtils.calculateCashDiscount(
+                            toFinalAmt,
+                            prefProvider,
+                            requireContext()
+                        ) / divideGuest
+                }
             } else {
                 divideCashDiscount = 0.0
             }
@@ -332,7 +340,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             bundle.putDouble("subTotalPrice", MethodUtils.roundOffAmountDouble(subTotalDInin))
             bundle.putDouble("totalTax", MethodUtils.roundOffAmountDouble(finalTaxAmt))
             bundle.putParcelable("model", model)
-            bundle.putDouble("divideCashDiscount", MethodUtils.roundOffAmountDouble(divideCashDiscount))
+            bundle.putDouble(
+                "divideCashDiscount",
+                MethodUtils.roundOffAmountDouble(divideCashDiscount)
+            )
             bundle.putParcelable("floorPlan", floorPlanModel)
             bundle.putDouble("totalServiceCharge", MethodUtils.roundOffAmountDouble(serviceCharge))
             bundle.putDouble("totalDiscount", MethodUtils.roundOffAmountDouble(totalDiscount))
@@ -750,8 +761,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         subTotalGuest: Double,
         totalGuest: Double,
         taxGuest: Double,
-        serviceChargeGuest: Double,
-        cashSurcharge: Double
+        serviceChargeGuest: Double
     ) {
 
         //New Drag and Drop
@@ -782,7 +792,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         }
         subTotal += dineInTableAdapter.getList().get(0).guestDividedAmt
 
-        var total = subTotal + totalTax
+
+        var divideCashDiscount = MethodUtils.calculateCashDiscount(
+            toFinalAmt,
+            prefProvider,
+            requireContext()
+        ) / totalGuestCount
 
 
         val paymentAttr = GuestPaymentAttributes().apply {
@@ -792,7 +807,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             cardType = ""
             cashDiscount = 0.0
             cashDiscountFee = 0.0
-            cash_discount_or_surcharge = cashSurcharge / totalGuestCount
+            cash_discount_or_surcharge = divideCashDiscount
             employeeId = prefProvider.getValueInt(EMPLOYEE_ID, 0)
             taxAmount = taxGuest
             subTotalPrice = subTotalGuest
@@ -809,7 +824,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 cardType = ""
                 cashDiscount = 0.0
                 cashDiscountFee = 0.0
-                cash_discount_or_surcharge = cashSurcharge / totalGuestCount
+                cash_discount_or_surcharge = divideCashDiscount
                 employeeId = prefProvider.getValueInt(EMPLOYEE_ID, 0)
                 taxAmount = taxGuest
                 subTotalPrice = subTotalGuest
@@ -825,19 +840,16 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         }
         var dineInOrderModel = DineInPaymentUpdateModel()
         dineInOrderModel.id = orderId
-        // dineInOrderModel.paymentAttributes = paymentAttr
+
 
         var modelReq = DineInOrderPayment(dineInOrderModel)
-
-        //var splitModel = SpitByOrderRequestModel(orderId,completed_all_payments = false,paymentAttr,null)
-
         var model = GuestPaymentRequest(paymentAttr, dineInOrderModel)
 
         val bundle = Bundle()
         dineInModel.id?.let { bundle.putInt("id", it) }
         bundle.putParcelable("cartList", cartList)
         bundle.putDouble("totalPrice", totalGuest)
-        bundle.putDouble("cashSurcharge", cashSurcharge)
+        bundle.putDouble("divideCashDiscount", divideCashDiscount)
         bundle.putInt("totalGuestCount", totalGuestCount)
         bundle.putInt("paidGuestCount", paidGuestAmount)
         bundle.putDouble("subTotalPrice", subTotalGuest)
@@ -848,7 +860,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         bundle.putParcelable("orderPayment", modelReq)
         orderId?.let { bundle.putInt("orderId", it) }
         bundle.putBoolean("isGuestPay", true)
-
         var wholeTableAmt = 0.0
         var paidAmount = 0.0
         for (i in 0 until adapterList.size) {

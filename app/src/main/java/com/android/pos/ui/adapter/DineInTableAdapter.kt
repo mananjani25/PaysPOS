@@ -234,9 +234,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                     MethodUtils.roundOffAmountDouble(guestSubTotal + list.get(0).wholeTableSubTotal),
                     MethodUtils.roundOffAmountDouble(finalAmt),
                     MethodUtils.roundOffAmountDouble(totalTaxAmt + list.get(0).wholeTableTax),
-                    MethodUtils.roundOffAmountDouble(totalServiceCharge + list.get(0).wholeTableSurTax),
-                    list.get(0).cashSurchargeDiscount,
-                )
+                    MethodUtils.roundOffAmountDouble(totalServiceCharge + list.get(0).wholeTableSurTax))
             }
 
 
@@ -552,7 +550,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             subTotal: Double,
             total: Double,
             tax: Double,
-            serviceCharge: Double, cashSurcharge: Double
+            serviceCharge: Double
         )
 
         fun onSendItemToKitchen(item: TbItem)

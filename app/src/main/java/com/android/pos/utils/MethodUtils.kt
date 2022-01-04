@@ -273,7 +273,7 @@ class MethodUtils {
                     if (rateorAmount.toDouble() >= 100) {
                         return finalAmount
                     } else {
-                        return (finalAmount * 100 / rateorAmount.toDouble())
+                        return (finalAmount * rateorAmount.toDouble() / 100)
                     }
                 }
             }
