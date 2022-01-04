@@ -292,14 +292,26 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             // subTotal += dineInTableAdapter.getList().get(0).guestDividedAmt
 
 
+            if (MethodUtils.isEnableCashDiscount(requireContext())) {
+                var divideGuest = totalGuestCount - paidGuestAmount
+                divideCashDiscount =
+                    MethodUtils.calculateCashDiscount(
+                        toFinalAmt,
+                        prefProvider,
+                        requireContext()
+                    ) / divideGuest
+            } else {
+                divideCashDiscount = 0.0
+            }
+
             var model = GuestPaymentRequest(
                 GuestPaymentAttributes().apply {
-                    amount =
-                        MethodUtils.roundOffAmountDouble(toFinalAmt)
+                    amount = MethodUtils.roundOffAmountDouble(toFinalAmt)
                     cardName = ""
                     cardNumber = ""
                     cardType = ""
                     cashDiscount = 0.0
+                    cash_discount_or_surcharge = divideCashDiscount
                     cashDiscountFee = 0.0
                     employeeId = prefProvider.getValueInt(EMPLOYEE_ID, 0)
                     taxAmount = MethodUtils.roundOffAmountDouble(finalTaxAmt)
@@ -315,57 +327,15 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 },
                 DineInPaymentUpdateModel()
             )
-
-
             val bundle = Bundle()
-            if (optionType == "CashDiscount") {
-                if (paidGuestAmount > 0) {
-                    bundle.putDouble(
-                        "totalPrice",
-                        MethodUtils.roundOffAmountDouble(
-                            toFinalAmt - (divideCashDiscount * (totalGuestCount - paidGuestAmount))
-                        )
-                    )
-                } else {
-                    bundle.putDouble(
-                        "totalPrice",
-                        MethodUtils.roundOffAmountDouble(
-                            toFinalAmt - divideCashDiscount
-                        )
-                    )
-                }
-            } else {
-                bundle.putDouble(
-                    "totalPrice",
-                    MethodUtils.roundOffAmountDouble(
-                        toFinalAmt
-                    )
-                )
-            }
-            bundle.putDouble(
-                "subTotalPrice",
-                MethodUtils.roundOffAmountDouble(subTotalDInin)
-            )
+            bundle.putDouble("totalPrice", MethodUtils.roundOffAmountDouble(toFinalAmt))
+            bundle.putDouble("subTotalPrice", MethodUtils.roundOffAmountDouble(subTotalDInin))
             bundle.putDouble("totalTax", MethodUtils.roundOffAmountDouble(finalTaxAmt))
             bundle.putParcelable("model", model)
-            if (paidGuestAmount > 0) {
-                bundle.putDouble(
-                    "divideCashDiscount",
-                    divideCashDiscount * (totalGuestCount - paidGuestAmount)
-                )
-            } else {
-                bundle.putDouble(
-                    "divideCashDiscount",
-                    divideCashDiscount
-                )
-            }
+            bundle.putDouble("divideCashDiscount", MethodUtils.roundOffAmountDouble(divideCashDiscount))
             bundle.putParcelable("floorPlan", floorPlanModel)
-            bundle.putBoolean("isTotalPayment", true)
-            bundle.putDouble(
-                "totalServiceCharge",
-                MethodUtils.roundOffAmountDouble(serviceCharge)
-            )
-            bundle.putDouble("totalDiscount", totalDiscount)
+            bundle.putDouble("totalServiceCharge", MethodUtils.roundOffAmountDouble(serviceCharge))
+            bundle.putDouble("totalDiscount", MethodUtils.roundOffAmountDouble(totalDiscount))
             bundle.putBoolean("isTotalPayment", true)
             bundle.putBoolean("isLastPayment", true)
 
@@ -515,25 +485,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         }
 
-        binding.btnPay.setOnClickListener {
-
-
-            val bundle = Bundle()
-            bundle.putDouble("totalPrice", totalPrice)
-            bundle.putDouble("subTotalPrice", subTotalPrice)
-            bundle.putDouble("totalTax", totalTax)
-            bundle.putDouble("totalDiscount", totalDiscount)
-            bundle.putDouble("totalServiceCharge", totalServiceCharge)
-            bundle.putString("future_delivery_date", future_delivery_date)
-            bundle.putString("future_delivery_time", future_delivery_time)
-            bundle.putBoolean("update", false)
-
-            bundle.putParcelable("cartList", cartList)
-
-            findNavController().navigate(R.id.action_dineInOrderTable_to_paymentFragment, bundle)
-
-        }
-
         /*  binding.imgClose.setOnClickListener {
               findNavController().popBackStack()
           }*/
@@ -553,52 +504,26 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         val txtDiscount: AppCompatTextView = popupView.findViewById(R.id.txtDiscount)
         val txtTotalAmount: AppCompatTextView = popupView.findViewById(R.id.txtTotalAmount)
         val txtTotalTax: AppCompatTextView = popupView.findViewById(R.id.txtTotalTax)
-        val txttotalCashDiscount: AppCompatTextView = popupView.findViewById(R.id.txtcashDiscount)
         val txtTotalcashAdj: AppCompatTextView = popupView.findViewById(R.id.txtnoncashadj)
         val chkLoyaltyAmount: CheckBox = popupView.findViewById(R.id.chkLoyaltyAmount)
         val groupLoyalty: Group = popupView.findViewById(R.id.groupLoyalty)
         chkLoyaltyAmount.visibility = View.GONE
         groupLoyalty.visibility = View.GONE
 
-        val linearCCashDiscount: LinearLayoutCompat =
-            popupView.findViewById(R.id.lineaarCashDiscount)
         val linear_NonCashDiscount: LinearLayoutCompat =
             popupView.findViewById(R.id.linear_NonCashDiscount)
-        var optionType = prefProvider.getValue(Constants.OPTION_TYPE, "")
 
         if (prefProvider.getValueboolean(Constants.CASHDIS_SURCHARGEENABLE, false)) {
-            if (optionType == "CashDiscount") {
-                linearCCashDiscount.visibility = View.VISIBLE
-                linear_NonCashDiscount.visibility = View.GONE
-                if (paidGuestAmount > 0) {
-                    txttotalCashDiscount.text = "- $" + String.format(
-                        "%.2f", divideCashDiscount * (totalGuestCount - paidGuestAmount)
-                    )
-                } else {
-                    txttotalCashDiscount.text = "- $" + String.format(
-                        "%.2f", MethodUtils.calculateCashDiscount(
-                            subTotalDInin,
-                            prefProvider,
-                            requireContext()
-                        )
-                    )
-                }
-                txtTotalcashAdj.text = "- $" + String.format("%.2f", 0.0)
-            } else {
-                linearCCashDiscount.visibility = View.GONE
-                linear_NonCashDiscount.visibility = View.GONE
-
-                txttotalCashDiscount.text = "- $" + String.format("%.2f", 0.0)
-                txtTotalcashAdj.text = "- $" + String.format(
-                    "%.2f", MethodUtils.calculateCashDiscount(
-                        subTotalDInin,
-                        prefProvider,
-                        requireContext()
-                    )
+            linear_NonCashDiscount.visibility = View.VISIBLE
+            txtTotalcashAdj.text = "$" + String.format(
+                "%.2f",
+                MethodUtils.calculateCashDiscount(
+                    toFinalAmt,
+                    prefProvider,
+                    requireContext()
                 )
-            }
+            )
         } else {
-            linearCCashDiscount.visibility = View.GONE
             linear_NonCashDiscount.visibility = View.GONE
         }
 
@@ -1533,9 +1458,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     dineInList.get(0).guestDividedAmt =
                         MethodUtils.roundOffAmountDouble((WTSubTotal + WTTaxes + WTServiceCharge - orderDiscount) / (baseResponse.guestAttributes.size - 1))
                     dineInList.get(0).totalGuestCount = baseResponse.guestAttributes.size - 1
-                    dineInList.get(0).wholeTableSubTotal = WTSubTotal/dineInList.get(0).totalGuestCount
-                    dineInList.get(0).wholeTableTax = WTTaxes/dineInList.get(0).totalGuestCount
-                    dineInList.get(0).wholeTableSurTax = WTServiceCharge/dineInList.get(0).totalGuestCount
+                    dineInList.get(0).wholeTableSubTotal =
+                        WTSubTotal / dineInList.get(0).totalGuestCount
+                    dineInList.get(0).wholeTableTax = WTTaxes / dineInList.get(0).totalGuestCount
+                    dineInList.get(0).wholeTableSurTax =
+                        WTServiceCharge / dineInList.get(0).totalGuestCount
 
                     Log.d(
                         "guestDivide",
@@ -1822,22 +1749,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         Log.d(TAG, "navigateDineInOrder: " + myShare)
                         Log.d(TAG, "navigateDineInOrder: " + guestSubTotal)
 
-                        if (MethodUtils.isEnableCashDiscount(requireContext())) {
-                            var cashDisSurcharge = MethodUtils.calculateCashDiscount(
-                                subTotalWT,
-                                prefProvider,
-                                requireContext()
-                            ) / (baseResponse.guestAttributes.size - 1)
-                            if (optionType == "CashDiscount") {
-                                dineInList.get(0).cashSurchargeDiscount = cashDisSurcharge
-                                Log.d(TAG, "navigateDineInOrder: $cashDisSurcharge")
-                            } else if (optionType == "SurCharge") {
-                                dineInList.get(0).cashSurchargeDiscount = 0.0
-                            }
-                        } else {
-                            dineInList.get(0).cashSurchargeDiscount = 0.0
-                        }
-
 
                         var finalAmt =
                             guestSubTotal + serviceCharge + finalTaxAmt + myShare
@@ -1847,54 +1758,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         subTotalWT = guestSubTotal + myShare
                         toFinalAmt = finalAmt
 
-
-                        if (prefProvider.getValueboolean(
-                                Constants.CASHDIS_SURCHARGEENABLE,
-                                false
-                            )
-                        ) {
-                            if (optionType == "CashDiscount") {
-
-                                if (paidGuestCount > 0) {
-                                    divideCashDiscount =
-                                        MethodUtils.calculateCashDiscount(
-                                            subTotalDInin,
-                                            prefProvider,
-                                            requireContext()
-                                        ) / (baseResponse.guestAttributes.size - 1)
-                                    binding.txtTotalAmountNew.text = MethodUtils.roundOffAmount(
-                                        finalAmt - (divideCashDiscount * unpaidCount)
-                                    )
-
-                                } else {
-                                    divideCashDiscount = MethodUtils.calculateCashDiscount(
-                                        subTotalDInin,
-                                        prefProvider,
-                                        requireContext()
-                                    )
-                                    binding.txtTotalAmountNew.text = MethodUtils.roundOffAmount(
-                                        finalAmt - divideCashDiscount
-                                    )
-                                }
-
-
-                            } else {
-                                divideCashDiscount = MethodUtils.calculateCashDiscount(
-                                    subTotalDInin,
-                                    prefProvider,
-                                    requireContext()
-                                )
-
-                                binding.txtTotalAmountNew.text = MethodUtils.roundOffAmount(
-                                    finalAmt
-                                )
-                            }
-                        } else {
-                            divideCashDiscount = 0.0
-                            binding.txtTotalAmountNew.text = MethodUtils.roundOffAmount(
-                                finalAmt
-                            )
-                        }
+                        binding.txtTotalAmountNew.text = MethodUtils.roundOffAmount(
+                            finalAmt
+                        )
 
 
                     }
@@ -2087,21 +1953,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             }
         }
 
-        if (MethodUtils.isEnableCashDiscount(requireContext())) {
-            var cashDisSurcharge = MethodUtils.calculateCashDiscount(
-                subTotalWT,
-                prefProvider,
-                requireContext()
-            ) / totalGuestCount
-            if (optionType == "CashDiscount") {
-                newList.get(0).cashSurchargeDiscount = cashDisSurcharge
-                Log.d(TAG, "navigateDineInOrder: $cashDisSurcharge")
-            } else if (optionType == "SurCharge") {
-                newList.get(0).cashSurchargeDiscount = 0.0
-            }
-        } else {
-            newList.get(0).cashSurchargeDiscount = 0.0
-        }
         dineInTableAdapter.setList(newList)
 
         updateOrderCall()

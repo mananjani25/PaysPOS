@@ -217,9 +217,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
 
             var finalAmt =
-                guestSubTotal + totalServiceCharge + totalTaxAmt + (list.get(0).guestDividedAmt - list.get(
-                    0
-                ).cashSurchargeDiscount)
+                guestSubTotal + totalServiceCharge + totalTaxAmt + (list.get(0).guestDividedAmt)
 
             Log.e(TAG, "guestSubTotal  ${guestSubTotal}")
             Log.e(TAG, "guesttotalServiceCharge  ${totalServiceCharge}")
