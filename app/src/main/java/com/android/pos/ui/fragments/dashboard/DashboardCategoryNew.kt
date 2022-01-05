@@ -174,9 +174,12 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         prefProvider.setValue("PaidAmount", "")
         prefProvider.setValue("WholeTotal", "")
         prefProvider.setValueInt("cardCount", 0)
-        prefProvider.setValue(
-            "cashDiscountSurcharge", ""
-        )
+        prefProvider.setValue(Constants.SUB_TOTAL, "")
+        prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
+        prefProvider.setValue(Constants.TOTAL_DISCOUNT,"")
+        prefProvider.setValue(Constants.TIP,"")
+        prefProvider.setValue(Constants.TAX_CHARGE,"")
+        prefProvider.setValue(Constants.SERVICE_CHARGE,"")
         optionType = prefProvider.getValue(OPTION_TYPE, "")
         if (isOrderUpdate) {
             orderId = requireArguments().getInt("orderId")

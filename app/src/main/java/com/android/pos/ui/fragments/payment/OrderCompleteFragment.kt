@@ -28,6 +28,7 @@ import com.android.pos.data.remote.Constants.LARGE
 import com.android.pos.data.remote.Constants.SPLIT_NO
 import com.android.pos.data.remote.Constants.SPLIT_PAY_AMOUNT
 import com.android.pos.data.remote.Constants.SPLIT_PAY_TYPE
+import com.android.pos.data.remote.Constants.SUB_TOTAL
 import com.android.pos.data.remote.Constants.getReceiptFormatDateFromUTCServer
 import com.android.pos.databinding.FragmentOrderCompletBinding
 import com.android.pos.di.PrefProvider
@@ -1958,6 +1959,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         prefProvider.setValue(Constants.CUSTOMER_NAME, "")
         prefProvider.setValue("PaidAmount", "")
         prefProvider.setValue("WholeTotal", "")
+        prefProvider.setValue(SUB_TOTAL, "")
+        prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
+        prefProvider.setValue(Constants.TOTAL_DISCOUNT,"")
+        prefProvider.setValue(Constants.TIP,"")
+        prefProvider.setValue(Constants.TAX_CHARGE,"")
+        prefProvider.setValue(Constants.SERVICE_CHARGE,"")
 
     }
 
