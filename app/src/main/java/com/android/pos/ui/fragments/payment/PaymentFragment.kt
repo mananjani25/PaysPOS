@@ -686,19 +686,20 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             R.id.txtOriginalAmount -> {
                 paymentType = "Cash"
                 paymentAmount = when {
-
                     isSplitByNo -> {
-//                        prefProvider.setValue(
-//                            CASH_DISCOUNT_SURCHARGE,
-//                            "" + cashDiscountSurcharge / splitValue
-//                        )
+                        var remainningCashDiscount =
+                            cashDiscountSurcharge - (cashDiscountSurcharge / splitValue)
+                        prefProvider.setValue(
+                            CASH_DISCOUNT_SURCHARGE,
+                            String.format("%.2f", remainningCashDiscount)
+                        )
                         splitAfterAmount
                     }
                     isSplitByAmount -> {
                         splitAfterAmount
                     }
                     isCustomCash -> {
-                        splitAfterAmount
+                        paymentAmount
                     }
                     else -> {
                         if (remainingAmount == 0.0) {
@@ -770,13 +771,14 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 setUpPaymentTypeWiseData("Card")
                 val handler = Handler(Looper.getMainLooper())
                 handler.postDelayed({
-
                     when {
                         isSplitByNo -> {
-//                            prefProvider.setValue(
-//                                CASH_DISCOUNT_SURCHARGE,
-//                                "" + cashDiscountSurcharge / splitValue
-//                            )
+                            var remainningCashDiscount =
+                                cashDiscountSurcharge - (cashDiscountSurcharge / splitValue)
+                            prefProvider.setValue(
+                                CASH_DISCOUNT_SURCHARGE,
+                                String.format("%.2f", remainningCashDiscount)
+                            )
                         }
                     }
                     makePaymentCreditCard()
@@ -1300,14 +1302,30 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                 bundle.putParcelable("receiptData", it.data)
                                 bundle.putInt("splitValue", splitValue)
                                 if (splitValue != -1) {
-                                    if (WholetotalPrice <= cardPaymentAmount) {
+                                    if (remainingAmount <= 0.0) {
                                         bundle.putBoolean("isSpilt", false)
+                                        prefProvider.setValue(SUB_TOTAL, "")
+                                        prefProvider.setValue(TOTAL_DISCOUNT,"")
+                                        prefProvider.setValue(TIP,"")
+                                        prefProvider.setValue(TAX_CHARGE,"")
+                                        prefProvider.setValue(SERVICE_CHARGE,"")
                                     } else {
                                         bundle.putBoolean("isSpilt", true)
+                                        setPaymentAttriButes(SUB_TOTAL,splitValue)
+                                        setPaymentAttriButes(SERVICE_CHARGE,splitValue)
+                                        setPaymentAttriButes(TAX_CHARGE,splitValue)
+                                        setPaymentAttriButes(TIP,splitValue)
+                                        setPaymentAttriButes(TOTAL_DISCOUNT,splitValue)
                                     }
                                 } else {
                                     bundle.putBoolean("isSpilt", false)
+                                    prefProvider.setValue(SUB_TOTAL, "")
+                                    prefProvider.setValue(TOTAL_DISCOUNT,"")
+                                    prefProvider.setValue(TIP,"")
+                                    prefProvider.setValue(TAX_CHARGE,"")
+                                    prefProvider.setValue(SERVICE_CHARGE,"")
                                 }
+
                                 bundle.putBoolean("isSplitByNo", isSplitByNo)
                                 bundle.putBoolean("isSplitByAmount", isSplitByAmount)
                                 bundle.putString("paymentType", "Card")
@@ -1440,7 +1458,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
 
                                 if (splitValue != -1) {
-                                    if (remainingAmount <= splitAfterAmount || remainingAmount == 0.0) {
+                                    if (remainingAmount <= 0.0) {
                                         bundle.putBoolean("isSpilt", false)
                                         prefProvider.setValue(SUB_TOTAL, "")
                                         prefProvider.setValue(TOTAL_DISCOUNT,"")
