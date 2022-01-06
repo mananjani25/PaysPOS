@@ -114,7 +114,7 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
                 Log.e(TAG, "onActionConnected")
                 val params = JsonObject()
                 params.addProperty("id", prefProvider.getValueInt(LOCATION_ID, 0))
-                params.addProperty("url",requestURL)
+                params.addProperty("url", requestURL)
                 subscription?.perform("received", params)
             }?.onRejected {
                 Log.e(TAG, "onActiononRejected")
