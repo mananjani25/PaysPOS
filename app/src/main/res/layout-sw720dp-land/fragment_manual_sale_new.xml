@@ -168,20 +168,11 @@
                     android:paddingStart="@dimen/_4sdp"
                     android:paddingEnd="@dimen/_4sdp">
 
-                    <ImageView
-                        android:id="@+id/imgGroup"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:contentDescription="@string/add_customer"
-                        android:src="@drawable/ic_group" />
 
                     <LinearLayout
                         android:id="@+id/llCustomer"
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_toStartOf="@id/imgArrow"
-                        android:layout_toEndOf="@id/imgGroup"
                         android:orientation="vertical"
                         android:padding="@dimen/_5sdp">
 
@@ -215,12 +206,12 @@
 
                     <ImageView
                         android:id="@+id/imgArrow"
-                        android:layout_width="@dimen/_12sdp"
-                        android:layout_height="@dimen/_12sdp"
+                        android:layout_width="@dimen/_15sdp"
+                        android:layout_height="@dimen/_15sdp"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
-                        android:padding="@dimen/_2sdp"
-                        android:src="@drawable/ic_arrow_forward"
+                        android:padding="@dimen/_4sdp"
+                        app:srcCompat="@drawable/down_arrow"
                         app:tint="@color/txtColor" />
                 </RelativeLayout>
 

@@ -86,24 +86,24 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                         if (mData.cash_discount_type == "SurCharge") {
                             MethodUtils.setRefundPriceTextView(
                                 binding.tvTotalRefundAmount,
-                                (mData.sub_total + mData.tips + mData.tax_amount + mData.service_charge_amount + mData.cash_discount_or_surcharge - (mData.loyalty_amount!! + mData.total_discount))
+                                (mData.sub_total + mData.tips + mData.tax_amount + mData.service_charge_amount + mData.cash_discount_or_surcharge - (mData.loyalty_amount!! /*+ mData.total_discount*/))
                             )
                         } else {
                             MethodUtils.setRefundPriceTextView(
                                 binding.tvTotalRefundAmount,
-                                (mData.sub_total + mData.tips + mData.tax_amount + mData.service_charge_amount - (mData.loyalty_amount!! + mData.total_discount))
+                                (mData.sub_total + mData.tips + mData.tax_amount + mData.service_charge_amount - (mData.loyalty_amount!! /*+ mData.total_discount*/))
                             )
                         }
                     } else if (mData.payment_type == "Cash") {
                         if (mData.cash_discount_type == "CashDiscount") {
                             MethodUtils.setRefundPriceTextView(
                                 binding.tvTotalRefundAmount,
-                                (mData.sub_total + mData.tips + mData.tax_amount + mData.service_charge_amount - (mData.loyalty_amount!! + +mData.cash_discount_or_surcharge + mData.total_discount))
+                                (mData.sub_total + mData.tips + mData.tax_amount + mData.service_charge_amount - (mData.loyalty_amount!! + +mData.cash_discount_or_surcharge /*+ mData.total_discount*/))
                             )
                         } else {
                             MethodUtils.setRefundPriceTextView(
                                 binding.tvTotalRefundAmount,
-                                (mData.sub_total + mData.tips + mData.tax_amount + mData.service_charge_amount - (mData.loyalty_amount!! + mData.total_discount))
+                                (mData.sub_total + mData.tips + mData.tax_amount + mData.service_charge_amount - (mData.loyalty_amount!! /*+ mData.total_discount*/))
                             )
                         }
                     }
@@ -313,13 +313,12 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
 
             if (paymentOrderDetailsResponse.data.order.refund_detail.refunded_amount.equals(0.0)) {
                 if (binding.edtAmount.text.toString()
-                        .toDouble() > paymentOrderDetailsResponse.data.order.total_amount
+                        .toDouble() > paymentOrderDetailsResponse.data.amount
                 ) {
-                    binding.edtAmount.setText(MethodUtils.roundOffAmountString((paymentOrderDetailsResponse.data.order.total_amount - paymentOrderDetailsResponse.data.order.total_tips).toDouble()))
+                    binding.edtAmount.setText(MethodUtils.roundOffAmountString((paymentOrderDetailsResponse.data.amount).toDouble()))
                 }
             } else {
-                val newPrice =
-                    (paymentOrderDetailsResponse.data.order.total_amount - paymentOrderDetailsResponse.data.order.total_tips) - paymentOrderDetailsResponse.data.order.refund_detail.refunded_amount
+                val newPrice = paymentOrderDetailsResponse.data.amount - paymentOrderDetailsResponse.data.order.refund_detail.refunded_amount
                 if (binding.edtAmount.text.toString().toDouble() > newPrice) {
                     binding.edtAmount.setText(MethodUtils.roundOffAmountString(newPrice.toDouble()))
                 }
