@@ -18,9 +18,16 @@ import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.GetFloorPlanResponse
 import com.android.pos.data.model.responseModel.GuestPaymentAttributes
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE_DINEIN
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.LOCATION_ID
+import com.android.pos.data.remote.Constants.SERVICE_CHARGE_DINEIN
+import com.android.pos.data.remote.Constants.SUB_TOTAL_DINEIN
+import com.android.pos.data.remote.Constants.TAX_CHARGE_DINEIN
 import com.android.pos.data.remote.Constants.TERMINAL_ID
+import com.android.pos.data.remote.Constants.TIPS_AMOUNT_DINEIN
+import com.android.pos.data.remote.Constants.TOTAL_DISCOUNT_DINEIN
+import com.android.pos.data.remote.Constants.TOTAL_PRICE_DINEIN
 import com.android.pos.databinding.DialogPayByGuestBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
@@ -141,6 +148,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
 
         if (isTotalPayment) {
             isTotalPayment = true
+            isGuestPaymentTotal = false
             isLastPayment = true
             setTotalPaymentData()
         } else {
@@ -159,6 +167,14 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
         binding.txtThirdAmount.setOnClickListener(this)
         binding.txtFourthAmount.setOnClickListener(this)
         binding.txtAddTips.setOnClickListener(this)
+
+        totalPrice = allPaymentSummarySavedPref(TOTAL_PRICE_DINEIN, totalPrice)
+        subTotalPrice = allPaymentSummarySavedPref(SUB_TOTAL_DINEIN, subTotalPrice)
+        totalServiceCharge = allPaymentSummarySavedPref(SERVICE_CHARGE_DINEIN, totalServiceCharge)
+        totalTax = allPaymentSummarySavedPref(TAX_CHARGE_DINEIN, totalTax)
+        divideCashDiscount = allPaymentSummarySavedPref(CASH_DISCOUNT_SURCHARGE_DINEIN, divideCashDiscount)
+        tipAmount = allPaymentSummarySavedPref(TIPS_AMOUNT_DINEIN, tipAmount)
+        totaldiscount = allPaymentSummarySavedPref(TOTAL_DISCOUNT_DINEIN, totaldiscount)
 
         setFragmentResultListener("request_key_split") { requestKey: String, bundle: Bundle ->
             splitValue = bundle.getInt("split")
@@ -270,6 +286,15 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
         return binding.root
     }
 
+
+    fun allPaymentSummarySavedPref(type: String, value: Double): Double {
+        if (prefProvider.getValue(type, "").isEmpty()) {
+            prefProvider.setValue(type, String.format("%.2f", value))
+            return prefProvider.getValue(type, "").toDouble()
+        } else {
+            return prefProvider.getValue(type, "").toDouble()
+        }
+    }
 
     private fun wholePaymentObservor() {
         paymentViewModel.msgText.observe(viewLifecycleOwner) { event ->
@@ -524,6 +549,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
         MethodUtils.setPriceTextView(binding.txtTax, totalTax)
         MethodUtils.setPriceTextView(binding.txtTipAmt, tipAmount)
         MethodUtils.setPriceTextView(binding.txtServiceCharge, totalServiceCharge)
+
         if (MethodUtils.isEnableCashDiscount(requireContext())) {
             if (cashDiscountType == "CashDiscount") {
                 binding.txtCardAmount.text = "$ " + String.format("%.2f", totalPrice)
