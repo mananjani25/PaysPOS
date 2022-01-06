@@ -473,9 +473,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 bundle.putDouble("splitPaidAmount", paymentAmount)
                 bundle.putDouble("remainingAmount", remainingAmount)
                 if (isSplitByAmount) {
-                    bundle.putInt("splitvalue", 2)
-                    bundle.putBoolean("isSplitByNo", true)
-                    bundle.putBoolean("isSplitByAmount", false)
+                    bundle.putInt("splitvalue", splitValue)
+                    bundle.putBoolean("isSplitByNo", isSplitByNo)
+                    bundle.putBoolean("isSplitByAmount", isSplitByAmount)
                 } else {
                     bundle.putInt("splitvalue", splitValue)
                     bundle.putBoolean("isSplitByNo", isSplitByNo)
@@ -1961,10 +1961,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         prefProvider.setValue("WholeTotal", "")
         prefProvider.setValue(SUB_TOTAL, "")
         prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
-        prefProvider.setValue(Constants.TOTAL_DISCOUNT,"")
-        prefProvider.setValue(Constants.TIP,"")
-        prefProvider.setValue(Constants.TAX_CHARGE,"")
-        prefProvider.setValue(Constants.SERVICE_CHARGE,"")
+        prefProvider.setValue(Constants.TOTAL_DISCOUNT, "")
+        prefProvider.setValue(Constants.TIP, "")
+        prefProvider.setValue(Constants.TAX_CHARGE, "")
+        prefProvider.setValue(Constants.SERVICE_CHARGE, "")
 
     }
 
