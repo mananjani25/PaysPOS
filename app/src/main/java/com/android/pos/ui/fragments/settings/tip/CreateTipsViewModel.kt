@@ -27,6 +27,7 @@ class CreateTipsViewModel @Inject constructor(
     private val prefProvider: PrefProvider
 ) : ViewModel() {
 
+    private var _isActive: Boolean = false
     val createTipDetails = MutableLiveData(CreateTipRequestModel())
 
     private val _snackbarText = MutableLiveData<Event<Any?>>()
@@ -50,6 +51,8 @@ class CreateTipsViewModel @Inject constructor(
     fun setTipData(tipData: GetTipReponse.Data) {
         createTipDetails.value?.name = tipData.name
         createTipDetails.value?.rate = tipData.rate
+
+        _isActive = tipData.isActive
     }
 
     fun isEditData(isEdit: Boolean, tipId: Int) {
@@ -75,6 +78,7 @@ class CreateTipsViewModel @Inject constructor(
                     id = tipId
                     name = value!!.name
                     rate = value.rate
+                    isActive = _isActive
                     locationId = prefProvider.getValueInt(LOCATION_ID, -1)
                 }
             } else {

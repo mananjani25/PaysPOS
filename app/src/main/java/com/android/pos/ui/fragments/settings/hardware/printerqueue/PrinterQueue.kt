@@ -21,6 +21,7 @@ import com.android.pos.data.model.responseModel.GetKitchenReceiptSettingsRespons
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.COMPLETED
+import com.android.pos.data.remote.Constants.CREATE_QUEUE_PRINTER
 import com.android.pos.data.remote.Constants.IN_PROCESS
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.remote.Constants.PENDING
@@ -98,6 +99,8 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
 
     private fun connectActionCable() {
         // 1. Setup
+        var requestURL = prefProvider.getValue(Constants.BASE_URL_NEW, "") + CREATE_QUEUE_PRINTER
+        Log.e(TAG, "requestURL:  ${requestURL}")
         val uri = URI("wss://possoft.io/cable")
         consumer = ActionCable.createConsumer(uri)
 
@@ -111,6 +114,7 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
                 Log.e(TAG, "onActionConnected")
                 val params = JsonObject()
                 params.addProperty("id", prefProvider.getValueInt(LOCATION_ID, 0))
+                params.addProperty("url", requestURL)
                 subscription?.perform("received", params)
             }?.onRejected {
                 Log.e(TAG, "onActiononRejected")
@@ -266,12 +270,12 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
 
 
 
-            if (printerQueuelist.size != 0) {
-                for (i in 0 until printerQueuelist.size) {
+        if (printerQueuelist.size != 0) {
+            for (i in 0 until printerQueuelist.size) {
 
-                    configurePrinter(printerQueuelist.get(i), i)
-                }
+                configurePrinter(printerQueuelist.get(i), i)
             }
+        }
         /*printerQueuelist.forEachIndexed { index, printerQueueModel ->
             configurePrinter(printerQueueModel, index)
         }*/
@@ -433,8 +437,12 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
 
         } catch (e: Exception) {
             isPrintRunning = false
-            requireActivity().runOnUiThread {
-                adapter.updatePrintStatus(0, "FAILED")
+            try {
+                requireActivity().runOnUiThread {
+                    adapter.updatePrintStatus(0, "FAILED")
+                }
+            } catch (e: java.lang.Exception) {
+                e.printStackTrace()
             }
             Log.e(TAG, "PrinterException: " + e.message)
             printer = null

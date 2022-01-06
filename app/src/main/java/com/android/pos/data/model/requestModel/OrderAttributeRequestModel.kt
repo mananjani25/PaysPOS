@@ -222,7 +222,7 @@ class GuestsAttributes(
     @SerializedName("child_merge_id") var childMergeId: Int? = null,
 
 
-)
+    )
 
 class GuestItemsAttributes(
 
@@ -309,7 +309,6 @@ class OrderItemsAttribute {
 
     @SerializedName("is_manual_sales")
     var is_manual_sales: Boolean = false
-
 
     @SerializedName("order_item_modifiers_attributes")
     var orderItemModifiersAttributes: List<OrderItemModifierAttribute> = emptyList()

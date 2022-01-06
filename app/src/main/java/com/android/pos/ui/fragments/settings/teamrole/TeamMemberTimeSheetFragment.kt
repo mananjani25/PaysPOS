@@ -73,6 +73,13 @@ class TeamMemberTimeSheetFragment : Fragment(), AdapterView.OnItemSelectedListen
             backPressManage()
         }
 
+        binding.includeView.txtHome.setOnClickListener {
+
+            findNavController().navigate(
+                R.id.action_teamMemberTimeSheetFragment_to_dashboardCategoryNew
+            )
+        }
+
 
         startDatePickerObserver()
         endDatePickerObserver()
