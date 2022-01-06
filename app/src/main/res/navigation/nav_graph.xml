@@ -567,11 +567,20 @@
         <action
             android:id="@+id/action_teamMemberTimeSheetFragment_to_singleTeamMemberTimeSheetFragment"
             app:destination="@id/singleTeamMemberTimeSheetFragment" />
+        <action
+            android:id="@+id/action_teamMemberTimeSheetFragment_to_dashboardCategoryNew"
+            app:destination="@id/dashboardCategoryNew"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/singleTeamMemberTimeSheetFragment"
         android:name="com.android.pos.ui.fragments.settings.teamrole.SingleTeamMemberTimeSheetFragment"
-        android:label="SingleTeamMemberTimeSheetFragment" />
+        android:label="SingleTeamMemberTimeSheetFragment">
+        <action
+            android:id="@+id/action_singleTeamMemberTimeSheetFragment_to_dashboardCategoryNew"
+            app:destination="@id/dashboardCategoryNew"
+            app:popUpToInclusive="true" />
+    </fragment>
     <fragment
         android:id="@+id/userAccessPermissionListFragment"
         android:name="com.android.pos.ui.fragments.settings.teamrole.UserAccessPermissionListFragment"

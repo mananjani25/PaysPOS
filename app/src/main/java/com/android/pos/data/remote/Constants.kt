@@ -379,4 +379,8 @@ object Constants {
 
 
     const val CASH_DISCOUNT_SURCHARGE = "cashDiscountSurcharge"
+    const val SUB_TOTAL = "subtotal"
+    const val TAX_CHARGE = "taxcharge"
+    const val TIPS_AMOUNT = "tips"
+    const val TOTAL_DISCOUNT= "totalDiscount"
 }

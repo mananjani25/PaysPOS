@@ -2,11 +2,11 @@ package com.android.pos.ui.fragments.settings.teamrole
 
 import android.app.DatePickerDialog
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -59,6 +59,16 @@ class SingleTeamMemberTimeSheetFragment : Fragment() {
         binding.includeView.spRoles.visibility = View.GONE
         binding.includeView.edtSearch.visibility = View.GONE
         binding.includeView.txtPrint.visibility = View.GONE
+
+
+        binding.includeView.txtHome.setOnClickListener {
+
+            findNavController().navigate(
+                R.id.action_singleTeamMemberTimeSheetFragment_to_dashboardCategoryNew
+            )
+        }
+
+
 
 
         startDate =

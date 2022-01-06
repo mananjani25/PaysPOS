@@ -26,10 +26,15 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.remote.Constants.ORDER_TYPE
+import com.android.pos.data.remote.Constants.SERVICE_CHARGE
 import com.android.pos.data.remote.Constants.SPLIT_NO
 import com.android.pos.data.remote.Constants.SPLIT_PAY_AMOUNT
 import com.android.pos.data.remote.Constants.SPLIT_PAY_TYPE
+import com.android.pos.data.remote.Constants.SUB_TOTAL
+import com.android.pos.data.remote.Constants.TAX_CHARGE
 import com.android.pos.data.remote.Constants.TERMINAL_ID
+import com.android.pos.data.remote.Constants.TIP
+import com.android.pos.data.remote.Constants.TOTAL_DISCOUNT
 import com.android.pos.databinding.PaymentFragmentBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.AlertUtils
@@ -121,39 +126,102 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
         cartList = requireArguments().getParcelable("cartList")
         totalPrice = requireArguments().getDouble("totalPrice")
+        subTotalPrice = requireArguments().getDouble("subTotalPrice")
+        totalTax = requireArguments().getDouble("totalTax")
+        totalServiceCharge = requireArguments().getDouble("totalServiceCharge")
+        totalDiscount = requireArguments().getDouble("totalDiscount")
         cashDiscountType = prefProvider.getValue(Constants.OPTION_TYPE, "")
 
 
 
-        if (prefProvider.getValue("cashDiscountSurCharge", "").isEmpty() ||
-            prefProvider.getValue("cashDiscountSurCharge", "") == "0.00" ||
-            prefProvider.getValue("cashDiscountSurCharge", "") == "0.0"
-        ) {
-            cashDiscountSurcharge = 0.0
-            prefProvider.setValue(
-                "cashDiscountSurCharge",
-                String.format("%.2f", cashDiscountSurcharge)
-            )
+        if (MethodUtils.isEnableCashDiscount(requireContext())) {
+            if (prefProvider.getValue(CASH_DISCOUNT_SURCHARGE, "").isEmpty()) {
+                cashDiscountSurcharge = MethodUtils.calculateCashDiscount(
+                    totalPrice,
+                    prefProvider,
+                    requireContext()
+                )
+                prefProvider.setValue(
+                    CASH_DISCOUNT_SURCHARGE,
+                    String.format("%.2f", cashDiscountSurcharge)
+                )
+            } else {
+                cashDiscountSurcharge =
+                    prefProvider.getValue(CASH_DISCOUNT_SURCHARGE, "").toDouble()
+            }
         } else {
-            cashDiscountSurcharge = prefProvider.getValue("cashDiscountSurCharge", "").toDouble()
+            cashDiscountSurcharge = 0.0
         }
 
+        var cardActualAmount = 0.0
+        if (cashDiscountType == "CashDiscount") {
+            cardActualAmount = totalPrice
+        } else if (cashDiscountType == "SurCharge") {
+            cardActualAmount = totalPrice + MethodUtils.calculateCashDiscount(
+                totalPrice,
+                prefProvider,
+                requireContext()
+            )
+        } else {
+            cardActualAmount = totalPrice
+        }
+        viewModel.saveActualValue(
+            totalPrice,
+            subTotalPrice,
+            totalTax,
+            totalServiceCharge,
+            tipAmount,
+            totalDiscount,
+            MethodUtils.calculateCashDiscount(totalPrice, prefProvider, requireContext()),
+            cardActualAmount
+        )
+        setUpPaymentSummary()
 
         if (prefProvider.getValue("WholeTotal", "").isEmpty()) {
             WholetotalPrice = totalPrice
-            if (cashDiscountType == "CashDiscount") {
-                WholetotalPrice -= cashDiscountSurcharge
-            }
-            prefProvider.setValue("WholeTotal", String.format("%.2f", WholetotalPrice))
+            prefProvider.setValue("WholeTotal", String.format("%.2f", totalPrice))
         } else {
             WholetotalPrice = prefProvider.getValue("WholeTotal", "").toDouble()
         }
 
-        subTotalPrice = requireArguments().getDouble("subTotalPrice")
-        totalTax = requireArguments().getDouble("totalTax")
+        if (prefProvider.getValue(SUB_TOTAL, "").isEmpty()) {
+            prefProvider.setValue(SUB_TOTAL, String.format("%.2f", subTotalPrice))
+        } else {
+            subTotalPrice = prefProvider.getValue(SUB_TOTAL, "").toDouble()
+        }
 
-        totalServiceCharge = requireArguments().getDouble("totalServiceCharge")
-        totalDiscount = requireArguments().getDouble("totalDiscount")
+        if (prefProvider.getValue(TAX_CHARGE, "").isEmpty()) {
+            prefProvider.setValue(TAX_CHARGE, String.format("%.2f", totalTax))
+        } else {
+            totalTax = prefProvider.getValue(TAX_CHARGE, "").toDouble()
+        }
+
+
+        if (prefProvider.getValue(SERVICE_CHARGE, "").isEmpty()) {
+            prefProvider.setValue(SERVICE_CHARGE, String.format("%.2f", totalServiceCharge))
+        } else {
+            totalServiceCharge = prefProvider.getValue(SERVICE_CHARGE, "").toDouble()
+        }
+
+
+        if (prefProvider.getValue(TOTAL_DISCOUNT, "").isEmpty()) {
+            prefProvider.setValue(TOTAL_DISCOUNT, String.format("%.2f", totalDiscount))
+        } else {
+            totalDiscount = prefProvider.getValue(TOTAL_DISCOUNT, "").toDouble()
+        }
+
+
+        if (prefProvider.getValue(TIP, "").isEmpty()) {
+            prefProvider.setValue(TIP, String.format("%.2f", tipAmount))
+        } else {
+            tipAmount = prefProvider.getValue(TIP, "").toDouble()
+        }
+
+
+
+
+
+
         future_delivery_time = requireArguments().getString("future_delivery_time").toString()
         future_delivery_date = requireArguments().getString("future_delivery_date").toString()
         redeemLoyaltyInfo = Gson().fromJson(
@@ -171,7 +239,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         }
 
 
-        setUpPaymentSummary()
+
 
         binding.txtSplitAmount.setOnClickListener(this)
         binding.txtCustom.setOnClickListener(this)
@@ -196,27 +264,21 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         return binding.root
     }
 
+    @SuppressLint("SetTextI18n")
     private fun setSplitData() {
         if (isNextPayment) {
             if (isSplitByNo) {
                 if (MethodUtils.isEnableCashDiscount(requireContext())) {
-
-
                     var last_cash_discount_surcharge =
-                        prefProvider.getValue(CASH_DISCOUNT_SURCHARGE, "")
+                        prefProvider.getValue(CASH_DISCOUNT_SURCHARGE, "")//3.33
                     if (last_cash_discount_surcharge.isEmpty() || last_cash_discount_surcharge == "0.0") {
                         last_cash_discount_surcharge = "0.0"
                     }
-
                     cardPaymentAmount =
-                        (remainingAmount + (cashDiscountSurcharge - last_cash_discount_surcharge.toDouble()))
-                    binding.txtCardAmount.text =
-                        "$ " + String.format(
-                            "%.2f",
-                            cardPaymentAmount
-                        )
-                    prefProvider.setValue(CASH_DISCOUNT_SURCHARGE, "")
-
+                        (remainingAmount + last_cash_discount_surcharge.toDouble())
+                    binding.txtCardAmount.text = "$ " + String.format("%.2f", cardPaymentAmount)
+                    cashDiscountSurcharge =
+                        prefProvider.getValue(CASH_DISCOUNT_SURCHARGE, "").toDouble()
                 } else {
                     cardPaymentAmount = remainingAmount
                     binding.txtCardAmount.text =
@@ -224,16 +286,31 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 }
                 MethodUtils.setPriceTextView(binding.txtTotalAmount, remainingAmount)
                 getCashPaymentOptionList(remainingAmount)
-
-                isSplitByNo = false
-
             } else if (isSplitByAmount) {
+                splitAfterAmount = remainingAmount
+                val tipAmount1 =
+                    (splitAfterAmount * tipAmount) / (totalPrice + tipAmount)
+                val total = ((totalPrice) + tipAmount1)
+                totalPrice -= splitAfterAmount
+                val subTotalPrice1 = (splitAfterAmount * subTotalPrice) / total
+                val totalServiceCharge1 =
+                    (splitAfterAmount * totalServiceCharge) / total
+                val totalTax1 = (splitAfterAmount * totalTax) / total
+                val totalDiscount1 = (splitAfterAmount * totalDiscount) / total
+                val cashDiscount1 = (splitAfterAmount * cashDiscountSurcharge) / total
+
+                subTotalPrice = subTotalPrice1
+                totalTax = totalTax1
+                totalServiceCharge = totalServiceCharge1
+                totalDiscount = totalDiscount1
+                cashDiscountSurcharge = cashDiscount1
+
                 if (MethodUtils.isEnableCashDiscount(requireContext())) {
                     if (cashDiscountType == "CashDiscount") {
-                        cardPaymentAmount = remainingAmount
-                        binding.txtCardAmount.text = "$ " + String.format("%.2f", remainingAmount)
+                        cardPaymentAmount = splitAfterAmount + cashDiscountSurcharge
+                        binding.txtCardAmount.text = "$ " + String.format("%.2f", cardPaymentAmount)
                     } else if (cashDiscountType == "SurCharge") {
-                        cardPaymentAmount = remainingAmount + cashDiscountSurcharge
+                        cardPaymentAmount = splitAfterAmount - cashDiscountSurcharge
                         binding.txtCardAmount.text =
                             "$ " + String.format("%.2f", cardPaymentAmount)
                     }
@@ -242,11 +319,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     binding.txtCardAmount.text =
                         "$" + String.format("%.2f", remainingAmount)
                 }
-
                 MethodUtils.setPriceTextView(binding.txtTotalAmount, remainingAmount)
                 getCashPaymentOptionList(remainingAmount)
-
-                isSplitByAmount = false
             }
         } else {
             if (isSplitByNo) {
@@ -265,12 +339,30 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 MethodUtils.setPriceTextView(binding.txtTotalAmount, splitAfterAmount)
                 getCashPaymentOptionList(splitAfterAmount)
             } else if (isSplitByAmount) {
+                val tipAmount1 =
+                    (splitAfterAmount * tipAmount) / (totalPrice + tipAmount)
+                val total = ((totalPrice) + tipAmount1)
+                val subTotalPrice1 = (splitAfterAmount * subTotalPrice) / total
+                val totalServiceCharge1 =
+                    (splitAfterAmount * totalServiceCharge) / total
+                val totalTax1 = (splitAfterAmount * totalTax) / total
+                val totalDiscount1 = (splitAfterAmount * totalDiscount) / total
+                val cashDiscount1 = (splitAfterAmount * cashDiscountSurcharge) / total
+
+
+                totalPrice = splitAfterAmount
+                subTotalPrice = subTotalPrice1
+                totalTax = totalTax1
+                totalServiceCharge = totalServiceCharge1
+                totalDiscount = totalDiscount1
+                cashDiscountSurcharge = cashDiscount1
+
                 if (MethodUtils.isEnableCashDiscount(requireContext())) {
                     if (cashDiscountType == "CashDiscount") {
-                        cardPaymentAmount = splitAfterAmount + (cashDiscountSurcharge / 2)
+                        cardPaymentAmount = splitAfterAmount + (cashDiscountSurcharge)
                         binding.txtCardAmount.text = "$ " + String.format("%.2f", cardPaymentAmount)
                     } else if (cashDiscountType == "SurCharge") {
-                        cardPaymentAmount = splitAfterAmount + cashDiscountSurcharge
+                        cardPaymentAmount = splitAfterAmount - cashDiscountSurcharge
                         binding.txtCardAmount.text =
                             "$ " + String.format("%.2f", cardPaymentAmount)
                     }
@@ -287,15 +379,41 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
     }
 
     private fun setUpPaymentSummary() {
-        if (isSplitByNo || isSplitByAmount) {
-            splitDataWithAmount()
+        MethodUtils.setPriceTextView(binding.txtTotal, totalPrice)
+        MethodUtils.setPriceTextView(binding.txtSubTotal, subTotalPrice)
+        MethodUtils.setPriceTextView(binding.txtTax, totalTax)
+        MethodUtils.setPriceTextView(binding.txtTipAmt, tipAmount)
+        MethodUtils.setPriceTextView(binding.txtServiceCharge, totalServiceCharge)
+
+        if (redeemLoyaltyInfo?.needToApplyLoyalty == true) {
+            binding.llLoyalty.visible()
+            binding.llLoyaltyPoint.visible()
+            binding.txtLoyaltyAmount.text =
+                "- $" + String.format("%.2f", redeemLoyaltyInfo?.usedLoyaltyAmount ?: 0.0)
+            binding.txtUsedLoyaltyPoints.text = "${redeemLoyaltyInfo?.usedLoyaltyPoints ?: 0}"
+        } else {
+            binding.llLoyalty.gone()
+            binding.llLoyaltyPoint.gone()
+        }
+        if (totalDiscount == 0.0) {
+            binding.linearDiscount.visibility = View.GONE
+        } else {
+            binding.linearDiscount.visibility = View.VISIBLE
+            binding.txtDiscount.text = "- " +
+                    MainApplication.getInstance()!!.getText(R.string.symbole)
+                        .toString() + String.format(
+                "%.2f", totalDiscount
+            )
         }
         if (MethodUtils.isEnableCashDiscount(requireContext())) {
             if (cashDiscountType == "CashDiscount") {
                 binding.txtCardAmount.text = "$ " + String.format("%.2f", totalPrice)
                 cardPaymentAmount = totalPrice
                 binding.linearnoncashAdj.visibility = View.VISIBLE
-                binding.txtNoncashAdj.text = "$ " + String.format("%.2f", cashDiscountSurcharge)
+                binding.txtNoncashAdj.text = "$ " + String.format(
+                    "%.2f",
+                    MethodUtils.calculateCashDiscount(totalPrice, prefProvider, requireContext())
+                )
                 totalPrice -= cashDiscountSurcharge
             } else if (cashDiscountType == "SurCharge") {
                 binding.linearnoncashAdj.visibility = View.GONE
@@ -309,94 +427,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             cardPaymentAmount = totalPrice
             binding.linearnoncashAdj.visibility = View.GONE
         }
-        MethodUtils.setPriceTextView(binding.txtTotal, totalPrice)
         MethodUtils.setPriceTextView(binding.txtTotalAmount, totalPrice)
-        MethodUtils.setPriceTextView(binding.txtSubTotal, subTotalPrice)
-        MethodUtils.setPriceTextView(binding.txtTax, totalTax)
-        MethodUtils.setPriceTextView(binding.txtTipAmt, tipAmount)
-        MethodUtils.setPriceTextView(binding.txtServiceCharge, totalServiceCharge)
-        if (redeemLoyaltyInfo?.needToApplyLoyalty == true) {
-            binding.llLoyalty.visible()
-            binding.llLoyaltyPoint.visible()
-            binding.txtLoyaltyAmount.text =
-                "- $" + String.format("%.2f", redeemLoyaltyInfo?.usedLoyaltyAmount ?: 0.0)
-            binding.txtUsedLoyaltyPoints.text = "${redeemLoyaltyInfo?.usedLoyaltyPoints ?: 0}"
-        } else {
-            binding.llLoyalty.gone()
-            binding.llLoyaltyPoint.gone()
-        }
-
-        if (totalDiscount == 0.0) {
-            binding.linearDiscount.visibility = View.GONE
-        } else {
-            binding.linearDiscount.visibility = View.VISIBLE
-            binding.txtDiscount.text = "- " +
-                    MainApplication.getInstance()!!.getText(R.string.symbole)
-                        .toString() + String.format(
-                "%.2f", totalDiscount
-            )
-        }
         getCashPaymentOptionList((totalPrice + tipAmount))
-    }
-
-    private fun splitDataWithAmount() {
-        val splitPayType = prefProvider.getValue(SPLIT_PAY_TYPE, "")
-        val splitPayAmount = prefProvider.getValue(SPLIT_PAY_AMOUNT, "")
-
-        if (splitPayType == SPLIT_NO) {
-            tipAmount = 0.0
-
-            if (splitPayAmount.isNotEmpty()) {
-                val splitNo = prefProvider.getValueInt(SPLIT_NO, -1)
-                if (splitNo != -1) {
-                    val split_totalPrice = totalPrice / splitNo
-                    totalPrice -= split_totalPrice
-
-                    val split_subTotalPrice = subTotalPrice / splitNo
-                    subTotalPrice -= split_subTotalPrice
-
-                    val split_totalTax = totalTax / splitNo
-                    totalTax -= split_totalTax
-
-                    val split_totalServiceCharge = totalServiceCharge / splitNo
-                    totalServiceCharge -= split_totalServiceCharge
-
-                    val split_totalDiscount = totalDiscount / splitNo
-                    totalDiscount -= split_totalDiscount
-
-                    val split_cashDiscount = cashDiscountSurcharge / splitNo
-                    cashDiscountSurcharge -= split_cashDiscount
-                }
-
-            }
-        } else if (splitPayType == SPLIT_PAY_AMOUNT) {
-
-
-            if (splitPayAmount.isNotEmpty()) {
-
-
-                val tipAmount1 =
-                    (splitPayAmount.toDouble() * tipAmount) / (totalPrice + tipAmount)
-
-                val total = ((totalPrice) + tipAmount1)
-
-                val subTotalPrice1 = (splitPayAmount.toDouble() * subTotalPrice) / total
-                val totalServiceCharge1 =
-                    (splitPayAmount.toDouble() * totalServiceCharge) / total
-                val totalTax1 = (splitPayAmount.toDouble() * totalTax) / total
-                val totalDiscount1 = (splitPayAmount.toDouble() * totalDiscount) / total
-
-
-                totalPrice -= splitPayAmount.toDouble()
-                subTotalPrice -= subTotalPrice1
-                totalTax -= totalTax1
-                totalServiceCharge -= totalServiceCharge1
-                totalDiscount -= totalDiscount1
-//                tipAmount -= tipAmount1
-
-            }
-        }
-
     }
 
     private fun setUpPaymentTypeWiseData(payType: String) {
@@ -426,7 +458,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 binding.txtTotalAmount,
                 totalPrice / splitValue
             )
-//            MethodUtils.setPriceTextView(binding.txtTotal, WholetotalPrice)
+
 
         } else if (payType == "Card") {
             if (MethodUtils.isEnableCashDiscount(requireContext())) {
@@ -453,7 +485,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 binding.linearnoncashAdj.visibility = View.GONE
             }
             MethodUtils.setPriceTextView(binding.txtTotalAmount, cardPaymentAmount)
-//            MethodUtils.setPriceTextView(binding.txtTotal, WholetotalPrice)
+
         }
     }
 
@@ -473,22 +505,14 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 } else {
                     splitAfterAmount = ((totalPrice + tipAmount)) / splitValue
                 }
-                var dividedCashDiscount = cashDiscountSurcharge / splitValue
-                var remainingCashDiscount = cashDiscountSurcharge - dividedCashDiscount
-
-                prefProvider.setValue(
-                    "cashDiscountSurcharge",
-                    remainingCashDiscount.toString()
-                )
-
                 setSplitData()
             } else {
-                isSplitByAmount = true
-                isSplitByNo = false
                 splitAfterAmount = bundle.getDouble("splitByAmount")
                 val totalAmountFormat = MethodUtils.roundOffAmount(totalPrice)
                 binding.txtSplitValue.text =
                     "Out of $totalAmountFormat Total, Payment 1 of $splitAfterAmount"
+                isSplitByNo = false
+                isSplitByAmount = true
                 setSplitData()
             }
         }
@@ -500,6 +524,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             isSplitByAmount = false
             splitValue = -1
             paymentAmount = amounnt
+            cardPaymentAmount = paymentAmount + cashDiscountSurcharge
+            binding.txtCardAmount.text = "$ " + String.format("%.2f", cardPaymentAmount)
             MethodUtils.setPriceTextView(binding.txtTotalAmount, paymentAmount)
             getCashPaymentOptionList(paymentAmount)
         }
@@ -655,15 +681,20 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             R.id.txtOriginalAmount -> {
                 paymentType = "Cash"
                 paymentAmount = when {
-
                     isSplitByNo -> {
+                        var remainningCashDiscount =
+                            cashDiscountSurcharge - (cashDiscountSurcharge / splitValue)
+                        prefProvider.setValue(
+                            CASH_DISCOUNT_SURCHARGE,
+                            String.format("%.2f", remainningCashDiscount)
+                        )
                         splitAfterAmount
                     }
                     isSplitByAmount -> {
                         splitAfterAmount
                     }
                     isCustomCash -> {
-                        splitAfterAmount
+                        paymentAmount
                     }
                     else -> {
                         if (remainingAmount == 0.0) {
@@ -703,8 +734,13 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             R.id.llCash -> {
                 paymentType = "Cash"
                 paymentAmount = when {
-
                     isSplitByNo -> {
+                        var remainningCashDiscount =
+                            cashDiscountSurcharge - (cashDiscountSurcharge / splitValue)
+                        prefProvider.setValue(
+                            CASH_DISCOUNT_SURCHARGE,
+                            String.format("%.2f", remainningCashDiscount)
+                        )
                         splitAfterAmount
                     }
                     isSplitByAmount -> {
@@ -725,23 +761,22 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
             }
             R.id.llCredit -> {
-
                 paymentType = "Card"
                 setUpPaymentTypeWiseData("Card")
-                val handler = Handler(Looper.getMainLooper())
-                handler.postDelayed({
-
-                    when {
-                        isSplitByNo -> {
-                            prefProvider.setValue(
-                                CASH_DISCOUNT_SURCHARGE,
-                                "" + cashDiscountSurcharge / splitValue
-                            )
-                        }
-                    }
-                    makePaymentCreditCard()
-                }, 2000)
-
+                if (isSplitByNo) {
+                    var remainningCashDiscount =
+                        cashDiscountSurcharge - (cashDiscountSurcharge / splitValue)
+                    prefProvider.setValue(
+                        CASH_DISCOUNT_SURCHARGE,
+                        String.format("%.2f", remainningCashDiscount)
+                    )
+                } else if (isSplitByAmount) {
+                    prefProvider.setValue(
+                        CASH_DISCOUNT_SURCHARGE,
+                        String.format("%.2f", cashDiscountSurcharge)
+                    )
+                }
+                makePaymentCreditCard()
             }
 
 
@@ -840,26 +875,82 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
     private fun makePaymentCreditCard() {
 
-        when {
-            isSplitByNo -> {
+        if (isUpdate)
+            viewModel.updateOrder(
+                true,
+                orderId,
+                paymentId,
+                paymentOfflineId,
+                orderOfflineId
+            )
+
+        if (isSplitByNo) {
+            val myRequest = cartList?.let {
+                viewModel.createOrderRequestForCard(
+                    it,
+                    subTotalPrice / splitValue,
+                    cardPaymentAmount,
+                    totalServiceCharge / splitValue,
+                    totalTax / splitValue,
+                    prefProvider.getValue(Constants.ORDER_TYPE, "").toString(),
+                    future_delivery_date,
+                    future_delivery_date,
+                    true,
+                    totalDiscount / splitValue,
+                    tipAmount,
+                    splitValue,
+                    redeemLoyaltyInfo,
+                    cashDiscountSurcharge / splitValue,
+                    true,
+                    paymentType, cashDiscountType
+                )
+            }
+            if (myRequest != null) {
+                viewModel.totalPayAmount(cardPaymentAmount)
+                val orderId = prefProvider.getValueInt("ORDER_ID", -1)
+                if (orderId == -1) {
+                    viewModel.submit(myRequest)
+                } else {
+
+                    val paymentReq = myRequest.order.paymentAttributes
+                    if (paymentReq != null) {
+                        paymentReq.order_id = orderId
+                    }
+
+                    val aa = SpitByOrderRequestModel(
+                        orderId,
+                        true,
+                        paymentReq!!,
+                        SpitByOrderPaymentModel(listOf(paymentReq))
+                    )
+
+                    viewModel.splitByOrder(aa, false)
+
+                }
+            }
+        } else if (isSplitByAmount) {
+            try {
+
                 val myRequest = cartList?.let {
-                    viewModel.createOrderRequestForCard(
+
+                    viewModel.createOrderRequest(
                         it,
-                        subTotalPrice / splitValue,
+                        subTotalPrice,
                         cardPaymentAmount,
-                        totalServiceCharge / splitValue,
-                        totalTax / splitValue,
+                        totalServiceCharge,
+                        totalTax,
                         prefProvider.getValue(Constants.ORDER_TYPE, "").toString(),
                         future_delivery_date,
                         future_delivery_date,
-                        true,
-                        totalDiscount / splitValue,
+                        false,
+                        totalDiscount,
                         tipAmount,
                         splitValue,
                         redeemLoyaltyInfo,
-                        cashDiscountSurcharge / splitValue,
+                        cashDiscountSurcharge,
                         true,
-                        paymentType, cashDiscountType
+                        paymentType,
+                        cashDiscountType
                     )
                 }
                 if (myRequest != null) {
@@ -876,84 +967,68 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
                         val aa = SpitByOrderRequestModel(
                             orderId,
-                            true,
+                            false,
                             paymentReq!!,
                             SpitByOrderPaymentModel(listOf(paymentReq))
                         )
 
-                        viewModel.splitByOrder(aa, false)
+
+                        viewModel.splitByOrder(aa!!, false)
 
                     }
                 }
+            } catch (e: Exception) {
+                Log.d(TAG, "makePayment: " + e.toString())
             }
-            else -> {
-                val myRequest = cartList?.let {
-                    if (splitValue != -1) {
-                        viewModel.createOrderRequestForCard(
-                            it,
-                            subTotalPrice / splitValue,
-                            cardPaymentAmount,
-                            totalServiceCharge / splitValue,
-                            totalTax / splitValue,
-                            prefProvider.getValue(Constants.ORDER_TYPE, "").toString(),
-                            future_delivery_date,
-                            future_delivery_date,
-                            true,
-                            totalDiscount / splitValue,
-                            tipAmount / splitValue,
-                            splitValue,
-                            redeemLoyaltyInfo,
-                            cashDiscountSurcharge / splitValue,
-                            true,
-                            paymentType, cashDiscountType
-                        )
-                    } else {
-                        viewModel.createOrderRequestForCard(
-                            it,
-                            subTotalPrice,
-                            cardPaymentAmount,
-                            totalServiceCharge,
-                            totalTax,
-                            prefProvider.getValue(Constants.ORDER_TYPE, "").toString(),
-                            future_delivery_date,
-                            future_delivery_date,
-                            true,
-                            totalDiscount,
-                            tipAmount,
-                            splitValue,
-                            redeemLoyaltyInfo,
-                            cashDiscountSurcharge,
-                            true,
-                            paymentType, cashDiscountType
-                        )
+        } else {
+
+
+            val myRequest = cartList?.let {
+
+                viewModel.createOrderRequest(
+                    it,
+                    subTotalPrice,
+                    cardPaymentAmount,
+                    totalServiceCharge,
+                    totalTax,
+                    prefProvider.getValue(Constants.ORDER_TYPE, "").toString(),
+                    future_delivery_date,
+                    future_delivery_date,
+                    true,
+                    totalDiscount,
+                    tipAmount,
+                    splitValue,
+                    redeemLoyaltyInfo,
+                    cashDiscountSurcharge,
+                    true,
+                    paymentType, cashDiscountType
+                )
+            }
+            if (myRequest != null) {
+                viewModel.totalPayAmount(cardPaymentAmount)
+                val orderId = prefProvider.getValueInt("ORDER_ID", -1)
+                if (orderId == -1) {
+                    viewModel.submit(myRequest)
+                } else {
+
+                    val paymentReq = myRequest.order.paymentAttributes
+                    if (paymentReq != null) {
+                        paymentReq.order_id = orderId
                     }
 
-                }
-                if (myRequest != null) {
-                    viewModel.totalPayAmount(cardPaymentAmount)
-                    val orderId = prefProvider.getValueInt("ORDER_ID", -1)
-                    if (orderId == -1) {
-                        viewModel.submit(myRequest)
-                    } else {
+                    val aa = SpitByOrderRequestModel(
+                        orderId,
+                        true,
+                        paymentReq!!,
+                        SpitByOrderPaymentModel(listOf(paymentReq))
+                    )
 
-                        val paymentReq = myRequest.order.paymentAttributes
-                        if (paymentReq != null) {
-                            paymentReq.order_id = orderId
-                        }
+                    viewModel.splitByOrder(aa, false)
 
-                        val aa = SpitByOrderRequestModel(
-                            orderId,
-                            true,
-                            paymentReq!!,
-                            SpitByOrderPaymentModel(listOf(paymentReq))
-                        )
-
-                        viewModel.splitByOrder(aa, false)
-
-                    }
                 }
             }
         }
+
     }
 
 
@@ -1022,23 +1097,12 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             }
         } else if (isSplitByAmount) {
             try {
-                splitValue = -1
-                val tipAmount =
-                    (splitAfterAmount * tipAmount) / (totalPrice + tipAmount)
-                val total = splitAfterAmount
-                val subTotalPrice = (splitAfterAmount * subTotalPrice) / totalPrice + tipAmount
-                val totalServiceCharge =
-                    (splitAfterAmount * totalServiceCharge) / totalPrice + tipAmount
-                val totalTax = (splitAfterAmount * totalTax) / totalPrice + tipAmount
-                val totalDiscount = (splitAfterAmount * totalDiscount) / totalPrice + tipAmount
-
-
                 val myRequest = cartList?.let {
 
                     viewModel.createOrderRequest(
                         it,
                         subTotalPrice,
-                        total,
+                        splitAfterAmount,
                         totalServiceCharge,
                         totalTax,
                         prefProvider.getValue(Constants.ORDER_TYPE, "").toString(),
@@ -1088,7 +1152,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 viewModel.createOrderRequest(
                     it,
                     subTotalPrice,
-                    totalPrice + tipAmount,
+                    totalPrice,
                     totalServiceCharge,
                     totalTax,
                     prefProvider.getValue(Constants.ORDER_TYPE, "").toString(),
@@ -1105,7 +1169,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 )
             }
             if (myRequest != null) {
-                viewModel.totalPayAmount(totalPrice + tipAmount)
+                viewModel.totalPayAmount(totalPrice)
                 val orderId = prefProvider.getValueInt("ORDER_ID", -1)
                 if (orderId == -1) {
                     viewModel.submit(myRequest)
@@ -1201,6 +1265,17 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         })
     }
 
+    fun setPaymentAttriButes(type: String, split: Int) {
+        var temp_value =
+            prefProvider.getValue(type, "").toDouble()
+        var remaining_Value =
+            temp_value - (temp_value / split)
+        prefProvider.setValue(
+            type,
+            remaining_Value.toString()
+        )
+    }
+
     private fun observeData() {
 
         viewModel.data.observe(viewLifecycleOwner, { event ->
@@ -1250,14 +1325,32 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                 bundle.putParcelable("receiptData", it.data)
                                 bundle.putInt("splitValue", splitValue)
                                 if (splitValue != -1) {
-                                    if (WholetotalPrice <= cardPaymentAmount) {
+                                    if (remainingAmount <= 0.0) {
                                         bundle.putBoolean("isSpilt", false)
+                                        prefProvider.setValue(SUB_TOTAL, "")
+                                        prefProvider.setValueInt("ORDER_ID", -1)
+                                        prefProvider.setValue(TOTAL_DISCOUNT, "")
+                                        prefProvider.setValue(TIP, "")
+                                        prefProvider.setValue(TAX_CHARGE, "")
+                                        prefProvider.setValue(SERVICE_CHARGE, "")
                                     } else {
                                         bundle.putBoolean("isSpilt", true)
+                                        setPaymentAttriButes(SUB_TOTAL, splitValue)
+                                        setPaymentAttriButes(SERVICE_CHARGE, splitValue)
+                                        setPaymentAttriButes(TAX_CHARGE, splitValue)
+                                        setPaymentAttriButes(TIP, splitValue)
+                                        setPaymentAttriButes(TOTAL_DISCOUNT, splitValue)
                                     }
                                 } else {
                                     bundle.putBoolean("isSpilt", false)
+                                    prefProvider.setValue(SUB_TOTAL, "")
+                                    prefProvider.setValueInt("ORDER_ID", -1)
+                                    prefProvider.setValue(TOTAL_DISCOUNT, "")
+                                    prefProvider.setValue(TIP, "")
+                                    prefProvider.setValue(TAX_CHARGE, "")
+                                    prefProvider.setValue(SERVICE_CHARGE, "")
                                 }
+
                                 bundle.putBoolean("isSplitByNo", isSplitByNo)
                                 bundle.putBoolean("isSplitByAmount", isSplitByAmount)
                                 bundle.putString("paymentType", "Card")
@@ -1313,6 +1406,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                 if (splitValue != -1) {
                                     if (WholetotalPrice <= cardPaymentAmount) {
                                         bundle.putBoolean("isSpilt", false)
+                                        prefProvider.setValueInt("ORDER_ID", -1)
                                     } else {
                                         bundle.putBoolean("isSpilt", true)
                                     }
@@ -1370,7 +1464,6 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                     "%.2f",
                                     prefProvider.getValue("WholeTotal", "").toDouble()
                                 )
-
                                 bundle.putDouble("WholetotalPrice", wholetotalPriceTemp.toDouble())
                                 var remainingAmount = 0.0
                                 remainingAmount = String.format(
@@ -1389,14 +1482,32 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                 bundle.putParcelable("receiptData", it.data)
                                 bundle.putInt("splitValue", splitValue)
 
+
                                 if (splitValue != -1) {
-                                    if (WholetotalPrice <= splitAfterAmount || remainingAmount == 0.0) {
+                                    if (remainingAmount <= 0.0) {
                                         bundle.putBoolean("isSpilt", false)
+                                        prefProvider.setValue(SUB_TOTAL, "")
+                                        prefProvider.setValue(TOTAL_DISCOUNT, "")
+                                        prefProvider.setValue(TIP, "")
+                                        prefProvider.setValue(TAX_CHARGE, "")
+                                        prefProvider.setValue(SERVICE_CHARGE, "")
+                                        prefProvider.setValueInt("ORDER_ID", -1)
                                     } else {
                                         bundle.putBoolean("isSpilt", true)
+                                        setPaymentAttriButes(SUB_TOTAL, splitValue)
+                                        setPaymentAttriButes(SERVICE_CHARGE, splitValue)
+                                        setPaymentAttriButes(TAX_CHARGE, splitValue)
+                                        setPaymentAttriButes(TIP, splitValue)
+                                        setPaymentAttriButes(TOTAL_DISCOUNT, splitValue)
                                     }
                                 } else {
                                     bundle.putBoolean("isSpilt", false)
+                                    prefProvider.setValue(SUB_TOTAL, "")
+                                    prefProvider.setValueInt("ORDER_ID", -1)
+                                    prefProvider.setValue(TOTAL_DISCOUNT, "")
+                                    prefProvider.setValue(TIP, "")
+                                    prefProvider.setValue(TAX_CHARGE, "")
+                                    prefProvider.setValue(SERVICE_CHARGE, "")
                                 }
                                 bundle.putBoolean("isSplitByNo", isSplitByNo)
                                 bundle.putBoolean("isSplitByAmount", isSplitByAmount)
@@ -1439,8 +1550,9 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                 bundle.putInt("orderID", it.data.order.id)
                                 bundle.putParcelable("receiptData", it.data)
                                 bundle.putInt("splitValue", splitValue)
-                                if (WholetotalPrice <= splitAfterAmount || remainingAmount == 0.0) {
+                                if (remainingAmount == 0.0) {
                                     bundle.putBoolean("isSpilt", false)
+                                    prefProvider.setValueInt("ORDER_ID", -1)
                                 } else {
                                     bundle.putBoolean("isSpilt", true)
                                 }
@@ -1470,8 +1582,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                 }
 
 
-                                bundle.putDouble("WholetotalPrice", WholetotalPrice)
-                                var remaining_custom = paymentAmount - WholetotalPrice
+                                bundle.putDouble("WholetotalPrice", totalPrice + tipAmount)
+                                var remaining_custom = paymentAmount - totalPrice + tipAmount
                                 bundle.putDouble(
                                     "remainingAmount",
                                     remaining_custom
