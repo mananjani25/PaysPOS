@@ -1404,7 +1404,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             txtTotalcashAdj.text = "$" + String.format(
                 "%.2f",
                 MethodUtils.calculateCashDiscount(
-                    amountToBepaid - cartList[0].discountPrice,
+                    amountToBepaid,
                     prefProvider,
                     requireContext()
                 )
@@ -1414,7 +1414,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         }
 
 
-        MethodUtils.setPriceTextView(txtTotalAmount, amountToBepaid - cartList[0].discountPrice)
+        MethodUtils.setPriceTextView(txtTotalAmount, amountToBepaid)
     }
 
     private fun resetTabbySearch(model: CategorySearchData) {

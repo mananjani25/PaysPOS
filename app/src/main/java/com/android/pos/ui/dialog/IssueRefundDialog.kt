@@ -86,24 +86,24 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                         if (mData.cash_discount_type == "SurCharge") {
                             MethodUtils.setRefundPriceTextView(
                                 binding.tvTotalRefundAmount,
-                                (mData.sub_total + mData.tips + mData.tax_amount + mData.service_charge_amount + mData.cash_discount_or_surcharge - (mData.loyalty_amount!! + mData.total_discount))
+                                (mData.sub_total + mData.tips + mData.tax_amount + mData.service_charge_amount + mData.cash_discount_or_surcharge - (mData.loyalty_amount!! /*+ mData.total_discount*/))
                             )
                         } else {
                             MethodUtils.setRefundPriceTextView(
                                 binding.tvTotalRefundAmount,
-                                (mData.sub_total + mData.tips + mData.tax_amount + mData.service_charge_amount - (mData.loyalty_amount!! + mData.total_discount))
+                                (mData.sub_total + mData.tips + mData.tax_amount + mData.service_charge_amount - (mData.loyalty_amount!! /*+ mData.total_discount*/))
                             )
                         }
                     } else if (mData.payment_type == "Cash") {
                         if (mData.cash_discount_type == "CashDiscount") {
                             MethodUtils.setRefundPriceTextView(
                                 binding.tvTotalRefundAmount,
-                                (mData.sub_total + mData.tips + mData.tax_amount + mData.service_charge_amount - (mData.loyalty_amount!! + +mData.cash_discount_or_surcharge + mData.total_discount))
+                                (mData.sub_total + mData.tips + mData.tax_amount + mData.service_charge_amount - (mData.loyalty_amount!! + +mData.cash_discount_or_surcharge /*+ mData.total_discount*/))
                             )
                         } else {
                             MethodUtils.setRefundPriceTextView(
                                 binding.tvTotalRefundAmount,
-                                (mData.sub_total + mData.tips + mData.tax_amount + mData.service_charge_amount - (mData.loyalty_amount!! + mData.total_discount))
+                                (mData.sub_total + mData.tips + mData.tax_amount + mData.service_charge_amount - (mData.loyalty_amount!! /*+ mData.total_discount*/))
                             )
                         }
                     }

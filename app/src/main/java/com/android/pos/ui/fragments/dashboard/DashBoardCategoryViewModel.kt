@@ -569,6 +569,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                     }
                 }
 
+
+                subTotalPrice -= cartList[0].discountPrice
+
                 serviceChargeCalculation(cartList)
 
                 totalDiscount = cartList[0].items!!.map {
@@ -578,7 +581,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 totalPrice = (subTotalPrice + totalTax + totalServiceCharge)
 
                 //loyalty point and price calculation
-                amountToBePaid = totalPrice - cartList[0].discountPrice
+                amountToBePaid = totalPrice
                 if (selectedCustomer == null) {
                     var fnAmount = amountToBePaid
                     MethodUtils.setPriceTextView(
