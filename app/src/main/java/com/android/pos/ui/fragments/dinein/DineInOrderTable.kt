@@ -354,6 +354,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             bundle.putBoolean("isLastPayment", true)
 
             orderId?.let { it1 -> bundle.putInt("orderId", it1) }
+            orderId?.let { it1 -> prefProvider.setValueInt("ORDER_ID", it1) }
 
             findNavController().navigate(
                 R.id.action_dineInOrderTable_to_payByGuestDialog,
@@ -863,6 +864,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         bundle.putParcelable("orderPayment", modelReq)
         orderId?.let { bundle.putInt("orderId", it) }
         bundle.putBoolean("isGuestPay", true)
+        orderId?.let { it1 -> bundle.putInt("orderId", it1) }
+        orderId?.let { it1 -> prefProvider.setValueInt("ORDER_ID", it1) }
         var wholeTableAmt = 0.0
         var paidAmount = 0.0
         for (i in 0 until adapterList.size) {
@@ -879,8 +882,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             }
 
         }
-
-
         if (totalGuestCount.minus(1) == paidGuestAmount) {
             bundle.putBoolean("isLastPayment", true)
         } else {
@@ -890,141 +891,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             R.id.action_dineInOrderTable_to_payByGuestDialog,
             bundle
         )
-        // var subTotal = 0.0
-        var totalTax = 0.0
 
-
-        /*val total = dineInModel.items
-        var subTotal = 0.0
-        var totalTax = 0.0
-        if (total.isNotEmpty()) {
-            total.forEach {
-                subTotal += it.price * it.itemQuantity
-                it.taxes?.forEach { tax ->
-                    totalTax += tax.rate
-                }
-            }
-            subTotal += dineInTableAdapter.getList().get(0).guestDividedAmt
-
-            var total = subTotal + totalTax
-            Log.e(TAG, "total:  ${total}")
-
-            var model = GuestPaymentRequest(
-                PaymentAttributes().apply {
-                    amount = total
-                    cardName = ""
-                    cardNumber = ""
-                    cardType = ""
-                    cashDiscount = 0.0
-                    cashDiscountFee = 0.0
-                    employeeId = prefProvider.getValueInt(EMPLOYEE_ID, 0)
-                    taxAmount = totalTax
-                    subTotalPrice = subTotal
-                    offlineId = randomOfflineId()
-                    payableType = "GuestTab"
-                    paymentType = "Cash"
-                    transactionId = randomOfflineId()
-                    terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
-
-                }
-            )
-
-            // dineInModel.id?.let { viewModel.payByGuest(it, model) }
-
-            Log.e(TAG, "DineTablecartList:  ${Gson().toJson(cartList)}")
-            Log.e(TAG, "DineTabletotalPrice:   ${totalPrice}")
-            Log.e(TAG, "DineTabletotalTax: ${totalTax}")
-
-            val bundle = Bundle()
-            bundle.putInt("id", dineInModel.id!!)
-            bundle.putParcelable("cartList", cartList)
-            bundle.putDouble("totalPrice", total)
-            bundle.putDouble("subTotalPrice", subTotal)
-            bundle.putDouble("totalTax", totalTax)
-            bundle.putParcelable("model", model)
-            bundle.putParcelable("floorPlan", floorPlanModel)
-
-            val list = dineInTableAdapter.getList()
-
-            var wholeTableAmt = 0.0
-            for (i in 0 until list.size) {
-                list.get(i).items.forEach {
-                    wholeTableAmt += it.price * it.itemQuantity
-                    if (it.modifiers.isNotEmpty()) {
-                        it.modifiers.forEach {
-                            wholeTableAmt += it.price * it.itemQuantity
-                        }
-                    }
-
-                }
-
-            }
-
-
-            var totalPaid = 0.0
-
-            var wtAmt: Double = 0.0
-            list.get(0).items.forEach {
-                wtAmt += it.price * it.itemQuantity
-                if (it.modifiers.isNotEmpty()) {
-                    it.modifiers.forEach {
-                        wtAmt += it.price * it.itemQuantity
-                    }
-                }
-            }
-
-
-            Log.e(TAG, " ComplexResponse  ${Gson().toJson(list)}")
-
-            var dividedAmt: Double =
-                wtAmt / (list.size - 1)
-            Log.e(TAG, "NEwdividedAmt ${dividedAmt}")
-            for (i in 0 until list.size) {
-                list.get(i).items.forEach {
-                    if (it.isPaid) {
-                        totalPaid += it.price * it.itemQuantity
-                        if (it.modifiers.isNotEmpty()) {
-                            it.modifiers.forEach {
-
-                                totalPaid += it.price * it.itemQuantity
-                            }
-                        }
-
-                        Log.e(TAG, "totalPaidNew:  ${totalPaid}")
-                    }
-
-                    Log.e(TAG, "isPaidAmt ${list.get(i).isPaid}")
-
-
-                }
-                if (list.get(i).isPaid) {
-                    totalPaid += dividedAmt
-                }
-            }
-
-            totalPaid = totalPaid
-            wholeTableAmt = wholeTableAmt
-            total = total
-
-            Log.e(TAG, "totalPaid  ${totalPaid}")
-            Log.e(TAG, "wholeTableAmtGetD  ${wholeTableAmt}")
-
-            Log.e(TAG, "itemPayment:  ${total}")
-
-            if ((wholeTableAmt - totalPaid) == total) {
-                bundle.putBoolean("isLastPayment", true)
-            } else {
-                bundle.putBoolean("isLastPayment", false)
-            }
-
-            findNavController().navigate(
-                R.id.action_dineInOrderTable_to_payByGuestDialog,
-                bundle
-            )*/
-        /* val list = dineInTableAdapter.getList()
-         list[position].isPaid = true
-         dineInTableAdapter.setList(list.toCollection(arrayListOf()))
-*/
 
     }
 

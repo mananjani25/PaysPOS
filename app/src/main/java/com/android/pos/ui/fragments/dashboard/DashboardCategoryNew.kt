@@ -168,21 +168,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         binding = FragmentDashboardCategoryNewBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
         getLoyaltyPrograms()
-
-        prefProvider.setValue(Constants.SPLIT_PAY_AMOUNT, "")
-        prefProvider.setValueInt(Constants.SPLIT_NO, -1)
-        prefProvider.setValue(Constants.SPLIT_PAY_TYPE, "")
-        isOrderUpdate = requireArguments().getBoolean("update")
-        prefProvider.setValue("PaidAmount", "")
-        prefProvider.setValue("WholeTotal", "")
-        prefProvider.setValueInt("cardCount", 0)
-        prefProvider.setValue(Constants.SUB_TOTAL, "")
-        prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
-        prefProvider.setValue(Constants.TOTAL_DISCOUNT, "")
-        prefProvider.setValue(Constants.TIP, "")
-        prefProvider.setValue(Constants.TAX_CHARGE, "")
-        prefProvider.setValue(Constants.SERVICE_CHARGE, "")
-        optionType = prefProvider.getValue(OPTION_TYPE, "")
+        clearPrefrenceOfOrder()
         if (isOrderUpdate) {
             orderId = requireArguments().getInt("orderId")
             paymentId = requireArguments().getInt("paymentId")
@@ -263,7 +249,26 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         return binding.root
     }
+    fun clearPrefrenceOfOrder() {
+        prefProvider.setValue("PaidAmount", "")
+        prefProvider.setValue("WholeTotal", "")
+        prefProvider.setValueInt("cardCount", 0)
+        prefProvider.setValue(Constants.SUB_TOTAL, "")
+        prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
+        prefProvider.setValue(Constants.TOTAL_DISCOUNT, "")
+        prefProvider.setValue(Constants.TIP, "")
+        prefProvider.setValue(Constants.TAX_CHARGE, "")
+        prefProvider.setValue(Constants.SERVICE_CHARGE, "")
 
+        prefProvider.setValue(Constants.SUB_TOTAL_DINEIN, "")
+        prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE_DINEIN, "")
+        prefProvider.setValue(Constants.TOTAL_DISCOUNT_DINEIN, "")
+        prefProvider.setValue(Constants.TIPS_AMOUNT_DINEIN, "")
+        prefProvider.setValue(Constants.TAX_CHARGE_DINEIN, "")
+        prefProvider.setValue(Constants.SERVICE_CHARGE_DINEIN, "")
+        prefProvider.setValue(Constants.TOTAL_PRICE_DINEIN, "")
+        optionType = prefProvider.getValue(OPTION_TYPE, "")
+    }
     private fun getLoyaltyPrograms() {
         Log.e("Loyalty", "getLoyaltyPrograms called..")
         viewModel.activeLoyaltyProgram = prefProvider.getActiveLoyaltyData()

@@ -249,7 +249,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
             }
-        }else{
+        } else {
             if (isSpilt) {
                 binding.constraintSplit.visibility = View.VISIBLE
                 binding.viewSplitLine.visibility = View.VISIBLE
@@ -279,8 +279,21 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 binding.txtPaymentAmount.text = "Out of " + MethodUtils.roundOffAmount(paidAmount)
             } else {
-                binding.llHome.visibility = View.VISIBLE
-                binding.txtHome.visibility = View.VISIBLE
+                if (isGuest) {
+                    if (isLastPayment) {
+                        binding.llHome.visibility = View.VISIBLE
+                        binding.txtHome.visibility = View.VISIBLE
+                        binding.llCheckOut.visibility = View.GONE
+                    } else {
+                        binding.llHome.visibility = View.GONE
+                        binding.txtHome.visibility = View.GONE
+                        binding.llCheckOut.visibility = View.VISIBLE
+                    }
+                } else {
+                    binding.llHome.visibility = View.VISIBLE
+                    binding.txtHome.visibility = View.VISIBLE
+                    binding.llCheckOut.visibility = View.GONE
+                }
                 binding.llNoReceipt.visibility = View.VISIBLE
                 binding.viewSplitLine.visibility = View.GONE
                 binding.constraintSplit.visibility = View.GONE
