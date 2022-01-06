@@ -313,13 +313,12 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
 
             if (paymentOrderDetailsResponse.data.order.refund_detail.refunded_amount.equals(0.0)) {
                 if (binding.edtAmount.text.toString()
-                        .toDouble() > paymentOrderDetailsResponse.data.order.total_amount
+                        .toDouble() > paymentOrderDetailsResponse.data.amount
                 ) {
-                    binding.edtAmount.setText(MethodUtils.roundOffAmountString((paymentOrderDetailsResponse.data.order.total_amount - paymentOrderDetailsResponse.data.order.total_tips).toDouble()))
+                    binding.edtAmount.setText(MethodUtils.roundOffAmountString((paymentOrderDetailsResponse.data.amount).toDouble()))
                 }
             } else {
-                val newPrice =
-                    (paymentOrderDetailsResponse.data.order.total_amount - paymentOrderDetailsResponse.data.order.total_tips) - paymentOrderDetailsResponse.data.order.refund_detail.refunded_amount
+                val newPrice = paymentOrderDetailsResponse.data.amount - paymentOrderDetailsResponse.data.order.refund_detail.refunded_amount
                 if (binding.edtAmount.text.toString().toDouble() > newPrice) {
                     binding.edtAmount.setText(MethodUtils.roundOffAmountString(newPrice.toDouble()))
                 }
