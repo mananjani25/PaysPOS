@@ -26,6 +26,7 @@ class ManualSaleViewModel @Inject constructor(
     private val appDataBase: AppDatabase,
     private val prefProvider: PrefProvider
 ) : ViewModel() {
+    private var mPosition: Int = 0
     private lateinit var aa: LiveData<Int>
     private val TAG = "ManualSaleViewModel"
 
@@ -85,67 +86,79 @@ class ManualSaleViewModel @Inject constructor(
 
             if (list != null && list.isNotEmpty()) {
 
-                if (type == ADD || type == UPDATE) {
-                    var index = -1
 
-                    list.forEachIndexed { pos, tbItem ->
-                        if (item != null) {
-                            if (tbItem.itemId == item.itemId) {
-                                index = pos
-                                return@forEachIndexed
-                            }
-                        }
-                    }
-                    if (index != -1) {
-                        val model = cartList[0].items?.get(index)
+                if (type == ADD) {
+                    list.add(item)
+                } else if (type == UPDATE) {
+
+
+                    if (mPosition != -1) {
+                        val model = cartList[0].items?.get(mPosition)
+
                         if (model != null) {
-                            if (type == "UPDATE") {
-                                if (item != null) {
-                                    model.itemQuantity = item.itemQuantity
-                                    if (item.isEdited) {
-                                        model.isEdited = item.isEdited
-                                    }
-                                }
-                                list[index] = model
-                            } else {
-                                if (index != -1) {
-                                    if (item != null) {
-                                        model.itemQuantity =
-                                            item.itemQuantity + model.itemQuantity
-                                    }
-
-                                    list[index] = model
-                                } else {
-                                    if (item != null) {
-                                        model.itemQuantity = item.itemQuantity
-                                        if (item.isEdited) {
-                                            model.isEdited = item.isEdited
-                                        }
-                                    }
-                                    list[index] = model
-                                }
+                            model.itemQuantity = item.itemQuantity
+                            if (item.isEdited) {
+                                model.isEdited = item.isEdited
                             }
-
-                        }
-                    } else {
-                        if (item != null) {
-                            list.add(item)
+                            list[mPosition] = model
                         }
                     }
-                } else if (type == DELETE) {
 
-                    var index = -1
+                }
 
-                    list.forEachIndexed { pos, tbItem ->
-                        if (item != null) {
-                            if (tbItem.itemId == item.itemId) {
-                                index = pos
-                                return@forEachIndexed
-                            }
-                        }
-                    }
-                    if (index != -1) {
-                        val model = cartList[0].items?.get(index)
+//                if (type == ADD) {
+////                    var index = -1
+////
+////                    list.forEachIndexed { pos, tbItem ->
+////                        if (item != null) {
+////                            if (tbItem.itemId == item.itemId) {
+////                                index = pos
+////                                return@forEachIndexed
+////                            }
+////                        }
+////                    }
+////                    if (index != -1) {
+////                        val model = cartList[0].items?.get(index)
+////                        if (model != null) {
+////                            if (type == "UPDATE") {
+////                                if (item != null) {
+////                                    model.itemQuantity = item.itemQuantity
+////                                    if (item.isEdited) {
+////                                        model.isEdited = item.isEdited
+////                                    }
+////                                }
+////                                list[index] = model
+////                            } else {
+////                                if (index != -1) {
+////                                    if (item != null) {
+////                                        model.itemQuantity =
+////                                            item.itemQuantity + model.itemQuantity
+////                                    }
+////
+////                                    list[index] = model
+////                                } else {
+////                                    if (item != null) {
+////                                        model.itemQuantity = item.itemQuantity
+////                                        if (item.isEdited) {
+////                                            model.isEdited = item.isEdited
+////                                        }
+////                                    }
+////                                    list[index] = model
+////                                }
+////                            }
+////
+////                        }
+////                    } else {
+////                        if (item != null) {
+////                            list.add(item)
+////                        }
+////                    }
+//                }
+
+                else if (type == DELETE) {
+
+                    if (mPosition != -1) {
+                        val model = cartList[0].items?.get(mPosition)
                         if (model != null) {
                             //delete from cart
                             if (item.isEdited) {
@@ -325,5 +338,9 @@ class ManualSaleViewModel @Inject constructor(
             serviceCharge = serviceChargeList
         }
         return cartModel
+    }
+
+    fun setPosition(position: Int) {
+        mPosition = position
     }
 }

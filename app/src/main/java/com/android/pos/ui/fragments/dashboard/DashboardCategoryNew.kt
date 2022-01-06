@@ -756,6 +756,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         binding.layoutCart.rvCart.visibility = View.GONE
                         binding.layoutCart.llPayment.visibility = View.GONE
 
+
                     }
                 }
             )
@@ -1413,7 +1414,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         }
 
 
-        MethodUtils.setPriceTextView(txtTotalAmount, amountToBepaid - viewModel.totalDiscount)
+        MethodUtils.setPriceTextView(txtTotalAmount, amountToBepaid - cartList[0].discountPrice)
     }
 
     private fun resetTabbySearch(model: CategorySearchData) {
@@ -1857,14 +1858,18 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                                 (totalPrice(data) - data.discountPrice)
                             )
 
+                            viewModel.cartLogic(cartList, data, UPDATE)
+
                         }
-                        totalPrice(data) > result.percentage -> {
+                        result.discountType == "" -> {
                             totalDiscountMannualAdded = data.discountPrice
                             data.discountPrice = result.percentage
                             data.discountId = 0
                             data.discountType = result.discountType
                             data.isManualSales = false
                             discountPrice = data.discountPrice / data.itemQuantity
+
+                            viewModel.cartLogic(cartList, data, UPDATE)
                         }
                         else -> {
                             /*  data.discountPrice = 0.0
@@ -2081,7 +2086,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     private fun observeSaveOrder() {
 
-        viewModelPayment.data.observe(viewLifecycleOwner, { event ->
+        viewModelPayment.QueueStart.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let { it ->
                 AlertUtils.showCustomAlert(requireActivity(), it.message)
                 binding.layoutCart.txtSave.text = getString(R.string.save)

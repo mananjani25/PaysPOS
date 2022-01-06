@@ -816,6 +816,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
 
             model.price = String.format("%.2f", (itemCost)).toDouble()
 
+            viewModel.setPosition(position)
+
             viewModel.cartLogic(cartList, model, Constants.UPDATE)
         }
 

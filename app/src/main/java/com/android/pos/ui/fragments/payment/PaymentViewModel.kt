@@ -100,7 +100,7 @@ class PaymentViewModel @Inject constructor(
 
                                 if (onlySave) {
                                     _queueStart.value = Event(createOrderResponse)
-                                    //_data.value = Event(createOrderResponse)
+//                                    _data.value = Event(createOrderResponse)
                                 } else {
                                     if (createOrderResponse.data.order.orderType != "Dine In") {
                                         cashLogApi(createOrderResponse, "in")

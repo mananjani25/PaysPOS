@@ -298,6 +298,7 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
     }
 
     private fun cartModel(order: OpenOrderResponse.Data.Order): CartModel {
+        Log.e("futureDeliveryDate", order.futureDeliveryDate.toString())
         return CartModel().apply {
             terminalId = order.terminalId
             employeeID = order.employeeId
@@ -305,7 +306,7 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
             orderTypeId = order.orderTypeId
             orderType = order.orderType
             orderTypeName = order.orderType
-            futureDeliveryDate = order.futureDeliveryDate
+            futureDeliveryDate = order.futureDeliveryDate.toString()
             isOpenOrder = true
             serviceCharge = serviceChargesList(order)
             customer = assignCustomer(order)
