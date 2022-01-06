@@ -114,7 +114,7 @@
     <string name="tv_primary_job_title">Primary Job Title</string>
     <string name="tv_hourly_rate">Hourly Rate</string>
     <string name="tv_access">Access</string>
-    <string name="tv_permission_set_">Permission Set <font color='#E90C0C'>*</font></string>
+    <string name="tv_permission_set_">Role <font color='#E90C0C'>*</font></string>
     <string name="tv_permission_set">Permission Set</string>
     <string name="tv_personal_passcode">Passcode</string>
     <string name="tv_personal_passcode_">Passcode<font color='#E90C0C'>*</font></string>
@@ -123,7 +123,7 @@
     <string name="tv_update_team_member">Update Team Member</string>
     <string name="tv_info_email">Adding an email will invite this team member to create their login for POS.</string>
     <string name="tv_add_job_title">Add Job Title</string>
-    <string name="tv_team_permissions">Team Permissions</string>
+    <string name="tv_team_permissions">Choose Role</string>
     <string name="tv_clock_in">Clock In</string>
     <string name="tv_continue_to_pos">Continue to POS</string>
     <string name="name">Name <font color='#E90C0C'>*</font></string>
