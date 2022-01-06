@@ -46,7 +46,7 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
             addAll(noteList)
         }
         this.serviceCharge =
-            serviceCharge as Double
+            serviceCharge
         notifyDataSetChanged()
     }
 
@@ -91,11 +91,11 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
             var totalItemPrice: Double = (item.totalPrice - item.discountAmount).toDouble()
             if (paymentType == "Cash") {
                 if (cashdiscountType == "CashDiscount") {
-                    totalItemPrice -= cash_discount_or_surcharge
+                    totalItemPrice -= (cash_discount_or_surcharge / noteList.size)
                 }
             } else if (paymentType == "Card") {
                 if (cashdiscountType == "SurCharge") {
-                    totalItemPrice += cash_discount_or_surcharge
+                    totalItemPrice += (cash_discount_or_surcharge / noteList.size)
                 }
             }
 
@@ -104,6 +104,7 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
                     totalTax += it
                 }
             }
+
 
             item.orderItemModifiers.forEach { modifiers ->
                 totalItemPrice += (modifiers.price * modifiers.quantity)
@@ -116,7 +117,7 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
             }
 
             totalItemPrice += totalTax + serviceCharge
-            MethodUtils.setPriceTextView(itemBinding.tvItemPrice, totalItemPrice.toDouble())
+            MethodUtils.setPriceTextView(itemBinding.tvItemPrice, totalItemPrice)
 
             itemBinding.ivCheck.setOnClickListener {
                 item.isChecked = !item.isChecked
