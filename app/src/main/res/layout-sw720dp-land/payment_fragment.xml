@@ -218,6 +218,7 @@
                         android:gravity="center"
                         android:paddingVertical="@dimen/_10sdp"
                         android:text="@string/custom"
+                        android:visibility="invisible"
                         android:textColor="@color/btnColorDark_"
                         android:textSize="@dimen/_6mdpi" />
 
