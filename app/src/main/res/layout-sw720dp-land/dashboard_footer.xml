@@ -15,9 +15,9 @@
         android:id="@+id/relParent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
         android:layout_marginStart="@dimen/_5sdp"
         android:layout_marginEnd="@dimen/_5sdp"
+        android:background="@color/white"
         android:orientation="horizontal">
 
         <TextView
@@ -95,11 +95,11 @@
                     app:tint="@color/txt_color_blue" />
 
                 <TextView
-                    android:padding="@dimen/_5sdp"
                     android:id="@+id/txtCheckOut"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:padding="@dimen/_5sdp"
                     android:text="@string/checkout"
                     android:textColor="@color/txt_color_blue"
                     android:textSize="@dimen/_5mdpi" />
@@ -126,34 +126,36 @@
                     style="@style/CustomFontSemiBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/transactions"
                     android:padding="@dimen/_5sdp"
+                    android:text="@string/transactions"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_5mdpi" />
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/linearOpenOrders"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/_15sdp"
                 android:gravity="center"
                 android:orientation="horizontal"
+                android:visibility="visible"
                 tools:ignore="UseCompoundDrawables">
 
                 <ImageView
                     android:layout_width="@dimen/_8sdp"
                     android:layout_height="@dimen/_8sdp"
                     android:contentDescription="@string/notification"
-                    android:src="@drawable/ic_notification"
+                    android:src="@drawable/ic_orders"
                     app:tint="@color/txtColor" />
 
                 <TextView
                     style="@style/CustomFontSemiBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/notification"
                     android:padding="@dimen/_5sdp"
+                    android:text="@string/open_orders"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_5mdpi" />
             </LinearLayout>
@@ -181,8 +183,8 @@
                     style="@style/CustomFontSemiBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/more"
                     android:padding="@dimen/_5sdp"
+                    android:text="@string/more"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_5mdpi" />
             </LinearLayout>
