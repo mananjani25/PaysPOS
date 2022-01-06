@@ -31,6 +31,7 @@ import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.remote.Constants.MERGEDANDOCCUPIED
+import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
 import com.android.pos.data.remote.Constants.ORDER_TYPE_NAME
 import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.databinding.FragmentDineInOrderTableBinding
@@ -122,6 +123,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         observeServiceCharge()
         getCustomerReceiptSettings()
         getKitchenReceiptSettings()
+        observeFireAll()
+        observeQueueCreated()
 
         observeTipsList()
 
@@ -245,8 +248,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             for (i in 0 until ids.size) {
                 builder.append(ids.get(i))
                 builder.append(",")
-
-
             }
 
             orderId?.let { it1 ->
@@ -254,7 +255,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 viewModel.fireItemToKitchen(
                     it1,
                     true,
-                    builder.substring(0, builder.length - 1).toString()
+                    builder.substring(0, builder.length - 1).toString(),
+                    true
                 )
             }
         }
@@ -332,7 +334,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             bundle.putDouble("subTotalPrice", MethodUtils.roundOffAmountDouble(subTotalDInin))
             bundle.putDouble("totalTax", MethodUtils.roundOffAmountDouble(finalTaxAmt))
             bundle.putParcelable("model", model)
-            bundle.putDouble("divideCashDiscount", MethodUtils.roundOffAmountDouble(divideCashDiscount))
+            bundle.putDouble(
+                "divideCashDiscount",
+                MethodUtils.roundOffAmountDouble(divideCashDiscount)
+            )
             bundle.putParcelable("floorPlan", floorPlanModel)
             bundle.putDouble("totalServiceCharge", MethodUtils.roundOffAmountDouble(serviceCharge))
             bundle.putDouble("totalDiscount", MethodUtils.roundOffAmountDouble(totalDiscount))
@@ -480,7 +485,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 var idStr = Gson().toJson(ids.toTypedArray())
 
 
-                viewModel.fireItemToKitchen(orderId!!, true, idStr)
+                viewModel.fireItemToKitchen(orderId!!, true, idStr, false)
             }
 
         }
@@ -1033,19 +1038,20 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         var idStr = Gson().toJson(ids.toString())
 
 
-        viewModel.fireItemToKitchen(orderId!!, true, idStr)
+        viewModel.fireItemToKitchen(orderId!!, true, idStr, false, item)
 
     }
 
     override fun onWholeTableToKitchen(ids: String) {
 
-        viewModel.fireItemToKitchen(orderId!!, true, ids)
+        viewModel.fireItemToKitchen(orderId!!, true, ids, true)
     }
 
     override fun singleItemFired(id: String, position: Int, item: TbItem) {
 
         clickedPos = position
-        viewModel.fireItemToKitchen(orderId!!, true, id)
+        viewModel.fireItemToKitchen(orderId!!, true, id, false, item)
+
 
         for (i in 0 until kitchenPrinterList.size) {
 
@@ -1059,7 +1065,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         guestName: String,
         listWTitems: ArrayList<TbItem>
     ) {
-        Log.e(TAG, "")
         if (listItem[0].isPaid == true) {
             guestPrint("Paid", listItem, guestName, listWTitems)
         } else {
@@ -4676,6 +4681,117 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             }
         })
+    }
+
+    private fun observeQueueCreated() {
+        viewModel.queueCreateSuccess.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let { status ->
+
+            }
+
+        })
+    }
+
+    private fun observeFireAll() {
+        viewModel.fireAllStatus.observe(viewLifecycleOwner, { event ->
+            Log.e(TAG, "FireAllStatusObserved")
+
+            var orderItemsAttributes: ArrayList<OrderItemsAttribute> = arrayListOf()
+            getOrderDetailsResponse?.orderItems?.forEach {
+                val orderItem = OrderItemsAttribute()
+                orderItem.category_id = it.categoryId
+                orderItem.discountAmount = it.discountAmount
+                orderItem.discountId = it.discountId
+                orderItem.discountType = it.discountType
+                orderItem.employeeId = it.employeeId
+                orderItem.id = it.id
+                orderItem.isPaid = it.isPaid
+                orderItem.itemId = it.itemId
+                orderItem.itemName = it.itemName
+                orderItem.note = it.note
+                orderItem.orderId = it.orderId
+                orderItem.note = it.note
+                var taxList: ArrayList<OrderItemTaxesAttribute> = arrayListOf()
+                it.orderItemTaxes.forEach { tax ->
+                    var taxModel = OrderItemTaxesAttribute()
+                    taxModel.taxType = tax.taxType
+                    taxModel.orderId = tax.orderId
+                    taxModel.name = tax.name
+                    taxModel.taxTotalAmount = tax.amount ?: 0.0
+                    taxModel.id = tax.id
+                    taxModel.isDefault = tax.isDefault
+                    taxModel.orderItemId = tax.orderItemId
+                    taxModel.rate = tax.rate
+                    taxModel.taxId = tax.taxId
+
+                    taxList.add(taxModel)
+
+                }
+                orderItem.orderItemTaxesAttributes = taxList
+
+                var listModifiers: ArrayList<OrderItemModifierAttribute> = arrayListOf()
+                it.orderItemModifiers.forEach {
+                    var modifierModel = OrderItemModifierAttribute()
+                    modifierModel.id = it.id
+                    modifierModel.order_item_id = it.orderItemId
+                    modifierModel.orderId = it.orderId
+                    modifierModel.name = it.name
+                    modifierModel.quantity = it.quantity
+                    modifierModel.modifier_set_id = it.modifierId?.toInt() ?: 0
+                    modifierModel.price = it.price
+
+                    listModifiers.add(modifierModel)
+
+
+                }
+                orderItem.orderItemModifiersAttributes = listModifiers
+
+                orderItemsAttributes.add(orderItem)
+
+
+            }
+
+            var orderRequest = OrderAttributeRequestModel()
+
+            orderRequest.orderTypeId = prefProvider.getValueInt(ORDER_TYPE_ID, 0)
+            orderRequest.totalAmount = getOrderDetailsResponse?.totalAmount ?: 0.0
+
+            orderRequest.offlineId = getOrderDetailsResponse?.offlineId ?: ""
+            orderRequest.id = getOrderDetailsResponse?.id ?: 0
+
+            val createQueueRequest = CreateQueuePrinterRequestModel(
+                location_id = prefProvider.getValueInt(LOCATION_ID, 0),
+                order_type = "Dine In",
+                printer_id = listOf(),
+                order_item_attributes = orderItemsAttributes,
+                order_data = orderRequest,
+                terminal_id = prefProvider.getValueInt(TERMINAL_ID, 0)
+
+
+            )
+            viewModel.createQueuePrinter(createQueueRequest)
+
+
+        })
+    }
+
+    private fun singleItemFireObserver() {
+        viewModel.fireSingleStatus.observe(viewLifecycleOwner, {
+            val createQueueRequest = CreateQueuePrinterRequestModel(
+                location_id = prefProvider.getValueInt(LOCATION_ID, 0),
+                order_type = "Dine In",
+                printer_id = listOf(),
+                order_item_attributes = arrayListOf(),
+                order_data = OrderRequestModel(),
+                terminal_id = prefProvider.getValueInt(TERMINAL_ID, 0)
+
+
+            )
+            viewModel.createQueuePrinter(createQueueRequest)
+
+
+        })
+
     }
 
 }
