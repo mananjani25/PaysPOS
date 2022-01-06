@@ -121,6 +121,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         setupSnackbar()
         getCustomerList()
         observeServiceCharge()
+        singleItemFireObserver()
         getCustomerReceiptSettings()
         getKitchenReceiptSettings()
         observeFireAll()
@@ -4756,7 +4757,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             orderRequest.orderTypeId = prefProvider.getValueInt(ORDER_TYPE_ID, 0)
             orderRequest.totalAmount = getOrderDetailsResponse?.totalAmount ?: 0.0
 
-            orderRequest.offlineId = getOrderDetailsResponse?.offlineId ?: ""
+            orderRequest.offlineId = getOrderDetailsResponse?.offlineId ?: randomOfflineId()
             orderRequest.id = getOrderDetailsResponse?.id ?: 0
 
             val createQueueRequest = CreateQueuePrinterRequestModel(
@@ -4776,18 +4777,52 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     }
 
     private fun singleItemFireObserver() {
+
         viewModel.fireSingleStatus.observe(viewLifecycleOwner, {
-            val createQueueRequest = CreateQueuePrinterRequestModel(
-                location_id = prefProvider.getValueInt(LOCATION_ID, 0),
-                order_type = "Dine In",
-                printer_id = listOf(),
-                order_item_attributes = arrayListOf(),
-                order_data = OrderRequestModel(),
-                terminal_id = prefProvider.getValueInt(TERMINAL_ID, 0)
+            it.getContentIfNotHandled()?.let {
+                var itemList: ArrayList<OrderItemsAttribute> = arrayListOf()
+                val itemModel = OrderItemsAttribute()
+                itemModel.category_id = it.categoryId
+                itemModel.discountAmount = it.discountPrice
+                itemModel.discountId = it.discountId
+                itemModel.discountType = it.discountType
+                itemModel.itemName = it.name
+                itemModel.quantity = it.itemQuantity
+                var listModifiers: ArrayList<OrderItemModifierAttribute> = arrayListOf()
+                it.modifiers.forEach {
+                    var modifierModel = OrderItemModifierAttribute()
+                    modifierModel.price = it.price
+                    modifierModel.id = it.id
+                    modifierModel.name = it.name
+                    modifierModel.totalPrice = it.price
+                    modifierModel.quantity = it.itemQuantity
+
+                    listModifiers.add(modifierModel)
+                }
+
+                itemModel.orderItemModifiersAttributes = listModifiers
 
 
-            )
-            viewModel.createQueuePrinter(createQueueRequest)
+                var orderRequest = OrderAttributeRequestModel()
+
+                orderRequest.orderTypeId = prefProvider.getValueInt(ORDER_TYPE_ID, 0)
+                orderRequest.totalAmount = getOrderDetailsResponse?.totalAmount ?: 0.0
+
+                orderRequest.offlineId = getOrderDetailsResponse?.offlineId ?: randomOfflineId()
+                orderRequest.id = getOrderDetailsResponse?.id ?: 0
+
+                val createQueueRequest = CreateQueuePrinterRequestModel(
+                    location_id = prefProvider.getValueInt(LOCATION_ID, 0),
+                    order_type = "Dine In",
+                    printer_id = listOf(),
+                    order_item_attributes = arrayListOf(),
+                    order_data = orderRequest,
+                    terminal_id = prefProvider.getValueInt(TERMINAL_ID, 0)
+
+
+                )
+                viewModel.createQueuePrinter(createQueueRequest)
+            }
 
 
         })
