@@ -113,6 +113,8 @@ class DashBoardCategoryViewModel @Inject constructor(
     val _callCashDiscount = MutableLiveData<Event<Boolean>>()
     val callCashDiscount: LiveData<Event<Boolean>> = _callCashDiscount
 
+    private val _queueStart = MutableLiveData<Event<CreateOrderResponse?>>()
+    val QueueStart: LiveData<Event<CreateOrderResponse?>> = _queueStart
 
     val _Basedata = MutableLiveData<Event<CreateOrderResponse.Data?>>()
 

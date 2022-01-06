@@ -46,6 +46,8 @@ class PaymentViewModel @Inject constructor(
     private var _queuePrinter = MutableLiveData<Event<String>>()
     val queuePrinter: LiveData<Event<String>> = _queuePrinter
 
+    private val _queueStartSaveOrder = MutableLiveData<Event<CreateOrderResponse?>>()
+    val queueStartSaveOrder: LiveData<Event<CreateOrderResponse?>> = _queueStartSaveOrder
 
     private val _msgText = MutableLiveData<Event<String>>()
     val msgText: LiveData<Event<String>> = _msgText
@@ -109,7 +111,8 @@ class PaymentViewModel @Inject constructor(
                                 }
 
                                 if (onlySave) {
-                                    _queueStart.value = Event(createOrderResponse)
+                                    _queueStartSaveOrder.value = Event(createOrderResponse)
+                                    //_queueStart.value = Event(createOrderResponse)
 //                                    _data.value = Event(createOrderResponse)
                                 } else {
                                     if (createOrderResponse.data.order.orderType != "Dine In") {
@@ -254,6 +257,7 @@ class PaymentViewModel @Inject constructor(
 
                             if (order.totalAmount == totalPayAmounts) {
                                 _queueStart.value = Event(createOrderResponse)
+
                                 //  _data.value = Event(createOrderResponse)
                             } else {
                                 cashOutApi(createOrderResponse, "out")
