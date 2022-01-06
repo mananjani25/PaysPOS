@@ -35,6 +35,8 @@ import com.android.pos.data.model.CategorySearchData
 import com.android.pos.data.model.CategoryTabModel
 import com.android.pos.data.model.DineInModel
 import com.android.pos.data.model.DineInOrderDetailAttributes
+import com.android.pos.data.model.requestModel.CreateQueuePrinterRequestModel
+import com.android.pos.data.model.requestModel.OrderAttributeRequestModel
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ADD
@@ -176,10 +178,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         prefProvider.setValueInt("cardCount", 0)
         prefProvider.setValue(Constants.SUB_TOTAL, "")
         prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
-        prefProvider.setValue(Constants.TOTAL_DISCOUNT,"")
-        prefProvider.setValue(Constants.TIP,"")
-        prefProvider.setValue(Constants.TAX_CHARGE,"")
-        prefProvider.setValue(Constants.SERVICE_CHARGE,"")
+        prefProvider.setValue(Constants.TOTAL_DISCOUNT, "")
+        prefProvider.setValue(Constants.TIP, "")
+        prefProvider.setValue(Constants.TAX_CHARGE, "")
+        prefProvider.setValue(Constants.SERVICE_CHARGE, "")
         optionType = prefProvider.getValue(OPTION_TYPE, "")
         if (isOrderUpdate) {
             orderId = requireArguments().getInt("orderId")
@@ -227,6 +229,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         dineInUpdateOrder()
         getCustomerReceiptSettings()
         getKitchenReceiptSettings()
+        observeQueueCreate()
         prefProvider.setValue(Constants.SPLIT_PAY_AMOUNT_DINE_IN, "")
         prefProvider.setValue(Constants.SPLIT_PAY_TYPE_DINE_IN, "")
         prefProvider.setValueInt(Constants.SPLIT_NO_DINE_IN, -1)
@@ -871,6 +874,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 findNavController().navigate(R.id.action_dashboardCategoryNew_to_transactionFragment)
             }
         }
+        binding.footer.linearOpenOrders.setOnClickListener {
+            findNavController().navigate(R.id.action_dashboardCategoryNew_to_orders)
+        }
 
 
     }
@@ -950,7 +956,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         }
 
         linearOrders.setOnClickListener {
-
             findNavController().navigate(R.id.action_dashboardCategoryNew_to_orders)
             dialog.dismiss()
         }
@@ -2094,6 +2099,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 hideOrderType()
                 getKitchenPrinters(it)
                 clearUpdateFlag()
+
 
             }
         })
@@ -3605,10 +3611,59 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     }
 
     private fun addItemInCartThroughBarcode(item: TbItem?) {
-        item?.let {
-            ItemPopup(item, true)
+
+
+        // qty check logic
+        var itemQty = 1
+        if (cartList.isNotEmpty()) {
+            cartList[0].items?.filter { it.itemId == item?.itemId }?.map {
+                itemQty += it.itemQuantity
+            }
         }
+        if (item?.quantity ?: 0 >= itemQty) {
+            item?.itemQuantity = 1
+
+            if (cartList.isEmpty()) {
+                viewModel.setServiceCharges(serviceChargesList)
+            }
+            if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
+
+                if (cartList.isNotEmpty()) {
+                    cartList[0].orderType = DINE_IN
+                }
+
+                val dineInList = dineInCartAdapter.getList()
+                dineInList.get(0).selectedPosition = dineInCartAdapter.getHeaderPosition()
+                viewModel.cartLogic(cartList, item, ADD, dineInList = dineInList)
+
+
+            } else {
+                //check is_edited flag
+                //makeItemEdited(item)
+
+                viewModel.cartLogic(cartList, item, ADD)
+            }
+        } else {
+            item?.itemQuantity = -1
+            AlertUtils.showCustomAlert(
+                requireActivity(),
+                getString(R.string.qty_validation)
+            )
+        }
+
+
+        /*if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
+            cartList.get(0).orderType = DINE_IN
+            val dineInList = dineInCartAdapter.getList()
+            // dineInList.get(dineInCartAdapter.getHeaderPosition()).items.add(data)
+            dineInList.get(0).selectedPosition = dineInCartAdapter.getHeaderPosition()
+            viewModel.cartLogic(cartList, item, ADD, dineInList = dineInList)
+        } else {
+            viewModel.cartLogic(cartList, item, ADD)
+        }*/
+
     }
+
 
     override fun scannerBarcodeEvent(barcodeData: ByteArray?, barcodeType: Int, scannerID: Int) {
         Log.e(TAG, "scannerBarcodeEvent: ${barcodeData?.let { String(it) }}")
@@ -3657,7 +3712,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     }
                 }
             })
-        }catch (e:Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
         }
     }
@@ -3672,5 +3727,50 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     override fun scannerVideoEvent(videoData: ByteArray?) {
         TODO("Not yet implemented")
+    }
+
+    private fun observeQueueCreate() {
+        viewModelPayment.queueStartSaveOrder.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+                createQueuePrinter(it)
+
+
+            }
+        })
+    }
+
+    private fun createQueuePrinter(createOrder: CreateOrderResponse) {
+        val listPrinter: List<Int> = listOf()
+        val orderRequest = cartList?.let {
+
+            viewModelPayment.createOrderRequest(
+                it[0],
+                viewModel.subTotalPrice,
+                viewModel.totalPrice,
+                viewModel.totalServiceCharge,
+                viewModel.totalTax,
+                prefProvider.getValue(Constants.ORDER_TYPE, "").toString(),
+                future_delivery_date,
+                future_delivery_date,
+                false,
+                viewModel.totalDiscount,
+                0.0,
+                0,
+                null,
+                0.0,
+                false,
+                "Cash", cashDiscountType
+            )
+        }
+        val createRequest = CreateQueuePrinterRequestModel(
+            location_id = prefProvider.getValueInt(Constants.LOCATION_ID, 0),
+            order_type = prefProvider.getValue(ORDER_TYPE, ""),
+            printer_id = listPrinter,
+            order_item_attributes = orderRequest?.order?.orderItemsAttributes ?: listOf(),
+            order_data = orderRequest?.order ?: OrderAttributeRequestModel(),
+            terminal_id = prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
+
+        )
+        viewModelPayment.createQueuePrinter(createRequest, createOrder)
     }
 }

@@ -23,6 +23,7 @@ import com.google.gson.Gson
 import com.zebra.scannercontrol.*
 import com.zebra.scannercontrol.DCSSDKDefs.*
 import dagger.hilt.android.AndroidEntryPoint
+import java.net.NetworkInterface
 import java.util.*
 import javax.inject.Inject
 
@@ -1230,8 +1231,9 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
         /*val bluetoothAdapter: BluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
         val address = bluetoothAdapter.address
         Log.e("!_@_ MAC :", address.toString())*/
-        //return "E0:D0:83:0B:B9:7A"
-      return "0c:25:76:b4:0b:95" // Sunmi Bluetooth MAC Address
+       // return "E0:D0:83:0B:B9:7A"
+        return "0C:25:76:B4:0B:93"
+     // return "0c:25:76:b4:0b:95" // Sunmi Bluetooth MAC Address
         //0c:25:76:b4:0b:95
 //        return "0c:25:76:b4:0b:95"
     }
