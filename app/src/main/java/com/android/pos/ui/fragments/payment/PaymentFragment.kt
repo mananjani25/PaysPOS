@@ -153,9 +153,32 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             cashDiscountSurcharge = 0.0
         }
 
+        var cardActualAmount = 0.0
+        if (cashDiscountType == "CashDiscount") {
+            cardActualAmount = totalPrice
+        } else if (cashDiscountType == "SurCharge") {
+            cardActualAmount = totalPrice + MethodUtils.calculateCashDiscount(
+                totalPrice,
+                prefProvider,
+                requireContext()
+            )
+        } else {
+            cardActualAmount = totalPrice
+        }
+        viewModel.saveActualValue(
+            totalPrice,
+            subTotalPrice,
+            totalTax,
+            totalServiceCharge,
+            tipAmount,
+            totalDiscount,
+            MethodUtils.calculateCashDiscount(totalPrice, prefProvider, requireContext()),
+            cardActualAmount
+        )
         setUpPaymentSummary()
 
         if (prefProvider.getValue("WholeTotal", "").isEmpty()) {
+            WholetotalPrice = totalPrice
             prefProvider.setValue("WholeTotal", String.format("%.2f", totalPrice))
         } else {
             WholetotalPrice = prefProvider.getValue("WholeTotal", "").toDouble()
@@ -263,9 +286,6 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 }
                 MethodUtils.setPriceTextView(binding.txtTotalAmount, remainingAmount)
                 getCashPaymentOptionList(remainingAmount)
-
-                isSplitByNo = false
-
             } else if (isSplitByAmount) {
                 splitAfterAmount = remainingAmount
                 val tipAmount1 =
@@ -1308,6 +1328,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                     if (remainingAmount <= 0.0) {
                                         bundle.putBoolean("isSpilt", false)
                                         prefProvider.setValue(SUB_TOTAL, "")
+                                        prefProvider.setValueInt("ORDER_ID", -1)
                                         prefProvider.setValue(TOTAL_DISCOUNT, "")
                                         prefProvider.setValue(TIP, "")
                                         prefProvider.setValue(TAX_CHARGE, "")
@@ -1323,6 +1344,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                 } else {
                                     bundle.putBoolean("isSpilt", false)
                                     prefProvider.setValue(SUB_TOTAL, "")
+                                    prefProvider.setValueInt("ORDER_ID", -1)
                                     prefProvider.setValue(TOTAL_DISCOUNT, "")
                                     prefProvider.setValue(TIP, "")
                                     prefProvider.setValue(TAX_CHARGE, "")
@@ -1384,6 +1406,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                 if (splitValue != -1) {
                                     if (WholetotalPrice <= cardPaymentAmount) {
                                         bundle.putBoolean("isSpilt", false)
+                                        prefProvider.setValueInt("ORDER_ID", -1)
                                     } else {
                                         bundle.putBoolean("isSpilt", true)
                                     }
@@ -1468,6 +1491,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                         prefProvider.setValue(TIP, "")
                                         prefProvider.setValue(TAX_CHARGE, "")
                                         prefProvider.setValue(SERVICE_CHARGE, "")
+                                        prefProvider.setValueInt("ORDER_ID", -1)
                                     } else {
                                         bundle.putBoolean("isSpilt", true)
                                         setPaymentAttriButes(SUB_TOTAL, splitValue)
@@ -1479,6 +1503,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                 } else {
                                     bundle.putBoolean("isSpilt", false)
                                     prefProvider.setValue(SUB_TOTAL, "")
+                                    prefProvider.setValueInt("ORDER_ID", -1)
                                     prefProvider.setValue(TOTAL_DISCOUNT, "")
                                     prefProvider.setValue(TIP, "")
                                     prefProvider.setValue(TAX_CHARGE, "")
@@ -1527,6 +1552,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                 bundle.putInt("splitValue", splitValue)
                                 if (remainingAmount == 0.0) {
                                     bundle.putBoolean("isSpilt", false)
+                                    prefProvider.setValueInt("ORDER_ID", -1)
                                 } else {
                                     bundle.putBoolean("isSpilt", true)
                                 }
