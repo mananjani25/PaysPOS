@@ -9,10 +9,12 @@ import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.entities.CashDiscountModel
 import com.android.pos.data.entities.TbCustomer
 import com.android.pos.data.entities.TbItem
+import com.android.pos.data.model.requestModel.CreateQueuePrinterRequestModel
 import com.android.pos.data.model.requestModel.DineInOrderPayment
 import com.android.pos.data.model.requestModel.GuestPaymentRequest
 import com.android.pos.data.model.requestModel.OrderRequestModel
 import com.android.pos.data.model.responseModel.BaseResponse
+import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.repositories.PosRepository
@@ -42,8 +44,17 @@ class DineInOrderTableViewModel @Inject constructor(
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
 
+    private val _fireAllStatus = MutableLiveData<Event<Boolean>>()
+    val fireAllStatus: LiveData<Event<Boolean>> = _fireAllStatus
+
+    private val _fireSingleStatus = MutableLiveData<Event<TbItem?>>()
+    val fireSingleStatus: LiveData<Event<TbItem?>> = _fireSingleStatus
+
     val _Basedata = MutableLiveData<Event<GetOrderDetailsResponse.Data?>>()
     val Basedata: LiveData<Event<GetOrderDetailsResponse.Data?>> = _Basedata
+
+    private val _queueCreateSuccess = MutableLiveData<Event<Boolean>>()
+    val queueCreateSuccess: LiveData<Event<Boolean>> = _queueCreateSuccess
 
 
     val _guestPayment = MutableLiveData<Event<String>>()
@@ -115,7 +126,7 @@ class DineInOrderTableViewModel @Inject constructor(
 
     }
 
-    fun fireItemToKitchen(id: Int, status: Boolean, itemIds: String) {
+    fun fireItemToKitchen(id: Int, status: Boolean, itemIds: String, isAllFired: Boolean,item:TbItem?=null) {
 
         _showProgress.value = Event(true)
 
@@ -127,6 +138,12 @@ class DineInOrderTableViewModel @Inject constructor(
                     _showProgress.value = Event(false)
                     resource.data.let { response ->
                         if (response?.status == 200) {
+
+                            if (isAllFired) {
+                                _fireAllStatus.value = Event(true)
+                            } else {
+                                _fireSingleStatus.value = Event(item)
+                            }
                             _snackbarText.value = Event(resource.message)
                             _msgText.value = Event(response.message)
                         }
@@ -273,5 +290,35 @@ class DineInOrderTableViewModel @Inject constructor(
 
     }
 
+    fun createQueuePrinter(
+        createQueuePrinterModel: CreateQueuePrinterRequestModel
+    ) {
+        _showProgress.value = Event(true)
+
+        viewModelScope.launch {
+            val resource = posRepository.createQueuePrinter(createQueuePrinterModel)
+
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+                    _queueCreateSuccess.value = Event(true)
+
+
+                }
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+
+                }
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
+                }
+            }
+
+
+        }
+
+
+    }
 
 }
