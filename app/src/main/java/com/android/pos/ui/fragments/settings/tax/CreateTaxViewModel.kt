@@ -27,6 +27,7 @@ class CreateTaxViewModel @Inject constructor(
     private val prefProvider: PrefProvider
 ) : ViewModel() {
 
+    private var isEnableTax: Boolean = false
     val createTaxDetails = MutableLiveData(CreateTaxRequestModel())
 
     private val _snackbarText = MutableLiveData<Event<Any?>>()
@@ -63,6 +64,8 @@ class CreateTaxViewModel @Inject constructor(
         enableTaxViewModel = taxData.isDefault
         customAmountViewModel = taxData.isCustomAmount
         taxTypeViewModel = taxData.taxType.toString()
+
+        isEnableTax = taxData.isActive
     }
 
     fun setItemIds(itemIds: ArrayList<Int>) {
@@ -106,6 +109,7 @@ class CreateTaxViewModel @Inject constructor(
                 itemIds = itemIdsViewModel
                 itemPricing = itemPricingViewModel
                 taxType = taxTypeViewModel
+                isActive = isEnableTax
                 locationId = prefProvider.getValueInt(LOCATION_ID, -1)
 
             }

@@ -24,6 +24,7 @@ class LoyaltyPointViewModel @Inject constructor(
     private val prefProvider: PrefProvider
 ) : ViewModel() {
 
+    private var isEnableLp: Boolean? = false
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
 
@@ -151,7 +152,7 @@ class LoyaltyPointViewModel @Inject constructor(
                 val request = LoyaltyPointRequest(
                     amount = loyaltyAmount,
                     id = if (isEdit) loyaltyId else null,
-                    isEnable = false,
+                    isEnable = isEnableLp,
                     name = loyaltyName,
                     rewardPoint = loyaltyTarget,
                     rewardType = loyaltyPointType,
@@ -199,6 +200,8 @@ class LoyaltyPointViewModel @Inject constructor(
         loyaltyAmount = loyaltyProgramsModel?.amount ?: 0.0
         loyaltyTarget = loyaltyProgramsModel?.rewardPoint ?: 0
         loyaltyId = loyaltyProgramsModel?.id
+
+        isEnableLp = loyaltyProgramsModel?.isEnable
 
 
     }
