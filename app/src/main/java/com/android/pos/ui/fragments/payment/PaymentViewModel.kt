@@ -398,11 +398,14 @@ class PaymentViewModel @Inject constructor(
             if (cashdiscountType == "SurCharge") {
                 orderAttributeRequestModel.cash_discount_type = ""
                 orderAttributeRequestModel.cash_discount_or_surcharge = 0.0
+                orderAttributeRequestModel.totalAmount = actual_Total
             } else if (cashdiscountType == "CashDiscount") {
                 orderAttributeRequestModel.cash_discount_or_surcharge = actual_CashDiscountSurCharge
                 orderAttributeRequestModel.cash_discount_type = cashdiscountType
+
+                orderAttributeRequestModel.totalAmount = actual_Total - actual_CashDiscountSurCharge
             }
-        } else if (paymentType == "Card") {
+        } /*else if (paymentType == "Card") {
             if (cashdiscountType == "SurCharge") {
                 orderAttributeRequestModel.cash_discount_or_surcharge = actual_CashDiscountSurCharge
                 orderAttributeRequestModel.cash_discount_type = cashdiscountType
@@ -410,7 +413,7 @@ class PaymentViewModel @Inject constructor(
                 orderAttributeRequestModel.cash_discount_type = ""
                 orderAttributeRequestModel.cash_discount_or_surcharge = 0.0
             }
-        }
+        }*/
         orderAttributeRequestModel.offlineId =
             if (isUpdateOrder) orderOfflineId.toString() else randomOfflineId()
         Log.e(TAG, "openOrderType: " + cartModel.orderType)
@@ -420,14 +423,14 @@ class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.serviceChargeEnabled = true
         orderAttributeRequestModel.taxEnabled = true
         orderAttributeRequestModel.subTotal = actual_SubTotal
-        orderAttributeRequestModel.totalAmount = actual_Total
+
 
         if (cartModel.discountId != null && cartModel.discountId != -1)
             orderAttributeRequestModel.discount_id = cartModel.discountId
         orderAttributeRequestModel.totalDiscount = actual_TotalDiscount
         orderAttributeRequestModel.totalServiceCharges = actual_TotalServiceCharge
         orderAttributeRequestModel.totalTaxAmount = actual_TotalTax
-        orderAttributeRequestModel.totalTips = actual_TotalTips
+        orderAttributeRequestModel.totalTips = tipAmount
         orderAttributeRequestModel.is_loyalty_applied = redeemLoyaltyInfo?.needToApplyLoyalty
         if (orderAttributeRequestModel.is_loyalty_applied == true) {
             orderAttributeRequestModel.loyalty_program_id =
@@ -452,7 +455,11 @@ class PaymentViewModel @Inject constructor(
                 subTotalPrice,
                 totalServiceCharge,
                 totalTax,
-                totalDiscount, tipAmount, splitValue, finaldiscount, paymentType,
+                totalDiscount,
+                tipAmount,
+                splitValue,
+                finaldiscount,
+                paymentType,
                 orderAttributeRequestModel.cash_discount_type,
                 redeemLoyaltyInfo = redeemLoyaltyInfo
             )
@@ -524,7 +531,7 @@ class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.locationId = cartModel.locationId
         orderAttributeRequestModel.terminalId = cartModel.terminalId
         orderAttributeRequestModel.note = cartModel.note
-        if (paymentType == "Cash") {
+        /*if (paymentType == "Cash") {
             if (cashdiscountType == "SurCharge") {
                 orderAttributeRequestModel.cash_discount_type = ""
                 orderAttributeRequestModel.cash_discount_or_surcharge = 0.0
@@ -532,13 +539,17 @@ class PaymentViewModel @Inject constructor(
                 orderAttributeRequestModel.cash_discount_or_surcharge = actual_CashDiscountSurCharge
                 orderAttributeRequestModel.cash_discount_type = cashdiscountType
             }
-        } else if (paymentType == "Card") {
+        } else*/ if (paymentType == "Card") {
             if (cashdiscountType == "SurCharge") {
                 orderAttributeRequestModel.cash_discount_or_surcharge = actual_CashDiscountSurCharge
                 orderAttributeRequestModel.cash_discount_type = cashdiscountType
+
+                orderAttributeRequestModel.totalAmount =
+                    actual_CardAmount + actual_CashDiscountSurCharge
             } else if (cashdiscountType == "CashDiscount") {
                 orderAttributeRequestModel.cash_discount_type = ""
                 orderAttributeRequestModel.cash_discount_or_surcharge = 0.0
+                orderAttributeRequestModel.totalAmount = actual_CardAmount
             }
         }
 
@@ -551,7 +562,7 @@ class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.serviceChargeEnabled = true
         orderAttributeRequestModel.taxEnabled = true
         orderAttributeRequestModel.subTotal = actual_SubTotal
-        orderAttributeRequestModel.totalAmount = actual_CardAmount
+
         if (cartModel.discountId != null && cartModel.discountId != -1)
             orderAttributeRequestModel.discount_id = cartModel.discountId
         orderAttributeRequestModel.totalDiscount = actual_TotalDiscount

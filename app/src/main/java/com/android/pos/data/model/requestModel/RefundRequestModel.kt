@@ -33,7 +33,10 @@ data class RefundRequestModel(
         @SerializedName("terminal_id")
         var terminalId: Int? = null,
         @SerializedName("tips_refunded")
-        var tipsRefunded: Double = 0.0
+        var tipsRefunded: Double = 0.0,
+        @SerializedName("cash_discount_or_surcharge_refunded")
+        var cash_discount_or_surcharge_refunded: Double = 0.0
+
     ) : Parcelable {
         @Parcelize
         data class OrderItemRefundsAttribute(

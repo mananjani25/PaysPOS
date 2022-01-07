@@ -133,13 +133,15 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                             paymentId = payment_id
                             employeeId = paymentOrderDetailsResponse.data.employee_id
                             terminalId = paymentOrderDetailsResponse.data.terminal_id
-                            taxRefunded = totalTax
+                            taxRefunded = paymentOrderDetailsResponse.data.tax_amount
                             tipsRefunded = paymentOrderDetailsResponse.data.tips
-                            serviceChargeRefunded = totalServiceCharge
+                            serviceChargeRefunded =
+                                paymentOrderDetailsResponse.data.service_charge_amount
+                            cash_discount_or_surcharge_refunded =
+                                paymentOrderDetailsResponse.data.cash_discount_or_surcharge
                         }
                     }
 
-                    calculationOfItems()
                     val bundle = Bundle().apply {
                         putParcelable("refundData", refundData)
                         putDouble("refundAmount", subTotalPrice)
