@@ -682,6 +682,13 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 paymentType = "Cash"
                 paymentAmount = when {
                     isSplitByNo -> {
+                        var remaining_payment =
+                            String.format("%.2f",prefProvider.getValue("WholeTotal", "").toDouble() - splitAfterAmount).toDouble()
+                        if (remaining_payment <= 0.0) {
+                            prefProvider.setValueboolean("isLastPayment", true)
+                        } else {
+                            prefProvider.setValueboolean("isLastPayment", false)
+                        }
                         var remainningCashDiscount =
                             cashDiscountSurcharge - (cashDiscountSurcharge / splitValue)
                         prefProvider.setValue(
@@ -735,6 +742,13 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 paymentType = "Cash"
                 paymentAmount = when {
                     isSplitByNo -> {
+                        var remaining_payment =
+                            String.format("%.2f",prefProvider.getValue("WholeTotal", "").toDouble() - splitAfterAmount).toDouble()
+                        if (remaining_payment <= 0.0) {
+                            prefProvider.setValueboolean("isLastPayment", true)
+                        } else {
+                            prefProvider.setValueboolean("isLastPayment", false)
+                        }
                         var remainningCashDiscount =
                             cashDiscountSurcharge - (cashDiscountSurcharge / splitValue)
                         prefProvider.setValue(
@@ -1043,8 +1057,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 orderOfflineId
             )
 
-        if (isSplitByNo) {
-
+        var isLastPayment = prefProvider.getValueboolean("isLastPayment", false)
+        if (isSplitByNo && !isLastPayment) {
             val myRequest = cartList?.let {
 
                 viewModel.createOrderRequest(

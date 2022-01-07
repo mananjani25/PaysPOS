@@ -71,14 +71,14 @@ class PaymentViewModel @Inject constructor(
     private val _orderCreate = MutableLiveData<Event<Boolean>>()
     val orderCreate: LiveData<Event<Boolean>> = _orderCreate
 
-    private var actual_Total: Double = 0.0
-    private var actual_SubTotal: Double = 0.0
-    private var actual_TotalTax: Double = 0.0
-    private var actual_TotalServiceCharge: Double = 0.0
-    private var actual_TotalTips: Double = 0.0
-    private var actual_TotalDiscount: Double = 0.0
-    private var actual_CashDiscountSurCharge: Double = 0.0
-    private var actual_CardAmount: Double = 0.0
+    public var actual_Total: Double = 0.0
+    public var actual_SubTotal: Double = 0.0
+    public var actual_TotalTax: Double = 0.0
+    public var actual_TotalServiceCharge: Double = 0.0
+    public var actual_TotalTips: Double = 0.0
+    public var actual_TotalDiscount: Double = 0.0
+    public var actual_CashDiscountSurCharge: Double = 0.0
+    public var actual_CardAmount: Double = 0.0
 
 
     fun submit(orderRequestModel: OrderRequestModel) {
@@ -1332,7 +1332,10 @@ class PaymentViewModel @Inject constructor(
 
                                     _data.value = Event(createOrderResponse)
                                 } else {
-                                    cashLogApi(createOrderResponse, "in")
+                                    if (createOrderResponse.data.order.orderType != "Dine In") {
+                                        cashLogApi(createOrderResponse, "in")
+                                    }
+
                                 }
 
                                 if (isDineIn)
