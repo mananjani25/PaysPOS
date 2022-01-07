@@ -321,7 +321,9 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 }
                 MethodUtils.setPriceTextView(binding.txtTotalAmount, remainingAmount)
                 getCashPaymentOptionList(remainingAmount)
+
             }
+            isSplitByNo = false
         } else {
             if (isSplitByNo) {
                 if (MethodUtils.isEnableCashDiscount(requireContext())) {
@@ -817,7 +819,11 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                         if (isSplitByNo || isSplitByAmount) {
                             bundle.putDouble("totalPrice", (splitAfterAmount))
                         } else {
-                            bundle.putDouble("totalPrice", totalPrice + tipAmount)
+                            if(remainingAmount==0.0){
+                                bundle.putDouble("totalPrice", totalPrice + tipAmount)
+                            }else{
+                                bundle.putDouble("totalPrice", remainingAmount)
+                            }
                         }
                         bundle.putInt("splitValue", splitValue)
                         findNavController().navigate(
