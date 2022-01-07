@@ -102,6 +102,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     DineInAdapter.DineInCallback, CategoryTabAdapter1.TabListner,
     ItemCallback, View.OnClickListener, ScannerAppEngine.IScannerAppEngineDevEventsDelegate {
 
+    private var isOpenOrderUpdate: Boolean = false
     private var orderDiscount: Double = 0.0
     private var categoryItemAdapter1: CategoryItemAdapter1? = null
     private var categoryTabAdapter1: CategoryTabAdapter1? = null
@@ -169,6 +170,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         binding.lifecycleOwner = this
         getLoyaltyPrograms()
         clearPrefrenceOfOrder()
+
+        isOrderUpdate = requireArguments().getBoolean("update")
+
         if (isOrderUpdate) {
             orderId = requireArguments().getInt("orderId")
             paymentId = requireArguments().getInt("paymentId")
@@ -2343,7 +2347,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         future_delivery_date = cartList.futureDeliveryDate
                     }
 
-                    val request = viewModelPayment.createOrderRequest(
+                    val request = viewModelPayment.createOpenOrderRequest(
                         cartList,
                         viewModel.subTotalPrice,
                         totalAmountTobeSave,

@@ -360,6 +360,7 @@ class PaymentViewModel @Inject constructor(
     }
 
 
+
     fun createOrderRequest(
         cartModel: CartModel,
         subTotalPrice: Double,
@@ -467,6 +468,126 @@ class PaymentViewModel @Inject constructor(
             null
         }
 
+        orderAttributeRequestModel.orderServiceChargesAttributes =
+            orderServiceChargesAttributes(cartModel, subTotalPrice)
+        if (cartModel.orderType == DINE_IN) {
+            orderAttributeRequestModel.guestsAttributes = getGuestsAttributes(cartModel)
+            Log.e(
+                TAG,
+                "guestsAttributesData:  ${Gson().toJson(orderAttributeRequestModel.guestsAttributes)}"
+            )
+
+            orderAttributeRequestModel.orderItemsAttributes = dineInOrderItemAttributed(cartModel)
+            Log.e(
+                TAG,
+                "dineInOrderItemData:  ${Gson().toJson(orderAttributeRequestModel.orderItemsAttributes)}"
+            )
+        } else {
+
+            orderAttributeRequestModel.orderItemsAttributes = orderItemsAttributes(cartModel)
+        }
+
+//        if (cartModel.customer != null)
+//            orderAttributeRequestModel.customerAttributes = customerAttributes(cartModel)
+
+
+        val orderRequestModel = OrderRequestModel(isPaid, orderAttributeRequestModel)
+
+        Log.e("orderRequestModel", ":  ${Gson().toJson(orderRequestModel)}")
+
+        return orderRequestModel
+    }
+
+
+    fun createOpenOrderRequest(
+        cartModel: CartModel,
+        subTotalPrice: Double,
+        totalPrice: Double,
+        totalServiceCharge: Double,
+        totalTax: Double,
+        ORDER_TYPE: String,
+        future_delivery_date: String,
+        future_delivery_time: String,
+        isPaid: Boolean,
+        totalDiscount: Double,
+        tipAmount: Double,
+        splitValue: Int,
+        redeemLoyaltyInfo: RedeemLoyaltyInfo?,
+        finaldiscount: Double,
+        needToAddPaymentAttributes: Boolean?,
+        paymentType: String,
+        cashdiscountType: String
+    ): OrderRequestModel {
+
+        val orderAttributeRequestModel = OrderAttributeRequestModel()
+
+
+        if (isUpdateOrder)
+            orderAttributeRequestModel.id = orderId
+
+        orderAttributeRequestModel.date = TimeFormatUtils.getCurrentDate()
+        if (future_delivery_date.isNotEmpty())
+            orderAttributeRequestModel.futureDeliveryDate = future_delivery_date
+        orderAttributeRequestModel.deliveryType = "Pickup"
+        orderAttributeRequestModel.employeeId = cartModel.employeeID
+        orderAttributeRequestModel.locationId = cartModel.locationId
+        orderAttributeRequestModel.terminalId = cartModel.terminalId
+        orderAttributeRequestModel.note = cartModel.note
+        orderAttributeRequestModel.offlineId =
+            if (isUpdateOrder) orderOfflineId.toString() else randomOfflineId()
+        Log.e(TAG, "openOrderType: " + cartModel.orderType)
+        orderAttributeRequestModel.openOrderType = cartModel.orderType
+        orderAttributeRequestModel.orderTypeId = cartModel.orderTypeId
+        orderAttributeRequestModel.paymentStatus = if (isPaid) 1 else 0
+        orderAttributeRequestModel.serviceChargeEnabled = true
+        orderAttributeRequestModel.taxEnabled = true
+        orderAttributeRequestModel.subTotal = MethodUtils.roundOffAmountDouble(subTotalPrice)
+        orderAttributeRequestModel.totalAmount =
+            MethodUtils.roundOffAmountDouble(totalPrice) - MethodUtils.roundOffAmountDouble(
+                tipAmount
+            )
+        if (cartModel.discountId != null && cartModel.discountId != -1)
+            orderAttributeRequestModel.discount_id = cartModel.discountId
+        orderAttributeRequestModel.totalDiscount = totalDiscount
+        orderAttributeRequestModel.totalServiceCharges =
+            MethodUtils.roundOffAmountDouble(totalServiceCharge)
+        orderAttributeRequestModel.totalTaxAmount = MethodUtils.roundOffAmountDouble(totalTax)
+        orderAttributeRequestModel.totalTips = MethodUtils.roundOffAmountDouble(tipAmount)
+
+        orderAttributeRequestModel.is_loyalty_applied = redeemLoyaltyInfo?.needToApplyLoyalty
+        if (orderAttributeRequestModel.is_loyalty_applied == true) {
+            orderAttributeRequestModel.loyalty_program_id =
+                "${redeemLoyaltyInfo?.loyaltyProgramsModel?.id}"
+            orderAttributeRequestModel.loyalty_amount = redeemLoyaltyInfo?.usedLoyaltyAmount
+            orderAttributeRequestModel.used_reward_points = redeemLoyaltyInfo?.usedLoyaltyPoints
+        }
+//        if (cartModel.customer != null)
+//            orderAttributeRequestModel.customer_id = cartModel.customer?.id
+
+        val customerId = prefProvider.getValueInt(Constants.CUSTOMER_ID, -1)
+        if (customerId != -1) {
+            orderAttributeRequestModel.customer_id = customerId
+        }
+
+
+        orderAttributeRequestModel.paymentAttributes = if (needToAddPaymentAttributes == true) {
+            paymentAttributes(
+                cartModel,
+                totalPrice,
+                subTotalPrice,
+                totalServiceCharge,
+                totalTax,
+                totalDiscount,
+                tipAmount,
+                splitValue,
+                finaldiscount,
+                paymentType,
+                orderAttributeRequestModel.cash_discount_type,
+                redeemLoyaltyInfo = redeemLoyaltyInfo
+            )
+        } else {
+            null
+        }
         orderAttributeRequestModel.orderServiceChargesAttributes =
             orderServiceChargesAttributes(cartModel, subTotalPrice)
         if (cartModel.orderType == DINE_IN) {
