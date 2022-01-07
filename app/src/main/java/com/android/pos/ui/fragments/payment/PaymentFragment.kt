@@ -720,22 +720,18 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 finalPrice = totalPrice + tipAmount
                 isCustomCash = true
                 paymentAmount = secondValue.toDouble()
-                totalPrice = paymentAmount
-
                 makePayment()
             }
             R.id.txtThirdAmount -> {
                 finalPrice = totalPrice + tipAmount
                 isCustomCash = true
                 paymentAmount = thirdValue
-                totalPrice = paymentAmount
                 makePayment()
             }
             R.id.txtFourthAmount -> {
                 finalPrice = totalPrice + tipAmount
                 isCustomCash = true
                 paymentAmount = fourthValue
-                totalPrice = paymentAmount
                 makePayment()
             }
 
@@ -1603,7 +1599,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
 
                                 bundle.putDouble("WholetotalPrice", totalPrice + tipAmount)
-                                var remaining_custom = paymentAmount - totalPrice + tipAmount
+                                var remaining_custom = paymentAmount - WholetotalPrice
                                 bundle.putDouble(
                                     "remainingAmount",
                                     remaining_custom
