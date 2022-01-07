@@ -24,6 +24,7 @@ import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.databinding.FragmentCustomerBinding
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.CustomerListAdapter
+import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.SwipeHelper
 import com.android.pos.utils.callback.PaginationScrollListener
@@ -77,6 +78,7 @@ class Customer : Fragment() {
 
         // loadCustomerList()
         setUpRecyclerView()
+        observeCustomerDelete()
         loadCustomerLocalList(currentpage)
 
         val layoutManager =
@@ -324,6 +326,23 @@ class Customer : Fragment() {
                 binding.linearCustomerDialog.visibility = View.GONE
             }
         }
+    }
+
+    private fun observeCustomerDelete() {
+        viewModel.data.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+                AlertUtils.showCustomAlertWithListenerWithOK(
+                    requireContext(),
+                    it.message
+                ) { _, _ ->
+
+
+                }
+
+
+            }
+
+        })
     }
 
 
