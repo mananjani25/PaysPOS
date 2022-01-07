@@ -470,7 +470,13 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
 
                 } else {
                     val bundle = Bundle()
-                    bundle.putDouble("totalPrice", cardPaymentAmount)
+                    bundle.putDouble("PaidAmount", cardPaymentAmount)
+                    bundle.putDouble("WholetotalPrice", cardPaymentAmount)
+                    bundle.putDouble("dis_charge_value", 0.0)
+                    bundle.putDouble(
+                        "remainingAmount",
+                        0.0
+                    )
                     bundle.putDouble("paymentAmount", cardPaymentAmount)
                     orderId?.let { bundle.putInt("orderID", it) }
                     //bundle.putParcelable("receiptData", it.data)
@@ -478,8 +484,11 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                     bundle.putBoolean("isDineIn", true)
                     bundle.putBoolean("isTotalPayment", isTotalPayment)
                     bundle.putBoolean("isGuest", isGuestPay)
+                    bundle.putInt("splitValue", -1)
                     bundle.putBoolean("isLastPayment", isLastPayment)
                     bundle.putString("paymentType", "Card")
+                    bundle.putBoolean("isSplitByNo", isSplitByNo)
+                    bundle.putBoolean("isSplitByAmount", isSplitByAmount)
                     isGuestPaymentTotal = true
                     bundle.putBoolean("isGuestPaymentTotal", true)
                     if (isLastPayment!!)
@@ -616,14 +625,26 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                     }
                     else -> {
                         val bundle = Bundle()
-                        bundle.putDouble("totalPrice", totalPrice + tipAmount)
-                        bundle.putDouble("paymentAmount", paymentAmount)
+                        if (remainingAmount == 0.0) {
+                            bundle.putDouble("PaidAmount", totalPrice + tipAmount)
+                        } else {
+                            bundle.putDouble("PaidAmount", remainingAmount)
+                        }
+
+                        bundle.putDouble("WholetotalPrice", prefProvider.getValue(TOTAL_PRICE_DINEIN,"").toDouble())
+                        bundle.putDouble(
+                            "remainingAmount",
+                            0.0
+                        )
                         orderId?.let { bundle.putInt("orderID", it) }
                         //bundle.putParcelable("receiptData", it.data)
                         bundle.putBoolean("isSpilt", false)
                         bundle.putBoolean("isDineIn", true)
+                        bundle.putInt("splitValue", -1)
                         bundle.putBoolean("isGuest", isGuestPay)
                         bundle.putString("paymentType", "Cash")
+                        bundle.putBoolean("isSplitByNo", isSplitByNo)
+                        bundle.putBoolean("isSplitByAmount", isSplitByAmount)
                         bundle.putBoolean("isLastPayment", isLastPayment)
                         bundle.putBoolean("isTotalPayment", isTotalPayment)
                         isGuestPaymentTotal = true
@@ -634,11 +655,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                             R.id.action_payByGuestDialog_to_orderCompleteFragment,
                             bundle
                         )
-
-                        prefProvider.setValueInt("ORDER_ID", -1)
-
-
-                    }
+                        prefProvider.setValueInt("ORDER_ID", -1) }
                 }
             }
         }
@@ -789,6 +806,28 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
             R.id.llCredit -> {
                 paymentType = "Card"
                 setUpPaymentTypeWiseDiscount()
+                if (isSplitByNo) {
+                    var remaining_payment =
+                        String.format("%.2f",prefProvider.getValue(TOTAL_PRICE_DINEIN, "").toDouble() - splitAfterAmount).toDouble()
+                    if (remaining_payment <= 0.0) {
+                        prefProvider.setValueboolean("isLastPayment", true)
+                    } else {
+                        prefProvider.setValueboolean("isLastPayment", false)
+                    }
+
+                    var remainningCashDiscount =
+                        divideCashDiscount - (divideCashDiscount / splitValue)
+                    prefProvider.setValue(
+                        Constants.CASH_DISCOUNT_SURCHARGE,
+                        String.format("%.2f", remainningCashDiscount)
+                    )
+                } else if (isSplitByAmount) {
+                    prefProvider.setValue(
+                        Constants.CASH_DISCOUNT_SURCHARGE,
+                        String.format("%.2f", divideCashDiscount)
+                    )
+                }
+
                 if (isTotalPayment) {
                     makePaymentCreditCard()
                 } else {
