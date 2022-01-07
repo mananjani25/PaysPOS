@@ -4637,6 +4637,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                 orderRequest.offlineId = getOrderDetailsResponse?.offlineId ?: randomOfflineId()
                 orderRequest.id = getOrderDetailsResponse?.id ?: 0
+                orderRequest.openOrderType = "Dine In"
 
                 val createQueueRequest = CreateQueuePrinterRequestModel(
                     location_id = prefProvider.getValueInt(LOCATION_ID, 0),
@@ -4689,6 +4690,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     orderRequest.offlineId =
                         getOrderDetailsResponse?.offlineId ?: randomOfflineId()
                     orderRequest.id = getOrderDetailsResponse?.id ?: 0
+                    orderRequest.openOrderType = "Dine In"
+
 
                     val createQueueRequest = CreateQueuePrinterRequestModel(
                         location_id = prefProvider.getValueInt(LOCATION_ID, 0),
