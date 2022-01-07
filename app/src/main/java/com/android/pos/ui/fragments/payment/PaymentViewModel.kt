@@ -12,6 +12,7 @@ import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
+import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
@@ -45,6 +46,9 @@ class PaymentViewModel @Inject constructor(
 
     private var _queuePrinter = MutableLiveData<Event<String>>()
     val queuePrinter: LiveData<Event<String>> = _queuePrinter
+
+    private var _queueCreateSaveOrder = MutableLiveData<Event<Boolean?>>()
+    val QueueCreateSaveOrder : LiveData<Event<Boolean?>> = _queueCreateSaveOrder
 
     private val _queueStartSaveOrder = MutableLiveData<Event<CreateOrderResponse?>>()
     val queueStartSaveOrder: LiveData<Event<CreateOrderResponse?>> = _queueStartSaveOrder
@@ -111,9 +115,20 @@ class PaymentViewModel @Inject constructor(
                                 }
 
                                 if (onlySave) {
-                                    _queueStartSaveOrder.value = Event(createOrderResponse)
+                                    if (prefProvider.getValueboolean(
+                                            IS_PRINTER_QUEUE_ENABLE,
+                                            false
+                                        )
+                                    ) {
+
+
+                                        _queueStartSaveOrder.value = Event(createOrderResponse)
+                                    } else {
+                                        _queueStart.value = Event(createOrderResponse)
+                                        //_data.value = Event(createOrderResponse)
+                                    }
                                     //_queueStart.value = Event(createOrderResponse)
-//                                    _data.value = Event(createOrderResponse)
+
                                 } else {
                                     if (createOrderResponse.data.order.orderType != "Dine In") {
                                         cashLogApi(createOrderResponse, "in")
@@ -256,9 +271,12 @@ class PaymentViewModel @Inject constructor(
                             Log.e("INOUT : Total PayAmount", totalPayAmounts.toString())
 
                             if (order.totalAmount == totalPayAmounts) {
-                                _queueStart.value = Event(createOrderResponse)
+                                if (prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)) {
+                                    _queueStart.value = Event(createOrderResponse)
+                                } else {
 
-                                //  _data.value = Event(createOrderResponse)
+                                    _data.value = Event(createOrderResponse)
+                                }
                             } else {
                                 cashOutApi(createOrderResponse, "out")
                             }
@@ -314,8 +332,12 @@ class PaymentViewModel @Inject constructor(
                     if (response?.status == 200) {
 
                         resource.data?.let {
-                            _queueStart.value = Event(createOrderResponse)
-                            //     _data.value = Event(createOrderResponse)
+                            if (prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)) {
+                                _queueStart.value = Event(createOrderResponse)
+                            } else {
+                                _data.value = Event(createOrderResponse)
+                            }
+
 
                         }
 
@@ -1351,6 +1373,7 @@ class PaymentViewModel @Inject constructor(
                 Status.SUCCESS -> {
                     _showProgress.value = Event(false)
                     _data.value = Event(createOrder)
+                    _queueCreateSaveOrder.value = Event(true)
 
                     // _queuePrinter.value = Event(resource?.data?.message.toString())
 

@@ -775,10 +775,10 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
                             )
                             sendOrderedBroadcast(intent, null)
                         } else {
-                            Toast.makeText(
+                            /*Toast.makeText(
                                 MainApplication.getInstance(),
                                 "Barcode received from $scannerName", Toast.LENGTH_SHORT
-                            ).show()
+                            ).show()*/
                         }
                     }
                 }
