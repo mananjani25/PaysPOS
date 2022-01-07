@@ -32,7 +32,8 @@ class AddressListAdapter(val refreshCallBack: (Int) -> Unit) :
 
     fun addData(model: CreateCustomerRequestModel.Customer.Addresses) {
         list.add(model)
-        notifyItemInserted(list.size - 1)
+        notifyItemInserted(list.size )
+        //notifyItemRangeInserted(0,list.size )
     }
 
 

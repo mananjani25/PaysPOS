@@ -261,11 +261,18 @@ class AddEditCustomer : Fragment() {
     @SuppressLint("NotifyDataSetChanged")
     private fun onClick() {
         binding.imgAddressAdd.setOnClickListener {
-            Log.e(
-                TAG,
-                "getaddress1:  ${adapter.getList().get(adapter.getList().size - 1).address1}"
-            )
-            if (adapter.getList()[adapter.getList().size - 1].address1.isNotEmpty()) {
+
+            if (adapter.getList().isEmpty()) {
+                modelAddress = CreateCustomerRequestModel.Customer.Addresses()
+                modelAddress.apply {
+                    latitude = 0.0
+                    longitude = 0.0
+                }
+                adapter.addData(
+                    modelAddress
+                )
+
+            } else if (adapter.getList()[adapter.getList().size - 1].address1.isNotEmpty()) {
                 modelAddress = CreateCustomerRequestModel.Customer.Addresses()
                 modelAddress.apply {
                     latitude = 0.0
