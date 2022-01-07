@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -262,7 +263,9 @@ class CreateModifierSet : Fragment(), TextWatcher {
                     AlertUtils.showCustomAlertWithListenerWithOK(
                         it, message
                     ) { _, _ ->
-                        findNavController().navigateUp()
+                        lifecycleScope.launchWhenResumed {
+                            findNavController().navigateUp()
+                        }
                     }
                 }
 
