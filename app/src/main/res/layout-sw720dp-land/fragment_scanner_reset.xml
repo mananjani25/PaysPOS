@@ -64,13 +64,17 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:layout_marginStart="@dimen/_15sdp"
+                android:layout_marginEnd="@dimen/_15sdp"
+                android:orientation="horizontal"
+                android:paddingStart="@dimen/_25sdp"
+                android:paddingEnd="@dimen/_25sdp">
 
                 <View
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:visibility="gone" />
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -90,20 +94,25 @@
                     <FrameLayout
                         android:id="@+id/flBarCodeReset"
                         android:layout_width="wrap_content"
-                        android:layout_height="@dimen/_30sdp"
+                        android:layout_height="@dimen/_40sdp"
                         android:layout_gravity="center"
-                        android:layout_marginTop="@dimen/_10sdp" />
+                        android:layout_marginTop="@dimen/_10sdp"
+                        android:layout_marginBottom="@dimen/_25sdp"
+                        android:paddingStart="@dimen/_35sdp"
+                        android:paddingEnd="@dimen/_35sdp" />
 
                     <TextView
+
                         style="@style/ResetStyle"
                         android:text="3. Scan the barcode below to pair:" />
 
                     <FrameLayout
                         android:id="@+id/flBarCode"
                         android:layout_width="wrap_content"
-                        android:layout_height="@dimen/_30sdp"
+                        android:layout_height="@dimen/_40sdp"
                         android:layout_gravity="center"
-                        android:layout_marginTop="@dimen/_10sdp" />
+                        android:layout_marginTop="@dimen/_20sdp"
+                        android:layout_marginBottom="@dimen/_10sdp" />
 
                     <TextView
                         style="@style/ResetStyle"
@@ -126,8 +135,8 @@
                 <View
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:visibility="gone" />
             </LinearLayout>
 
         </androidx.core.widget.NestedScrollView>

@@ -216,6 +216,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         getCustomerReceiptSettings()
         getKitchenReceiptSettings()
         observeQueueCreate()
+        queuePrinterObserver()
         prefProvider.setValue(Constants.SPLIT_PAY_AMOUNT_DINE_IN, "")
         prefProvider.setValue(Constants.SPLIT_PAY_TYPE_DINE_IN, "")
         prefProvider.setValueInt(Constants.SPLIT_NO_DINE_IN, -1)
@@ -249,6 +250,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         return binding.root
     }
+
     fun clearPrefrenceOfOrder() {
         prefProvider.setValue("PaidAmount", "")
         prefProvider.setValue("WholeTotal", "")
@@ -269,6 +271,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         prefProvider.setValue(Constants.TOTAL_PRICE_DINEIN, "")
         optionType = prefProvider.getValue(OPTION_TYPE, "")
     }
+
     private fun getLoyaltyPrograms() {
         Log.e("Loyalty", "getLoyaltyPrograms called..")
         viewModel.activeLoyaltyProgram = prefProvider.getActiveLoyaltyData()
@@ -3621,9 +3624,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         // qty check logic
         var itemQty = 1
         if (cartList.isNotEmpty()) {
-            cartList[0].items?.filter { it.itemId == item?.itemId }?.map {
+            /*cartList[0].items?.filter { it.itemId == item?.itemId }?.map {
                 itemQty += it.itemQuantity
-            }
+            }*/
         }
         if (item?.quantity ?: 0 >= itemQty) {
             item?.itemQuantity = 1
@@ -3777,5 +3780,20 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         )
         viewModelPayment.createQueuePrinter(createRequest, createOrder)
+    }
+
+    private fun queuePrinterObserver() {
+        viewModelPayment.QueueCreateSaveOrder.observe(requireActivity(), {
+            it.getContentIfNotHandled()?.let {
+                binding.layoutCart.txtSave.text = getString(R.string.save)
+                clearCustomer()
+                hideOrderType()
+                //getKitchenPrinters(it)
+                clearUpdateFlag()
+
+
+
+            }
+        })
     }
 }

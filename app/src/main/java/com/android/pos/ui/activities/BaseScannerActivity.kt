@@ -775,10 +775,10 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
                             )
                             sendOrderedBroadcast(intent, null)
                         } else {
-                            Toast.makeText(
+                            /*Toast.makeText(
                                 MainApplication.getInstance(),
                                 "Barcode received from $scannerName", Toast.LENGTH_SHORT
-                            ).show()
+                            ).show()*/
                         }
                     }
                 }
@@ -1231,9 +1231,9 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
         /*val bluetoothAdapter: BluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
         val address = bluetoothAdapter.address
         Log.e("!_@_ MAC :", address.toString())*/
-       // return "E0:D0:83:0B:B9:7A"
-        return "0C:25:76:B4:0B:93"
-     // return "0c:25:76:b4:0b:95" // Sunmi Bluetooth MAC Address
+        return "E0:D0:83:0B:B9:7A"
+        //return "0C:25:76:B4:0B:93"
+        // return "0c:25:76:b4:0b:95" // Sunmi Bluetooth MAC Address
         //0c:25:76:b4:0b:95
 //        return "0c:25:76:b4:0b:95"
     }
