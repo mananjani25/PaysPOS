@@ -3623,13 +3623,18 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         // qty check logic
         var itemQty = 1
+        var itemQuantity = 1
         if (cartList.isNotEmpty()) {
-            /*cartList[0].items?.filter { it.itemId == item?.itemId }?.map {
-                itemQty += it.itemQuantity
-            }*/
+            cartList[0].items?.filter { it.itemId == item?.itemId }?.map {
+                Log.e(TAG, "ScanItemQuantity: ${it.itemQuantity}")
+                itemQty = it.itemQuantity
+
+
+            }
         }
         if (item?.quantity ?: 0 >= itemQty) {
             item?.itemQuantity = 1
+            //item?.itemQuantity = 0
 
             if (cartList.isEmpty()) {
                 viewModel.setServiceCharges(serviceChargesList)
@@ -3790,7 +3795,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 hideOrderType()
                 //getKitchenPrinters(it)
                 clearUpdateFlag()
-
 
 
             }

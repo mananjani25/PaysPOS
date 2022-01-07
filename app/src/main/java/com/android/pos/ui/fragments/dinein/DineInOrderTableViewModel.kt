@@ -126,7 +126,13 @@ class DineInOrderTableViewModel @Inject constructor(
 
     }
 
-    fun fireItemToKitchen(id: Int, status: Boolean, itemIds: String, isAllFired: Boolean,item:TbItem?=null) {
+    fun fireItemToKitchen(
+        id: Int,
+        status: Boolean,
+        itemIds: String,
+        isAllFired: Boolean,
+        item: TbItem? = null
+    ) {
 
         _showProgress.value = Event(true)
 
