@@ -884,6 +884,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         binding.footer.linearTransaction.setOnClickListener {
             if (rolePermission.hasTransactionPermission(binding.root)) {
                 findNavController().navigate(R.id.action_dashboardCategoryNew_to_transactionFragment)
+
             }
         }
         binding.footer.linearOpenOrders.setOnClickListener {
@@ -930,12 +931,21 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         val linearSupport: LinearLayout = dialog.findViewById(R.id.linearSupport)
         val txtSignOut: TextView = dialog.findViewById(R.id.txtSignOut)
         val txtBusinessName: TextView = dialog.findViewById(R.id.txtBusinessName)
+        val linearOpenOrders: LinearLayout = dialog.findViewById(R.id.linearOpenOrders)
+        val footer : RelativeLayout = dialog.findViewById(R.id.footer)
+        val footerTransaction:LinearLayout =  footer.findViewById<LinearLayout>(R.id.linearTransaction)
+        val linearCheckOut:LinearLayout = footer.findViewById(R.id.linearCheckOut)
+
+
 
         txtBusinessName.text = getString(R.string.business_name) + " :- " + prefProvider.getValue(
             Constants.BUSINESS_NAME,
             ""
         )
 
+        linearCheckOut.setOnClickListener {
+            dialog.dismiss()
+        }
 
         linearHome.setOnClickListener {
             closeDialog(dialog)
@@ -950,6 +960,12 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             findNavController().navigate(R.id.action_dashboardCategoryNew_to_reports)
             dialog.dismiss()
         }
+
+        linearOpenOrders.setOnClickListener {
+            findNavController().navigate(R.id.action_dashboardCategoryNew_to_orders)
+            dialog.dismiss()
+        }
+
         linearTeam.setOnClickListener {
             if (rolePermission.hasEmployeePermission(binding.root)) {
                 findNavController().navigate(R.id.action_dashboardCategoryNew_to_teamList)
@@ -970,6 +986,13 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         linearOrders.setOnClickListener {
             findNavController().navigate(R.id.action_dashboardCategoryNew_to_orders)
             dialog.dismiss()
+        }
+
+        footerTransaction.setOnClickListener {
+            if (rolePermission.hasTransactionPermission(binding.root)) {
+                findNavController().navigate(R.id.action_dashboardCategoryNew_to_transactionFragment)
+                dialog.dismiss()
+            }
         }
         linearTransaction.setOnClickListener {
             if (rolePermission.hasTransactionPermission(binding.root)) {

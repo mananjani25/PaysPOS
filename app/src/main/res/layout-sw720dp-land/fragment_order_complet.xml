@@ -197,7 +197,7 @@
                     <androidx.appcompat.widget.AppCompatEditText
                         android:id="@+id/edtEmail"
                         style="@style/CustomFontSemiBold"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_gravity="center"
                         android:layout_weight="0.1"
@@ -216,7 +216,7 @@
                     <com.santalu.maskedittext.MaskEditText
                         android:id="@+id/edtPhoneNo"
                         style="@style/CustomFontSemiBold"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_gravity="center"
                         android:layout_weight="0.1"
@@ -252,6 +252,46 @@
                         android:text="Send Receipt"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_6mdpi" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/linearForReferenceDesign"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_gravity="center"
+                    android:orientation="horizontal"
+                    android:visibility="visible">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontBold"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_margin="@dimen/_3sdp"
+                        android:layout_weight="1"
+                        android:background="@color/btnColorDark_"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:minWidth="@dimen/_120sdp"
+                        android:padding="@dimen/_5sdp"
+                        android:text="@string/print"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_7mdpi" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontBold"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_margin="@dimen/_3sdp"
+                        android:layout_weight="1"
+                        android:background="@color/btnColorDark_"
+                        android:gravity="center"
+                        android:minWidth="@dimen/_120sdp"
+                        android:padding="@dimen/_5sdp"
+                        android:text="@string/tv_email"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_7mdpi" />
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -372,9 +412,9 @@
                             android:minWidth="@dimen/_245sdp"
                             android:padding="@dimen/_5sdp"
                             android:text="@string/tv_home"
-                            android:visibility="gone"
                             android:textColor="@color/white"
-                            android:textSize="@dimen/_7mdpi" />
+                            android:textSize="@dimen/_7mdpi"
+                            android:visibility="gone" />
 
                         <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/llCheckOut"
@@ -385,12 +425,12 @@
                             android:layout_weight="1"
                             android:background="@color/btnColorDark_"
                             android:gravity="center"
-                            android:visibility="gone"
                             android:minWidth="@dimen/_245sdp"
                             android:padding="@dimen/_5sdp"
                             android:text="@string/checkout"
                             android:textColor="@color/white"
-                            android:textSize="@dimen/_7mdpi" />
+                            android:textSize="@dimen/_7mdpi"
+                            android:visibility="gone" />
 
 
                     </androidx.appcompat.widget.LinearLayoutCompat>

@@ -1015,7 +1015,7 @@
     <fragment
         android:id="@+id/printerQueue"
         android:name="com.android.pos.ui.fragments.settings.hardware.printerqueue.PrinterQueue"
-        android:label="PrinterQueue" >
+        android:label="PrinterQueue">
         <action
             android:id="@+id/action_printerQueue_to_dashboardCategoryNew"
             app:destination="@id/dashboardCategoryNew"

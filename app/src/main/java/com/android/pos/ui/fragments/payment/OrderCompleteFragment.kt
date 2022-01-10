@@ -400,6 +400,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
             R.id.llMessage -> {
                 type = "Message"
+                binding.linerContent.visibility = View.VISIBLE
                 binding.llSendReceipt.visibility = View.VISIBLE
                 binding.edtEmail.visibility = View.GONE
                 binding.imgBack.visibility = View.VISIBLE
@@ -407,7 +408,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 binding.llOptions.visibility = View.GONE
                 binding.txtHome.visibility = View.GONE
                 binding.txtAddCustomer.visibility = View.GONE
-                binding.llOptions.visibility = View.GONE
+                binding.constraintSplit.visibility = View.GONE
+                binding.viewSplitLine.visibility = View.GONE
                 MethodUtils.hideKeyboard(requireActivity())
             }
             R.id.llEmail -> {

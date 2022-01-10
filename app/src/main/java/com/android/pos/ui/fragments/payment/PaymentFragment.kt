@@ -685,7 +685,10 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 paymentAmount = when {
                     isSplitByNo -> {
                         var remaining_payment =
-                            String.format("%.2f",prefProvider.getValue("WholeTotal", "").toDouble() - splitAfterAmount).toDouble()
+                            String.format("%.2f",
+                                prefProvider.getValue("WholeTotal", "")
+                                    .toDouble() - splitAfterAmount
+                            ).toDouble()
                         if (remaining_payment <= 0.0) {
                             prefProvider.setValueboolean("isLastPayment", true)
                         } else {
@@ -741,7 +744,10 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 paymentAmount = when {
                     isSplitByNo -> {
                         var remaining_payment =
-                            String.format("%.2f",prefProvider.getValue("WholeTotal", "").toDouble() - splitAfterAmount).toDouble()
+                            String.format("%.2f",
+                                prefProvider.getValue("WholeTotal", "")
+                                    .toDouble() - splitAfterAmount
+                            ).toDouble()
                         if (remaining_payment <= 0.0) {
                             prefProvider.setValueboolean("isLastPayment", true)
                         } else {
@@ -815,9 +821,9 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                         if (isSplitByNo || isSplitByAmount) {
                             bundle.putDouble("totalPrice", (splitAfterAmount))
                         } else {
-                            if(remainingAmount==0.0){
+                            if (remainingAmount == 0.0) {
                                 bundle.putDouble("totalPrice", totalPrice + tipAmount)
-                            }else{
+                            } else {
                                 bundle.putDouble("totalPrice", remainingAmount)
                             }
                         }

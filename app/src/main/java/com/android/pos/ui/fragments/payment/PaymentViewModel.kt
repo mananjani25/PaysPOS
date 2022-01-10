@@ -48,7 +48,7 @@ class PaymentViewModel @Inject constructor(
     val queuePrinter: LiveData<Event<String>> = _queuePrinter
 
     private var _queueCreateSaveOrder = MutableLiveData<Event<Boolean?>>()
-    val QueueCreateSaveOrder : LiveData<Event<Boolean?>> = _queueCreateSaveOrder
+    val QueueCreateSaveOrder: LiveData<Event<Boolean?>> = _queueCreateSaveOrder
 
     private val _queueStartSaveOrder = MutableLiveData<Event<CreateOrderResponse?>>()
     val queueStartSaveOrder: LiveData<Event<CreateOrderResponse?>> = _queueStartSaveOrder
@@ -360,7 +360,6 @@ class PaymentViewModel @Inject constructor(
     }
 
 
-
     fun createOrderRequest(
         cartModel: CartModel,
         subTotalPrice: Double,
@@ -405,6 +404,8 @@ class PaymentViewModel @Inject constructor(
                 orderAttributeRequestModel.cash_discount_type = cashdiscountType
 
                 orderAttributeRequestModel.totalAmount = actual_Total - actual_CashDiscountSurCharge
+            } else {
+                orderAttributeRequestModel.totalAmount = totalPrice
             }
         } /*else if (paymentType == "Card") {
             if (cashdiscountType == "SurCharge") {
