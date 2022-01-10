@@ -115,8 +115,8 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
         display?.getSize(size)
         val width = size.x
         val height = size.y
-        val x = width * 6 / 10
-        val y = x / 3
+        val x = width * 2 / 10
+        val y = x / 4
         barCodeView.setSize(x, y)
         flBarcode?.addView(barCodeView, layoutParams)
     }
@@ -1192,8 +1192,8 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
         var y = x / 3
         if (getDeviceScreenSize() > 6) { // Check 6 is ok or not
             if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                x = width / 2
-                y = x / 3
+                x = width / 4
+                y = x / 4
             } else {
                 x = width * 2 / 3
                 y = x / 3
@@ -1232,8 +1232,8 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
         val address = bluetoothAdapter.address
         Log.e("!_@_ MAC :", address.toString())*/
         //  return "E0:D0:83:0B:B9:7A"
-        return "0C:25:76:B4:0B:93"
-        // return "0c:25:76:b4:0b:95" // Sunmi Bluetooth MAC Address
+      //  return "0C:25:76:B4:0B:93"
+        return "0c:25:76:b4:0b:95" // Sunmi Bluetooth MAC Address
         //0c:25:76:b4:0b:95
 //        return "0c:25:76:b4:0b:95"
     }
