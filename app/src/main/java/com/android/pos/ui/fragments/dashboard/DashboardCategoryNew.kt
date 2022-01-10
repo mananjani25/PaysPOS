@@ -226,6 +226,26 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         prefProvider.setValueInt(Constants.SPLIT_NO_DINE_IN, -1)
 
 
+
+        binding.footer.txtEmployeeName.setOnClickListener {
+            alert(
+                getString(R.string.app_name),
+                getString(R.string.clockout_message)
+            ) {
+                positiveButton(getString(android.R.string.ok)) {
+                    val bundle = Bundle()
+                    bundle.putBoolean("isDashboard", true)
+                    findNavController().navigate(
+                        R.id.action_dashboardCategoryNew_to_passcode,
+                        bundle
+                    )
+                }
+                negativeButton(R.string.tv_cancel) {
+                    // Do negative stuff here
+                }
+            }
+        }
+
         binding.footer.imgClock.setOnClickListener {
             alert(
                 getString(R.string.app_name),
@@ -244,6 +264,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 }
             }
         }
+
         val callback: OnBackPressedCallback =
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
