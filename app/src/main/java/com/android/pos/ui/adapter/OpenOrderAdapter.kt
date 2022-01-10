@@ -76,11 +76,13 @@ class OpenOrderAdapter(val context: Context) :
                 binding.txtEditOrder.visibility = View.GONE
                 binding.txtPrintReceipt.visibility = View.VISIBLE
                 binding.txtPayNow.visibility = View.GONE
+                binding.txtPrintReceipt.text = "Print Receipt"
 
             } else {
                 binding.txtCancelOrder.visibility = View.VISIBLE
                 binding.txtEditOrder.visibility = View.VISIBLE
                 binding.txtPrintReceipt.visibility = View.VISIBLE
+                binding.txtPrintReceipt.text = "Print Unpaid Receipt"
                 binding.txtPayNow.visibility = View.VISIBLE
             }
 
