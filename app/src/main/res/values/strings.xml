@@ -664,6 +664,7 @@
     <string name="update_customer">Update Customer</string>
     <string name="printer_queue_list">Printer Queue List</string>
     <string name="delete">Delete</string>
+    <string name="delete_all">Delete all</string>
     <string name="printer_queue_tag">When the orders are remains for printing and Printer Queue stops working then please check printers connections.Onece everything will get settled,Please press Refresh button from top right corner.Swipe right to left delete printer queue list.</string>
 
     <string name="scan_gun">Scan Gun</string>

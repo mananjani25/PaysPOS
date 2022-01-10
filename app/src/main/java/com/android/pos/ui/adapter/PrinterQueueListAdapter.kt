@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.model.PrinterQueueModel
 import com.android.pos.databinding.ViewPrinterQueueListBinding
+import com.android.pos.utils.MethodUtils
 
 class PrinterQueueListAdapter : RecyclerView.Adapter<PrinterQueueListAdapter.MyViewHolder>() {
     private var list: ArrayList<PrinterQueueModel> = arrayListOf()
@@ -29,7 +30,7 @@ class PrinterQueueListAdapter : RecyclerView.Adapter<PrinterQueueListAdapter.MyV
             binding.txtOrderId.text = ""
             binding.txtOrderType.text = model.orderType
             binding.txtTerminalName.text = model.terminalName
-            binding.txtTotalAmt.text = "$" + model.totalAmt
+            binding.txtTotalAmt.text = model.totalAmt?.let { MethodUtils.roundOffAmount(it) }
             binding.txtStatus.text = model.status
 
         }

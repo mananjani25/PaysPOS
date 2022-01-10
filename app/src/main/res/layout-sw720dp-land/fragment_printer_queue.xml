@@ -94,7 +94,7 @@
                     android:paddingVertical="@dimen/_5sdp"
                     android:paddingStart="@dimen/_8sdp"
                     android:paddingEnd="@dimen/_8sdp"
-                    android:text="@string/delete"
+                    android:text="@string/delete_all"
                     android:textColor="@color/txt_color_blue"
                     android:textSize="@dimen/_6mdpi"
                     app:layout_constraintBottom_toBottomOf="parent"

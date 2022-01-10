@@ -107,6 +107,7 @@
                             android:background="@color/dividerColor" />
 
                         <TextView
+                            android:visibility="gone"
                             android:id="@+id/txtMarketing"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -120,6 +121,7 @@
                             android:textStyle="normal" />
 
                         <View
+                            android:visibility="gone"
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
                             android:background="@color/dividerColor" />
