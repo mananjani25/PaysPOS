@@ -122,7 +122,7 @@ class TransactionDetailsFragment : Fragment() {
         binding.tvIssueRefund.setOnClickListener {
             val bundle = Bundle().apply {
                 paymentDetailsResponse.data.order.order_items.forEach {
-                    it.isChecked = false
+                    it.isChecked = true
                 }
                 putInt("paymentId", paymentId)
                 putParcelable("orderDetailsResponse", paymentDetailsResponse)

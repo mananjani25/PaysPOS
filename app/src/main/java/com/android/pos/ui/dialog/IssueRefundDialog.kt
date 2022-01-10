@@ -190,6 +190,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
             totalItemDiscount += it.discountAmount
         }
 
+
         refundItemListAdapter.addItems(
             paymentOrderDetailsResponse.data.order.order_items,
             paymentOrderDetailsResponse.data.service_charge_amount,
@@ -200,6 +201,8 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
             paymentOrderDetailsResponse.data.loyalty_amount
         )
 
+        refundItemListAdapter.setSelectedItemList(paymentOrderDetailsResponse.data.order.order_items.toCollection(
+            arrayListOf()))
         refundItemListAdapter.showItemSubTotal = {
 
             //    calculationOfItems()

@@ -15,7 +15,7 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
     RecyclerView.Adapter<RefundItemListAdapter.MyViewHolder>() {
 
     var showItemSubTotal: (() -> Unit)? = null
-    var selectedItemList = ArrayList<GetOrderDetailsResponse.Data.OrderItem>()
+    private var selectedItemList: ArrayList<GetOrderDetailsResponse.Data.OrderItem> = arrayListOf()
     var noteList = ArrayList<GetOrderDetailsResponse.Data.OrderItem>()
     var serviceCharge: Double = 0.0
     var cashdiscountType: String = ""
@@ -23,6 +23,12 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
     var cash_discount_or_surcharge: Double = 0.0
     var totalDiscount: Double = 0.0
     var loyaltyAmount: Double = 0.0
+
+    fun setSelectedItemList(list: ArrayList<GetOrderDetailsResponse.Data.OrderItem>) {
+        selectedItemList.clear()
+        selectedItemList.addAll(list)
+
+    }
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -144,8 +150,10 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
         }
     }
 
+
     fun selectedItemList(): ArrayList<GetOrderDetailsResponse.Data.OrderItem> {
         return selectedItemList
     }
+
 
 }
