@@ -365,12 +365,14 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         setFragmentResultListener("request_key_customer") { requestKey: String, bundle: Bundle ->
             val result = bundle.getParcelable<TbCustomer>("data")
             if (result != null) {
+                Log.e(TAG, "bundleSelectBundle:  ${Gson().toJson(bundle)}")
                 setUpCustomer(result, bundle)
             }
         }
         setFragmentResultListener("request_key_customer_open_order") { requestKey: String, bundle: Bundle ->
             val result = bundle.getParcelable<TbCustomer>("data")
             if (result != null) {
+                Log.e(TAG, "gotBundlebundle:  ${Gson().toJson(bundle)}")
                 setUpCustomer(result, bundle)
 
 
@@ -555,10 +557,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         if (openOrder) {
             future_delivery_date = bundle.getString("DATE").toString()
             future_delivery_time = bundle.getString("TIME").toString()
-            prefProvider.setValueInt(ORDER_TYPE_ID, orderType!!.id)
-            prefProvider.setValue(ORDER_TYPE_NAME, orderType!!.name)
-            Log.e("!_@_", "523 ${orderType!!.orderType}")
-            prefProvider.setValue(ORDER_TYPE, orderType!!.orderType)
+            prefProvider.setValueInt(ORDER_TYPE_ID, orderType?.id ?: 3)
+            prefProvider.setValue(ORDER_TYPE_NAME, orderType?.name ?: OPEN_ORDER)
+            Log.e("!_@_", "523 ${orderType?.orderType ?: ""}")
+            prefProvider.setValue(ORDER_TYPE, orderType?.orderType ?: OPEN_ORDER)
             hideOrderType()
         }
     }
@@ -932,9 +934,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         val txtSignOut: TextView = dialog.findViewById(R.id.txtSignOut)
         val txtBusinessName: TextView = dialog.findViewById(R.id.txtBusinessName)
         val linearOpenOrders: LinearLayout = dialog.findViewById(R.id.linearOpenOrders)
-        val footer : RelativeLayout = dialog.findViewById(R.id.footer)
-        val footerTransaction:LinearLayout =  footer.findViewById<LinearLayout>(R.id.linearTransaction)
-        val linearCheckOut:LinearLayout = footer.findViewById(R.id.linearCheckOut)
+        val footer: RelativeLayout = dialog.findViewById(R.id.footer)
+        val footerTransaction: LinearLayout =
+            footer.findViewById<LinearLayout>(R.id.linearTransaction)
+        val linearCheckOut: LinearLayout = footer.findViewById(R.id.linearCheckOut)
 
 
 
@@ -1424,7 +1427,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         if (viewModel.loyaltyPointCondition(customer)) {
 
             Log.e(TAG, Gson().toJson(viewModel.redeemLoyaltyInfo))
-            amountToBepaid = viewModel.redeemLoyaltyInfo.getAmountToBePaid()
+            amountToBepaid = viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0
             txtLoyaltyAmount.text =
                 "- $${String.format("%.2f", viewModel.redeemLoyaltyInfo.usedLoyaltyAmount)}"
             txtLoyaltyPoints.text = "${viewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
@@ -2357,7 +2360,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     var totalAmountTobeSave = 0.0
                     if (viewModel.redeemLoyaltyInfo.isLoyaltyApplied == true) {
                         totalAmountTobeSave =
-                            (viewModel.redeemLoyaltyInfo.getAmountToBePaid())
+                            (viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0)
                     } else {
                         totalAmountTobeSave =
                             (binding.layoutCart.txtTotalAmount.text.toString().subSequence(
@@ -2439,9 +2442,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     binding.layoutCart.txtTotalAmount.text.length
                 ) as String).toDouble()
                 bundle.putDouble("totalPrice", final_total)
-                bundle.putString(
+                bundle.putParcelable(
                     "redeemLoyalty",
-                    Gson().toJson(viewModel.redeemLoyaltyInfo)
+                    viewModel.redeemLoyaltyInfo
                 )
                 bundle.putDouble(
                     "cashDiscountSurcharge",

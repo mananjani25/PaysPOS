@@ -111,7 +111,6 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
                         gcd.getFromLocation(placeDetails.lat, placeDetails.lng, 1)
 
                     if (address.isNotEmpty()) {
-
                         binding.edtStreet.setText(placeDetails.name)
                         binding.edtSuite.setText(placeDetails.name)
                         binding.edtCity.setText(address[0].locality)

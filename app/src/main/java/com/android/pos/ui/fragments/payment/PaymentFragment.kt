@@ -224,10 +224,12 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
         future_delivery_time = requireArguments().getString("future_delivery_time").toString()
         future_delivery_date = requireArguments().getString("future_delivery_date").toString()
-        redeemLoyaltyInfo = Gson().fromJson(
+      /*  redeemLoyaltyInfo = Gson().fromJson(
             requireArguments().getString("redeemLoyalty").toString(),
             RedeemLoyaltyInfo::class.java
-        )
+        )*/
+
+        redeemLoyaltyInfo = requireArguments().getParcelable("redeemLoyalty")
 
         isUpdate = requireArguments().getBoolean("update")
         if (isUpdate) {
@@ -276,13 +278,15 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     }
                     cardPaymentAmount =
                         (remainingAmount + last_cash_discount_surcharge.toDouble())
-                    binding.txtCardAmount.text = "$ " + String.format("%.2f", cardPaymentAmount)
+                    MethodUtils.setPriceTextView(binding.txtCardAmount, cardPaymentAmount)
+                    //  binding.txtCardAmount.text = "$ " + String.format("%.2f", cardPaymentAmount)
                     cashDiscountSurcharge =
                         prefProvider.getValue(CASH_DISCOUNT_SURCHARGE, "").toDouble()
                 } else {
                     cardPaymentAmount = remainingAmount
-                    binding.txtCardAmount.text =
-                        "$" + String.format("%.2f", remainingAmount)
+                    MethodUtils.setPriceTextView(binding.txtCardAmount, remainingAmount)
+//                    binding.txtCardAmount.text =
+//                        "$" + String.format("%.2f", remainingAmount)
                 }
                 MethodUtils.setPriceTextView(binding.txtTotalAmount, remainingAmount)
                 getCashPaymentOptionList(remainingAmount)
@@ -308,16 +312,19 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 if (MethodUtils.isEnableCashDiscount(requireContext())) {
                     if (cashDiscountType == "CashDiscount") {
                         cardPaymentAmount = splitAfterAmount + cashDiscountSurcharge
-                        binding.txtCardAmount.text = "$ " + String.format("%.2f", cardPaymentAmount)
+                        MethodUtils.setPriceTextView(binding.txtCardAmount, cardPaymentAmount)
+                        //  binding.txtCardAmount.text = "$ " + String.format("%.2f", cardPaymentAmount)
                     } else if (cashDiscountType == "SurCharge") {
                         cardPaymentAmount = splitAfterAmount - cashDiscountSurcharge
-                        binding.txtCardAmount.text =
-                            "$ " + String.format("%.2f", cardPaymentAmount)
+                        MethodUtils.setPriceTextView(binding.txtCardAmount, cardPaymentAmount)
+                        /*binding.txtCardAmount.text =
+                            "$ " + String.format("%.2f", cardPaymentAmount)*/
                     }
                 } else {
                     cardPaymentAmount = remainingAmount
-                    binding.txtCardAmount.text =
-                        "$" + String.format("%.2f", remainingAmount)
+                    MethodUtils.setPriceTextView(binding.txtCardAmount, remainingAmount)
+//                    binding.txtCardAmount.text =
+//                        "$" + String.format("%.2f", remainingAmount)
                 }
                 MethodUtils.setPriceTextView(binding.txtTotalAmount, remainingAmount)
                 getCashPaymentOptionList(remainingAmount)
@@ -328,15 +335,20 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             if (isSplitByNo) {
                 if (MethodUtils.isEnableCashDiscount(requireContext())) {
                     cardPaymentAmount = (splitAfterAmount + (cashDiscountSurcharge / splitValue))
-                    binding.txtCardAmount.text =
-                        "$ " + String.format(
-                            "%.2f",
-                            (splitAfterAmount + (cashDiscountSurcharge / splitValue))
-                        )
+                    MethodUtils.setPriceTextView(
+                        binding.txtCardAmount,
+                        (splitAfterAmount + (cashDiscountSurcharge / splitValue))
+                    )
+//                    binding.txtCardAmount.text =
+//                        "$ " + String.format(
+//                            "%.2f",
+//                            (splitAfterAmount + (cashDiscountSurcharge / splitValue))
+//                        )
                 } else {
                     cardPaymentAmount = splitAfterAmount
-                    binding.txtCardAmount.text =
-                        "$" + String.format("%.2f", splitAfterAmount)
+                    MethodUtils.setPriceTextView(binding.txtCardAmount, splitAfterAmount)
+//                    binding.txtCardAmount.text =
+//                        "$" + String.format("%.2f", splitAfterAmount)
                 }
                 MethodUtils.setPriceTextView(binding.txtTotalAmount, splitAfterAmount)
                 getCashPaymentOptionList(splitAfterAmount)
@@ -362,16 +374,19 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 if (MethodUtils.isEnableCashDiscount(requireContext())) {
                     if (cashDiscountType == "CashDiscount") {
                         cardPaymentAmount = splitAfterAmount + (cashDiscountSurcharge)
-                        binding.txtCardAmount.text = "$ " + String.format("%.2f", cardPaymentAmount)
+                        // binding.txtCardAmount.text = "$ " + String.format("%.2f", cardPaymentAmount)
+                        MethodUtils.setPriceTextView(binding.txtCardAmount, cardPaymentAmount)
                     } else if (cashDiscountType == "SurCharge") {
                         cardPaymentAmount = splitAfterAmount - cashDiscountSurcharge
-                        binding.txtCardAmount.text =
-                            "$ " + String.format("%.2f", cardPaymentAmount)
+                        MethodUtils.setPriceTextView(binding.txtCardAmount, cardPaymentAmount)
+                        /*binding.txtCardAmount.text =
+                            "$ " + String.format("%.2f", cardPaymentAmount)*/
                     }
                 } else {
                     cardPaymentAmount = splitAfterAmount
-                    binding.txtCardAmount.text =
-                        "$" + String.format("%.2f", cardPaymentAmount)
+                    MethodUtils.setPriceTextView(binding.txtCardAmount, cardPaymentAmount)
+                    /*binding.txtCardAmount.text =
+                        "$" + String.format("%.2f", cardPaymentAmount)*/
                 }
 
                 MethodUtils.setPriceTextView(binding.txtTotalAmount, splitAfterAmount)
@@ -409,7 +424,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         }
         if (MethodUtils.isEnableCashDiscount(requireContext())) {
             if (cashDiscountType == "CashDiscount") {
-                binding.txtCardAmount.text = "$ " + String.format("%.2f", totalPrice)
+                MethodUtils.setPriceTextView(binding.txtCardAmount, totalPrice)
+               // binding.txtCardAmount.text = "$ " + String.format("%.2f", totalPrice)
                 cardPaymentAmount = totalPrice
                 binding.linearnoncashAdj.visibility = View.VISIBLE
                 binding.txtNoncashAdj.text = "$ " + String.format(
@@ -419,13 +435,15 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 totalPrice -= cashDiscountSurcharge
             } else if (cashDiscountType == "SurCharge") {
                 binding.linearnoncashAdj.visibility = View.GONE
-                binding.txtCardAmount.text =
-                    "$ " + String.format("%.2f", totalPrice + cashDiscountSurcharge)
+                MethodUtils.setPriceTextView(binding.txtCardAmount, totalPrice + cashDiscountSurcharge)
+               /* binding.txtCardAmount.text =
+                    "$ " + String.format("%.2f", totalPrice + cashDiscountSurcharge)*/
                 cardPaymentAmount = totalPrice + cashDiscountSurcharge
             }
         } else {
-            binding.txtCardAmount.text =
-                "$" + String.format("%.2f", totalPrice)
+            MethodUtils.setPriceTextView(binding.txtCardAmount, totalPrice)
+           /* binding.txtCardAmount.text =
+                "$" + String.format("%.2f", totalPrice)*/
             cardPaymentAmount = totalPrice
             binding.linearnoncashAdj.visibility = View.GONE
         }
@@ -685,7 +703,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 paymentAmount = when {
                     isSplitByNo -> {
                         var remaining_payment =
-                            String.format("%.2f",
+                            String.format(
+                                "%.2f",
                                 prefProvider.getValue("WholeTotal", "")
                                     .toDouble() - splitAfterAmount
                             ).toDouble()
@@ -744,7 +763,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 paymentAmount = when {
                     isSplitByNo -> {
                         var remaining_payment =
-                            String.format("%.2f",
+                            String.format(
+                                "%.2f",
                                 prefProvider.getValue("WholeTotal", "")
                                     .toDouble() - splitAfterAmount
                             ).toDouble()

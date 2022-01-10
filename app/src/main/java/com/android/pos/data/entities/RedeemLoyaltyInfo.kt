@@ -1,8 +1,11 @@
 package com.android.pos.data.entities
 
+import android.os.Parcelable
 import android.util.Log
+import kotlinx.parcelize.Parcelize
 
-class RedeemLoyaltyInfo() {
+@Parcelize
+class RedeemLoyaltyInfo() : Parcelable {
     var loyaltyProgramsModel: LoyaltyProgramsModel? = null
     var total: Double = 0.0
     var usedLoyaltyPoints: Int = 0
@@ -10,10 +13,10 @@ class RedeemLoyaltyInfo() {
     var remainingAmount: Double = 0.0
     var usedLoyaltyAmount: Double = 0.0
     var isLoyaltyApplied: Boolean? = false
-    var amountToBePaid: Double? = 0.0
+    var amountToBePaid: Double = 0.0
     var needToApplyLoyalty: Boolean = false
 
-    fun getAmountToBePaid(): Double {
+    fun getAmountToBePaid(): Double? {
         return if (needToApplyLoyalty) {
             remainingAmount
         } else {

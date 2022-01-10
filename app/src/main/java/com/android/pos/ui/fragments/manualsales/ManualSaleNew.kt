@@ -337,8 +337,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
 
             if (binding.txtTotalAmount.text.toString() != "$0.00") {
                 val bundle = Bundle()
-                Log.e("!_@_","Total Price: ${viewModel.redeemLoyaltyInfo.getAmountToBePaid()}")
-                bundle.putDouble("totalPrice", viewModel.redeemLoyaltyInfo.getAmountToBePaid())
+                Log.e("!_@_","Total Price: ${viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0}")
+                bundle.putDouble("totalPrice", viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0)
                 bundle.putDouble("subTotalPrice", viewModel.subTotalPrice)
                 bundle.putDouble("totalTax", viewModel.totalTax)
                 bundle.putDouble("totalDiscount", viewModel.totalDiscount)
@@ -918,7 +918,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
             //setPopUpData(popupView)
             refreshItemCalculation()
             //display total price to be paid
-            MethodUtils.setPriceTextView(txtTotalAmount, viewModel.redeemLoyaltyInfo.getAmountToBePaid())
+            MethodUtils.setPriceTextView(txtTotalAmount, viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0)
         }
 
         if (prefProvider.getValueboolean(Constants.LOYALTY_ADDED, false)) {
@@ -967,7 +967,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
         )
 
         //display total price to be paid
-        MethodUtils.setPriceTextView(txtTotalAmount, amountToBepaid)
+        MethodUtils.setPriceTextView(txtTotalAmount, amountToBepaid ?: 0.0)
 
         val popupWindow = PopupWindow(
             popupView,
