@@ -344,6 +344,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             bundle.putDouble("subTotalPrice", MethodUtils.roundOffAmountDouble(subTotalDInin))
             bundle.putDouble("totalTax", MethodUtils.roundOffAmountDouble(finalTaxAmt))
             bundle.putParcelable("model", model)
+            bundle.putBoolean("update",true)
             bundle.putDouble(
                 "divideCashDiscount",
                 MethodUtils.roundOffAmountDouble(divideCashDiscount)
@@ -355,7 +356,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             bundle.putBoolean("isLastPayment", true)
 
             orderId?.let { it1 -> bundle.putInt("orderId", it1) }
-            orderId?.let { it1 -> prefProvider.setValueInt("ORDER_ID", it1) }
+//            orderId?.let { it1 -> prefProvider.setValueInt("ORDER_ID", it1) }
 
             findNavController().navigate(
                 R.id.action_dineInOrderTable_to_payByGuestDialog,
@@ -866,7 +867,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         orderId?.let { bundle.putInt("orderId", it) }
         bundle.putBoolean("isGuestPay", true)
         orderId?.let { it1 -> bundle.putInt("orderId", it1) }
-        orderId?.let { it1 -> prefProvider.setValueInt("ORDER_ID", it1) }
+//        orderId?.let { it1 -> prefProvider.setValueInt("ORDER_ID", it1) }
         var wholeTableAmt = 0.0
         var paidAmount = 0.0
         for (i in 0 until adapterList.size) {

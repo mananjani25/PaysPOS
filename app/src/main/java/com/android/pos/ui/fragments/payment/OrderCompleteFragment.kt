@@ -274,9 +274,15 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         MethodUtils.roundOffAmount(0.0) + " Change"
                 } else {
                     if (remainingAmount < paidAmount) {
-                        binding.txtChangeAmount.text =
-                            MethodUtils.roundOffAmount((paidAmount - dis_charge_value) - remainingAmount) + " Change"
+                        var temp_Change =
+                            MethodUtils.roundOffAmountDouble((paidAmount - dis_charge_value) - remainingAmount)
+                        if (!(temp_Change.equals(0.0) || temp_Change.equals(0) || temp_Change <= 0.0)) {
+                            binding.txtChangeAmount.text =
+                                MethodUtils.roundOffAmount((paidAmount - dis_charge_value) - remainingAmount) + " Change"
+                        }
+
                     }
+
                 }
 
                 binding.txtPaymentAmount.text = "Out of " + MethodUtils.roundOffAmount(paidAmount)
@@ -1982,7 +1988,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         prefProvider.setValue(Constants.TIP, "")
         prefProvider.setValue(Constants.TAX_CHARGE, "")
         prefProvider.setValue(Constants.SERVICE_CHARGE, "")
-
+        prefProvider.setValueInt("ORDER_ID", -1)
     }
 
     private fun observeShowProgress() {

@@ -1401,12 +1401,6 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                     R.id.action_paymentFragment_to_orderCompleteFragment,
                                     bundle
                                 )
-                                prefProvider.setValue(SPLIT_PAY_TYPE, SPLIT_NO)
-                                prefProvider.setValue(
-                                    SPLIT_PAY_AMOUNT,
-                                    (splitAfterAmount - tipAmount).toString()
-                                )
-                                prefProvider.setValueInt(SPLIT_NO, splitValue)
 
                             }
                             isSplitByAmount -> {

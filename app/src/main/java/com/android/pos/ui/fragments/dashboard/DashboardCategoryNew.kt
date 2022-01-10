@@ -3164,7 +3164,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     bundle.putParcelable("dineInList", baseResponse)
                     bundle.putBoolean("isGuestPaid", false)
                     bundle.putInt("orderId", baseResponse.order.id)
-
+                    prefProvider.setValueInt("ORDER_ID",baseResponse.order.id)
 
                     prefProvider.setValue(Constants.ORDER_TYPE, "")
                     prefProvider.setValue(Constants.CUSTOMER_NAME, "")
