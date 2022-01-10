@@ -405,7 +405,7 @@ class PaymentViewModel @Inject constructor(
 
                 orderAttributeRequestModel.totalAmount = actual_Total - actual_CashDiscountSurCharge
             } else {
-                orderAttributeRequestModel.totalAmount = totalPrice
+                orderAttributeRequestModel.totalAmount = totalPrice - tipAmount
             }
         } /*else if (paymentType == "Card") {
             if (cashdiscountType == "SurCharge") {
