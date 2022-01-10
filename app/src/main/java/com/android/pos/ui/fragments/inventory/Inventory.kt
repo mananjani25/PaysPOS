@@ -100,7 +100,7 @@ class Inventory : Fragment() {
             1 -> {
                 val category: Fragment = Categories()
                 loadFragment(category)
-                binding.commonToolbar.txtSetItem.visibility = View.VISIBLE
+                binding.commonToolbar.txtSetItem.visibility = View.GONE
                 binding.commonToolbar.txtSubTitle.text =
                     resources.getString(R.string.categories_title)
 
@@ -108,7 +108,7 @@ class Inventory : Fragment() {
             2 -> {
                 val modifier: Fragment = Modifiers()
                 loadFragment(modifier)
-                binding.commonToolbar.txtSetItem.visibility = View.VISIBLE
+                binding.commonToolbar.txtSetItem.visibility = View.GONE
                 binding.commonToolbar.txtSubTitle.text =
                     resources.getString(R.string.modifiers_title)
             }
@@ -122,13 +122,13 @@ class Inventory : Fragment() {
             3 -> {
                 val option: Fragment = Options()
                 loadFragment(option)
-                binding.commonToolbar.txtSetItem.visibility = View.VISIBLE
+                binding.commonToolbar.txtSetItem.visibility = View.GONE
                 binding.commonToolbar.txtSubTitle.text = resources.getString(R.string.options_title)
             }
             4 -> {
                 val hideCategory: Fragment = HideCategoryListing()
                 loadFragment(hideCategory)
-                binding.commonToolbar.txtSetItem.visibility = View.VISIBLE
+                binding.commonToolbar.txtSetItem.visibility = View.GONE
                 binding.commonToolbar.txtSubTitle.text =
                     resources.getString(R.string.hidden_categories_title)
             }
@@ -136,7 +136,7 @@ class Inventory : Fragment() {
             5 -> {
                 val hideItem: Fragment = HideItemListing()
                 loadFragment(hideItem)
-                binding.commonToolbar.txtSetItem.visibility = View.VISIBLE
+                binding.commonToolbar.txtSetItem.visibility = View.GONE
                 binding.commonToolbar.txtSubTitle.text =
                     resources.getString(R.string.hidden_items_title)
             }

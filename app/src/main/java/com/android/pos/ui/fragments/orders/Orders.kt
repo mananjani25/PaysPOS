@@ -94,14 +94,14 @@ class Orders : Fragment() {
             1 -> {
                 val upcomingOrders = ActiveOrderFragment.newInstance("Upcoming")
                 loadFragment(upcomingOrders)
-                binding.commonToolbar.txtSetItem.visibility = View.VISIBLE
+                binding.commonToolbar.txtSetItem.visibility = View.GONE
                 binding.commonToolbar.txtSubTitle.text = "Upcoming Orders"
 
             }
             2 -> {
                 val modifier: Fragment = ActiveOrderFragment.newInstance("1")
                 loadFragment(modifier)
-                binding.commonToolbar.txtSetItem.visibility = View.VISIBLE
+                binding.commonToolbar.txtSetItem.visibility = View.GONE
                 binding.commonToolbar.txtSubTitle.text = "Completed"
             }
 
