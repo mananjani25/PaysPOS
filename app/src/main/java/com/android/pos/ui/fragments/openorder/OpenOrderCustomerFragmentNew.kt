@@ -269,6 +269,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
             }
 
             R.id.btnCancelCustomer -> {
+                findNavController().navigateUp()
 
             }
             R.id.txtPickup -> {

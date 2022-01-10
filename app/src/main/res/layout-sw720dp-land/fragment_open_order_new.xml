@@ -19,7 +19,7 @@
             android:layout_height="wrap_content">
 
             <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/imgBack"
+                    android:id="@+id/imgBack"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
@@ -120,13 +120,13 @@
 
 
                     <androidx.appcompat.widget.LinearLayoutCompat
-                        android:background="@drawable/edt_border_light_gray"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
+                        android:background="@drawable/edt_border_light_gray"
                         android:gravity="center"
-                        android:padding="1dp"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        android:padding="1dp">
 
                         <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/txtPickup"
@@ -159,14 +159,14 @@
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
                     <androidx.appcompat.widget.LinearLayoutCompat
-                        android:background="@drawable/edt_border_light_gray"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:padding="1dp"
                         android:layout_marginTop="@dimen/_10sdp"
+                        android:background="@drawable/edt_border_light_gray"
                         android:gravity="center"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        android:padding="1dp">
 
                         <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/txtCustomerDetails"
