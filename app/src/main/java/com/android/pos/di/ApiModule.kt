@@ -15,6 +15,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 @Module
@@ -40,7 +41,7 @@ object ApiModule {
         Retrofit.Builder()
             .baseUrl(prefProvider.getValue(BASE_URL_NEW, BASE_URL).toString())
             .client(
-                OkHttpClient.Builder()
+                OkHttpClient.Builder().connectTimeout(10000, TimeUnit.MILLISECONDS)
                     .addInterceptor { chain ->
                         chain.proceed(chain.request().newBuilder().also {
                             val authToken = prefProvider.getValue(AUTH_TOKEN, "")

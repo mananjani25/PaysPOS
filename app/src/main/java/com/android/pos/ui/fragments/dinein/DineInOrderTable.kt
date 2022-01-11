@@ -310,7 +310,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             toFinalAmt,
                             prefProvider,
                             requireContext()
-                        ) / divideGuest
+                        ) / totalGuestCount
                 }
             } else {
                 divideCashDiscount = 0.0
@@ -848,21 +848,28 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         dineInOrderModel.id = orderId
 
 
+        prefProvider.setValue(Constants.SUB_TOTAL_DINEIN, "")
+        prefProvider.setValue(Constants.TOTAL_DISCOUNT_DINEIN, "")
+        prefProvider.setValue(Constants.TIPS_AMOUNT_DINEIN, "")
+        prefProvider.setValue(Constants.TAX_CHARGE_DINEIN, "")
+        prefProvider.setValue(Constants.SERVICE_CHARGE_DINEIN, "")
+        prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE_DINEIN, "")
+        prefProvider.setValue(Constants.TOTAL_PRICE_DINEIN, "")
         var modelReq = DineInOrderPayment(dineInOrderModel)
         var model = GuestPaymentRequest(paymentAttr, dineInOrderModel)
 
         val bundle = Bundle()
         dineInModel.id?.let { bundle.putInt("id", it) }
         bundle.putParcelable("cartList", cartList)
-        bundle.putDouble("totalPrice", totalGuest)
-        bundle.putDouble("divideCashDiscount", divideCashDiscount)
+        bundle.putDouble("totalPrice", MethodUtils.roundOffAmountDouble(totalGuest))
+        bundle.putDouble("divideCashDiscount", MethodUtils.roundOffAmountDouble(divideCashDiscount))
         bundle.putInt("totalGuestCount", totalGuestCount)
         bundle.putInt("paidGuestCount", paidGuestAmount)
-        bundle.putDouble("subTotalPrice", subTotalGuest)
-        bundle.putDouble("totalTax", taxGuest)
+        bundle.putDouble("subTotalPrice", MethodUtils.roundOffAmountDouble(subTotalGuest))
+        bundle.putDouble("totalTax", MethodUtils.roundOffAmountDouble(taxGuest))
         bundle.putParcelable("model", model)
         bundle.putParcelable("floorPlan", floorPlanModel)
-        bundle.putDouble("totalServiceCharge", serviceChargeGuest)
+        bundle.putDouble("totalServiceCharge", MethodUtils.roundOffAmountDouble(serviceChargeGuest))
         bundle.putParcelable("orderPayment", modelReq)
         orderId?.let { bundle.putInt("orderId", it) }
         bundle.putBoolean("isGuestPay", true)

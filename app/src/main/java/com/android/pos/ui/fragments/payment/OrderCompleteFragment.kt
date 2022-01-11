@@ -269,18 +269,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 )
                 binding.txtTitle.text =
                     MethodUtils.roundOffAmount(paidAmount)
-                if (isSplitByAmount) {
-                    binding.txtChangeAmount.text =
-                        MethodUtils.roundOffAmount(0.0) + " Change"
-                } else {
-                    if (remainingAmount < paidAmount) {
-                        var temp_Change =
-                            MethodUtils.roundOffAmountDouble((paidAmount - dis_charge_value) - remainingAmount)
-                        if (!(temp_Change.equals(0.0) || temp_Change.equals(0) || temp_Change <= 0.0)) {
-                            binding.txtChangeAmount.text =
-                                MethodUtils.roundOffAmount((paidAmount - dis_charge_value) - remainingAmount) + " Change"
-                        }
-
+                if (remainingAmount < paidAmount) {
+                    var temp_Change =
+                        MethodUtils.roundOffAmountDouble((paidAmount - dis_charge_value) - remainingAmount)
+                    if (!(temp_Change.equals(0.0) || temp_Change.equals(0) || temp_Change <= 0.0)) {
+                        binding.txtChangeAmount.text =
+                            MethodUtils.roundOffAmount((paidAmount - dis_charge_value) - remainingAmount) + " Change"
                     }
 
                 }
