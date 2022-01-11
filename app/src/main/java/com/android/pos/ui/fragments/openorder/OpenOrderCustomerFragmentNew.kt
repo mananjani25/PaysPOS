@@ -422,13 +422,13 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
                 false
             }
 */
-            binding.edtPhoneNo.text.toString().trim().length < 14 -> {
+            /*binding.edtPhoneNo.text.toString().trim().length < 14 -> {
                 AlertUtils.showCustomAlert(
                     requireContext(),
                     getString(R.string.valid_phone_no_validate)
                 )
                 false
-            }
+            }*/
             else -> true
         }
 

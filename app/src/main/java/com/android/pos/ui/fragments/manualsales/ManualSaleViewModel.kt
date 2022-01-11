@@ -315,8 +315,7 @@ class ManualSaleViewModel @Inject constructor(
             redeemLoyaltyInfo.usedLoyaltyAmount = 0.0
             //redeemLoyaltyInfo.isLoyaltyApplied = false
         }
-        Log.e("Loyalty Manual Sales", "redeemLoyaltyInfo : ${Gson().toJson(redeemLoyaltyInfo)}")
-        Log.e("Loyalty Manual Sales", "txtTotalAmount : ${redeemLoyaltyInfo.getAmountToBePaid()}")
+
         MethodUtils.setPriceTextView(txtTotalAmount, redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0)
 
     }
