@@ -11,6 +11,7 @@ import android.location.Geocoder
 import android.os.Build
 import android.os.Bundle
 import android.text.TextUtils
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -31,6 +32,7 @@ import com.android.pos.utils.MethodUtils
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.Instant
 import java.time.LocalDateTime
@@ -50,6 +52,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
     private var currentSelectedDate: Long? = null
     private var selectedHour: Int? = null
     private var selectedMinute: Int? = null
+    private val TAG = "OpenOrderCustomerFragment"
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -104,18 +107,32 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
                 }
 
                 override fun onPlaceDetailsFetched(placeDetails: PlaceDetails) {
+                    Log.e(TAG, "onPlaceFatched ${Gson().toJson(placeDetails)}")
 
                     MethodUtils.hideKeyboard(requireActivity())
-                    val gcd = Geocoder(context, Locale.getDefault())
-                    val address: List<Address> =
-                        gcd.getFromLocation(placeDetails.lat, placeDetails.lng, 1)
+                    /* val gcd = Geocoder(context, Locale.getDefault())
+                     val address: List<Address> =
+                         gcd.getFromLocation(placeDetails.lat, placeDetails.lng, 1)
+ */
+                    /*Log.e(TAG, "address   ${Gson().toJson(address)}")*/
+                    if (placeDetails.address.isNotEmpty()) {
 
-                    if (address.isNotEmpty()) {
+                        var state = ""
+                        var pincode = ""
+                        placeDetails.address.forEach {
+                            if (it.type[0].lowercase() == "administrative_area_level_1".lowercase()) {
+                                state = it.longName
+                            } else if (it.type[0].lowercase() == "postal_code".lowercase()) {
+                                pincode = it.longName
+                            }
+
+
+                        }
                         binding.edtStreet.setText(placeDetails.name)
                         binding.edtSuite.setText(placeDetails.name)
-                        binding.edtCity.setText(address[0].locality)
-                        binding.edtState.setText(address[0].adminArea)
-                        binding.edtZip.setText(address[0].postalCode)
+                        binding.edtCity.setText(placeDetails.vicinity)
+                        binding.edtState.setText(state)
+                        binding.edtZip.setText(pincode)
 
 
                     }
