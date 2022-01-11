@@ -248,7 +248,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:background="@null"
-                            android:hint="@string/_201_555_0123"
+                            android:hint="@string/mobile_number"
                             android:inputType="number"
                             android:maxLength="20"
                             android:padding="@dimen/_5sdp"
