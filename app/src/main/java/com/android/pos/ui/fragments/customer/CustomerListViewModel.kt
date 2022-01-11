@@ -47,8 +47,6 @@ public class CustomerListViewModel @Inject constructor(
 
     fun getData() {
         _showProgress.value = Event(true)
-
-
     }
 
     fun deleteTbl() {

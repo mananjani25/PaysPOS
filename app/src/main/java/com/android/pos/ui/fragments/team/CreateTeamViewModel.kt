@@ -92,13 +92,13 @@ class CreateTeamViewModel @Inject constructor(
                 .matches()
         ) {
             _snackbarText.value = Event(R.string.valid_email_validate)
-        } else if (value?.phoneNumber?.length == 0) {
+        } /*else if (value?.phoneNumber?.length == 0) {
             _snackbarText.value = Event(R.string.phone_no_validate)
-        } else if (value?.phoneNumber?.length!! < 14) {
+        }*/ /*else if (value?.phoneNumber?.length!! < 14) {
             _snackbarText.value = Event(R.string.valid_phone_no_validate)
-        } else if (roleId == -1 || roleId == 0) {
+        }*/ else if (roleId == -1 || roleId == 0) {
             _snackbarText.value = Event("Please choose role")
-        } else if (TextUtils.isEmpty(value.passcode?.trim())) {
+        } else if (TextUtils.isEmpty(value?.passcode?.trim())) {
             _snackbarText.value = Event("Please enter passcode")
         } else {
             _showProgress.value = Event(true)
@@ -106,12 +106,12 @@ class CreateTeamViewModel @Inject constructor(
 
             createEmployeeData = CreateEmployeeRequestModel().apply {
                 if (isEdit) id = taxId
-                firstName = value.firstName
-                lastName = value.lastName
-                phoneNumber = value.phoneNumber.replace(("[\\D]").toRegex(), "")
-                email = value.email
+                firstName = value?.firstName
+                lastName = value?.lastName
+                phoneNumber = value?.phoneNumber?.replace(("[\\D]").toRegex(), "")!!
+                email = value?.email!!
                 locationId = prefProvider.getValueInt(LOCATION_ID, -1)
-                passcode = value.passcode
+                passcode = value?.passcode.toString()
                 isActive = true
                 team_role_id = roleId
                 hourly_wages = value.hourly_wages
