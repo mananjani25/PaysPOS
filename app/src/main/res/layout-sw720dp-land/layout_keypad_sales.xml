@@ -290,19 +290,30 @@
             android:textColor="@color/color65"
             android:textSize="@dimen/_7mdpi" />
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/imgAdd"
-            style="@style/CustomFontRegularStyle"
+
+        <RelativeLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="?attr/selectableItemBackground"
             android:gravity="center"
-            android:padding="@dimen/_5sdp"
-            android:text="+"
-            android:textAllCaps="true"
-            android:textColor="@color/color65"
-            android:textSize="@dimen/_12mdpi" />
+            android:padding="@dimen/_5sdp">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/imgAdd"
+                style="@style/CustomFontRegularStyle"
+                android:layout_width="@dimen/_50sdp"
+                android:layout_height="@dimen/_50sdp"
+                android:gravity="center"
+                android:text="+"
+                android:background="@color/purple_500"
+                android:textAllCaps="true"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_12mdpi" />
+
+
+        </RelativeLayout>
+
 
 
     </LinearLayout>
