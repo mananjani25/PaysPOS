@@ -28,7 +28,7 @@
     <string name="first_name">First Name <font color='#E90C0C'>*</font></string>
     <string name="last_name">Last Name <font color='#E90C0C'>*</font></string>
     <string name="last_name_">Last Name</string>
-    <string name="phone">Mobile Number <font color='#E90C0C'>*</font></string>
+    <string name="phone">Mobile Number <font color='#E90C0C'></font></string>
     <string name="address_empty_validation">Please Enter Full Address</string>
     <string name="birth_date_validation">Please Enter Birth Date</string>
     `

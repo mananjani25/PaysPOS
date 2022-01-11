@@ -418,10 +418,13 @@ class OpenOrderCustomerFragment : Fragment(), View.OnClickListener {
                 )
                 false
             }
+/*
             TextUtils.isEmpty(binding.edtPhoneNo.text.toString().trim()) -> {
                 AlertUtils.showCustomAlert(requireContext(), getString(R.string.phone_no_validate))
                 false
             }
+*/
+/*
             binding.edtPhoneNo.text.toString().trim().length < 14 -> {
                 AlertUtils.showCustomAlert(
                     requireContext(),
@@ -429,6 +432,7 @@ class OpenOrderCustomerFragment : Fragment(), View.OnClickListener {
                 )
                 false
             }
+*/
             else -> true
         }
 
