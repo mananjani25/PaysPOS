@@ -23,7 +23,6 @@ import com.google.gson.Gson
 import com.zebra.scannercontrol.*
 import com.zebra.scannercontrol.DCSSDKDefs.*
 import dagger.hilt.android.AndroidEntryPoint
-import java.net.NetworkInterface
 import java.util.*
 import javax.inject.Inject
 
@@ -79,7 +78,7 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
         }
 
         //set mac address and protocols
-        selectedProtocol = DCSSDK_BT_PROTOCOL.SSI_BT_CRADLE_HOST
+        selectedProtocol = DCSSDK_BT_PROTOCOL.CRD_BT_LE
         selectedConfig = DCSSDK_BT_SCANNER_CONFIG.SET_FACTORY_DEFAULTS
         MainApplication.sdkHandler?.dcssdkSetBTAddress(getMacAddress())
 
@@ -1145,6 +1144,7 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
                 if (device.scannerID == availableScanner?.scannerId) {
                     availableScanner.isAutoReconnection =
                         device.isAutoCommunicationSessionReestablishment
+                    availableScanner.connectionType = DCSSDK_CONN_TYPES.DCSSDK_CONNTYPE_BT_NORMAL
                 }
             }
         }
@@ -1232,10 +1232,10 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
         val address = bluetoothAdapter.address
         Log.e("!_@_ MAC :", address.toString())*/
         // return "E0:D0:83:0B:B9:7A"
-        return "0C:25:76:B4:0B:93"
+          return "0C:25:76:B4:0B:93"
         // return "0c:25:76:b4:0b:95" // Sunmi Bluetooth MAC Address
         //0c:25:76:b4:0b:95
-//        return "0c:25:76:b4:0b:95"
+      //  return "0c:25:76:b4:0b:95"
     }
 
 

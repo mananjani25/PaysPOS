@@ -6,7 +6,6 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
-import android.opengl.Visibility
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -1876,7 +1875,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
             } else {
 
-                if (data.quantity >= qty) {
+                if (data.quantity >= qty || data.isManualSales) {
                     txtQty.setText(qty.toString())
                 } else {
                     qty -= 1

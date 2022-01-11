@@ -177,7 +177,7 @@
     <string name="service_charge">Service Charge</string>
     <string name="percentage">Percentage <font color='#E90C0C'>*</font></string>
     <string name="tip_percentage">Tip Percentage <font color='#E90C0C'>*</font></string>
-    <string name="tax_percentage">Tax Percentage <font color='#E90C0C'>*</font></string>
+    <string name="tax_rate">Tax rate <font color='#E90C0C'>*</font></string>
     <string name="create_note">Create Note</string>
     <string name="update_note">Update Note</string>
     <string name="note_title">Note Title <font color='#E90C0C'>*</font></string>
@@ -585,6 +585,7 @@
     <string name="assign_customer">Assign Customer</string>
     <string name="tv_choose_photo">Choose Photo</string>
     <string name="_201_555_0123">Mobile Number<font color='#E90C0C'>*</font></string>
+    <string name="mobile_number">Mobile Number</string>
 
     <!--Error Messages-->
     <string name="error_something_wrong">Something went wrong. Please try again.</string>
