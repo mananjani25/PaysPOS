@@ -43,14 +43,15 @@
                     app:tint="@color/viewTextColor" />
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    style="@style/CustomFontSemiBold"
                     android:id="@+id/txtDiscountTitle"
+                    style="@style/CustomFontSemiBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:padding="@dimen/_4sdp"
+                    android:layout_centerHorizontal="true"
                     android:text="@string/create_discount"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />
@@ -114,7 +115,8 @@
                                 android:layout_height="@dimen/_25sdp"
                                 android:layout_gravity="center"
                                 android:background="@color/boxColor"
-                                android:padding="@dimen/_8sdp" />
+                                android:padding="@dimen/_8sdp"
+                                android:visibility="gone"/>
 
                             <androidx.appcompat.widget.AppCompatTextView
                                 android:layout_width="wrap_content"
@@ -267,6 +269,7 @@
                     android:padding="@dimen/_5sdp"
                     android:text="@string/options"
                     android:textColor="@color/viewTextColor"
+                    android:visibility="gone"
                     android:textSize="@dimen/_5mdpi" />
 
 

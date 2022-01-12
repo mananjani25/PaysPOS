@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -13,6 +14,7 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.USERNAME
 import com.android.pos.databinding.FragmentClockInOwnerBinding
 import com.android.pos.di.PrefProvider
+import com.android.pos.ui.activities.MainActivity
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.TimeFormatUtils
 import dagger.hilt.android.AndroidEntryPoint
@@ -22,6 +24,7 @@ import javax.inject.Inject
 class ClockInOwner : Fragment() {
     private lateinit var binding: FragmentClockInOwnerBinding
     private val viewModel by viewModels<ClockInOwnerViewModel>()
+    var isClockOut: Boolean = false
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -85,6 +88,11 @@ class ClockInOwner : Fragment() {
         binding.txtContinuePOS.setOnClickListener {
             findNavController().navigate(R.id.action_clockInOwner_to_dashboardCategory)
         }
+
+        binding.imgCacncel.setOnClickListener {
+            findNavController().navigateUp()
+        }
+
 
     }
 }
