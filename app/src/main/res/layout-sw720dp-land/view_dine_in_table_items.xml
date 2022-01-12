@@ -34,24 +34,14 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.6"
-
+                    android:gravity="center"
                     android:orientation="horizontal">
-
-                    <ImageView
-                        android:layout_width="@dimen/_12sdp"
-                        android:layout_height="@dimen/_8sdp"
-                        android:layout_gravity="center"
-                        android:layout_marginStart="@dimen/_4sdp"
-                        android:padding="@dimen/_2sdp"
-                        android:src="@drawable/hamburger"
-                        android:visibility="invisible" />
 
                     <androidx.appcompat.widget.AppCompatCheckBox
                         android:id="@+id/chkIsFired"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_marginStart="@dimen/_7sdp"
                         android:button="@drawable/dine_in_fire_selector"
                         android:gravity="center" />
                 </LinearLayout>

@@ -1349,11 +1349,14 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
             paymentViewModel.totalPayAmount(cardPaymentAmount)
             val orderId = prefProvider.getValueInt("ORDER_ID", -1)
             var reemainvalue = 0.0
-            if (cashDiscountType == "CashDiscount") {
-                reemainvalue = paymentViewModel.actual_Total - cardPaymentAmount
-            } else {
-                reemainvalue = paymentViewModel.actual_Total - divideCashDiscount - totalPrice
+            if (!isCustomCash) {
+                if (cashDiscountType == "CashDiscount") {
+                    reemainvalue = paymentViewModel.actual_Total - cardPaymentAmount
+                } else {
+                    reemainvalue = paymentViewModel.actual_Total - divideCashDiscount - totalPrice
+                }
             }
+
             if (reemainvalue == 0.0) {
                 requestModel.order.paymentAttributes = paymentAttributes()
                 paymentViewModel.dineInWholePayment(requestModel, orderId, splitValue)
@@ -1387,13 +1390,16 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
             )
         val requestModel = createRequestForTotalAmount()
         if (requestModel != null) {
-            paymentViewModel.totalPayAmount(totalPrice)
+            paymentViewModel.totalPayAmount(paymentAmount)
             val orderId = prefProvider.getValueInt("ORDER_ID", -1)
             var reemainvalue = 0.0
-            if (cashDiscountType == "CashDiscount") {
-                reemainvalue = paymentViewModel.actual_Total - divideCashDiscount - paymentAmount
-            } else {
-                reemainvalue = paymentViewModel.actual_Total - totalPrice
+            if (!isCustomCash) {
+                if (cashDiscountType == "CashDiscount") {
+                    reemainvalue =
+                        paymentViewModel.actual_Total - divideCashDiscount - paymentAmount
+                } else {
+                    reemainvalue = paymentViewModel.actual_Total - totalPrice
+                }
             }
             if (reemainvalue == 0.0) {
                 requestModel.order.paymentAttributes = paymentAttributes()
@@ -1509,7 +1515,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                         listOf(guestPaymentAttributes)
                 }
             }
-        }else if(paymentType == "Cash"){
+        } else if (paymentType == "Cash") {
             var isLastPayment = prefProvider.getValueboolean("isLastPayment", false)
             var customPrice = 0.0
             if ((isCustomCash && isSplitByNo) || (isCustomCash && isSplitByAmount)) {
@@ -1518,7 +1524,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                 customPrice = paymentAmount
             }
             when {
-                isSplitByNo && !isLastPayment ->{
+                isSplitByNo && !isLastPayment -> {
                     guestRequestModel?.paymentAttributes!!.amount =
                         customPrice
                     guestRequestModel?.paymentAttributes!!.serviceChargeAmount =
@@ -1540,8 +1546,10 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                     guestPaymentAttributes.amount = guestRequestModel?.paymentAttributes!!.amount
                     guestPaymentAttributes.serviceChargeAmount =
                         guestRequestModel?.paymentAttributes!!.serviceChargeAmount
-                    guestPaymentAttributes.subTotal = guestRequestModel?.paymentAttributes!!.subTotal
-                    guestPaymentAttributes.taxAmount = guestRequestModel?.paymentAttributes!!.taxAmount
+                    guestPaymentAttributes.subTotal =
+                        guestRequestModel?.paymentAttributes!!.subTotal
+                    guestPaymentAttributes.taxAmount =
+                        guestRequestModel?.paymentAttributes!!.taxAmount
                     guestPaymentAttributes.tips = guestRequestModel?.paymentAttributes!!.tips
                     guestPaymentAttributes.totalDiscount =
                         guestRequestModel?.paymentAttributes!!.totalDiscount
@@ -1549,8 +1557,10 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                         guestRequestModel?.paymentAttributes!!.payableType
                     guestPaymentAttributes.paymentType =
                         guestRequestModel?.paymentAttributes!!.paymentType
-                    guestPaymentAttributes.offlineId = guestRequestModel?.paymentAttributes!!.offlineId
-                    guestPaymentAttributes.order_id = guestRequestModel?.paymentAttributes!!.order_id
+                    guestPaymentAttributes.offlineId =
+                        guestRequestModel?.paymentAttributes!!.offlineId
+                    guestPaymentAttributes.order_id =
+                        guestRequestModel?.paymentAttributes!!.order_id
                     guestPaymentAttributes.cash_discount_or_surcharge =
                         guestRequestModel?.paymentAttributes!!.cash_discount_or_surcharge
                     guestPaymentAttributes.cash_discount_type =
@@ -1558,7 +1568,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                     guestRequestModel?.paymentAttributes!!.paymentAttributes =
                         listOf(guestPaymentAttributes)
                 }
-                isCustomCash ->{
+                isCustomCash -> {
                     guestRequestModel?.paymentAttributes!!.amount =
                         totalPrice
                     guestRequestModel?.paymentAttributes!!.serviceChargeAmount =
@@ -1580,8 +1590,10 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                     guestPaymentAttributes.amount = guestRequestModel?.paymentAttributes!!.amount
                     guestPaymentAttributes.serviceChargeAmount =
                         guestRequestModel?.paymentAttributes!!.serviceChargeAmount
-                    guestPaymentAttributes.subTotal = guestRequestModel?.paymentAttributes!!.subTotal
-                    guestPaymentAttributes.taxAmount = guestRequestModel?.paymentAttributes!!.taxAmount
+                    guestPaymentAttributes.subTotal =
+                        guestRequestModel?.paymentAttributes!!.subTotal
+                    guestPaymentAttributes.taxAmount =
+                        guestRequestModel?.paymentAttributes!!.taxAmount
                     guestPaymentAttributes.tips = guestRequestModel?.paymentAttributes!!.tips
                     guestPaymentAttributes.totalDiscount =
                         guestRequestModel?.paymentAttributes!!.totalDiscount
@@ -1589,8 +1601,10 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                         guestRequestModel?.paymentAttributes!!.payableType
                     guestPaymentAttributes.paymentType =
                         guestRequestModel?.paymentAttributes!!.paymentType
-                    guestPaymentAttributes.offlineId = guestRequestModel?.paymentAttributes!!.offlineId
-                    guestPaymentAttributes.order_id = guestRequestModel?.paymentAttributes!!.order_id
+                    guestPaymentAttributes.offlineId =
+                        guestRequestModel?.paymentAttributes!!.offlineId
+                    guestPaymentAttributes.order_id =
+                        guestRequestModel?.paymentAttributes!!.order_id
                     guestPaymentAttributes.cash_discount_or_surcharge =
                         guestRequestModel?.paymentAttributes!!.cash_discount_or_surcharge
                     guestPaymentAttributes.cash_discount_type =
@@ -1598,7 +1612,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                     guestRequestModel?.paymentAttributes!!.paymentAttributes =
                         listOf(guestPaymentAttributes)
                 }
-                else->{
+                else -> {
                     guestRequestModel?.paymentAttributes!!.amount =
                         paymentAmount
                     guestRequestModel?.paymentAttributes!!.serviceChargeAmount =
@@ -1620,8 +1634,10 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                     guestPaymentAttributes.amount = guestRequestModel?.paymentAttributes!!.amount
                     guestPaymentAttributes.serviceChargeAmount =
                         guestRequestModel?.paymentAttributes!!.serviceChargeAmount
-                    guestPaymentAttributes.subTotal = guestRequestModel?.paymentAttributes!!.subTotal
-                    guestPaymentAttributes.taxAmount = guestRequestModel?.paymentAttributes!!.taxAmount
+                    guestPaymentAttributes.subTotal =
+                        guestRequestModel?.paymentAttributes!!.subTotal
+                    guestPaymentAttributes.taxAmount =
+                        guestRequestModel?.paymentAttributes!!.taxAmount
                     guestPaymentAttributes.tips = guestRequestModel?.paymentAttributes!!.tips
                     guestPaymentAttributes.totalDiscount =
                         guestRequestModel?.paymentAttributes!!.totalDiscount
@@ -1629,8 +1645,10 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                         guestRequestModel?.paymentAttributes!!.payableType
                     guestPaymentAttributes.paymentType =
                         guestRequestModel?.paymentAttributes!!.paymentType
-                    guestPaymentAttributes.offlineId = guestRequestModel?.paymentAttributes!!.offlineId
-                    guestPaymentAttributes.order_id = guestRequestModel?.paymentAttributes!!.order_id
+                    guestPaymentAttributes.offlineId =
+                        guestRequestModel?.paymentAttributes!!.offlineId
+                    guestPaymentAttributes.order_id =
+                        guestRequestModel?.paymentAttributes!!.order_id
                     guestPaymentAttributes.cash_discount_or_surcharge =
                         guestRequestModel?.paymentAttributes!!.cash_discount_or_surcharge
                     guestPaymentAttributes.cash_discount_type =
@@ -1641,280 +1659,281 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
             }
         }
 
-}
-
-
-private fun paymentAttributes(): PaymentAttributes {
-    if (paymentType == "Card") {
-        var isLastPayment = prefProvider.getValueboolean("isLastPayment", false)
-        if (isSplitByNo && !isLastPayment) {
-            val paymentReq = PaymentAttributes().apply {
-                amount = cardPaymentAmount
-                employeeId = prefProvider.getValueInt(EMPLOYEE_ID, 0)
-                payableType = "Order"
-                paymentType = "Card"
-                serviceChargeAmount = totalServiceCharge / splitValue
-                subTotal = subTotalPrice / splitValue
-                taxAmount = totalTax / splitValue
-                terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
-                tips = tipAmount / splitValue
-                tipsAdjusted = false
-                totalDiscount = totaldiscount / splitValue
-                order_id = orderId
-                cash_discount_or_surcharge = divideCashDiscount / splitValue
-                total_cash_discount = divideCashDiscount / splitValue
-                cash_discount_type = cashDiscountType
-            }
-            return paymentReq
-        } else {
-            val paymentReq = PaymentAttributes().apply {
-                amount = cardPaymentAmount
-                employeeId = prefProvider.getValueInt(EMPLOYEE_ID, 0)
-                payableType = "Order"
-                paymentType = "Card"
-                serviceChargeAmount = totalServiceCharge
-                subTotal = subTotalPrice
-                taxAmount = totalTax
-                terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
-                tips = tipAmount
-                tipsAdjusted = false
-                totalDiscount = totaldiscount
-                order_id = orderId
-                cash_discount_or_surcharge = divideCashDiscount
-                total_cash_discount = divideCashDiscount
-                cash_discount_type = cashDiscountType
-
-            }
-            return paymentReq
-        }
-    } else {
-        var isLastPayment = prefProvider.getValueboolean("isLastPayment", false)
-        var customPrice = 0.0
-        if ((isCustomCash && isSplitByNo) || (isCustomCash && isSplitByAmount)) {
-            customPrice = splitAfterAmount
-        } else {
-            customPrice = paymentAmount
-        }
-        if (isSplitByNo && !isLastPayment) {
-            val paymentReq = PaymentAttributes().apply {
-                amount = customPrice
-                employeeId = prefProvider.getValueInt(EMPLOYEE_ID, 0)
-                payableType = "Order"
-                paymentType = "Cash"
-                serviceChargeAmount = totalServiceCharge / splitValue
-                subTotal = subTotalPrice / splitValue
-                taxAmount = totalTax / splitValue
-                terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
-                tips = tipAmount / splitValue
-                tipsAdjusted = false
-                totalDiscount = totaldiscount / splitValue
-                order_id = orderId
-                cash_discount_type = cashDiscountType
-                cash_discount_or_surcharge = divideCashDiscount / splitValue
-                total_cash_discount = divideCashDiscount / splitValue
-            }
-            return paymentReq
-        } else if (isCustomCash) {
-            val paymentReq = PaymentAttributes().apply {
-                amount = totalPrice
-                employeeId = prefProvider.getValueInt(EMPLOYEE_ID, 0)
-                payableType = "Order"
-                paymentType = "Cash"
-                serviceChargeAmount = totalServiceCharge
-                subTotal = subTotalPrice
-                taxAmount = totalTax
-                terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
-                tips = tipAmount
-                tipsAdjusted = false
-                totalDiscount = totaldiscount
-                order_id = orderId
-                cash_discount_type = cashDiscountType
-                cash_discount_or_surcharge = divideCashDiscount
-                total_cash_discount = divideCashDiscount
-            }
-            return paymentReq
-        } else {
-            val paymentReq = PaymentAttributes().apply {
-                amount = paymentAmount
-                employeeId = prefProvider.getValueInt(EMPLOYEE_ID, 0)
-                payableType = "Order"
-                paymentType = "Cash"
-                serviceChargeAmount = totalServiceCharge
-                subTotal = subTotalPrice
-                taxAmount = totalTax
-                terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
-                tips = tipAmount
-                tipsAdjusted = false
-                totalDiscount = totaldiscount
-                order_id = orderId
-                cash_discount_type = cashDiscountType
-                cash_discount_or_surcharge = divideCashDiscount
-                total_cash_discount = divideCashDiscount
-            }
-            return paymentReq
-        }
-
     }
 
 
-}
+    private fun paymentAttributes(): PaymentAttributes {
+        if (paymentType == "Card") {
+            var isLastPayment = prefProvider.getValueboolean("isLastPayment", false)
+            if (isSplitByNo && !isLastPayment) {
+                val paymentReq = PaymentAttributes().apply {
+                    amount = cardPaymentAmount
+                    employeeId = prefProvider.getValueInt(EMPLOYEE_ID, 0)
+                    payableType = "Order"
+                    paymentType = "Card"
+                    serviceChargeAmount = totalServiceCharge / splitValue
+                    subTotal = subTotalPrice / splitValue
+                    taxAmount = totalTax / splitValue
+                    terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
+                    tips = tipAmount / splitValue
+                    tipsAdjusted = false
+                    totalDiscount = totaldiscount / splitValue
+                    order_id = orderId
+                    cash_discount_or_surcharge = divideCashDiscount / splitValue
+                    total_cash_discount = divideCashDiscount / splitValue
+                    cash_discount_type = cashDiscountType
+                }
+                return paymentReq
+            } else {
+                val paymentReq = PaymentAttributes().apply {
+                    amount = cardPaymentAmount
+                    employeeId = prefProvider.getValueInt(EMPLOYEE_ID, 0)
+                    payableType = "Order"
+                    paymentType = "Card"
+                    serviceChargeAmount = totalServiceCharge
+                    subTotal = subTotalPrice
+                    taxAmount = totalTax
+                    terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
+                    tips = tipAmount
+                    tipsAdjusted = false
+                    totalDiscount = totaldiscount
+                    order_id = orderId
+                    cash_discount_or_surcharge = divideCashDiscount
+                    total_cash_discount = divideCashDiscount
+                    cash_discount_type = cashDiscountType
 
-@SuppressLint("SetTextI18n")
-private fun getCashPaymentOptionList(totalPrice: Double) {
-    Log.e(TAG, "totalPrice  $totalPrice")
-    secondValue = floor(totalPrice + 1).toInt()
-    Log.e(TAG, "secondValue  $secondValue")
-    val newVal = totalPrice + 1
-    thirdValue = calculateCashOption(newVal)
-    Log.e(TAG, "thirdValuatedValue:   $thirdValue")
-    if (secondValue.toDouble() == thirdValue) {
-        if (secondValue > 1000) {
-            thirdValue += 100
+                }
+                return paymentReq
+            }
         } else {
-            thirdValue += 50
+            var isLastPayment = prefProvider.getValueboolean("isLastPayment", false)
+            var customPrice = 0.0
+            if ((isCustomCash && isSplitByNo) || (isCustomCash && isSplitByAmount)) {
+                customPrice = splitAfterAmount
+            } else {
+                customPrice = paymentAmount
+            }
+            if (isSplitByNo && !isLastPayment) {
+                val paymentReq = PaymentAttributes().apply {
+                    amount = customPrice
+                    employeeId = prefProvider.getValueInt(EMPLOYEE_ID, 0)
+                    payableType = "Order"
+                    paymentType = "Cash"
+                    serviceChargeAmount = totalServiceCharge / splitValue
+                    subTotal = subTotalPrice / splitValue
+                    taxAmount = totalTax / splitValue
+                    terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
+                    tips = tipAmount / splitValue
+                    tipsAdjusted = false
+                    totalDiscount = totaldiscount / splitValue
+                    order_id = orderId
+                    cash_discount_type = cashDiscountType
+                    cash_discount_or_surcharge = divideCashDiscount / splitValue
+                    total_cash_discount = divideCashDiscount / splitValue
+                }
+                return paymentReq
+            } else if (isCustomCash) {
+                val paymentReq = PaymentAttributes().apply {
+                    amount = totalPrice
+                    employeeId = prefProvider.getValueInt(EMPLOYEE_ID, 0)
+                    payableType = "Order"
+                    paymentType = "Cash"
+                    serviceChargeAmount = totalServiceCharge
+                    subTotal = subTotalPrice
+                    taxAmount = totalTax
+                    terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
+                    tips = tipAmount
+                    tipsAdjusted = false
+                    totalDiscount = totaldiscount
+                    order_id = orderId
+                    cash_discount_type = cashDiscountType
+                    cash_discount_or_surcharge = divideCashDiscount
+                    total_cash_discount = divideCashDiscount
+                }
+                return paymentReq
+            } else {
+                val paymentReq = PaymentAttributes().apply {
+                    amount = paymentAmount
+                    employeeId = prefProvider.getValueInt(EMPLOYEE_ID, 0)
+                    payableType = "Order"
+                    paymentType = "Cash"
+                    serviceChargeAmount = totalServiceCharge
+                    subTotal = subTotalPrice
+                    taxAmount = totalTax
+                    terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
+                    tips = tipAmount
+                    tipsAdjusted = false
+                    totalDiscount = totaldiscount
+                    order_id = orderId
+                    cash_discount_type = cashDiscountType
+                    cash_discount_or_surcharge = divideCashDiscount
+                    total_cash_discount = divideCashDiscount
+                }
+                return paymentReq
+            }
+
         }
+
 
     }
-    fourthValue = calculateCashOption(thirdValue)
-    if (thirdValue == fourthValue) {
-        fourthValue += 100
-    } else {
-        fourthValue += 50
+
+    @SuppressLint("SetTextI18n")
+    private fun getCashPaymentOptionList(totalPrice: Double) {
+        Log.e(TAG, "totalPrice  $totalPrice")
+        secondValue = floor(totalPrice + 1).toInt()
+        Log.e(TAG, "secondValue  $secondValue")
+        val newVal = totalPrice + 1
+        thirdValue = calculateCashOption(newVal)
+        Log.e(TAG, "thirdValuatedValue:   $thirdValue")
+        if (secondValue.toDouble() == thirdValue) {
+            if (secondValue > 1000) {
+                thirdValue += 100
+            } else {
+                thirdValue += 50
+            }
+
+        }
+        fourthValue = calculateCashOption(thirdValue)
+        if (thirdValue == fourthValue) {
+            fourthValue += 100
+        } else {
+            fourthValue += 50
+        }
+
+        MethodUtils.setPriceTextView(binding.txtOriginalAmount, totalPrice)
+        MethodUtils.setPriceTextView(binding.txtSecondAmount, secondValue.toDouble())
+        MethodUtils.setPriceTextView(binding.txtThirdAmount, thirdValue)
+        MethodUtils.setPriceTextView(binding.txtFourthAmount, fourthValue)
+
+
     }
 
-    MethodUtils.setPriceTextView(binding.txtOriginalAmount, totalPrice)
-    MethodUtils.setPriceTextView(binding.txtSecondAmount, secondValue.toDouble())
-    MethodUtils.setPriceTextView(binding.txtThirdAmount, thirdValue)
-    MethodUtils.setPriceTextView(binding.txtFourthAmount, fourthValue)
+    private fun calculateCashOption(value: Double): Double {
+        if (value > 1000) {
+            return ceil(value / 100) * 100
 
-
-}
-
-private fun calculateCashOption(value: Double): Double {
-    if (value > 1000) {
-        return ceil(value / 100) * 100
-
-    } else if (value > 500) {
-        return ceil(value / 50) * 50
-    } else {
-        val arrAmount = arrayOf(
-            5,
-            10,
-            20,
-            50,
-            100,
-            110,
-            120,
-            150,
-            200,
-            210,
-            220,
-            250,
-            300,
-            310,
-            320,
-            350,
-            400,
-            410,
-            420,
-            450,
-            500
-        )
-        val myValue = value.toInt()
-        Log.e(TAG, "myValue:  ${myValue}")
-        var searchIndex: Int = -1
-        val filterValue = arrAmount.filter {
-            it >= value
-        }.first()
-        searchIndex = arrAmount.indexOf(filterValue)
-        Log.e(TAG, "filterValue:  ${filterValue}")
-        Log.e(TAG, "searchIndex:  ${searchIndex}")
-
-        /* arrAmount.forEachIndexed { index, i ->
-             if (i >= value) {
-                  = i
-                 return@forEachIndexed
-             }
-         }*/
-
-        if (arrAmount.contains(myValue)) {
-            searchIndex += 1
-        }
-
-        if (searchIndex >= arrAmount.size) {
-            return 550.0
+        } else if (value > 500) {
+            return ceil(value / 50) * 50
         } else {
-            val lastAmount = arrAmount[searchIndex]
-            return lastAmount.toDouble()
-        }
+            val arrAmount = arrayOf(
+                5,
+                10,
+                20,
+                50,
+                100,
+                110,
+                120,
+                150,
+                200,
+                210,
+                220,
+                250,
+                300,
+                310,
+                320,
+                350,
+                400,
+                410,
+                420,
+                450,
+                500
+            )
+            val myValue = value.toInt()
+            Log.e(TAG, "myValue:  ${myValue}")
+            var searchIndex: Int = -1
+            val filterValue = arrAmount.filter {
+                it >= value
+            }.first()
+            searchIndex = arrAmount.indexOf(filterValue)
+            Log.e(TAG, "filterValue:  ${filterValue}")
+            Log.e(TAG, "searchIndex:  ${searchIndex}")
+
+            /* arrAmount.forEachIndexed { index, i ->
+                 if (i >= value) {
+                      = i
+                     return@forEachIndexed
+                 }
+             }*/
+
+            if (arrAmount.contains(myValue)) {
+                searchIndex += 1
+            }
+
+            if (searchIndex >= arrAmount.size) {
+                return 550.0
+            } else {
+                val lastAmount = arrAmount[searchIndex]
+                return lastAmount.toDouble()
+            }
 
 
 //            if (searchIndex > 0)
-    }
-}
-
-private fun observeShowProgress() {
-
-    viewModel.showProgress.observe(viewLifecycleOwner, { event ->
-        event.getContentIfNotHandled()?.let {
-            if (it) {
-                ProgressUtils.showProgressDialog(requireActivity())
-            } else {
-                ProgressUtils.dismissProgressDialog()
-            }
         }
-    })
-
-    viewModel.msgText.observe(viewLifecycleOwner, { event ->
-        event.getContentIfNotHandled()?.let {
-            AlertUtils.showCustomAlert(requireContext(), it)
-        }
-    })
-
-
-}
-
-private fun navigateOnPaymentSuccess() {
-    viewModel.onPayment.observe(viewLifecycleOwner, { event ->
-        event.getContentIfNotHandled()?.let { str ->
-            Log.e(TAG, "getstr:   $str")
-            AlertUtils.showCustomAlertWithListenerWithOK(requireContext(), str) { _, _ ->
-
-
-                gotoPay()
-
-
-            }
-
-        }
-    })
-}
-
-
-private fun createRequestForTotalAmount(): OrderRequestModel {
-    val orderModel = OrderAttributeRequestModel()
-    orderModel.apply {
-        date = TimeFormatUtils.getCurrentDate()
-        employeeId = prefProvider.getValueInt(EMPLOYEE_ID, 0)
-        locationId = prefProvider.getValueInt(LOCATION_ID, 1)
-        terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
-        note = ""
-        openOrderType = "DineIn"
-        orderTypeId = 2
-        paymentStatus = 1
-        subTotal = paymentViewModel.actual_SubTotal
-        totalAmount = paymentViewModel.actual_Total
-        totalDiscount = paymentViewModel.actual_TotalDiscount
-        totalServiceCharges = paymentViewModel.actual_TotalServiceCharge
-        totalTaxAmount = paymentViewModel.actual_TotalTax
-        totalTips = paymentViewModel.actual_TotalTips
-        cash_discount_type = cashDiscountType
-        cash_discount_or_surcharge = paymentViewModel.actual_CashDiscountSurCharge
     }
 
-    return OrderRequestModel(
-        completed_all_payments = true,
-        order = orderModel
-    )
-}
+    private fun observeShowProgress() {
+
+        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    ProgressUtils.showProgressDialog(requireActivity())
+                } else {
+                    ProgressUtils.dismissProgressDialog()
+                }
+            }
+        })
+
+        viewModel.msgText.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+                AlertUtils.showCustomAlert(requireContext(), it)
+            }
+        })
+
+
+    }
+
+    private fun navigateOnPaymentSuccess() {
+        viewModel.onPayment.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let { str ->
+                Log.e(TAG, "getstr:   $str")
+                AlertUtils.showCustomAlertWithListenerWithOK(requireContext(), str) { _, _ ->
+
+
+                    gotoPay()
+
+
+                }
+
+            }
+        })
+    }
+
+
+    private fun createRequestForTotalAmount(): OrderRequestModel {
+        val orderModel = OrderAttributeRequestModel()
+        orderModel.apply {
+            date = TimeFormatUtils.getCurrentDate()
+            employeeId = prefProvider.getValueInt(EMPLOYEE_ID, 0)
+            locationId = prefProvider.getValueInt(LOCATION_ID, 1)
+            terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
+            note = ""
+            openOrderType = "DineIn"
+            orderTypeId = 2
+            paymentStatus = 1
+            subTotal = paymentViewModel.actual_SubTotal
+            totalAmount =
+                paymentViewModel.actual_Total - paymentViewModel.actual_CashDiscountSurCharge
+            totalDiscount = paymentViewModel.actual_TotalDiscount
+            totalServiceCharges = paymentViewModel.actual_TotalServiceCharge
+            totalTaxAmount = paymentViewModel.actual_TotalTax
+            totalTips = paymentViewModel.actual_TotalTips
+            cash_discount_type = cashDiscountType
+            cash_discount_or_surcharge = paymentViewModel.actual_CashDiscountSurCharge
+        }
+
+        return OrderRequestModel(
+            completed_all_payments = true,
+            order = orderModel
+        )
+    }
 }

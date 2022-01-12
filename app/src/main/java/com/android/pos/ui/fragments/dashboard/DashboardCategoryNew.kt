@@ -1448,6 +1448,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
             Log.e(TAG, Gson().toJson(viewModel.redeemLoyaltyInfo))
             amountToBepaid = viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0
+            amountToBepaid -= (viewModel.totalDiscount + cartList[0].discountPrice)
             txtLoyaltyAmount.text =
                 "- $${String.format("%.2f", viewModel.redeemLoyaltyInfo.usedLoyaltyAmount)}"
             txtLoyaltyPoints.text = "${viewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
@@ -1456,7 +1457,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             chkLoyalty.visible()
             chkLoyalty.isChecked = viewModel.redeemLoyaltyInfo.needToApplyLoyalty
         } else {
-            amountToBepaid = viewModel.totalPrice
+            amountToBepaid =
+                viewModel.totalPrice - (viewModel.totalDiscount + cartList[0].discountPrice)
             groupLoyalty.gone()
             chkLoyalty.gone()
         }
@@ -3163,7 +3165,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     bundle.putParcelable("dineInList", baseResponse)
                     bundle.putBoolean("isGuestPaid", false)
                     bundle.putInt("orderId", baseResponse.order.id)
-                    prefProvider.setValueInt("ORDER_ID",baseResponse.order.id)
+                    prefProvider.setValueInt("ORDER_ID", baseResponse.order.id)
 
                     prefProvider.setValue(Constants.ORDER_TYPE, "")
                     prefProvider.setValue(Constants.CUSTOMER_NAME, "")
