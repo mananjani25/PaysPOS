@@ -2,38 +2,36 @@ package com.android.pos.ui.fragments.dinein
 
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
-import com.android.pos.R
-import com.android.pos.databinding.FragmentDineInBinding
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
-import androidx.navigation.NavController
-import com.android.pos.ui.adapter.DineInFloorNameListAdapter
-import androidx.recyclerview.widget.LinearLayoutManager
-import dagger.hilt.android.AndroidEntryPoint
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.android.pos.R
 import com.android.pos.data.model.responseModel.GetFloorPlanResponse
-import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.data.remote.Constants.AVAILABLE
 import com.android.pos.data.remote.Constants.DINE_IN_STATUS
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.MERGED
 import com.android.pos.data.remote.Constants.MERGEDANDOCCUPIED
 import com.android.pos.data.remote.Constants.OCCUPIED
+import com.android.pos.databinding.FragmentDineInBinding
 import com.android.pos.di.PrefProvider
+import com.android.pos.ui.adapter.DineInFloorNameListAdapter
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.extensions.toDp
 import com.android.pos.utils.statusUtils.Status
 import com.google.gson.Gson
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -371,6 +369,17 @@ class DineInFragment : Fragment() {
                         R.id.action_dineInFragment_to_dineInOrderTable,
                         bundle
                     )
+                } else {
+                    val status =
+                        "This table is locked by " + dineInFloorTableModel.currentOrderDetails.employeeName + "."
+
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        requireContext(),
+                        status
+                    ) { _, _ ->
+
+
+                    }
                 }
 
             } else if (dineInFloorTableModel.status == AVAILABLE) {
