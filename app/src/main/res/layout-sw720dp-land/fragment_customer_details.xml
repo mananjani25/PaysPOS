@@ -222,7 +222,6 @@
                         android:layout_gravity="center"
                         android:layout_marginTop="@dimen/_3sdp"
                         android:layout_marginBottom="@dimen/_3sdp"
-
                         android:textColor="@color/txt_color_blue"
                         android:textSize="@dimen/_6mdpi" />
 
