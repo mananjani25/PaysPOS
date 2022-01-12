@@ -661,7 +661,8 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
         Log.e("Loyalty", "txtTotalAmount : ${redeemLoyaltyInfo.getAmountToBePaid()}")
         redeemLoyaltyInfo.getAmountToBePaid()?.let {
-            MethodUtils.setPriceTextView(txtTotalAmount,
+            MethodUtils.setPriceTextView(
+                txtTotalAmount,
                 it
             )
         }
@@ -1400,7 +1401,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             val resource = posRepository.getTableStatus(
                 tableId, prefProvider.getValueInt(
                     Constants.EMPLOYEE_ID, 0
-                ), prefProvider.getValueInt(Constants.TERMINAL_ID, 0), status
+                ), prefProvider.getValueInt(Constants.TERMINAL_ID, 0), status, true
             )
 
             when (resource.status) {
@@ -1621,7 +1622,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     }
 
-    fun showErrorMessage(errorMessage : String){
+    fun showErrorMessage(errorMessage: String) {
         _snackbarText.value = Event(errorMessage)
     }
 }

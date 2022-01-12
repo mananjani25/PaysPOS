@@ -442,9 +442,9 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
             apiService.updateKitchenFireStatus(id, isFired, items)
         }
 
-    suspend fun getTableStatus(tableId: Int, empId: Int, terminalId: Int, status: String) =
+    suspend fun getTableStatus(tableId: Int, empId: Int, terminalId: Int, status: String,clearTable:Boolean) =
         getResult {
-            apiService.getTableStatus(tableId, empId, terminalId, status)
+            apiService.getTableStatus(tableId, empId, terminalId, status,clearTable)
         }
 
     suspend fun mergeFloorTable(

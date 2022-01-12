@@ -625,7 +625,8 @@ interface ApiService {
         @Path("id") tableId: Int,
         @Query("employee_id") employee_id: Int,
         @Query("terminal_id") terminal_id: Int,
-        @Query("status") status: String
+        @Query("status") status: String,
+        @Query("clear_table") clearTable:Boolean
     ): BaseResponse
 
     @POST(MERGE_FLOOR_TABLE)
