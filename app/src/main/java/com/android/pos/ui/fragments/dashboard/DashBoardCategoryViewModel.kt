@@ -543,6 +543,8 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
                 }
+
+                subTotalPrice -= cartList[0].discountPrice
                 serviceChargeCalculation(cartList)
 
                 cartList[0].dineInList?.forEach {
