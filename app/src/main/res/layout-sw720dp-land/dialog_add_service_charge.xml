@@ -47,6 +47,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_weight="1"
+
                     android:gravity="center"
                     android:text="@string/add_service_charge"
                     android:textSize="@dimen/_7mdpi" />
@@ -91,6 +92,7 @@
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:visibility="gone"
                     android:orientation="horizontal">
 
                     <TextView
