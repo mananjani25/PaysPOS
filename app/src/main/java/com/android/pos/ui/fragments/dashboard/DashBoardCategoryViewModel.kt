@@ -161,14 +161,15 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun dineInCartUpdate(
         cartList: List<CartModel>?,
-        dineInList: List<DineInModel> = arrayListOf()
+        dineInList: List<DineInModel>
     ) {
 
-        val cartModel = cartList?.get(0)
-        cartModel?.dineInList = dineInList
-        cartModel?.orderType = DINE_IN
-        cartModel?.let {
+        val cartModel = cartList!!.get(0)
+        cartModel.dineInList = dineInList
+        cartModel.orderType = DINE_IN
+        cartModel.let {
             addCart(it)
+
 
         }
 

@@ -121,7 +121,9 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
         })
 
         binding.imgBack.setOnClickListener {
-            findNavController().popBackStack()
+
+            findNavController().navigateUp()
+
         }
 
         binding.txtCreateCustomer.setOnClickListener {

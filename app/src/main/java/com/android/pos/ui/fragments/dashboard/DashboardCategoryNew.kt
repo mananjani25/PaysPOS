@@ -662,6 +662,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         if (isAdded)
             viewModel.mAllWords(prefProvider.getValue(ORDER_TYPE, "").toString()).observe(
                 requireActivity(), {
+                    Log.e(TAG,"YesAdded")
                     cartList = it as ArrayList<CartModel>
                     viewModel.destroyedList.clear()
 
@@ -690,7 +691,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                             if (cartList[0].items?.isNotEmpty() == true) {
 
-                                val dineList = dineInCartAdapter.getList()
+                                val dineList = cartList[0].dineInList?:dineInCartAdapter.getList()
                                 cartList[0].items?.forEach {
 
                                     if (it.isManualSales && dineList.isNotEmpty()) {
@@ -698,7 +699,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                                         if (it?.timeStamp == null || it?.timeStamp?.lowercase() == "null".lowercase()) {
                                             it.timeStamp = viewModel.randomOfflineId()
                                         }
-                                        dineList[0].items.add(it)
+                                        dineList[0]?.items.add(it)
 
                                     }
                                     cartList[0].items?.toCollection(arrayListOf())?.clear()
@@ -725,7 +726,14 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                                             val dineInList = list1
                                             if (dineInList.size >= position && position != 0) {
 
+
                                                 dineInList.get(position).customer = result
+
+                                                Log.e(TAG, "UpdateCustomerPostition ${position}")
+                                                Log.e(
+                                                    TAG,
+                                                    "UpdateCustomer ${dineInList.get(position).customer}"
+                                                )
 
                                                 viewModel.dineInCartUpdate(
                                                     cartList,
@@ -3163,7 +3171,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     bundle.putParcelable("dineInList", baseResponse)
                     bundle.putBoolean("isGuestPaid", false)
                     bundle.putInt("orderId", baseResponse.order.id)
-                    prefProvider.setValueInt("ORDER_ID",baseResponse.order.id)
+                    prefProvider.setValueInt("ORDER_ID", baseResponse.order.id)
 
                     prefProvider.setValue(Constants.ORDER_TYPE, "")
                     prefProvider.setValue(Constants.CUSTOMER_NAME, "")

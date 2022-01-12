@@ -162,7 +162,7 @@ class DineInFragment : Fragment() {
 
                             }
                             //bundle.putParcelable("floorList", resource.data.data)
-                            Log.e(TAG, "itFloorData ${Gson().toJson(it?.data?.data)}")
+
                             bundle.putParcelableArrayList(
                                 "floorList", it.data?.data?.toCollection(
                                     arrayListOf()
