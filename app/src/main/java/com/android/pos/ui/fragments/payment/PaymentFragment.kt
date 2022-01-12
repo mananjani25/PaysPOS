@@ -132,6 +132,20 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         totalDiscount = requireArguments().getDouble("totalDiscount")
         cashDiscountType = prefProvider.getValue(Constants.OPTION_TYPE, "")
 
+        redeemLoyaltyInfo = requireArguments().getParcelable("redeemLoyalty")
+
+        isUpdate = requireArguments().getBoolean("update")
+        if (isUpdate) {
+
+            orderId = requireArguments().getInt("orderId")
+            paymentId = requireArguments().getInt("paymentId")
+            paymentOfflineId = requireArguments().getString("paymentOfflineId").toString()
+            orderOfflineId = requireArguments().getString("orderOfflineId").toString()
+        }
+
+        future_delivery_time = requireArguments().getString("future_delivery_time").toString()
+        future_delivery_date = requireArguments().getString("future_delivery_date").toString()
+
 
 
         if (MethodUtils.isEnableCashDiscount(requireContext())) {
@@ -216,31 +230,6 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         } else {
             tipAmount = prefProvider.getValue(TIP, "").toDouble()
         }
-
-
-
-
-
-
-        future_delivery_time = requireArguments().getString("future_delivery_time").toString()
-        future_delivery_date = requireArguments().getString("future_delivery_date").toString()
-      /*  redeemLoyaltyInfo = Gson().fromJson(
-            requireArguments().getString("redeemLoyalty").toString(),
-            RedeemLoyaltyInfo::class.java
-        )*/
-
-        redeemLoyaltyInfo = requireArguments().getParcelable("redeemLoyalty")
-
-        isUpdate = requireArguments().getBoolean("update")
-        if (isUpdate) {
-
-            orderId = requireArguments().getInt("orderId")
-            paymentId = requireArguments().getInt("paymentId")
-            paymentOfflineId = requireArguments().getString("paymentOfflineId").toString()
-            orderOfflineId = requireArguments().getString("orderOfflineId").toString()
-        }
-
-
 
 
         binding.txtSplitAmount.setOnClickListener(this)
@@ -1211,7 +1200,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 )
             }
             if (myRequest != null) {
-                viewModel.totalPayAmount(totalPrice)
+                viewModel.totalPayAmount(paymentAmount)
                 val orderId = prefProvider.getValueInt("ORDER_ID", -1)
                 if (orderId == -1) {
                     viewModel.submit(myRequest)

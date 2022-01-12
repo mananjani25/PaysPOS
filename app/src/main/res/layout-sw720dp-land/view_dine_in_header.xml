@@ -36,12 +36,11 @@
                     <androidx.appcompat.widget.AppCompatCheckBox
                         android:id="@+id/chkIsFired"
                         android:layout_width="wrap_content"
+                        android:layout_marginStart="@dimen/_10sdp"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginStart="@dimen/_9sdp"
                         android:button="@drawable/dine_in_fire_selector"
                         android:checked="false"
-                        android:gravity="center" />
+                         />
                 </LinearLayout>
 
                 <TextView

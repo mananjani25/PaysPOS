@@ -344,7 +344,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             bundle.putDouble("subTotalPrice", MethodUtils.roundOffAmountDouble(subTotalDInin))
             bundle.putDouble("totalTax", MethodUtils.roundOffAmountDouble(finalTaxAmt))
             bundle.putParcelable("model", model)
-            bundle.putBoolean("update",true)
+            bundle.putBoolean("update", true)
             bundle.putDouble(
                 "divideCashDiscount",
                 MethodUtils.roundOffAmountDouble(divideCashDiscount)
@@ -767,7 +767,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         subTotalGuest: Double,
         totalGuest: Double,
         taxGuest: Double,
-        serviceChargeGuest: Double
+        serviceChargeGuest: Double,
+        divideDiscount: Double
     ) {
 
         //New Drag and Drop
@@ -811,7 +812,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             cardName = ""
             cardNumber = ""
             cardType = ""
-            cashDiscount = 0.0
+            cashDiscount = divideDiscount
             cashDiscountFee = 0.0
             cash_discount_or_surcharge = divideCashDiscount
             employeeId = prefProvider.getValueInt(EMPLOYEE_ID, 0)
@@ -828,7 +829,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 cardName = ""
                 cardNumber = ""
                 cardType = ""
-                cashDiscount = 0.0
+                cashDiscount = divideDiscount
                 cashDiscountFee = 0.0
                 cash_discount_or_surcharge = divideCashDiscount
                 employeeId = prefProvider.getValueInt(EMPLOYEE_ID, 0)
@@ -862,6 +863,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         dineInModel.id?.let { bundle.putInt("id", it) }
         bundle.putParcelable("cartList", cartList)
         bundle.putDouble("totalPrice", MethodUtils.roundOffAmountDouble(totalGuest))
+        bundle.putDouble("totalDiscount", MethodUtils.roundOffAmountDouble(divideDiscount))
         bundle.putDouble("divideCashDiscount", MethodUtils.roundOffAmountDouble(divideCashDiscount))
         bundle.putInt("totalGuestCount", totalGuestCount)
         bundle.putInt("paidGuestCount", paidGuestAmount)
@@ -1341,35 +1343,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     Log.e(TAG, "itemsDiscount:  ${itemsDiscount}")
 
 
-                    var orderDiscount = 0.0
-                    if (baseResponse.totalDiscount >= itemsDiscount) {
-                        orderDiscount = baseResponse.totalDiscount - itemsDiscount
-                    }
-                    dineInList.get(0).guestDividedAmt =
-                        MethodUtils.roundOffAmountDouble((WTSubTotal + WTTaxes + WTServiceCharge - orderDiscount) / (baseResponse.guestAttributes.size - 1))
-                    dineInList.get(0).totalGuestCount = baseResponse.guestAttributes.size - 1
-                    dineInList.get(0).wholeTableSubTotal =
-                        WTSubTotal / dineInList.get(0).totalGuestCount
-                    dineInList.get(0).wholeTableTax = WTTaxes / dineInList.get(0).totalGuestCount
-                    dineInList.get(0).wholeTableSurTax =
-                        WTServiceCharge / dineInList.get(0).totalGuestCount
-
-                    Log.d(
-                        "guestDivide",
-                        "navigateDineInOrder: " + (WTSubTotal + WTTaxes + WTServiceCharge - orderDiscount) / (baseResponse.guestAttributes.size - 1)
-                    )
-                    WholeTableAmount = MethodUtils.roundOffAmountDouble(
-                        (WTSubTotal + WTTaxes + WTServiceCharge - orderDiscount)
-                    )
-
-                    var service: Double = 0.0
-                    var serviceSubTotal = subTotalWT - itemsDiscount
-
-                    serviceChargeList.forEach {
-                        service += (serviceSubTotal * it.percentage) / 100
-                    }
-
-                    // subTotalWT -= baseResponse.totalDiscount
 
 
                     dineInList.forEach {
@@ -1383,9 +1356,40 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     }
                     totalDiscount = 0.0
                     totalDiscount += baseResponse.totalDiscount
+                    var orderDiscount = 0.0
+                    if (baseResponse.totalDiscount >= itemsDiscount) {
+                        orderDiscount = baseResponse.totalDiscount - itemsDiscount
+                    }
+                    dineInList[0].orderDiscount =
+                        (orderDiscount / (baseResponse.guestAttributes.size - 1))
 
-                    val totalAmoountTxt =
-                        MethodUtils.roundOffAmount(subTotalWT + serviceCharge + viewModel.totalTaxAmount - baseResponse.totalDiscount)
+
+                    dineInList.get(0).guestDividedAmt =
+                        MethodUtils.roundOffAmountDouble((WTSubTotal + WTTaxes + WTServiceCharge - itemsDiscount) / (baseResponse.guestAttributes.size - 1))
+                    dineInList.get(0).totalGuestCount = baseResponse.guestAttributes.size - 1
+                    dineInList.get(0).wholeTableSubTotal =
+                        WTSubTotal / dineInList.get(0).totalGuestCount
+                    dineInList.get(0).wholeTableTax = WTTaxes / dineInList.get(0).totalGuestCount
+                    dineInList.get(0).wholeTableSurTax =
+                        WTServiceCharge / dineInList.get(0).totalGuestCount
+
+                    Log.d(
+                        "guestDivide",
+                        "navigateDineInOrder: " + (WTSubTotal + WTTaxes + WTServiceCharge) / (baseResponse.guestAttributes.size - 1)
+                    )
+                    WholeTableAmount = MethodUtils.roundOffAmountDouble(
+                        (WTSubTotal + WTTaxes + WTServiceCharge)
+                    )
+
+                    var service: Double = 0.0
+                    var serviceSubTotal = subTotalWT - itemsDiscount
+
+                    serviceChargeList.forEach {
+                        service += (serviceSubTotal * it.percentage) / 100
+                    }
+
+                    // subTotalWT -= baseResponse.totalDiscount
+
 
                     var fisrtTime: Boolean = false
                     for (i in 1 until dineInList.size) {
@@ -1641,7 +1645,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
                         var finalAmt =
-                            guestSubTotal + serviceCharge + finalTaxAmt + myShare
+                            guestSubTotal + serviceCharge + finalTaxAmt + myShare - totalDiscount
 
                         Log.d(TAG, "navigateDineInOrder: " + finalAmt)
                         viewModel.totalTaxAmount = totalAmount
@@ -1709,6 +1713,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         var totalPaid = 0.0
         var guestShare = 0.0
         var totalTablePrice = 0.0
+        var WTDiscount = 0.0
         var guestCount = 0
 
         for (i in 0 until oldList.size) {
@@ -1746,8 +1751,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         for (i in 1 until oldList.size) {
             if (oldList.get(i).isHeader == 1) {
-
                 oldList.get(i).item?.let { it ->
+                    WTDiscount += it.discountPrice
                     wholeTableAmt += (it.price * it.itemQuantity) - it.discountPrice
 
                     if (it.modifiers.isNotEmpty()) {
@@ -1804,7 +1809,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             }
 
         }
-        guestShare += (wholeTableAmt + WTServiceCharge + WTTax) / (guestCount - 1)
+        guestShare += (wholeTableAmt + WTServiceCharge + WTTax - WTDiscount) / (guestCount - 1)
 
         for (i in 0 until oldList.size) {
             var model = DineInModel()

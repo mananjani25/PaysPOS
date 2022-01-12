@@ -22,6 +22,7 @@ data class DineInModel(
     var isPaid: Boolean = false,
     var guestDividedAmt: Double = 0.0,
     var wholeTableSubTotal: Double = 0.0,
+    var orderDiscount :Double = 0.0,
     var wholeTableSurTax: Double = 0.0,
     var wholeTableTax: Double = 0.0,
     var totalGuestCount:Int =0,

@@ -91,10 +91,11 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             } else {
                 binding.imgPrint.visibility = View.VISIBLE
             }
+            var guestDiscount = 0.0
+
             for (i in position + 1 until list.size) {
 
                 if (list.get(i).isHeader == 1) {
-
                     noItem = false
                     list.get(i).item?.let {
                         if (!it.isPaid) {
@@ -144,6 +145,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
 
                         }
+
                         if (!it.isPaid) {
                             isPaid = it.isPaid
                         }
@@ -161,6 +163,9 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                     isPaid = list.get(i).isPaid
                 }
             }
+
+
+
             guestAmt += list.get(0).guestDividedAmt
 
 
@@ -217,7 +222,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
 
             var finalAmt =
-                guestSubTotal + totalServiceCharge + totalTaxAmt + (list.get(0).guestDividedAmt)
+                guestSubTotal + totalServiceCharge + totalTaxAmt + (list.get(0).guestDividedAmt) - list[0].orderDiscount
 
             Log.e(TAG, "guestSubTotal  ${guestSubTotal}")
             Log.e(TAG, "guesttotalServiceCharge  ${totalServiceCharge}")
@@ -234,7 +239,10 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                     MethodUtils.roundOffAmountDouble(guestSubTotal + list.get(0).wholeTableSubTotal),
                     MethodUtils.roundOffAmountDouble(finalAmt),
                     MethodUtils.roundOffAmountDouble(totalTaxAmt + list.get(0).wholeTableTax),
-                    MethodUtils.roundOffAmountDouble(totalServiceCharge + list.get(0).wholeTableSurTax))
+                    MethodUtils.roundOffAmountDouble(totalServiceCharge + list.get(0).wholeTableSurTax),
+                    list[0].orderDiscount
+
+                )
             }
 
 
@@ -550,7 +558,8 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             subTotal: Double,
             total: Double,
             tax: Double,
-            serviceCharge: Double
+            serviceCharge: Double,
+            discount: Double
         )
 
         fun onSendItemToKitchen(item: TbItem)
