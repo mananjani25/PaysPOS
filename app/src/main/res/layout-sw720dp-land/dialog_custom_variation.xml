@@ -95,7 +95,7 @@
                             android:layout_gravity="center"
                             android:layout_weight="1"
                             android:padding="@dimen/_5sdp"
-                            android:text="@string/tv_variation_name"
+                            android:text="@string/tv_variation_name_mand"
                             android:textColor="@color/viewTextColor"
                             android:textSize="@dimen/_5mdpi" />
 
