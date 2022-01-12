@@ -251,14 +251,15 @@ class DineInFragment : Fragment() {
                         inflatedViewSquare.tag = dineInFloorTablesList[i]
 
                         val paramsSquare = FrameLayout.LayoutParams(
-                            (dineInFloorTablesList[i].width.toInt().toDp() * 1.5).toInt(),
-                            (dineInFloorTablesList[i].height.toInt().toDp() * 1.5).toInt()
+                            (dineInFloorTablesList[i].width.toInt().toDp() ).toInt(),
+                            (dineInFloorTablesList[i].height.toInt().toDp()).toInt()
                         )
 
                         paramsSquare.leftMargin =
-                            (dineInFloorTablesList[i].xPosition * 1.35).toInt().toDp()
+                            (dineInFloorTablesList[i].xLeft ).toInt().toDp()
+
                         paramsSquare.topMargin =
-                            (dineInFloorTablesList[i].yPosition * 1.35).toInt().toDp()
+                            (dineInFloorTablesList[i].yTop ).toInt().toDp()
                         if (dineInFloorTablesList[i].status == OCCUPIED || dineInFloorTablesList[i].status == MERGEDANDOCCUPIED) {
                             llMainParentSquare.background =
                                 resources.getDrawable(R.drawable.background_drawer_button_green)
@@ -322,13 +323,13 @@ class DineInFragment : Fragment() {
                         inflatedViewRound.tag = dineInFloorTablesList[i]
 
                         val paramsRound = FrameLayout.LayoutParams(
-                            (dineInFloorTablesList[i].width.toInt().toDp() * 1.5).toInt(),
-                            (dineInFloorTablesList[i].height.toInt().toDp() * 1.5).toInt()
+                            (dineInFloorTablesList[i].width.toInt().toDp()).toInt(),
+                            (dineInFloorTablesList[i].height.toInt().toDp() ).toInt()
                         )
                         paramsRound.leftMargin =
-                            (dineInFloorTablesList[i].xPosition * 1.35).toInt().toDp()
+                            (dineInFloorTablesList[i].xLeft ).toInt().toDp()
                         paramsRound.topMargin =
-                            (dineInFloorTablesList[i].yPosition * 1.35).toInt().toDp()
+                            (dineInFloorTablesList[i].yTop ).toInt().toDp()
                         // binding.flFloorPlan.removeAllViews()
                         if (dineInFloorTablesList[i].status == OCCUPIED || dineInFloorTablesList[i].status == MERGEDANDOCCUPIED) {
                             llMainParentRound.background =

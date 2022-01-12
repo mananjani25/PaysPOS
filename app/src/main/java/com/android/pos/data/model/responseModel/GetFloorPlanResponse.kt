@@ -1,9 +1,8 @@
 package com.android.pos.data.model.responseModel
 
 
-import com.google.gson.annotations.SerializedName
 import android.os.Parcelable
-
+import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
 
@@ -57,6 +56,11 @@ data class GetFloorPlanResponse(
             val xPosition: Double,
             @SerializedName("y_position")
             val yPosition: Double,
+            @SerializedName("y_top")
+            val yTop: Double,
+            @SerializedName("x_left")
+            val xLeft: Double,
+
             @SerializedName("child_table")
             val childTable: Boolean,
             @SerializedName("parent_table")
