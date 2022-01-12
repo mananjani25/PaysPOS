@@ -100,7 +100,7 @@
                             android:textColor="@color/viewTextColor"
                             android:textSize="@dimen/_5mdpi" />
 
-                        <androidx.appcompat.widget.AppCompatTextView
+                        <EditText
                             android:id="@+id/tvVariationsName"
                             style="@style/CustomFontBold"
                             android:layout_width="wrap_content"
