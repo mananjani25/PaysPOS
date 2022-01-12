@@ -43,6 +43,7 @@ class DineInFragment : Fragment() {
     private var dineInFloorNameList = ArrayList<GetFloorPlanResponse.Data>()
     private var dineInFloorTablesList = ArrayList<GetFloorPlanResponse.Data.FloorPlanTable>()
     private val TAG = this.javaClass.name.toString()
+    private var floorPlanSelectedPos = 0
 
 
     @Inject
@@ -122,7 +123,10 @@ class DineInFragment : Fragment() {
                                 it.data!!.data as ArrayList<GetFloorPlanResponse.Data>
                             dineInFloorNameListAdapter.addFloorName(dineInFloorNameList)
 
-                            setFloorPlan(dineInFloorNameList[0].floorPlanTables)
+
+                            setFloorPlan(dineInFloorNameList[floorPlanSelectedPos].floorPlanTables)
+
+                            floorPlanSelectedPos = 0
                         }
                     }
                     Status.ERROR -> {
@@ -149,6 +153,8 @@ class DineInFragment : Fragment() {
                             setFragmentResultListener("request_key_table_selection") { requestKey: String, bundle: Bundle ->
                                 var mergeStatus = bundle.getBoolean("merge_done")
                                 if (mergeStatus) {
+                                    floorPlanSelectedPos =
+                                        dineInFloorNameListAdapter.getSelectedPos()
                                     loadFloorPlan()
 
 

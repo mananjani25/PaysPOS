@@ -4,7 +4,6 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
-import com.android.pos.data.model.DineInFloorNameModel
 import com.android.pos.data.model.responseModel.GetFloorPlanResponse
 import com.android.pos.databinding.ViewDineInFloorNameBinding
 import com.android.pos.ui.fragments.dinein.DineInViewModel
@@ -71,6 +70,9 @@ class DineInFloorNameListAdapter(val viewModel: DineInViewModel) :
             }
 
         }
+    }
+    fun getSelectedPos():Int{
+        return mpos
     }
 
 }
