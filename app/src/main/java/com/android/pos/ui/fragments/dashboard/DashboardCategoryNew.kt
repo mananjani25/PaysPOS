@@ -1456,7 +1456,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
             Log.e(TAG, Gson().toJson(viewModel.redeemLoyaltyInfo))
             amountToBepaid = viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0
-            amountToBepaid -= (viewModel.totalDiscount + cartList[0].discountPrice)
+           // amountToBepaid -= (viewModel.totalDiscount + cartList[0].discountPrice)
             txtLoyaltyAmount.text =
                 "- $${String.format("%.2f", viewModel.redeemLoyaltyInfo.usedLoyaltyAmount)}"
             txtLoyaltyPoints.text = "${viewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
@@ -1466,7 +1466,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             chkLoyalty.isChecked = viewModel.redeemLoyaltyInfo.needToApplyLoyalty
         } else {
             amountToBepaid =
-                viewModel.totalPrice - (viewModel.totalDiscount + cartList[0].discountPrice)
+                viewModel.totalPrice
             groupLoyalty.gone()
             chkLoyalty.gone()
         }
