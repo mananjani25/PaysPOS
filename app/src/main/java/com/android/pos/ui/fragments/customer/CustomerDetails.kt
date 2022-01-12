@@ -126,7 +126,12 @@ class CustomerDetails : Fragment() {
                 "${AlertUtils.usNumberFormat(customerModel.phones[0].phone_number)}"
         }
         if (customerModel.addresses.isNotEmpty()) {
-            (customerModel.addresses[0].address1 + "," + customerModel.addresses[0].address2 + "," + customerModel.addresses[0].city).also {
+            var address = ""
+            for (i in customerModel.addresses.indices) {
+                if (customerModel.addresses[i].full_address.isNotEmpty())
+                    address = address + "Address" + i.toString() + " : " + customerModel.addresses[i].full_address + "\n\n"
+            }
+            address.also {
                 binding.txtAddress.text = it
             }
         }
@@ -166,7 +171,7 @@ class CustomerDetails : Fragment() {
         viewModel.orderResponse.observe(viewLifecycleOwner, EventObserver { order ->
             //reorder
             prefProvider.setValue(Constants.ORDER_TYPE, order.orderType)
-            Log.e("!_@_","customer details ${order.orderType}")
+            Log.e("!_@_", "customer details ${order.orderType}")
             if (order.customer != null) {
                 prefProvider.setValue(
                     Constants.CUSTOMER_NAME,
@@ -323,7 +328,7 @@ class CustomerDetails : Fragment() {
 
         val variationsAttribute = VariationsAttribute()
         variationsAttribute.id = variation?.variationId
-        variationsAttribute.name = variation?.name?:""
+        variationsAttribute.name = variation?.name ?: ""
         variationsAttribute.price = variation?.price
         variationsAttribute.orderVariationId = variation?.id
         variationsAttributeList.add(variationsAttribute)
