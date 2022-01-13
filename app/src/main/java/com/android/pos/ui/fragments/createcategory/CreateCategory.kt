@@ -19,6 +19,7 @@ import com.android.pos.data.remote.Constants.CREATECATEGORY
 import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.databinding.CreateCategoryActivityBinding
 import com.android.pos.ui.adapter.CategoryListItemAdapter
+import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.statusUtils.Status
@@ -29,7 +30,6 @@ import com.bumptech.glide.load.DecodeFormat
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -96,7 +96,7 @@ class CreateCategory : Fragment() {
                 //send image if its altered.
                 newImagePathToUpload = ""
             }
-            viewModel.submit(adapter.getIds(), newImagePathToUpload)
+            viewModel.submit(adapter.getIds(), newImagePathToUpload,categoryData)
         }
         binding.imgBack.setOnClickListener {
             onSubmitBack()
@@ -136,9 +136,19 @@ class CreateCategory : Fragment() {
     private fun navigationObserver() {
 
         viewModel.data.observe(viewLifecycleOwner, { event ->
-            event.getContentIfNotHandled()?.let {
-                if (it) {
-                    onSubmitBack()
+            event.getContentIfNotHandled()?.let { createOptionResponse ->
+
+                activity?.let {
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        it, createOptionResponse
+                    ) { _, _ ->
+                        val navControll = findNavController()
+                        navControll.previousBackStackEntry?.savedStateHandle?.set(
+                            KEY,
+                            CREATECATEGORY
+                        )
+                        navControll.popBackStack()
+                    }
                 }
             }
         })

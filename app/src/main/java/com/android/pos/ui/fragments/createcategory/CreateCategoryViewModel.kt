@@ -33,8 +33,8 @@ class CreateCategoryViewModel @Inject constructor(
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
-    private val _data = MutableLiveData<Event<Boolean?>>()
-    val data: LiveData<Event<Boolean?>> = _data
+    private val _data = MutableLiveData<Event<String?>>()
+    val data: LiveData<Event<String?>> = _data
 
     // private var catId: Int = -1
     private var isEdit: Boolean = false
@@ -56,11 +56,14 @@ class CreateCategoryViewModel @Inject constructor(
 
     //  val getInventory = catId.value?.let { posRepository.getInventory(it) }
 
-    fun submit(ids: ArrayList<Int>, imagePath: String?) {
+    fun submit(ids: ArrayList<Int>, imagePath: String?, categoryData: TbCategory) {
 
         if (TextUtils.isEmpty(categoryDetails.value?.name?.trim())) {
             _snackbarText.value = Event(R.string.category_name_validate)
-        } else {
+        }
+        else if (categoryData.name.equals(categoryDetails.value?.name))
+            _snackbarText.value = Event(R.string.same_category_name)
+        else {
             _showProgress.value = Event(true)
 
             if (isEdit) {
@@ -132,7 +135,7 @@ class CreateCategoryViewModel @Inject constructor(
                                         )
                                     }
 
-                                    _data.value = Event(true)
+                                    _data.value = Event(it.message)
 
 
                                 }

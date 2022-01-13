@@ -302,11 +302,11 @@
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/imgAdd"
                 style="@style/CustomFontRegularStyle"
-                android:layout_width="@dimen/_50sdp"
+                android:layout_width="@dimen/_70sdp"
                 android:layout_height="@dimen/_50sdp"
+                android:background="@color/purple_500"
                 android:gravity="center"
                 android:text="+"
-                android:background="@color/purple_500"
                 android:textAllCaps="true"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_12mdpi" />

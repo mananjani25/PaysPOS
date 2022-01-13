@@ -686,4 +686,6 @@
     <string name="product_code">Product Code</string>
     <string name="open_orders">Open Orders</string>
 
+    <string name="same_category_name">Category name should be different</string>
+
 </resources>

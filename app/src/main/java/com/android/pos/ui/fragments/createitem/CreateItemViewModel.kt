@@ -1,7 +1,6 @@
 package com.android.pos.ui.fragments.createitem
 
 import android.text.TextUtils
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -73,9 +72,12 @@ class CreateItemViewModel @Inject constructor(
 
     fun submit() {
         val value = itemDetails.value
+
+
         if (TextUtils.isEmpty(value?.name?.trim())) {
             _snackbarText.value = Event(R.string.item_name_validate)
-        } else if (categoryIdViewModel == 0) {
+        }
+        else if (categoryIdViewModel == 0) {
             _snackbarText.value = Event(R.string.category_select_validate)
         } /*else if (TextUtils.isEmpty(
                 value?.price?.toString()?.trim()
