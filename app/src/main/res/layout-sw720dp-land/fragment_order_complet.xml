@@ -52,10 +52,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:layout_centerVertical="true"
                 android:layout_gravity="center"
                 android:gravity="center"
-                android:textColor="@color/colorGreen"
+                android:textColor="@color/purple_500"
                 android:textSize="@dimen/_8mdpi"
                 tools:text="$12.50" />
 
