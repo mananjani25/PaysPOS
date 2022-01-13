@@ -1,20 +1,17 @@
 package com.android.pos.ui.adapter
 
 import android.annotation.SuppressLint
-import android.graphics.Color
 import android.graphics.Paint
-import android.graphics.PorterDuff
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import com.android.pos.R
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.model.DineInModel
-import com.android.pos.databinding.*
+import com.android.pos.databinding.ViewDineInHeaderBinding
+import com.android.pos.databinding.ViewDineInTableItemsBinding
 import com.android.pos.utils.MethodUtils
 import com.google.gson.Gson
 import java.util.*
@@ -289,6 +286,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
                 if (buttonView.isPressed) {
                     if (isChecked) {
+                        var listItem: ArrayList<TbItem> = arrayListOf()
                         val ids: MutableList<Int> = ArrayList()
 
                         val builder = java.lang.StringBuilder()
@@ -297,6 +295,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                         for (i in layoutPosition + 1 until list.size) {
 
                             if (list.get(i).isHeader == 1) {
+                                list[i].item?.let { listItem.add(it) }
 
                                 list.get(i).item?.orderItemId?.let {
                                     builder.append(it)
@@ -313,7 +312,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
                         }
 
-                        listner.onWholeTableToKitchen(builder.toString())
+                        listner.onWholeTableToKitchen(builder.toString(),listItem)
                         binding.chkIsFired.isChecked = true
                         binding.chkIsFired.isEnabled = false
 
@@ -563,7 +562,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         )
 
         fun onSendItemToKitchen(item: TbItem)
-        fun onWholeTableToKitchen(ids: String)
+        fun onWholeTableToKitchen(ids: String,listItems:ArrayList<TbItem>)
         fun singleItemFired(id: String, position: Int, item: TbItem)
         fun onGuestPrint(
             listItem: ArrayList<TbItem>,

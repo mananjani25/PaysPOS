@@ -1,86 +1,75 @@
 package com.android.pos.ui.fragments.settings.hardware.printer
 
+
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothSocket
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.text.Html
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.android.pos.data.model.PrinterListModel
-import com.android.pos.data.remote.Constants.DISCOVERY_INTERVAL
-
-import com.android.pos.data.remote.Constants.WIFI
-import com.android.pos.databinding.FragmentPrinterBinding
-import com.android.pos.ui.adapter.PrinterListAdapter
-import com.epson.epos2.Epos2Exception
-import com.epson.epos2.discovery.Discovery
-import com.epson.epos2.discovery.DiscoveryListener
-import com.epson.epos2.discovery.FilterOption
-import com.epson.epsonio.*
-import com.google.gson.Gson
-import dagger.hilt.android.AndroidEntryPoint
-import java.lang.Exception
-import java.util.concurrent.Executors
-import java.util.concurrent.ScheduledExecutorService
-import java.util.concurrent.ScheduledFuture
-import java.util.concurrent.TimeUnit
-import com.epson.epsonio.EpsonIoException
-import android.bluetooth.BluetoothDevice
-
-import android.bluetooth.BluetoothAdapter
-
-import android.content.Intent
-import java.util.*
-import android.bluetooth.BluetoothSocket
-import android.os.Build
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.android.pos.data.remote.Constants.BLUETOOTH
-import com.android.pos.utils.printer.PrinterClass
-import com.android.pos.utils.printer.PrinterClass.SEND_TIMEOUT
-import com.android.pos.utils.printer.PrinterClass.language
-import com.epson.eposprint.BatteryStatusChangeEventListener
-import com.epson.eposprint.Builder
-import com.epson.eposprint.Print
-import com.epson.eposprint.StatusChangeEventListener
-import java.io.IOException
-import java.io.InputStream
-import java.io.OutputStream
-import java.net.URLDecoder
-import kotlin.collections.ArrayList
-
-import android.text.Html
-import androidx.activity.OnBackPressedCallback
-import androidx.fragment.app.viewModels
-
 import com.android.pos.R
 import com.android.pos.data.entities.TbOrderType
+import com.android.pos.data.model.PrinterListModel
 import com.android.pos.data.model.requestModel.CreatePrinterRequestModel
 import com.android.pos.data.remote.Constants.AVAILABLE
+import com.android.pos.data.remote.Constants.BLUETOOTH
 import com.android.pos.data.remote.Constants.CUSTOMER
+import com.android.pos.data.remote.Constants.DISCOVERY_INTERVAL
 import com.android.pos.data.remote.Constants.KITCHEN
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.remote.Constants.PRINTER
 import com.android.pos.data.remote.Constants.TERMINAL_ID
+import com.android.pos.data.remote.Constants.WIFI
+import com.android.pos.databinding.FragmentPrinterBinding
 import com.android.pos.di.PrefProvider
+import com.android.pos.ui.adapter.PrinterListAdapter
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.addHorizontalKitchenLine
 import com.android.pos.utils.extensions.alert
-import com.android.pos.utils.getBitmapFromVectorDrawable
-
-
 import com.android.pos.utils.padLine
+import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.printer.PrinterClass.BLUETOOTH_TIMEOUT
-import com.android.pos.utils.printer.PrinterClass.IMAGE_WIDTH_MAX
+import com.android.pos.utils.printer.PrinterClass.SEND_TIMEOUT
 import com.android.pos.utils.printer.PrinterClass.TEST_PRINT_LAN_TIME
+import com.android.pos.utils.printer.PrinterClass.language
 import com.android.pos.utils.statusUtils.Status
+import com.epson.epos2.Epos2Exception
+import com.epson.epos2.discovery.Discovery
+import com.epson.epos2.discovery.DiscoveryListener
+import com.epson.epos2.discovery.FilterOption
+import com.epson.eposprint.BatteryStatusChangeEventListener
+import com.epson.eposprint.Builder
+import com.epson.eposprint.Print
+import com.epson.eposprint.StatusChangeEventListener
+import com.epson.epsonio.*
+import com.google.gson.Gson
+import dagger.hilt.android.AndroidEntryPoint
+import java.io.IOException
+import java.io.InputStream
+import java.io.OutputStream
+import java.net.URLDecoder
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.*
+import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledExecutorService
+import java.util.concurrent.ScheduledFuture
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 
 //Original New
@@ -341,10 +330,11 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         binding.imgSync.setOnClickListener {
             availableNetworkAdapter.clearList()
 
-            searchBluetooth()
+            //searchBluetooth()
             try {
-                stopFinder()
-                startFinder()
+              //  stopFinder()
+                syncPrinterList()
+               // startFinder()
 
             } catch (e: Exception) {
                 e.printStackTrace()

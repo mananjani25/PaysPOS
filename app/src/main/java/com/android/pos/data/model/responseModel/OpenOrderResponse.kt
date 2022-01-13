@@ -251,7 +251,7 @@ data class OpenOrderResponse(
                 @SerializedName("card_type")
                 val cardType: String,
                 @SerializedName("cash_discount_or_surcharge")
-                val cashDiscount: Int,
+                val cashDiscount: Double,
                 @SerializedName("created_at")
                 val createdAt: String,
                 @SerializedName("employee_id")

@@ -25,9 +25,6 @@ import com.android.pos.data.remote.Constants.BUSINESS_PHONE_NO
 import com.android.pos.data.remote.Constants.CUSTOMER
 import com.android.pos.data.remote.Constants.KITCHEN
 import com.android.pos.data.remote.Constants.LARGE
-import com.android.pos.data.remote.Constants.SPLIT_NO
-import com.android.pos.data.remote.Constants.SPLIT_PAY_AMOUNT
-import com.android.pos.data.remote.Constants.SPLIT_PAY_TYPE
 import com.android.pos.data.remote.Constants.SUB_TOTAL
 import com.android.pos.data.remote.Constants.getReceiptFormatDateFromUTCServer
 import com.android.pos.databinding.FragmentOrderCompletBinding
@@ -903,7 +900,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     )
 
                 }
-                if (customerSettingModel.showOrderTime) {
+                if (customerSettingModel.showOrderTime && receiptModel?.order?.createdAt?.isNotEmpty() == true) {
                     builder.addTextLineSpace(30)
                     builder.addFeedUnit(30)
                     builder.addTextFont(Builder.FONT_E)
@@ -916,6 +913,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         Builder.FALSE,
                         Builder.COLOR_1
                     )
+
+
 
                     builder.addText(
                         padLine(
@@ -932,10 +931,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             }
                         )
                     )
-
                 }
 
-                if (customerSettingModel.showPrintTime) {
+                if (customerSettingModel.showPrintTime && receiptModel?.order?.createdAt?.isNotEmpty() == true) {
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 

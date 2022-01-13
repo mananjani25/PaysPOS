@@ -592,16 +592,9 @@ class PaymentViewModel @Inject constructor(
             orderServiceChargesAttributes(cartModel, subTotalPrice)
         if (cartModel.orderType == DINE_IN) {
             orderAttributeRequestModel.guestsAttributes = getGuestsAttributes(cartModel)
-            Log.e(
-                TAG,
-                "guestsAttributesData:  ${Gson().toJson(orderAttributeRequestModel.guestsAttributes)}"
-            )
 
             orderAttributeRequestModel.orderItemsAttributes = dineInOrderItemAttributed(cartModel)
-            Log.e(
-                TAG,
-                "dineInOrderItemData:  ${Gson().toJson(orderAttributeRequestModel.orderItemsAttributes)}"
-            )
+
         } else {
 
             orderAttributeRequestModel.orderItemsAttributes = orderItemsAttributes(cartModel)
@@ -613,7 +606,6 @@ class PaymentViewModel @Inject constructor(
 
         val orderRequestModel = OrderRequestModel(isPaid, orderAttributeRequestModel)
 
-        Log.e("orderRequestModel", ":  ${Gson().toJson(orderRequestModel)}")
 
         return orderRequestModel
     }

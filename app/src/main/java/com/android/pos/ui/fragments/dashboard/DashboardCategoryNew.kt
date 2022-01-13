@@ -662,7 +662,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         if (isAdded)
             viewModel.mAllWords(prefProvider.getValue(ORDER_TYPE, "").toString()).observe(
                 requireActivity(), {
-                    Log.e(TAG,"YesAdded")
+                    Log.e(TAG, "YesAdded")
                     cartList = it as ArrayList<CartModel>
                     viewModel.destroyedList.clear()
 
@@ -691,7 +691,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                             if (cartList[0].items?.isNotEmpty() == true) {
 
-                                val dineList = cartList[0].dineInList?:dineInCartAdapter.getList()
+                                val dineList = cartList[0].dineInList ?: dineInCartAdapter.getList()
                                 cartList[0].items?.forEach {
 
                                     if (it.isManualSales && dineList.isNotEmpty()) {
@@ -1456,7 +1456,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
             Log.e(TAG, Gson().toJson(viewModel.redeemLoyaltyInfo))
             amountToBepaid = viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0
-           // amountToBepaid -= (viewModel.totalDiscount + cartList[0].discountPrice)
+            // amountToBepaid -= (viewModel.totalDiscount + cartList[0].discountPrice)
             txtLoyaltyAmount.text =
                 "- $${String.format("%.2f", viewModel.redeemLoyaltyInfo.usedLoyaltyAmount)}"
             txtLoyaltyPoints.text = "${viewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"

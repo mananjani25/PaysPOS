@@ -251,15 +251,19 @@ class DineInFragment : Fragment() {
                         inflatedViewSquare.tag = dineInFloorTablesList[i]
 
                         val paramsSquare = FrameLayout.LayoutParams(
-                            (dineInFloorTablesList[i].width.toInt().toDp() ).toInt(),
+                            (dineInFloorTablesList[i].width.toInt().toDp()).toInt(),
                             (dineInFloorTablesList[i].height.toInt().toDp()).toInt()
                         )
 
                         paramsSquare.leftMargin =
-                            (dineInFloorTablesList[i].xLeft ).toInt().toDp()
+                            (dineInFloorTablesList[i].xLeft).toInt().toDp()
 
-                        paramsSquare.topMargin =
-                            (dineInFloorTablesList[i].yTop ).toInt().toDp()
+
+                        paramsSquare.topMargin = if (dineInFloorTablesList[i].yTop > 735) {
+                            735
+                        } else {
+                            (dineInFloorTablesList[i].yTop).toInt().toDp()
+                        }
                         if (dineInFloorTablesList[i].status == OCCUPIED || dineInFloorTablesList[i].status == MERGEDANDOCCUPIED) {
                             llMainParentSquare.background =
                                 resources.getDrawable(R.drawable.background_drawer_button_green)
@@ -321,15 +325,34 @@ class DineInFragment : Fragment() {
 
                         /*pass object in settag*/
                         inflatedViewRound.tag = dineInFloorTablesList[i]
+                        val paramsRound =
+                            if (dineInFloorTablesList[i].height.toInt().toDp() <= 120) {
+                                FrameLayout.LayoutParams(
+                                    120,
+                                    120
+                                )
+                            } else {
+                                FrameLayout.LayoutParams(
+                                    (dineInFloorTablesList[i].width.toInt().toDp()).toInt(),
+                                    (dineInFloorTablesList[i].height.toInt().toDp()).toInt()
+                                )
 
-                        val paramsRound = FrameLayout.LayoutParams(
+                            }
+
+                        FrameLayout.LayoutParams(
                             (dineInFloorTablesList[i].width.toInt().toDp()).toInt(),
-                            (dineInFloorTablesList[i].height.toInt().toDp() ).toInt()
+                            (dineInFloorTablesList[i].height.toInt().toDp()).toInt()
                         )
                         paramsRound.leftMargin =
-                            (dineInFloorTablesList[i].xLeft ).toInt().toDp()
+                            (dineInFloorTablesList[i].xLeft).toInt().toDp()
+
+
                         paramsRound.topMargin =
-                            (dineInFloorTablesList[i].yTop ).toInt().toDp()
+                            if (dineInFloorTablesList[i].yTop > 735) {
+                                735
+                            } else {
+                                (dineInFloorTablesList[i].yTop).toInt().toDp()
+                            }
                         // binding.flFloorPlan.removeAllViews()
                         if (dineInFloorTablesList[i].status == OCCUPIED || dineInFloorTablesList[i].status == MERGEDANDOCCUPIED) {
                             llMainParentRound.background =
