@@ -100,7 +100,7 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="@{@string/symbole +``+String.format(@string/format,(viewModel.totalAmount - viewModel.cash_discount_or_surcharge))}"
+                android:text="@{@string/symbole +``+String.format(@string/format,viewModel.totalAmount)}"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_5mdpi"
                 tools:text="Amount" />

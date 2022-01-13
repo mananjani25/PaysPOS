@@ -89,7 +89,7 @@ class TransactionDetailsViewModel @Inject constructor(
     fun getCashDiscountDetails(active: Int): LiveData<CashDiscountModel>? {
         return posRepository.getCashDisDetail(active)
     }
-
+    val serviceCharges = posRepository.serviceChargeList()
     fun refundPaymentApiCall(
         refundAmount: Double,
         refundData: RefundRequestModel,

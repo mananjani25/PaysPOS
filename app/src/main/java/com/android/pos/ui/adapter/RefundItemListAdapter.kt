@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
+import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.databinding.ViewRefundItemBinding
 import com.android.pos.ui.fragments.transactions.TransactionDetailsViewModel
@@ -23,6 +24,7 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
     var cash_discount_or_surcharge: Double = 0.0
     var totalDiscount: Double = 0.0
     var loyaltyAmount: Double = 0.0
+    var serviceChargeList: List<TbServiceCharge> = arrayListOf()
 
     fun setSelectedItemList(list: ArrayList<GetOrderDetailsResponse.Data.OrderItem>) {
         selectedItemList.clear()
@@ -41,7 +43,7 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
 
     fun addItems(
         noteList: List<GetOrderDetailsResponse.Data.OrderItem>,
-        serviceCharge: Double,
+        serviceCharge: List<TbServiceCharge>?,
         cash_discount_or_surcharge: Double,
         cashDiscountType: String,
         paymentType: String,
@@ -59,8 +61,8 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
             clear()
             addAll(noteList)
         }
-        this.serviceCharge =
-            serviceCharge as Double
+        this.serviceChargeList =
+            serviceCharge as List<TbServiceCharge>
         notifyDataSetChanged()
     }
 
@@ -108,18 +110,17 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
 
 
             var totalItemPrice: Double = (item.totalPrice - item.discountAmount)
-            if (paymentType == "Cash") {
-                if (cashdiscountType == "CashDiscount") {
-                    totalItemPrice -= (cash_discount_or_surcharge / itemCount)
-                }
-            } else if (paymentType == "Card") {
-                if (cashdiscountType == "SurCharge") {
-                    totalItemPrice += (cash_discount_or_surcharge / itemCount)
-                }
-            }
+
             item.orderItemTaxes.forEach { tax ->
                 tax.taxTotalAmount.let {
                     totalTax += it
+                }
+            }
+
+            var totalServiceCharge = 0.0
+            serviceChargeList.forEach {
+                if (it.isEnabled) {
+                    totalServiceCharge += (totalItemPrice * it.percentage) / 100
                 }
             }
 
@@ -130,7 +131,18 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
                 totalItemPrice += (modifiers.price * modifiers.quantity)
             }
 
-            totalItemPrice += totalTax + (serviceCharge / noteList.size) - orderDiscount - loyaltyAmountPerItem
+            var cashDiscountDivide = 0.0
+            if (paymentType == "Cash") {
+                if (cashdiscountType == "CashDiscount") {
+                    cashDiscountDivide = (cash_discount_or_surcharge / itemCount)
+                }
+            } else if (paymentType == "Card") {
+                if (cashdiscountType == "SurCharge") {
+                    cashDiscountDivide = (cash_discount_or_surcharge / itemCount)
+                }
+            }
+
+            totalItemPrice += totalTax + (totalServiceCharge / noteList.size) - orderDiscount - loyaltyAmountPerItem - cashDiscountDivide
             MethodUtils.setPriceTextView(itemBinding.tvItemPrice, totalItemPrice.toDouble())
 
             itemBinding.ivCheck.setOnClickListener {

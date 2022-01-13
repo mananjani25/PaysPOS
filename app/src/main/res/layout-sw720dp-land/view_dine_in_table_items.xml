@@ -27,7 +27,6 @@
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-
                 android:weightSum="5">
 
                 <LinearLayout
@@ -36,12 +35,12 @@
                     android:layout_weight="0.6"
                     android:gravity="center"
                     android:orientation="horizontal">
-
                     <androidx.appcompat.widget.AppCompatCheckBox
                         android:id="@+id/chkIsFired"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
+                        android:layout_marginRight="@dimen/_5sdp"
                         android:button="@drawable/dine_in_fire_selector"
                         android:gravity="center" />
                 </LinearLayout>

@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
+import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.model.GetPaymentOrderDetailsResponse
 import com.android.pos.data.model.responseModel.GetCustomerReceiptSettingsResponse
 import com.android.pos.data.model.responseModel.GetTipReponse
@@ -52,6 +53,7 @@ class TransactionDetailsFragment : Fragment() {
     private var tipsList: List<GetTipReponse.Data> = listOf()
     private var paymentId: Int = -1
     private var isFromTrans: Boolean = false
+    private var serviceChargesList: ArrayList<TbServiceCharge>? = arrayListOf()
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -96,6 +98,10 @@ class TransactionDetailsFragment : Fragment() {
             }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 
+        viewModel.serviceCharges.observe(requireActivity(), {
+            serviceChargesList = it.data as ArrayList<TbServiceCharge>?
+
+        })
         return binding.root
     }
 
@@ -126,6 +132,7 @@ class TransactionDetailsFragment : Fragment() {
                 }
                 putInt("paymentId", paymentId)
                 putParcelable("orderDetailsResponse", paymentDetailsResponse)
+                putParcelableArrayList("serviceChargesList", serviceChargesList)
             }
             findNavController().navigate(
                 R.id.action_transactionDetailsFragment_to_issueRefundFragment,

@@ -12,9 +12,11 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
+import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.model.GetPaymentOrderDetailsResponse
 import com.android.pos.data.model.requestModel.RefundRequestModel
 import com.android.pos.databinding.DialogIssueRefundBinding
+import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.RefundItemListAdapter
 import com.android.pos.ui.fragments.transactions.TransactionDetailsViewModel
 import com.android.pos.utils.AlertUtils
@@ -43,6 +45,8 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
     private var isItem = false
     private var payment_id = 0
     private var subTotalPrice: Double = 0.0
+    lateinit var prefProvider: PrefProvider
+    private var serviceChargesList: List<TbServiceCharge>? = arrayListOf()
 
 
     companion object {
@@ -60,11 +64,11 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
 
         paymentOrderDetailsResponse = arguments?.getParcelable("orderDetailsResponse")!!
         payment_id = arguments?.getInt("paymentId")!!
+        serviceChargesList = arguments?.getParcelableArrayList("serviceChargesList")!!
         binding.orderDetails = paymentOrderDetailsResponse
         binding.edtAmount.addTextChangedListener(this)
-
+        prefProvider = PrefProvider(requireContext())
         setUpRecyclerView()
-
 
         binding.rgRefundType.setOnCheckedChangeListener { group, checkedId ->
 
@@ -125,7 +129,6 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                     AlertUtils.showCustomAlert(requireActivity(), "Please Enter Amount To Refund")
                 } else {
                     subTotalPrice = binding.edtAmount.text.toString().toDouble()
-
                     refundData = RefundRequestModel().apply {
                         paymentRefund = RefundRequestModel.PaymentRefund().apply {
                             amount = subTotalPrice
@@ -193,16 +196,23 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
 
         refundItemListAdapter.addItems(
             paymentOrderDetailsResponse.data.order.order_items,
-            paymentOrderDetailsResponse.data.service_charge_amount,
-            paymentOrderDetailsResponse.data.cash_discount_or_surcharge,
+            serviceChargesList,
+            MethodUtils.calculateCashDiscount(
+                paymentOrderDetailsResponse.data.sub_total + paymentOrderDetailsResponse.data.tax_amount + paymentOrderDetailsResponse.data.service_charge_amount,
+                prefProvider,
+                requireContext()
+            ),
             if (paymentOrderDetailsResponse.data.cash_discount_type != null) paymentOrderDetailsResponse.data.cash_discount_type else "",
             paymentOrderDetailsResponse.data.payment_type,
             paymentOrderDetailsResponse.data.total_discount - totalItemDiscount,
             paymentOrderDetailsResponse.data.loyalty_amount
         )
 
-        refundItemListAdapter.setSelectedItemList(paymentOrderDetailsResponse.data.order.order_items.toCollection(
-            arrayListOf()))
+        refundItemListAdapter.setSelectedItemList(
+            paymentOrderDetailsResponse.data.order.order_items.toCollection(
+                arrayListOf()
+            )
+        )
         refundItemListAdapter.showItemSubTotal = {
 
             //    calculationOfItems()
@@ -258,15 +268,6 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
 
                 totalItemPrice += subTotalPrice
 
-                if (paymentOrderDetailsResponse.data.payment_type == "Cash") {
-                    if (paymentOrderDetailsResponse.data.cash_discount_type == "CashDiscount") {
-                        totalItemPrice -= (paymentOrderDetailsResponse.data.cash_discount_or_surcharge / refundItemListAdapter.itemCount)
-                    }
-                } else if (paymentOrderDetailsResponse.data.payment_type == "Card") {
-                    if (paymentOrderDetailsResponse.data.cash_discount_type == "SurCharge") {
-                        totalItemPrice += (paymentOrderDetailsResponse.data.cash_discount_or_surcharge / refundItemListAdapter.itemCount)
-                    }
-                }
             }
             val orderItemRefundsAttributeModel =
                 RefundRequestModel.PaymentRefund.OrderItemRefundsAttribute()
@@ -281,9 +282,34 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
             orderItemRefundsAttributesList.add(orderItemRefundsAttributeModel)
         }
 
+
+        var totalServiceCharge = 0.0
+        serviceChargesList?.forEach {
+            if (it.isEnabled) {
+                totalServiceCharge += (totalItemPrice * it.percentage) / 100
+            }
+        }
+
+
         totalItemPrice += totalTax + totalServiceCharge - applyDiscount - loyaltyAmount
 
-
+        if (paymentOrderDetailsResponse.data.payment_type == "Cash") {
+            if (paymentOrderDetailsResponse.data.cash_discount_type == "CashDiscount") {
+                totalItemPrice -= (MethodUtils.calculateCashDiscount(
+                    totalItemPrice,
+                    prefProvider,
+                    requireContext()
+                ) / refundItemListAdapter.itemCount)
+            }
+        } else if (paymentOrderDetailsResponse.data.payment_type == "Card") {
+            if (paymentOrderDetailsResponse.data.cash_discount_type == "SurCharge") {
+                totalItemPrice += (MethodUtils.calculateCashDiscount(
+                    totalItemPrice,
+                    prefProvider,
+                    requireContext()
+                ) / refundItemListAdapter.itemCount)
+            }
+        }
 
         refundData = RefundRequestModel().apply {
             paymentRefund = RefundRequestModel.PaymentRefund().apply {

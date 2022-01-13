@@ -36,26 +36,31 @@
                     <androidx.appcompat.widget.AppCompatCheckBox
                         android:id="@+id/chkIsFired"
                         android:layout_width="wrap_content"
-                        android:layout_marginStart="@dimen/_10sdp"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="@dimen/_10sdp"
                         android:button="@drawable/dine_in_fire_selector"
                         android:checked="false"
-                         />
+                        android:gravity="center" />
                 </LinearLayout>
 
-                <TextView
-                    android:id="@+id/txtTableName"
-                    style="@style/CustomFontMediumStyle"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_weight="4.4"
-                    android:gravity="start"
-                    android:paddingStart="@dimen/_22sdp"
-                    android:text="Whole Table"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/_6mdpi" />
-
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_weight="2.4"
+                    android:layout_gravity="center_vertical"
+                    android:layout_height="match_parent">
+                    <TextView
+                        android:id="@+id/txtTableName"
+                        style="@style/CustomFontMediumStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:gravity="start|center_vertical"
+                        android:paddingStart="@dimen/_12sdp"
+                        android:text="Whole Table"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_6mdpi" />
+                </LinearLayout>
 
             </LinearLayout>
 
