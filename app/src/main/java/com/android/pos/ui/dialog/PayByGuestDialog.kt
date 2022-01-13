@@ -2,8 +2,6 @@ package com.android.pos.ui.dialog
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -1391,7 +1389,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
         val requestModel = createRequestForTotalAmount()
         if (requestModel != null) {
             paymentViewModel.totalPayAmount(paymentAmount)
-            val orderId = prefProvider.getValueInt("ORDER_ID", -1)
+            val orderIdNew = prefProvider.getValueInt("ORDER_ID", -1)
             var reemainvalue = 0.0
             if (!isCustomCash) {
                 if (cashDiscountType == "CashDiscount") {
@@ -1403,7 +1401,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
             }
             if (reemainvalue == 0.0) {
                 requestModel.order.paymentAttributes = paymentAttributes()
-                paymentViewModel.dineInWholePayment(requestModel, orderId, splitValue)
+                orderId?.let { paymentViewModel.dineInWholePayment(requestModel, it, splitValue) }
             } else {
                 val paymentReq = paymentAttributes()
                 var completePayment = false
