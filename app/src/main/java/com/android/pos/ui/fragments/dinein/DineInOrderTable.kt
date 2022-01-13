@@ -123,6 +123,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         getCustomerList()
         observeServiceCharge()
         singleItemFireObserver()
+        getCustomerPrinterList()
         getCustomerReceiptSettings()
         getKitchenReceiptSettings()
         observeFireAll()
@@ -929,20 +930,25 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
     }
 
-    override fun onWholeTableToKitchen(ids: String) {
+    override fun onWholeTableToKitchen(ids: String, list: ArrayList<TbItem>) {
+        Log.e(TAG, "WholeTableITem")
+        viewModel.fireItemToKitchen(orderId ?: 0, true, ids, true)
+        for (i in 0 until kitchenPrinterList.size) {
 
-        viewModel.fireItemToKitchen(orderId!!, true, ids, true)
+            initKitchenPrinter(kitchenPrinterList.get(i), Constants.KITCHEN, list)
+        }
     }
 
     override fun singleItemFired(id: String, position: Int, item: TbItem) {
 
         clickedPos = position
-        viewModel.fireItemToKitchen(orderId!!, true, id, false, item)
+        viewModel.fireItemToKitchen(orderId ?: 0, true, id, false, item)
 
-
+        var listItem: ArrayList<TbItem> = arrayListOf()
+        listItem.add(item)
         for (i in 0 until kitchenPrinterList.size) {
 
-            initKitchenPrinter(kitchenPrinterList.get(i), Constants.KITCHEN, item)
+            initKitchenPrinter(kitchenPrinterList.get(i), Constants.KITCHEN, listItem)
         }
 
     }
@@ -2037,6 +2043,34 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         })
 
+    }
+
+    private fun getCustomerPrinterList() {
+        viewModel.getCustomerPrinterList().observe(viewLifecycleOwner, {
+            when (it.status) {
+                Status.SUCCESS -> {
+                    ProgressUtils.dismissProgressDialog()
+                    if (it.data != null) {
+                        customerList = it.data
+
+
+                    }
+
+
+                }
+                Status.ERROR -> {
+
+                    ProgressUtils.dismissProgressDialog()
+
+                }
+                Status.LOADING -> {
+                    ProgressUtils.showProgressDialog(requireActivity())
+
+                }
+
+            }
+
+        })
     }
 
     private fun getCustomerPrinters(paymentType: String) {
@@ -4193,7 +4227,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     private fun initKitchenPrinter(
         data: PrinterResponse.Data.KitchenReceiptPrinters,
         type: String,
-        item: TbItem
+        item: ArrayList<TbItem>
 
     ) {
         if (PrinterClass.getPrinter() == null) {
@@ -4241,7 +4275,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     private fun generateKitchenReceipt(
         customerReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
         type: String,
-        item: TbItem
+        item: ArrayList<TbItem>
     ) {
         var builder: Builder? = null
         try {
@@ -4274,6 +4308,20 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 addBuilderText(builder, getOrderDetailsResponse?.orderType.toString())
             }
 
+            builder.addFeedLine(2)
+            builder.addTextFont(Builder.FONT_E)
+            //  builder.addTextAlign(Builder.ALIGN_LEFT)
+            builder.addTextLang(Builder.LANG_EN)
+            builder.addTextSize(1, 1)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.COLOR_1
+            )
+
+
+            builder.addText(getOrderDetailsResponse?.floorPlanTable?.tableName+" ("+getOrderDetailsResponse?.floorPlanTable?.tableNumber+")")
 
             builder.addFeedLine(2)
             builder.addTextFont(Builder.FONT_E)
