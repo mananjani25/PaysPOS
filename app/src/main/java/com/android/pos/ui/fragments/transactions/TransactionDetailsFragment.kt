@@ -54,6 +54,7 @@ class TransactionDetailsFragment : Fragment() {
     private var paymentId: Int = -1
     private var isFromTrans: Boolean = false
     private var serviceChargesList: ArrayList<TbServiceCharge>? = arrayListOf()
+    private var isSplitPayment = false
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -132,6 +133,7 @@ class TransactionDetailsFragment : Fragment() {
                 }
                 putInt("paymentId", paymentId)
                 putParcelable("orderDetailsResponse", paymentDetailsResponse)
+                putBoolean("isSplitPayment",isSplitPayment)
                 putParcelableArrayList("serviceChargesList", serviceChargesList)
             }
             findNavController().navigate(
@@ -148,6 +150,10 @@ class TransactionDetailsFragment : Fragment() {
             event.getContentIfNotHandled()?.let {
 
                 paymentDetailsResponse = it
+                if (paymentDetailsResponse.data.order.order_split_type == "OrderAmountTab") {
+                    isSplitPayment = true
+                }
+
                 binding.tvDate.text =
                     convertCurrentDate(
                         it.data.order.created_at,

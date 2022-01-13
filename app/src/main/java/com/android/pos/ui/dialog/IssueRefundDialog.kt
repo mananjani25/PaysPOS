@@ -47,7 +47,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
     private var subTotalPrice: Double = 0.0
     lateinit var prefProvider: PrefProvider
     private var serviceChargesList: List<TbServiceCharge>? = arrayListOf()
-
+    private var isSplitPayment = false
 
     companion object {
         fun newInstance() = IssueRefundDialog()
@@ -64,11 +64,57 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
 
         paymentOrderDetailsResponse = arguments?.getParcelable("orderDetailsResponse")!!
         payment_id = arguments?.getInt("paymentId")!!
+        isSplitPayment = arguments?.getBoolean("isSplitPayment")!!
         serviceChargesList = arguments?.getParcelableArrayList("serviceChargesList")!!
         binding.orderDetails = paymentOrderDetailsResponse
         binding.edtAmount.addTextChangedListener(this)
         prefProvider = PrefProvider(requireContext())
-        setUpRecyclerView()
+        if (!isSplitPayment) {
+            setUpRecyclerView()
+        } else {
+            isItem = true
+            binding.rbAmount.isChecked = true
+            binding.rbItems.visibility = View.GONE
+            binding.llItemList.visibility = View.GONE
+            binding.llRefundAmount.visibility = View.VISIBLE
+            binding.tvRefundPaymentDetails.visibility = View.VISIBLE
+            binding.tvRefundItemDetails.visibility = View.GONE
+
+            val mData = paymentOrderDetailsResponse.data
+
+            if (mData.order.refund_detail.refunded_amount.equals(0.0)) {
+                if (mData.payment_type == "Card") {
+                    if (mData.cash_discount_type == "SurCharge") {
+                        MethodUtils.setRefundPriceTextView(
+                            binding.tvTotalRefundAmount, (mData.amount)
+                            /*(mData.sub_total + mData.tips + mData.tax_amount + mData.service_charge_amount + mData.cash_discount_or_surcharge - (mData.loyalty_amount!! *//*+ mData.total_discount*//*))*/
+                        )
+                    } else {
+                        MethodUtils.setRefundPriceTextView(
+                            binding.tvTotalRefundAmount, (mData.amount)
+//                                (mData.sub_total + mData.tips + mData.tax_amount + mData.service_charge_amount - (mData.loyalty_amount!! /*+ mData.total_discount*/))
+                        )
+                    }
+                } else if (mData.payment_type == "Cash") {
+                    if (mData.cash_discount_type == "CashDiscount") {
+                        MethodUtils.setRefundPriceTextView(
+                            binding.tvTotalRefundAmount,
+                            (mData.amount)
+                        )
+                    } else {
+                        MethodUtils.setRefundPriceTextView(
+                            binding.tvTotalRefundAmount,
+                            (mData.amount)
+                        )
+                    }
+                }
+            } else {
+                MethodUtils.setRefundPriceTextView(
+                    binding.tvTotalRefundAmount,
+                    ((mData.amount - mData.tips) - mData.order.refund_detail.refunded_amount)
+                )
+            }
+        }
 
         binding.rgRefundType.setOnCheckedChangeListener { group, checkedId ->
 

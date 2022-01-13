@@ -83,6 +83,7 @@ class GetPaymentOrderDetailsResponse(
             @SerializedName("total_service_charges") val total_service_charges: Double,
             @SerializedName("open_order_type") val open_order_type: String,
             @SerializedName("delivery_type") val delivery_type: String,
+            @SerializedName("order_split_type") val order_split_type: String,
             @SerializedName("delivery_employee_id") val delivery_employee_id: String,
             @SerializedName("discount_id") val discount_id: String,
             @SerializedName("created_at") val created_at: String,
