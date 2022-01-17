@@ -66,12 +66,14 @@
                             tools:listitem="@layout/view_business_setting" />
 
                         <View
+                            android:visibility="gone"
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
                             android:background="@color/dividerColor" />
 
 
                         <TextView
+                            android:visibility="gone"
                             android:background="?attr/selectableItemBackground"
                             android:id="@+id/txtHardware"
                             android:layout_width="match_parent"

@@ -204,6 +204,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 binding.llHome.visibility = View.GONE
                 binding.llNoReceipt.text = "Next Payment"
                 binding.txtHome.text = "Next Payment"
+                binding.llNoReceipt.background = requireContext().getDrawable(R.color.black)
+
                 var title = "Split "
                 viewModel.addSplitToDatabase(
                     title,
@@ -267,6 +269,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 binding.llHome.visibility = View.GONE
                 binding.llNoReceipt.text = "Next Payment"
                 binding.txtHome.text = "Next Payment"
+                binding.llNoReceipt.background = requireContext().getDrawable(R.color.black)
                 var title = "Split "
                 viewModel.addSplitToDatabase(
                     title,
