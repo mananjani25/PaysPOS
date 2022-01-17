@@ -514,7 +514,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
                     AlertUtils.showCustomAlertWithListenerWithOK(
                         it, createTaxResponse.message
                     ) { _, _ ->
-                        findNavController().navigateUp()
+                        findNavController().popBackStack()
                     }
                 }
 

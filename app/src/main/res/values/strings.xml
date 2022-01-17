@@ -132,7 +132,7 @@
     <string name="plus">+</string>
     <string name="options">Options</string>
     <string name="add_options">Add Options</string>
-    <string name="add_a_custom_set_of_options_to_an_item_to_create_variations_learn_more"><![CDATA[Add a custom set of options to an item to create variations. Learn more >]]></string>
+    <string name="add_a_custom_set_of_options_to_an_item_to_create_variations_learn_more"><![CDATA[Add a custom set of options to an item to create variations.]]></string>
     <string name="price_and_inventory">Price and inventory</string>
     <string name="unit_type">Unit Type</string>
     <string name="per_item">Per Item</string>
