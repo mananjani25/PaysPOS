@@ -461,6 +461,10 @@
         <action
             android:id="@+id/action_dashboardCategoryNew_to_openOrderCustomerFragmentNew"
             app:destination="@id/openOrderCustomerFragmentNew" />
+        <action
+            android:id="@+id/action_dashboardCategoryNew_to_hardware"
+            app:destination="@id/hardware"
+            app:enterAnim="@anim/nav_default_enter_anim" />
 
     </fragment>
     <action
@@ -1035,5 +1039,22 @@
     <fragment
         android:id="@+id/scannerResetFragment"
         android:name="com.android.pos.ui.fragments.settings.hardware.scangun.ScannerResetFragment" />
+    <fragment
+        android:id="@+id/hardware"
+        android:name="com.android.pos.ui.fragments.settings.hardware.Hardware"
+        tools:layout="@layout/fragment_hardware" >
+        <action
+            android:id="@+id/action_hardware_to_printer"
+            app:destination="@id/printer"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_hardware_to_scannerListFragment"
+            app:destination="@id/scannerListFragment"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_hardware_to_printerQueue"
+            app:destination="@id/printerQueue"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+    </fragment>
 
 </navigation>

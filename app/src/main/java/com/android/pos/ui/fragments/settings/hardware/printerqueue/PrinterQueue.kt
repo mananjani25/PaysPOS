@@ -11,16 +11,11 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
-import com.android.pos.data.entities.Modifier
-import com.android.pos.data.entities.TaxData
-import com.android.pos.data.entities.TbItem
-import com.android.pos.data.model.DineInModel
 import com.android.pos.data.model.PrinterQueueModel
 import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
-import com.android.pos.data.remote.Constants.COMPLETED
 import com.android.pos.data.remote.Constants.CREATE_QUEUE_PRINTER
 import com.android.pos.data.remote.Constants.IN_PROCESS
 import com.android.pos.data.remote.Constants.LOCATION_ID
@@ -38,15 +33,14 @@ import com.epson.eposprint.Print
 import com.epson.eposprint.StatusChangeEventListener
 import com.google.gson.Gson
 import com.google.gson.JsonElement
+import com.google.gson.JsonObject
 import com.hosopy.actioncable.ActionCable
 import com.hosopy.actioncable.Channel
 import com.hosopy.actioncable.Consumer
 import com.hosopy.actioncable.Subscription
-import java.net.URI
-
 import dagger.hilt.android.AndroidEntryPoint
+import java.net.URI
 import javax.inject.Inject
-import com.google.gson.JsonObject
 
 
 @AndroidEntryPoint
@@ -283,7 +277,8 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
     }
 
     private fun configurePrinter(printerQueueModel: PrinterQueueModel, pos: Int) {
-        requireActivity().runOnUiThread {
+
+        activity?.runOnUiThread {
             adapter.updatePrintStatus(0, IN_PROCESS)
             adapter.notifyDataSetChanged()
         }
