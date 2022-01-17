@@ -564,7 +564,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginRight="@dimen/_5sdp"
                             android:gravity="end"
-                            android:text=""
+                            android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.cash_discount_or_surcharge)}"
                             android:textColor="@color/viewTextColor"
                             android:textSize="@dimen/_5mdpi" />
                     </LinearLayout>
@@ -819,6 +819,23 @@
                     android:paddingEnd="@dimen/_15sdp"
                     android:paddingBottom="@dimen/_8sdp"
                     android:text="@string/tv_print_receipt"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_6mdpi" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtPrintKitchenReceipt"
+                    style="@style/CustomFontBold"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:background="@drawable/background_button_menu"
+                    android:gravity="center"
+                    android:paddingStart="@dimen/_15sdp"
+                    android:paddingTop="@dimen/_8sdp"
+                    android:paddingEnd="@dimen/_15sdp"
+                    android:paddingBottom="@dimen/_8sdp"
+                    android:text="@string/tv_print_kitchen_receipt"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_6mdpi" />
             </LinearLayout>

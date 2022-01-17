@@ -536,7 +536,8 @@
     <string name="tv_email_id">Email Id</string>
     <string name="tv_cancel_order">Cancel Order</string>
     <string name="tv_edit_order">Update Order</string>
-    <string name="tv_print_receipt">Print Receipt</string>
+    <string name="tv_print_receipt">Print Customer Receipt</string>
+    <string name="tv_print_kitchen_receipt">Print Kitchen Receipt</string>
     <string name="tv_pay_now">Pay Now</string>
     <string name="tv_customer_name">Customer Name</string>
     <string name="tv_delivery_status">Delivery Status</string>

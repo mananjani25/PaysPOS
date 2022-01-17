@@ -209,6 +209,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         availableNetworkAdapter.setListner(this)
         availableNetworkAdapter.setList(arrayListOf())
         binding.rvAvailablePrinter.adapter = availableNetworkAdapter
+        binding.rvAvailablePrinter.isNestedScrollingEnabled=false
+        binding.rvAvailablePrinter.isLayoutFrozen=true
         binding.rvAvailablePrinter.addItemDecoration(
             DividerItemDecoration(
                 requireContext(),

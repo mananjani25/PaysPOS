@@ -125,6 +125,10 @@ class TransactionDetailsFragment : Fragment() {
             getCustomerPrinters()
 
         }
+        binding.txtPrintKitchenReceipt.setOnClickListener {
+            getCustomerPrinters()
+
+        }
 
         binding.tvIssueRefund.setOnClickListener {
             val bundle = Bundle().apply {
