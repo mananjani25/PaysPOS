@@ -196,9 +196,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 binding.viewSplitLine.visibility = View.VISIBLE
                 binding.txtRemainingAmount.visibility = View.VISIBLE
                 binding.txtRemainingAmountLabel.visibility = View.VISIBLE
-                if (!remainingAmount.toString().contains("$")){
-                    binding.txtRemainingAmount.text= MethodUtils.roundOffAmount(remainingAmount)
-                }else {
+                if (!remainingAmount.toString().contains("$")) {
+                    binding.txtRemainingAmount.text = MethodUtils.roundOffAmount(remainingAmount)
+                } else {
                     binding.txtRemainingAmount.text = String.format("%.2f", remainingAmount)
                 }
                 binding.llHome.visibility = View.GONE
@@ -258,9 +258,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 binding.viewSplitLine.visibility = View.VISIBLE
                 binding.txtRemainingAmount.visibility = View.VISIBLE
                 binding.txtRemainingAmountLabel.visibility = View.VISIBLE
-                if (!remainingAmount.toString().contains("$")){
-                    binding.txtRemainingAmount.text= MethodUtils.roundOffAmount(remainingAmount)
-                }else {
+                if (!remainingAmount.toString().contains("$")) {
+                    binding.txtRemainingAmount.text = MethodUtils.roundOffAmount(remainingAmount)
+                } else {
                     binding.txtRemainingAmount.text = String.format("%.2f", remainingAmount)
                 }
 
