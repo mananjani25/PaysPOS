@@ -376,7 +376,8 @@ class PaymentViewModel @Inject constructor(
         finaldiscount: Double,
         needToAddPaymentAttributes: Boolean?,
         paymentType: String,
-        cashdiscountType: String
+        cashdiscountType: String,
+        tipID: Int? = null
     ): OrderRequestModel {
 
         val orderAttributeRequestModel = OrderAttributeRequestModel()
@@ -462,7 +463,8 @@ class PaymentViewModel @Inject constructor(
                 finaldiscount,
                 paymentType,
                 orderAttributeRequestModel.cash_discount_type,
-                redeemLoyaltyInfo = redeemLoyaltyInfo
+                redeemLoyaltyInfo = redeemLoyaltyInfo,
+                tipID
             )
         } else {
             null
@@ -627,7 +629,8 @@ class PaymentViewModel @Inject constructor(
         finaldiscount: Double,
         needToAddPaymentAttributes: Boolean?,
         paymentType: String,
-        cashdiscountType: String
+        cashdiscountType: String,
+        tipID: Int?=null
     ): OrderRequestModel {
 
         val orderAttributeRequestModel = OrderAttributeRequestModel()
@@ -1249,7 +1252,8 @@ class PaymentViewModel @Inject constructor(
         finalcashdiscount: Double,
         paymentTypeStatus: String,
         cashdiscountType: String,
-        redeemLoyaltyInfo: RedeemLoyaltyInfo?
+        redeemLoyaltyInfo: RedeemLoyaltyInfo?,
+        tipID: Int? = null
     ): PaymentAttributes {
         return PaymentAttributes().apply {
 //            if (isUpdateOrder)
@@ -1292,6 +1296,8 @@ class PaymentViewModel @Inject constructor(
             tips = MethodUtils.roundOffAmountDouble(tipAmount)
             tipsAdjusted = false
             totalDiscount = MethodUtils.roundOffAmountDouble(totalDis)
+            tipID?.let { tipId = it }
+
 
 
             if (isUpdateOrder && orderId != null) {

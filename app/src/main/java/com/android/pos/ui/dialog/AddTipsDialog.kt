@@ -25,6 +25,7 @@ import java.util.*
 class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface,
     TextWatcher {
 
+    private var tipID: Int? = null
     private var totalTip: Double = 0.0
     private var totalPrice: Double = 0.0
     private lateinit var binding: DailogAddTipsBinding
@@ -176,6 +177,8 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface,
 
             val result = Bundle().apply {
                 putDouble("tipAmount", amount)
+                tipID?.let { putInt("tipId", tipID ?: 0) }
+
             }
             setFragmentResult("request_key_tips", result)
             findNavController().navigateUp()
@@ -198,6 +201,7 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface,
     override fun selectedItem(model: GetTipReponse.Data, pos: Int) {
         Log.e(TAG, "SelectedItem:  ${Gson().toJson(model)}")
         tipModel.apply { model }
+        tipID = model.id
 
         val tipCalculation = (totalPrice * model.rate) / 100
 
@@ -207,6 +211,7 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface,
 
     fun calculateValue(number: String, delete: Boolean) {
         tipsListAdapter.clearSelectedItem()
+        tipID = null
         selectedListPos = -1
         if (binding.edtAmount.text?.length!! > 1 && delete) {
             binding.edtAmount.setText(removeLastCharacter(binding.edtAmount.text.toString()))
