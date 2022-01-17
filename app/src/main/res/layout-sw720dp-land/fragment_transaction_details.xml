@@ -564,7 +564,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginRight="@dimen/_5sdp"
                             android:gravity="end"
-                            android:text=""
+                            android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.cash_discount_or_surcharge)}"
                             android:textColor="@color/viewTextColor"
                             android:textSize="@dimen/_5mdpi" />
                     </LinearLayout>
