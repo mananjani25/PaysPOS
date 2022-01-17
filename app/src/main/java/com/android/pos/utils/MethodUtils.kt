@@ -70,7 +70,7 @@ class MethodUtils {
 
         }
 
-        fun roundOffAmount(price: Double): String {
+            fun roundOffAmount(price: Double): String {
             return MainApplication.getInstance()!!.getText(R.string.symbole)
                 .toString() + String.format("%.2f", price)
         }

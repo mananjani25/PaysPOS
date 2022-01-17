@@ -196,7 +196,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 binding.viewSplitLine.visibility = View.VISIBLE
                 binding.txtRemainingAmount.visibility = View.VISIBLE
                 binding.txtRemainingAmountLabel.visibility = View.VISIBLE
-                binding.txtRemainingAmount.text = String.format("%.2f", remainingAmount)
+                if (!remainingAmount.toString().contains("$")){
+                    binding.txtRemainingAmount.text= MethodUtils.roundOffAmount(remainingAmount)
+                }else {
+                    binding.txtRemainingAmount.text = String.format("%.2f", remainingAmount)
+                }
                 binding.llHome.visibility = View.GONE
                 binding.llNoReceipt.text = "Next Payment"
                 binding.txtHome.text = "Next Payment"
@@ -254,7 +258,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 binding.viewSplitLine.visibility = View.VISIBLE
                 binding.txtRemainingAmount.visibility = View.VISIBLE
                 binding.txtRemainingAmountLabel.visibility = View.VISIBLE
-                binding.txtRemainingAmount.text = String.format("%.2f", remainingAmount)
+                if (!remainingAmount.toString().contains("$")){
+                    binding.txtRemainingAmount.text= MethodUtils.roundOffAmount(remainingAmount)
+                }else {
+                    binding.txtRemainingAmount.text = String.format("%.2f", remainingAmount)
+                }
+
                 binding.llHome.visibility = View.GONE
                 binding.llNoReceipt.text = "Next Payment"
                 binding.txtHome.text = "Next Payment"
