@@ -2,8 +2,6 @@ package com.android.pos.ui.fragments.payment
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -42,7 +40,6 @@ import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.visible
-import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlin.math.ceil
@@ -60,6 +57,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
     private var paymentId: Int? = null
     private var isUpdate: Boolean = false
     private var tipAmount: Double = 0.0
+    private var tipID: Int? = null
     private var future_delivery_date: String = ""
     private var future_delivery_time: String = ""
     private var redeemLoyaltyInfo: RedeemLoyaltyInfo? = null
@@ -111,6 +109,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         isSplitByNo = false
         isSplitByAmount = false
         tipAmount = 0.0
+        tipID = null
 
         var navController = findNavController()
         navController.currentBackStackEntry?.savedStateHandle?.getLiveData<Bundle>("data")
@@ -414,7 +413,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         if (MethodUtils.isEnableCashDiscount(requireContext())) {
             if (cashDiscountType == "CashDiscount") {
                 MethodUtils.setPriceTextView(binding.txtCardAmount, totalPrice)
-               // binding.txtCardAmount.text = "$ " + String.format("%.2f", totalPrice)
+                // binding.txtCardAmount.text = "$ " + String.format("%.2f", totalPrice)
                 cardPaymentAmount = totalPrice
                 binding.linearnoncashAdj.visibility = View.VISIBLE
                 binding.txtNoncashAdj.text = "$ " + String.format(
@@ -424,15 +423,18 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 totalPrice -= cashDiscountSurcharge
             } else if (cashDiscountType == "SurCharge") {
                 binding.linearnoncashAdj.visibility = View.GONE
-                MethodUtils.setPriceTextView(binding.txtCardAmount, totalPrice + cashDiscountSurcharge)
-               /* binding.txtCardAmount.text =
-                    "$ " + String.format("%.2f", totalPrice + cashDiscountSurcharge)*/
+                MethodUtils.setPriceTextView(
+                    binding.txtCardAmount,
+                    totalPrice + cashDiscountSurcharge
+                )
+                /* binding.txtCardAmount.text =
+                     "$ " + String.format("%.2f", totalPrice + cashDiscountSurcharge)*/
                 cardPaymentAmount = totalPrice + cashDiscountSurcharge
             }
         } else {
             MethodUtils.setPriceTextView(binding.txtCardAmount, totalPrice)
-           /* binding.txtCardAmount.text =
-                "$" + String.format("%.2f", totalPrice)*/
+            /* binding.txtCardAmount.text =
+                 "$" + String.format("%.2f", totalPrice)*/
             cardPaymentAmount = totalPrice
             binding.linearnoncashAdj.visibility = View.GONE
         }
@@ -541,6 +543,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
         setFragmentResultListener("request_key_tips") { requestKey: String, bundle: Bundle ->
             tipAmount = bundle.getDouble("tipAmount")
+            tipID = bundle.getInt("tipId")
 
             tipAmountCalculation()
         }
@@ -889,7 +892,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 redeemLoyaltyInfo,
                 cashDiscountSurcharge,
                 true,
-                paymentType, cashDiscountType
+                paymentType, cashDiscountType,
+                tipID
             )
         }
         val createRequest = CreateQueuePrinterRequestModel(
@@ -933,7 +937,9 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     redeemLoyaltyInfo,
                     cashDiscountSurcharge / splitValue,
                     true,
-                    paymentType, cashDiscountType
+                    paymentType, cashDiscountType,
+                    tipID
+
                 )
             }
             if (myRequest != null) {
@@ -981,7 +987,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                         cashDiscountSurcharge,
                         true,
                         paymentType,
-                        cashDiscountType
+                        cashDiscountType,
+                        tipID
                     )
                 }
                 if (myRequest != null) {
@@ -1032,7 +1039,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     redeemLoyaltyInfo,
                     cashDiscountSurcharge,
                     true,
-                    paymentType, cashDiscountType
+                    paymentType, cashDiscountType,
+                    tipID
                 )
             }
             if (myRequest != null) {
@@ -1095,7 +1103,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     cashDiscountSurcharge / splitValue,
                     true,
                     paymentType,
-                    cashDiscountType
+                    cashDiscountType,
+                    tipID
                 )
             }
             if (myRequest != null) {
@@ -1147,7 +1156,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                         cashDiscountSurcharge,
                         true,
                         paymentType,
-                        cashDiscountType
+                        cashDiscountType,
+                        tipID
                     )
                 }
                 if (myRequest != null) {
@@ -1196,7 +1206,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     redeemLoyaltyInfo,
                     cashDiscountSurcharge,
                     true,
-                    paymentType, cashDiscountType
+                    paymentType, cashDiscountType,
+                    tipID
                 )
             }
             if (myRequest != null) {
@@ -1242,7 +1253,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     redeemLoyaltyInfo,
                     cashDiscountSurcharge,
                     true,
-                    paymentType, cashDiscountType
+                    paymentType, cashDiscountType,
+                    tipID
                 )
             }
             if (myRequest != null) {

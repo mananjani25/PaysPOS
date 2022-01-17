@@ -526,6 +526,9 @@ class PaymentAttributes : Parcelable {
     @SerializedName("sub_total")
     var subTotal: Double = 0.0
 
+    @SerializedName("tip_setting_id")
+    var tipId: Int? = null
+
     @SerializedName("tax_amount")
     var taxAmount: Double = 0.0
 

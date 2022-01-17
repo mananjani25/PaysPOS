@@ -964,6 +964,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         val txtBusinessName: TextView = dialog.findViewById(R.id.txtBusinessName)
         val linearOpenOrders: LinearLayout = dialog.findViewById(R.id.linearOpenOrders)
         val footer: RelativeLayout = dialog.findViewById(R.id.footer)
+        val linearHardware: LinearLayout = dialog.findViewById(R.id.linearHardware)
         val footerTransaction: LinearLayout =
             footer.findViewById<LinearLayout>(R.id.linearTransaction)
         val linearCheckOut: LinearLayout = footer.findViewById(R.id.linearCheckOut)
@@ -982,6 +983,11 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         linearHome.setOnClickListener {
             closeDialog(dialog)
         }
+        linearHardware.setOnClickListener {
+            findNavController().navigate(R.id.action_dashboardCategoryNew_to_hardware)
+            dialog.dismiss()
+        }
+
         linearCust.setOnClickListener {
             if (rolePermission.hasCustomerPermission(binding.root)) {
                 findNavController().navigate(R.id.action_dashboardCategoryNew_to_customer)
@@ -2454,32 +2460,32 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         if (cartList.isNotEmpty()) {
             if (prefProvider.getValueboolean(DINE_IN_UPDATE, false)) {
                 var itemCount = 0
-                    for (i in cartList.indices) {
-                        for (j in cartList[i].dineInList?.indices!!) {
-                            if (cartList[i].dineInList?.get(j)?.items?.size!! > 0) {
-                                itemCount++
-                                break
-                            }
-                        }
-                        if (itemCount != 0) {
+                for (i in cartList.indices) {
+                    for (j in cartList[i].dineInList?.indices!!) {
+                        if (cartList[i].dineInList?.get(j)?.items?.size!! > 0) {
+                            itemCount++
                             break
                         }
-
+                    }
+                    if (itemCount != 0) {
+                        break
                     }
 
-                    if (itemCount == 0) {
-                        AlertUtils.showCustomAlertWithListenerWithOK(
-                            requireContext(),
-                            "Please Add Atleast One Item in a Cart"
-                        ) { _, _ ->
-                        }
-                    }else{
-                        val request = viewModel.updateOrder(cartList[0])
-                        prefProvider.setValueboolean(DINE_IN_UPDATE, false)
-                        prefProvider.setValueboolean(DINE_IN_LIST_EDIT, false)
-                        prefProvider.setValueboolean(DINE_IN_UPDATE, false)
-                        cartList[0].orderId?.let { viewModel.updateOrderCall(it, request) }
+                }
+
+                if (itemCount == 0) {
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        requireContext(),
+                        "Please Add Atleast One Item in a Cart"
+                    ) { _, _ ->
                     }
+                } else {
+                    val request = viewModel.updateOrder(cartList[0])
+                    prefProvider.setValueboolean(DINE_IN_UPDATE, false)
+                    prefProvider.setValueboolean(DINE_IN_LIST_EDIT, false)
+                    prefProvider.setValueboolean(DINE_IN_UPDATE, false)
+                    cartList[0].orderId?.let { viewModel.updateOrderCall(it, request) }
+                }
 
             } else {
 

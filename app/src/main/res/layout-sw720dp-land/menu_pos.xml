@@ -253,7 +253,6 @@
                     android:layout_width="0sp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_10sdp"
-
                     android:orientation="horizontal"
                     android:paddingStart="@dimen/_5sdp"
                     android:paddingBottom="@dimen/_7sdp"
@@ -289,6 +288,45 @@
                     app:layout_constraintStart_toStartOf="@+id/linearReports"
                     app:layout_constraintTop_toBottomOf="@+id/linearReports" />
 
+                <LinearLayout
+                    android:id="@+id/linearHardware"
+                    android:layout_width="0sp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:orientation="horizontal"
+                    android:paddingStart="@dimen/_5sdp"
+                    android:paddingBottom="@dimen/_7sdp"
+                    app:layout_constraintEnd_toEndOf="@+id/viewLineReports"
+                    app:layout_constraintStart_toStartOf="@+id/viewLineReports"
+                    app:layout_constraintTop_toBottomOf="@+id/viewLineReports">
+
+                    <ImageView
+                        android:layout_width="@dimen/_10sdp"
+                        android:layout_height="@dimen/_10sdp"
+                        android:src="@drawable/ic_hardware" />
+
+                    <TextView
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="@dimen/_7sdp"
+                        android:gravity="center"
+                        android:text="Hardware"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_6mdpi" />
+
+
+                </LinearLayout>
+
+                <View
+                    android:id="@+id/viewLineHardware"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:background="@color/background"
+                    app:layout_constraintEnd_toEndOf="@+id/linearHardware"
+                    app:layout_constraintStart_toStartOf="@+id/linearHardware"
+                    app:layout_constraintTop_toBottomOf="@+id/linearHardware" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
