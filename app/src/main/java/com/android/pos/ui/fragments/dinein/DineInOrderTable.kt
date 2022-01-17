@@ -267,6 +267,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         binding.btnPayNew.setOnClickListener {
 
             val adapterList = dineInTableAdapter.getList()
+            var offlineId = randomOfflineId()
 
             var subTotal = 0.0
             var amtToPay = 0.0
@@ -329,7 +330,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     employeeId = prefProvider.getValueInt(EMPLOYEE_ID, 0)
                     taxAmount = MethodUtils.roundOffAmountDouble(finalTaxAmt)
                     subTotalPrice = MethodUtils.roundOffAmountDouble(subTotalWT)
-                    offlineId = randomOfflineId()
+                    offlineId = offlineId
                     payableType = "GuestTab"
                     paymentType = "Cash"
                     transactionId = randomOfflineId()
@@ -353,6 +354,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             bundle.putParcelable("floorPlan", floorPlanModel)
             bundle.putDouble("totalServiceCharge", MethodUtils.roundOffAmountDouble(serviceCharge))
             bundle.putDouble("totalDiscount", MethodUtils.roundOffAmountDouble(totalDiscount))
+            bundle.putString("orderOfflineId", offlineId)
+            bundle.putString("paymentOfflineId", randomOfflineId())
             bundle.putBoolean("isTotalPayment", true)
             bundle.putBoolean("isLastPayment", true)
 
@@ -807,6 +810,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             requireContext()
         ) / totalGuestCount
 
+        var orderOfflineId = randomOfflineId()
+
 
         val paymentAttr = GuestPaymentAttributes().apply {
             amount = totalGuest
@@ -819,10 +824,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             employeeId = prefProvider.getValueInt(EMPLOYEE_ID, 0)
             taxAmount = taxGuest
             subTotalPrice = subTotalGuest
-            offlineId = randomOfflineId()
+            offlineId = orderOfflineId
             payableType = "GuestTab"
             paymentType = "Cash"
-            transactionId = randomOfflineId()
+            transactionId = orderOfflineId
             terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
             order_id = orderId
             paymentAttributes = listOf(GuestPaymentAttributes().apply {
@@ -874,6 +879,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         bundle.putParcelable("floorPlan", floorPlanModel)
         bundle.putDouble("totalServiceCharge", MethodUtils.roundOffAmountDouble(serviceChargeGuest))
         bundle.putParcelable("orderPayment", modelReq)
+        bundle.putString("orderOfflineId", orderOfflineId)
+        bundle.putString("paymentOfflineId", paymentAttr.offlineId)
         orderId?.let { bundle.putInt("orderId", it) }
         bundle.putBoolean("isGuestPay", true)
         orderId?.let { it1 -> bundle.putInt("orderId", it1) }
@@ -4321,7 +4328,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             )
 
 
-            builder.addText(getOrderDetailsResponse?.floorPlanTable?.tableName+" ("+getOrderDetailsResponse?.floorPlanTable?.tableNumber+")")
+            builder.addText(getOrderDetailsResponse?.floorPlanTable?.tableName + " (" + getOrderDetailsResponse?.floorPlanTable?.tableNumber + ")")
 
             builder.addFeedLine(2)
             builder.addTextFont(Builder.FONT_E)

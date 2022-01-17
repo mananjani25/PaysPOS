@@ -135,6 +135,8 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
         isGuestPay = requireArguments().getBoolean("isGuestPay")
         optionType = prefProvider.getValue(Constants.OPTION_TYPE, "")
         splitModel = requireArguments().getParcelable("orderPayment")
+        orderOfflineId = requireArguments().getString("orderOfflineId").toString()
+        paymentOfflineId = requireArguments().getString("paymentOfflineId").toString()
         cashDiscountType = optionType
 
         var navControll = findNavController()
@@ -1324,6 +1326,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
             totalTips = tipAmount
             cash_discount_or_surcharge = divideCashDiscount
             cash_discount_type = cashDiscountType
+            offlineId = orderOfflineId
 
         }
 
@@ -1695,6 +1698,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                     tips = tipAmount
                     tipsAdjusted = false
                     totalDiscount = totaldiscount
+                    offlineId = paymentOfflineId
                     order_id = orderId
                     cash_discount_or_surcharge = divideCashDiscount
                     total_cash_discount = divideCashDiscount
@@ -1726,6 +1730,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                     totalDiscount = totaldiscount / splitValue
                     order_id = orderId
                     cash_discount_type = cashDiscountType
+                    offlineId = paymentOfflineId
                     cash_discount_or_surcharge = divideCashDiscount / splitValue
                     total_cash_discount = divideCashDiscount / splitValue
                 }
@@ -1744,6 +1749,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                     tipsAdjusted = false
                     totalDiscount = totaldiscount
                     order_id = orderId
+                    offlineId = paymentOfflineId
                     cash_discount_type = cashDiscountType
                     cash_discount_or_surcharge = divideCashDiscount
                     total_cash_discount = divideCashDiscount
@@ -1766,6 +1772,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                     cash_discount_type = cashDiscountType
                     cash_discount_or_surcharge = divideCashDiscount
                     total_cash_discount = divideCashDiscount
+                    offlineId = paymentOfflineId
                 }
                 return paymentReq
             }
@@ -1927,6 +1934,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
             totalTips = paymentViewModel.actual_TotalTips
             cash_discount_type = cashDiscountType
             cash_discount_or_surcharge = paymentViewModel.actual_CashDiscountSurCharge
+            offlineId = orderOfflineId
         }
 
         return OrderRequestModel(
