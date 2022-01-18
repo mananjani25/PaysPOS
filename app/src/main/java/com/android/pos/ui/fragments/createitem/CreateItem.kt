@@ -1,9 +1,12 @@
 package com.android.pos.ui.fragments.createitem
 
+import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.text.Editable
 import android.text.TextUtils
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -88,6 +91,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
         navigateToEditVariation()
         callBackFromImage()
         initObservers()
+        onTextChanged()
 
         binding.tvAddOptions.setOnClickListener {
 
@@ -113,6 +117,26 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
         }
 
         return binding.root
+    }
+
+    private fun onTextChanged() {
+        binding.etStock.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+            }
+
+            @SuppressLint("SetTextI18n")
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                if (binding.etStock.text?.trim()?.isNotEmpty() == true && binding.etStock.text.toString().toInt() > 10000) {
+                    binding.etStock.setText("10000")
+                }
+            }
+
+            override fun afterTextChanged(p0: Editable?) {
+
+            }
+
+        })
     }
 
     private fun initObservers() {
@@ -300,7 +324,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
                 binding.etDesc.text.toString(),
                 "",
                 0,
-                productCode?:""
+                productCode ?: ""
             )
         } else {
             val itemPrice: Double?
@@ -322,7 +346,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
                 binding.etDesc.text.toString(),
                 binding.etSku.text.toString(),
                 stock,
-                productCode?:""
+                productCode ?: ""
             )
         }
 
@@ -414,7 +438,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
             viewProfile(itemObject.imageUrl)
 
         } else {
-            viewModel.itemDetails.value?.productCode = productCode?:""
+            viewModel.itemDetails.value?.productCode = productCode ?: ""
         }
 
         binding.etItemPrice.addTextChangedListener(

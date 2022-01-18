@@ -1,29 +1,19 @@
 package com.android.pos.ui.dialog
 
-import android.app.Activity
 import android.graphics.Point
 import android.os.Bundle
+import android.text.Editable
 import android.text.TextUtils
-import android.util.Log
+import android.text.TextWatcher
 import android.view.*
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.GridLayoutManager
 import com.android.pos.R
 import com.android.pos.data.entities.VariationsAttribute
-import com.android.pos.data.model.OptionListModel
-import com.android.pos.data.remote.Constants.ADD_TAX
-import com.android.pos.data.remote.Constants.DIALOG_KEY
-import com.android.pos.data.remote.Constants.DIALOG_KEY_TAX
 import com.android.pos.data.remote.Constants.DIALOG_KEY_VARIATION_DETAILS
-import com.android.pos.data.remote.Constants.DIALOG_KEY_VARIATION_DETAILS_POSITION
 import com.android.pos.data.remote.Constants.DIALOG_KEY_VARIATION_DETAILS_REMOVE
-import com.android.pos.data.remote.Constants.INCLUDE_TAX
-import com.android.pos.databinding.DialogEditItemTitleBinding
 import com.android.pos.databinding.DialogEditVariationBinding
-import com.android.pos.databinding.DialogItemPricingBinding
-import com.android.pos.ui.adapter.ChooseColorsAdapter
 import com.android.pos.utils.AmountTextWatcher
 import com.android.pos.utils.extensions.setNavigationResult
 import dagger.hilt.android.AndroidEntryPoint
@@ -83,8 +73,30 @@ class EditVariationDialog : DialogFragment(), View.OnClickListener {
             findNavController().popBackStack()
         }
 
-
+        onTextChanged()
         return binding.root
+    }
+
+    private fun onTextChanged() {
+        binding.tvVariationsStock.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                if (binding.tvVariationsStock.text?.trim()
+                        ?.isNotEmpty() == true && binding.tvVariationsStock.text.toString()
+                        .toInt() > 10000
+                ) {
+                    binding.tvVariationsStock.setText("10000")
+                }
+            }
+
+            override fun afterTextChanged(p0: Editable?) {
+
+            }
+
+        })
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -103,7 +115,7 @@ class EditVariationDialog : DialogFragment(), View.OnClickListener {
                 variationAttribute?.name = binding.tvVariationsName.text.toString()
 
                 if (TextUtils.isEmpty(binding.tvVariationsPrice.text.toString())) {
-                 //   variationAttribute?.price = null
+                    //   variationAttribute?.price = null
                     variationAttribute?.priceType = "Variable"
                 } else {
 

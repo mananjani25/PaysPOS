@@ -235,6 +235,7 @@
                             android:background="@null"
                             android:gravity="end"
                             android:hint="Sku"
+                            android:maxLength="200"
                             android:imeOptions="actionNext"
                             android:inputType="text"
                             android:padding="@dimen/_5sdp"
