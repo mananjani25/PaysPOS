@@ -114,27 +114,23 @@ class PrinterViewModel @Inject constructor(
 
     }
 
-    fun deletePrinter(id: Int,status:String?=null) {
+    fun deletePrinter(id: Int, status: String? = null) {
         _showProgress.value = Event(true)
         viewModelScope.launch {
             val resource: com.android.pos.utils.statusUtils.Resource<DeletePrinterResponseModel> =
-                posRepository.deletePrinter(id,status)
+                posRepository.deletePrinter(id, status)
 
             when (resource.status) {
                 Status.SUCCESS -> {
-
-                    Log.e("PrinterViewModel", "PrinterDeleted  ${resource.data?.data?.receiptPrintType}")
                     _showProgress.value = Event(false)
-                    if (status != null){
-                        if (status.lowercase() == Constants.KITCHEN.lowercase()){
+                    if (status != null) {
+                        if (status.lowercase() == Constants.KITCHEN.lowercase()) {
                             posRepository.deleteCustomerPrinter(id)
-                        }
-                        else{
+                        } else {
                             posRepository.deleteKitchenPrinter(id)
                         }
 
-                    }
-                    else {
+                    } else {
 
                         if (resource.data?.data?.receiptPrintType == Constants.KITCHEN) {
 

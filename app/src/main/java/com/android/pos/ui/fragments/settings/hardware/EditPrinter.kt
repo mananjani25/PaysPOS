@@ -78,17 +78,7 @@ class EditPrinter : Fragment() {
             findNavController().popBackStack()
         }
         binding.txtSave.setOnClickListener {
-            Log.e(
-                TAG,
-                "getUpdateList  ${
-                    Gson().toJson(
-                        createRequestModelForUpdatePrinter(
-                            adapter.getList(),
-                            printerModel
-                        )
-                    )
-                }"
-            )
+
 
             val model = createRequestModelForUpdatePrinter(
                 adapter.getList(),
@@ -97,7 +87,7 @@ class EditPrinter : Fragment() {
             model.locationId = prefProvider.getValueInt(LOCATION_ID, 1)
             model.terminalIds = listOf(prefProvider.getValueInt(TERMINAL_ID, 0))
             model.name = binding.txtPrinterName.text.toString()
-            Log.e(TAG, "PAsrsingJSONmodel  ${Gson().toJson(model)}")
+
             viewModel.updatePrinter(
                 printerModel?.id!!, model
             )
