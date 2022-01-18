@@ -1246,8 +1246,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
             }
 
-        }
-        else{
+        } else {
             deletePrinter(printerListModel.id!!)
         }
 
@@ -2085,16 +2084,15 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         }
     }
 
-    private fun deletePrinter(id: Int,type:String?=null) {
+    private fun deletePrinter(id: Int, type: String? = null) {
         alert(
             getString(R.string.tv_pos),
             getString(R.string.delete_printer_message)
         ) {
             positiveButton(getString(R.string.tv_delete)) {
                 if (type != null) {
-                    viewModel.deletePrinter(id,type)
-                }
-                else{
+                    viewModel.deletePrinter(id, type)
+                } else {
                     viewModel.deletePrinter(id)
                 }
 

@@ -54,6 +54,7 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
                     listner.onUpdatePrinterStatus(list[layoutPosition], isChecked)
 
                 } else if (isChecked && !(list.get(layoutPosition).isActive)) {
+                    buttonView.isChecked = false
                     listner.onPrinterActive(list.get(layoutPosition), layoutPosition)
                     /*list.removeAt(layoutPosition)
                     notifyDataSetChanged()*/

@@ -125,11 +125,23 @@ class PrinterViewModel @Inject constructor(
 
                     Log.e("PrinterViewModel", "PrinterDeleted  ${resource.data?.data?.receiptPrintType}")
                     _showProgress.value = Event(false)
-                    if (resource.data?.data?.receiptPrintType == Constants.KITCHEN) {
+                    if (status != null){
+                        if (status.lowercase() == Constants.KITCHEN.lowercase()){
+                            posRepository.deleteCustomerPrinter(id)
+                        }
+                        else{
+                            posRepository.deleteKitchenPrinter(id)
+                        }
 
-                        posRepository.deleteKitchenPrinter(id)
-                    } else if (resource.data?.data?.receiptPrintType == Constants.CUSTOMER) {
-                        posRepository.deleteCustomerPrinter(id)
+                    }
+                    else {
+
+                        if (resource.data?.data?.receiptPrintType == Constants.KITCHEN) {
+
+                            posRepository.deleteKitchenPrinter(id)
+                        } else if (resource.data?.data?.receiptPrintType == Constants.CUSTOMER) {
+                            posRepository.deleteCustomerPrinter(id)
+                        }
                     }
                     printerList()
                     _delete.value = Event("Printer_deleted")
