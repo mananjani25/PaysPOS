@@ -54,9 +54,9 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
                     listner.onUpdatePrinterStatus(list[layoutPosition], isChecked)
 
                 } else if (isChecked && !(list.get(layoutPosition).isActive)) {
-                    listner.onPrinterActive(list.get(layoutPosition))
-                    list.removeAt(layoutPosition)
-                    notifyDataSetChanged()
+                    listner.onPrinterActive(list.get(layoutPosition), layoutPosition)
+                    /*list.removeAt(layoutPosition)
+                    notifyDataSetChanged()*/
                 }
 
 
@@ -124,7 +124,7 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
 
     interface PrinterListInterface {
         fun onPrinterSelected(printerListModel: PrinterListModel)
-        fun onPrinterActive(printerListModel: PrinterListModel)
+        fun onPrinterActive(printerListModel: PrinterListModel, layoutPosition: Int)
         fun onEditSelected(printerListModel: PrinterListModel)
         fun onDeletePrinter(printerListModel: PrinterListModel)
         fun onUpdatePrinterStatus(printerListModel: PrinterListModel, isChecked: Boolean)
@@ -137,5 +137,10 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
         this.list.clear()
         notifyItemRangeRemoved(0, size)
         notifyDataSetChanged()
+    }
+
+    fun removeItemAt(pos: Int) {
+        list.removeAt(pos)
+        notifyItemRangeRemoved(pos, list.size)
     }
 }

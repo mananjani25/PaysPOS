@@ -16,6 +16,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -29,6 +30,7 @@ import com.android.pos.data.remote.Constants.BLUETOOTH
 import com.android.pos.data.remote.Constants.CUSTOMER
 import com.android.pos.data.remote.Constants.DISCOVERY_INTERVAL
 import com.android.pos.data.remote.Constants.KITCHEN
+import com.android.pos.data.remote.Constants.KITCHENANDCUSTOMER
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.remote.Constants.PRINTER
 import com.android.pos.data.remote.Constants.TERMINAL_ID
@@ -209,8 +211,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         availableNetworkAdapter.setListner(this)
         availableNetworkAdapter.setList(arrayListOf())
         binding.rvAvailablePrinter.adapter = availableNetworkAdapter
-        binding.rvAvailablePrinter.isNestedScrollingEnabled=false
-        binding.rvAvailablePrinter.isLayoutFrozen=true
+        binding.rvAvailablePrinter.isNestedScrollingEnabled = false
+        //   binding.rvAvailablePrinter.isLayoutFrozen = true
         binding.rvAvailablePrinter.addItemDecoration(
             DividerItemDecoration(
                 requireContext(),
@@ -334,9 +336,9 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
             //searchBluetooth()
             try {
-              //  stopFinder()
+                //  stopFinder()
                 syncPrinterList()
-               // startFinder()
+                // startFinder()
 
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -403,7 +405,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                                                 customerData[i].ipAddress,
                                                 customerData[i].macAddress
                                             ),
-                                            printerModel = customerData[i].orderTypes
+                                            printerModel = customerData[i].orderTypes,
+                                            currentPrinterType = CUSTOMER
 
 
                                         )
@@ -593,7 +596,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                                                 kitchenData[i].ipAddress,
                                                 kitchenData[i].macAddress
                                             ),
-                                            printerModel = kitchenData[i].orderTypes
+                                            printerModel = kitchenData[i].orderTypes,
+                                            currentPrinterType = KITCHEN
 
 
                                         )
@@ -1123,9 +1127,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         onInitPrinter(printerListModel)
     }
 
-    override fun onPrinterActive(printerListModel: PrinterListModel) {
+    override fun onPrinterActive(printerListModel: PrinterListModel, layoutPosition: Int) {
         Log.e(TAG, "printerListModel: ${Gson().toJson(printerListModel)}")
-
         var list: ArrayList<CreatePrinterRequestModel.PrinterSettingsAttributes> = arrayListOf()
         for (i in 0 until orderTypeList.size) {
             list.add(
@@ -1142,26 +1145,75 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             )
         }
 
+        setFragmentResultListener("request_printer_type") { requestKey: String, bundle: Bundle ->
+            val data = bundle.getString("type")
+            when (data) {
+                KITCHEN -> {
 
-        val createPrinter = CreatePrinterRequestModel(
-            name = printerListModel.printerName,
-            macAddress = printerListModel.deviceModel?.macAddress,
-            modalName = printerListModel.deviceModel?.printerName,
-            terminalIds = listOf(prefProvider.getValueInt(TERMINAL_ID, 1)),
-            status = true,
-            locationId = prefProvider.getValueInt(LOCATION_ID, 1),
-            receiptPrintType = if (printerListModel.printerName == "TM-U220") {
-                KITCHEN
-            } else {
-                CUSTOMER
-            },
-            printer_type = printerListModel.connectionType,
-            ip_address = printerListModel.deviceModel?.ipAddress,
-            printerSettingsAttributes = list
-        )
-        Log.e(TAG, "createPrinterRequestParam:  ${Gson().toJson(createPrinter)}")
-        viewModel.createPrinter(createPrinter)
-        syncPrinterList()
+                    val createPrinter = CreatePrinterRequestModel(
+                        name = printerListModel.printerName,
+                        macAddress = printerListModel.deviceModel?.macAddress,
+                        modalName = printerListModel.deviceModel?.printerName,
+                        terminalIds = listOf(prefProvider.getValueInt(TERMINAL_ID, 1)),
+                        status = true,
+                        locationId = prefProvider.getValueInt(LOCATION_ID, 1),
+                        receiptPrintType = KITCHEN,
+                        printer_type = printerListModel.connectionType,
+                        ip_address = printerListModel.deviceModel?.ipAddress,
+                        printerSettingsAttributes = list
+                    )
+                    Log.e(TAG, "createPrinterRequestParam:  ${Gson().toJson(createPrinter)}")
+                    viewModel.createPrinter(createPrinter)
+                    availableNetworkAdapter.removeItemAt(layoutPosition)
+                    syncPrinterList()
+
+                }
+                CUSTOMER -> {
+                    val createPrinter = CreatePrinterRequestModel(
+                        name = printerListModel.printerName,
+                        macAddress = printerListModel.deviceModel?.macAddress,
+                        modalName = printerListModel.deviceModel?.printerName,
+                        terminalIds = listOf(prefProvider.getValueInt(TERMINAL_ID, 1)),
+                        status = true,
+                        locationId = prefProvider.getValueInt(LOCATION_ID, 1),
+                        receiptPrintType = CUSTOMER,
+                        printer_type = printerListModel.connectionType,
+                        ip_address = printerListModel.deviceModel?.ipAddress,
+                        printerSettingsAttributes = list
+                    )
+
+                    viewModel.createPrinter(createPrinter)
+                    availableNetworkAdapter.removeItemAt(layoutPosition)
+                    syncPrinterList()
+
+
+                }
+                KITCHENANDCUSTOMER -> {
+                    val createBothPrinter = CreatePrinterRequestModel(
+                        name = printerListModel.printerName,
+                        macAddress = printerListModel.deviceModel?.macAddress,
+                        modalName = printerListModel.deviceModel?.printerName,
+                        terminalIds = listOf(prefProvider.getValueInt(TERMINAL_ID, 1)),
+                        status = true,
+                        locationId = prefProvider.getValueInt(LOCATION_ID, 1),
+                        receiptPrintType = KITCHENANDCUSTOMER,
+                        printer_type = printerListModel.connectionType,
+                        ip_address = printerListModel.deviceModel?.ipAddress,
+                        printerSettingsAttributes = list
+                    )
+
+                    viewModel.createPrinter(createBothPrinter)
+                    availableNetworkAdapter.removeItemAt(layoutPosition)
+
+                    syncPrinterList()
+
+
+                }
+
+            }
+
+        }
+        findNavController().navigate(R.id.action_printer_to_printerTypeSelection)
 
 
         /* if (printerListModel.printerName == "TM-U220") {
@@ -1185,7 +1237,19 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
     override fun onDeletePrinter(printerListModel: PrinterListModel) {
 
-        deletePrinter(printerListModel.id!!)
+        if (printerListModel.type.lowercase() == KITCHENANDCUSTOMER.lowercase()) {
+            if (printerListModel.currentPrinterType == KITCHEN) {
+                deletePrinter(printerListModel.id!!, CUSTOMER)
+
+            } else {
+                deletePrinter(printerListModel.id!!, KITCHEN)
+
+            }
+
+        }
+        else{
+            deletePrinter(printerListModel.id!!)
+        }
 
 
     }
@@ -1580,9 +1644,11 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
 
         try {
-            Log.e(TAG,"SUBSTR:  ${printerListModel.printerName?.substring(0,6)}")
+            Log.e(TAG, "SUBSTR:  ${printerListModel.printerName?.substring(0, 6)}")
             builder = Builder(
-                if (printerListModel.printerName?.substring(0,6).toString().lowercase() == "TM-m30".lowercase()) {
+                if (printerListModel.printerName?.substring(0, 6).toString()
+                        .lowercase() == "TM-m30".lowercase()
+                ) {
                     "TM-m30"
                 } else {
                     printerListModel.printerName
@@ -2019,13 +2085,18 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         }
     }
 
-    private fun deletePrinter(id: Int) {
+    private fun deletePrinter(id: Int,type:String?=null) {
         alert(
             getString(R.string.tv_pos),
             getString(R.string.delete_printer_message)
         ) {
             positiveButton(getString(R.string.tv_delete)) {
-                viewModel.deletePrinter(id)
+                if (type != null) {
+                    viewModel.deletePrinter(id,type)
+                }
+                else{
+                    viewModel.deletePrinter(id)
+                }
 
             }
             negativeButton(R.string.tv_cancel) {

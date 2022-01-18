@@ -14,7 +14,6 @@ import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Status
-import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -115,11 +114,11 @@ class PrinterViewModel @Inject constructor(
 
     }
 
-    fun deletePrinter(id: Int) {
+    fun deletePrinter(id: Int,status:String?=null) {
         _showProgress.value = Event(true)
         viewModelScope.launch {
             val resource: com.android.pos.utils.statusUtils.Resource<DeletePrinterResponseModel> =
-                posRepository.deletePrinter(id)
+                posRepository.deletePrinter(id,status)
 
             when (resource.status) {
                 Status.SUCCESS -> {
@@ -173,8 +172,6 @@ class PrinterViewModel @Inject constructor(
                 Status.SUCCESS -> {
                     _showProgress.value = Event(false)
                     printerList()
-
-                    Log.e(TAG, "resourceData:  ${Gson().toJson(resource.data)}")
 
                 }
 

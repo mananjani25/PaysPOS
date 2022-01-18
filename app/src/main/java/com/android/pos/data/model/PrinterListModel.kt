@@ -5,7 +5,6 @@ import android.os.Parcelable
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants.CUSTOMER
 import com.epson.epsonio.DeviceInfo
-import kotlinx.android.parcel.Parcelize
 import java.util.*
 
 
@@ -17,7 +16,8 @@ data class PrinterListModel(
     var type: String = CUSTOMER,
     var deviceModel: DeviceInfo? = null,
     var uuid: UUID? = null,
-    var printerModel: List<PrinterResponse.Data.OrderTypes>? = null
+    var printerModel: List<PrinterResponse.Data.OrderTypes>? = null,
+    var currentPrinterType:String?=null
 ):Parcelable{
     constructor(parcel: Parcel) : this(
         parcel.readValue(Int::class.java.classLoader) as? Int,

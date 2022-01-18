@@ -140,6 +140,7 @@ interface ApiService {
     @DELETE(DELETE_UPDATE_PRINTER)
     suspend fun deletePrinter(
         @Path("id") Id: Int,
+        @Query("change_receipt_type") type: String? = null
     ): DeletePrinterResponseModel
 
 
@@ -147,7 +148,7 @@ interface ApiService {
     suspend fun deletePrinterQueue(@Path("id") Id: Int): BaseResponse
 
     @GET(DELETE_ALL_QUEUE_PRINTER)
-    suspend fun deleteAllPrinterQueue(@Query("printer_ids") ids: Array<Int>) : BaseResponse
+    suspend fun deleteAllPrinterQueue(@Query("printer_ids") ids: Array<Int>): BaseResponse
 
     @PUT(DELETE_UPDATE_PRINTER)
     suspend fun updatePrinter(
@@ -626,7 +627,7 @@ interface ApiService {
         @Query("employee_id") employee_id: Int,
         @Query("terminal_id") terminal_id: Int,
         @Query("status") status: String,
-        @Query("clear_table") clearTable:Boolean
+        @Query("clear_table") clearTable: Boolean
     ): BaseResponse
 
     @POST(MERGE_FLOOR_TABLE)

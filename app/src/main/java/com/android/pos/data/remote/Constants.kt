@@ -197,6 +197,7 @@ object Constants {
     const val BLUETOOTH = "Bluetooth"
     const val KITCHEN = "Kitchen"
     const val CUSTOMER = "Customer"
+    const val KITCHENANDCUSTOMER = "KitchenAndCustomer"
     const val AVAILABLE = "Available"
     const val MERGED = "Merged"
 

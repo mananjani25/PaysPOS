@@ -819,6 +819,10 @@
             android:id="@+id/action_printer_to_editPrinter"
             app:destination="@id/editPrinter"
             app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_printer_to_printerTypeSelection"
+            app:destination="@id/printerTypeSelection"
+            app:enterAnim="@anim/nav_default_enter_anim" />
     </fragment>
     <fragment
         android:id="@+id/transactionDetailsFragment"
@@ -1056,5 +1060,9 @@
             app:destination="@id/printerQueue"
             app:enterAnim="@anim/nav_default_enter_anim" />
     </fragment>
+    <dialog
+        android:id="@+id/printerTypeSelection"
+        android:name="com.android.pos.ui.dialog.PrinterTypeSelection"
+        android:label="PrinterTypeSelection" />
 
 </navigation>
