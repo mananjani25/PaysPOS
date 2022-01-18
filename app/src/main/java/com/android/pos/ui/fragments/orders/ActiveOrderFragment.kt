@@ -42,7 +42,9 @@ import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
 class ActiveOrderFragment : Fragment(), OrderCallBack {
@@ -199,6 +201,8 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
                 if (!order.payments.isNullOrEmpty()) {
                     bundle.putInt("paymentId", order.payments[0].id)
                     bundle.putString("paymentOfflineId", order.payments[0].offlineId)
+                } else {
+                    bundle.putString("paymentOfflineId", randomOfflineId())
                 }
                 bundle.putString("orderOfflineId", order.offlineId)
                 bundle.putBoolean("isLoyaltyApplied", order.isLoyaltyApplied)
@@ -236,6 +240,8 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
                 if (order.payments.isNotEmpty()) {
                     bundle.putInt("paymentId", order.payments[0].id)
                     bundle.putString("paymentOfflineId", order.payments[0].offlineId)
+                } else {
+                    bundle.putString("paymentOfflineId", randomOfflineId())
                 }
                 bundle.putString("orderOfflineId", order.offlineId)
 
@@ -1569,5 +1575,29 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
         return net.glxn.qrgen.android.QRCode.from(qrcodeStaticUrl).bitmap()
 
 
+    }
+
+    fun randomOfflineId(): String {
+
+        val locationId = prefProvider.getValueInt(Constants.LOCATION_ID, -1).toString()
+        val timestamp = System.currentTimeMillis().toString()
+        val ss = locationId + timestamp.takeLast(4)
+        val reqLent = 12 - ss.length
+        val Alphabet = getSaltString(reqLent)
+        val timeStampFinal = Alphabet + ss
+        Log.e("timeStampFinal", timeStampFinal)
+
+        return timeStampFinal
+    }
+
+    fun getSaltString(reqLent: Int): String? {
+        val SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
+        val salt = StringBuilder()
+        val rnd = Random()
+        while (salt.length < reqLent) { // length of the random string.
+            val index = (rnd.nextFloat() * SALTCHARS.length).toInt()
+            salt.append(SALTCHARS[index])
+        }
+        return salt.toString()
     }
 }
