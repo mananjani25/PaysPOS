@@ -95,6 +95,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         binding = FragmentOrderCompletBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
         observeTipsList()
+
         getCustomerReceiptSettings()
         getKitchenReceiptSettings()
         splitAdapter = SplitListAdapter()
@@ -123,6 +124,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             if (it != null) {
                 kitchenSettingModel = it
+
+
+
                 getKitchenPrinters()
             }
         })
@@ -538,10 +542,34 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 Status.SUCCESS -> {
                     ProgressUtils.dismissProgressDialog()
                     if (it.data != null) {
-                        kitchenPrinterList = it.data
-                        for (i in 0 until kitchenPrinterList.size) {
+                        it.data
 
-                            initKitchenPrinter(kitchenPrinterList.get(i), KITCHEN)
+                        kitchenPrinterList = it.data
+                        Log.e(TAG, "receiptOrderType: ${receiptModel?.order?.orderType}")
+                        for (i in 0 until kitchenPrinterList.size) {
+                            kitchenPrinterList[i].orderTypes.forEach {
+                                Log.e(TAG, "OrderType: ${it.orderTypeName}")
+
+                                if (it.orderTypeName.trim()
+                                        .lowercase().equals(
+                                            receiptModel?.order?.orderType?.toString()?.trim()
+                                                ?.lowercase()
+                                        )
+                                ) {
+
+                                    it.printerSettings.forEach {
+                                        if (it.printType.lowercase()
+                                                .equals(KITCHEN.lowercase()) && it.autoPrinting
+                                        ) {
+                                            initKitchenPrinter(kitchenPrinterList.get(i), KITCHEN)
+
+                                        }
+                                    }
+
+                                }
+                            }
+
+
                         }
                     }
 
