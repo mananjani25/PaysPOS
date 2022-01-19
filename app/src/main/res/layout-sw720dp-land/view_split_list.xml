@@ -61,6 +61,7 @@
                 android:layout_centerVertical="true"
                 android:layout_toEndOf="@+id/txtSplitAmountLabel"
                 android:gravity="start"
+                android:layout_marginHorizontal="@dimen/_5sdp"
                 android:singleLine="true"
                 android:textColor="@color/colorGreen"
                 android:textSize="@dimen/_6mdpi"
