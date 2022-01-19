@@ -322,13 +322,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         }
 
         binding.txtSave.setOnClickListener {
-            val navController = findNavController()
-            navController.previousBackStackEntry?.savedStateHandle?.set(
-                com.android.pos.data.remote.Constants.KEY,
-                PRINTER
-            )
+            syncPrinterList(true)
 
-            navController.popBackStack()
         }
 
         binding.imgSync.setOnClickListener {
@@ -360,7 +355,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         })
     }
 
-    private fun syncPrinterList() {
+    private fun syncPrinterList(saved: Boolean = false) {
         allPrinterlist.clear()
         viewModel.printerList().observe(viewLifecycleOwner, {
             when (it.status) {
@@ -540,7 +535,17 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                     searchBluetooth()
                     startFinder()
 
+                    if (saved) {
 
+                        val navController = findNavController()
+                        navController.previousBackStackEntry?.savedStateHandle?.set(
+                            com.android.pos.data.remote.Constants.KEY,
+                            PRINTER
+                        )
+
+                        navController.popBackStack()
+
+                    }
                 }
                 Status.ERROR -> {
                     Log.e(TAG, "PrinterError ")
@@ -701,15 +706,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                 }
 
                 if (!isAdded) {
-                    Log.e(TAG, "BluetoothPrinterName:  ${i.name}")
-                    Log.e(TAG, "BluetoothPrintertype:  ${i.type}")
-                    Log.e(TAG, "BluetoothPrinterbondState:  ${i.bondState}")
-                    Log.e(TAG, "BluetoothPrinterdeviceClass:  ${i.bluetoothClass.deviceClass}")
-                    Log.e(
-                        TAG,
-                        "BluetoothPrintermajorDeviceClass:  ${i.bluetoothClass.majorDeviceClass}"
-                    )
-                    Log.e(TAG, "BluetoothPrinteraddress:  ${i.address}")
+
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                         Log.e(TAG, "BluetoothPrinteralias:  ${i.alias}")
                     }
@@ -949,11 +946,6 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
                     var isAdded: Boolean = false
                     for (j in 0 until allPrinterlist.size) {
-                        Log.e(TAG, "DeviceAddress : ${deviceList!!.get(i).macAddress}")
-                        Log.e(
-                            TAG,
-                            "DeviceModelAddress:  ${allPrinterlist.get(j).deviceModel?.macAddress}"
-                        )
                         if (allPrinterlist.get(j).deviceModel?.macAddress == deviceList!!.get(i).macAddress) {
                             isAdded = true
                             break
@@ -984,7 +976,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                         )
                     }
 
-                    Log.e(TAG, "DeviceisAdded:  ${isAdded}")
+
                 }
 
             }

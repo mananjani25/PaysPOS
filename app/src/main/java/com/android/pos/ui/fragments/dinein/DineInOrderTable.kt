@@ -238,30 +238,25 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         }
 
         binding.txtFireAll.setOnClickListener {
-            val list = dineInTableAdapter.getList()
-            val ids: MutableList<Int> = ArrayList()
+
+            checkForAutoFire(false)
+            /*val list = dineInTableAdapter.getList()
+            val idsStr = java.lang.StringBuilder()
             list.forEach {
                 if (it.isHeader == 1) {
-                    it.item?.orderItemId?.let { it1 -> ids.add(it1) }
+                    it.item?.orderItemId?.let { it1 -> idsStr.append(it1) }
                 }
             }
-
-            // var idStr = Gson().toJson(ids.toTypedArray())
-            val builder = java.lang.StringBuilder()
-            for (i in 0 until ids.size) {
-                builder.append(ids.get(i))
-                builder.append(",")
-            }
-
+            var fireIds = android.text.TextUtils.join(",", idsStr.toSet())
             orderId?.let { it1 ->
                 isFireAll = true
                 viewModel.fireItemToKitchen(
                     it1,
                     true,
-                    builder.substring(0, builder.length - 1).toString(),
+                    fireIds,
                     true
                 )
-            }
+            }*/
         }
 
         binding.btnPayNew.setOnClickListener {
@@ -1437,6 +1432,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     }
                     if (dineInList.isNotEmpty()) {
                         dineInTableAdapter.setList(dineInList)
+                        checkForAutoFire(true)
 
 
                         //  binding.txtTotalAmountNew.setText("${MethodUtils.roundOffAmount(totalAmtnew)}")
@@ -3517,7 +3513,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
                         val current = LocalDateTime.now()
-                        val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy HH:mm:a")
+                        val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:aa")
                         val formatted = current.format(formatter)
                         builder.addTextLineSpace(30)
                         builder.addFeedUnit(30)
@@ -4136,13 +4132,27 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
             try {
-                PrinterClass.getPrinter()?.sendData(
-                    builder,
-                    PrinterClass.BLUETOOTH_TIMEOUT, status, battery
-                )
 
+
+                requireActivity().runOnUiThread {
+                    PrinterClass.getPrinter()?.sendData(
+                        builder,
+                        if (customerReceiptPrinters.name.substring(0, 6).toString()
+                                .lowercase() == "TM-m30".lowercase() || customerReceiptPrinters.name.substring(
+                                0,
+                                6
+                            ).toString().lowercase() == "TM-m10".lowercase()
+                        ) {
+                            PrinterClass.BLUETOOTH_TIMEOUT
+                        } else {
+                            PrinterClass.SEND_TIMEOUT
+
+                        }, status, battery
+                    )
+                }
                 PrinterClass.closePrinter()
-                findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
+
+                //findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
                 //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
             } catch (e: Exception) {
                 PrinterClass.closePrinter()
@@ -4777,6 +4787,69 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             })
         }
+
+    }
+
+    fun checkForAutoFire(isCheckAndFire: Boolean) {
+        var list = dineInTableAdapter.getList()
+        val builder = ArrayList<String>()
+        var listItem: ArrayList<TbItem> = arrayListOf()
+        list.forEach {
+            if (it.isHeader == 1) {
+                it.item?.let {
+                    if (!it.isFired) {
+                        listItem.add(it)
+                    }
+                }
+                it.item?.orderItemId?.let {
+                    builder.add(it.toString())
+
+                }
+                //  it.item?.isFired = true
+
+            }
+
+        }
+
+        if (listItem.isNotEmpty()) {
+            var autoPrintEnable = false
+            kitchenPrinterList.forEach { kit ->
+                if (isCheckAndFire) {
+                    kit.orderTypes.forEach {
+                        if (it.orderTypeName.trim()
+                                .lowercase().equals(
+                                    getOrderDetailsResponse?.orderType?.toString()?.trim()
+                                        ?.lowercase()
+                                )
+                        ) {
+                            it.printerSettings.forEach {
+                                if (it.printType.lowercase()
+                                        .equals(Constants.KITCHEN.lowercase()) && it.autoPrinting
+                                ) {
+                                    autoPrintEnable = true
+                                    initKitchenPrinter(kit, Constants.KITCHEN, listItem)
+                                }
+                            }
+                        }
+
+                    }
+                } else {
+                    initKitchenPrinter(kit, Constants.KITCHEN, listItem)
+
+                }
+            }
+            if (!isCheckAndFire or (isCheckAndFire && autoPrintEnable)) {
+                var fireAllIds = android.text.TextUtils.join(",", builder)
+                viewModel.fireItemToKitchen(orderId ?: 0, true, fireAllIds, true)
+                list.forEach {
+                    if (it.isHeader == 1) {
+                        it?.item?.isFired = true
+                    }
+                }
+                dineInTableAdapter.updateStatus(0, true)
+            }
+        }
+
 
     }
 
