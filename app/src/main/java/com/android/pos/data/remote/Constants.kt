@@ -307,7 +307,7 @@ object Constants {
         df.setTimeZone(TimeZone.getTimeZone("UTC"))
         val date: Date = df.parse(mdate)
         df.setTimeZone(TimeZone.getDefault())
-        val dateFormatter = SimpleDateFormat("MMM-dd-yyyy HH:mm:aa")
+        val dateFormatter = SimpleDateFormat("MMM-dd-yyyy hh:mm:aa")
         return dateFormatter.format(date)
 
     }

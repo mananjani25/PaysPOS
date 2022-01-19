@@ -15,7 +15,6 @@ import com.android.pos.databinding.ViewDineInTableItemsBinding
 import com.android.pos.utils.MethodUtils
 import com.google.gson.Gson
 import java.util.*
-import kotlin.collections.ArrayList
 
 class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private var list: ArrayList<DineInModel> = arrayListOf()
@@ -221,11 +220,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             var finalAmt =
                 guestSubTotal + totalServiceCharge + totalTaxAmt + (list.get(0).guestDividedAmt) - list[0].orderDiscount
 
-            Log.e(TAG, "guestSubTotal  ${guestSubTotal}")
-            Log.e(TAG, "guesttotalServiceCharge  ${totalServiceCharge}")
-            Log.e(TAG, "guesttotalTaxAmt  ${totalTaxAmt}")
-            Log.e(TAG, "guestguestDividedAmt  ${list.get(0).guestDividedAmt}")
-            Log.e(TAG, "guestcashSurchargeDiscount  ${list.get(0).cashSurchargeDiscount}")
+
 
             binding.txtPay.setText("Pay " + MethodUtils.roundOffAmount(finalAmt))
 
@@ -287,7 +282,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 if (buttonView.isPressed) {
                     if (isChecked) {
                         var listItem: ArrayList<TbItem> = arrayListOf()
-                        val ids: MutableList<Int> = ArrayList()
+
 
                         val builder = java.lang.StringBuilder()
 
@@ -311,8 +306,10 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
 
                         }
+                        if (builder.isNotEmpty()) {
 
-                        listner.onWholeTableToKitchen(builder.toString(),listItem)
+                            listner.onWholeTableToKitchen(builder.toString(), listItem)
+                        }
                         binding.chkIsFired.isChecked = true
                         binding.chkIsFired.isEnabled = false
 
@@ -562,7 +559,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         )
 
         fun onSendItemToKitchen(item: TbItem)
-        fun onWholeTableToKitchen(ids: String,listItems:ArrayList<TbItem>)
+        fun onWholeTableToKitchen(ids: String, listItems: ArrayList<TbItem>)
         fun singleItemFired(id: String, position: Int, item: TbItem)
         fun onGuestPrint(
             listItem: ArrayList<TbItem>,

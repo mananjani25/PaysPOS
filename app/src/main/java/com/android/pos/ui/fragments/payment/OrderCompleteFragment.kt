@@ -124,9 +124,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             if (it != null) {
                 kitchenSettingModel = it
-
-
-
                 getKitchenPrinters()
             }
         })
@@ -445,7 +442,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
             R.id.llPrint -> {
                 removeCustomer()
-                getCustomerPrinters()
+                getCustomerPrinters(false)
 
                 // findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
             }
@@ -548,7 +545,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         Log.e(TAG, "receiptOrderType: ${receiptModel?.order?.orderType}")
                         for (i in 0 until kitchenPrinterList.size) {
                             kitchenPrinterList[i].orderTypes.forEach {
-                                Log.e(TAG, "OrderType: ${it.orderTypeName}")
+
 
                                 if (it.orderTypeName.trim()
                                         .lowercase().equals(
@@ -571,6 +568,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
                         }
+
+                        getCustomerPrinters(true)
                     }
 
                 }
@@ -587,7 +586,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     }
 
-    private fun getCustomerPrinters() {
+    private fun getCustomerPrinters(autoPrintCheck: Boolean) {
 
         viewModel.getCustomerPrinterList().observe(viewLifecycleOwner, {
             when (it.status) {
@@ -596,10 +595,38 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     if (it.data != null) {
                         val customerList = it.data
 
-                        customerList.forEach {
-                            initPrinter(it, CUSTOMER)
+                        if (autoPrintCheck) {
+                            customerList.forEach { cus ->
+                                cus.orderTypes.forEach {
+
+                                    if (it.orderTypeName.trim()
+                                            .lowercase().equals(
+                                                receiptModel?.order?.orderType?.toString()?.trim()
+                                                    ?.lowercase()
+                                            )
+                                    ) {
+
+                                        it.printerSettings.forEach {
+                                            if (it.printType.lowercase()
+                                                    .equals(CUSTOMER.lowercase()) && it.autoPrinting
+                                            ) {
+                                                initPrinter(cus, CUSTOMER)
 
 
+                                            }
+                                        }
+                                    }
+                                }
+
+                            }
+
+
+                        } else {
+                            customerList.forEach {
+                                initPrinter(it, CUSTOMER)
+
+
+                            }
                         }
 
 
