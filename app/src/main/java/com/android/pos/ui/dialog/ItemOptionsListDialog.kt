@@ -136,6 +136,12 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
                             if (!isLiveData) {
 
                                 if (optionSetList != null) {
+                                    var data=optionSetList
+                                    optionSetList=ArrayList()
+
+                                    for (i in data?.indices!!){
+                                         optionSetList!!.addAll(listOf(it1[i]))
+                                    }
 
                                     selectedOptionSetNameAdapter.addAllOptions(optionSetList!!)
 
