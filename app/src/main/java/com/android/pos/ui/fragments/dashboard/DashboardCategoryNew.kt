@@ -6,6 +6,7 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
+import android.opengl.Visibility
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -73,7 +74,6 @@ import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.remote.Constants.UPDATE
 import com.android.pos.data.remote.Constants.VERTICAL
 import com.android.pos.databinding.FragmentDashboardCategoryNewBinding
-
 import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
 import com.android.pos.ui.activities.MainActivity
@@ -1464,7 +1464,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
             Log.e(TAG, Gson().toJson(viewModel.redeemLoyaltyInfo))
             amountToBepaid = viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0
-            // amountToBepaid -= (viewModel.totalDiscount + cartList[0].discountPrice)
             txtLoyaltyAmount.text =
                 "- $${String.format("%.2f", viewModel.redeemLoyaltyInfo.usedLoyaltyAmount)}"
             txtLoyaltyPoints.text = "${viewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
@@ -1473,8 +1472,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             chkLoyalty.visible()
             chkLoyalty.isChecked = viewModel.redeemLoyaltyInfo.needToApplyLoyalty
         } else {
-            amountToBepaid =
-                viewModel.totalPrice
+            amountToBepaid = viewModel.totalPrice
             groupLoyalty.gone()
             chkLoyalty.gone()
         }
@@ -1893,7 +1891,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
             } else {
 
-                if (data.quantity >= qty || data.isManualSales) {
+                if (data.quantity >= qty) {
                     txtQty.setText(qty.toString())
                 } else {
                     qty -= 1
@@ -2460,34 +2458,17 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private fun gotoPayment() {
         if (cartList.isNotEmpty()) {
             if (prefProvider.getValueboolean(DINE_IN_UPDATE, false)) {
-                var itemCount = 0
-                for (i in cartList.indices) {
-                    for (j in cartList[i].dineInList?.indices!!) {
-                        if (cartList[i].dineInList?.get(j)?.items?.size!! > 0) {
-                            itemCount++
-                            break
-                        }
-                    }
-                    if (itemCount != 0) {
-                        break
-                    }
 
-                }
-
-                if (itemCount == 0) {
-                    AlertUtils.showCustomAlertWithListenerWithOK(
-                        requireContext(),
-                        getString(R.string.please_add_Atleast_one_item_in_cart)
-                    ) { _, _ ->
-                    }
-                } else {
+                if (cartList.isNotEmpty()) {
                     val request = viewModel.updateOrder(cartList[0])
+
                     prefProvider.setValueboolean(DINE_IN_UPDATE, false)
                     prefProvider.setValueboolean(DINE_IN_LIST_EDIT, false)
                     prefProvider.setValueboolean(DINE_IN_UPDATE, false)
                     cartList[0].orderId?.let { viewModel.updateOrderCall(it, request) }
-                }
 
+
+                }
             } else {
 
                 val bundle = Bundle()
@@ -2536,29 +2517,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     bundle.putString("orderOfflineId", orderOfflineId)
                 }
                 if (prefProvider.getValue(ORDER_TYPE, "").toString() == DINE_IN) {
-                    var itemCount = 0
-                    for (i in cartList.indices) {
-                        for (j in cartList[i].dineInList?.indices!!) {
-                            if (cartList[i].dineInList?.get(j)?.items?.size!! > 0) {
-                                itemCount++
-                                break
-                            }
-                        }
-                        if (itemCount != 0) {
-                            createDineInRequest()
-                            break
-                        }
-                    }
 
-                    if (itemCount == 0) {
-                        bundle.clear()
-                        AlertUtils.showCustomAlertWithListenerWithOK(
-                            requireContext(),
-                            getString(R.string.please_add_Atleast_one_item_in_cart)
-                        ) { _, _ ->
-                        }
+                    createDineInRequest()
 
-                    }
+
                 } else {
 
                     lifecycleScope.launchWhenStarted {
@@ -3217,7 +3179,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     bundle.putParcelable("dineInList", baseResponse)
                     bundle.putBoolean("isGuestPaid", false)
                     bundle.putInt("orderId", baseResponse.order.id)
-                    prefProvider.setValueInt("ORDER_ID", baseResponse.order.id)
+
 
                     prefProvider.setValue(Constants.ORDER_TYPE, "")
                     prefProvider.setValue(Constants.CUSTOMER_NAME, "")

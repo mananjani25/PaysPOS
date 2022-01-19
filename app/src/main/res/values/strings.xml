@@ -54,7 +54,7 @@
 
     <!--Validation messages-->
 
-    <string name="email_validate">Please Enter Email Address</string>
+    <string name="email_validate">Please enter Email Address</string>
     <string name="valid_email_validate">Please Enter Valid Email Address</string>
     <string name="password_validate">Please Enter Password</string>
     <string name="item_name_validate">Please Enter Item Name</string>

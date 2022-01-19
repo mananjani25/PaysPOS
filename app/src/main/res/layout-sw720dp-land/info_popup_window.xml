@@ -364,7 +364,7 @@
                         android:orientation="horizontal">
 
                         <androidx.appcompat.widget.AppCompatTextView
-                            style="@style/CustomFontMediumStyle"
+                            style="@style/CustomFontBold"
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
                             android:layout_gravity="center"
