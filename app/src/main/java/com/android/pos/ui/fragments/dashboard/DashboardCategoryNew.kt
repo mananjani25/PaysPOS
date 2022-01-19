@@ -169,7 +169,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         binding = FragmentDashboardCategoryNewBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
         getLoyaltyPrograms()
-        clearPrefrenceOfOrder()
+
 
         isOrderUpdate = requireArguments().getBoolean("update")
 
@@ -320,6 +320,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         observeShowProgress()
         syncData()
+        getBackstack()
+        clearPrefrenceOfOrder()
         hideOrderType()
         setupAdapter()
         setVenueData()
@@ -328,7 +330,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         getOrderTypes()
         getServiceCharges()
         setupSnackbar()
-        getBackstack()
         swipeListener()
         observeSaveOrder()
         tableStatusCheck()

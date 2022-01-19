@@ -42,7 +42,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
     private var isFromDetails = false
     private lateinit var defaultModel: TbItem
     private var selectedCurrency: String = AMOUNT
-
+    var modifierPrice: Double = 0.0
 
     companion object {
         fun newInstance() = AddDiscountDialog()
@@ -69,6 +69,13 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         val model: TbItem? = requireArguments().getParcelable("model")
         defaultModel = model ?: TbItem()
 
+        if (defaultModel.modifiers.isNotEmpty()) {
+            for (i in defaultModel.modifiers.indices) {
+                modifierPrice += defaultModel.modifiers[i].price
+            }
+        }
+
+
 
         selectedCurrency = defaultModel.discountType
         binding.edtAmount.addTextChangedListener(this)
@@ -87,7 +94,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                 if (defaultModel.discountPrice != 0.0) {
                     if (defaultModel.discountType == getString(R.string.disc_percentage)) {
                         val applyDiscount =
-                            (defaultModel.discountPrice * 100) / (defaultModel.price * defaultModel.itemQuantity)
+                            (defaultModel.discountPrice * 100) / ((defaultModel.price + modifierPrice) * defaultModel.itemQuantity)
                         binding.edtAmount.setText(MethodUtils.roundOffAmountString(applyDiscount))
                         percentageView()
                     } else {
@@ -106,7 +113,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                     selectedListPos = discountAdapter.selectedPosition
                 if (defaultModel.discountType == getString(R.string.disc_percentage)) {
                     val applyDiscount =
-                        (defaultModel.discountPrice * 100) / (defaultModel.price * defaultModel.itemQuantity)
+                        (defaultModel.discountPrice * 100) / ((defaultModel.price + modifierPrice) * defaultModel.itemQuantity)
                     binding.edtAmount.setText(MethodUtils.roundOffAmountString(applyDiscount))
                     percentageView()
                 } else {
@@ -479,7 +486,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
             if (selectedCurrency == AMOUNT) {
 
                 var price =
-                    ((defaultModel.price - defaultModel.discountPrice) * defaultModel.itemQuantity)
+                    (((defaultModel.price+modifierPrice) - defaultModel.discountPrice) * defaultModel.itemQuantity)
 
                 if (isOrderDiscount) {
                     price = totalOrderPrice
