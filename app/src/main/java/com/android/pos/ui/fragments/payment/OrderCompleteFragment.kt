@@ -610,6 +610,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                             if (it.printType.lowercase()
                                                     .equals(CUSTOMER.lowercase()) && it.autoPrinting
                                             ) {
+                                                requireActivity().runOnUiThread {
+                                                    ProgressUtils.showProgressDialog(requireActivity())
+                                                }
                                                 initPrinter(cus, CUSTOMER)
 
 
@@ -657,6 +660,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         PrinterClass.closePrinter()
         if (PrinterClass.getPrinter() == null) {
+
             var printer: Print? = Print(requireContext())
             if (printer != null) {
                 printer.setStatusChangeEventCallback(this)
@@ -684,6 +688,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 printer?.setStatusChangeEventCallback(this)
 
             } catch (e: Exception) {
+                ProgressUtils.dismissProgressDialog()
                 Log.e(TAG, "PrinterException: " + e.message)
                 printer = null
                 return
@@ -698,9 +703,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
 
             } catch (e: Exception) {
+                ProgressUtils.dismissProgressDialog()
                 e.printStackTrace()
             }
         } else {
+            ProgressUtils.dismissProgressDialog()
             Log.e(TAG, "PrinterIsNotNull:")
         }
 
@@ -1609,11 +1616,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     builder,
                     BLUETOOTH_TIMEOUT, status, battery
                 )
+                ProgressUtils.dismissProgressDialog()
 
                 PrinterClass.closePrinter()
                 // findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
                 //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
             } catch (e: Exception) {
+                ProgressUtils.dismissProgressDialog()
                 PrinterClass.closePrinter()
                 e.printStackTrace()
                 Log.e(TAG, "PrinterError: " + e.localizedMessage)
@@ -1621,6 +1630,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
         } catch (e: Exception) {
+            ProgressUtils.dismissProgressDialog()
             e.printStackTrace()
         }
     }
@@ -1630,6 +1640,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         type: String
     ) {
         if (PrinterClass.getPrinter() == null) {
+            requireActivity().runOnUiThread {
+                ProgressUtils.showProgressDialog(requireActivity())
+            }
             var printer: Print? = Print(requireContext())
             if (printer != null) {
                 printer.setStatusChangeEventCallback(this)
@@ -1653,6 +1666,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 printer?.setStatusChangeEventCallback(this)
 
             } catch (e: Exception) {
+                ProgressUtils.dismissProgressDialog()
                 Log.e(TAG, "PrinterException: " + e.message)
                 printer = null
                 return
@@ -1783,10 +1797,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 Builder.COLOR_1
             )
 
-            Log.e(
-                TAG,
-                "ConvertDateTime:  ${getReceiptFormatDateFromUTCServer(receiptModel?.order?.createdAt.toString())}"
-            )
             builder.addText(
                 padLine(
                     getReceiptFormatDateFromUTCServer(receiptModel?.order?.createdAt.toString()),
@@ -1848,7 +1858,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
 
 
-            if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName) {
+            if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName != false) {
                 if (receiptModel?.order?.customer != null) {
 
                     builder.addTextLineSpace(30)
@@ -1971,11 +1981,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     builder,
                     PrinterClass.SEND_TIMEOUT, status, battery
                 )
-
+                ProgressUtils.dismissProgressDialog()
                 PrinterClass.closePrinter()
 
                 //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
             } catch (e: Exception) {
+                ProgressUtils.dismissProgressDialog()
                 PrinterClass.closePrinter()
                 e.printStackTrace()
                 Log.e(TAG, "PrinterError: " + e.localizedMessage)
@@ -1983,6 +1994,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
         } catch (e: Exception) {
+            ProgressUtils.dismissProgressDialog()
             e.printStackTrace()
         }
 

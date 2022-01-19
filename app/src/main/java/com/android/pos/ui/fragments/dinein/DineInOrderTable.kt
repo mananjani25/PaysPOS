@@ -4791,9 +4791,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     }
 
     fun checkForAutoFire(isCheckAndFire: Boolean) {
-
-        Log.e(TAG, "orderType:  ${getOrderDetailsResponse?.orderType}")
-
         var list = dineInTableAdapter.getList()
         val builder = ArrayList<String>()
         var listItem: ArrayList<TbItem> = arrayListOf()
