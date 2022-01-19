@@ -15,6 +15,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.pos.R
 import com.android.pos.data.entities.TbCustomer
+import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentAssignCustomerOrderBinding
 import com.android.pos.ui.adapter.AssignCustomerToOrderAdapter
 import com.android.pos.ui.fragments.customer.CustomerListViewModel
@@ -36,6 +37,7 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
     private lateinit var adapter: AssignCustomerToOrderAdapter
     private var isFromDineIn: Boolean? = false
     private var dineInPosition: Int? = null
+    private var isFromCompletePayment: Boolean = false
 
 
     private var currentpage = 1
@@ -63,6 +65,7 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
 
         loadCustomerLocalList(currentpage)
         isFromDineIn = arguments?.getBoolean("DINE_IN", false)
+        isFromCompletePayment = arguments?.getBoolean("fromPayment") ?: false
         dineInPosition = arguments?.getInt("position")
         return binding.root
     }
@@ -122,7 +125,12 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
 
         binding.imgBack.setOnClickListener {
 
-            findNavController().popBackStack()
+            val navController = findNavController()
+            navController.previousBackStackEntry?.savedStateHandle?.set(
+                Constants.KEY,
+                "FROM_CUSTOMER"
+            )
+            navController.popBackStack()
 
         }
 
@@ -195,6 +203,11 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
             setFragmentResult("request_key_customer", result)
         }
 
-        findNavController().popBackStack()
+        val navController = findNavController()
+        navController.previousBackStackEntry?.savedStateHandle?.set(
+            Constants.KEY,
+            "FROM_CUSTOMER"
+        )
+        navController.popBackStack()
     }
 }

@@ -946,11 +946,6 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
                     var isAdded: Boolean = false
                     for (j in 0 until allPrinterlist.size) {
-                        Log.e(TAG, "DeviceAddress : ${deviceList!!.get(i).macAddress}")
-                        Log.e(
-                            TAG,
-                            "DeviceModelAddress:  ${allPrinterlist.get(j).deviceModel?.macAddress}"
-                        )
                         if (allPrinterlist.get(j).deviceModel?.macAddress == deviceList!!.get(i).macAddress) {
                             isAdded = true
                             break
@@ -982,27 +977,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                     }
 
 
-
                 }
 
-                for (i in 0 until 5){
-                    availableNetworkAdapter.addItem(
-                        PrinterListModel(
-                            printerName = deviceList!!.get(0).printerName,
-                            connectionType = WIFI,
-                            deviceModel = DeviceInfo(
-                                DevType.TCP,
-                                deviceList!!.get(0).printerName,
-                                deviceList!!.get(0).deviceName,
-                                deviceList!!.get(0).ipAddress,
-                                deviceList!!.get(0).macAddress
-                            ),
-                            type = AVAILABLE,
-
-
-                            )
-                    )
-                }
             }
 
 

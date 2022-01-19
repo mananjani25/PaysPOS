@@ -50,6 +50,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEventListener,
     BatteryStatusChangeEventListener {
+    private var isFromCustomer: Boolean = false
     private var dis_charge_value: Double = 0.0
     private var isGuest: Boolean = false
     private var remainingAmount: Double = 0.0
@@ -96,6 +97,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         binding.lifecycleOwner = this
         observeTipsList()
 
+        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<String>(Constants.KEY)
+            ?.observe(viewLifecycleOwner) { it ->
+                if (it.lowercase() == "FROM_CUSTOMER".lowercase()) {
+                    isFromCustomer = true
+
+                }
+
+            }
         getCustomerReceiptSettings()
         getKitchenReceiptSettings()
         splitAdapter = SplitListAdapter()
@@ -124,7 +133,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             if (it != null) {
                 kitchenSettingModel = it
-                getKitchenPrinters()
+                if (!isFromCustomer) {
+                    getKitchenPrinters()
+                }
             }
         })
     }
@@ -403,6 +414,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 moveToDashboard()
             }
             R.id.txtAddCustomer -> {
+                setFragmentResultListener("ordercomplete_customer") { requestKey: String, bundle: Bundle ->
+
+
+                }
+                val bundle = Bundle()
+                bundle.putBoolean("fromPayment", true)
                 findNavController().navigate(R.id.action_orderCompleteFragment_to_assignCustomerOrderFragment)
             }
             R.id.llCheckOut -> {
@@ -542,7 +559,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         it.data
 
                         kitchenPrinterList = it.data
-                        Log.e(TAG, "receiptOrderType: ${receiptModel?.order?.orderType}")
                         for (i in 0 until kitchenPrinterList.size) {
                             kitchenPrinterList[i].orderTypes.forEach {
 
