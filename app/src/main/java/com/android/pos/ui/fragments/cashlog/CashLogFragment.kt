@@ -287,10 +287,18 @@ class CashLogFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
         viewModel.data.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
+                if (it.data.cashes.isNotEmpty()) {
+                    binding.txtNodata.visibility = View.GONE
+                    binding.rvOpenOrder.visibility = View.VISIBLE
+                    cashLogResponse = it.data
+                    binding.cashLogModel = cashLogResponse
+                    adapter.add(cashLogResponse.cashes)
+                } else {
+                    binding.rvOpenOrder.visibility = View.GONE
+                    binding.txtNodata.visibility = View.VISIBLE
+                    binding.txtNodata.text = it.message
+                }
 
-                cashLogResponse = it.data
-                binding.cashLogModel = cashLogResponse
-                adapter.add(cashLogResponse.cashes)
             }
         })
 

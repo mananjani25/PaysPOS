@@ -158,9 +158,17 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
                     Status.SUCCESS -> {
                         ProgressUtils.dismissProgressDialog()
                         resource.data?.let {
+                            if (it.data.orders.isNotEmpty()) {
+                                binding.rvOpenOrder.visibility = View.VISIBLE
+                                binding.txtNodata.visibility = View.GONE
+                                val data = it.data.orders
+                                adapter.add(data)
+                            } else {
+                                binding.txtNodata.visibility = View.VISIBLE
+                                binding.txtNodata.text = it.message
+                                binding.rvOpenOrder.visibility = View.GONE
 
-                            val data = it.data.orders
-                            adapter.add(data)
+                            }
                         }
                     }
                     Status.ERROR -> {

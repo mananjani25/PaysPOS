@@ -2477,7 +2477,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 if (itemCount == 0) {
                     AlertUtils.showCustomAlertWithListenerWithOK(
                         requireContext(),
-                        "Please Add Atleast One Item in a Cart"
+                        getString(R.string.please_add_Atleast_one_item_in_cart)
                     ) { _, _ ->
                     }
                 } else {
@@ -2554,7 +2554,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         bundle.clear()
                         AlertUtils.showCustomAlertWithListenerWithOK(
                             requireContext(),
-                            "Please Add Atleast One Item in a Cart"
+                            getString(R.string.please_add_Atleast_one_item_in_cart)
                         ) { _, _ ->
                         }
 

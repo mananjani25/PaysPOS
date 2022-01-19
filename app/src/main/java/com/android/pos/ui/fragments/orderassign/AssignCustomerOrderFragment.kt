@@ -122,7 +122,7 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
 
         binding.imgBack.setOnClickListener {
 
-            findNavController().navigateUp()
+            findNavController().popBackStack()
 
         }
 
@@ -195,6 +195,6 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
             setFragmentResult("request_key_customer", result)
         }
 
-        findNavController().navigateUp()
+        findNavController().popBackStack()
     }
 }
