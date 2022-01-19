@@ -169,7 +169,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         binding = FragmentDashboardCategoryNewBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
         getLoyaltyPrograms()
-        clearPrefrenceOfOrder()
+
 
         isOrderUpdate = requireArguments().getBoolean("update")
 
@@ -320,6 +320,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         observeShowProgress()
         syncData()
+        getBackstack()
+        clearPrefrenceOfOrder()
         hideOrderType()
         setupAdapter()
         setVenueData()
@@ -328,7 +330,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         getOrderTypes()
         getServiceCharges()
         setupSnackbar()
-        getBackstack()
         swipeListener()
         observeSaveOrder()
         tableStatusCheck()
@@ -2476,7 +2477,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 if (itemCount == 0) {
                     AlertUtils.showCustomAlertWithListenerWithOK(
                         requireContext(),
-                        "Please Add Atleast One Item in a Cart"
+                        getString(R.string.please_add_Atleast_one_item_in_cart)
                     ) { _, _ ->
                     }
                 } else {
@@ -2553,7 +2554,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         bundle.clear()
                         AlertUtils.showCustomAlertWithListenerWithOK(
                             requireContext(),
-                            "Please Add Atleast One Item in a Cart"
+                            getString(R.string.please_add_Atleast_one_item_in_cart)
                         ) { _, _ ->
                         }
 

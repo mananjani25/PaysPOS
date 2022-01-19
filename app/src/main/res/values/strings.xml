@@ -556,7 +556,7 @@
     <string name="tv_unit_variable">Variable</string>
     <string name="tv_unit_fixed">Fixed</string>
     <string name="add_tips">Add Tip</string>
-    <string name="cancel_order_message">Are you sure want to cancel this Order?</string>
+    <string name="cancel_order_message">Are you sure, you want to cancel this order?</string>
     <string name="yes">YES</string>
     <string name="no">NO</string>
     <string name="tv_issue_refund">Issue Refund</string>
@@ -658,6 +658,7 @@
     <string name="terminal_login_id_tap_to_copy_unique_id">Terminal Login ID (Tap to copy Unique id)</string>
     <string name="error_order_id_not_available">Order id is not available.</string>
 
+    <string name="please_add_Atleast_one_item_in_cart">Please add at least one item in a cart.</string>
     <string name="items_title">Items</string>
     <string name="inventory_title">Inventory</string>
     <string name="categories_title">Categories</string>

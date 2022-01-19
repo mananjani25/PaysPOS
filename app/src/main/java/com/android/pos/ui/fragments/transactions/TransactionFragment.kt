@@ -584,22 +584,51 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
     private fun getEmployeesTimeSheetObserver() {
         viewModel.data.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let { timeSheet ->
-                binding.rvTeamTimeSheet.visibility = View.VISIBLE
-                // employeeTimeSheet.addAll(timeSheet.data.payments)
-                TOTAL_PAGES = timeSheet.data.pagination.maxPageSize.toInt()
+                if (timeSheet.data.payments.size > 0) {
+                    binding.txtNodata.visibility = View.GONE
+                    binding.rvTeamTimeSheet.visibility = View.VISIBLE
+                    // employeeTimeSheet.addAll(timeSheet.data.payments)
+                    TOTAL_PAGES = timeSheet.data.pagination.maxPageSize.toInt()
 
-                transactionAdapter.showLoading(false)
+                    transactionAdapter.showLoading(false)
 
-                if (checkFilter) {
-                    checkFilter = false
-                    transactionAdapter.clear()
-                }
-                transactionAdapter.addAll(timeSheet.data.payments)
+                    if (checkFilter) {
+                        checkFilter = false
+                        transactionAdapter.clear()
+                    }
+                    transactionAdapter.addAll(timeSheet.data.payments)
 
-                isLoading = false
-                if (currentPage != TOTAL_PAGES) {
+                    isLoading = false
+                    if (currentPage != TOTAL_PAGES) {
 
-                    transactionAdapter.showLoading(true)
+                        transactionAdapter.showLoading(true)
+                    }
+                } else {
+                    if (transactionAdapter.itemCount == 0) {
+                        binding.rvTeamTimeSheet.visibility = View.GONE
+                        binding.txtNodata.visibility = View.VISIBLE
+                        binding.txtNodata.text = timeSheet.message.toString()
+                    } else {
+                        binding.txtNodata.visibility = View.GONE
+                        binding.rvTeamTimeSheet.visibility = View.VISIBLE
+                        // employeeTimeSheet.addAll(timeSheet.data.payments)
+                        TOTAL_PAGES = timeSheet.data.pagination.maxPageSize.toInt()
+
+                        transactionAdapter.showLoading(false)
+
+                        if (checkFilter) {
+                            checkFilter = false
+                            transactionAdapter.clear()
+                        }
+                        transactionAdapter.addAll(timeSheet.data.payments)
+
+                        isLoading = false
+                        if (currentPage != TOTAL_PAGES) {
+
+                            transactionAdapter.showLoading(true)
+                        }
+
+                    }
                 }
 
 

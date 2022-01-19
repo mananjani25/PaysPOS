@@ -95,6 +95,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="Role"
+                android:visibility="gone"
                 android:layout_gravity="center"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_5mdpi" />
@@ -134,6 +135,17 @@
 
         </LinearLayout>
 
+
+        <TextView
+            android:id="@+id/txt_nodata"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:text=""
+            android:visibility="gone"
+            android:gravity="center"
+            android:textSize="@dimen/_6sdp"
+            android:textColor="@color/black"
+            android:layout_weight="1" />
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvTeamTimeSheet"
             android:layout_width="match_parent"

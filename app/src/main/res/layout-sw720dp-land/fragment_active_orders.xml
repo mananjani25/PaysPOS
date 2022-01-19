@@ -117,6 +117,17 @@
 
         </LinearLayout>
 
+
+        <TextView
+            android:id="@+id/txt_nodata"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text=""
+            android:visibility="gone"
+            android:gravity="center"
+            android:textSize="@dimen/_6sdp"
+            android:textColor="@color/black"
+            />
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvOpenOrder"
             android:layout_width="match_parent"
