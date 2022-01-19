@@ -91,7 +91,12 @@ class AssignCustomerToOrderAdapter :
             )
 
             if (enrollToLoyalty) {
-                val ssPoint = SpannableStringBuilder("Loyalty Point: $loyaltyPoint")
+                val ssPoint: SpannableStringBuilder = if (loyaltyPoint!! > 0) {
+                    SpannableStringBuilder("Loyalty Points: $loyaltyPoint")
+                } else {
+                    SpannableStringBuilder("Loyalty Point: $loyaltyPoint")
+                }
+
                 ssPoint.setSpan(
                     TextAppearanceSpan(MainApplication.getInstance(), R.style.LoyaltyPointStyle),
                     0,

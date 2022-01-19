@@ -140,7 +140,7 @@
                     android:layout_gravity="center"
                     android:background="?attr/selectableItemBackground"
                     android:gravity="start"
-                    android:text="Loyalty Point: 0.0"
+                    android:text="Loyalty Points: 0.0"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_5mdpi"
                     android:visibility="gone"
