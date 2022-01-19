@@ -170,8 +170,7 @@ class AddEditCustomer : Fragment() {
                 editModel?.enroll_to_loyalty
 
 
-            binding.chkIsLoyalty.isChecked =
-                viewModel.addCustomerDetails.value?.data?.enroll_to_loyalty == true
+            binding.chkIsLoyalty.isChecked = viewModel.addCustomerDetails.value?.data?.enroll_to_loyalty!!
 
 
             /*Log.e(TAG, "Date  ${getDay(editModel?.birth_date!!)}")

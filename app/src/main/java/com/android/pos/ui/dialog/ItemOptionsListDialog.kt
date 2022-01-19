@@ -75,8 +75,6 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
                 setNavigationResult(DIALOG_KEY, selectedOptionSetNameAdapter.optionSetList)
                 setNavigationResult(DIALOG_KEY_OPTIONS, finalvariationList)
                 findNavController().popBackStack()
-            } else {
-
             }
 
         }
@@ -202,9 +200,7 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
 
                                 Log.d("itemOptionListCopy", "::" + itemOptionListCopy)
                             }
-
                             isLiveData = true
-
                         }
                     }
                     Status.ERROR -> {
@@ -213,10 +209,7 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
                     }
                 }
             }
-
-
         })
-
     }
 
     private fun createOptionSets(optionSetList: ArrayList<OptionSet>) {
