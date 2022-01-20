@@ -46,6 +46,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
     private var enrollToLoyalty: Boolean = false
     private var finalReward: Int = 0
     private var deliveryType: String = "Pickup"
+    private var selectedDate: String?=null
     private var country = arrayOf("United States", "Canada")
     private lateinit var binding: FragmentOpenOrderNewBinding
     private lateinit var placesApi: PlaceAPI
@@ -61,6 +62,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
     ): View? {
         binding = FragmentOpenOrderNewBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
+
         setupUI()
         return binding.root
     }
@@ -89,6 +91,11 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
                 selectedMinute ?: LocalDateTime.now().minute
             )
         }
+
+
+
+
+
         setPhoneCountry()
 
         placesApi =
@@ -175,11 +182,17 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
             })
 
         }
+        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Bundle>("data")
+            ?.observe(viewLifecycleOwner) { it ->
+                selectedDate=it.getString("SELECTED_DATE")
+                binding.edtDate.text=selectedDate
+            }
 
         setFragmentResultListener("request_key_customer") { requestKey: String, bundle: Bundle ->
             val result = bundle.getParcelable<TbCustomer>("data")
             if (result != null) {
-
+                selectedDate=bundle.getString("SELECTED_DATE")
+                binding.edtDate.text=selectedDate
                 setupCustomer(result)
             }
         }
@@ -197,6 +210,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
     }
 
     private fun setupCustomer(customer: TbCustomer) {
+
 
         customerID = customer.id
         enrollToLoyalty = customer.enroll_to_loyalty ?: false
@@ -268,8 +282,12 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
                 )
             }
             R.id.etSearch -> {
+                val result = Bundle().apply {
+                    putString("SELECTED_DATE", binding.edtDate.text.toString())
+                }
+
                 findNavController().navigate(
-                    R.id.action_openOrderCustomerFragmentNew_to_assignCustomerOrderFragment
+                    R.id.action_openOrderCustomerFragmentNew_to_assignCustomerOrderFragment,result
                 )
             }
             R.id.btnClearDelivery -> {
@@ -323,6 +341,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
 
             R.id.edtDate -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    selectedDate=null
                     showDatePicker()
                 }
             }
@@ -484,7 +503,13 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
         )
         val dateAsFormattedText: String =
             dateTime.format(DateTimeFormatter.ofPattern("MMM-dd-yyyy"))
-        binding.edtDate.text = dateAsFormattedText
+        if (selectedDate!=null){
+            binding.edtDate.text = selectedDate
+        }
+        else{
+            binding.edtDate.text = dateAsFormattedText
+        }
+
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
