@@ -97,11 +97,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         binding.lifecycleOwner = this
         observeTipsList()
 
-        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<String>(Constants.KEY)
+        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Bundle>("data")
             ?.observe(viewLifecycleOwner) { it ->
-                if (it.lowercase() == "FROM_CUSTOMER".lowercase()) {
+                if (it.getString(Constants.KEY)?.lowercase() == "FROM_CUSTOMER".lowercase()) {
                     isFromCustomer = true
-
                 }
 
             }
