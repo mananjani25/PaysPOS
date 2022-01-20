@@ -137,7 +137,7 @@ class TransactionDetailsFragment : Fragment() {
                 }
                 putInt("paymentId", paymentId)
                 putParcelable("orderDetailsResponse", paymentDetailsResponse)
-                putBoolean("isSplitPayment",isSplitPayment)
+                putBoolean("isSplitPayment", isSplitPayment)
                 putParcelableArrayList("serviceChargesList", serviceChargesList)
             }
             findNavController().navigate(
@@ -571,13 +571,9 @@ class TransactionDetailsFragment : Fragment() {
                 }
 
                 if (customerSettingModel.showPrintTime) {
-
-
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-
-
                         val current = LocalDateTime.now()
-                        val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy HH:mm:a")
+                        val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:aa")
                         val formatted = current.format(formatter)
 
                         builder.addTextLineSpace(30)
@@ -700,7 +696,7 @@ class TransactionDetailsFragment : Fragment() {
 
 
                         val current = LocalDateTime.now()
-                        val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy HH:mm:a")
+                        val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:aa")
                         val formatted = current.format(formatter)
                         builder.addTextLineSpace(30)
                         builder.addFeedUnit(30)
@@ -715,14 +711,6 @@ class TransactionDetailsFragment : Fragment() {
                             Builder.COLOR_1
                         )
 
-                        Log.e(
-                            TAG,
-                            "ConvertDateTime:  ${
-                                Constants.getReceiptFormatDateFromUTCServer(
-                                    paymentDetailsResponse?.data.order?.created_at.toString()
-                                )
-                            }"
-                        )
                         builder.addText(
                             padLine(
                                 if (customerSettingModel.showTeam) {

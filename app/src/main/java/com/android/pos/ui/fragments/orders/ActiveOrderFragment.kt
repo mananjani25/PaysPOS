@@ -711,10 +711,6 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
                 prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "").toString()
             )
 
-
-
-
-
             builder.addFeedLine(1)
 
             builder.addTextFont(Builder.FONT_E)
@@ -813,7 +809,7 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
 
 
                         val current = LocalDateTime.now()
-                        val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy HH:mm:a")
+                        val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:aa")
                         val formatted = current.format(formatter)
 
                         builder.addTextLineSpace(30)
@@ -910,14 +906,6 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
                         Builder.COLOR_1
                     )
 
-                    Log.e(
-                        TAG,
-                        "ConvertDateTime:  ${
-                            Constants.getReceiptFormatDateFromUTCServer(
-                                receiptModel?.createdAt.toString()
-                            )
-                        }"
-                    )
                     builder.addText(
                         padLine(
                             if (customerSettingModel.showTeam) {
@@ -944,7 +932,7 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
 
 
                         val current = LocalDateTime.now()
-                        val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy HH:mm:a")
+                        val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:aa")
                         val formatted = current.format(formatter)
                         builder.addTextLineSpace(30)
                         builder.addFeedUnit(30)
@@ -959,14 +947,6 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
                             Builder.COLOR_1
                         )
 
-                        Log.e(
-                            TAG,
-                            "ConvertDateTime:  ${
-                                Constants.getReceiptFormatDateFromUTCServer(
-                                    receiptModel?.createdAt.toString()
-                                )
-                            }"
-                        )
                         builder.addText(
                             padLine(
                                 if (customerSettingModel.showTeam) {
