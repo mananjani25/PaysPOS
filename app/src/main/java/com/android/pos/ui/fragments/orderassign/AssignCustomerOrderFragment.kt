@@ -45,6 +45,7 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
     private var isLoading = false
     private var isLastPage = false
     private var firstDetailLoad = false
+    private var selectedDate :String?=null
     val data = LinkedHashMap<String, String>()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -67,6 +68,7 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
         isFromDineIn = arguments?.getBoolean("DINE_IN", false)
         isFromCompletePayment = arguments?.getBoolean("fromPayment") ?: false
         dineInPosition = arguments?.getInt("position")
+        selectedDate = arguments?.getString("SELECTED_DATE")
         return binding.root
     }
 
@@ -126,9 +128,11 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
         binding.imgBack.setOnClickListener {
 
             val navController = findNavController()
+            var bundle=Bundle()
+            bundle.putString("SELECTED_DATE",selectedDate)
+            bundle.putString(Constants.KEY,"FROM_CUSTOMER")
             navController.previousBackStackEntry?.savedStateHandle?.set(
-                Constants.KEY,
-                "FROM_CUSTOMER"
+                "data",bundle
             )
             navController.popBackStack()
 
@@ -190,6 +194,7 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
         val result = Bundle().apply {
             putParcelable("data", customer)
             putBoolean("OPEN_ORDER", false)
+            putString("SELECTED_DATE", selectedDate)
             isFromDineIn?.let { putBoolean("DINE_IN", it) }
             dineInPosition?.let {
                 Log.e(TAG, "position:  $it")

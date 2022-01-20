@@ -510,6 +510,7 @@
 
     <string name="tv_all_payment_types">All Transaction Types</string>
     <string name="tv_cash_payment">Cash</string>
+    <string name="tv_card_payment">Card</string>
     <string name="tv_external">External</string>
     <string name="tv_terminal_id">Terminal</string>
     <string name="tv_order_details">Order Details</string>
@@ -688,6 +689,6 @@
     <string name="product_code">Product Code</string>
     <string name="open_orders">Open Orders</string>
 
-    <string name="same_category_name">Category name should be different</string>
+    <string name="same_category_name">Name Category name has already been taken.</string>
 
 </resources>
