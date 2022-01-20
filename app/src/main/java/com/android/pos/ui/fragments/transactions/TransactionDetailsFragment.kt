@@ -3,12 +3,14 @@ package com.android.pos.ui.fragments.transactions
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.graphics.Point
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import androidx.activity.OnBackPressedCallback
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -26,6 +28,7 @@ import com.android.pos.ui.adapter.OrderDetailsItemListAdapter
 import com.android.pos.utils.*
 import com.android.pos.utils.TimeFormatUtils.convertCurrentDate
 import com.android.pos.utils.TimeFormatUtils.convertCurrentTime
+import com.android.pos.utils.extensions.getColor
 import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.statusUtils.Status
@@ -241,6 +244,7 @@ class TransactionDetailsFragment : Fragment() {
                         if (paymentDetailsResponse.data.cash_discount_type == "CashDiscount") {
                             binding.linearCashDiscount.visibility = View.VISIBLE
                             binding.liinearNoncashAdj.visibility = View.GONE
+                            binding.txtCashAmounntDiscount.setTextColor(ContextCompat.getColor(requireContext(),R.color.colorRed))
                             binding.txtCashAmounntDiscount.text = "- $" + String.format(
                                 "%.2f",
                                 paymentDetailsResponse.data.cash_discount_or_surcharge

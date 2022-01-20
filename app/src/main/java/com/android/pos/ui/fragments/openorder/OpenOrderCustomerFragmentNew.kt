@@ -204,26 +204,30 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
 
         binding.edtFirstName.setText(customer.first_name)
         binding.edtLastName.setText(customer.last_name)
-        binding.edtPhoneNo.setText(AlertUtils.usNumberFormat(customer.phones[0].phone_number))
+        if (customer.phones.size>0){
+            binding.edtPhoneNo.setText(AlertUtils.usNumberFormat(customer.phones[0].phone_number))
+        }
         binding.edtEmail.setText(customer.email)
         binding.edtCompany.setText(customer.company)
 
-        if (customer.addresses.size == 1) {
-            binding.edtStreet.setText(customer.addresses[0].street)
-            binding.edtSuite.setText(customer.addresses[0].address2)
-            binding.edtCity.setText(customer.addresses[0].city)
-            binding.edtState.setText(customer.addresses[0].state)
-            binding.edtZip.setText(customer.addresses[0].postcode)
-        }
-        if (customer.addresses.size == 2) {
-            binding.edtStreetBill.setText(customer.addresses[1].street)
-            binding.edtSuiteBill.setText(customer.addresses[1].address2)
-            binding.edtCityBill.setText(customer.addresses[1].city)
-            binding.edtStateBill.setText(customer.addresses[1].state)
-            binding.edtZipBill.setText(customer.addresses[1].postcode)
-        }
+        if (customer.addresses.isNotEmpty()) {
+            for (i in customer.addresses.indices) {
+                if (customer.addresses[i].type_of_address == "Shipping") {
+                    if (customer.addresses[i].country == "United States") {
+                        binding.spDelivery.setSelection(0)
+                    } else if (customer.addresses[i].country == "Canada") {
+                        binding.spDelivery.setSelection(1)
+                    }
+                    binding.edtStreet.setText(customer.addresses[i].street)
+                    binding.edtCity.setText(customer.addresses[i].city)
+                    binding.edtState.setText(customer.addresses[i].state)
+                    binding.edtZip.setText(customer.addresses[i].postcode)
+                    binding.edtSuite.setText(customer.addresses[i].address1)
+                    break
+                }
 
-
+            }
+        }
     }
 
     @SuppressLint("SetTextI18n")

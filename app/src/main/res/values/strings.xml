@@ -87,7 +87,7 @@
 
 
     <string name="delete_tax_message">Are you sure want to Delete Tax?</string>
-    <string name="delete_tip_message">Are you sure want to Delete Tip?</string>
+    <string name="delete_tip_message">Are you sure want to Delete the Tip?</string>
     <string name="delete_note_message">Are you sure want to Delete Note?</string>
     <string name="delete_discount_message">Are you sure want to Delete Discount?</string>
     <string name="delete_customer_message">Are you sure, you want to delete this Customer?</string>
@@ -548,7 +548,7 @@
     <string name="event_type">Event Type</string>
     <string name="reason">Reason</string>
     <string name="employee_name">Employee Name</string>
-    <string name="add_note_cart">Note : </string>
+    <string name="add_note_cart">Note: </string>
     <string name="tv_variation_name">Variation Name</string>
     <string name="tv_variation_name_mand">Variation Name<font color='#E90C0C'>*</font></string>
     <string name="tv_unit">Unit</string>

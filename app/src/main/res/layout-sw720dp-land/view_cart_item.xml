@@ -62,7 +62,7 @@
                             android:lines="1"
                             android:maxLines="1"
                             android:singleLine="true"
-                            android:text="@{@string/add_note_cart +``+model.note}"
+                            android:text="@{@string/add_note_cart +` `+model.note}"
                             android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi" />
 

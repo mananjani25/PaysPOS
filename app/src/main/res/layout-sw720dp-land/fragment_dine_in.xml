@@ -44,7 +44,7 @@
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:layout_marginEnd="@dimen/_8sdp"
-                    android:padding="@dimen/_3sdp"
+                    android:padding="@dimen/_1sdp"
                     android:src="@drawable/merge" />
 
 

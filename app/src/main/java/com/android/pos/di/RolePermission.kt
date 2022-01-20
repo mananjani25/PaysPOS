@@ -46,7 +46,7 @@ class RolePermission @Inject constructor(
                 }
             }
         }
-        root?.showAlert("You do not have permission to access this feature.. \nPlease contact your manager.")
+        root?.showAlert("You do not have Permission to Access this Feature.. \nPlease Contact your Manager.")
         return false
     }
 
@@ -56,7 +56,7 @@ class RolePermission @Inject constructor(
         return if (permission) {
             true
         } else {
-            root?.showAlert("You do not have permission to access this feature.")
+            root?.showAlert("You do not have Permission to Access this Feature.")
             false
         }
     }
