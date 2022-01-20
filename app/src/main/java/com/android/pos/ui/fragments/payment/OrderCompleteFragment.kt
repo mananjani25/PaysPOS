@@ -892,10 +892,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     )
 
 
-                    Log.e(
-                        TAG,
-                        "ConvertDateTime:  ${getReceiptFormatDateFromUTCServer(receiptModel?.order?.createdAt.toString())}"
-                    )
                     builder.addText("Order Time:" + getReceiptFormatDateFromUTCServer(receiptModel?.order?.createdAt.toString()))
 
                 }
@@ -907,7 +903,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
                         val current = LocalDateTime.now()
-                        val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy HH:mm:a")
+                        val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:aa")
                         val formatted = current.format(formatter)
 
                         builder.addTextLineSpace(30)
@@ -1029,7 +1025,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
                         val current = LocalDateTime.now()
-                        val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy HH:mm:a")
+                        val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:aa")
                         val formatted = current.format(formatter)
                         builder.addTextLineSpace(30)
                         builder.addFeedUnit(30)
@@ -1044,10 +1040,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             Builder.COLOR_1
                         )
 
-                        Log.e(
-                            TAG,
-                            "ConvertDateTime:  ${getReceiptFormatDateFromUTCServer(receiptModel?.order?.createdAt.toString())}"
-                        )
+
                         builder.addText(
                             padLine(
                                 if (customerSettingModel.showTeam) {
