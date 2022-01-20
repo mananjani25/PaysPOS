@@ -960,11 +960,16 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         guestName: String,
         listWTitems: ArrayList<TbItem>
     ) {
-        if (listItem[0].isPaid == true) {
-            guestPrint("Paid", listItem, guestName, listWTitems)
-        } else {
-            guestPrint("Unpaid", listItem, guestName, listWTitems)
 
+        if (listItem.isNotEmpty()) {
+            if (listItem[0].isPaid == true) {
+                guestPrint("Paid", listItem, guestName, listWTitems)
+            } else {
+                guestPrint("Unpaid", listItem, guestName, listWTitems)
+
+            }
+        } else if (listItem.isEmpty() && listWTitems.isNotEmpty()) {
+            guestPrint("Unpaid", listItem, guestName, listWTitems)
         }
 
     }
@@ -2443,7 +2448,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
                         val current = LocalDateTime.now()
-                        val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:aa")
+                        val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:a")
                         val formatted = current.format(formatter)
 
                         builder.addTextLineSpace(30)
@@ -2571,7 +2576,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
                         val current = LocalDateTime.now()
-                        val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:aa")
+                        val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:a")
                         val formatted = current.format(formatter)
                         builder.addTextLineSpace(30)
                         builder.addFeedUnit(30)
@@ -3511,7 +3516,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
                         val current = LocalDateTime.now()
-                        val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:aa")
+                        val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:a")
                         val formatted = current.format(formatter)
                         builder.addTextLineSpace(30)
                         builder.addFeedUnit(30)

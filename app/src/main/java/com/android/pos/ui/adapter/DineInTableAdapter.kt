@@ -188,6 +188,12 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 binding.btnPaid.visibility = View.INVISIBLE
 
             }
+            if (noItem) {
+                binding.chkIsFired.isEnabled = false
+            } else {
+                binding.chkIsFired.isEnabled = true
+            }
+
             if (list[layoutPosition].title?.lowercase() == "Whole Table".lowercase() || list.get(0).totalGuestCount == 1) {
                 binding.btnPay.visibility = View.GONE
                 binding.btnPaid.visibility = View.INVISIBLE
@@ -263,8 +269,8 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
                 }
 
+                var guestName = ""
                 if (listItem.isNotEmpty()) {
-                    var guestName = ""
                     if (list[bindingAdapterPosition].customer != null) {
                         guestName = list[bindingAdapterPosition].customer?.first_name.toString()
                     } else {
@@ -272,6 +278,8 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                     }
 
 
+                }
+                if (listItem.isNotEmpty() || listItemWT.isNotEmpty()) {
                     listner.onGuestPrint(listItem, guestName, listItemWT)
                 }
 

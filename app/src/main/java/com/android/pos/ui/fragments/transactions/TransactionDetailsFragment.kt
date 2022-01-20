@@ -573,7 +573,7 @@ class TransactionDetailsFragment : Fragment() {
                 if (customerSettingModel.showPrintTime) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                         val current = LocalDateTime.now()
-                        val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:aa")
+                        val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:a")
                         val formatted = current.format(formatter)
 
                         builder.addTextLineSpace(30)
@@ -696,7 +696,7 @@ class TransactionDetailsFragment : Fragment() {
 
 
                         val current = LocalDateTime.now()
-                        val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:aa")
+                        val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:a")
                         val formatted = current.format(formatter)
                         builder.addTextLineSpace(30)
                         builder.addFeedUnit(30)
