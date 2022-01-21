@@ -56,12 +56,12 @@ class CreateCategoryViewModel @Inject constructor(
 
     //  val getInventory = catId.value?.let { posRepository.getInventory(it) }
 
-    fun submit(ids: ArrayList<Int>, imagePath: String?, categoryData: TbCategory) {
+    fun submit(ids: ArrayList<Int>, imagePath: String?, categoryName: String) {
 
         if (TextUtils.isEmpty(categoryDetails.value?.name?.trim())) {
             _snackbarText.value = Event(R.string.category_name_validate)
         }
-        else if (categoryData.name.equals(categoryDetails.value?.name))
+        else if (categoryName.equals(categoryDetails.value?.name))
             _snackbarText.value = Event(R.string.same_category_name)
         else {
             _showProgress.value = Event(true)
