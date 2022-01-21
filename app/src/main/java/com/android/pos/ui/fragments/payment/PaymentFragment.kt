@@ -1437,7 +1437,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                     "remainingAmount",
                                     remainingAmount
                                 )
-                                bundle.putInt("orderID", it.data.order.id)
+                                bundle.putInt("orderID", orderId ?: 0)
                                 bundle.putParcelable("receiptData", it.data)
                                 bundle.putInt("splitValue", splitValue)
                                 if (splitValue != -1) {
@@ -1515,7 +1515,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                     "remainingAmount",
                                     remainingAmount
                                 )
-                                bundle.putInt("orderID", it.data.order.id)
+                                bundle.putInt("orderID", orderId?:0)
                                 bundle.putParcelable("receiptData", it.data)
                                 bundle.putInt("splitValue", splitValue)
 
@@ -1584,7 +1584,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                     "remainingAmount",
                                     remainingAmount
                                 )
-                                bundle.putInt("orderID", it.data.order.id)
+                                bundle.putInt("orderID", orderId?:0)
                                 bundle.putParcelable("receiptData", it.data)
                                 bundle.putInt("splitValue", splitValue)
                                 if (remainingAmount == 0.0) {
@@ -1625,7 +1625,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                     "remainingAmount",
                                     remaining_custom
                                 )
-                                bundle.putInt("orderID", it.data.order.id)
+                                bundle.putInt("orderID", orderId?:0)
                                 bundle.putParcelable("receiptData", it.data)
                                 bundle.putInt("splitValue", -1)
                                 bundle.putBoolean("isSpilt", false)
@@ -1656,7 +1656,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                     "remainingAmount",
                                     0.0
                                 )
-                                bundle.putInt("orderID", it.data.order.id)
+                                bundle.putInt("orderID", orderId?:0)
                                 bundle.putParcelable("receiptData", it.data)
                                 bundle.putInt("splitValue", -1)
                                 bundle.putBoolean("isSpilt", false)

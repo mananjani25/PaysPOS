@@ -354,7 +354,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             bundle.putBoolean("isTotalPayment", true)
             bundle.putBoolean("isLastPayment", true)
 
-            orderId?.let { it1 -> bundle.putInt("orderId", it1) }
+            bundle.putInt("orderId", orderId ?: 0)
 //            orderId?.let { it1 -> prefProvider.setValueInt("ORDER_ID", it1) }
 
             findNavController().navigate(
@@ -876,9 +876,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         bundle.putParcelable("orderPayment", modelReq)
         bundle.putString("orderOfflineId", orderOfflineId)
         bundle.putString("paymentOfflineId", paymentAttr.offlineId)
-        orderId?.let { bundle.putInt("orderId", it) }
+        bundle.putInt("orderId", orderId ?: 0)
         bundle.putBoolean("isGuestPay", true)
-        orderId?.let { it1 -> bundle.putInt("orderId", it1) }
+        //orderId?.let { it1 -> bundle.putInt("orderId", it1) }
 //        orderId?.let { it1 -> prefProvider.setValueInt("ORDER_ID", it1) }
         var wholeTableAmt = 0.0
         var paidAmount = 0.0

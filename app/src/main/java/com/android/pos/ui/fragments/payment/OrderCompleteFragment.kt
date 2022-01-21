@@ -40,7 +40,6 @@ import com.epson.eposprint.Builder
 import com.epson.eposprint.Print
 import com.epson.eposprint.StatusChangeEventListener
 import com.google.android.material.snackbar.Snackbar
-import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -120,7 +119,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             if (it.isNotEmpty()) {
                 splitList = arrayListOf()
                 splitList = it.toCollection(arrayListOf())
-                Log.e(TAG, "SplitList:  ${Gson().toJson(splitList)}")
                 splitAdapter.setList(it.toCollection(arrayListOf()))
 
             }
@@ -502,6 +500,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 var bundle = Bundle()
                 bundle.putBoolean("isNextPayment", true)
                 bundle.putInt("splitvalue", splitValue)
+                bundle.putInt("orderId", orderID)
                 bundle.putDouble("splitPaidAmount", paymentAmount)
                 bundle.putDouble("remainingAmount", remainingAmount)
                 bundle.putBoolean("isSplitByNo", isSplitByNo)
@@ -513,6 +512,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 val navController = findNavController()
                 var bundle = Bundle()
                 bundle.putBoolean("isNextPayment", true)
+                //  bundle.putInt("orderID",orderID)
                 bundle.putDouble("splitPaidAmount", paymentAmount)
                 bundle.putDouble("remainingAmount", remainingAmount)
                 if (isSplitByAmount) {
@@ -532,6 +532,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             if (isGuest) {
                 if (!isLastPayment) {
                     val bundle = Bundle()
+                    Log.e(TAG, "guestorderID ${orderID}")
                     bundle.putInt("orderId", orderID)
 
                     findNavController().navigate(

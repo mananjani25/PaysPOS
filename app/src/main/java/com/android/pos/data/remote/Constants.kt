@@ -90,6 +90,7 @@ object Constants {
     const val DISCOVERY_INTERVAL = 500
     const val EMPLOYEES_TIMESHEET = "employees/timesheet"
     const val EMPLOYEES_TIMESHEET_DETAILS = "employees/timesheet_details"
+    const val ORDER_ID = "orderID"
 
     const val SYNC_VENUE_DATA = "locations/sync_data"
     const val SYNC_VENUE_DETAILS = "locations/setting_data"

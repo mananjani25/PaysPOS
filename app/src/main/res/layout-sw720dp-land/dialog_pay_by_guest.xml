@@ -163,9 +163,9 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_weight="1.4"
-                        android:paddingVertical="@dimen/_10sdp"
                         android:background="?attr/selectableItemBackground"
                         android:gravity="center"
+                        android:paddingVertical="@dimen/_10sdp"
                         android:textColor="@color/btnColorDark_"
                         android:textSize="@dimen/_6mdpi" />
 
@@ -176,9 +176,9 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_weight="1.4"
-                        android:paddingVertical="@dimen/_10sdp"
                         android:background="?attr/selectableItemBackground"
                         android:gravity="center"
+                        android:paddingVertical="@dimen/_10sdp"
 
                         android:textColor="@color/btnColorDark_"
                         android:textSize="@dimen/_6mdpi" />
@@ -190,9 +190,9 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_weight="1.4"
-                        android:paddingVertical="@dimen/_10sdp"
                         android:background="?attr/selectableItemBackground"
                         android:gravity="center"
+                        android:paddingVertical="@dimen/_10sdp"
                         android:textColor="@color/btnColorDark_"
                         android:textSize="@dimen/_6mdpi" />
 
@@ -204,9 +204,9 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_weight="1.4"
-                        android:paddingVertical="@dimen/_10sdp"
                         android:background="?attr/selectableItemBackground"
                         android:gravity="center"
+                        android:paddingVertical="@dimen/_10sdp"
                         android:textColor="@color/btnColorDark_"
                         android:textSize="@dimen/_6mdpi" />
 
@@ -219,14 +219,13 @@
                         android:layout_weight="0.9"
                         android:background="?attr/selectableItemBackground"
                         android:gravity="center"
-                        android:visibility="invisible"
                         android:paddingVertical="@dimen/_10sdp"
                         android:text="@string/custom"
                         android:textColor="@color/btnColorDark_"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textSize="@dimen/_6mdpi"
+                        android:visibility="invisible" />
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
-
 
 
                 <include layout="@layout/divider" />
@@ -257,9 +256,9 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_weight="1.6"
-                        android:paddingVertical="@dimen/_10sdp"
                         android:background="?attr/selectableItemBackground"
                         android:gravity="center"
+                        android:paddingVertical="@dimen/_10sdp"
                         android:text=""
                         android:textColor="@color/btnColorDark_"
                         android:textSize="@dimen/_6mdpi" />
@@ -457,10 +456,10 @@
                 android:background="?attr/selectableItemBackground"
                 android:orientation="horizontal"
                 android:paddingStart="@dimen/_5sdp"
-                android:visibility="gone"
                 android:paddingTop="@dimen/_3sdp"
                 android:paddingEnd="@dimen/_5sdp"
-                android:paddingBottom="@dimen/_3sdp">
+                android:paddingBottom="@dimen/_3sdp"
+                android:visibility="gone">
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontMediumStyle"
@@ -493,10 +492,10 @@
                 android:background="?attr/selectableItemBackground"
                 android:orientation="horizontal"
                 android:paddingStart="@dimen/_5sdp"
-                android:visibility="gone"
                 android:paddingTop="@dimen/_3sdp"
                 android:paddingEnd="@dimen/_5sdp"
-                android:paddingBottom="@dimen/_3sdp">
+                android:paddingBottom="@dimen/_3sdp"
+                android:visibility="gone">
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontMediumStyle"
@@ -521,6 +520,7 @@
                     tools:text="$20.00" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
+
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:id="@+id/linearDiscount"
                 android:layout_width="match_parent"
@@ -696,16 +696,16 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnpaynowCreditdialog"
-                android:layout_gravity="center"
-                android:layout_margin="10dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="10dp"
                 android:background="@color/btnColorDark_"
                 android:text="@string/pay_now"
-                android:visibility="gone"
                 android:textColor="@color/white"
-                android:textStyle="bold" />
-            </androidx.appcompat.widget.LinearLayoutCompat>
+                android:textStyle="bold"
+                android:visibility="gone" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
 
     </androidx.appcompat.widget.LinearLayoutCompat>

@@ -50,6 +50,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
     private var orderOfflineId: String = ""
     private var paymentOfflineId: String = ""
     private var orderId: Int? = null
+    private var orderIDNew: Int? = null
     private var paymentId: Int? = null
     private var tipAmount: Double = 0.0
     private var future_delivery_date: String = ""
@@ -216,6 +217,8 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
             paymentOfflineId = requireArguments().getString("paymentOfflineId").toString()
             orderOfflineId = requireArguments().getString("orderOfflineId").toString()
         }
+
+        orderIDNew = requireArguments().getInt("orderId")
 
         callbackSetup()
         binding.txtSplitAmount.setOnClickListener(this)
@@ -516,6 +519,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                     bundle.putBoolean("isTotalPayment", isTotalPayment)
                     bundle.putBoolean("isLastPayment", isLastPayment)
                     bundle.putString("paymentType", "Cash")
+                    bundle.putInt("orderID", orderIDNew ?: 0)
                     isGuestPaymentTotal = false
                     bundle.putBoolean("isGuestPaymentTotal", isGuestPaymentTotal)
                     findNavController().navigate(
@@ -578,6 +582,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                     bundle.putBoolean("isSplitByAmount", isSplitByAmount)
                     bundle.putString("paymentType", "Card")
                     bundle.putBoolean("isGuest", isGuestPay)
+                    bundle.putInt("orderID", orderIDNew ?: 0)
                     bundle.putBoolean("isDineIn", true)
                     isGuestPaymentTotal = true
                     bundle.putBoolean("isGuestPaymentTotal", true)
@@ -607,6 +612,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                     bundle.putString("paymentType", "Card")
                     bundle.putBoolean("isSplitByNo", isSplitByNo)
                     bundle.putBoolean("isSplitByAmount", isSplitByAmount)
+                    bundle.putInt("orderID", orderIDNew ?: 0)
                     if (isGuestPaymentTotal && isLastPayment) {
                         prefProvider.setValueInt("ORDER_ID", -1)
                     } else if (isLastPayment && isTotalPayment) {
@@ -681,6 +687,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                         bundle.putBoolean("isSplitByNo", isSplitByNo)
                         bundle.putBoolean("isSplitByAmount", isSplitByAmount)
                         bundle.putBoolean("isTotalPayment", isTotalPayment)
+                        bundle.putInt("orderID", orderIDNew ?: 0)
                         bundle.putBoolean("isLastPayment", isLastPayment)
                         bundle.putString("paymentType", "Cash")
                         isGuestPaymentTotal = false
@@ -730,6 +737,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                         bundle.putBoolean("isGuestPaymentTotal", true)
                         bundle.putBoolean("isTotalPayment", isTotalPayment)
                         bundle.putBoolean("isLastPayment", isLastPayment)
+                        bundle.putInt("orderID", orderIDNew ?: 0)
                         findNavController().navigate(
                             R.id.action_payByGuestDialog_to_orderCompleteFragment,
                             bundle
@@ -774,6 +782,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                         bundle.putBoolean("isTotalPayment", isTotalPayment)
                         bundle.putBoolean("isLastPayment", isLastPayment)
                         bundle.putString("paymentType", "Cash")
+                        bundle.putInt("orderID", orderIDNew ?: 0)
                         isGuestPaymentTotal = false
                         bundle.putBoolean("isGuestPaymentTotal", isGuestPaymentTotal)
 
@@ -811,6 +820,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                         bundle.putBoolean("isSplitByAmount", isSplitByAmount)
                         bundle.putBoolean("isLastPayment", isLastPayment)
                         bundle.putBoolean("isTotalPayment", isTotalPayment)
+                        bundle.putInt("orderID", orderIDNew ?: 0)
 
 
                         if (isGuestPaymentTotal && isLastPayment) {

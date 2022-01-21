@@ -630,7 +630,7 @@ class PaymentViewModel @Inject constructor(
         needToAddPaymentAttributes: Boolean?,
         paymentType: String,
         cashdiscountType: String,
-        tipID: Int?=null
+        tipID: Int? = null
     ): OrderRequestModel {
 
         val orderAttributeRequestModel = OrderAttributeRequestModel()
