@@ -38,13 +38,12 @@ import dagger.hilt.android.AndroidEntryPoint
 class CreateCategory : Fragment() {
 
 
-
     private var imagePath: String? = ""
     lateinit var binding: CreateCategoryActivityBinding
     private val viewModel by viewModels<CreateCategoryViewModel>()
     private var listCategory: ArrayList<CategoryListItemModel> = arrayListOf()
     var isEdit: Boolean = false
-    private lateinit var categoryData: TbCategory
+    private var categoryData: TbCategory? = null
     private var adapter = CategoryListItemAdapter()
 
     override fun onCreateView(
@@ -63,11 +62,11 @@ class CreateCategory : Fragment() {
             categoryData = arguments?.getParcelable("categoryObject")!!
             binding.txtSave.text = getString(R.string.update)
             binding.txtTitle.text = getString(R.string.update_category)
-            viewModel.categoryData(categoryData)
-            viewModel.isEditData(isEdit, categoryData.id)
+            viewModel.categoryData(categoryData!!)
+            viewModel.isEditData(isEdit, categoryData!!.id)
 
             //load image from edit
-            viewProfile(categoryData.thumbImgUrl)
+            viewProfile(categoryData!!.thumbImgUrl)
         }
 
         setupSnackbar()
@@ -92,11 +91,19 @@ class CreateCategory : Fragment() {
 
         binding.txtSave.setOnClickListener {
             var newImagePathToUpload = imagePath
-            if (isEdit && imagePath.equals(categoryData.thumbImgUrl, true)) {
+            if (isEdit && imagePath.equals(categoryData?.thumbImgUrl, true)) {
                 //send image if its altered.
                 newImagePathToUpload = ""
             }
-            viewModel.submit(adapter.getIds(), newImagePathToUpload,categoryData)
+            if (categoryData != null)
+                categoryData?.name?.let { it1 ->
+                    viewModel.submit(adapter.getIds(), newImagePathToUpload,
+                        it1
+                    )
+                }
+            else
+                viewModel.submit(adapter.getIds(), newImagePathToUpload, "")
+
         }
         binding.imgBack.setOnClickListener {
             onSubmitBack()
@@ -108,8 +115,8 @@ class CreateCategory : Fragment() {
 
     private fun openDialog() {
         var profileImg = ""
-        if (::categoryData.isInitialized && !categoryData.thumbImgUrl.isNullOrEmpty()) {
-            profileImg = categoryData.thumbImgUrl ?: ""
+        if (categoryData != null && !categoryData!!.thumbImgUrl.isNullOrEmpty()) {
+            profileImg = categoryData!!.thumbImgUrl ?: ""
 
         }
         val bundle = Bundle()
@@ -187,7 +194,7 @@ class CreateCategory : Fragment() {
                         it.data?.let { it1 -> adapter.add(it1) }
 
                         if (isEdit) {
-                            adapter.selectedItemFromEdit(categoryData.item_ids)
+                            categoryData?.item_ids?.let { it1 -> adapter.selectedItemFromEdit(it1) }
                         }
                     }
                     Status.ERROR -> {
