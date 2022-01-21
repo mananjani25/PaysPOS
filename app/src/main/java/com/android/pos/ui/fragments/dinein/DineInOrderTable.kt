@@ -27,13 +27,20 @@ import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
+import com.android.pos.data.remote.Constants.DINE_IN_ADAPTER_LIST
+import com.android.pos.data.remote.Constants.DINE_IN_DISCOUNT
+import com.android.pos.data.remote.Constants.DINE_IN_SERVICECHARGE
+import com.android.pos.data.remote.Constants.DINE_IN_SUBTOTAL
+import com.android.pos.data.remote.Constants.DINE_IN_TAX
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
+import com.android.pos.data.remote.Constants.IS_GUEST_PAYMNET
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.remote.Constants.MERGEDANDOCCUPIED
 import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
 import com.android.pos.data.remote.Constants.ORDER_TYPE_NAME
+import com.android.pos.data.remote.Constants.PRINT_DATA_DINE_IN
 import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.databinding.FragmentDineInOrderTableBinding
 import com.android.pos.di.PrefProvider
@@ -353,6 +360,19 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             bundle.putString("paymentOfflineId", randomOfflineId())
             bundle.putBoolean("isTotalPayment", true)
             bundle.putBoolean("isLastPayment", true)
+            bundle.putParcelable(PRINT_DATA_DINE_IN, getOrderDetailsResponse)
+            bundle.putDouble(DINE_IN_SUBTOTAL, subTotalWT)
+            bundle.putDouble(DINE_IN_TAX, viewModel.totalTaxAmount)
+            bundle.putDouble(DINE_IN_DISCOUNT, viewModel.totalDiscountAmount)
+            bundle.putDouble(DINE_IN_SERVICECHARGE, serviceCharge)
+
+
+            bundle.putBoolean(IS_GUEST_PAYMNET, false)
+            bundle.putParcelableArrayList(
+                DINE_IN_ADAPTER_LIST, dineInTableAdapter.getList().toCollection(
+                    arrayListOf()
+                )
+            )
 
             bundle.putInt("orderId", orderId ?: 0)
 //            orderId?.let { it1 -> prefProvider.setValueInt("ORDER_ID", it1) }
@@ -878,6 +898,22 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         bundle.putString("paymentOfflineId", paymentAttr.offlineId)
         bundle.putInt("orderId", orderId ?: 0)
         bundle.putBoolean("isGuestPay", true)
+        bundle.putParcelable(PRINT_DATA_DINE_IN, getOrderDetailsResponse)
+        bundle.putDouble(DINE_IN_SUBTOTAL, MethodUtils.roundOffAmountDouble(subTotalGuest))
+        bundle.putDouble(DINE_IN_TAX, MethodUtils.roundOffAmountDouble(taxGuest))
+        bundle.putDouble(DINE_IN_DISCOUNT, MethodUtils.roundOffAmountDouble(divideDiscount))
+        bundle.putDouble(
+            DINE_IN_SERVICECHARGE,
+            MethodUtils.roundOffAmountDouble(serviceChargeGuest)
+        )
+
+
+        bundle.putBoolean(IS_GUEST_PAYMNET, true)
+        bundle.putParcelableArrayList(
+            DINE_IN_ADAPTER_LIST, dineInTableAdapter.getList().toCollection(
+                arrayListOf()
+            )
+        )
         //orderId?.let { it1 -> bundle.putInt("orderId", it1) }
 //        orderId?.let { it1 -> prefProvider.setValueInt("ORDER_ID", it1) }
         var wholeTableAmt = 0.0

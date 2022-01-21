@@ -13,11 +13,17 @@ import androidx.navigation.fragment.findNavController
 import com.android.pos.MainApplication
 import com.android.pos.R
 import com.android.pos.data.entities.CartModel
+import com.android.pos.data.model.DineInModel
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.GetFloorPlanResponse
+import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.data.model.responseModel.GuestPaymentAttributes
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE_DINEIN
+import com.android.pos.data.remote.Constants.DINE_IN_DISCOUNT
+import com.android.pos.data.remote.Constants.DINE_IN_SERVICECHARGE
+import com.android.pos.data.remote.Constants.DINE_IN_SUBTOTAL
+import com.android.pos.data.remote.Constants.DINE_IN_TAX
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.remote.Constants.SERVICE_CHARGE_DINEIN
@@ -43,6 +49,7 @@ import kotlin.math.floor
 @AndroidEntryPoint
 open class PayByGuestDialog : Fragment(), View.OnClickListener {
 
+    private var dineInAdapterList: ArrayList<DineInModel>? = null
     private var isGuestPay: Boolean = false
     private lateinit var binding: DialogPayByGuestBinding
     private var remainingAmount: Double = 0.0
@@ -53,6 +60,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
     private var orderIDNew: Int? = null
     private var paymentId: Int? = null
     private var tipAmount: Double = 0.0
+    private var getOrderDetailsResponse: GetOrderDetailsResponse.Data? = null
     private var future_delivery_date: String = ""
     private var future_delivery_time: String = ""
     private var fourthValue: Double = 0.0
@@ -127,6 +135,9 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
         divideCashDiscount = requireArguments().getDouble("divideCashDiscount")
         totaldiscount = requireArguments().getDouble("totalDiscount")
         totalTax = requireArguments().getDouble("totalTax")
+        getOrderDetailsResponse = requireArguments()?.getParcelable(Constants.PRINT_DATA_DINE_IN)
+        dineInAdapterList =
+            requireArguments().getParcelableArrayList<DineInModel>(Constants.DINE_IN_ADAPTER_LIST)
         floorPlanModel = requireArguments().getParcelable("floorPlan")
         guestRequestModel = requireArguments().getParcelable("model")
         totalGuestCount = requireArguments().getInt("totalGuestCount")
@@ -149,6 +160,16 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                 splitValue = it.getInt("splitvalue", -1)
                 isSplitByAmount = it.getBoolean("isSplitByAmount", false)
                 isSplitByNo = it.getBoolean("isSplitByNo", false)
+                subTotalPrice = requireArguments().getDouble("subTotalPrice")
+                totalServiceCharge = requireArguments().getDouble("totalServiceCharge")
+                divideCashDiscount = requireArguments().getDouble("divideCashDiscount")
+                totaldiscount = requireArguments().getDouble("totalDiscount")
+                totalTax = requireArguments().getDouble("totalTax")
+                getOrderDetailsResponse = requireArguments()?.getParcelable(Constants.PRINT_DATA_DINE_IN)
+                dineInAdapterList =
+                    requireArguments().getParcelableArrayList<DineInModel>(Constants.DINE_IN_ADAPTER_LIST)
+
+
                 setSplitData()
 
             }
@@ -520,8 +541,14 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                     bundle.putBoolean("isLastPayment", isLastPayment)
                     bundle.putString("paymentType", "Cash")
                     bundle.putInt("orderID", orderIDNew ?: 0)
+                    bundle.putParcelable(Constants.PRINT_DATA_DINE_IN, getOrderDetailsResponse)
                     isGuestPaymentTotal = false
                     bundle.putBoolean("isGuestPaymentTotal", isGuestPaymentTotal)
+                    bundle.putParcelableArrayList(Constants.DINE_IN_ADAPTER_LIST, dineInAdapterList)
+                    bundle.putDouble(DINE_IN_SUBTOTAL, subTotalPrice)
+                    bundle.putDouble(DINE_IN_TAX, totalTax)
+                    bundle.putDouble(DINE_IN_DISCOUNT, totaldiscount)
+                    bundle.putDouble(DINE_IN_SERVICECHARGE, totalServiceCharge)
                     findNavController().navigate(
                         R.id.action_payByGuestDialog_to_orderCompleteFragment,
                         bundle
@@ -587,6 +614,12 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                     isGuestPaymentTotal = true
                     bundle.putBoolean("isGuestPaymentTotal", true)
                     bundle.putBoolean("isTotalPayment", isTotalPayment)
+                    bundle.putParcelable(Constants.PRINT_DATA_DINE_IN, getOrderDetailsResponse)
+                    bundle.putParcelableArrayList(Constants.DINE_IN_ADAPTER_LIST, dineInAdapterList)
+                    bundle.putDouble(DINE_IN_SUBTOTAL, subTotalPrice)
+                    bundle.putDouble(DINE_IN_TAX, totalTax)
+                    bundle.putDouble(DINE_IN_DISCOUNT, totaldiscount)
+                    bundle.putDouble(DINE_IN_SERVICECHARGE, totalServiceCharge)
                     findNavController().navigate(
                         R.id.action_payByGuestDialog_to_orderCompleteFragment,
                         bundle
@@ -620,6 +653,12 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                     }
                     isGuestPaymentTotal = true
                     bundle.putBoolean("isGuestPaymentTotal", true)
+                    bundle.putParcelable(Constants.PRINT_DATA_DINE_IN, getOrderDetailsResponse)
+                    bundle.putParcelableArrayList(Constants.DINE_IN_ADAPTER_LIST, dineInAdapterList)
+                    bundle.putDouble(DINE_IN_SUBTOTAL, subTotalPrice)
+                    bundle.putDouble(DINE_IN_TAX, totalTax)
+                    bundle.putDouble(DINE_IN_DISCOUNT, totaldiscount)
+                    bundle.putDouble(DINE_IN_SERVICECHARGE, totalServiceCharge)
                     if (isLastPayment!!)
                         bundle.putBoolean("isGuest", false)
                     findNavController().navigate(
@@ -692,6 +731,15 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                         bundle.putString("paymentType", "Cash")
                         isGuestPaymentTotal = false
                         bundle.putBoolean("isGuestPaymentTotal", isGuestPaymentTotal)
+                        bundle.putParcelable(Constants.PRINT_DATA_DINE_IN, getOrderDetailsResponse)
+                        bundle.putParcelableArrayList(
+                            Constants.DINE_IN_ADAPTER_LIST,
+                            dineInAdapterList
+                        )
+                        bundle.putDouble(DINE_IN_SUBTOTAL, subTotalPrice)
+                        bundle.putDouble(DINE_IN_TAX, totalTax)
+                        bundle.putDouble(DINE_IN_DISCOUNT, totaldiscount)
+                        bundle.putDouble(DINE_IN_SERVICECHARGE, totalServiceCharge)
 
                         findNavController().navigate(
                             R.id.action_payByGuestDialog_to_orderCompleteFragment,
@@ -738,6 +786,16 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                         bundle.putBoolean("isTotalPayment", isTotalPayment)
                         bundle.putBoolean("isLastPayment", isLastPayment)
                         bundle.putInt("orderID", orderIDNew ?: 0)
+                        bundle.putParcelable(Constants.PRINT_DATA_DINE_IN, getOrderDetailsResponse)
+                        bundle.putParcelableArrayList(
+                            Constants.DINE_IN_ADAPTER_LIST,
+                            dineInAdapterList
+                        )
+
+                        bundle.putDouble(DINE_IN_SUBTOTAL, subTotalPrice)
+                        bundle.putDouble(DINE_IN_TAX, totalTax)
+                        bundle.putDouble(DINE_IN_DISCOUNT, totaldiscount)
+                        bundle.putDouble(DINE_IN_SERVICECHARGE, totalServiceCharge)
                         findNavController().navigate(
                             R.id.action_payByGuestDialog_to_orderCompleteFragment,
                             bundle
@@ -786,6 +844,15 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                         isGuestPaymentTotal = false
                         bundle.putBoolean("isGuestPaymentTotal", isGuestPaymentTotal)
 
+                        bundle.putParcelableArrayList(
+                            Constants.DINE_IN_ADAPTER_LIST,
+                            dineInAdapterList
+                        )
+                        bundle.putDouble(DINE_IN_SUBTOTAL, subTotalPrice)
+                        bundle.putDouble(DINE_IN_TAX, totalTax)
+                        bundle.putDouble(DINE_IN_DISCOUNT, totaldiscount)
+                        bundle.putDouble(DINE_IN_SERVICECHARGE, totalServiceCharge)
+                        bundle.putParcelable(Constants.PRINT_DATA_DINE_IN, getOrderDetailsResponse)
                         findNavController().navigate(
                             R.id.action_payByGuestDialog_to_orderCompleteFragment,
                             bundle
@@ -830,6 +897,15 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                         }
                         isGuestPaymentTotal = true
                         bundle.putBoolean("isGuestPaymentTotal", true)
+                        bundle.putParcelable(Constants.PRINT_DATA_DINE_IN, getOrderDetailsResponse)
+                        bundle.putParcelableArrayList(
+                            Constants.DINE_IN_ADAPTER_LIST,
+                            dineInAdapterList
+                        )
+                        bundle.putDouble(DINE_IN_SUBTOTAL, subTotalPrice)
+                        bundle.putDouble(DINE_IN_TAX, totalTax)
+                        bundle.putDouble(DINE_IN_DISCOUNT, totaldiscount)
+                        bundle.putDouble(DINE_IN_SERVICECHARGE, totalServiceCharge)
                         if (isLastPayment!!)
                             bundle.putBoolean("isGuest", false)
                         findNavController().navigate(
