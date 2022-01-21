@@ -15,6 +15,9 @@ interface EmployeeDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addAllEmployee(employeeList: List<Employee>)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+   suspend fun addAllEmployeeSuspend(employeeList: List<Employee>)
+
     @get:Query("select * from TbEmployee")
     val allEmployee: LiveData<List<Employee>>
 

@@ -1597,6 +1597,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 posRepository.addCashDiscountsFromDb(it.data.cash_discounts)
                                 posRepository.deleteTeamRoleFromDb()
                                 posRepository.addTeamRoleFromDb(it.data.teamRoles)
+                                posRepository.employeeListAddAllFromSeeting(it.data.employee)
                                 rolePermission.findCurrentUserRoleAndSave(it.data.teamRoles)
                                 posRepository.deleteOrderTypeFromDb()
                                 posRepository.addOrderType(it.data.orderTypes)

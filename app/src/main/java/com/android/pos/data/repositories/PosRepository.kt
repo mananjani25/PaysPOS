@@ -289,6 +289,10 @@ class PosRepository @Inject constructor(
         appDatabase.teamRoleDao().addAllRolesSuspend(teamRoleList)
     }
 
+    suspend fun employeeListAddAllFromSeeting(employeelist: List<Employee>) {
+        appDatabase.employeeDao().addAllEmployeeSuspend(employeelist)
+    }
+
     suspend fun addOrderType(OrderTypeList: List<TbOrderType>) {
         appDatabase.orderTypeDao().addAll(OrderTypeList)
     }

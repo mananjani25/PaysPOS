@@ -68,6 +68,8 @@ data class VenueDetailsResponse(
         val kitchenReceipt: GetKitchenReceiptSettingsResponse.Data,
         @SerializedName("team_roles")
         val teamRoles: List<TeamRole>,
+        @SerializedName("employee")
+        val employee: List<Employee>,
         @SerializedName("order_types")
         val orderTypes: List<TbOrderType>,
 
