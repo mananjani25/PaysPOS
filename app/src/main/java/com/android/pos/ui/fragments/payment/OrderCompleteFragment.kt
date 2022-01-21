@@ -26,6 +26,7 @@ import com.android.pos.data.remote.Constants.BUSINESS_NAME
 import com.android.pos.data.remote.Constants.BUSINESS_PHONE_NO
 import com.android.pos.data.remote.Constants.CUSTOMER
 import com.android.pos.data.remote.Constants.DINE_IN_ADAPTER_LIST
+import com.android.pos.data.remote.Constants.GUEST_POSITION
 import com.android.pos.data.remote.Constants.KITCHEN
 import com.android.pos.data.remote.Constants.LARGE
 import com.android.pos.data.remote.Constants.PRINT_DATA_DINE_IN
@@ -506,15 +507,37 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     }
 
     private fun customerPrintWholeOrder() {
+
+        var guestPos = requireArguments().getInt(GUEST_POSITION)
+        var listItem: java.util.ArrayList<TbItem> = arrayListOf()
+        var listItemWT: java.util.ArrayList<TbItem> = arrayListOf()
+        for (i in 1 until dineInList.size) {
+            if (dineInList.get(i).isHeader == 1) {
+                dineInList.get(i).item?.let { it1 -> listItemWT.add(it1) }
+            } else {
+                break
+            }
+        }
+        for (i in guestPos + 1 until dineInList.size) {
+            if (dineInList.get(i).isHeader == 1) {
+
+                dineInList[i].item?.let { it1 -> listItem.add(it1) }
+            } else {
+                break;
+            }
+
+        }
         customerPrinterDineIn?.forEach {
+
+
             initDineInPrinter(
                 it,
                 Constants.CUSTOMER,
                 paymentType,
-                false,
-                arrayListOf(),
-                "",
-                arrayListOf()
+                true,
+                listGuestItem = listItem,
+                dineInList.get(guestPos).title.toString(),
+                listItemWT
             )
 
         }
@@ -1040,7 +1063,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     listWTitems.get(i),
                     customerSettingModel.fonts,
                     customerSettingModel.showModifiers,
-                    dineInList.size - 1,
+                    dineInList.get(0).totalGuestCount,
                     dineInList.get(0).serviceChargeList ?: arrayListOf()
                 )
             }
@@ -1284,21 +1307,21 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 )
                 if (getDineInOrderDetails?.payments?.isNotEmpty() == true) {
 
-                  /*  builder.addText(
-                        padLine(
-                            "Change Amount",
-                            "$" + MethodUtils.roundOffAmountString(
-                                (getDineInOrderDetails?.payments?.get(
-                                    0
-                                )?.amount!! - getDineInOrderDetails?.totalAmount!!)
-                            ),
-                            if (customerSettingModel.fonts == Constants.LARGE) {
-                                24
-                            } else {
-                                48
-                            }
-                        )
-                    )*/
+                    /*  builder.addText(
+                          padLine(
+                              "Change Amount",
+                              "$" + MethodUtils.roundOffAmountString(
+                                  (getDineInOrderDetails?.payments?.get(
+                                      0
+                                  )?.amount!! - getDineInOrderDetails?.totalAmount!!)
+                              ),
+                              if (customerSettingModel.fonts == Constants.LARGE) {
+                                  24
+                              } else {
+                                  48
+                              }
+                          )
+                      )*/
                 }
             }
 
@@ -2608,13 +2631,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 bundle.putBoolean("isSplitByNo", isSplitByNo)
                 bundle.putBoolean("isSplitByAmount", isSplitByAmount)
                 bundle.putBoolean("isCustomCash", isCustomCash)
-                bundle.putParcelable(PRINT_DATA_DINE_IN,getDineInOrderDetails)
-                bundle.putParcelableArrayList(DINE_IN_ADAPTER_LIST,dineInList)
-                bundle.putDouble("subTotalPrice",subTotalWT)
-                bundle.putDouble("totalServiceCharge",serviceCharge)
-                bundle.putDouble("totalDiscount",totalDiscount)
-                bundle.putDouble("divideCashDiscount",totalDiscount)
-                bundle.putDouble("totalTax",totalTaxAmount)
+                bundle.putParcelable(PRINT_DATA_DINE_IN, getDineInOrderDetails)
+                bundle.putParcelableArrayList(DINE_IN_ADAPTER_LIST, dineInList)
+                bundle.putDouble("subTotalPrice", subTotalWT)
+                bundle.putDouble("totalServiceCharge", serviceCharge)
+                bundle.putDouble("totalDiscount", totalDiscount)
+                bundle.putDouble("divideCashDiscount", totalDiscount)
+                bundle.putDouble("totalTax", totalTaxAmount)
 
 
 

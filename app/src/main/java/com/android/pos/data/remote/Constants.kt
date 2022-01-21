@@ -97,6 +97,8 @@ object Constants {
     const val DINE_IN_DISCOUNT = "dine_in_discount"
     const val DINE_IN_SERVICECHARGE = "dine_in_servicecharge"
     const val IS_GUEST_PAYMNET = "is_guest_payment"
+    const val GUEST_POSITION = "guest_position"
+    const val GUEST_COUNT = "guest_count"
     const val DINE_IN_ADAPTER_LIST = "dine_in_adapter_list"
     const val SYNC_VENUE_DATA = "locations/sync_data"
     const val SYNC_VENUE_DETAILS = "locations/setting_data"

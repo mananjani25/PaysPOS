@@ -34,6 +34,7 @@ import com.android.pos.data.remote.Constants.DINE_IN_SUBTOTAL
 import com.android.pos.data.remote.Constants.DINE_IN_TAX
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
+import com.android.pos.data.remote.Constants.GUEST_POSITION
 import com.android.pos.data.remote.Constants.IS_GUEST_PAYMNET
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.remote.Constants.LOCATION_ID
@@ -375,6 +376,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             )
 
             bundle.putInt("orderId", orderId ?: 0)
+            bundle.putInt(GUEST_POSITION,0)
 //            orderId?.let { it1 -> prefProvider.setValueInt("ORDER_ID", it1) }
 
             findNavController().navigate(
@@ -909,6 +911,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
         bundle.putBoolean(IS_GUEST_PAYMNET, true)
+        bundle.putInt(GUEST_POSITION,position)
         bundle.putParcelableArrayList(
             DINE_IN_ADAPTER_LIST, dineInTableAdapter.getList().toCollection(
                 arrayListOf()

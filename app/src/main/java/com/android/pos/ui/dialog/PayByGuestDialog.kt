@@ -81,6 +81,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
     private var totalServiceCharge: Double = 0.0
     private var isTotalPayment: Boolean = false
     private var paymentAmount: Double = 0.0
+    private var guestSelectedPos: Int = 0
 
     private var guestId: Int? = null
     private var guestRequestModel: GuestPaymentRequest? = null
@@ -138,6 +139,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
         getOrderDetailsResponse = requireArguments()?.getParcelable(Constants.PRINT_DATA_DINE_IN)
         dineInAdapterList =
             requireArguments().getParcelableArrayList<DineInModel>(Constants.DINE_IN_ADAPTER_LIST)
+        guestSelectedPos = requireArguments().getInt(Constants.GUEST_POSITION)
         floorPlanModel = requireArguments().getParcelable("floorPlan")
         guestRequestModel = requireArguments().getParcelable("model")
         totalGuestCount = requireArguments().getInt("totalGuestCount")
@@ -165,7 +167,8 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                 divideCashDiscount = requireArguments().getDouble("divideCashDiscount")
                 totaldiscount = requireArguments().getDouble("totalDiscount")
                 totalTax = requireArguments().getDouble("totalTax")
-                getOrderDetailsResponse = requireArguments()?.getParcelable(Constants.PRINT_DATA_DINE_IN)
+                getOrderDetailsResponse =
+                    requireArguments()?.getParcelable(Constants.PRINT_DATA_DINE_IN)
                 dineInAdapterList =
                     requireArguments().getParcelableArrayList<DineInModel>(Constants.DINE_IN_ADAPTER_LIST)
 
@@ -549,6 +552,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                     bundle.putDouble(DINE_IN_TAX, totalTax)
                     bundle.putDouble(DINE_IN_DISCOUNT, totaldiscount)
                     bundle.putDouble(DINE_IN_SERVICECHARGE, totalServiceCharge)
+                    bundle.putInt(Constants.GUEST_POSITION,guestSelectedPos)
                     findNavController().navigate(
                         R.id.action_payByGuestDialog_to_orderCompleteFragment,
                         bundle
@@ -620,6 +624,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                     bundle.putDouble(DINE_IN_TAX, totalTax)
                     bundle.putDouble(DINE_IN_DISCOUNT, totaldiscount)
                     bundle.putDouble(DINE_IN_SERVICECHARGE, totalServiceCharge)
+                    bundle.putInt(Constants.GUEST_POSITION,guestSelectedPos)
                     findNavController().navigate(
                         R.id.action_payByGuestDialog_to_orderCompleteFragment,
                         bundle
@@ -659,6 +664,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                     bundle.putDouble(DINE_IN_TAX, totalTax)
                     bundle.putDouble(DINE_IN_DISCOUNT, totaldiscount)
                     bundle.putDouble(DINE_IN_SERVICECHARGE, totalServiceCharge)
+                    bundle.putInt(Constants.GUEST_POSITION,guestSelectedPos)
                     if (isLastPayment!!)
                         bundle.putBoolean("isGuest", false)
                     findNavController().navigate(
@@ -740,6 +746,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                         bundle.putDouble(DINE_IN_TAX, totalTax)
                         bundle.putDouble(DINE_IN_DISCOUNT, totaldiscount)
                         bundle.putDouble(DINE_IN_SERVICECHARGE, totalServiceCharge)
+                        bundle.putInt(Constants.GUEST_POSITION,guestSelectedPos)
 
                         findNavController().navigate(
                             R.id.action_payByGuestDialog_to_orderCompleteFragment,
@@ -796,6 +803,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                         bundle.putDouble(DINE_IN_TAX, totalTax)
                         bundle.putDouble(DINE_IN_DISCOUNT, totaldiscount)
                         bundle.putDouble(DINE_IN_SERVICECHARGE, totalServiceCharge)
+                        bundle.putInt(Constants.GUEST_POSITION,guestSelectedPos)
                         findNavController().navigate(
                             R.id.action_payByGuestDialog_to_orderCompleteFragment,
                             bundle
@@ -853,6 +861,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                         bundle.putDouble(DINE_IN_DISCOUNT, totaldiscount)
                         bundle.putDouble(DINE_IN_SERVICECHARGE, totalServiceCharge)
                         bundle.putParcelable(Constants.PRINT_DATA_DINE_IN, getOrderDetailsResponse)
+                        bundle.putInt(Constants.GUEST_POSITION,guestSelectedPos)
                         findNavController().navigate(
                             R.id.action_payByGuestDialog_to_orderCompleteFragment,
                             bundle
@@ -906,6 +915,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                         bundle.putDouble(DINE_IN_TAX, totalTax)
                         bundle.putDouble(DINE_IN_DISCOUNT, totaldiscount)
                         bundle.putDouble(DINE_IN_SERVICECHARGE, totalServiceCharge)
+                        bundle.putInt(Constants.GUEST_POSITION,guestSelectedPos)
                         if (isLastPayment!!)
                             bundle.putBoolean("isGuest", false)
                         findNavController().navigate(
