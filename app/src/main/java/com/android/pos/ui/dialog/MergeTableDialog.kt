@@ -24,9 +24,8 @@ import com.android.pos.ui.adapter.MergeTableSelectionAdapter
 import com.android.pos.ui.fragments.dinein.DineInViewModel
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
-import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.HashSet
+import java.util.*
 
 @AndroidEntryPoint
 class MergeTableDialog : DialogFragment() {
@@ -245,8 +244,6 @@ class MergeTableDialog : DialogFragment() {
                     )
                 }
 
-                Log.e(TAG, "childIds:  ${childIds}")
-                Log.e(TAG, "totalChairCount:  ${totalChairCount}")
 
 
 
@@ -461,6 +458,15 @@ class MergeTableDialog : DialogFragment() {
 
 
              }*/
+            } else if (isDuplicateIdTrue) {
+
+                AlertUtils.showCustomAlertWithListenerWithOK(
+                    requireContext(), "Same Table Can't be Merged."
+                ) { _, _ ->
+
+                }
+
+
             }
         }
     }

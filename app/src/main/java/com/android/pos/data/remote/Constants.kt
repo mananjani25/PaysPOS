@@ -90,7 +90,14 @@ object Constants {
     const val DISCOVERY_INTERVAL = 500
     const val EMPLOYEES_TIMESHEET = "employees/timesheet"
     const val EMPLOYEES_TIMESHEET_DETAILS = "employees/timesheet_details"
-
+    const val ORDER_ID = "orderID"
+    const val PRINT_DATA_DINE_IN = "print_data_dine_in"
+    const val DINE_IN_SUBTOTAL = "dine_in_subtotal"
+    const val DINE_IN_TAX = "dine_in_tax"
+    const val DINE_IN_DISCOUNT = "dine_in_discount"
+    const val DINE_IN_SERVICECHARGE = "dine_in_servicecharge"
+    const val IS_GUEST_PAYMNET = "is_guest_payment"
+    const val DINE_IN_ADAPTER_LIST = "dine_in_adapter_list"
     const val SYNC_VENUE_DATA = "locations/sync_data"
     const val SYNC_VENUE_DETAILS = "locations/setting_data"
     const val ORDER_TYPES = "order_types"
@@ -378,20 +385,20 @@ object Constants {
     const val FRAGMENT_SCANNER_LIST = 2
     const val FRAGMENT_RESET_SCANNER = 3
 
-//takeout_openorder
+    //takeout_openorder
     const val CASH_DISCOUNT_SURCHARGE = "cashDiscountSurcharge"
     const val SUB_TOTAL = "subtotal"
     const val TAX_CHARGE = "taxcharge"
     const val TIPS_AMOUNT = "tips"
-    const val TOTAL_DISCOUNT= "totalDiscount"
+    const val TOTAL_DISCOUNT = "totalDiscount"
 
     // dinein
     const val CASH_DISCOUNT_SURCHARGE_DINEIN = "cashDiscountSurcharge_dinein"
     const val SUB_TOTAL_DINEIN = "subtotal_dinein"
     const val TAX_CHARGE_DINEIN = "taxcharge_dinein"
     const val TIPS_AMOUNT_DINEIN = "tips_dinein"
-    const val TOTAL_DISCOUNT_DINEIN= "totalDiscount_dinein"
-    const val SERVICE_CHARGE_DINEIN= "servicecharge_dinein"
-    const val TOTAL_PRICE_DINEIN= "totalprice_dinein"
+    const val TOTAL_DISCOUNT_DINEIN = "totalDiscount_dinein"
+    const val SERVICE_CHARGE_DINEIN = "servicecharge_dinein"
+    const val TOTAL_PRICE_DINEIN = "totalprice_dinein"
 
 }

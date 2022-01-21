@@ -27,13 +27,20 @@ import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
+import com.android.pos.data.remote.Constants.DINE_IN_ADAPTER_LIST
+import com.android.pos.data.remote.Constants.DINE_IN_DISCOUNT
+import com.android.pos.data.remote.Constants.DINE_IN_SERVICECHARGE
+import com.android.pos.data.remote.Constants.DINE_IN_SUBTOTAL
+import com.android.pos.data.remote.Constants.DINE_IN_TAX
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
+import com.android.pos.data.remote.Constants.IS_GUEST_PAYMNET
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.remote.Constants.MERGEDANDOCCUPIED
 import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
 import com.android.pos.data.remote.Constants.ORDER_TYPE_NAME
+import com.android.pos.data.remote.Constants.PRINT_DATA_DINE_IN
 import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.databinding.FragmentDineInOrderTableBinding
 import com.android.pos.di.PrefProvider
@@ -353,8 +360,21 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             bundle.putString("paymentOfflineId", randomOfflineId())
             bundle.putBoolean("isTotalPayment", true)
             bundle.putBoolean("isLastPayment", true)
+            bundle.putParcelable(PRINT_DATA_DINE_IN, getOrderDetailsResponse)
+            bundle.putDouble(DINE_IN_SUBTOTAL, subTotalWT)
+            bundle.putDouble(DINE_IN_TAX, viewModel.totalTaxAmount)
+            bundle.putDouble(DINE_IN_DISCOUNT, viewModel.totalDiscountAmount)
+            bundle.putDouble(DINE_IN_SERVICECHARGE, serviceCharge)
 
-            orderId?.let { it1 -> bundle.putInt("orderId", it1) }
+
+            bundle.putBoolean(IS_GUEST_PAYMNET, false)
+            bundle.putParcelableArrayList(
+                DINE_IN_ADAPTER_LIST, dineInTableAdapter.getList().toCollection(
+                    arrayListOf()
+                )
+            )
+
+            bundle.putInt("orderId", orderId ?: 0)
 //            orderId?.let { it1 -> prefProvider.setValueInt("ORDER_ID", it1) }
 
             findNavController().navigate(
@@ -876,9 +896,25 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         bundle.putParcelable("orderPayment", modelReq)
         bundle.putString("orderOfflineId", orderOfflineId)
         bundle.putString("paymentOfflineId", paymentAttr.offlineId)
-        orderId?.let { bundle.putInt("orderId", it) }
+        bundle.putInt("orderId", orderId ?: 0)
         bundle.putBoolean("isGuestPay", true)
-        orderId?.let { it1 -> bundle.putInt("orderId", it1) }
+        bundle.putParcelable(PRINT_DATA_DINE_IN, getOrderDetailsResponse)
+        bundle.putDouble(DINE_IN_SUBTOTAL, MethodUtils.roundOffAmountDouble(subTotalGuest))
+        bundle.putDouble(DINE_IN_TAX, MethodUtils.roundOffAmountDouble(taxGuest))
+        bundle.putDouble(DINE_IN_DISCOUNT, MethodUtils.roundOffAmountDouble(divideDiscount))
+        bundle.putDouble(
+            DINE_IN_SERVICECHARGE,
+            MethodUtils.roundOffAmountDouble(serviceChargeGuest)
+        )
+
+
+        bundle.putBoolean(IS_GUEST_PAYMNET, true)
+        bundle.putParcelableArrayList(
+            DINE_IN_ADAPTER_LIST, dineInTableAdapter.getList().toCollection(
+                arrayListOf()
+            )
+        )
+        //orderId?.let { it1 -> bundle.putInt("orderId", it1) }
 //        orderId?.let { it1 -> prefProvider.setValueInt("ORDER_ID", it1) }
         var wholeTableAmt = 0.0
         var paidAmount = 0.0
@@ -958,18 +994,45 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     override fun onGuestPrint(
         listItem: ArrayList<TbItem>,
         guestName: String,
-        listWTitems: ArrayList<TbItem>
+        listWTitems: ArrayList<TbItem>,
+        subTotalGuest: Double,
+        total: Double,
+        taxGuest: Double,
+        serviceChargeGuest: Double,
+        divideDiscount: Double
     ) {
 
         if (listItem.isNotEmpty()) {
             if (listItem[0].isPaid == true) {
-                guestPrint("Paid", listItem, guestName, listWTitems)
+                guestPrint(
+                    "Paid",
+                    listItem,
+                    guestName,
+                    listWTitems,
+                    subTotalGuest,
+                    total,
+                    taxGuest,
+                    serviceChargeGuest,
+                    divideDiscount
+                )
             } else {
-                guestPrint("Unpaid", listItem, guestName, listWTitems)
+                guestPrint(
+                    "Unpaid", listItem, guestName, listWTitems, subTotalGuest,
+                    total,
+                    taxGuest,
+                    serviceChargeGuest,
+                    divideDiscount
+                )
 
             }
         } else if (listItem.isEmpty() && listWTitems.isNotEmpty()) {
-            guestPrint("Unpaid", listItem, guestName, listWTitems)
+            guestPrint(
+                "Unpaid", listItem, guestName, listWTitems, subTotalGuest,
+                total,
+                taxGuest,
+                serviceChargeGuest,
+                divideDiscount
+            )
         }
 
     }
@@ -978,7 +1041,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         paymentStatus: String,
         listGuestItem: ArrayList<TbItem>,
         guestName: String,
-        wtItems: ArrayList<TbItem>
+        wtItems: ArrayList<TbItem>,
+        subTotalGuest: Double = 0.0,
+        total: Double = 0.0,
+        taxGuest: Double = 0.0,
+        serviceChargeGuest: Double = 0.0,
+        divideDiscount: Double = 0.0
     ) {
 
         Log.e(TAG, "customerListSize  ${customerList.size}")
@@ -991,7 +1059,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     true,
                     listGuestItem,
                     guestName,
-                    wtItems
+                    wtItems,
+                    subTotalGuest,
+                    total,
+                    taxGuest,
+                    serviceChargeGuest,
+                    divideDiscount
+
                 )
 
             }
@@ -2132,7 +2206,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         guestPrint: Boolean,
         listGuestItem: ArrayList<TbItem>,
         guestName: String,
-        listWTitems: ArrayList<TbItem>
+        listWTitems: ArrayList<TbItem>,
+        subTotalGuest: Double = 0.0,
+        total: Double = 0.0,
+        taxGuest: Double = 0.0,
+        serviceChargeGuest: Double = 0.0,
+        divideDiscount: Double = 0.0
     ) {
 
         PrinterClass.closePrinter()
@@ -2179,7 +2258,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             paymentType,
                             listGuestItem,
                             guestName,
-                            listWTitems
+                            listWTitems,
+                            subTotalGuest,
+                            total,
+                            taxGuest,
+                            serviceChargeGuest,
+                            divideDiscount,
                         )
 
                     } else {
@@ -2205,7 +2289,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         paymentType: String,
         listGuestItem: ArrayList<TbItem>,
         guestName: String,
-        listWTitems: ArrayList<TbItem>
+        listWTitems: ArrayList<TbItem>,
+        subTotalGuest: Double = 0.0,
+        total: Double = 0.0,
+        taxGuest: Double = 0.0,
+        serviceChargeGuest: Double = 0.0,
+        divideDiscount: Double = 0.0
     ) {
         var guestSubTotal = 0.0
         var guestTaxes = 0.0
@@ -2713,11 +2802,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 Builder.COLOR_1
             )
 
+
             builder.addText(
                 padLine(
                     "Sub Total",
                     "$" + MethodUtils.roundOffAmountString(
-                        guestSubTotal + dineInTableAdapter.getList().get(0).guestDividedAmt
+                        subTotalGuest
                     ),
                     if (customerSettingModel.fonts == Constants.LARGE) {
                         24
@@ -2745,7 +2835,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 builder.addText(
                     padLine(
                         "Tax",
-                        "$" + MethodUtils.roundOffAmountString(guestTaxes),
+                        "$" + MethodUtils.roundOffAmountString(taxGuest),
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             24
                         } else {
@@ -2772,7 +2862,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 builder.addText(
                     padLine(
                         "Service Charge",
-                        "$" + MethodUtils.roundOffAmountString(guestServiceCharge),
+                        "$" + MethodUtils.roundOffAmountString(serviceChargeGuest),
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             24
                         } else {
@@ -2851,7 +2941,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             builder.addText(
                 padLine(
                     "Total Price",
-                    "$" + MethodUtils.roundOffAmountString(totalAmt),
+                    "$" + MethodUtils.roundOffAmountString(total),
                     if (customerSettingModel.fonts == Constants.LARGE) {
                         24
                     } else {
