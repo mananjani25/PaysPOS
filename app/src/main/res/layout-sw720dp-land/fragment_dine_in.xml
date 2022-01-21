@@ -45,7 +45,7 @@
                     android:layout_centerVertical="true"
                     android:layout_marginEnd="@dimen/_8sdp"
                     android:padding="@dimen/_1sdp"
-                    android:src="@drawable/merge" />
+                    android:src="@drawable/ic_merge_new" />
 
 
             </RelativeLayout>

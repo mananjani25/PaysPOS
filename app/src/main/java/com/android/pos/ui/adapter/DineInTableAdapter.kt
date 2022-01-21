@@ -243,11 +243,6 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 )
             }
 
-
-        }
-
-        init {
-
             binding.imgPrint.setOnClickListener {
                 var fisrtTime: Boolean = false
                 var listItem: ArrayList<TbItem> = arrayListOf()
@@ -280,11 +275,28 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
                 }
                 if (listItem.isNotEmpty() || listItemWT.isNotEmpty()) {
-                    listner.onGuestPrint(listItem, guestName, listItemWT)
+
+                    listner.onGuestPrint(
+                        listItem,
+                        guestName,
+                        listItemWT,
+                        MethodUtils.roundOffAmountDouble(guestSubTotal + list.get(0).wholeTableSubTotal),
+                        MethodUtils.roundOffAmountDouble(finalAmt),
+                        MethodUtils.roundOffAmountDouble(totalTaxAmt + list.get(0).wholeTableTax),
+                        MethodUtils.roundOffAmountDouble(totalServiceCharge + list.get(0).wholeTableSurTax),
+                        list[0].orderDiscount
+                    )
                 }
 
 
             }
+
+
+        }
+
+        init {
+
+
             binding.chkIsFired.setOnCheckedChangeListener { buttonView, isChecked ->
 
                 if (buttonView.isPressed) {
@@ -572,7 +584,12 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         fun onGuestPrint(
             listItem: ArrayList<TbItem>,
             guestName: String,
-            listWTitems: ArrayList<TbItem>
+            listWTitems: ArrayList<TbItem>,
+            subTotalGuest: Double,
+            total: Double,
+            taxGuest: Double,
+            serviceChargeGuest: Double,
+            divideDiscount: Double
         )
     }
 

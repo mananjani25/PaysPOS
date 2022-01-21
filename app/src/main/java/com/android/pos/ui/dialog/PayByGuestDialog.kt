@@ -428,8 +428,8 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
     private fun wholePaymentObservor() {
         paymentViewModel.msgText.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
-            /*    AlertUtils.showCustomAlertWithListenerWithOK(requireContext(), it) { _, _ ->*/
-                    gotoPay()
+                /*    AlertUtils.showCustomAlertWithListenerWithOK(requireContext(), it) { _, _ ->*/
+                gotoPay()
 
                 /*}*/
 
@@ -1904,7 +1904,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                 /*AlertUtils.showCustomAlertWithListenerWithOK(requireContext(), str) { _, _ ->*/
 
 
-                    gotoPay()
+                gotoPay()
 
 
                 /*}*/

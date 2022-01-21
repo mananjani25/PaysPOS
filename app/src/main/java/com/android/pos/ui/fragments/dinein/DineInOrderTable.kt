@@ -958,18 +958,45 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     override fun onGuestPrint(
         listItem: ArrayList<TbItem>,
         guestName: String,
-        listWTitems: ArrayList<TbItem>
+        listWTitems: ArrayList<TbItem>,
+        subTotalGuest: Double,
+        total: Double,
+        taxGuest: Double,
+        serviceChargeGuest: Double,
+        divideDiscount: Double
     ) {
 
         if (listItem.isNotEmpty()) {
             if (listItem[0].isPaid == true) {
-                guestPrint("Paid", listItem, guestName, listWTitems)
+                guestPrint(
+                    "Paid",
+                    listItem,
+                    guestName,
+                    listWTitems,
+                    subTotalGuest,
+                    total,
+                    taxGuest,
+                    serviceChargeGuest,
+                    divideDiscount
+                )
             } else {
-                guestPrint("Unpaid", listItem, guestName, listWTitems)
+                guestPrint(
+                    "Unpaid", listItem, guestName, listWTitems, subTotalGuest,
+                    total,
+                    taxGuest,
+                    serviceChargeGuest,
+                    divideDiscount
+                )
 
             }
         } else if (listItem.isEmpty() && listWTitems.isNotEmpty()) {
-            guestPrint("Unpaid", listItem, guestName, listWTitems)
+            guestPrint(
+                "Unpaid", listItem, guestName, listWTitems, subTotalGuest,
+                total,
+                taxGuest,
+                serviceChargeGuest,
+                divideDiscount
+            )
         }
 
     }
@@ -978,7 +1005,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         paymentStatus: String,
         listGuestItem: ArrayList<TbItem>,
         guestName: String,
-        wtItems: ArrayList<TbItem>
+        wtItems: ArrayList<TbItem>,
+        subTotalGuest: Double = 0.0,
+        total: Double = 0.0,
+        taxGuest: Double = 0.0,
+        serviceChargeGuest: Double = 0.0,
+        divideDiscount: Double = 0.0
     ) {
 
         Log.e(TAG, "customerListSize  ${customerList.size}")
@@ -991,7 +1023,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     true,
                     listGuestItem,
                     guestName,
-                    wtItems
+                    wtItems,
+                    subTotalGuest,
+                    total,
+                    taxGuest,
+                    serviceChargeGuest,
+                    divideDiscount
+
                 )
 
             }
@@ -2132,7 +2170,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         guestPrint: Boolean,
         listGuestItem: ArrayList<TbItem>,
         guestName: String,
-        listWTitems: ArrayList<TbItem>
+        listWTitems: ArrayList<TbItem>,
+        subTotalGuest: Double = 0.0,
+        total: Double = 0.0,
+        taxGuest: Double = 0.0,
+        serviceChargeGuest: Double = 0.0,
+        divideDiscount: Double = 0.0
     ) {
 
         PrinterClass.closePrinter()
@@ -2179,7 +2222,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             paymentType,
                             listGuestItem,
                             guestName,
-                            listWTitems
+                            listWTitems,
+                            subTotalGuest,
+                            total,
+                            taxGuest,
+                            serviceChargeGuest,
+                            divideDiscount,
                         )
 
                     } else {
@@ -2205,7 +2253,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         paymentType: String,
         listGuestItem: ArrayList<TbItem>,
         guestName: String,
-        listWTitems: ArrayList<TbItem>
+        listWTitems: ArrayList<TbItem>,
+        subTotalGuest: Double = 0.0,
+        total: Double = 0.0,
+        taxGuest: Double = 0.0,
+        serviceChargeGuest: Double = 0.0,
+        divideDiscount: Double = 0.0
     ) {
         var guestSubTotal = 0.0
         var guestTaxes = 0.0
@@ -2713,11 +2766,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 Builder.COLOR_1
             )
 
+
             builder.addText(
                 padLine(
                     "Sub Total",
                     "$" + MethodUtils.roundOffAmountString(
-                        guestSubTotal + dineInTableAdapter.getList().get(0).guestDividedAmt
+                        subTotalGuest
                     ),
                     if (customerSettingModel.fonts == Constants.LARGE) {
                         24
@@ -2745,7 +2799,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 builder.addText(
                     padLine(
                         "Tax",
-                        "$" + MethodUtils.roundOffAmountString(guestTaxes),
+                        "$" + MethodUtils.roundOffAmountString(taxGuest),
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             24
                         } else {
@@ -2772,7 +2826,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 builder.addText(
                     padLine(
                         "Service Charge",
-                        "$" + MethodUtils.roundOffAmountString(guestServiceCharge),
+                        "$" + MethodUtils.roundOffAmountString(serviceChargeGuest),
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             24
                         } else {
@@ -2851,7 +2905,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             builder.addText(
                 padLine(
                     "Total Price",
-                    "$" + MethodUtils.roundOffAmountString(totalAmt),
+                    "$" + MethodUtils.roundOffAmountString(total),
                     if (customerSettingModel.fonts == Constants.LARGE) {
                         24
                     } else {
