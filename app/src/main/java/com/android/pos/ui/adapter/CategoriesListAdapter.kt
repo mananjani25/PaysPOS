@@ -1,6 +1,7 @@
 package com.android.pos.ui.adapter
 
 import android.text.TextUtils
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Filter
@@ -41,7 +42,7 @@ class CategoriesListAdapter(private val isChoose: Boolean) :
 
             binding.imageCheck.setOnClickListener {
                 if (isChoose) {
-                    mpos = layoutPosition
+                    mpos = bindingAdapterPosition
                     notifyDataSetChanged()
                 }
             }
