@@ -103,7 +103,7 @@
                             android:background="@drawable/background_square_border_grey"
                             android:imeOptions="actionNext"
                             android:padding="@dimen/_5sdp"
-                            android:inputType="textPersonName"
+                            android:inputType="textCapWords|textVisiblePassword"
                             android:digits="@string/disable_emoji_string"
                             android:text="@={viewModel.addCustomerDetails.data.first_name}"
                             android:textColor="@color/txtColor"
@@ -135,7 +135,7 @@
                             android:layout_marginTop="@dimen/_5sdp"
                             android:background="@drawable/background_square_border_grey"
                             android:imeOptions="actionNext"
-                            android:inputType="textPersonName"
+                            android:inputType="textCapWords|textVisiblePassword"
                             android:digits="@string/disable_emoji_string"
                             android:padding="@dimen/_5sdp"
                             android:text="@={viewModel.addCustomerDetails.data.last_name}"
@@ -211,7 +211,7 @@
                     android:textColor="@color/color65"
                     android:textSize="@dimen/_5mdpi" />
 
-                <EditText
+                <androidx.appcompat.widget.AppCompatEditText
                     android:id="@+id/edtEmailAdd"
                     style="@style/CustomFontMediumStyle"
                     android:layout_width="match_parent"
@@ -222,7 +222,7 @@
                     android:background="@drawable/background_square_border_grey"
                     android:imeOptions="actionNext"
                     android:digits="@string/disable_emoji_string"
-                    android:inputType="textEmailAddress"
+                    android:inputType="textVisiblePassword"
                     android:padding="@dimen/_5sdp"
                     android:text="@={viewModel.addCustomerDetails.data.email}"
                     android:textColor="@color/txtColor"
@@ -477,7 +477,7 @@
                     android:layout_marginEnd="@dimen/_15sdp"
                     android:background="@drawable/background_square_border_grey"
                     android:imeOptions="actionDone"
-                    android:inputType="text"
+                    android:inputType="textVisiblePassword"
                     android:padding="@dimen/_5sdp"
                     android:text="@={viewModel.addCustomerDetails.data.company}"
                     android:textColor="@color/txtColor"
