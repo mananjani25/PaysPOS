@@ -545,14 +545,24 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                  finalPrice = totalPrice + tipAmount
              }*/
             //isCustomCash = true
+            /*    if (splitValue != -1) {
+                    splitAfterAmount = amounnt
+                } else {
+                    paymentAmount = amounnt
+                }
+
+                makePayment()
+    */
+
+            finalPrice = amounnt + tipAmount
+            isCustomCash = true
             if (splitValue != -1) {
                 splitAfterAmount = amounnt
             } else {
+
                 paymentAmount = amounnt
             }
-
             makePayment()
-
         }
 
         setFragmentResultListener("request_key_tips") { requestKey: String, bundle: Bundle ->

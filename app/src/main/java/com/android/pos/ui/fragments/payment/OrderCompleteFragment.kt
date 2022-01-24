@@ -246,17 +246,40 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 )
                 binding.txtTitle.text =
                     MethodUtils.roundOffAmount(paidAmount)
-                if (isSplitByAmount) {
-                    binding.txtChangeAmount.text =
-                        MethodUtils.roundOffAmount(0.0) + " Change"
-                } else {
-                    if (remainingAmount < paidAmount) {
-                        binding.txtChangeAmount.text =
-                            MethodUtils.roundOffAmount((paidAmount - dis_charge_value) - remainingAmount) + " Change"
-                    }
-                }
 
-                binding.txtPaymentAmount.text = "Out of " + MethodUtils.roundOffAmount(paidAmount)
+
+                Log.e(TAG, "paymentpaidAmount  ${paidAmount}")
+                Log.e(TAG, "paymentWholetotalPrice  ${WholetotalPrice}")
+                Log.e(TAG, "paymentremainingAmount  ${remainingAmount}")
+                Log.e(TAG, "paymentsplitValue ${splitValue}")
+                Log.e(TAG, "paymentisSpilt  ${isSpilt}")
+                Log.e(TAG, "paymentisCustomCash  ${isCustomCash}")
+                Log.e(TAG, "paymentisSplitByAmount  ${isSplitByAmount}")
+
+                if (isSplitByAmount) {
+                    if (paidAmount > WholetotalPrice) {
+                        binding.txtChangeAmount.text =
+                            MethodUtils.roundOffAmount(paidAmount - WholetotalPrice) + " Change"
+                        binding.txtPaymentAmount.text =
+                            "Out of " + MethodUtils.roundOffAmount(paidAmount)
+
+                    } else {
+
+                        binding.txtChangeAmount.text =
+                            MethodUtils.roundOffAmount(0.0) + " Change"
+                    }
+                } else if (remainingAmount < paidAmount) {
+                    binding.txtChangeAmount.text =
+                        MethodUtils.roundOffAmount((paidAmount - dis_charge_value) - WholetotalPrice) + " Change"
+                    binding.txtPaymentAmount.text =
+                        "Out of " + MethodUtils.roundOffAmount((paidAmount))
+
+                } else {
+
+
+                    binding.txtPaymentAmount.text =
+                        "Out of " + MethodUtils.roundOffAmount(paidAmount)
+                }
             } else {
                 binding.llHome.visibility = View.VISIBLE
                 binding.txtHome.visibility = View.VISIBLE
