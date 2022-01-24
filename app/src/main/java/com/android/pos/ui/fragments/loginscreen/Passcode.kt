@@ -12,15 +12,17 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.android.pos.MainApplication
 import com.android.pos.R
+import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentPasscodeBinding
+import com.android.pos.di.PrefProvider
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
@@ -30,6 +32,9 @@ class Passcode : Fragment() {
     private val viewModel by viewModels<PasscodeViewModel>()
     var isDashboard: Boolean = false
     var isClockOut: Boolean = false
+
+    @Inject
+    lateinit var prefProvider: PrefProvider
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -77,15 +82,36 @@ class Passcode : Fragment() {
 
         binding.passCodeView.setOnTextChangeListener {
             if (it.length == 4) {
-
                 Log.e("passCodeView", it.toString())
-                viewModel.submit(it.toString())
+
+                if (isDashboard) {
+                    if (prefProvider.getValue(Constants.PASSCODE, "").toString() == it.toString()
+                    ) {
+                        viewModel.submit(it.toString())
+                    } else {
+                        binding.passCodeView.setPassCode("")
+                        AlertUtils.showCustomAlert(
+                            requireActivity(),
+                            "You have entered wrong Passcode."
+                        )
+
+                    }
+                } else {
+                    viewModel.submit(it.toString())
+                }
 
             }
         }
 
         binding.Cancel.setOnClickListener {
-            findNavController().navigateUp()
+            //findNavController().navigateUp()
+            if (isClockOut) {
+                (requireActivity() as MainActivity).finish()
+
+            } else {
+                findNavController().navigateUp()
+
+            }
         }
 
     }
