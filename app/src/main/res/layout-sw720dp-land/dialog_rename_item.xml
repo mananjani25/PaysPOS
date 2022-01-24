@@ -74,7 +74,8 @@
             android:padding="@dimen/_5sdp"
             android:textColor="@color/txtColor"
             android:textColorHint="@color/hintColor"
-            android:textSize="@dimen/_6mdpi" />
+            android:textSize="@dimen/_6mdpi"
+            android:digits="@string/disable_emoji_string"/>
 
 
     </androidx.appcompat.widget.LinearLayoutCompat>

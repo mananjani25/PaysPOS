@@ -6,6 +6,7 @@ import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.os.Build
 import android.os.Bundle
+import android.text.InputFilter
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -55,6 +56,11 @@ class AddEditCustomer : Fragment() {
         binding = FragmentAddEditCustomerBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
+
+
+        //edit.setFilters(new InputFilter[] { filter })
+
+
 
         setUpSnackBar()
         showObserveProgress()

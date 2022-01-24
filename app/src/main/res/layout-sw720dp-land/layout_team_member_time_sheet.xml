@@ -193,6 +193,7 @@
                 android:hint="@string/search_name"
                 android:imeOptions="actionDone"
                 android:inputType="text"
+                android:digits="@string/disable_emoji_string"
                 android:minWidth="@dimen/_90sdp"
                 android:padding="@dimen/_2sdp"
                 android:paddingStart="@dimen/_5sdp"

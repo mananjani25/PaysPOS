@@ -202,7 +202,8 @@
                         android:paddingBottom="@dimen/_4sdp"
                         android:textColor="@color/txtColor"
                         android:textColorHint="@color/txtColor"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textSize="@dimen/_6mdpi"
+                        android:digits="@string/disable_emoji_string"/>
                 </LinearLayout>
 
 

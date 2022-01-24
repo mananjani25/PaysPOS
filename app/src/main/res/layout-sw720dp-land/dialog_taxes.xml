@@ -74,7 +74,8 @@
             android:textColor="@color/black"
             android:textColorHint="@color/hintColor"
             android:textSize="@dimen/_6mdpi"
-            android:visibility="gone" />
+            android:visibility="gone"
+            android:digits="@string/disable_emoji_string"/>
 
         <View
             android:layout_width="match_parent"

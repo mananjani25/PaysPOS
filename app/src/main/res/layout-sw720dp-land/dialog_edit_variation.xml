@@ -108,7 +108,8 @@
                             android:imeOptions="actionNext"
                             android:padding="@dimen/_5sdp"
                             android:textColor="@color/btnColor"
-                            android:textSize="@dimen/_5mdpi" />
+                            android:textSize="@dimen/_5mdpi"
+                            android:digits="@string/disable_emoji_string"/>
                     </LinearLayout>
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
@@ -160,7 +161,8 @@
                             android:padding="@dimen/_5sdp"
                             android:textColor="@color/black"
                             android:textColorHint="@color/hintColor"
-                            android:textSize="@dimen/_5mdpi" />
+                            android:textSize="@dimen/_5mdpi"
+                            android:digits="@string/disable_emoji_string"/>
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -199,7 +201,8 @@
                             android:padding="@dimen/_5sdp"
                             android:textColor="@color/black"
                             android:textColorHint="@color/hintColor"
-                            android:textSize="@dimen/_5mdpi" />
+                            android:textSize="@dimen/_5mdpi"
+                            android:digits="@string/disable_emoji_string"/>
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -238,7 +241,8 @@
                             android:padding="@dimen/_5sdp"
                             android:textColor="@color/black"
                             android:textColorHint="@color/hintColor"
-                            android:textSize="@dimen/_5mdpi" />
+                            android:textSize="@dimen/_5mdpi"
+                            android:digits="@string/disable_emoji_string"/>
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
 

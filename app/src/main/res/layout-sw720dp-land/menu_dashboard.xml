@@ -59,6 +59,7 @@
         android:layout_marginEnd="@dimen/_5sdp"
         android:background="@null"
         android:ems="10"
+        android:digits="@string/disable_emoji_string"
         android:fontFamily="@font/sf_pro_display_regular"
         android:hint="@string/scan_barcode_or_search"
         android:imeOptions="actionDone"

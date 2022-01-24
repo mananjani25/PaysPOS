@@ -94,6 +94,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:digits="@string/disable_emoji_string"
                     android:layout_marginBottom="@dimen/_10sdp"
                     android:background="@drawable/edt_border_light_gray"
                     android:hint="@string/tv_add_role_name"
