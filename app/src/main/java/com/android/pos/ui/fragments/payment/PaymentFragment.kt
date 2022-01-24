@@ -529,16 +529,30 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         }
         setFragmentResultListener("request_for_customAmount") { requestKey: String, bundle: Bundle ->
             val amounnt = bundle.getDouble("amount")
-            isCustomCash = true
+            /*isCustomCash = true
             isSplitByNo = false
             isNextPayment = false
             isSplitByAmount = false
             splitValue = -1
+
+
             paymentAmount = amounnt
             cardPaymentAmount = paymentAmount + cashDiscountSurcharge
             binding.txtCardAmount.text = "$ " + String.format("%.2f", cardPaymentAmount)
             MethodUtils.setPriceTextView(binding.txtTotalAmount, paymentAmount)
-            getCashPaymentOptionList(paymentAmount)
+            getCashPaymentOptionList(paymentAmount)*/
+            /* if (finalPrice != 0.0) {
+                 finalPrice = totalPrice + tipAmount
+             }*/
+            //isCustomCash = true
+            if (splitValue != -1) {
+                splitAfterAmount = amounnt
+            } else {
+                paymentAmount = amounnt
+            }
+
+            makePayment()
+
         }
 
         setFragmentResultListener("request_key_tips") { requestKey: String, bundle: Bundle ->
@@ -812,7 +826,12 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
             R.id.txtCustom -> {
                 val bundle = Bundle()
-                bundle.putDouble("totalprice", ((totalPrice + tipAmount)))
+
+                if (splitAfterAmount != 0.0) {
+                    bundle.putDouble("totalprice", (splitAfterAmount + tipAmount))
+                } else {
+                    bundle.putDouble("totalprice", ((totalPrice + tipAmount)))
+                }
                 findNavController().navigate(
                     R.id.action_paymentFragment_to_customAmountFragment,
                     bundle
