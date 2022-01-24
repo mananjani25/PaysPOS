@@ -156,13 +156,14 @@
                             android:background="@null"
                             android:gravity="end"
                             android:hint="$0.0"
+                            android:maxLength="11"
                             android:imeOptions="actionNext"
                             android:inputType="numberDecimal"
                             android:padding="@dimen/_5sdp"
                             android:textColor="@color/black"
                             android:textColorHint="@color/hintColor"
                             android:textSize="@dimen/_5mdpi"
-                            android:digits="@string/disable_emoji_string"/>
+                            android:digits="@string/numbers_digits_string"/>
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
