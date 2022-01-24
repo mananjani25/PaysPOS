@@ -155,7 +155,9 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:background="@null"
+
                             android:gravity="end"
+                            android:digits="@string/disable_emoji_string"
                             android:hint="Sales Tax"
                             android:imeOptions="actionNext"
                             android:inputType="textCapWords"
@@ -217,6 +219,7 @@
                                 android:layout_height="wrap_content"
                                 android:background="@null"
                                 android:gravity="end"
+                                android:digits="@string/disable_emoji_string"
                                 android:hint="0.00"
                                 android:imeOptions="actionDone"
                                 android:inputType="numberDecimal"

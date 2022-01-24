@@ -113,7 +113,8 @@
                             android:padding="@dimen/_5sdp"
                             android:textColor="@color/txtColor"
                             android:textColorHint="@color/hint_color_"
-                            android:textSize="@dimen/_5mdpi" />
+                            android:textSize="@dimen/_5mdpi"
+                            android:digits="@string/disable_emoji_string"/>
 
                     </LinearLayout>
 
@@ -145,7 +146,7 @@
                             android:imeOptions="actionNext"
                             android:inputType="textCapWords"
                             android:padding="@dimen/_5sdp"
-
+                            android:digits="@string/disable_emoji_string"
                             android:textColor="@color/txtColor"
                             android:textColorHint="@color/hint_color_"
                             android:textSize="@dimen/_5mdpi" />
@@ -180,7 +181,7 @@
                         android:imeOptions="actionNext"
                         android:inputType="textCapWords"
                         android:padding="@dimen/_5sdp"
-
+                        android:digits="@string/disable_emoji_string"
                         android:textColor="@color/txtColor"
                         android:textColorHint="@color/hint_color_"
                         android:textSize="@dimen/_5mdpi" />
@@ -225,7 +226,7 @@
                         android:inputType="number"
                         android:maxLength="20"
                         android:padding="@dimen/_5sdp"
-
+                        android:digits="@string/disable_emoji_string"
                         android:textColor="@color/txtColor"
                         android:textColorHint="@color/hint_color_"
                         android:textSize="@dimen/_5mdpi"
@@ -311,6 +312,7 @@
                         android:hint="None"
                         android:imeOptions="actionNext"
                         android:inputType="numberDecimal"
+                        android:digits="@string/disable_emoji_string"
                         android:padding="@dimen/_5sdp"
                         android:textColor="@color/txtColor"
                         android:textColorHint="@color/cool_grey"
@@ -385,6 +387,7 @@
                         android:layout_gravity="center"
                         android:background="@null"
                         android:hint="6548"
+                        android:digits="@string/disable_emoji_string"
                         android:inputType="number"
                         android:maxLength="4"
 

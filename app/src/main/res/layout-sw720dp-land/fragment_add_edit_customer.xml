@@ -94,7 +94,7 @@
                             android:textColor="@color/color65"
                             android:textSize="@dimen/_5mdpi" />
 
-                        <EditText
+                        <androidx.appcompat.widget.AppCompatEditText
                             android:id="@+id/edtFName"
                             style="@style/CustomFontMediumStyle"
                             android:layout_width="match_parent"
@@ -102,8 +102,9 @@
                             android:layout_marginTop="@dimen/_5sdp"
                             android:background="@drawable/background_square_border_grey"
                             android:imeOptions="actionNext"
-                            android:inputType="textNoSuggestions"
                             android:padding="@dimen/_5sdp"
+                            android:inputType="textPersonName"
+                            android:digits="@string/disable_emoji_string"
                             android:text="@={viewModel.addCustomerDetails.data.first_name}"
                             android:textColor="@color/txtColor"
                             android:textColorHint="@color/hintColor"
@@ -126,7 +127,7 @@
                             android:textColor="@color/color65"
                             android:textSize="@dimen/_5mdpi" />
 
-                        <EditText
+                        <androidx.appcompat.widget.AppCompatEditText
                             android:id="@+id/edtLName"
                             style="@style/CustomFontMediumStyle"
                             android:layout_width="match_parent"
@@ -134,7 +135,8 @@
                             android:layout_marginTop="@dimen/_5sdp"
                             android:background="@drawable/background_square_border_grey"
                             android:imeOptions="actionNext"
-                            android:inputType="text"
+                            android:inputType="textPersonName"
+                            android:digits="@string/disable_emoji_string"
                             android:padding="@dimen/_5sdp"
                             android:text="@={viewModel.addCustomerDetails.data.last_name}"
                             android:textColor="@color/txtColor"
@@ -219,6 +221,7 @@
                     android:layout_marginEnd="@dimen/_15sdp"
                     android:background="@drawable/background_square_border_grey"
                     android:imeOptions="actionNext"
+                    android:digits="@string/disable_emoji_string"
                     android:inputType="textEmailAddress"
                     android:padding="@dimen/_5sdp"
                     android:text="@={viewModel.addCustomerDetails.data.email}"

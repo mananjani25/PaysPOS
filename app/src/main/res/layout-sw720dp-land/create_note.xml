@@ -95,6 +95,7 @@
                 android:layout_marginTop="@dimen/_5sdp"
                 android:background="@drawable/edt_border_light_gray"
                 android:hint="Note Title"
+                android:digits="@string/disable_emoji_string"
                 android:imeOptions="actionDone"
                 android:inputType="textCapWords"
                 android:padding="@dimen/_5sdp"

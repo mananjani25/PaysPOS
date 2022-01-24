@@ -18,6 +18,7 @@
             android:drawablePadding="@dimen/_10sdp"
             android:hint="@string/search_discount"
             android:imeOptions="actionDone"
+            android:digits="@string/disable_emoji_string"
             android:inputType="text"
             android:padding="@dimen/_4sdp"
             android:textColor="@color/black"

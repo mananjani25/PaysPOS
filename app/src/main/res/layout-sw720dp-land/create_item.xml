@@ -156,7 +156,8 @@
                     android:text="@={createItemVewModel.itemDetails.name}"
                     android:textColor="@color/black"
                     android:textColorHint="@color/hintColor"
-                    android:textSize="@dimen/_5mdpi" />
+                    android:textSize="@dimen/_5mdpi"
+                    android:digits="@string/disable_emoji_string"/>
 
                 <androidx.appcompat.widget.AppCompatEditText
                     style="@style/CustomFontSemiBold"
@@ -172,7 +173,8 @@
                     android:text="@={createItemVewModel.itemDetails.productCode}"
                     android:textColor="@color/black"
                     android:textColorHint="@color/hintColor"
-                    android:textSize="@dimen/_5mdpi" />
+                    android:textSize="@dimen/_5mdpi"
+                    android:digits="@string/disable_emoji_string"/>
 
 
                 <androidx.appcompat.widget.LinearLayoutCompat
@@ -421,6 +423,7 @@
                             android:layout_height="wrap_content"
                             android:background="@null"
                             android:hint="$0.00"
+                            android:digits="@string/disable_emoji_string"
                             android:imeOptions="actionNext"
                             android:inputType="numberDecimal"
                             android:padding="@dimen/_5sdp"
@@ -458,6 +461,7 @@
                             android:layout_height="wrap_content"
                             android:background="@null"
                             android:hint="Sku"
+                            android:digits="@string/disable_emoji_string"
                             android:imeOptions="actionNext"
                             android:inputType="text"
                             android:maxLength="200"
@@ -496,6 +500,7 @@
                             android:layout_height="wrap_content"
                             android:background="@null"
                             android:hint="0"
+                            android:digits="@string/disable_emoji_string"
                             android:imeOptions="actionNext"
                             android:inputType="number"
                             android:padding="@dimen/_5sdp"
@@ -633,6 +638,7 @@
                     android:layout_gravity="top"
                     android:background="@drawable/edt_border_light_gray"
                     android:gravity="top"
+                    android:digits="@string/disable_emoji_string"
                     android:hint="@string/description"
                     android:inputType="textMultiLine"
                     android:minLines="3"
