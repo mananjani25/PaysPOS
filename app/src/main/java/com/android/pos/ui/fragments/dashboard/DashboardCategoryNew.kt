@@ -6,8 +6,9 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
-import android.opengl.Visibility
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.*
 import android.view.ViewGroup
@@ -1652,6 +1653,35 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         var variationAdapter: VariationDashboardListAdapter? = null
 
         var qty = data.itemQuantity
+
+
+        txtQty.addTextChangedListener(object : TextWatcher {
+            override fun onTextChanged(
+                s: CharSequence, start: Int, before: Int,
+                count: Int
+            ) {
+                val enteredString = s.toString()
+                if (enteredString.startsWith("0")) {
+
+                    if (enteredString.length > 0) {
+                        txtQty.setText(enteredString.substring(1))
+                    } else {
+                        txtQty.setText("")
+                    }
+                } else if (s.toString().trim().isNotEmpty() && s.toString().toInt() > 10000) {
+                    txtQty.setText("10000")
+                }
+
+            }
+
+            override fun beforeTextChanged(
+                s: CharSequence?, start: Int, count: Int,
+                after: Int
+            ) {
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
         if (isItemClick) {
             qty = 1
             txtQty.setText(qty.toString())

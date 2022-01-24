@@ -6,6 +6,8 @@ import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.*
 import android.widget.*
@@ -105,7 +107,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
 
         binding.layoutMenu.imgSearch.visibility = View.GONE
         binding.layoutMenu.autoSearch.visibility = View.GONE
-        viewModel.redeemLoyaltyInfo.needToApplyLoyalty = prefProvider.getValueboolean(LOYALTY_ADDED,false)
+        viewModel.redeemLoyaltyInfo.needToApplyLoyalty =
+            prefProvider.getValueboolean(LOYALTY_ADDED, false)
         //    prefProvider.setValue(CUSTOMER_NAME, "")
 
 
@@ -337,8 +340,14 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
 
             if (binding.txtTotalAmount.text.toString() != "$0.00") {
                 val bundle = Bundle()
-                Log.e("!_@_","Total Price: ${viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0}")
-                bundle.putDouble("totalPrice", viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0)
+                Log.e(
+                    "!_@_",
+                    "Total Price: ${viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0}"
+                )
+                bundle.putDouble(
+                    "totalPrice",
+                    viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0
+                )
                 bundle.putDouble("subTotalPrice", viewModel.subTotalPrice)
                 bundle.putDouble("totalTax", viewModel.totalTax)
                 bundle.putDouble("totalDiscount", viewModel.totalDiscount)
@@ -780,6 +789,34 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
         edtNote.setText(model.note)
         var qty = model.itemQuantity
 
+        txtQty.addTextChangedListener(object : TextWatcher {
+            override fun onTextChanged(
+                s: CharSequence, start: Int, before: Int,
+                count: Int
+            ) {
+                val enteredString = s.toString()
+                if (enteredString.startsWith("0")) {
+
+                    if (enteredString.length > 0) {
+                        txtQty.setText(enteredString.substring(1))
+                    } else {
+                        txtQty.setText("")
+                    }
+                } else if (s.toString().trim().isNotEmpty() && s.toString().toInt() > 10000) {
+                    txtQty.setText("10000")
+                }
+
+            }
+
+            override fun beforeTextChanged(
+                s: CharSequence?, start: Int, count: Int,
+                after: Int
+            ) {
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
+
         edtItemName.setText(model.name)
         txtQty.setText(qty.toString())
         if (model.discountPrice != 0.0) {
@@ -918,7 +955,10 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
             //setPopUpData(popupView)
             refreshItemCalculation()
             //display total price to be paid
-            MethodUtils.setPriceTextView(txtTotalAmount, viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0)
+            MethodUtils.setPriceTextView(
+                txtTotalAmount,
+                viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0
+            )
         }
 
         if (prefProvider.getValueboolean(Constants.LOYALTY_ADDED, false)) {
