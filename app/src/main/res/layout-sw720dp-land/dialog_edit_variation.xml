@@ -97,6 +97,7 @@
                             android:layout_weight="1"
                             android:padding="@dimen/_5sdp"
                             android:text="@string/tv_name_mand"
+                            android:inputType="textVisiblePassword"
                             android:textColor="@color/viewTextColor"
                             android:textSize="@dimen/_5mdpi" />
 
@@ -184,6 +185,7 @@
                             android:layout_weight="1"
                             android:padding="@dimen/_5sdp"
                             android:text="@string/sku"
+                            android:inputType="number"
                             android:textColor="@color/viewTextColor"
                             android:textSize="@dimen/_5mdpi" />
 
@@ -197,7 +199,7 @@
                             android:gravity="end"
                             android:hint="Sku"
                             android:imeOptions="actionNext"
-                            android:inputType="text"
+                            android:inputType="textVisiblePassword"
                             android:maxLength="200"
                             android:padding="@dimen/_5sdp"
                             android:textColor="@color/black"
@@ -238,12 +240,13 @@
                             android:gravity="end"
                             android:hint="10"
                             android:imeOptions="actionNext"
-                            android:inputType="number"
+                            android:inputType="text"
+                            android:digits="@string/numbers_digits_string"
                             android:padding="@dimen/_5sdp"
                             android:textColor="@color/black"
                             android:textColorHint="@color/hintColor"
                             android:textSize="@dimen/_5mdpi"
-                            android:digits="@string/disable_emoji_string"/>
+                           />
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
 

@@ -18,10 +18,7 @@ class AmountTextWatcher(private val editText: AppCompatEditText, private val isM
         editText.setInputType(InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL)
         if (s.toString() != current) {
             editText.removeTextChangedListener(this)
-
-
             val cleanString: String = s.replace("""[$,.]""".toRegex(), "")
-
 
             val parsed = cleanString.trim().toDouble()
 

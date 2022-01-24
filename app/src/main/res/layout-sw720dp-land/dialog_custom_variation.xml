@@ -109,7 +109,7 @@
                             android:gravity="end"
                             android:hint="Variation Name"
                             android:imeOptions="actionNext"
-                            android:inputType="text"
+                            android:inputType="textVisiblePassword"
                             android:padding="@dimen/_5sdp"
                             android:textColor="@color/black"
                             android:textColorHint="@color/hintColor"
@@ -239,7 +239,7 @@
                             android:hint="Sku"
                             android:maxLength="200"
                             android:imeOptions="actionNext"
-                            android:inputType="text"
+                            android:inputType="textVisiblePassword"
                             android:padding="@dimen/_5sdp"
                             android:textColor="@color/black"
                             android:textColorHint="@color/hintColor"
@@ -279,12 +279,12 @@
                             android:gravity="end"
                             android:hint="10"
                             android:imeOptions="actionNext"
-                            android:inputType="text"
+                            android:inputType="number"
                             android:padding="@dimen/_5sdp"
                             android:textColor="@color/black"
                             android:textColorHint="@color/hintColor"
                             android:textSize="@dimen/_5mdpi"
-                            android:digits="@string/disable_emoji_string"/>
+                            android:digits="@string/numbers_digits_string"/>
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
