@@ -19,7 +19,7 @@
             android:drawablePadding="@dimen/_10sdp"
             android:hint="@string/search_options"
             android:imeOptions="actionDone"
-            android:inputType="text"
+            android:inputType="textVisiblePassword"
             android:padding="@dimen/_4sdp"
             android:textColor="@color/black"
             android:textColorHint="@color/hintColor"

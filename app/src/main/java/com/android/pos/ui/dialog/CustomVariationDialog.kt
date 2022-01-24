@@ -3,6 +3,7 @@ package com.android.pos.ui.dialog
 import android.graphics.Point
 import android.os.Bundle
 import android.text.Editable
+import android.text.InputType
 import android.text.TextUtils
 import android.text.TextWatcher
 import android.view.*
@@ -74,7 +75,11 @@ class CustomVariationDialog : DialogFragment(), View.OnClickListener,
                 s: CharSequence, start: Int, before: Int,
                 count: Int
             ) {
+                binding.tvVariationsStock.setInputType(InputType.TYPE_CLASS_NUMBER )
+
                 val enteredString = s.toString()
+                val digits = TextUtils.isDigitsOnly(s)
+
                 if (enteredString.startsWith("0")) {
 
                     if (enteredString.length > 0) {
@@ -82,7 +87,8 @@ class CustomVariationDialog : DialogFragment(), View.OnClickListener,
                     } else {
                         binding.tvVariationsStock.setText("")
                     }
-                } else if (s.toString().trim().isNotEmpty() && s.toString().toInt() > 10000) {
+                }
+                else if (digits && s.toString().trim().isNotEmpty() && s.toString().toInt() > 10000) {
                     binding.tvVariationsStock.setText("10000")
                 }
 
@@ -92,9 +98,13 @@ class CustomVariationDialog : DialogFragment(), View.OnClickListener,
                 s: CharSequence?, start: Int, count: Int,
                 after: Int
             ) {
+                binding.tvVariationsStock.setInputType(InputType.TYPE_CLASS_NUMBER )
             }
 
-            override fun afterTextChanged(s: Editable?) {}
+            override fun afterTextChanged(s: Editable?) {
+                binding.tvVariationsStock.setInputType(InputType.TYPE_CLASS_NUMBER )
+
+            }
         })
 
 
