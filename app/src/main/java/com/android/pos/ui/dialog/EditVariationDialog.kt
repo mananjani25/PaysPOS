@@ -79,24 +79,34 @@ class EditVariationDialog : DialogFragment(), View.OnClickListener {
 
     private fun onTextChanged() {
         binding.tvVariationsStock.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            override fun onTextChanged(
+                s: CharSequence, start: Int, before: Int,
+                count: Int
+            ) {
+                val enteredString = s.toString()
+                if (enteredString.startsWith("0")) {
 
-            }
-
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                if (binding.tvVariationsStock.text?.trim()
-                        ?.isNotEmpty() == true && binding.tvVariationsStock.text.toString()
-                        .toInt() > 10000
-                ) {
+                    if (enteredString.length > 0) {
+                        binding.tvVariationsStock.setText(enteredString.substring(1))
+                    } else {
+                        binding.tvVariationsStock.setText("")
+                    }
+                } else if (s.toString().trim().isNotEmpty() && s.toString().toInt() > 10000) {
                     binding.tvVariationsStock.setText("10000")
                 }
-            }
-
-            override fun afterTextChanged(p0: Editable?) {
 
             }
 
+            override fun beforeTextChanged(
+                s: CharSequence?, start: Int, count: Int,
+                after: Int
+            ) {
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
         })
+
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

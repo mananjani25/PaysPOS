@@ -1,6 +1,5 @@
 package com.android.pos.ui.fragments.createitem
 
-import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -121,22 +120,33 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
 
     private fun onTextChanged() {
         binding.etStock.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            override fun onTextChanged(
+                s: CharSequence, start: Int, before: Int,
+                count: Int
+            ) {
+                val enteredString = s.toString()
+                if (enteredString.startsWith("0")) {
 
-            }
-
-            @SuppressLint("SetTextI18n")
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                if (binding.etStock.text?.trim()?.isNotEmpty() == true && binding.etStock.text.toString().toInt() > 10000) {
+                    if (enteredString.length > 0) {
+                        binding.etStock.setText(enteredString.substring(1))
+                    } else {
+                        binding.etStock.setText("")
+                    }
+                } else if (s.toString().trim().isNotEmpty() && s.toString().toInt() > 10000) {
                     binding.etStock.setText("10000")
                 }
-            }
-
-            override fun afterTextChanged(p0: Editable?) {
 
             }
 
+            override fun beforeTextChanged(
+                s: CharSequence?, start: Int, count: Int,
+                after: Int
+            ) {
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
         })
+
     }
 
     private fun initObservers() {
