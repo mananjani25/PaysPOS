@@ -165,9 +165,9 @@
             android:layout_marginBottom="@dimen/_15sdp"
             android:gravity="bottom|center"
             android:padding="@dimen/_5sdp"
-            tools:text="@string/tv_pos_2021"
             android:textColor="@color/btnColor"
-            android:textSize="@dimen/_6mdpi" />
+            android:textSize="@dimen/_6mdpi"
+            tools:text="@string/tv_pos_2021" />
 
         <androidx.appcompat.widget.AppCompatTextView
             style="@style/CustomFontMediumStyle"
