@@ -2,10 +2,7 @@ package com.android.pos.ui.dialog
 
 import android.graphics.Point
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.*
-import android.widget.EditText
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
@@ -15,7 +12,6 @@ import com.android.pos.databinding.DailogCustomAmountBinding
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.AmountTextWatcher
 import dagger.hilt.android.AndroidEntryPoint
-import java.text.NumberFormat
 
 
 @AndroidEntryPoint
@@ -51,6 +47,7 @@ class CustomAmountFragment : DialogFragment() {
             if (custom_amount > totalprice) {
                 val result = Bundle().apply {
                     putDouble("amount", custom_amount)
+                    putDouble("totalAmount", totalprice)
                 }
                 setFragmentResult("request_for_customAmount", result)
                 findNavController().navigateUp()

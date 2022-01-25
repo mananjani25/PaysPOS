@@ -671,7 +671,7 @@ class PaymentViewModel @Inject constructor(
 
         orderAttributeRequestModel.offlineId =
             if (isUpdateOrder) orderOfflineId.toString() else randomOfflineId()
-        Log.e(TAG, "openOrderType: " + cartModel.orderType)
+
         orderAttributeRequestModel.openOrderType = cartModel.orderType
         orderAttributeRequestModel.orderTypeId = cartModel.orderTypeId
         orderAttributeRequestModel.paymentStatus = if (isPaid) 1 else 0
