@@ -64,6 +64,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
     private var discountList: List<TbDiscount>? = null
     private var taxList: List<TaxData>? = null
     private var assignCustomer: TbCustomer? = null
+    private var isPayClicked: Boolean = false
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -242,12 +243,35 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
 
         nameObserver = Observer<List<CartModel>> {
 
-
+            val bundle = Bundle()
+            if (isPayClicked && cartList?.isNotEmpty() == true) {
+                Log.e(
+                    "!_@_",
+                    "Total Price: ${viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0}"
+                )
+                bundle.putDouble(
+                    "totalPrice",
+                    viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0
+                )
+                bundle.putDouble("subTotalPrice", viewModel.subTotalPrice)
+                bundle.putDouble("totalTax", viewModel.totalTax)
+                bundle.putDouble("totalDiscount", viewModel.totalDiscount)
+                bundle.putDouble("totalServiceCharge", viewModel.totalServiceCharge)
+                cartList?.get(0)?.customer = assignCustomer
+                bundle.putParcelable("cartList", cartList?.get(0))
+                bundle.putString(
+                    "redeemLoyalty",
+                    Gson().toJson(viewModel.redeemLoyaltyInfo)
+                )
+            }
             if (it != null && it.isNotEmpty()) {
+
 
                 mainCartList = it as ArrayList<CartModel>
 
                 if (cartList != null && cartList!!.isNotEmpty()) {
+
+
                     val manualItems = cartList!![0].items
                     val mainItems = mainCartList[0].items
 
@@ -263,12 +287,23 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
                         prefProvider.getValue(Constants.ORDER_TYPE, "").toString()
                     ).removeObserver(nameObserver)
 
-                    val navControll = findNavController()
-                    navControll.previousBackStackEntry?.savedStateHandle?.set(
-                        Constants.KEY,
-                        Constants.MANUALSALE
-                    )
-                    navControll.popBackStack()
+                    if (isPayClicked && viewModel.totalPrice != 0.0) {
+
+
+                        findNavController().navigate(
+                            R.id.action_manualSaleNew_to_paymentFragment,
+                            bundle
+                        )
+
+                    } else {
+
+                        val navControll = findNavController()
+                        navControll.previousBackStackEntry?.savedStateHandle?.set(
+                            Constants.KEY,
+                            Constants.MANUALSALE
+                        )
+                        navControll.popBackStack()
+                    }
 
                 }
             } else {
@@ -282,12 +317,22 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
                     viewModel.saveManualSaleData(cartList!!)
                 }
 
-                val navControll = findNavController()
-                navControll.previousBackStackEntry?.savedStateHandle?.set(
-                    Constants.KEY,
-                    Constants.MANUALSALE
-                )
-                navControll.popBackStack()
+                if (isPayClicked && viewModel.totalPrice != 0.0) {
+
+
+                    findNavController().navigate(
+                        R.id.action_manualSaleNew_to_paymentFragment,
+                        bundle
+                    )
+
+                } else {
+                    val navControll = findNavController()
+                    navControll.previousBackStackEntry?.savedStateHandle?.set(
+                        Constants.KEY,
+                        Constants.MANUALSALE
+                    )
+                    navControll.popBackStack()
+                }
             }
 
         }
@@ -339,27 +384,35 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
         binding.btnPay.setOnClickListener {
 
             if (binding.txtTotalAmount.text.toString() != "$0.00") {
-                val bundle = Bundle()
-                Log.e(
-                    "!_@_",
-                    "Total Price: ${viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0}"
-                )
-                bundle.putDouble(
-                    "totalPrice",
-                    viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0
-                )
-                bundle.putDouble("subTotalPrice", viewModel.subTotalPrice)
-                bundle.putDouble("totalTax", viewModel.totalTax)
-                bundle.putDouble("totalDiscount", viewModel.totalDiscount)
-                bundle.putDouble("totalServiceCharge", viewModel.totalServiceCharge)
-                cartList?.get(0)?.customer = assignCustomer
-                bundle.putParcelable("cartList", cartList?.get(0))
-                bundle.putString(
-                    "redeemLoyalty",
-                    Gson().toJson(viewModel.redeemLoyaltyInfo)
+                isPayClicked = true
+
+                dashboardViewModel.mAllWords(
+                    prefProvider.getValue(Constants.ORDER_TYPE, "").toString()
+                ).observe(
+                    viewLifecycleOwner, nameObserver
                 )
 
-                findNavController().navigate(R.id.action_manualSaleNew_to_paymentFragment, bundle)
+                /*   val bundle = Bundle()
+                   Log.e(
+                       "!_@_",
+                       "Total Price: ${viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0}"
+                   )
+                   bundle.putDouble(
+                       "totalPrice",
+                       viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0
+                   )
+                   bundle.putDouble("subTotalPrice", viewModel.subTotalPrice)
+                   bundle.putDouble("totalTax", viewModel.totalTax)
+                   bundle.putDouble("totalDiscount", viewModel.totalDiscount)
+                   bundle.putDouble("totalServiceCharge", viewModel.totalServiceCharge)
+                   cartList?.get(0)?.customer = assignCustomer
+                   bundle.putParcelable("cartList", cartList?.get(0))
+                   bundle.putString(
+                       "redeemLoyalty",
+                       Gson().toJson(viewModel.redeemLoyaltyInfo)
+                   )
+
+                   findNavController().navigate(R.id.action_manualSaleNew_to_paymentFragment, bundle)*/
             }
         }
 
@@ -523,7 +576,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
 
 
 
-            Log.e(TAG, "getcount:  ${count}")
+
             model.customItemCount = count
             model.name = "Custom Item ${count}"
             if (binding.edtItemName.text?.isNotEmpty() == true) {
@@ -543,16 +596,14 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
 
                 var id = cartAdapter.getItem(cartAdapter.getList().size - 1).customItemID
                 id++
-                Log.e(TAG, "CustomItemid:  ${id}")
+
                 model.customItemID = id
 
             }
 
             model.itemId = manualItemId
             model.categoryId = manualCategoryId
-            Log.e(TAG, "AddedCartSize  ${cartList?.size}")
 
-            Log.e(TAG, "Parsemodel  ${Gson().toJson(model)}")
             viewModel.cartLogic(cartList, model, ADD)
             binding.edtItemName.text?.clear()
 

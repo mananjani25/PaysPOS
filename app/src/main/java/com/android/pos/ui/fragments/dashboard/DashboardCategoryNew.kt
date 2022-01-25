@@ -59,6 +59,7 @@ import com.android.pos.data.remote.Constants.DINE_IN_STATUS
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
 import com.android.pos.data.remote.Constants.HORIZONTAL
+import com.android.pos.data.remote.Constants.IS_NEXT_AMOUNT
 import com.android.pos.data.remote.Constants.IS_ORDER_UPDATE
 import com.android.pos.data.remote.Constants.LOYALTY_ADDED
 import com.android.pos.data.remote.Constants.MANUALSALE
@@ -796,9 +797,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             binding.layoutCart.rlSave.visibility = View.VISIBLE
                         }
 
-//                        if (prefProvider.getValueInt("ORDER_ID", -1) != -1) {
-//                            gotoPayment()
-//                        }
+
                     } else {
                         viewModel.itemCalculation(
                             cartList,
@@ -812,6 +811,19 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         binding.layoutCart.llPayment.visibility = View.GONE
 
 
+                    }
+                    if (prefProvider.getValueInt("ORDER_ID", -1) != -1) {
+                        Log.e(TAG, "ManualSale ORderIDNOt Null")
+                        lifecycleScope.launchWhenResumed {
+                            if (findNavController().currentDestination?.id == R.id.dashboardCategoryNew) {
+                                val bundle = bundleOf(IS_NEXT_AMOUNT to true)
+
+                                findNavController().navigate(
+                                    R.id.action_dashboardCategoryNew_to_paymentFragment, bundle
+                                )
+                            }
+                        }
+                        //gotoPayment()
                     }
                 }
             )
@@ -2494,6 +2506,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     private fun gotoPayment() {
         if (cartList.isNotEmpty()) {
+            Log.e(TAG, "CartListNotEmpty")
             if (prefProvider.getValueboolean(DINE_IN_UPDATE, false)) {
 
                 if (cartList.isNotEmpty()) {
@@ -2572,6 +2585,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 }
             }
         }
+
     }
 
     private fun createDineInRequest() {

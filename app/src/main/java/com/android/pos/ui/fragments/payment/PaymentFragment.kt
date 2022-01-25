@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
@@ -15,6 +16,7 @@ import com.android.pos.R
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.CashDiscountModel
 import com.android.pos.data.entities.RedeemLoyaltyInfo
+import com.android.pos.data.model.SplitBundleModel
 import com.android.pos.data.model.requestModel.CreateQueuePrinterRequestModel
 import com.android.pos.data.model.requestModel.OrderAttributeRequestModel
 import com.android.pos.data.model.requestModel.SpitByOrderPaymentModel
@@ -40,6 +42,7 @@ import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.visible
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlin.math.ceil
@@ -86,6 +89,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
     var cashDiscountSurcharge: Double = 0.0
     var finalPrice: Double = 0.0
     var splitOldValue: Int = 0
+    var isFromDashboard: Boolean = false
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -101,6 +105,27 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
+        val callback: OnBackPressedCallback =
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    Log.e(TAG, "splitAmountValue  ${prefProvider.getValue(SPLIT_PAY_AMOUNT, "")}")
+                    if (prefProvider.getValue(SPLIT_PAY_AMOUNT, "") == "") {
+                        prefProvider.setValue(SPLIT_PAY_AMOUNT, "")
+                        prefProvider.setValueInt(SPLIT_NO, -1)
+                        findNavController().navigate(R.id.action_paymentFragment_to_dashboardCategoryNew)
+                    } else {
+                        AlertUtils.showCustomAlert(requireContext(), "Please complete all payment.")
+                    }
+
+
+                }
+
+            }
+
+        isFromDashboard = arguments?.getBoolean(Constants.IS_NEXT_AMOUNT) ?: false
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 
         binding = PaymentFragmentBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
@@ -122,6 +147,9 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 isSplitByNo = it.getBoolean("isSplitByNo", false)
                 setSplitData()
             }
+
+
+
 
         cartList = requireArguments().getParcelable("cartList")
         totalPrice = requireArguments().getDouble("totalPrice")
@@ -251,6 +279,44 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         queuePrinterObserver()
 
 
+        if (isFromDashboard) {
+            var data = prefProvider.getValue(Constants.SAVE_SPLIT_BUNDLE, "")
+
+            if (data.isNotEmpty()) {
+
+                var splitModel =
+                    Gson().fromJson<SplitBundleModel>(data, SplitBundleModel::class.java)
+                Log.e(TAG, "splitModel:  ${Gson().toJson(splitModel)}")
+                isNextPayment = splitModel.isNextPayment
+                remainingAmount = splitModel.remainingAmt
+                splitValue = splitModel.splitValue
+                isSplitByAmount = splitModel.isSplitByAmount
+                isSplitByNo = splitModel.isSplitByNo
+                WholetotalPrice = splitModel.remainingAmt
+                subTotalPrice = splitModel.subTotalWT
+                totalTax = splitModel.totalTaxAmount
+                totalDiscount = splitModel.totalDiscount
+                totalServiceCharge = splitModel.serviceCharge
+                cashDiscountSurcharge = splitModel.cashDiscountSurcharge
+                tipAmount = splitModel.tip
+                totalPrice = splitModel.remainingAmt
+                setSplitData()
+                //setUpPaymentSummary()
+
+            }
+
+            /*  isNextPayment = it.getBoolean("isNextPayment")
+              remainingAmount =
+                  String.format("%.2f", it.getDouble("remainingAmount", 0.0)).toDouble()
+              splitValue = it.getInt("splitvalue", -1)
+              isSplitByAmount = it.getBoolean("isSplitByAmount", false)
+              isSplitByNo = it.getBoolean("isSplitByNo", false)
+              setSplitData()
+  */
+
+        }
+
+
         return binding.root
     }
 
@@ -267,10 +333,14 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     }
                     cardPaymentAmount =
                         (remainingAmount + last_cash_discount_surcharge.toDouble())
+                    Log.e(TAG,"paylast_cash_discount_surcharge ${last_cash_discount_surcharge.toDouble()}")
+                    Log.e(TAG,"paycardPaymentAmount: ${cardPaymentAmount}")
                     MethodUtils.setPriceTextView(binding.txtCardAmount, cardPaymentAmount)
                     //  binding.txtCardAmount.text = "$ " + String.format("%.2f", cardPaymentAmount)
-                    cashDiscountSurcharge =
-                        prefProvider.getValue(CASH_DISCOUNT_SURCHARGE, "").toDouble()
+                    if (prefProvider.getValue(CASH_DISCOUNT_SURCHARGE, "").isNotEmpty()) {
+                        cashDiscountSurcharge =
+                            prefProvider.getValue(CASH_DISCOUNT_SURCHARGE, "").toDouble()
+                    }
                 } else {
                     cardPaymentAmount = remainingAmount
                     MethodUtils.setPriceTextView(binding.txtCardAmount, remainingAmount)
@@ -325,6 +395,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             if (isSplitByNo) {
                 if (MethodUtils.isEnableCashDiscount(requireContext())) {
                     cardPaymentAmount = (splitAfterAmount + (cashDiscountSurcharge / splitValue))
+
+                    Log.e(TAG, "paycardPaymentAmount:  ${cardPaymentAmount}")
                     MethodUtils.setPriceTextView(
                         binding.txtCardAmount,
                         (splitAfterAmount + (cashDiscountSurcharge / splitValue))
@@ -731,6 +803,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
             R.id.imgBack -> {
 
+                Log.e(TAG, "splitAmountValue  ${prefProvider.getValue(SPLIT_PAY_AMOUNT, "")}")
                 if (prefProvider.getValue(SPLIT_PAY_AMOUNT, "") == "") {
                     prefProvider.setValue(SPLIT_PAY_AMOUNT, "")
                     prefProvider.setValueInt(SPLIT_NO, -1)
@@ -1900,12 +1973,14 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                 bundle.putBoolean("isSplitByAmount", isSplitByAmount)
                                 bundle.putString("paymentType", "Cash")
                                 bundle.putDouble("TipAmount", tipAmount)
-                                findNavController().navigate(
-                                    R.id.action_paymentFragment_to_orderCompleteFragment,
-                                    bundle
-                                )
+                                if (findNavController().currentDestination?.id == R.id.paymentFragment) {
+                                    findNavController().navigate(
+                                        R.id.action_paymentFragment_to_orderCompleteFragment,
+                                        bundle
+                                    )
 
-                                prefProvider.setValueInt("ORDER_ID", -1)
+                                    prefProvider.setValueInt("ORDER_ID", -1)
+                                }
                             }
                         }
                     }

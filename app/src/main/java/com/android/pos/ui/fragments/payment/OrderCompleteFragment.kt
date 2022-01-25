@@ -17,6 +17,7 @@ import com.android.pos.R
 import com.android.pos.data.entities.TbCustomer
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.DineInModel
+import com.android.pos.data.model.SplitBundleModel
 import com.android.pos.data.model.SplitDetailListModel
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.Constants
@@ -30,6 +31,7 @@ import com.android.pos.data.remote.Constants.GUEST_POSITION
 import com.android.pos.data.remote.Constants.KITCHEN
 import com.android.pos.data.remote.Constants.LARGE
 import com.android.pos.data.remote.Constants.PRINT_DATA_DINE_IN
+import com.android.pos.data.remote.Constants.SAVE_SPLIT_BUNDLE
 import com.android.pos.data.remote.Constants.SUB_TOTAL
 import com.android.pos.data.remote.Constants.getReceiptFormatDateFromUTCServer
 import com.android.pos.databinding.FragmentOrderCompletBinding
@@ -45,6 +47,7 @@ import com.epson.eposprint.Builder
 import com.epson.eposprint.Print
 import com.epson.eposprint.StatusChangeEventListener
 import com.google.android.material.snackbar.Snackbar
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -126,6 +129,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         binding.rvSplits.adapter = splitAdapter
         if (requireArguments().getBoolean("isSpilt")) {
             observeSplitList()
+        } else {
+            prefProvider.setValue(Constants.SPLIT_PAY_AMOUNT, "")
         }
         return binding.root
     }
@@ -532,7 +537,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 moveToDashboard()
             }
             R.id.llPrint -> {
-                removeCustomer()
+                //removeCustomer()
                 if (isDineIn) {
                     customerPrintWholeOrder()
 
@@ -2695,7 +2700,28 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
 
+
                 navController.previousBackStackEntry?.savedStateHandle?.set("data", bundle)
+                var model = SplitBundleModel(
+                    true,
+                    splitValue,
+                    orderID,
+                    paymentAmount,
+                    remainingAmount,
+                    isSplitByNo,
+                    isSplitByAmount,
+                    isCustomCash,
+                    getDineInOrderDetails,
+                    dineInList,
+                    subTotalWT,
+                    serviceCharge,
+                    totalDiscount,
+                    totalTaxAmount,
+                    0.0,
+                    0.0
+                )
+
+                prefProvider.setValue(SAVE_SPLIT_BUNDLE, Gson().toJson(model).toString())
                 navController.popBackStack()
             } else {
                 val navController = findNavController()
@@ -2713,6 +2739,31 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     bundle.putBoolean("isSplitByAmount", isSplitByAmount)
                 }
                 bundle.putBoolean("isCustomCash", isCustomCash)
+
+                Log.e(TAG, "ORDER_ID:  ${prefProvider.getValueInt("ORDER_ID", -1)}")
+
+
+                var model = SplitBundleModel(
+                    true,
+                    splitValue,
+                    prefProvider.getValueInt("ORDER_ID", -1),
+                    0.0,
+                    prefProvider.getValue("WholeTotal", "").toDouble(),
+                    isSplitByNo,
+                    isSplitByAmount,
+                    isCustomCash,
+                    getDineInOrderDetails,
+                    dineInList,
+                    prefProvider.getValue(Constants.SUB_TOTAL, "").toDouble(),
+                    prefProvider.getValue(Constants.SERVICE_CHARGE, "").toDouble(),
+                    prefProvider.getValue(Constants.TOTAL_DISCOUNT, "").toDouble(),
+                    prefProvider.getValue(Constants.TAX_CHARGE, "").toDouble(),
+                    prefProvider.getValue(Constants.TIP, "").toDouble(),
+                    prefProvider.getValue(Constants.CASH_DISCOUNT_SURCHARGE, "").toDouble()
+                )
+
+                prefProvider.setValue(SAVE_SPLIT_BUNDLE, Gson().toJson(model).toString())
+
                 navController.previousBackStackEntry?.savedStateHandle?.set("data", bundle)
                 navController.popBackStack()
             }
@@ -2732,8 +2783,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
                 }
             } else {
-                removeCustomer()
-                findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
+                if (findNavController().currentDestination?.id == R.id.orderCompleteFragment) {
+                    removeCustomer()
+                    findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
+                }
             }
         }
     }
