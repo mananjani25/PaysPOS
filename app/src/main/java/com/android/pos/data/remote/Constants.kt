@@ -394,6 +394,9 @@ object Constants {
     const val TIPS_AMOUNT = "tips"
     const val TOTAL_DISCOUNT = "totalDiscount"
 
+    const val IS_NEXT_AMOUNT = "is_next_amount"
+    const val SAVE_SPLIT_BUNDLE = "save_split_bundle"
+
     // dinein
     const val CASH_DISCOUNT_SURCHARGE_DINEIN = "cashDiscountSurcharge_dinein"
     const val SUB_TOTAL_DINEIN = "subtotal_dinein"
