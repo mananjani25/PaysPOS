@@ -1182,6 +1182,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                 if (isTotalPayment) {
                     makePaymentCreditCard()
                 } else {
+                    viewModel.totalPayAmount(cardPaymentAmount)
                     guestPaySpit()
                     var finallLastPayment = isLastPayment && isGuestPaymentTotal
                     guestRequestModel?.let {
@@ -1245,6 +1246,9 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                 if (isTotalPayment) {
                     makePayment()
                 } else {
+
+                    viewModel.totalPayAmount(paymentAmount)
+
                     guestPaySpit()
                     var finallLastPayment = isLastPayment && isGuestPaymentTotal
                     guestRequestModel?.let {
@@ -1305,6 +1309,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                     makePayment()
 
                 } else {
+                    viewModel.totalPayAmount(paymentAmount)
                     guestPaySpit()
                     var finallLastPayment = isLastPayment && isGuestPaymentTotal
                     guestRequestModel?.let {
@@ -1349,6 +1354,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                 if (isTotalPayment) {
                     makePayment()
                 } else {
+                    viewModel.totalPayAmount(paymentAmount)
                     guestPaySpit()
                     var finallLastPayment = isLastPayment && isGuestPaymentTotal
                     guestRequestModel?.let {
@@ -1393,6 +1399,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                 if (isTotalPayment) {
                     makePayment()
                 } else {
+                    viewModel.totalPayAmount(paymentAmount)
                     guestPaySpit()
                     var finallLastPayment = isLastPayment && isGuestPaymentTotal
                     guestRequestModel?.let {
@@ -1438,6 +1445,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                     makePayment()
 
                 } else {
+                    viewModel.totalPayAmount(paymentAmount)
                     guestPaySpit()
                     var finallLastPayment = isLastPayment && isGuestPaymentTotal
                     guestRequestModel?.let {

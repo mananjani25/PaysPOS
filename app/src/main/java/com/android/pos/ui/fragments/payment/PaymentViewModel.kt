@@ -241,14 +241,14 @@ class PaymentViewModel @Inject constructor(
 
     private suspend fun cashLogApi(createOrderResponse: CreateOrderResponse, event: String) {
 
-        val order = createOrderResponse.data.order
 
+        val order = createOrderResponse.data.order
         val cashLogRequest = CashLogRequest(
-            totalPayAmounts,
+            totalPayAmounts + order.payments[order.payments.size - 1].tips,
             order.employeeId,
             event,
             order.id,
-            order.payments[0].id,
+            order.payments[order.payments.size - 1].id,
             "Payment received for order",
             order.terminalId,
             null,
@@ -321,7 +321,7 @@ class PaymentViewModel @Inject constructor(
             order.employeeId,
             event,
             order.id,
-            order.payments[0].id,
+            order.payments[order.payments.size - 1].id,
             "Change returned after order's payment",
             order.terminalId,
             null,
@@ -1266,7 +1266,7 @@ class PaymentViewModel @Inject constructor(
 //                id = paymentId
             val totalPP = MethodUtils.roundOffAmountDouble(totalPrice)
             val totalDC = MethodUtils.roundOffAmountDouble(tipAmount)
-            val totalAM = totalPP - totalDC
+            val totalAM = totalPP /*- totalDC*/
             amount = totalAM
             if (paymentTypeStatus == "Cash") {
                 if (cashdiscountType == "SurCharge") {
@@ -1346,7 +1346,7 @@ class PaymentViewModel @Inject constructor(
 //                id = paymentId
             val totalPP = MethodUtils.roundOffAmountDouble(totalPrice)
             val totalDC = MethodUtils.roundOffAmountDouble(tipAmount)
-            val totalAM = totalPP - totalDC
+            val totalAM = totalPP /*- totalDC*/
             amount = totalAM
 //            cardName = ""
 //            cardNumber = ""

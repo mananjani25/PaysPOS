@@ -497,8 +497,17 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             } else {
                 binding.linearnoncashAdj.visibility = View.GONE
             }
-            MethodUtils.setPriceTextView(binding.txtTotalAmount, cardPaymentAmount)
 
+
+
+            if (tipAmount == 0.00) {
+                MethodUtils.setPriceTextView(binding.txtTotalAmount, cardPaymentAmount)
+            } else {
+                binding.txtTotalAmount.text =
+                    MethodUtils.roundOffAmount(cardPaymentAmount + tipAmount) + " (" + MethodUtils.roundOffAmount(
+                        tipAmount
+                    ) + " Tip Added)"
+            }
         }
     }
 

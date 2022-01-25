@@ -9,19 +9,18 @@ import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.entities.CashDiscountModel
 import com.android.pos.data.entities.TbCustomer
 import com.android.pos.data.entities.TbItem
-import com.android.pos.data.model.requestModel.CreateQueuePrinterRequestModel
-import com.android.pos.data.model.requestModel.DineInOrderPayment
-import com.android.pos.data.model.requestModel.GuestPaymentRequest
-import com.android.pos.data.model.requestModel.OrderRequestModel
+import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.data.model.responseModel.PrinterResponse
+import com.android.pos.data.remote.Constants
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.TaxServiceChargeRepository
 import com.android.pos.data.repositories.TipDiscountRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
+import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -78,7 +77,7 @@ class DineInOrderTableViewModel @Inject constructor(
     var totalAmount = 0.0
     var subTotalAmount = 0.0
     var totalServiceChargeAmount = 0.0
-
+    private var totalPayAmounts: Double = 0.0
 
     fun getTipsList() = posRepository.getTipsList()
     fun getCustomerPrinterList(): LiveData<Resource<List<PrinterResponse.Data.CustomerReceiptPrinters>>> {
@@ -93,6 +92,11 @@ class DineInOrderTableViewModel @Inject constructor(
         return posRepository.getKitchenPrinters()
     }
 
+    fun totalPayAmount(paymentAmount: Double) {
+
+        totalPayAmounts = MethodUtils.roundOffAmountDouble(paymentAmount)
+    }
+
     fun payByGuest(
         id: Int,
         model: GuestPaymentRequest,
@@ -101,14 +105,17 @@ class DineInOrderTableViewModel @Inject constructor(
     ) {
         _showProgress.value = Event(true)
         viewModelScope.launch {
-            val resource: Resource<BaseResponse> =
-                posRepository.payByGuest(id, isAllPaymentComplete, model)
+            val resource = posRepository.payByGuest(id, isAllPaymentComplete, model)
 
             when (resource.status) {
                 Status.SUCCESS -> {
                     _showProgress.value = Event(false)
                     resource.data.let { response ->
-                        _guestPayment.value = Event(response?.message.toString())
+
+                        if (response != null) {
+                            cashLogApi(response, "in")
+                        }
+
                     }
                 }
 
@@ -327,4 +334,118 @@ class DineInOrderTableViewModel @Inject constructor(
 
     }
 
+    private suspend fun cashLogApi(createOrderResponse: CreateOrderResponse, event: String) {
+
+
+        val order = createOrderResponse.data.order
+        val cashLogRequest = CashLogRequest(
+            totalPayAmounts,
+            order.employeeId,
+            event,
+            order.id,
+            order.payments[order.payments.size - 1].id,
+            "Payment received for order",
+            order.terminalId,
+            null,
+            order.payments[order.payments.size - 1].tips
+        )
+
+
+        val resource = posRepository.cashInOut(cashLogRequest)
+
+        when (resource.status) {
+            Status.SUCCESS -> {
+                _showProgress.value = Event(false)
+                resource.data.let { response ->
+                    if (response?.status == 200) {
+
+                        resource.data?.let {
+
+
+                            Log.e(
+                                "INOUT : Total Amount",
+                                order.payments[order.payments.size - 1].amount.toString()
+                            )
+                            Log.e("INOUT : Total PayAmount", totalPayAmounts.toString())
+
+                            if (order.payments.isNotEmpty()) {
+                                if (order.payments[order.payments.size - 1].amount == totalPayAmounts) {
+
+                                    _guestPayment.value =
+                                        Event(createOrderResponse.message.toString())
+
+                                } else {
+                                    cashOutApi(createOrderResponse, "out")
+                                }
+                            }
+
+
+                        }
+
+                    } else {
+                        _snackbarText.value = Event(resource.message)
+                    }
+                }
+
+            }
+
+            Status.ERROR -> {
+                _snackbarText.value = Event(resource.message)
+                _showProgress.value = Event(false)
+            }
+
+            Status.LOADING -> {
+                _showProgress.value = Event(true)
+            }
+        }
+    }
+
+    private suspend fun cashOutApi(createOrderResponse: CreateOrderResponse, event: String) {
+
+        val order = createOrderResponse.data.order
+
+        val cashLogRequest = CashLogRequest(
+            MethodUtils.roundOffAmountDouble(totalPayAmounts) - order.payments[order.payments.size - 1].amount,
+            order.employeeId,
+            event,
+            order.id,
+            order.payments[order.payments.size - 1].id,
+            "Change returned after order's payment",
+            order.terminalId,
+            null,
+            order.payments[order.payments.size - 1].tips
+        )
+
+        val resource = posRepository.cashInOut(cashLogRequest)
+
+        when (resource.status) {
+            Status.SUCCESS -> {
+                _showProgress.value = Event(false)
+                resource.data.let { response ->
+                    if (response?.status == 200) {
+
+                        resource.data?.let {
+
+                            _guestPayment.value =
+                                Event(createOrderResponse.message.toString())
+
+                        }
+
+                    } else {
+                        _snackbarText.value = Event(resource.message)
+                    }
+                }
+
+            }
+
+            Status.ERROR -> {
+                _snackbarText.value = Event(resource.message)
+                _showProgress.value = Event(false)
+            }
+
+            Status.LOADING -> {
+                _showProgress.value = Event(true)
+            }
+        }
+    }
 }

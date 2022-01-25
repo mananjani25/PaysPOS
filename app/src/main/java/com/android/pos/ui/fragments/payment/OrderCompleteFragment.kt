@@ -290,8 +290,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         binding.txtPaymentAmount.text =
                             "Out of " + MethodUtils.roundOffAmount((paidAmount + tipAmount))
                     } else {
-                        binding.txtChangeAmount.text =
-                            MethodUtils.roundOffAmount((paidAmount - dis_charge_value) - WholetotalPrice) + " Change"
+
+                        val changeValue = (paidAmount - dis_charge_value) - remainingAmount
+                        if (changeValue > 0.0) {
+                            binding.txtChangeAmount.text =
+                                MethodUtils.roundOffAmount(changeValue) + " Change"
+                        }
                         binding.txtPaymentAmount.text =
                             "Out of " + MethodUtils.roundOffAmount((paidAmount + tipAmount))
                     }

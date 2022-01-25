@@ -631,8 +631,11 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private fun getServiceCharges() {
 
         viewModel.serviceCharges.observe(requireActivity(), {
-            serviceChargesList = it.data
-            getCartList()
+
+            if (it.status == Status.SUCCESS) {
+                serviceChargesList = it.data
+                getCartList()
+            }
         })
     }
 
@@ -668,7 +671,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         if (isAdded)
             viewModel.mAllWords(prefProvider.getValue(ORDER_TYPE, "").toString()).observe(
                 requireActivity(), {
-                    Log.e(TAG, "YesAdded")
+
+                Log.e(TAG, "YesAdded")
                     cartList = it as ArrayList<CartModel>
                     viewModel.destroyedList.clear()
 
