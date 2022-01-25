@@ -164,8 +164,8 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
 
     override fun onPause() {
         super.onPause()
-        //removeDevConnectiosDelegate(this)
-        //unregisterReceiver(onNotification)
+        removeDevConnectiosDelegate(this)
+        unregisterReceiver(onNotification)
     }
 
     protected fun addToAvailableScannerList(availableScanner: AvailableScanner) {

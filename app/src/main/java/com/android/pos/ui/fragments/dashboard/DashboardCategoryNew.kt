@@ -166,9 +166,12 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // prefProvider.setValueboolean(IS_CLOCKOUT, false)
+
         binding = FragmentDashboardCategoryNewBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
+
+        requireActivity().window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
         getLoyaltyPrograms()
 
 

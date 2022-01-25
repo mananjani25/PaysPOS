@@ -42,20 +42,20 @@ object ProgressUtils {
         val inflater = LayoutInflater.from(context)
 
         val dialogView = inflater.inflate(R.layout.view_loading, null)
-        builder!!.setContentView(dialogView)
+        builder?.setContentView(dialogView)
 
-        builder!!.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        builder!!.window?.setBackgroundDrawable(
+        builder?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        builder?.window?.setBackgroundDrawable(
             ColorDrawable(Color.WHITE)
         )
-        builder!!.setCanceledOnTouchOutside(false)
-        builder!!.setCancelable(false)
-        builder!!.window?.setLayout(
+        builder?.setCanceledOnTouchOutside(false)
+        builder?.setCancelable(false)
+        builder?.window?.setLayout(
             WindowManager.LayoutParams.WRAP_CONTENT,
             WindowManager.LayoutParams.WRAP_CONTENT
         )
 
-        if (!builder!!.isShowing) {
+        if (!builder?.isShowing!!) {
             val activity: Activity = context as Activity
             if (!activity.isFinishing && !activity.isDestroyed) {
                 try {

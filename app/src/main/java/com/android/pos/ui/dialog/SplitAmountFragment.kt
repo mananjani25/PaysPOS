@@ -35,7 +35,7 @@ class SplitAmountFragment : DialogFragment(), View.OnClickListener, TextWatcher 
     ): View? {
         binding = DailogSplitAmountBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
-
+        dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         setupData()
 
         return binding.root

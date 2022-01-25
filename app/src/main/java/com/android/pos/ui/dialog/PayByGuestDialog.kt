@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
@@ -123,6 +124,9 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
         binding = DialogPayByGuestBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
         binding.model = viewModel
+
+
+
         splitValue = -1
         isSplitByNo = false
         isSplitByAmount = false
@@ -301,7 +305,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
     private fun tipAmountCalculation() {
 
         val _totalPrice =
-            if (splitValue == -1) (totalPrice) else (totalPrice) / splitValue
+            if (splitValue == -1) (totalPrice) else splitAfterAmount
 
         if (tipAmount == 0.00) {
             binding.txtTotalAmount.text = MethodUtils.roundOffAmount(_totalPrice)
@@ -541,6 +545,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                         "remainingAmount",
                         remainingAmount
                     )
+                    bundle.putDouble("TipAmount", tipAmount)
                     orderId?.let { bundle.putInt("orderID", it) }
                     bundle.putInt("splitValue", splitValue)
                     if (splitValue != -1) {
@@ -627,6 +632,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                         "remainingAmount",
                         remainingAmount
                     )
+                    bundle.putDouble("TipAmount", tipAmount)
                     orderId?.let { bundle.putInt("orderID", it) }
                     bundle.putInt("splitValue", splitValue)
                     if (splitValue != -1) {
@@ -670,6 +676,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                         "remainingAmount",
                         0.0
                     )
+                    bundle.putDouble("TipAmount", tipAmount)
                     bundle.putDouble("paymentAmount", cardPaymentAmount)
                     bundle.putInt("orderID", prefProvider.getValueInt("ORDER_ID", -1))
                     //bundle.putParcelable("receiptData", it.data)
@@ -711,11 +718,15 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                     isSplitByNo -> {
                         val bundle = Bundle()
                         bundle.putDouble("PaidAmount", splitAfterAmount)
-                        var totalPriceTemp = String.format(
+                        val totalPriceTemp = String.format(
                             "%.2f",
                             prefProvider.getValue(TOTAL_PRICE_DINEIN, "").toDouble()
                         )
+                        //  val totalPriceAfterTip = totalPriceTemp.toDouble() + tipAmount
+
+
                         bundle.putDouble("WholetotalPrice", totalPriceTemp.toDouble())
+
                         var remainingAmount = 0.0
                         remainingAmount = String.format(
                             "%.2f",
@@ -729,6 +740,8 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                             "remainingAmount",
                             remainingAmount
                         )
+
+                        bundle.putDouble("TipAmount", tipAmount)
 
 
                         orderId?.let { bundle.putInt("orderID", it) }
@@ -816,6 +829,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                         } else {
                             bundle.putBoolean("isSpilt", true)
                         }
+                        bundle.putDouble("TipAmount", tipAmount)
                         bundle.putBoolean("isSplitByNo", isSplitByNo)
                         bundle.putBoolean("isSplitByAmount", isSplitByAmount)
                         bundle.putString("paymentType", "Cash")
@@ -863,7 +877,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                                     .toDouble()
                             bundle.putBoolean("isSpilt", false)
                         }
-
+                        bundle.putDouble("TipAmount", tipAmount)
                         bundle.putDouble(
                             "remainingAmount",
                             remaining_custom
@@ -930,7 +944,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                         bundle.putBoolean("isTotalPayment", isTotalPayment)
                         bundle.putInt("orderID", orderIDNew ?: 0)
 
-
+                        bundle.putDouble("TipAmount", tipAmount)
                         if (isGuestPaymentTotal && isLastPayment) {
                             prefProvider.setValueInt("ORDER_ID", -1)
                         } else if (isLastPayment && isTotalPayment) {

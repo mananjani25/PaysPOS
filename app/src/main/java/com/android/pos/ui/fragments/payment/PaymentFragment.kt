@@ -600,7 +600,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
     private fun tipAmountCalculation() {
 
         val _totalPrice =
-            if (splitValue == -1) (totalPrice) else (totalPrice) / splitValue
+            if (splitValue == -1) (totalPrice) else splitAfterAmount
 
         if (tipAmount == 0.00) {
             binding.txtTotalAmount.text = MethodUtils.roundOffAmount(_totalPrice)
@@ -615,6 +615,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         getCashPaymentOptionList(_totalPrice + tipAmount)
         MethodUtils.setPriceTextView(binding.txtTipAmt, tipAmount)
         MethodUtils.setPriceTextView(binding.txtTotal, _totalPrice + tipAmount)
+        binding.txtCardAmount.text =
+            "$ " + String.format("%.2f", cardPaymentAmount + tipAmount)
     }
 
 
@@ -1550,7 +1552,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                     prefProvider.setValue(TAX_CHARGE, "")
                                     prefProvider.setValue(SERVICE_CHARGE, "")
                                 }
-
+                                bundle.putDouble("TipAmount", tipAmount)
                                 bundle.putBoolean("isSplitByNo", isSplitByNo)
                                 bundle.putBoolean("isSplitByAmount", isSplitByAmount)
                                 bundle.putString("paymentType", "Card")
@@ -1607,6 +1609,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                 } else {
                                     bundle.putBoolean("isSpilt", false)
                                 }
+                                bundle.putDouble("TipAmount", tipAmount)
                                 bundle.putBoolean("isSplitByNo", isSplitByNo)
                                 bundle.putBoolean("isSplitByAmount", isSplitByAmount)
                                 bundle.putString("paymentType", "Card")
@@ -1632,6 +1635,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                     "remainingAmount",
                                     0.0
                                 )
+                                bundle.putDouble("TipAmount", tipAmount)
                                 bundle.putDouble("dis_charge_value", 0.0)
                                 bundle.putInt("orderID", it.data.order.id)
                                 bundle.putParcelable("receiptData", it.data)
@@ -1678,7 +1682,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                 bundle.putInt("orderID", it.data.order.id ?: 0)
                                 bundle.putParcelable("receiptData", it.data)
                                 bundle.putInt("splitValue", splitValue)
-
+                                bundle.putDouble("TipAmount", tipAmount)
 
                                 if (splitValue != -1) {
                                     if (remainingAmount <= 0.0) {
@@ -1740,7 +1744,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                 bundle.putInt("orderID", it.data.order.id ?: 0)
                                 bundle.putParcelable("receiptData", it.data)
                                 bundle.putInt("splitValue", splitValue)
-
+                                bundle.putDouble("TipAmount", tipAmount)
 
                                 if (splitValue != -1) {
                                     if (remainingAmount <= 0.0) {
@@ -1855,6 +1859,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                 bundle.putBoolean("isSplitByAmount", isSplitByAmount)
                                 bundle.putBoolean("isCustomCash", isCustomCash)
                                 bundle.putString("paymentType", "Cash")
+                                bundle.putDouble("TipAmount", tipAmount)
                                 findNavController().navigate(
                                     R.id.action_paymentFragment_to_orderCompleteFragment,
                                     bundle
@@ -1885,6 +1890,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                 bundle.putBoolean("isSplitByNo", isSplitByNo)
                                 bundle.putBoolean("isSplitByAmount", isSplitByAmount)
                                 bundle.putString("paymentType", "Cash")
+                                bundle.putDouble("TipAmount", tipAmount)
                                 findNavController().navigate(
                                     R.id.action_paymentFragment_to_orderCompleteFragment,
                                     bundle
