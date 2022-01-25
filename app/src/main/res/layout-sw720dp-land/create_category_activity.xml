@@ -96,6 +96,7 @@
                     android:imeOptions="actionDone"
                     android:padding="@dimen/_5sdp"
                     android:singleLine="true"
+                    android:inputType="textVisiblePassword"
                     android:text="@={createCategoryViewModel.categoryDetails.name}"
                     android:textColor="@color/black"
                     android:textColorHint="@color/hintColor"
