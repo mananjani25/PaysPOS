@@ -60,7 +60,12 @@ class Reports : Fragment() {
             }
         }
         binding.txtShiftReport.setOnClickListener {
-            selectedPosition(2)
+            if (rolePermission.hasReportSummaryPermission(binding.root)) {
+                selectedPosition(2)
+                val frag: Fragment = ReportSummaryFragment()
+                loadFragment(frag)
+            }
+
         }
     }
 
