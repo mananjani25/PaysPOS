@@ -103,7 +103,7 @@
                         android:background="@drawable/edt_border_light_gray"
                         android:hint="Option Set Title"
                         android:imeOptions="actionNext"
-                        android:inputType="textCapWords"
+                        android:inputType="textCapWords|textVisiblePassword"
                         android:padding="@dimen/_5sdp"
                         android:text="@={createOptionViewModel.optionDetails.name}"
                         android:textColor="@color/txtColor"
@@ -138,7 +138,7 @@
                         android:background="@drawable/edt_border_light_gray"
                         android:hint="Display Name"
                         android:imeOptions="actionNext"
-                        android:inputType="textCapWords"
+                        android:inputType="textCapWords|textVisiblePassword"
                         android:padding="@dimen/_5sdp"
                         android:text="@={createOptionViewModel.optionDetails.displayName}"
                         android:textColor="@color/txtColor"
@@ -201,6 +201,7 @@
                             android:textColor="@color/txtColor"
                             android:textColorHint="@color/colorC5"
                             android:textSize="@dimen/_6mdpi"
+                            android:inputType="textVisiblePassword"
                             android:digits="@string/disable_emoji_string"/>
 
 

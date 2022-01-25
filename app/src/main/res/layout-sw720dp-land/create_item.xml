@@ -84,6 +84,7 @@
                 android:gravity="center">
 
                 <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/llTapToEdit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -151,12 +152,12 @@
                     android:background="@drawable/edt_border_light_gray"
                     android:hint="@string/item_name_1"
                     android:imeOptions="actionNext"
-                    android:inputType="textCapWords"
                     android:padding="@dimen/_5sdp"
                     android:text="@={createItemVewModel.itemDetails.name}"
                     android:textColor="@color/black"
                     android:textColorHint="@color/hintColor"
                     android:textSize="@dimen/_5mdpi"
+                    android:inputType="textVisiblePassword"
                     android:digits="@string/disable_emoji_string"/>
 
                 <androidx.appcompat.widget.AppCompatEditText
@@ -429,7 +430,9 @@
                             android:padding="@dimen/_5sdp"
                             android:textColor="@color/black"
                             android:textColorHint="@color/hintColor"
-                            android:textSize="@dimen/_5mdpi" />
+                            android:textSize="@dimen/_5mdpi"
+                            android:inputType="textVisiblePassword"
+                            />
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -463,12 +466,13 @@
                             android:hint="Sku"
                             android:digits="@string/disable_emoji_string"
                             android:imeOptions="actionNext"
-                            android:inputType="text"
+
                             android:maxLength="200"
                             android:padding="@dimen/_5sdp"
                             android:textColor="@color/black"
                             android:textColorHint="@color/hintColor"
-                            android:textSize="@dimen/_5mdpi" />
+                            android:textSize="@dimen/_5mdpi"
+                            android:inputType="textVisiblePassword"/>
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -490,6 +494,7 @@
                             android:layout_weight="1"
                             android:padding="@dimen/_5sdp"
                             android:text="@string/stock"
+                            android:maxLength="5"
                             android:textColor="@color/viewTextColor"
                             android:textSize="@dimen/_5mdpi" />
 
@@ -500,13 +505,15 @@
                             android:layout_height="wrap_content"
                             android:background="@null"
                             android:hint="0"
+                            android:maxLength="5"
                             android:digits="@string/disable_emoji_string"
                             android:imeOptions="actionNext"
                             android:inputType="number"
                             android:padding="@dimen/_5sdp"
                             android:textColor="@color/black"
                             android:textColorHint="@color/hintColor"
-                            android:textSize="@dimen/_5mdpi" />
+                            android:textSize="@dimen/_5mdpi"
+                            />
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -559,6 +566,7 @@
                         android:layout_weight="1"
                         android:gravity="center"
                         android:text="@string/stock"
+                        android:maxLength="5"
                         android:textColor="@color/txtColor"
                         android:textSize="@dimen/_5mdpi" />
 
@@ -640,7 +648,7 @@
                     android:gravity="top"
                     android:digits="@string/disable_emoji_string"
                     android:hint="@string/description"
-                    android:inputType="textMultiLine"
+                    android:inputType="textMultiLine|textVisiblePassword"
                     android:minLines="3"
                     android:padding="@dimen/_5sdp"
                     android:textColor="@color/black"

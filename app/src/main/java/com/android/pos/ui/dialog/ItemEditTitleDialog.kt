@@ -83,6 +83,10 @@ class ItemEditTitleDialog : DialogFragment() {
             selectOption = "2"
             requestPermissionDialog(selectOption)
         }
+        binding.includeLayout.llTapToEdit.setOnClickListener {
+            selectOption = "2"
+            requestPermissionDialog(selectOption)
+        }
 
         binding.txtSave.setOnClickListener {
             findNavController().previousBackStackEntry?.savedStateHandle?.set(

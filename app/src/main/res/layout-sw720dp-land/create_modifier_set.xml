@@ -89,6 +89,7 @@
                     android:background="@drawable/edt_border_light_gray"
                     android:hint="@string/modifier_set_name"
                     android:padding="@dimen/_5sdp"
+                    android:inputType="textVisiblePassword"
                     android:digits="@string/disable_emoji_string"
                     android:text="@={createModifierViewModel.modifierDetails.modifierName}"
                     android:textColor="@color/black"
@@ -213,7 +214,8 @@
                             android:padding="@dimen/_5sdp"
                             android:textColor="@color/txtColor"
                             android:textColorHint="@color/colorC5"
-                            android:textSize="@dimen/_6mdpi" />
+                            android:textSize="@dimen/_6mdpi"
+                            android:inputType="textVisiblePassword"/>
 
                         <androidx.appcompat.widget.AppCompatEditText
                             android:id="@+id/edtPrice"

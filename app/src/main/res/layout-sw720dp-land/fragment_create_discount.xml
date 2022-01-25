@@ -163,7 +163,7 @@
                                 android:background="@null"
                                 android:hint="@string/discount_name_"
                                 android:imeOptions="actionNext"
-                                android:inputType="textCapWords"
+                                android:inputType="textCapWords|textVisiblePassword"
                                 android:padding="@dimen/_5sdp"
                                 android:text="@={viewModel.createDiscountDetails.name}"
                                 android:textColor="@color/black"

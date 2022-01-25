@@ -71,7 +71,8 @@
                 android:padding="@dimen/_7sdp"
                 android:textColor="@color/txtColor"
                 android:textColorHint="@color/hintColor"
-                android:textSize="@dimen/_6mdpi" />
+                android:textSize="@dimen/_6mdpi"
+                />
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txt_send"
                 style="@style/CustomFontSemiBold"

@@ -69,7 +69,8 @@
                     android:padding="@dimen/_7sdp"
                     android:text="@string/shift_report"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_6sdp" />
+                    android:textSize="@dimen/_6sdp"
+                    android:visibility="gone"/>
 
                 <View
                     android:layout_width="match_parent"

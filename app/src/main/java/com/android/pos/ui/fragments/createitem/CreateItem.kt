@@ -462,6 +462,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
         binding.chooseCategory.setOnClickListener(this)
         binding.chooseTax.setOnClickListener(this)
         binding.imgEdit.setOnClickListener(this)
+        binding.llTapToEdit.setOnClickListener(this)
 
         setFragmentResultListener("request_key") { requestKey: String, bundle: Bundle ->
             val result = bundle.getParcelable<TbCategory>("data")
@@ -528,6 +529,16 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
                 }
             }
             R.id.imgEdit -> {
+                var profileImg = ""
+                if (::itemObject.isInitialized && !itemObject.imageUrl.isNullOrEmpty()) {
+                    profileImg = itemObject.imageUrl ?: ""
+
+                }
+                val bundle = Bundle()
+                bundle.putString("imgUrl", profileImg)
+                findNavController().navigate(R.id.action_createItem_to_itemEditTitleDialog, bundle)
+            }
+            R.id.llTapToEdit -> {
                 var profileImg = ""
                 if (::itemObject.isInitialized && !itemObject.imageUrl.isNullOrEmpty()) {
                     profileImg = itemObject.imageUrl ?: ""

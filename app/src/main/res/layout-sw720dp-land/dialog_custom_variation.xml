@@ -266,6 +266,7 @@
                             android:layout_weight="1"
                             android:padding="@dimen/_5sdp"
                             android:text="@string/stock"
+                            android:maxLength="5"
                             android:textColor="@color/viewTextColor"
                             android:textSize="@dimen/_5mdpi" />
 
@@ -278,6 +279,7 @@
                             android:background="@null"
                             android:gravity="end"
                             android:hint="10"
+                            android:maxLength="5"
                             android:imeOptions="actionNext"
                             android:inputType="number"
                             android:padding="@dimen/_5sdp"

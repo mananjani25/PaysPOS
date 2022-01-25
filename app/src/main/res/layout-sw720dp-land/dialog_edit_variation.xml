@@ -227,6 +227,7 @@
                             android:layout_weight="1"
                             android:padding="@dimen/_5sdp"
                             android:text="@string/stock"
+                            android:maxLength="5"
                             android:textColor="@color/viewTextColor"
                             android:textSize="@dimen/_5mdpi" />
 
@@ -246,6 +247,7 @@
                             android:textColor="@color/black"
                             android:textColorHint="@color/hintColor"
                             android:textSize="@dimen/_5mdpi"
+                            android:maxLength="5"
                            />
 
                     </androidx.appcompat.widget.LinearLayoutCompat>

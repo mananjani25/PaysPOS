@@ -129,7 +129,8 @@
                         android:textColor="@color/txtColor"
                         android:textColorHint="@color/hintColor"
                         android:textSize="@dimen/_6mdpi"
-                        app:textAllCaps="true" />
+                        app:textAllCaps="true"
+                        />
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -254,7 +255,8 @@
                 android:textColor="@color/txtColor"
                 android:textColorHint="@color/hintColor"
                 android:textSize="@dimen/_5mdpi"
-                app:textAllCaps="true" />
+                app:textAllCaps="true"
+                />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 

@@ -67,7 +67,8 @@
                 android:gravity="center"
                 android:text="100"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textSize="@dimen/_5mdpi"
+                android:maxLength="5"/>
         </LinearLayout>
 
         <View

@@ -97,12 +97,13 @@
                 android:hint="Note Title"
                 android:digits="@string/disable_emoji_string"
                 android:imeOptions="actionDone"
-                android:inputType="textCapWords"
+
                 android:padding="@dimen/_5sdp"
                 android:text="@={viewModel.createNoteDetails.Note.name}"
                 android:textColor="@color/txtColor"
                 android:textColorHint="@color/hintColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textSize="@dimen/_5mdpi"
+                android:inputType="textVisiblePassword"/>
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
