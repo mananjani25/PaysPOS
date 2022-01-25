@@ -529,6 +529,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         }
         setFragmentResultListener("request_for_customAmount") { requestKey: String, bundle: Bundle ->
             val amounnt = bundle.getDouble("amount")
+            val totalPrice = bundle.getDouble("totalAmount")
             /*isCustomCash = true
             isSplitByNo = false
             isNextPayment = false
@@ -559,9 +560,9 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             if (splitValue != -1) {
                 splitAfterAmount = amounnt
             } else {
-
                 paymentAmount = amounnt
             }
+
             makePayment()
         }
 
