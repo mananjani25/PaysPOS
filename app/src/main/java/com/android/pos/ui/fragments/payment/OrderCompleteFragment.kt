@@ -70,6 +70,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private var isSpilt: Boolean = false
     private var isCustomCash: Boolean = false
     private var isSplitByAmount: Boolean = false
+    private var splitTotalAmount: Double = 0.0
     private var getDineInOrderDetails: GetOrderDetailsResponse.Data? = null
     private var isSplitByNo: Boolean = false
     private var isLastPayment: Boolean = false
@@ -255,6 +256,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 Log.e(TAG, "paymentisSpilt  ${isSpilt}")
                 Log.e(TAG, "paymentisCustomCash  ${isCustomCash}")
                 Log.e(TAG, "paymentisSplitByAmount  ${isSplitByAmount}")
+                if (isSpilt) {
+                    var sp = requireArguments().getString(Constants.SPLIT_PAY_AMOUNT)
+                    Log.e(TAG, "payment SplitTotalAmount  ${sp}")
+
+                }
+
+
 
                 if (isSplitByAmount) {
                     if (paidAmount > WholetotalPrice) {
