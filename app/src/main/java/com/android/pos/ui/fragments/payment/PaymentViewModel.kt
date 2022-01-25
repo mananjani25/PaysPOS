@@ -269,15 +269,21 @@ class PaymentViewModel @Inject constructor(
                             Log.e("INOUT : Total Amount", order.totalAmount.toString())
                             Log.e("INOUT : Total PayAmount", totalPayAmounts.toString())
 
-                            if (order.totalAmount == totalPayAmounts) {
-                                if (prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)) {
-                                    _queueStart.value = Event(createOrderResponse)
-                                } else {
+                            if (order.payments.isNotEmpty()) {
+                                if (order.payments[order.payments.size - 1].amount == totalPayAmounts) {
+                                    if (prefProvider.getValueboolean(
+                                            IS_PRINTER_QUEUE_ENABLE,
+                                            false
+                                        )
+                                    ) {
+                                        _queueStart.value = Event(createOrderResponse)
+                                    } else {
 
-                                    _data.value = Event(createOrderResponse)
+                                        _data.value = Event(createOrderResponse)
+                                    }
+                                } else {
+                                    cashOutApi(createOrderResponse, "out")
                                 }
-                            } else {
-                                cashOutApi(createOrderResponse, "out")
                             }
 
 
@@ -311,7 +317,7 @@ class PaymentViewModel @Inject constructor(
         val order = createOrderResponse.data.order
 
         val cashLogRequest = CashLogRequest(
-            MethodUtils.roundOffAmountDouble(totalPayAmounts) - order.totalAmount,
+            MethodUtils.roundOffAmountDouble(totalPayAmounts) - order.payments[order.payments.size - 1].amount,
             order.employeeId,
             event,
             order.id,

@@ -71,6 +71,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private var isCustomCash: Boolean = false
     private var isSplitByAmount: Boolean = false
     private var splitTotalAmount: Double = 0.0
+    private var splitChange: Double = 0.0
     private var getDineInOrderDetails: GetOrderDetailsResponse.Data? = null
     private var isSplitByNo: Boolean = false
     private var isLastPayment: Boolean = false
@@ -211,6 +212,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             paidAmount = requireArguments().getDouble("PaidAmount")
             WholetotalPrice = requireArguments().getDouble("WholetotalPrice")
             remainingAmount = requireArguments().getDouble("remainingAmount")
+            splitChange = requireArguments().getDouble("splitChange")
             orderID = requireArguments().getInt("orderID")
             receiptModel = requireArguments().getParcelable("receiptData")
             splitValue = requireArguments().getInt("splitValue")
@@ -242,7 +244,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 var title = "Split "
                 viewModel.addSplitToDatabase(
                     title,
-                    paidAmount,
+                    paidAmount - splitChange,
                     remainingAmount
                 )
                 binding.txtTitle.text =
@@ -262,8 +264,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 }
 
-
-
                 if (isSplitByAmount) {
                     if (paidAmount > WholetotalPrice) {
                         binding.txtChangeAmount.text =
@@ -277,16 +277,27 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             MethodUtils.roundOffAmount(0.0) + " Change"
                     }
                 } else if (remainingAmount < paidAmount) {
-                    binding.txtChangeAmount.text =
-                        MethodUtils.roundOffAmount((paidAmount - dis_charge_value) - WholetotalPrice) + " Change"
-                    binding.txtPaymentAmount.text =
-                        "Out of " + MethodUtils.roundOffAmount((paidAmount))
-
+                    if (isCustomCash && splitChange != 0.0) {
+                        binding.txtChangeAmount.text =
+                            MethodUtils.roundOffAmount(splitChange) + " Change"
+                        binding.txtPaymentAmount.text =
+                            "Out of " + MethodUtils.roundOffAmount((paidAmount))
+                    } else {
+                        binding.txtChangeAmount.text =
+                            MethodUtils.roundOffAmount((paidAmount - dis_charge_value) - WholetotalPrice) + " Change"
+                        binding.txtPaymentAmount.text =
+                            "Out of " + MethodUtils.roundOffAmount((paidAmount))
+                    }
                 } else {
-
-
-                    binding.txtPaymentAmount.text =
-                        "Out of " + MethodUtils.roundOffAmount(paidAmount)
+                    if (isCustomCash && splitChange != 0.0) {
+                        binding.txtChangeAmount.text =
+                            MethodUtils.roundOffAmount(splitChange) + " Change"
+                        binding.txtPaymentAmount.text =
+                            "Out of " + MethodUtils.roundOffAmount((paidAmount))
+                    } else {
+                        binding.txtPaymentAmount.text =
+                            "Out of " + MethodUtils.roundOffAmount(paidAmount)
+                    }
                 }
             } else {
                 binding.llHome.visibility = View.VISIBLE
@@ -2678,7 +2689,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 val navController = findNavController()
                 var bundle = Bundle()
                 bundle.putBoolean("isNextPayment", true)
-                //  bundle.putInt("orderID",orderID)
                 bundle.putDouble("splitPaidAmount", paymentAmount)
                 bundle.putDouble("remainingAmount", remainingAmount)
                 if (isSplitByAmount) {
