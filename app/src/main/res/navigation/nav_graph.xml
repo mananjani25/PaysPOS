@@ -989,6 +989,9 @@
         <action
             android:id="@+id/action_payByGuestDialog_to_orderCompleteFragment"
             app:destination="@id/orderCompleteFragment" />
+        <action
+            android:id="@+id/action_payByGuestDialog_to_addTipsDialog"
+            app:destination="@id/addTipsDialog" />
     </fragment>
     <fragment
         android:id="@+id/reportSummaryFragment"

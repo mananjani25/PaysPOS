@@ -1,11 +1,14 @@
 package com.android.pos.ui.dialog
 
+import android.app.Dialog
+import android.content.Context
 import android.graphics.Point
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.*
+import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
@@ -76,6 +79,9 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface,
     ): View? {
         binding = DailogAddTipsBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
+
+        dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
         return binding.root
     }
 
@@ -196,6 +202,8 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface,
         val width: Int = size.x
         window.setLayout((width * 0.50).toInt(), WindowManager.LayoutParams.MATCH_PARENT)
         window.setGravity(Gravity.CENTER)
+
+
     }
 
     override fun selectedItem(model: GetTipReponse.Data, pos: Int) {
@@ -260,5 +268,6 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface,
     override fun afterTextChanged(s: Editable?) {
 
     }
+
 
 }
