@@ -70,7 +70,7 @@
             android:background="@drawable/edt_border_light_gray"
             android:hint="@string/rename_item"
             android:imeOptions="actionDone"
-            android:inputType="textCapWords"
+            android:inputType="textCapWords|textVisiblePassword"
             android:padding="@dimen/_5sdp"
             android:textColor="@color/txtColor"
             android:textColorHint="@color/hintColor"

@@ -160,7 +160,7 @@
                             android:digits="@string/disable_emoji_string"
                             android:hint="Sales Tax"
                             android:imeOptions="actionNext"
-                            android:inputType="textCapWords"
+                            android:inputType="textVisiblePassword"
                             android:paddingStart="@dimen/_20sdp"
                             android:paddingTop="@dimen/_5sdp"
                             android:paddingEnd="@dimen/_20sdp"

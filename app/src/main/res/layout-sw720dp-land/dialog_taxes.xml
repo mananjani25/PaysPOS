@@ -69,7 +69,7 @@
             android:drawablePadding="@dimen/_10sdp"
             android:hint="@string/search_categories"
             android:imeOptions="actionDone"
-            android:inputType="text"
+            android:inputType="textVisiblePassword"
             android:padding="@dimen/_5sdp"
             android:textColor="@color/black"
             android:textColorHint="@color/hintColor"

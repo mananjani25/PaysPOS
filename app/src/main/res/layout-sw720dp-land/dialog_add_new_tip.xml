@@ -110,7 +110,7 @@
                             android:digits="@string/disable_emoji_string"
                             android:hint="Tip Name"
                             android:imeOptions="actionNext"
-                            android:inputType="textCapWords"
+                            android:inputType="textVisiblePassword"
                             android:padding="@dimen/_5sdp"
                             android:text="@={viewModel.createTipDetails.name}"
                             android:textColor="@color/black"
