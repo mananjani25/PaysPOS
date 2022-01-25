@@ -84,6 +84,7 @@
                 android:gravity="center">
 
                 <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/llTapToEdit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -490,6 +491,7 @@
                             android:layout_weight="1"
                             android:padding="@dimen/_5sdp"
                             android:text="@string/stock"
+                            android:maxLength="5"
                             android:textColor="@color/viewTextColor"
                             android:textSize="@dimen/_5mdpi" />
 
@@ -500,6 +502,7 @@
                             android:layout_height="wrap_content"
                             android:background="@null"
                             android:hint="0"
+                            android:maxLength="5"
                             android:digits="@string/disable_emoji_string"
                             android:imeOptions="actionNext"
                             android:inputType="number"
@@ -559,6 +562,7 @@
                         android:layout_weight="1"
                         android:gravity="center"
                         android:text="@string/stock"
+                        android:maxLength="5"
                         android:textColor="@color/txtColor"
                         android:textSize="@dimen/_5mdpi" />
 

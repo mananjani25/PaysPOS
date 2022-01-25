@@ -60,7 +60,7 @@ class Reports : Fragment() {
             }
         }
         binding.txtShiftReport.setOnClickListener {
-            //selectedPosition(2)
+            selectedPosition(2)
         }
     }
 
