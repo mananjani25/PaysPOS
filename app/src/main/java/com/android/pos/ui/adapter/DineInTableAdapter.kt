@@ -395,7 +395,11 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
             }
 
-            binding.txtEmpName.text = list[bindingAdapterPosition].empName
+            if (list[bindingAdapterPosition].empName == "null" || list[bindingAdapterPosition].empName == null) {
+                binding.txtEmpName.text = ""
+            } else {
+                binding.txtEmpName.text = list[bindingAdapterPosition].empName
+            }
             binding.model = model.item
             binding.executePendingBindings()
 
