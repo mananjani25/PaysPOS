@@ -223,7 +223,7 @@
                         android:text="@string/custom"
                         android:textColor="@color/btnColorDark_"
                         android:textSize="@dimen/_6mdpi"
-                        android:visibility="invisible" />
+                        android:visibility="visible" />
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 

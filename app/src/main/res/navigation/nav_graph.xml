@@ -992,6 +992,9 @@
         <action
             android:id="@+id/action_payByGuestDialog_to_addTipsDialog"
             app:destination="@id/addTipsDialog" />
+        <action
+            android:id="@+id/action_payByGuestDialog_to_customAmountFragment"
+            app:destination="@id/customAmountFragment" />
     </fragment>
     <fragment
         android:id="@+id/reportSummaryFragment"

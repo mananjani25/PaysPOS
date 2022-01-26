@@ -56,7 +56,7 @@
                 android:gravity="center"
                 android:textColor="@color/purple_500"
                 android:textSize="@dimen/_8mdpi"
-                tools:text="$12.50" />
+                tools:text="" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtTitleCash"
@@ -144,7 +144,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="@dimen/_5sdp"
-                    android:text="Out of $12.50"
+                    android:text=""
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_7mdpi" />
 
@@ -179,7 +179,7 @@
                         android:layout_toEndOf="@+id/txtRemainingAmountLabel"
                         android:textColor="@color/colorRed"
                         android:textSize="@dimen/_8mdpi"
-                        tools:text="$100.00" />
+                        tools:text="" />
                 </RelativeLayout>
 
                 <androidx.appcompat.widget.LinearLayoutCompat

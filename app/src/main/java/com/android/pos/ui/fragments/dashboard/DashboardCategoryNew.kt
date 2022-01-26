@@ -326,7 +326,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         observeShowProgress()
         syncData()
         getBackstack()
-        clearPrefrenceOfOrder()
+//        clearPrefrenceOfOrder()
         hideOrderType()
         setupAdapter()
         setVenueData()
