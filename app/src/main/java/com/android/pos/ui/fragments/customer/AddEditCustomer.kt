@@ -337,7 +337,7 @@ class AddEditCustomer : Fragment() {
                 activity?.let {
                     AlertUtils.showCustomAlertWithListenerWithOK(
                         it,
-                        baseResponse.message.toString(),
+                        baseResponse.message,
                     )
                     { _, _ ->
 
