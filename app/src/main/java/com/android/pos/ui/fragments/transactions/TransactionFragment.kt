@@ -178,8 +178,8 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
             TimePickerDialog(
                 requireActivity(),
                 startTime,
-                myCalendar2.get(Calendar.HOUR),
-                myCalendar2.get(Calendar.MINUTE),
+                myCalendar2.get(2),
+                myCalendar2.get(2),
                 false
             ).show()
         }
@@ -192,8 +192,8 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
             TimePickerDialog(
                 requireActivity(),
                 endTime,
-                myCalendar3.get(Calendar.HOUR),
-                myCalendar3.get(Calendar.MINUTE),
+                myCalendar3.get(2),
+                myCalendar3.get(2),
                 false
             ).show()
 

@@ -116,7 +116,8 @@
                     android:layout_marginStart="@dimen/_30sdp"
                     android:layout_marginTop="@dimen/_10sdp"
                     android:layout_marginEnd="@dimen/_30sdp"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:visibility="visible">
 
 
                     <androidx.appcompat.widget.LinearLayoutCompat
