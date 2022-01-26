@@ -74,6 +74,9 @@ object Constants {
     const val CASHDIS_SURCHARGEENABLE = "cashdisurchargeenable"
     const val CASH_DIS_STORED = "cashDisStore"
 
+    const val PICK_UP = "PickUp"
+    const val DELIVERY = "Delivery"
+
 
     //Api End Points
     const val USERS_LOG_IN = "users/log_in"

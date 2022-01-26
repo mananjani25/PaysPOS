@@ -826,6 +826,7 @@
                     android:id="@+id/txtPrintKitchenReceipt"
                     style="@style/CustomFontBold"
                     android:layout_width="match_parent"
+                    android:visibility="invisible"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
                     android:layout_marginTop="@dimen/_10sdp"

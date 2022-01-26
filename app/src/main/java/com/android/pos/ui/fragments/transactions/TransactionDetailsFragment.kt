@@ -973,7 +973,7 @@ class TransactionDetailsFragment : Fragment() {
 
             }
 
-            /*if (customerSettingModel.showRefundAmount) {
+            if (paymentDetailsResponse?.data?.order.refund_detail != null && paymentDetailsResponse?.data?.order?.refund_detail?.refunded_amount != 0.0) {
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
 
@@ -990,8 +990,8 @@ class TransactionDetailsFragment : Fragment() {
 
                 builder.addText(
                     padLine(
-                        "Change Amount",
-                        "$" + MethodUtils.roundOffAmountString(0.0),
+                        "Refund Amount",
+                        "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse?.data?.order?.refund_detail?.refunded_amount),
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             24
                         } else {
@@ -999,7 +999,7 @@ class TransactionDetailsFragment : Fragment() {
                         }
                     )
                 )
-            }*/
+            }
 
             if (paymentDetailsResponse.data.order?.total_tips == 0.0) {
                 builder.addFeedLine(1)
