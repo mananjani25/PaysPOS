@@ -23,9 +23,14 @@ class CashLogAdapter(val context: Context?) :
             binding.executePendingBindings()
 
             binding.txtDateTime.text =
-                TimeFormatUtils.convertCurrentDate(item.createdAt,context) + " " + TimeFormatUtils.convertCurrentTime(
-                    item.createdAt,context
+                TimeFormatUtils.convertCurrentDate(
+                    item.createdAt,
+                    context
+                ) + " " + TimeFormatUtils.convertCurrentTime(
+                    item.createdAt, context
                 )
+
+            binding.txtOrderId.text = item.orderId.toString()
 
             if (item.event.equals("IN", ignoreCase = true)) {
                 binding.txtEvent.text = "Cash IN"

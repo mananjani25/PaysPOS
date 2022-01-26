@@ -80,7 +80,7 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface,
         binding = DailogAddTipsBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
 
-        dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
 
         return binding.root
     }

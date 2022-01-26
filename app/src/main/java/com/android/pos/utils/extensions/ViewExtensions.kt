@@ -46,6 +46,10 @@ fun TextView.styleBold() {
     this.setTypeface(this.typeface, Typeface.BOLD)
 }
 
+fun View.isVisible(): Boolean {
+    return this.visibility == View.VISIBLE
+}
+
 fun View.visible() {
     visibility = View.VISIBLE
 }

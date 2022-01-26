@@ -24,11 +24,23 @@
             android:paddingBottom="@dimen/_5sdp">
 
             <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtOrderId"
+                style="@style/CustomFontMediumStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:text="@string/tv_order_type"
+                android:textColor="@color/btnColor"
+                android:textSize="@dimen/_5mdpi" />
+
+
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtDateTime"
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_5sdp"
                 android:layout_weight="1"
                 android:gravity="center"
                 android:textColor="@color/txtColor"
@@ -50,7 +62,7 @@
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"
+                android:layout_weight="1"
                 android:gravity="center"
                 android:text="@{viewModel.orderTypeName}"
                 android:textColor="@color/btnColor"
@@ -99,7 +111,7 @@
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="1.5"
                 android:gravity="center"
                 android:text="@{viewModel.reason}"
                 android:textColor="@color/txtColor"

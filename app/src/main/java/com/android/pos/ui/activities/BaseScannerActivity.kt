@@ -610,7 +610,7 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
             }
 
             //-- CDC readers --
-            Collections.sort(scannersList)
+            scannersList.sort()
 
             Log.e(TAG, "lastConnectedScannerList size : ${lastConnectedScannerList.size}")
             Log.e(TAG, "scannersList size : ${scannersList.size}")

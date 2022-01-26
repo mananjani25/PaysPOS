@@ -7,6 +7,8 @@ import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -24,12 +26,14 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.android.pos.MainApplication
 import com.android.pos.R
 import com.android.pos.data.entities.*
 import com.android.pos.data.model.CategorySearchData
@@ -104,6 +108,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     DineInAdapter.DineInCallback, CategoryTabAdapter1.TabListner,
     ItemCallback, View.OnClickListener, ScannerAppEngine.IScannerAppEngineDevEventsDelegate {
 
+    private lateinit var nameObserver: Observer<List<CartModel>>
     private var isOpenOrderUpdate: Boolean = false
     private var orderDiscount: Double = 0.0
     private var categoryItemAdapter1: CategoryItemAdapter1? = null
@@ -157,6 +162,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     @Inject
     lateinit var rolePermission: RolePermission
+
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -306,7 +312,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         Log.e("Loyalty", "getLoyaltyPrograms called..")
         viewModel.activeLoyaltyProgram = prefProvider.getActiveLoyaltyData()
         viewModel.activeLoyaltyProgramLiveData.observe(requireActivity(), {
-            if (it.data != null) {
+            if (it.status == Status.SUCCESS && it.data != null) {
                 Log.e("Loyalty", "getLoyaltyPrograms fetched..")
                 prefProvider.saveActiveLoyaltyData(it.data)
                 viewModel.activeLoyaltyProgram = it.data
@@ -349,10 +355,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         binding.layoutCart.llCartMenu.setOnClickListener(this)
         binding.layoutCart.imgOrderMenu.setOnClickListener(this)
         binding.layoutCart.txtAddDiscount.setOnClickListener(this)
-//
-//        if (prefProvider.getValueboolean(LOYALTY_ADDED, false)) {
-//            refreshItemCalculation()
-//        }
+
         binding.footer.txtEmployeeName.text = prefProvider.getValue(EMPLOYEE_NAME, "")
         binding.root.setOnClickListener {
             if (binding.layoutCart.llCustomerDialog.visibility == View.VISIBLE) {
@@ -389,14 +392,14 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         }
 
 
-        setFragmentResultListener("request_key_customer") { requestKey: String, bundle: Bundle ->
+        setFragmentResultListener("request_key_customer") { _: String, bundle: Bundle ->
             val result = bundle.getParcelable<TbCustomer>("data")
             if (result != null) {
                 Log.e(TAG, "bundleSelectBundle:  ${Gson().toJson(bundle)}")
                 setUpCustomer(result, bundle)
             }
         }
-        setFragmentResultListener("request_key_customer_open_order") { requestKey: String, bundle: Bundle ->
+        setFragmentResultListener("request_key_customer_open_order") { _: String, bundle: Bundle ->
             val result = bundle.getParcelable<TbCustomer>("data")
             if (result != null) {
                 Log.e(TAG, "gotBundlebundle:  ${Gson().toJson(bundle)}")
@@ -413,7 +416,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
             }
         }
-        setFragmentResultListener("request_key_discount_order") { requestKey: String, bundle: Bundle ->
+        setFragmentResultListener("request_key_discount_order") { _: String, bundle: Bundle ->
             val result = bundle.getParcelable<TbDiscount>("data")
             if (result != null && viewModel.totalPrice != 0.0) {
                 orderDiscount = result.percentage
@@ -441,32 +444,13 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         initScanner()
     }
 
+
     private fun initScanner() {
         //barcode event listener
         (activity as MainActivity).addDevEventsDelegate(this)
 
-        /*viewModel.barcodeFoundDbItemLiveData?.observe(viewLifecycleOwner, {
-            it?.let { resource ->
-                when (resource.status) {
-                    Status.SUCCESS -> {
-                        if (resource.data != null) {
-                            //data found. | Add in cart
-                        } else {
-                            //data not found. Create New Item
-                            val bundle = Bundle()
-                            bundle.putString("productCode", resource.data?.productCode)
-                            findNavController().navigate(R.id.action_dashboardCategoryNew_to_createItem)
-                        }
-                    }
-                    Status.ERROR -> {
-                    }
-                    Status.LOADING -> {
-
-                    }
-                }
-            }
-        })*/
     }
+
 
     private fun syncData() {
 
@@ -666,167 +650,192 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         dineInCartAdapter.setListner(this)
         binding.layoutCart.rvCart.adapter = cartAdapter
         binding.layoutCart.rvCartDineIn.adapter = dineInCartAdapter
-        // dineInCartAdapter.itemAdapter.setCallback(this)
+
+
+        nameObserver = Observer {
+
+            bindData(it)
+
+            removeObserver()
+        }
 
 
         if (isAdded)
-            viewModel.mAllWords(prefProvider.getValue(ORDER_TYPE, "").toString()).observe(
-                requireActivity(), {
+            addObserver()
+    }
 
-                Log.e(TAG, "YesAdded")
-                    cartList = it as ArrayList<CartModel>
-                    viewModel.destroyedList.clear()
+    private fun addObserver() {
 
-                    if (cartList.isNotEmpty()) {
-                        cartList[0].items?.filter { item -> item.isDestroy }?.let {
-                            viewModel.destroyedList.addAll(it)
+        viewModel.mAllWords(prefProvider.getValue(ORDER_TYPE, "")).observe(
+            requireActivity(), nameObserver
+        )
+
+    }
+
+    private fun removeObserver() {
+
+        viewModel.mAllWords(prefProvider.getValue(ORDER_TYPE, "")).removeObserver(nameObserver)
+        //  addObserver()
+    }
+
+    private fun bindData(it: List<CartModel>?) {
+        Log.e("bindData", "YesAdded")
+
+        cartList = it as ArrayList<CartModel>
+        viewModel.destroyedList.clear()
+
+        if (cartList.isNotEmpty()) {
+            cartList[0].items?.filter { item -> item.isDestroy }?.let {
+                viewModel.destroyedList.addAll(it)
+            }
+
+            refreshOrderTypeLabel()
+
+            if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
+                viewModel.setServiceCharges(serviceChargesList)
+                cartList.get(0).serviceCharge = serviceChargesList
+                binding.layoutCart.rvCart.visibility = View.GONE
+                binding.layoutCart.rvCartDineIn.visibility = View.VISIBLE
+                binding.layoutCart.llPayment.visibility = View.VISIBLE
+
+                val dineList: List<DineInModel>? =
+                    cartList.get(0).dineInList
+
+
+                if (dineList != null) {
+                    dineInCartAdapter.setList(dineList.toCollection(arrayListOf()))
+
+                }
+
+                if (cartList[0].items?.isNotEmpty() == true) {
+
+                    val dineList = cartList[0].dineInList ?: dineInCartAdapter.getList()
+                    cartList[0].items?.forEach {
+
+                        if (it.isManualSales && dineList.isNotEmpty()) {
+
+                            if (it.timeStamp == null || it.timeStamp?.lowercase() == "null".lowercase()) {
+                                it.timeStamp = viewModel.randomOfflineId()
+                            }
+                            dineList[0].items.add(it)
+
                         }
-
-                        refreshOrderTypeLabel()
-
-                        if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
-                            viewModel.setServiceCharges(serviceChargesList)
-                            cartList.get(0).serviceCharge = serviceChargesList
-                            binding.layoutCart.rvCart.visibility = View.GONE
-                            binding.layoutCart.rvCartDineIn.visibility = View.VISIBLE
-                            binding.layoutCart.llPayment.visibility = View.VISIBLE
-
-                            val dineList: List<DineInModel>? =
-                                cartList.get(0).dineInList
-
-
-                            if (dineList != null) {
-                                dineInCartAdapter.setList(dineList.toCollection(arrayListOf()))
-
-                            }
-
-                            if (cartList[0].items?.isNotEmpty() == true) {
-
-                                val dineList = cartList[0].dineInList ?: dineInCartAdapter.getList()
-                                cartList[0].items?.forEach {
-
-                                    if (it.isManualSales && dineList.isNotEmpty()) {
-
-                                        if (it?.timeStamp == null || it?.timeStamp?.lowercase() == "null".lowercase()) {
-                                            it.timeStamp = viewModel.randomOfflineId()
-                                        }
-                                        dineList[0]?.items.add(it)
-
-                                    }
-                                    cartList[0].items?.toCollection(arrayListOf())?.clear()
-                                    cartList[0].items = listOf()
-
-                                }
-
-                                viewModel.cartLogic(cartList, null, ADD, dineInList = dineList)
-
-                            }
-
-                            val list1 = cartList.get(0).dineInList
-                            if (isAdded) {
-
-                                setFragmentResultListener("request_key_customer_dine_in") { requestKey, bundle ->
-                                    val result = bundle.getParcelable<TbCustomer>("data")
-                                    if (result != null) {
-
-
-                                        if (list1?.isNotEmpty() == true) {
-
-                                            var position = bundle.getInt("position")
-
-                                            val dineInList = list1
-                                            if (dineInList.size >= position && position != 0) {
-
-
-                                                dineInList.get(position).customer = result
-
-                                                Log.e(TAG, "UpdateCustomerPostition ${position}")
-                                                Log.e(
-                                                    TAG,
-                                                    "UpdateCustomer ${dineInList.get(position).customer}"
-                                                )
-
-                                                viewModel.dineInCartUpdate(
-                                                    cartList,
-                                                    dineInList
-                                                )
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-
-
-                        } else {
-
-
-                            binding.layoutCart.rvCart.visibility = View.VISIBLE
-                            binding.layoutCart.rvCartDineIn.visibility = View.GONE
-                            binding.layoutCart.llPayment.visibility = View.VISIBLE
-
-                            Log.e(TAG, "cartList[0].items > ${cartList[0].items?.size}")
-                            Log.e(TAG, "viewModel.destroyedList > ${viewModel.destroyedList?.size}")
-                            cartAdapter.addCart(cartList[0].items)
-                        }
-                        viewModel.itemCalculation(
-                            cartList,
-                            binding.layoutCart.txtTotalAmount,
-                            requireContext()
-                        )
-
-                        val orderType = prefProvider.getValue(ORDER_TYPE, "")
-                        Log.e("!_@_", "rlSave -------- $orderType ")
-                        if (orderType == TAKEOUT || orderType == Constants.DINE_IN) {
-                            Log.e("!_@_", "rlSave -- GONE ")
-                            binding.layoutCart.rlSave.visibility = View.GONE
-                            if (prefProvider.getValue(ORDER_TYPE, "").toString() == DINE_IN) {
-                                binding.layoutCart.txtTotalAmount.visibility = View.GONE
-                                binding.layoutCart.txtPay.visibility = View.GONE
-                                binding.layoutCart.txtDineInProceed.visibility = View.VISIBLE
-                                if (prefProvider.getValueboolean(DINE_IN_UPDATE, false) == true) {
-
-                                    binding.layoutCart.txtDineInProceed.setText("Update and Proceed")
-                                } else {
-                                    binding.layoutCart.txtDineInProceed.setText("Proceed To Fire")
-                                }
-                            } else {
-                                binding.layoutCart.txtDineInProceed.visibility = View.GONE
-                            }
-                        } else {
-                            Log.e("!_@_", "rlSave -- VISIBLE ")
-                            binding.layoutCart.rlSave.visibility = View.VISIBLE
-                        }
-
-
-                    } else {
-                        viewModel.itemCalculation(
-                            cartList,
-                            binding.layoutCart.txtTotalAmount,
-                            requireContext()
-                        )
-
-
-
-                        binding.layoutCart.rvCart.visibility = View.GONE
-                        binding.layoutCart.llPayment.visibility = View.GONE
-
+                        cartList[0].items?.toCollection(arrayListOf())?.clear()
+                        cartList[0].items = listOf()
 
                     }
-                    if (prefProvider.getValueInt("ORDER_ID", -1) != -1) {
-                        Log.e(TAG, "ManualSale ORderIDNOt Null")
-                        lifecycleScope.launchWhenResumed {
-                            if (findNavController().currentDestination?.id == R.id.dashboardCategoryNew) {
-                                val bundle = bundleOf(IS_NEXT_AMOUNT to true)
 
-                                findNavController().navigate(
-                                    R.id.action_dashboardCategoryNew_to_paymentFragment, bundle
-                                )
+                    viewModel.cartLogic(cartList, null, ADD, dineInList = dineList)
+
+                }
+
+                val list1 = cartList.get(0).dineInList
+                if (isAdded) {
+
+                    setFragmentResultListener("request_key_customer_dine_in") { _, bundle ->
+                        val result = bundle.getParcelable<TbCustomer>("data")
+                        if (result != null) {
+
+
+                            if (list1?.isNotEmpty() == true) {
+
+                                var position = bundle.getInt("position")
+
+                                val dineInList = list1
+                                if (dineInList.size >= position && position != 0) {
+
+
+                                    dineInList.get(position).customer = result
+
+                                    Log.e(TAG, "UpdateCustomerPostition ${position}")
+                                    Log.e(
+                                        TAG,
+                                        "UpdateCustomer ${dineInList.get(position).customer}"
+                                    )
+
+                                    viewModel.dineInCartUpdate(
+                                        cartList,
+                                        dineInList
+                                    )
+                                }
                             }
                         }
-                        //gotoPayment()
                     }
                 }
+
+
+            } else {
+
+
+                binding.layoutCart.rvCart.visibility = View.VISIBLE
+                binding.layoutCart.rvCartDineIn.visibility = View.GONE
+                binding.layoutCart.llPayment.visibility = View.VISIBLE
+
+                Log.e(TAG, "cartList[0].items > ${cartList[0].items?.size}")
+                Log.e(TAG, "viewModel.destroyedList > ${viewModel.destroyedList.size}")
+                cartAdapter.addCart(cartList[0].items)
+            }
+            viewModel.itemCalculation(
+                cartList,
+                binding.layoutCart.txtTotalAmount,
+                requireContext()
             )
+
+            val orderType = prefProvider.getValue(ORDER_TYPE, "")
+            Log.e("!_@_", "rlSave -------- $orderType ")
+            if (orderType == TAKEOUT || orderType == DINE_IN) {
+                Log.e("!_@_", "rlSave -- GONE ")
+                binding.layoutCart.rlSave.visibility = View.GONE
+                if (prefProvider.getValue(ORDER_TYPE, "").toString() == DINE_IN) {
+                    binding.layoutCart.txtTotalAmount.visibility = View.GONE
+                    binding.layoutCart.txtPay.visibility = View.GONE
+                    binding.layoutCart.txtDineInProceed.visibility = View.VISIBLE
+                    if (prefProvider.getValueboolean(DINE_IN_UPDATE, false) == true) {
+
+                        binding.layoutCart.txtDineInProceed.setText("Update and Proceed")
+                    } else {
+                        binding.layoutCart.txtDineInProceed.setText("Proceed To Fire")
+                    }
+                } else {
+                    binding.layoutCart.txtDineInProceed.visibility = View.GONE
+                }
+            } else {
+                Log.e("!_@_", "rlSave -- VISIBLE ")
+                binding.layoutCart.rlSave.visibility = View.VISIBLE
+            }
+
+
+        } else {
+
+            viewModel.itemCalculation(
+                cartList,
+                binding.layoutCart.txtTotalAmount,
+                requireContext()
+            )
+
+            if (binding.layoutCart.rvCart.isVisible()) {
+                binding.layoutCart.rvCart.gone()
+            }
+
+            if (binding.layoutCart.llPayment.isVisible()) {
+                binding.layoutCart.llPayment.gone()
+            }
+
+
+        }
+        if (prefProvider.getValueInt("ORDER_ID", -1) != -1) {
+            Log.e(TAG, "ManualSale ORderIDNOt Null")
+            lifecycleScope.launchWhenResumed {
+                if (findNavController().currentDestination?.id == R.id.dashboardCategoryNew) {
+                    val bundle = bundleOf(IS_NEXT_AMOUNT to true)
+
+                    findNavController().navigate(
+                        R.id.action_dashboardCategoryNew_to_paymentFragment, bundle
+                    )
+                }
+            }
+            //gotoPayment()
+        }
     }
 
     private fun hideOrderType() {
@@ -910,7 +919,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             )
         binding.layoutMenu.autoSearch.threshold = 3
         binding.layoutMenu.autoSearch.setAdapter(searchAdapter)
-        binding.layoutMenu.autoSearch.setOnItemClickListener { parent, view, position, id ->
+        binding.layoutMenu.autoSearch.setOnItemClickListener { parent, _, position, _ ->
             val model: CategorySearchData = parent.getItemAtPosition(position) as CategorySearchData
             binding.layoutMenu.autoSearch.setText(model.title)
             resetTabbySearch(model)
@@ -1641,7 +1650,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         val dialog = Dialog(requireContext())
         dialog.window?.requestFeature(Window.FEATURE_NO_TITLE)
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-
+        dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
         val lp = WindowManager.LayoutParams()
         lp.copyFrom(dialog.window!!.attributes)
         lp.width = WindowManager.LayoutParams.WRAP_CONTENT
