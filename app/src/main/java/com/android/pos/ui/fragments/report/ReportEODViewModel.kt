@@ -4,12 +4,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.model.responseModel.report.Data
 import com.android.pos.data.model.responseModel.report.Terminal
+import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.repositories.PosRepository
-import com.android.pos.data.repositories.TaxServiceChargeRepository
-import com.android.pos.data.repositories.TipDiscountRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Status
@@ -20,8 +18,9 @@ import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
-class ReportViewModel @Inject constructor(
-    private val posRepository: PosRepository
+class ReportEODViewModel @Inject constructor(
+    private val posRepository: PosRepository,
+    private val prefProvider: PrefProvider
 ) : ViewModel() {
 
     private val _showProgress = MutableLiveData<Event<Boolean>>()
@@ -64,6 +63,7 @@ class ReportViewModel @Inject constructor(
         ).format(Date())
 
     }
+
     fun datePicker(selectPicker: Boolean) {
         selectPicker1 = selectPicker
 
@@ -92,10 +92,13 @@ class ReportViewModel @Inject constructor(
         viewModelScope.launch {
 
             val resourceReport =
-                posRepository.getReportSummary(
+                posRepository.getReportEOD(
                     startDate = startDate.value ?: "",
                     endDate = endDate.value ?: "",
-                    terminalId = selectedTerminalId
+                    terminalId = selectedTerminalId,
+                    employee_id = prefProvider.getValueInt(EMPLOYEE_ID, 0).toString(),
+                    email = ""
+
                 )
             when (resourceReport.status) {
                 Status.SUCCESS -> {

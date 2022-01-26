@@ -675,6 +675,16 @@ interface ApiService {
     ): ReportSummaryResponse
 
 
+    @GET(REPORT_SUMMARY)
+    suspend fun getReportEOD(
+        @Query("start_date") startDate: String,
+        @Query("end_date") endDate: String,
+        @Query("terminal_id") terminalId: String,
+        @Query("employee_id") employee_id: String,
+        @Query("email") email: String
+    ): ReportSummaryResponse
+
+
     @GET(ORDER_HISTORY)
     suspend fun getCustomerOrderHistory(
         @Path("id") id: String

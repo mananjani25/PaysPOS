@@ -1070,5 +1070,9 @@
         android:id="@+id/printerTypeSelection"
         android:name="com.android.pos.ui.dialog.PrinterTypeSelection"
         android:label="PrinterTypeSelection" />
+    <fragment
+        android:id="@+id/reportEODFragment"
+        android:name="com.android.pos.ui.fragments.report.ReportEODFragment"
+        android:label="ReportEODFragment" />
 
 </navigation>

@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.data.entities.CashDiscountModel
 import com.android.pos.data.model.GetPaymentOrderDetailsResponse
+import com.android.pos.data.model.requestModel.CashLogRequest
 import com.android.pos.data.model.requestModel.RefundRequestModel
 import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
@@ -52,43 +53,44 @@ class TransactionDetailsViewModel @Inject constructor(
 
     val endDate = MutableLiveData<String>()
 
-        fun apiCallOrderDetails(orderId: Int) {
-            viewModelScope.launch {
+    fun apiCallOrderDetails(orderId: Int) {
+        viewModelScope.launch {
 
-                val resource = posRepository.orderDetailsById(orderId)
+            val resource = posRepository.orderDetailsById(orderId)
 
 
-                when (resource.status) {
-                    Status.SUCCESS -> {
-                        _showProgress.value = Event(false)
-                        resource.data.let { logInResponse ->
-                            if (logInResponse?.status == 200) {
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+                    resource.data.let { logInResponse ->
+                        if (logInResponse?.status == 200) {
 
-                                resource.data?.let { createTaxResponse ->
-                                    _data.value = Event(createTaxResponse)
-                                }
-                            } else {
-                                _snackbarText.value = Event(resource.message)
+                            resource.data?.let { createTaxResponse ->
+                                _data.value = Event(createTaxResponse)
                             }
+                        } else {
+                            _snackbarText.value = Event(resource.message)
                         }
                     }
+                }
 
-                    Status.ERROR -> {
-                        _snackbarText.value = Event(resource.message)
-                        _showProgress.value = Event(false)
-                    }
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
+                }
 
-                    Status.LOADING -> {
-                        _showProgress.value = Event(true)
-                    }
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
                 }
             }
         }
+    }
 
 
     fun getCashDiscountDetails(active: Int): LiveData<CashDiscountModel>? {
         return posRepository.getCashDisDetail(active)
     }
+
     val serviceCharges = posRepository.serviceChargeList()
     fun refundPaymentApiCall(
         refundAmount: Double,
@@ -111,8 +113,11 @@ class TransactionDetailsViewModel @Inject constructor(
                         if (logInResponse?.status == 200) {
 
                             resource.data?.let { createTaxResponse ->
-                                _dataRefundDone.value = Event(createTaxResponse)
+
+                                cashOutApi(refundData, refundAmount, createTaxResponse)
                             }
+
+
                         } else {
                             _snackbarText.value = Event(resource.message)
                         }
@@ -152,6 +157,68 @@ class TransactionDetailsViewModel @Inject constructor(
                             _snackbarText.value = Event(resource.message)
                         }
                     }
+                }
+
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
+                }
+
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
+            }
+        }
+    }
+
+    private suspend fun cashOutApi(
+        refundRequestModel: RefundRequestModel,
+        amount: Double,
+        createTaxResponse: BaseResponse
+    ) {
+
+        val order = refundRequestModel.paymentRefund
+
+        val cashLogRequest = order?.employeeId?.let {
+            order.id?.let { it1 ->
+                order.paymentId?.let { it2 ->
+                    order.terminalId?.let { it3 ->
+                        CashLogRequest(
+                            amount,
+                            it,
+                            "out",
+                            it1,
+                            it2,
+                            "Change returned after order's payment",
+                            it3,
+                            null,
+                            order.tipsRefunded
+                        )
+                    }
+                }
+            }
+        }
+
+        val resource = cashLogRequest?.let { posRepository.cashInOut(it) }
+
+        if (resource != null) {
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+                    resource.data.let { response ->
+                        if (response?.status == 200) {
+
+                            resource.data?.let {
+
+                                _dataRefundDone.value = Event(createTaxResponse)
+
+                            }
+
+                        } else {
+                            _snackbarText.value = Event(resource.message)
+                        }
+                    }
+
                 }
 
                 Status.ERROR -> {
