@@ -179,6 +179,31 @@ class PaymentViewModel @Inject constructor(
         actual_TotalTax = MethodUtils.roundOffAmountDouble(totaltax)
         actual_TotalTips = MethodUtils.roundOffAmountDouble(totaltips)
         actual_CardAmount = MethodUtils.roundOffAmountDouble(cardActualAmount)
+
+        if (prefProvider.getValue(Constants.TOTAL_PRICE_ACTUAL, "").isEmpty()) {
+            prefProvider.setValue(Constants.TOTAL_PRICE_ACTUAL, actual_Total.toString())
+        }
+        if (prefProvider.getValue(Constants.SUB_TOTAL_ACTUAL, "").isEmpty()) {
+            prefProvider.setValue(Constants.SUB_TOTAL_ACTUAL, actual_SubTotal.toString())
+        }
+        if (prefProvider.getValue(Constants.TOTAL_DISCOUNT_ACTUAL, "").isEmpty()) {
+            prefProvider.setValue(Constants.TOTAL_DISCOUNT_ACTUAL, actual_TotalDiscount.toString())
+        }
+        if (prefProvider.getValue(Constants.TOTAL_SERVICE_CHARGE_ACTUAL, "").isEmpty()) {
+            prefProvider.setValue(
+                Constants.TOTAL_SERVICE_CHARGE_ACTUAL,
+                actual_TotalServiceCharge.toString()
+            )
+        }
+        if (prefProvider.getValue(Constants.TAX_CHARGE_ACTUAL, "").isEmpty()) {
+            prefProvider.setValue(Constants.TAX_CHARGE_ACTUAL, actual_TotalTax.toString())
+        }
+
+        if (prefProvider.getValue(Constants.TIPS_AMOUNT_ACTUAL, "").isEmpty()) {
+            prefProvider.setValue(Constants.TIPS_AMOUNT_ACTUAL, actual_TotalTips.toString())
+        }
+
+
     }
 
     fun dineInWholePayment(orderRequestModel: OrderRequestModel, orderId: Int, splitValue: Int) {

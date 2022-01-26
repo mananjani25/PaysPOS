@@ -15,6 +15,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.CartModel
+import com.android.pos.data.entities.RedeemLoyaltyInfo
 import com.android.pos.data.entities.TbCustomer
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.DineInModel
@@ -76,7 +77,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private var totalTaxAmount = 0.0
     private var totalDiscount = 0.0
     private var changeAmtGlobal = 0.0
-
+    private var redeemLoyaltyInfo: RedeemLoyaltyInfo? = null
     private var isSpilt: Boolean = false
     private var isCustomCash: Boolean = false
     private var isSplitByAmount: Boolean = false
@@ -102,7 +103,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private var splitList: ArrayList<SplitDetailListModel> = arrayListOf()
 
     private var isGuestPaymentTotal = false
-    var cartList: List<CartModel> = arrayListOf()
+    private var cartList: CartModel? = null
     private var paidAmount: Double = 0.0
 
     @Inject
@@ -196,7 +197,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         setupSnackbar()
         observeShowProgress()
         tipAmount = requireArguments().getDouble("TipAmount")
-
+        cartList = requireArguments().getParcelable("cartList")
+        redeemLoyaltyInfo = requireArguments().getParcelable("redeemLoyalty")
         isDineIn = requireArguments().getBoolean("isDineIn")
         if (isDineIn) {
             paidAmount = requireArguments().getDouble("PaidAmount")
@@ -2759,7 +2761,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     totalTaxAmount,
                     0.0,
                     0.0,
-                    cartlist = cartList
+                    cartlist = cartList,
+                    redeemLoyaltyInfo
                 )
 
                 prefProvider.setValue(SAVE_SPLIT_BUNDLE, Gson().toJson(model).toString())
@@ -2801,7 +2804,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     prefProvider.getValue(Constants.TAX_CHARGE, "").toDouble(),
                     prefProvider.getValue(Constants.TIP, "").toDouble(),
                     prefProvider.getValue(Constants.CASH_DISCOUNT_SURCHARGE, "").toDouble(),
-                    cartList
+                    cartList,
+                    redeemLoyaltyInfo
                 )
 
                 prefProvider.setValue(SAVE_SPLIT_BUNDLE, Gson().toJson(model).toString())

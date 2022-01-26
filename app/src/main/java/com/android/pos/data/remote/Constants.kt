@@ -393,9 +393,21 @@ object Constants {
     const val TAX_CHARGE = "taxcharge"
     const val TIPS_AMOUNT = "tips"
     const val TOTAL_DISCOUNT = "totalDiscount"
-
     const val IS_NEXT_AMOUNT = "is_next_amount"
     const val SAVE_SPLIT_BUNDLE = "save_split_bundle"
+
+
+    const val CASH_DISCOUNT_SURCHARGE_ACTUAL = "cashDiscountSurchargeactual"
+    const val SUB_TOTAL_ACTUAL = "subtotalactual"
+    const val TAX_CHARGE_ACTUAL = "taxchargeactual"
+    const val TIPS_AMOUNT_ACTUAL = "tipsactual"
+    const val TOTAL_DISCOUNT_ACTUAL = "totalDiscountactual"
+    const val TOTAL_PRICE_ACTUAL = "totalDiscountactual"
+    const val TOTAL_SERVICE_CHARGE_ACTUAL = "totalServiceChargeactual"
+
+
+
+
 
     // dinein
     const val CASH_DISCOUNT_SURCHARGE_DINEIN = "cashDiscountSurcharge_dinein"

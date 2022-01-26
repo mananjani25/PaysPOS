@@ -823,17 +823,22 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
 
         }
+
+
         if (prefProvider.getValueInt("ORDER_ID", -1) != -1) {
             Log.e(TAG, "ManualSale ORderIDNOt Null")
-            lifecycleScope.launchWhenResumed {
-                if (findNavController().currentDestination?.id == R.id.dashboardCategoryNew) {
-                    val bundle = bundleOf(IS_NEXT_AMOUNT to true)
+            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT).toString() != DINE_IN) {
+                lifecycleScope.launchWhenResumed {
+                    if (findNavController().currentDestination?.id == R.id.dashboardCategoryNew) {
+                        val bundle = bundleOf(IS_NEXT_AMOUNT to true)
 
-                    findNavController().navigate(
-                        R.id.action_dashboardCategoryNew_to_paymentFragment, bundle
-                    )
+                        findNavController().navigate(
+                            R.id.action_dashboardCategoryNew_to_paymentFragment, bundle
+                        )
+                    }
                 }
             }
+
             //gotoPayment()
         }
     }
