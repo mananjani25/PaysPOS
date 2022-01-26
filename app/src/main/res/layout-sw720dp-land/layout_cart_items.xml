@@ -31,15 +31,20 @@
                 android:textSize="@dimen/_5mdpi"
                 app:textAllCaps="false" />
 
-            <androidx.appcompat.widget.AppCompatImageView
+
+            <ImageView
                 android:id="@+id/imgOrderMenu"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
                 android:layout_gravity="center"
                 android:background="?attr/selectableItemBackground"
+                android:contentDescription="@string/menu"
                 android:padding="@dimen/_4sdp"
-                android:visibility="visible"
-                app:srcCompat="@drawable/ic_dots" />
+                android:src="@drawable/ic_dot_menu"
+                app:tint="@color/txtColor" />
+
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
