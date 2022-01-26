@@ -167,6 +167,7 @@
                     android:layout_marginTop="@dimen/_10sdp"
                     android:background="@drawable/edt_border_light_gray"
                     android:enabled="false"
+                    android:visibility="gone"
                     android:hint="@string/product_code"
                     android:imeOptions="actionNext"
                     android:inputType="textCapWords"

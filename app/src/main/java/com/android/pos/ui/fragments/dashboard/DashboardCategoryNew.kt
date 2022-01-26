@@ -1001,7 +1001,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
 
 
-        txtBusinessName.text = getString(R.string.business_name) + ":" + prefProvider.getValue(
+        txtBusinessName.text = getString(R.string.business_name) + ": " + prefProvider.getValue(
             Constants.BUSINESS_NAME,
             ""
         )

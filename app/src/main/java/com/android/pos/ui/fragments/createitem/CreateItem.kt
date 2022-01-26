@@ -115,6 +115,11 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
             saveItem()
         }
 
+        if (productCode != null && productCode!!.isNotEmpty()) {
+
+            binding.etSku.setText(productCode)
+        }
+
         return binding.root
     }
 
@@ -127,7 +132,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
                 val enteredString = s.toString()
                 if (enteredString.startsWith("0")) {
 
-                    if (enteredString.length > 0) {
+                    if (enteredString.isNotEmpty()) {
                         binding.etStock.setText(enteredString.substring(1))
                     } else {
                         binding.etStock.setText("")
@@ -332,7 +337,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
                 newImagePathToUpload,
                 null,
                 binding.etDesc.text.toString(),
-                "",
+                binding.etSku.text.toString(),
                 0,
                 productCode ?: ""
             )
