@@ -3240,7 +3240,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 val bitmap =
                     generateQRCode(getOrderDetailsResponse?.digitalReceiptUrl.toString())
 
-                val newBitmap = Bitmap.createScaledBitmap(bitmap, 175, 175, true)
+                val newBitmap = Bitmap.createScaledBitmap(bitmap, 210, 210, true)
                 builder.addImage(
                     newBitmap, 0, 0,
                     newBitmap.width, newBitmap.height, Builder.COLOR_1, Builder.MODE_MONO,
@@ -4211,7 +4211,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 val bitmap =
                     generateQRCode(getOrderDetailsResponse?.digitalReceiptUrl.toString())
 
-                val newBitmap = Bitmap.createScaledBitmap(bitmap, 175, 175, true)
+                val newBitmap = Bitmap.createScaledBitmap(bitmap, 210, 210, true)
                 builder.addImage(
                     newBitmap, 0, 0,
                     newBitmap.width, newBitmap.height, Builder.COLOR_1, Builder.MODE_MONO,

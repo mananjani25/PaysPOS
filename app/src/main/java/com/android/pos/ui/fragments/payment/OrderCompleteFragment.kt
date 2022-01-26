@@ -30,6 +30,7 @@ import com.android.pos.data.remote.Constants.DINE_IN_ADAPTER_LIST
 import com.android.pos.data.remote.Constants.GUEST_POSITION
 import com.android.pos.data.remote.Constants.KITCHEN
 import com.android.pos.data.remote.Constants.LARGE
+import com.android.pos.data.remote.Constants.OPEN_ORDER_
 import com.android.pos.data.remote.Constants.PRINT_DATA_DINE_IN
 import com.android.pos.data.remote.Constants.SAVE_SPLIT_BUNDLE
 import com.android.pos.data.remote.Constants.SUB_TOTAL
@@ -70,6 +71,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private var serviceCharge = 0.0
     private var totalTaxAmount = 0.0
     private var totalDiscount = 0.0
+    private var changeAmtGlobal = 0.0
 
     private var isSpilt: Boolean = false
     private var isCustomCash: Boolean = false
@@ -122,7 +124,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             }
         getCustomerReceiptSettings()
-        getKitchenReceiptSettings()
+
         getCustomerPrinterForDineIn()
         splitAdapter = SplitListAdapter()
         prefProvider.setValueboolean(Constants.IS_ORDER_UPDATE, value = false)
@@ -132,6 +134,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         } else {
             prefProvider.setValue(Constants.SPLIT_PAY_AMOUNT, "")
         }
+        getKitchenReceiptSettings()
         return binding.root
     }
 
@@ -278,18 +281,23 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 if (isSplitByAmount) {
                     if (paidAmount > WholetotalPrice) {
+                        changeAmtGlobal =
+                            MethodUtils.roundOffAmountDouble(paidAmount - WholetotalPrice)
+                                .toDouble()
                         binding.txtChangeAmount.text =
                             MethodUtils.roundOffAmount(paidAmount - WholetotalPrice) + " Change"
                         binding.txtPaymentAmount.text =
                             "Out of " + MethodUtils.roundOffAmount(paidAmount + tipAmount)
 
                     } else {
+                        changeAmtGlobal = MethodUtils.roundOffAmountDouble(0.0).toDouble()
 
                         binding.txtChangeAmount.text =
                             MethodUtils.roundOffAmount(0.0) + " Change"
                     }
                 } else if (remainingAmount < paidAmount) {
                     if (isCustomCash && splitChange != 0.0) {
+                        changeAmtGlobal = MethodUtils.roundOffAmountDouble(splitChange).toDouble()
                         binding.txtChangeAmount.text =
                             MethodUtils.roundOffAmount(splitChange) + " Change"
                         binding.txtPaymentAmount.text =
@@ -298,6 +306,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                         val changeValue = (paidAmount - dis_charge_value) - remainingAmount
                         if (changeValue > 0.0) {
+                            changeAmtGlobal =
+                                MethodUtils.roundOffAmountDouble(changeValue).toDouble()
                             binding.txtChangeAmount.text =
                                 MethodUtils.roundOffAmount(changeValue) + " Change"
                         }
@@ -306,6 +316,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     }
                 } else {
                     if (isCustomCash && splitChange != 0.0) {
+                        changeAmtGlobal = MethodUtils.roundOffAmountDouble(splitChange).toDouble()
                         binding.txtChangeAmount.text =
                             MethodUtils.roundOffAmount(splitChange) + " Change"
                         binding.txtPaymentAmount.text =
@@ -330,10 +341,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     MethodUtils.roundOffAmount(paidAmount + tipAmount)
 
                 if (isCustomCash) {
+                    changeAmtGlobal = MethodUtils.roundOffAmountDouble(remainingAmount).toDouble()
                     binding.txtChangeAmount.text =
                         MethodUtils.roundOffAmount(remainingAmount) + " Change"
                 } else {
                     if (remainingAmount < 0) {
+                        changeAmtGlobal =
+                            MethodUtils.roundOffAmountDouble(remainingAmount).toDouble()
                         binding.txtChangeAmount.text =
                             MethodUtils.roundOffAmount(remainingAmount) + " Change"
                     }
@@ -372,6 +386,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     var temp_Change =
                         MethodUtils.roundOffAmountDouble((paidAmount - dis_charge_value) - remainingAmount)
                     if (!(temp_Change.equals(0.0) || temp_Change.equals(0) || temp_Change <= 0.0)) {
+                        changeAmtGlobal =
+                            MethodUtils.roundOffAmountDouble((paidAmount - dis_charge_value) - remainingAmount)
+                                .toDouble()
                         binding.txtChangeAmount.text =
                             MethodUtils.roundOffAmount((paidAmount - dis_charge_value) - remainingAmount) + " Change"
                     }
@@ -1635,7 +1652,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 val bitmap =
                     generateQRCode(getDineInOrderDetails?.digitalReceiptUrl.toString())
 
-                val newBitmap = Bitmap.createScaledBitmap(bitmap, 175, 175, true)
+                val newBitmap = Bitmap.createScaledBitmap(bitmap, 210, 210, true)
                 builder.addImage(
                     newBitmap, 0, 0,
                     newBitmap.width, newBitmap.height, Builder.COLOR_1, Builder.MODE_MONO,
@@ -2611,7 +2628,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 val bitmap =
                     generateQRCode(getDineInOrderDetails?.digitalReceiptUrl.toString())
 
-                val newBitmap = Bitmap.createScaledBitmap(bitmap, 175, 175, true)
+                val newBitmap = Bitmap.createScaledBitmap(bitmap, 210, 210, true)
                 builder.addImage(
                     newBitmap, 0, 0,
                     newBitmap.width, newBitmap.height, Builder.COLOR_1, Builder.MODE_MONO,
@@ -3091,6 +3108,32 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             )
             builder.addTextAlign(Builder.ALIGN_CENTER)
             builder.addText(receiptModel?.order?.orderType + "\n")
+            Log.e(TAG, "orderType:  ${receiptModel?.order?.orderType}")
+            if (receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER_
+                    .lowercase()
+            ) {
+                if (receiptModel?.order?.deliveryType?.lowercase() == "Pickup".lowercase() || receiptModel?.order?.deliveryType?.lowercase() == "Delivery".lowercase()) {
+
+                    builder.addFeedLine(1)
+
+                    builder.addTextFont(Builder.FONT_E)
+
+                    builder.addTextLang(Builder.LANG_EN)
+                    builder.addTextSize(2, 2)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.COLOR_1
+                    )
+                    builder.addTextAlign(Builder.ALIGN_CENTER)
+                    builder.addText(receiptModel?.order?.deliveryType + "\n")
+                }
+
+
+            }
+
+
 
             if (customerSettingModel.fonts == LARGE) {
 
@@ -3579,10 +3622,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     Builder.COLOR_1
                 )
 
+                //ADDCHANGE
                 builder.addText(
                     padLine(
                         "Change Amount",
-                        "$" + MethodUtils.roundOffAmountString(0.0),
+                        "$" + changeAmtGlobal,
                         if (customerSettingModel.fonts == LARGE) {
                             24
                         } else {
@@ -3871,7 +3915,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 val bitmap = generateQRCode(receiptModel?.order?.digital_receipt_url.toString())
                 Log.e(TAG, "BitmapHeight ${bitmap.height}")
                 Log.e(TAG, "BitmapWidth ${bitmap.width}")
-                val newBitmap = Bitmap.createScaledBitmap(bitmap, 175, 175, true)
+                val newBitmap = Bitmap.createScaledBitmap(bitmap, 210, 210, true)
                 builder.addImage(
                     newBitmap, 0, 0,
                     newBitmap.width, newBitmap.height, Builder.COLOR_1, Builder.MODE_MONO,

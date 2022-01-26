@@ -674,6 +674,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     private fun removeObserver() {
 
+                    Log.e(TAG, "YesAdded")
+                    cartList = it as ArrayList<CartModel>
+                    viewModel.destroyedList.clear()
         viewModel.mAllWords(prefProvider.getValue(ORDER_TYPE, "")).removeObserver(nameObserver)
         //  addObserver()
     }
@@ -3412,7 +3415,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     ) {
         var builder: Builder? = null
         try {
-            Log.e(TAG, "KitchenPrinterName ${customerReceiptPrinters.name}")
             val pname = if (customerReceiptPrinters.name.substring(0, 6).toString()
                     .lowercase() == "TM-m30".lowercase()
             ) {
