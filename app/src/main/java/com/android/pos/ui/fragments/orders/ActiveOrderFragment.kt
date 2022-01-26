@@ -1480,7 +1480,7 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
                 val bitmap = generateQRCode(receiptModel.digitalReceiptUrl)
                 Log.e(TAG, "BitmapHeight ${bitmap.height}")
                 Log.e(TAG, "BitmapWidth ${bitmap.width}")
-                val newBitmap = Bitmap.createScaledBitmap(bitmap, 175, 175, true)
+                val newBitmap = Bitmap.createScaledBitmap(bitmap, 210, 210, true)
                 builder.addImage(
                     newBitmap, 0, 0,
                     newBitmap.width, newBitmap.height, Builder.COLOR_1, Builder.MODE_MONO,

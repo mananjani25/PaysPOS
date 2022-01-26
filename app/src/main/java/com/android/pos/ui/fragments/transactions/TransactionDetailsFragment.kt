@@ -3,7 +3,6 @@ package com.android.pos.ui.fragments.transactions
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.Color
 import android.graphics.Point
 import android.os.Build
 import android.os.Bundle
@@ -28,7 +27,6 @@ import com.android.pos.ui.adapter.OrderDetailsItemListAdapter
 import com.android.pos.utils.*
 import com.android.pos.utils.TimeFormatUtils.convertCurrentDate
 import com.android.pos.utils.TimeFormatUtils.convertCurrentTime
-import com.android.pos.utils.extensions.getColor
 import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.statusUtils.Status
@@ -129,7 +127,7 @@ class TransactionDetailsFragment : Fragment() {
 
         }
         binding.txtPrintKitchenReceipt.setOnClickListener {
-            getCustomerPrinters()
+            //getCustomerPrinters()
 
         }
 
@@ -244,7 +242,12 @@ class TransactionDetailsFragment : Fragment() {
                         if (paymentDetailsResponse.data.cash_discount_type == "CashDiscount") {
                             binding.linearCashDiscount.visibility = View.VISIBLE
                             binding.liinearNoncashAdj.visibility = View.GONE
-                            binding.txtCashAmounntDiscount.setTextColor(ContextCompat.getColor(requireContext(),R.color.colorRed))
+                            binding.txtCashAmounntDiscount.setTextColor(
+                                ContextCompat.getColor(
+                                    requireContext(),
+                                    R.color.colorRed
+                                )
+                            )
                             binding.txtCashAmounntDiscount.text = "- $" + String.format(
                                 "%.2f",
                                 paymentDetailsResponse.data.cash_discount_or_surcharge
@@ -970,7 +973,7 @@ class TransactionDetailsFragment : Fragment() {
 
             }
 
-            if (customerSettingModel.showRefundAmount) {
+            /*if (customerSettingModel.showRefundAmount) {
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
 
@@ -996,7 +999,7 @@ class TransactionDetailsFragment : Fragment() {
                         }
                     )
                 )
-            }
+            }*/
 
             if (paymentDetailsResponse.data.order?.total_tips == 0.0) {
                 builder.addFeedLine(1)
@@ -1218,7 +1221,7 @@ class TransactionDetailsFragment : Fragment() {
                     generateQRCode(paymentDetailsResponse?.data.order?.digital_receipt_url.toString())
                 Log.e(TAG, "BitmapHeight ${bitmap.height}")
                 Log.e(TAG, "BitmapWidth ${bitmap.width}")
-                val newBitmap = Bitmap.createScaledBitmap(bitmap, 175, 175, true)
+                val newBitmap = Bitmap.createScaledBitmap(bitmap, 210, 210, true)
                 builder.addImage(
                     newBitmap, 0, 0,
                     newBitmap.width, newBitmap.height, Builder.COLOR_1, Builder.MODE_MONO,
