@@ -33,6 +33,8 @@ import com.android.pos.data.remote.Constants.LARGE
 import com.android.pos.data.remote.Constants.PRINT_DATA_DINE_IN
 import com.android.pos.data.remote.Constants.SAVE_SPLIT_BUNDLE
 import com.android.pos.data.remote.Constants.SUB_TOTAL
+import com.android.pos.data.remote.Constants.SUB_TOTAL_DINEIN
+import com.android.pos.data.remote.Constants.TOTAL_PRICE_DINEIN
 import com.android.pos.data.remote.Constants.getReceiptFormatDateFromUTCServer
 import com.android.pos.databinding.FragmentOrderCompletBinding
 import com.android.pos.di.PrefProvider
@@ -204,6 +206,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             isSplitByNo = requireArguments().getBoolean("isSplitByNo")
             isCustomCash = requireArguments().getBoolean("isCustomCash")
             isSplitByAmount = requireArguments().getBoolean("isSplitByAmount")
+            splitChange = requireArguments().getDouble("splitChange")
             paymentType = requireArguments().getString("paymentType", "")
             dis_charge_value = requireArguments().getDouble("dis_charge_value", 0.0)
             getDineInOrderDetails = requireArguments().getParcelable(PRINT_DATA_DINE_IN)
@@ -2672,6 +2675,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     R.id.action_orderCompleteFragment_to_dineInOrderTable,
                     bundle
                 )
+                removePrefrenceDinein()
             }
         }
     }
@@ -4322,6 +4326,18 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         binding.txtHome.visibility = View.VISIBLE
         binding.txtAddCustomer.visibility = View.VISIBLE
         binding.llOptions.visibility = View.VISIBLE
+    }
+
+    fun removePrefrenceDinein() {
+        prefProvider.setValue("PaidAmount", "")
+        prefProvider.setValue(TOTAL_PRICE_DINEIN, "")
+        prefProvider.setValue(SUB_TOTAL_DINEIN, "")
+        prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE_DINEIN, "")
+        prefProvider.setValue(Constants.TOTAL_DISCOUNT_DINEIN, "")
+        prefProvider.setValue(Constants.TIPS_AMOUNT_DINEIN, "")
+        prefProvider.setValue(Constants.TAX_CHARGE_DINEIN, "")
+        prefProvider.setValue(Constants.SERVICE_CHARGE_DINEIN, "")
+
     }
 
 
