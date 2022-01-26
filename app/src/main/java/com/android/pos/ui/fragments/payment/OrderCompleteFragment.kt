@@ -14,6 +14,7 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
+import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.TbCustomer
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.DineInModel
@@ -31,9 +32,12 @@ import com.android.pos.data.remote.Constants.GUEST_POSITION
 import com.android.pos.data.remote.Constants.KITCHEN
 import com.android.pos.data.remote.Constants.LARGE
 import com.android.pos.data.remote.Constants.OPEN_ORDER_
+import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.PRINT_DATA_DINE_IN
 import com.android.pos.data.remote.Constants.SAVE_SPLIT_BUNDLE
 import com.android.pos.data.remote.Constants.SUB_TOTAL
+import com.android.pos.data.remote.Constants.SUB_TOTAL_DINEIN
+import com.android.pos.data.remote.Constants.TOTAL_PRICE_DINEIN
 import com.android.pos.data.remote.Constants.getReceiptFormatDateFromUTCServer
 import com.android.pos.databinding.FragmentOrderCompletBinding
 import com.android.pos.di.PrefProvider
@@ -91,13 +95,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private var paidAmountValue: Double = 0.0
     private var WholetotalPrice: Double = 0.0
     private val viewModel by viewModels<OrderCompleteViewModel>()
+    private val paymentviewModel by viewModels<PaymentViewModel>()
     private var receiptModel: CreateOrderResponse.Data? = null
     private var customerSettingModel = GetCustomerReceiptSettingsResponse.Data()
     private var kitchenSettingModel = GetKitchenReceiptSettingsResponse.Data()
     private var splitList: ArrayList<SplitDetailListModel> = arrayListOf()
 
     private var isGuestPaymentTotal = false
-
+    var cartList: List<CartModel> = arrayListOf()
     private var paidAmount: Double = 0.0
 
     @Inject
@@ -207,6 +212,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             isSplitByNo = requireArguments().getBoolean("isSplitByNo")
             isCustomCash = requireArguments().getBoolean("isCustomCash")
             isSplitByAmount = requireArguments().getBoolean("isSplitByAmount")
+            splitChange = requireArguments().getDouble("splitChange")
             paymentType = requireArguments().getString("paymentType", "")
             dis_charge_value = requireArguments().getDouble("dis_charge_value", 0.0)
             getDineInOrderDetails = requireArguments().getParcelable(PRINT_DATA_DINE_IN)
@@ -377,26 +383,40 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 var title = "Split "
                 viewModel.addSplitToDatabase(
                     title,
-                    paidAmount,
+                    paidAmount - splitChange,
                     remainingAmount
                 )
                 binding.txtTitle.text =
                     MethodUtils.roundOffAmount(paidAmount + tipAmount)
+
                 if (remainingAmount < paidAmount) {
-                    var temp_Change =
-                        MethodUtils.roundOffAmountDouble((paidAmount - dis_charge_value) - remainingAmount)
-                    if (!(temp_Change.equals(0.0) || temp_Change.equals(0) || temp_Change <= 0.0)) {
-                        changeAmtGlobal =
-                            MethodUtils.roundOffAmountDouble((paidAmount - dis_charge_value) - remainingAmount)
-                                .toDouble()
+                    if (isCustomCash && splitChange != 0.0) {
                         binding.txtChangeAmount.text =
-                            MethodUtils.roundOffAmount((paidAmount - dis_charge_value) - remainingAmount) + " Change"
+                            MethodUtils.roundOffAmount(splitChange) + " Change"
+                        binding.txtPaymentAmount.text =
+                            "Out of " + MethodUtils.roundOffAmount((paidAmount + tipAmount))
+                    } else {
+                        var temp_Change =
+                            MethodUtils.roundOffAmountDouble((paidAmount - dis_charge_value) - remainingAmount)
+                        if (!(temp_Change.equals(0.0) || temp_Change.equals(0) || temp_Change <= 0.0)) {
+                            binding.txtChangeAmount.text =
+                                MethodUtils.roundOffAmount((paidAmount - dis_charge_value) - remainingAmount) + " Change"
+                        }
+                        binding.txtPaymentAmount.text =
+                            "Out of " + MethodUtils.roundOffAmount((paidAmount + tipAmount))
                     }
 
+                } else {
+                    if (isCustomCash && splitChange != 0.0) {
+                        binding.txtChangeAmount.text =
+                            MethodUtils.roundOffAmount(splitChange) + " Change"
+                        binding.txtPaymentAmount.text =
+                            "Out of " + MethodUtils.roundOffAmount((paidAmount + tipAmount))
+                    } else {
+                        binding.txtPaymentAmount.text =
+                            "Out of " + MethodUtils.roundOffAmount(paidAmount + tipAmount)
+                    }
                 }
-
-                binding.txtPaymentAmount.text =
-                    "Out of " + MethodUtils.roundOffAmount(paidAmount + tipAmount)
             } else {
                 if (isGuest) {
                     if (isLastPayment) {
@@ -458,6 +478,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         binding.imgBack.setOnClickListener(this)
         binding.llHome.setOnClickListener(this)
         binding.llCheckOut.setOnClickListener(this)
+
 
         setFragmentResultListener("request_key_customer") { requestKey: String, bundle: Bundle ->
             val result = bundle.getParcelable<TbCustomer>("data")
@@ -2689,11 +2710,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     R.id.action_orderCompleteFragment_to_dineInOrderTable,
                     bundle
                 )
+                removePrefrenceDinein()
             }
         }
     }
 
     private fun moveToDashboard() {
+
 
         if (isSpilt) {
             if (isDineIn) {
@@ -2735,7 +2758,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     totalDiscount,
                     totalTaxAmount,
                     0.0,
-                    0.0
+                    0.0,
+                    cartlist = cartList
                 )
 
                 prefProvider.setValue(SAVE_SPLIT_BUNDLE, Gson().toJson(model).toString())
@@ -2776,7 +2800,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     prefProvider.getValue(Constants.TOTAL_DISCOUNT, "").toDouble(),
                     prefProvider.getValue(Constants.TAX_CHARGE, "").toDouble(),
                     prefProvider.getValue(Constants.TIP, "").toDouble(),
-                    prefProvider.getValue(Constants.CASH_DISCOUNT_SURCHARGE, "").toDouble()
+                    prefProvider.getValue(Constants.CASH_DISCOUNT_SURCHARGE, "").toDouble(),
+                    cartList
                 )
 
                 prefProvider.setValue(SAVE_SPLIT_BUNDLE, Gson().toJson(model).toString())
@@ -4366,6 +4391,19 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         binding.txtHome.visibility = View.VISIBLE
         binding.txtAddCustomer.visibility = View.VISIBLE
         binding.llOptions.visibility = View.VISIBLE
+    }
+
+    fun removePrefrenceDinein() {
+        prefProvider.setValue("PaidAmount", "")
+        prefProvider.setValue(TOTAL_PRICE_DINEIN, "")
+        prefProvider.setValue(SUB_TOTAL_DINEIN, "")
+        prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE_DINEIN, "")
+        prefProvider.setValue(Constants.TOTAL_DISCOUNT_DINEIN, "")
+        prefProvider.setValue(Constants.TIPS_AMOUNT_DINEIN, "")
+        prefProvider.setValue(Constants.TAX_CHARGE_DINEIN, "")
+        prefProvider.setValue(Constants.SERVICE_CHARGE_DINEIN, "")
+
+
     }
 
 

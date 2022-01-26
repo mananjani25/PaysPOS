@@ -300,9 +300,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 cashDiscountSurcharge = splitModel.cashDiscountSurcharge
                 tipAmount = splitModel.tip
                 totalPrice = splitModel.remainingAmt
+                setUpPaymentSummary()
                 setSplitData()
-                //setUpPaymentSummary()
-
             }
 
             /*  isNextPayment = it.getBoolean("isNextPayment")
@@ -613,31 +612,6 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         setFragmentResultListener("request_for_customAmount") { requestKey: String, bundle: Bundle ->
             val amounnt = bundle.getDouble("amount")
             val totalPrice = bundle.getDouble("totalAmount")
-            /*isCustomCash = true
-            isSplitByNo = false
-            isNextPayment = false
-            isSplitByAmount = false
-            splitValue = -1
-
-
-            paymentAmount = amounnt
-            cardPaymentAmount = paymentAmount + cashDiscountSurcharge
-            binding.txtCardAmount.text = "$ " + String.format("%.2f", cardPaymentAmount)
-            MethodUtils.setPriceTextView(binding.txtTotalAmount, paymentAmount)
-            getCashPaymentOptionList(paymentAmount)*/
-            /* if (finalPrice != 0.0) {
-                 finalPrice = totalPrice + tipAmount
-             }*/
-            //isCustomCash = true
-            /*    if (splitValue != -1) {
-                    splitAfterAmount = amounnt
-                } else {
-                    paymentAmount = amounnt
-                }
-
-                makePayment()
-    */
-
             finalPrice = amounnt + tipAmount
             isCustomCash = true
             paymentAmount = amounnt
