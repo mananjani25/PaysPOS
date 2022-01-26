@@ -674,9 +674,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     private fun removeObserver() {
 
-                    Log.e(TAG, "YesAdded")
-                    cartList = it as ArrayList<CartModel>
-                    viewModel.destroyedList.clear()
         viewModel.mAllWords(prefProvider.getValue(ORDER_TYPE, "")).removeObserver(nameObserver)
         //  addObserver()
     }
