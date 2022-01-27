@@ -3158,8 +3158,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     )
                     builder.addTextAlign(Builder.ALIGN_CENTER)
                     builder.addText(receiptModel?.order?.deliveryType + "\n")
-                }
-                else{
+                } else {
                     builder.addFeedLine(1)
 
                     builder.addTextFont(Builder.FONT_E)
@@ -4086,6 +4085,24 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 addBuilderText(builder, receiptModel?.order?.orderType.toString())
             }
 
+            if (receiptModel?.order?.orderType?.trim().toString().lowercase() == "Open Order".trim()
+                    .toString().lowercase()
+            ) {
+                builder.addFeedLine(1)
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(2, 2)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+
+                addBuilderText(builder, receiptModel?.order?.deliveryType.toString())
+            }
+
 
             builder.addFeedLine(2)
             builder.addTextFont(Builder.FONT_E)
@@ -4311,23 +4328,33 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                  builder.addText(receiptModel?.order?.customer?.email)*/
 
                     if (kitchenSettingModel.showCustomerAddress) {
-                        if (receiptModel?.order?.customer?.addresses?.isNotEmpty() == true) {
+                        if (receiptModel?.order?.orderType?.trim().toString()
+                                .lowercase() == "Open Order".trim()
+                                .toString().lowercase()
+                            && receiptModel?.order?.deliveryType?.trim().toString()
+                                .lowercase() == "Pickup".trim().lowercase()
+                        ) {
 
-                            builder.addTextLineSpace(30)
-                            builder.addFeedUnit(30)
-                            builder.addTextFont(Builder.FONT_E)
-                            builder.addTextAlign(Builder.ALIGN_LEFT)
-                            //builder.addTextLineSpace(20)
-                            builder.addTextLang(Builder.LANG_EN)
-                            builder.addTextSize(1, 1)
-                            builder.addTextStyle(
-                                Builder.FALSE,
-                                Builder.FALSE,
-                                Builder.TRUE,
-                                Builder.COLOR_1
-                            )
+                        } else {
 
-                            builder.addText(receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress)
+                            if (receiptModel?.order?.customer?.addresses?.isNotEmpty() == true) {
+
+                                builder.addTextLineSpace(30)
+                                builder.addFeedUnit(30)
+                                builder.addTextFont(Builder.FONT_E)
+                                builder.addTextAlign(Builder.ALIGN_LEFT)
+                                //builder.addTextLineSpace(20)
+                                builder.addTextLang(Builder.LANG_EN)
+                                builder.addTextSize(1, 1)
+                                builder.addTextStyle(
+                                    Builder.FALSE,
+                                    Builder.FALSE,
+                                    Builder.TRUE,
+                                    Builder.COLOR_1
+                                )
+
+                                builder.addText(receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress)
+                            }
                         }
                     }
 

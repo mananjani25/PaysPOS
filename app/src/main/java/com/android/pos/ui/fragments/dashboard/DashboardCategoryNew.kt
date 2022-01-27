@@ -2435,6 +2435,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 if (prefProvider.getValue(ORDER_TYPE, "") != DINE_IN) {
 
                     val cartList = viewModel.generateCombinedItems(cartList[0])
+                    cartList.openOrderType = openORderType
                     if (!isOrderUpdate)
                         cartList.customer = assignCustomer
 
@@ -2571,6 +2572,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 bundle.putString("future_delivery_time", future_delivery_time)
                 cartList[0].customer = assignCustomer
                 val cartModel = viewModel.generateCombinedItems(cartList[0])
+                Log.e(TAG, "openORderType  ${openORderType}")
                 cartModel.openOrderType = openORderType
                 bundle.putParcelable("cartList", cartModel)
                 if (isOrderUpdate) {
@@ -2587,13 +2589,22 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                 } else {
                     prefProvider.setValue(Constants.TOTAL_PRICE_ACTUAL, final_total.toString())
-                    prefProvider.setValue(Constants.SUB_TOTAL_ACTUAL, viewModel.subTotalPrice.toString())
-                    prefProvider.setValue(Constants.TOTAL_DISCOUNT_ACTUAL, viewModel.totalDiscount.toString())
+                    prefProvider.setValue(
+                        Constants.SUB_TOTAL_ACTUAL,
+                        viewModel.subTotalPrice.toString()
+                    )
+                    prefProvider.setValue(
+                        Constants.TOTAL_DISCOUNT_ACTUAL,
+                        viewModel.totalDiscount.toString()
+                    )
                     prefProvider.setValue(
                         Constants.TOTAL_SERVICE_CHARGE_ACTUAL,
                         viewModel.totalServiceCharge.toString()
                     )
-                    prefProvider.setValue(Constants.TAX_CHARGE_ACTUAL, viewModel.totalTax.toString())
+                    prefProvider.setValue(
+                        Constants.TAX_CHARGE_ACTUAL,
+                        viewModel.totalTax.toString()
+                    )
                     prefProvider.setValue(Constants.TIPS_AMOUNT_ACTUAL, "0.0")
 
 
@@ -3456,6 +3467,25 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 addBuilderText(builder, receiptModel?.order?.orderType.toString())
             }
 
+            if (receiptModel?.order?.orderType.trim().lowercase() == "Open Order".trim()
+                    .lowercase()
+            ) {
+                builder.addFeedLine(1)
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(2, 2)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+
+                addBuilderText(builder, receiptModel?.order?.deliveryType.toString())
+
+            }
+
 
             builder.addFeedLine(2)
             builder.addTextFont(Builder.FONT_E)
@@ -3681,7 +3711,13 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                  builder.addText(receiptModel?.order?.customer?.email)*/
 
                     if (kitchenSettingModel.showCustomerAddress) {
-                        if (receiptModel.order?.customer?.addresses?.isNotEmpty()) {
+
+                        if (receiptModel?.order?.orderType.trim().lowercase() == "Open Order".trim()
+                                .lowercase() && receiptModel?.order?.deliveryType.trim().lowercase() == "Pickup".trim()
+                                .lowercase()
+                        ) {
+
+                        } else if (receiptModel.order?.customer?.addresses?.isNotEmpty()) {
 
                             builder.addTextLineSpace(30)
                             builder.addFeedUnit(30)

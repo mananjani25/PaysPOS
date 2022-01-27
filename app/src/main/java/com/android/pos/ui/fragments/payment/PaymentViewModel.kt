@@ -395,7 +395,7 @@ class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.date = TimeFormatUtils.getCurrentDate()
         if (future_delivery_date.isNotEmpty())
             orderAttributeRequestModel.futureDeliveryDate = future_delivery_date
-        orderAttributeRequestModel.deliveryType = "Pickup"
+        orderAttributeRequestModel.deliveryType = cartModel.openOrderType
         orderAttributeRequestModel.employeeId = cartModel.employeeID
         orderAttributeRequestModel.locationId = cartModel.locationId
         orderAttributeRequestModel.terminalId = cartModel.terminalId
@@ -536,7 +536,7 @@ class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.date = TimeFormatUtils.getCurrentDate()
         if (future_delivery_date.isNotEmpty())
             orderAttributeRequestModel.futureDeliveryDate = future_delivery_date
-        orderAttributeRequestModel.deliveryType = "Pickup"
+        orderAttributeRequestModel.deliveryType = cartModel.openOrderType
         orderAttributeRequestModel.employeeId = cartModel.employeeID
         orderAttributeRequestModel.locationId = cartModel.locationId
         orderAttributeRequestModel.terminalId = cartModel.terminalId
@@ -648,7 +648,7 @@ class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.date = TimeFormatUtils.getCurrentDate()
         if (future_delivery_date.isNotEmpty())
             orderAttributeRequestModel.futureDeliveryDate = future_delivery_date
-        orderAttributeRequestModel.deliveryType = "Pickup"
+        orderAttributeRequestModel.deliveryType = cartModel.openOrderType
         orderAttributeRequestModel.employeeId = cartModel.employeeID
         orderAttributeRequestModel.locationId = cartModel.locationId
         orderAttributeRequestModel.terminalId = cartModel.terminalId
