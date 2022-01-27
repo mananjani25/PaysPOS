@@ -471,7 +471,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/_3sdp"
-                            android:text="@string/tv_order_subtotal"
+                            android:text="@string/payment_subtotal"
                             android:textColor="@color/viewTextColor"
                             android:textSize="@dimen/_5mdpi" />
 
@@ -826,6 +826,7 @@
                     android:id="@+id/txtPrintKitchenReceipt"
                     style="@style/CustomFontBold"
                     android:layout_width="match_parent"
+                    android:visibility="invisible"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
                     android:layout_marginTop="@dimen/_10sdp"

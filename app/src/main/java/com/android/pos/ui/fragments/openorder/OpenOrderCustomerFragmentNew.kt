@@ -26,6 +26,7 @@ import com.android.pos.R.color
 import com.android.pos.data.entities.TbAddress
 import com.android.pos.data.entities.TbCustomer
 import com.android.pos.data.entities.TbPhones
+import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentOpenOrderNewBinding
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.MethodUtils
@@ -46,7 +47,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
     private var enrollToLoyalty: Boolean = false
     private var finalReward: Int = 0
     private var deliveryType: String = "Pickup"
-    private var selectedDate: String?=null
+    private var selectedDate: String? = null
     private var country = arrayOf("United States", "Canada")
     private lateinit var binding: FragmentOpenOrderNewBinding
     private lateinit var placesApi: PlaceAPI
@@ -54,6 +55,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
     private var selectedHour: Int? = null
     private var selectedMinute: Int? = null
     private val TAG = "OpenOrderCustomerFragment"
+    private var type: String = Constants.PICK_UP
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -184,15 +186,15 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
         }
         findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Bundle>("data")
             ?.observe(viewLifecycleOwner) { it ->
-                selectedDate=it.getString("SELECTED_DATE")
-                binding.edtDate.text=selectedDate
+                selectedDate = it.getString("SELECTED_DATE")
+                binding.edtDate.text = selectedDate
             }
 
         setFragmentResultListener("request_key_customer") { requestKey: String, bundle: Bundle ->
             val result = bundle.getParcelable<TbCustomer>("data")
             if (result != null) {
-                selectedDate=bundle.getString("SELECTED_DATE")
-                binding.edtDate.text=selectedDate
+                selectedDate = bundle.getString("SELECTED_DATE")
+                binding.edtDate.text = selectedDate
                 setupCustomer(result)
             }
         }
@@ -218,7 +220,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
 
         binding.edtFirstName.setText(customer.first_name)
         binding.edtLastName.setText(customer.last_name)
-        if (customer.phones.size>0){
+        if (customer.phones.size > 0) {
             binding.edtPhoneNo.setText(AlertUtils.usNumberFormat(customer.phones[0].phone_number))
         }
         binding.edtEmail.setText(customer.email)
@@ -287,7 +289,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
                 }
 
                 findNavController().navigate(
-                    R.id.action_openOrderCustomerFragmentNew_to_assignCustomerOrderFragment,result
+                    R.id.action_openOrderCustomerFragmentNew_to_assignCustomerOrderFragment, result
                 )
             }
             R.id.btnClearDelivery -> {
@@ -312,7 +314,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
 
             }
             R.id.txtPickup -> {
-
+                type = Constants.PICK_UP
                 binding.txtPickup.setTextColor(resources.getColor(color.white))
                 binding.txtDelivery.setTextColor(resources.getColor(color.drawerBack50))
 
@@ -321,7 +323,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
 
             }
             R.id.txtDelivery -> {
-
+                type = Constants.DELIVERY
                 binding.txtPickup.setTextColor(resources.getColor(color.drawerBack50))
                 binding.txtDelivery.setTextColor(resources.getColor(color.white))
 
@@ -341,7 +343,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
 
             R.id.edtDate -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    selectedDate=null
+                    selectedDate = null
                     showDatePicker()
                 }
             }
@@ -434,6 +436,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
                         putParcelable("data", customer)
                         putString("DATE", binding.edtDate.text.toString())
                         putString("TIME", binding.edtTime.text.toString())
+                        putString("TYPE", type)
                         putBoolean("OPEN_ORDER", true)
                     }
                     setFragmentResult("request_key_customer_open_order", result)
@@ -503,10 +506,9 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
         )
         val dateAsFormattedText: String =
             dateTime.format(DateTimeFormatter.ofPattern("MMM-dd-yyyy"))
-        if (selectedDate!=null){
+        if (selectedDate != null) {
             binding.edtDate.text = selectedDate
-        }
-        else{
+        } else {
             binding.edtDate.text = dateAsFormattedText
         }
 

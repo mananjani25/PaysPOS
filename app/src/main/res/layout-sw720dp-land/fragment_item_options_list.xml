@@ -71,25 +71,41 @@
             android:orientation="vertical">
 
 
-            <Spinner
-                android:id="@+id/spOptions"
+
+            <FrameLayout
+                android:id="@+id/spinner_layout"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_14sdp"
-                android:layout_gravity="center"
-                android:layout_marginBottom="@dimen/_5sdp"
+                android:orientation="horizontal"
                 android:layout_weight="1"
+                android:layout_marginBottom="@dimen/_5sdp"
+                android:layout_gravity="center_vertical"
                 android:background="@drawable/bg_spinner"
-                android:imeOptions="actionNext"
-                android:inputType="text"
-                android:overlapAnchor="false"
-                android:spinnerMode="dropdown"
-                android:textSize="@dimen/_5mdpi" />
+                android:layout_height="@dimen/_14sdp">
+
+                <Spinner
+                    android:id="@+id/spOptions"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_14sdp"
+                    android:layout_gravity="center"
+                    android:background="@null"
+                    android:imeOptions="actionNext"
+                    android:inputType="text"
+                    android:overlapAnchor="false"
+                    android:spinnerMode="dropdown"
+                    android:textSize="@dimen/_5mdpi" />
+
+                <ImageView
+                    android:layout_width="@dimen/_7sdp"
+                    android:src="@drawable/caretdown"
+                    android:layout_gravity="right|center_vertical"
+                    android:layout_height="@dimen/_7sdp" />
+            </FrameLayout>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvOptonSetList"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_below="@+id/spOptions"
+                android:layout_below="@+id/spinner_layout"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
 

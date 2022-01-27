@@ -1,6 +1,7 @@
 package com.android.pos.data.model
 
 import com.android.pos.data.entities.CartModel
+import com.android.pos.data.entities.RedeemLoyaltyInfo
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 
 data class SplitBundleModel(
@@ -20,5 +21,6 @@ data class SplitBundleModel(
     var totalTaxAmount: Double,
     var tip : Double,
     var cashDiscountSurcharge:Double,
-    var cartlist: List<CartModel>
+    var cartlist: CartModel?,
+    var redeemLoyaltyInfo:RedeemLoyaltyInfo?
 )

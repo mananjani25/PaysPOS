@@ -150,19 +150,31 @@
                             android:textColor="@color/viewTextColor"
                             android:textSize="@dimen/_5mdpi" />
 
-                        <Spinner
-                            android:id="@+id/spUnit"
+                        <FrameLayout
                             android:layout_width="@dimen/_80sdp"
-                            android:layout_height="@dimen/_14sdp"
-                            android:layout_gravity="center"
-                            android:layout_marginStart="@dimen/_5sdp"
+                            android:orientation="horizontal"
+                            android:layout_gravity="center_vertical"
                             android:background="@drawable/bg_spinner"
-                            android:imeOptions="actionNext"
-                            android:inputType="text"
-                            android:overlapAnchor="false"
-                            android:spinnerMode="dropdown"
-                            android:textSize="@dimen/_5mdpi" />
+                            android:layout_height="@dimen/_14sdp">
 
+                            <Spinner
+                                android:id="@+id/spUnit"
+                                android:layout_width="@dimen/_80sdp"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:imeOptions="actionNext"
+                                android:inputType="text"
+                                android:background="@null"
+                                android:overlapAnchor="false"
+                                android:spinnerMode="dropdown"
+                                android:textSize="@dimen/_5mdpi" />
+
+                            <ImageView
+                                android:layout_width="@dimen/_7sdp"
+                                android:src="@drawable/caretdown"
+                                android:layout_gravity="right|center_vertical"
+                                android:layout_height="@dimen/_7sdp" />
+                        </FrameLayout>
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
                     <View
@@ -204,7 +216,7 @@
                             android:textColor="@color/black"
                             android:textColorHint="@color/hintColor"
                             android:textSize="@dimen/_5mdpi"
-                            android:digits="@string/numbers_digits_string"/>
+                            android:digits="@string/numbers_digits_string" />
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -244,7 +256,7 @@
                             android:textColor="@color/black"
                             android:textColorHint="@color/hintColor"
                             android:textSize="@dimen/_5mdpi"
-                            android:digits="@string/disable_emoji_string"/>
+                            android:digits="@string/disable_emoji_string" />
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -286,7 +298,7 @@
                             android:textColor="@color/black"
                             android:textColorHint="@color/hintColor"
                             android:textSize="@dimen/_5mdpi"
-                            android:digits="@string/numbers_digits_string"/>
+                            android:digits="@string/numbers_digits_string" />
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
