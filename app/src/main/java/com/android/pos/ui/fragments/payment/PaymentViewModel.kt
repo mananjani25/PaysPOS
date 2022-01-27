@@ -108,9 +108,6 @@ class PaymentViewModel @Inject constructor(
                                 if (orderRequestModel.order.openOrderType == Constants.OPEN_ORDER
                                     || orderRequestModel.order.openOrderType == Constants.OPEN_ORDER_
                                 ) {
-                                    prefProvider.setValue(Constants.ORDER_TYPE, "")
-                                    prefProvider.setValue(Constants.CUSTOMER_NAME, "")
-                                    prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
                                     posRepository.deleteCart()
                                 }
 
@@ -200,9 +197,6 @@ class PaymentViewModel @Inject constructor(
                         if (response?.status == 200) {
 
                             if (splitValue != -1) {
-                                prefProvider.setValue(Constants.ORDER_TYPE, "")
-                                prefProvider.setValue(Constants.CUSTOMER_NAME, "")
-                                prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
                                 posRepository.deleteCart()
                             }
                             resource.data?.let { createOrderResponse ->

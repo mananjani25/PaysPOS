@@ -2520,10 +2520,28 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     private fun gotoPayment() {
         if (cartList.isNotEmpty()) {
-            Log.e(TAG, "CartListNotEmpty")
             if (prefProvider.getValueboolean(DINE_IN_UPDATE, false)) {
+                var itemCount = 0
+                for (i in cartList.indices) {
+                    for (j in cartList[i].dineInList?.indices!!) {
+                        if (cartList[i].dineInList?.get(j)?.items?.size!! > 0) {
+                            itemCount++
+                            break
+                        }
+                    }
+                    if (itemCount != 0) {
+                        break
+                    }
 
-                if (cartList.isNotEmpty()) {
+                }
+
+                if (itemCount == 0) {
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        requireContext(),
+                        getString(R.string.please_add_Atleast_one_item_in_cart)
+                    ) { _, _ ->
+                    }
+                } else {
                     val request = viewModel.updateOrder(cartList[0])
 
                     prefProvider.setValueboolean(DINE_IN_UPDATE, false)
@@ -2533,6 +2551,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
 
                 }
+
             } else {
 
                 val bundle = Bundle()
@@ -2583,10 +2602,29 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     bundle.putString("orderOfflineId", orderOfflineId)
                 }
                 if (prefProvider.getValue(ORDER_TYPE, "").toString() == DINE_IN) {
+                    var itemCount = 0
+                    for (i in cartList.indices) {
+                        for (j in cartList[i].dineInList?.indices!!) {
+                            if (cartList[i].dineInList?.get(j)?.items?.size!! > 0) {
+                                itemCount++
+                                break
+                            }
+                        }
+                        if (itemCount != 0) {
+                            createDineInRequest()
+                            break
+                        }
+                    }
 
-                    createDineInRequest()
+                    if (itemCount == 0) {
+                        bundle.clear()
+                        AlertUtils.showCustomAlertWithListenerWithOK(
+                            requireContext(),
+                            getString(R.string.please_add_Atleast_one_item_in_cart)
+                        ) { _, _ ->
+                        }
 
-
+                    }
                 } else {
                     prefProvider.setValue(Constants.TOTAL_PRICE_ACTUAL, final_total.toString())
                     prefProvider.setValue(

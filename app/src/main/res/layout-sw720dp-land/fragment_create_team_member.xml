@@ -114,7 +114,7 @@
                             android:textColor="@color/txtColor"
                             android:textColorHint="@color/hint_color_"
                             android:textSize="@dimen/_5mdpi"
-                            android:digits="@string/disable_emoji_string"/>
+                            android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"/>
 
                     </LinearLayout>
 
@@ -146,7 +146,7 @@
                             android:imeOptions="actionNext"
                             android:inputType="textCapWords"
                             android:padding="@dimen/_5sdp"
-                            android:digits="@string/disable_emoji_string"
+                            android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
                             android:textColor="@color/txtColor"
                             android:textColorHint="@color/hint_color_"
                             android:textSize="@dimen/_5mdpi" />

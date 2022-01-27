@@ -94,16 +94,13 @@ class CreateCategory : Fragment() {
             if (isEdit && imagePath.equals(categoryData?.thumbImgUrl, true)) {
                 //send image if its altered.
                 newImagePathToUpload = ""
-            }
-            if (categoryData != null)
-                categoryData?.name?.let { it1 ->
-                    viewModel.submit(adapter.getIds(), newImagePathToUpload,
-                        it1
-                    )
-                }
-            else
+                viewModel.submit(
+                    adapter.getIds(), newImagePathToUpload,
+                    categoryData?.name.toString()
+                )
+            } else {
                 viewModel.submit(adapter.getIds(), newImagePathToUpload, "")
-
+            }
         }
         binding.imgBack.setOnClickListener {
             onSubmitBack()
