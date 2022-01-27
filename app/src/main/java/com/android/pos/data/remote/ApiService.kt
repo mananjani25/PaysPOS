@@ -74,6 +74,7 @@ import com.android.pos.data.remote.Constants.REORDER_CATEGORY
 import com.android.pos.data.remote.Constants.REORDER_ITEM
 import com.android.pos.data.remote.Constants.REORDER_MODIFIER
 import com.android.pos.data.remote.Constants.REORDER_OPTION_SET
+import com.android.pos.data.remote.Constants.REPORT_EOD_SUMMARY
 import com.android.pos.data.remote.Constants.REPORT_SUMMARY
 import com.android.pos.data.remote.Constants.SERVICE_CHARGE
 import com.android.pos.data.remote.Constants.SERVICE_CHARGE_ACTIVE
@@ -673,6 +674,16 @@ interface ApiService {
         @Query("end_date") endDate: String,
         @Query("terminal_id") terminalId: String
     ): ReportSummaryResponse
+
+
+    @GET(REPORT_EOD_SUMMARY)
+    suspend fun getReportEOD(
+        @Query("start_date") startDate: String,
+        @Query("end_date") endDate: String,
+        @Query("terminal_id") terminalId: String,
+        @Query("employee_id") employee_id: String,
+        @Query("email") email: String
+    ): EodReportResponse
 
 
     @GET(ORDER_HISTORY)

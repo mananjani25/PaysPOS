@@ -248,6 +248,7 @@ object Constants {
     const val UNMERGE_TABLE = "floor_plan_tables/{id}/unmerge_floor_plan_tables"
 
     const val REPORT_SUMMARY = "reports/report_summary"
+    const val REPORT_EOD_SUMMARY = "reports/employee_eod_report"
     const val ORDER_HISTORY = "customers/{id}/customer_order_history"
 
     const val BUSINESS_NAME = "business_name"

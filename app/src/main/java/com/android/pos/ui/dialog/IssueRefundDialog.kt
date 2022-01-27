@@ -62,6 +62,8 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
+        dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
+
         paymentOrderDetailsResponse = arguments?.getParcelable("orderDetailsResponse")!!
         payment_id = arguments?.getInt("paymentId")!!
         isSplitPayment = arguments?.getBoolean("isSplitPayment")!!
@@ -83,37 +85,26 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
             val mData = paymentOrderDetailsResponse.data
 
             if (mData.order.refund_detail.refunded_amount.equals(0.0)) {
-                if (mData.payment_type == "Card") {
-                    if (mData.cash_discount_type == "SurCharge") {
-                        MethodUtils.setRefundPriceTextView(
-                            binding.tvTotalRefundAmount, (mData.amount)
-                            /*(mData.sub_total + mData.tips + mData.tax_amount + mData.service_charge_amount + mData.cash_discount_or_surcharge - (mData.loyalty_amount!! *//*+ mData.total_discount*//*))*/
-                        )
-                    } else {
-                        MethodUtils.setRefundPriceTextView(
-                            binding.tvTotalRefundAmount, (mData.amount)
-//                                (mData.sub_total + mData.tips + mData.tax_amount + mData.service_charge_amount - (mData.loyalty_amount!! /*+ mData.total_discount*/))
-                        )
-                    }
-                } else if (mData.payment_type == "Cash") {
-                    if (mData.cash_discount_type == "CashDiscount") {
-                        MethodUtils.setRefundPriceTextView(
-                            binding.tvTotalRefundAmount,
-                            (mData.amount)
-                        )
-                    } else {
-                        MethodUtils.setRefundPriceTextView(
-                            binding.tvTotalRefundAmount,
-                            (mData.amount)
-                        )
-                    }
-                }
-            } else {
+
                 MethodUtils.setRefundPriceTextView(
                     binding.tvTotalRefundAmount,
-                    ((mData.amount - mData.tips) - mData.order.refund_detail.refunded_amount)
+                    (mData.amount)
                 )
+
+                binding.edtAmount.setText((mData.amount * 100).toString())
+
+            } else {
+
+                val price = (mData.amount - mData.tips) - mData.order.refund_detail.refunded_amount
+                MethodUtils.setRefundPriceTextView(
+                    binding.tvTotalRefundAmount,
+                    price
+                )
+
+                binding.edtAmount.setText((price * 100).toString())
             }
+
+
         }
 
         binding.rgRefundType.setOnCheckedChangeListener { group, checkedId ->
@@ -134,36 +125,23 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                 val mData = paymentOrderDetailsResponse.data
 
                 if (mData.order.refund_detail.refunded_amount.equals(0.0)) {
-                    if (mData.payment_type == "Card") {
-                        if (mData.cash_discount_type == "SurCharge") {
-                            MethodUtils.setRefundPriceTextView(
-                                binding.tvTotalRefundAmount, (mData.amount)
-                                /*(mData.sub_total + mData.tips + mData.tax_amount + mData.service_charge_amount + mData.cash_discount_or_surcharge - (mData.loyalty_amount!! *//*+ mData.total_discount*//*))*/
-                            )
-                        } else {
-                            MethodUtils.setRefundPriceTextView(
-                                binding.tvTotalRefundAmount, (mData.amount)
-//                                (mData.sub_total + mData.tips + mData.tax_amount + mData.service_charge_amount - (mData.loyalty_amount!! /*+ mData.total_discount*/))
-                            )
-                        }
-                    } else if (mData.payment_type == "Cash") {
-                        if (mData.cash_discount_type == "CashDiscount") {
-                            MethodUtils.setRefundPriceTextView(
-                                binding.tvTotalRefundAmount,
-                                (mData.amount)
-                            )
-                        } else {
-                            MethodUtils.setRefundPriceTextView(
-                                binding.tvTotalRefundAmount,
-                                (mData.amount)
-                            )
-                        }
-                    }
-                } else {
+
                     MethodUtils.setRefundPriceTextView(
                         binding.tvTotalRefundAmount,
-                        ((mData.amount - mData.tips) - mData.order.refund_detail.refunded_amount)
+                        (mData.amount)
                     )
+
+                    binding.edtAmount.setText((mData.amount * 100).toString())
+                } else {
+
+                    val price =
+                        (mData.amount - mData.tips) - mData.order.refund_detail.refunded_amount
+                    MethodUtils.setRefundPriceTextView(
+                        binding.tvTotalRefundAmount,
+                        price
+                    )
+
+                    binding.edtAmount.setText((price * 100).toString())
                 }
 
             }

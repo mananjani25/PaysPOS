@@ -4,33 +4,28 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.android.pos.data.model.responseModel.report.KeyValue
 import com.android.pos.data.model.responseModel.report.KeyValueWithString
-import com.android.pos.databinding.ViewEmployeeReportBinding
+import com.android.pos.databinding.ViewSalesOrdersReportBinding
 
-class EmployeeReportAdapter :
-    RecyclerView.Adapter<EmployeeReportAdapter.MyViewHolder>() {
+class SalesOrderDetailsAdapter :
+    RecyclerView.Adapter<SalesOrderDetailsAdapter.MyViewHolder>() {
 
-    private var preFixHeader = ""
     private var arrayList = ArrayList<ArrayList<KeyValueWithString>>()
 
-    inner class MyViewHolder(private val binding: ViewEmployeeReportBinding) :
+    inner class MyViewHolder(private val binding: ViewSalesOrdersReportBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         @SuppressLint("SetTextI18n")
         fun bind(keyValueList: ArrayList<KeyValueWithString>) {
+            if (keyValueList.size > 0) {
 
-            if (keyValueList.isNotEmpty()) {
-                val empName = keyValueList[0].value
-                val header = "$preFixHeader $empName"
-                binding.txtHeader.text = header
-
-                val employeeReportNestedAdapter = EmployeeReportNestedAdapter()
+                val employeeReportNestedAdapter = SalesOrderNestedDetailsAdapter()
                 employeeReportNestedAdapter.add(keyValueList)
                 binding.rvNested.adapter = employeeReportNestedAdapter
+
             }
-
         }
-
     }
 
     override fun onCreateViewHolder(
@@ -38,7 +33,7 @@ class EmployeeReportAdapter :
         viewType: Int
     ): MyViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val binding = ViewEmployeeReportBinding.inflate(inflater, parent, false)
+        val binding = ViewSalesOrdersReportBinding.inflate(inflater, parent, false)
         return MyViewHolder(binding)
     }
 
@@ -56,9 +51,5 @@ class EmployeeReportAdapter :
             this.arrayList.addAll(arrayList)
         }
         notifyDataSetChanged()
-    }
-
-    fun addPrefixHeader(preFixHeader: String) {
-        this.preFixHeader = preFixHeader
     }
 }

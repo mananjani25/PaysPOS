@@ -827,7 +827,7 @@
                     android:id="@+id/txtPrintKitchenReceipt"
                     style="@style/CustomFontBold"
                     android:layout_width="match_parent"
-                    android:visibility="invisible"
+                    android:visibility="gone"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
                     android:layout_marginTop="@dimen/_10sdp"
@@ -838,6 +838,42 @@
                     android:paddingEnd="@dimen/_15sdp"
                     android:paddingBottom="@dimen/_8sdp"
                     android:text="@string/tv_print_kitchen_receipt"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_6mdpi" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtTextReceipt"
+                    style="@style/CustomFontBold"
+                    android:layout_width="match_parent"
+                    android:visibility="visible"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:background="@drawable/button_hover_blue"
+                    android:gravity="center"
+                    android:paddingStart="@dimen/_15sdp"
+                    android:paddingTop="@dimen/_8sdp"
+                    android:paddingEnd="@dimen/_15sdp"
+                    android:paddingBottom="@dimen/_8sdp"
+                    android:text="Text Receipt"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_6mdpi" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtEmailReceipt"
+                    style="@style/CustomFontBold"
+                    android:layout_width="match_parent"
+                    android:visibility="visible"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:background="@drawable/button_hover_blue"
+                    android:gravity="center"
+                    android:paddingStart="@dimen/_15sdp"
+                    android:paddingTop="@dimen/_8sdp"
+                    android:paddingEnd="@dimen/_15sdp"
+                    android:paddingBottom="@dimen/_8sdp"
+                    android:text="Email Receipt"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_6mdpi" />
             </LinearLayout>

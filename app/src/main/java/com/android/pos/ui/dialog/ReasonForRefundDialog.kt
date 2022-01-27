@@ -49,9 +49,9 @@ class ReasonForRefundDialog : DialogFragment() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
+        dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
         refundData = arguments?.getParcelable("refundData")!!
-
-
         refundAmount = arguments?.getDouble("refundAmount")!!
 
 

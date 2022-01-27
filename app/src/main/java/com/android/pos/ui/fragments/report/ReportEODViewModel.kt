@@ -4,12 +4,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.android.pos.data.db.AppDatabase
+import com.android.pos.data.model.responseModel.EodReportResponse
 import com.android.pos.data.model.responseModel.report.Data
 import com.android.pos.data.model.responseModel.report.Terminal
+import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.repositories.PosRepository
-import com.android.pos.data.repositories.TaxServiceChargeRepository
-import com.android.pos.data.repositories.TipDiscountRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Status
@@ -20,8 +19,9 @@ import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
-class ReportViewModel @Inject constructor(
-    private val posRepository: PosRepository
+class ReportEODViewModel @Inject constructor(
+    private val posRepository: PosRepository,
+    private val prefProvider: PrefProvider
 ) : ViewModel() {
 
     private val _showProgress = MutableLiveData<Event<Boolean>>()
@@ -36,8 +36,8 @@ class ReportViewModel @Inject constructor(
     private val _endDateSelection = MutableLiveData<Event<Unit>>()
     val endDateSelection: LiveData<Event<Unit>> = _endDateSelection
 
-    private val _data = MutableLiveData<Event<Data?>>()
-    val data: LiveData<Event<Data?>> = _data
+    private val _data = MutableLiveData<Event<EodReportResponse.Data>>()
+    val data: LiveData<Event<EodReportResponse.Data>> = _data
 
     val getTerminalListDatabse = posRepository.getTerminalListDatabse()
 
@@ -64,6 +64,7 @@ class ReportViewModel @Inject constructor(
         ).format(Date())
 
     }
+
     fun datePicker(selectPicker: Boolean) {
         selectPicker1 = selectPicker
 
@@ -74,16 +75,6 @@ class ReportViewModel @Inject constructor(
         }
     }
 
-    fun updateLabel(myCalendar: Calendar) {
-        val myFormat = "MM/dd/yyyy" //In which you need put here
-        val sdf = SimpleDateFormat(myFormat, Locale.getDefault())
-
-        if (selectPicker1) {
-            startDate.value = sdf.format(myCalendar.time)
-        } else {
-            endDate.value = sdf.format(myCalendar.time)
-        }
-    }
 
 
     fun getReportSummary() {
@@ -92,17 +83,20 @@ class ReportViewModel @Inject constructor(
         viewModelScope.launch {
 
             val resourceReport =
-                posRepository.getReportSummary(
+                posRepository.getReportEOD(
                     startDate = startDate.value ?: "",
                     endDate = endDate.value ?: "",
-                    terminalId = selectedTerminalId
+                    terminalId = selectedTerminalId,
+                    employee_id = prefProvider.getValueInt(EMPLOYEE_ID, 0).toString(),
+                    email = ""
+
                 )
             when (resourceReport.status) {
                 Status.SUCCESS -> {
                     _showProgress.value = Event(false)
                     resourceReport.data.let {
                         if (it?.status == 200) {
-                            _data.postValue(Event(resourceReport.data?.data))
+                            _data.postValue(Event(resourceReport.data?.data!!))
                         }
                     }
                 }
