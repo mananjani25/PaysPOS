@@ -12,6 +12,7 @@ import com.android.pos.data.model.SplitDetailListModel
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.ApiHelper
+import com.android.pos.data.remote.Constants
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.performGetOperation
 import com.android.pos.utils.performGetOperationDatabase
@@ -655,6 +656,13 @@ class PosRepository @Inject constructor(
             .addAllTerminalSuspend(
                 data
             )
+
+
+    fun getEmployeeEmail() =
+        performGetOperationDatabase(databaseQuery = {
+            appDatabase.employeeDao()
+                .employeeById(prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0))
+        })
 
     fun getTerminalListDatabse() =
         performGetOperationDatabase(databaseQuery = { appDatabase.terminalDao().allTerminal })

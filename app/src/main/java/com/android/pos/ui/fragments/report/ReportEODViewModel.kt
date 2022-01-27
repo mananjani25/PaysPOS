@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.data.model.responseModel.EodReportResponse
-import com.android.pos.data.model.responseModel.report.Data
 import com.android.pos.data.model.responseModel.report.Terminal
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.repositories.PosRepository
@@ -40,6 +39,8 @@ class ReportEODViewModel @Inject constructor(
     val data: LiveData<Event<EodReportResponse.Data>> = _data
 
     val getTerminalListDatabse = posRepository.getTerminalListDatabse()
+
+    val getEmployeeEmail = posRepository.getEmployeeEmail()
 
     var selectPicker1: Boolean = false
     val startDate = MutableLiveData<String>()
@@ -76,8 +77,7 @@ class ReportEODViewModel @Inject constructor(
     }
 
 
-
-    fun getReportSummary() {
+    fun getReportSummary(email: String) {
 
         _showProgress.value = Event(true)
         viewModelScope.launch {
@@ -88,7 +88,7 @@ class ReportEODViewModel @Inject constructor(
                     endDate = endDate.value ?: "",
                     terminalId = selectedTerminalId,
                     employee_id = prefProvider.getValueInt(EMPLOYEE_ID, 0).toString(),
-                    email = ""
+                    email = email
 
                 )
             when (resourceReport.status) {
@@ -96,7 +96,12 @@ class ReportEODViewModel @Inject constructor(
                     _showProgress.value = Event(false)
                     resourceReport.data.let {
                         if (it?.status == 200) {
-                            _data.postValue(Event(resourceReport.data?.data!!))
+
+                            if (email.isEmpty()) {
+                                _data.postValue(Event(resourceReport.data?.data!!))
+                            } else {
+                                _snackbarText.value = Event(resourceReport.message)
+                            }
                         }
                     }
                 }

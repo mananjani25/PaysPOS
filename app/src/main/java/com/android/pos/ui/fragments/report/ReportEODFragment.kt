@@ -11,6 +11,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
@@ -102,9 +103,36 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
             findNavController().navigateUp()
         }
         binding.txtSearch.setOnClickListener {
-            viewModel.getReportSummary()
+            viewModel.getReportSummary("")
         }
 
+        binding.txtEmail.setOnClickListener {
+
+
+            viewModel.getEmployeeEmail.observe(viewLifecycleOwner, {
+
+                if (it.status == Status.SUCCESS && it.data != null) {
+
+                    val bundle = Bundle()
+                    bundle.putBoolean("EOD", true)
+                    bundle.putInt("type", 2)
+                    bundle.putString("email", it.data.email)
+                    findNavController().navigate(
+                        R.id.action_reportEODFragment_to_sendReceiptFragment,
+                        bundle
+                    )
+                }
+            })
+
+
+            //  viewModel.getReportSummary("")
+        }
+
+        setFragmentResultListener("request_key_eod") { requestKey: String, bundle: Bundle ->
+
+
+            bundle.getString("email")?.let { viewModel.getReportSummary(it) }
+        }
     }
 
     private fun initControls() {
@@ -122,7 +150,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
             timecalender.set(Calendar.MINUTE, minute)
             viewModel.startDate.value = timeCalculateForStartEndTime(hour, minute, "isstart")
             if (differnceTrue(viewModel.startDate.value!!, viewModel.endDate.value) <= 30) {
-                viewModel.getReportSummary()
+                viewModel.getReportSummary("")
             } else {
                 AlertUtils.showCustomAlertWithListenerWithOK(
                     requireActivity(),
@@ -138,7 +166,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
             timecalender.set(Calendar.MINUTE, minute)
             viewModel.endDate.value = timeCalculateForStartEndTime(hour, minute, "isend")
             if (differnceTrue(viewModel.endDate.value!!, viewModel.startDate.value) <= 30) {
-                viewModel.getReportSummary()
+                viewModel.getReportSummary("")
             } else {
                 AlertUtils.showCustomAlertWithListenerWithOK(
                     requireActivity(),
@@ -438,9 +466,9 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 cashEventSummaryAdapter.add(it.refundAndVoidDetails)
 
                 showHide(
-                    rvMedia = binding.rvTipsDetails,
-                    textView = binding.txtTipsDetails,
-                    headerView = binding.ilTipsDetails,
+                    rvMedia = binding.rvWastageDetails,
+                    textView = null,
+                    headerView = null,
                     visible = it.wastageDetails.isNotEmpty()
                 )
                 wastage_detailsAdapter.add(it.wastageDetails)
@@ -455,16 +483,13 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 otherDetailsAdapter.add(it.otherDetails)
 
 
-                showHide(
-                    rvMedia = binding.rvSalesDetails,
-                    textView = null,
-                    headerView = null,
-                    visible = it.orderSalesDetails.isNotEmpty()
-                )
-                salesOrderDetailsAdapter.add(it.orderSalesDetails)
-
-
-
+//                showHide(
+//                    rvMedia = binding.rvSalesDetails,
+//                    textView = null,
+//                    headerView = null,
+//                    visible = it.orderSalesDetails.isNotEmpty()
+//                )
+//                salesOrderDetailsAdapter.add(it.orderSalesDetails)
 
 
                 binding.linReports.visible()
@@ -553,7 +578,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
         /*viewModel.apiCallTimeSheet(
             getTerminalId(binding.spTerminals.selectedItemPosition).toString()
         )*/
-        viewModel.getReportSummary()
+        viewModel.getReportSummary("")
 
     }
 

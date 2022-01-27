@@ -7,6 +7,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.model.responseModel.report.KeyValue
 import com.android.pos.data.model.responseModel.report.KeyValueWithString
 import com.android.pos.databinding.ViewSalesOrdersReportBinding
+import com.android.pos.utils.extensions.gone
+import com.android.pos.utils.extensions.visible
 
 class SalesOrderDetailsAdapter :
     RecyclerView.Adapter<SalesOrderDetailsAdapter.MyViewHolder>() {
