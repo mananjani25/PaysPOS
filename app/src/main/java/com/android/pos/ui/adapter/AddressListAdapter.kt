@@ -66,6 +66,12 @@ class AddressListAdapter(val refreshCallBack: (Int) -> Unit) :
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             binding.edtAddress.adapter = adapter
 
+            binding.edtStreet.setOnFocusChangeListener { v, hasFocus ->
+
+                edtStreet.dismissDropDown()
+            }
+
+
             binding.edtAddress.onItemSelectedListener =
                 object : AdapterView.OnItemSelectedListener {
                     override fun onItemSelected(
@@ -105,11 +111,10 @@ class AddressListAdapter(val refreshCallBack: (Int) -> Unit) :
                 //binding.edtStreet.setText("${place.description}")
                 placesApi.fetchPlaceDetails(place.id, object : OnPlacesDetailsListener {
                     override fun onError(errorMessage: String) {
-
-
                     }
 
                     override fun onPlaceDetailsFetched(placeDetails: PlaceDetails) {
+
                         decodeLocation(placeDetails.lat, placeDetails.lng, placeDetails.name)
 
                         val gcd = Geocoder(itemView.context, Locale.getDefault())
@@ -118,8 +123,6 @@ class AddressListAdapter(val refreshCallBack: (Int) -> Unit) :
                         Log.e(TAG, "CountryNAme ${address.get(0).countryName}")
 
                         if (address.isNotEmpty()) {
-
-
                             try {
                                 list[layoutPosition].address1 = placeDetails.name
                                 list[layoutPosition].address2 = placeDetails.name ?: ""

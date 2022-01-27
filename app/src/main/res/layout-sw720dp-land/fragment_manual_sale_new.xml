@@ -443,7 +443,7 @@
                         android:enabled="false"
                         android:text="0.00"
                         android:maxLength="11"
-                        android:digits="@string/numbers_digits_string"
+                        android:digits="0123456789"
                         android:textColor="@color/txtColor"
                         android:textSize="@dimen/_10mdpi" />
 

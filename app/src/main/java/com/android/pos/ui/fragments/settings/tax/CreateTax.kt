@@ -23,7 +23,6 @@ import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.data.remote.Constants.SETTING_KEY
 import com.android.pos.databinding.DialogCreateNewTaxBinding
 import com.android.pos.utils.AlertUtils
-import com.android.pos.utils.AmountTextWatcher
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.getNavigationResultLiveData
 import com.android.pos.utils.extensions.liveSnackBar
