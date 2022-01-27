@@ -335,7 +335,7 @@ fun addOrdersForKitchenDineIn(
                     Builder.FALSE,
                     Builder.FALSE,
                     Builder.TRUE,
-                    Builder.COLOR_1
+                    Builder.COLOR_2
                 )
                 //builder.addTextPosition(1)
 
@@ -403,7 +403,7 @@ fun addOrdersForKitchen(
                     Builder.FALSE,
                     Builder.FALSE,
                     Builder.TRUE,
-                    Builder.COLOR_1
+                    Builder.COLOR_2
                 )
                 //builder.addTextPosition(1)
 

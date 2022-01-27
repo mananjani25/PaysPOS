@@ -33,7 +33,6 @@ import com.android.pos.data.remote.Constants.GUEST_POSITION
 import com.android.pos.data.remote.Constants.KITCHEN
 import com.android.pos.data.remote.Constants.LARGE
 import com.android.pos.data.remote.Constants.OPEN_ORDER_
-import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.PRINT_DATA_DINE_IN
 import com.android.pos.data.remote.Constants.SAVE_SPLIT_BUNDLE
 import com.android.pos.data.remote.Constants.SUB_TOTAL
@@ -3159,6 +3158,22 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     )
                     builder.addTextAlign(Builder.ALIGN_CENTER)
                     builder.addText(receiptModel?.order?.deliveryType + "\n")
+                }
+                else{
+                    builder.addFeedLine(1)
+
+                    builder.addTextFont(Builder.FONT_E)
+
+                    builder.addTextLang(Builder.LANG_EN)
+                    builder.addTextSize(2, 2)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.COLOR_1
+                    )
+                    builder.addTextAlign(Builder.ALIGN_CENTER)
+                    builder.addText("Delivery" + "\n")
                 }
 
 
