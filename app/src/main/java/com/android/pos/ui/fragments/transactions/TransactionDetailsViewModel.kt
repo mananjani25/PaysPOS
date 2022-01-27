@@ -180,7 +180,7 @@ class TransactionDetailsViewModel @Inject constructor(
         val order = refundRequestModel.paymentRefund
 
         val cashLogRequest = order?.employeeId?.let {
-            order.id?.let { it1 ->
+            order.orderId?.let { it1 ->
                 order.paymentId?.let { it2 ->
                     order.terminalId?.let { it3 ->
                         CashLogRequest(
