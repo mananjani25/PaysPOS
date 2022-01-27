@@ -402,7 +402,7 @@ object Constants {
     const val TAX_CHARGE_ACTUAL = "taxchargeactual"
     const val TIPS_AMOUNT_ACTUAL = "tipsactual"
     const val TOTAL_DISCOUNT_ACTUAL = "totalDiscountactual"
-    const val TOTAL_PRICE_ACTUAL = "totalDiscountactual"
+    const val TOTAL_PRICE_ACTUAL = "totalPriceActual"
     const val TOTAL_SERVICE_CHARGE_ACTUAL = "totalServiceChargeactual"
 
 

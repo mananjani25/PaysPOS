@@ -2826,11 +2826,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     )
                 } else {
                     removeCustomer()
+                    removePrefrenceDinein()
                     findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
                 }
             } else {
                 if (findNavController().currentDestination?.id == R.id.orderCompleteFragment) {
                     removeCustomer()
+                    removePrefrenceDinein()
                     findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
                 }
             }
@@ -4422,6 +4424,16 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         prefProvider.setValue(Constants.TAX_CHARGE, "")
         prefProvider.setValue(Constants.SERVICE_CHARGE, "")
         prefProvider.setValueInt("ORDER_ID", -1)
+
+        prefProvider.setValue(Constants.TOTAL_PRICE_ACTUAL, "0.0")
+        prefProvider.setValue(Constants.SUB_TOTAL_ACTUAL, "0.0")
+        prefProvider.setValue(Constants.TOTAL_DISCOUNT_ACTUAL, "0.0")
+        prefProvider.setValue(
+            Constants.TOTAL_SERVICE_CHARGE_ACTUAL,
+            "0.0"
+        )
+        prefProvider.setValue(Constants.TAX_CHARGE_ACTUAL, "0.0")
+        prefProvider.setValue(Constants.TIPS_AMOUNT_ACTUAL, "0.0")
     }
 
     private fun observeShowProgress() {

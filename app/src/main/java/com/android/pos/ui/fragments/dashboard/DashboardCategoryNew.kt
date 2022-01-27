@@ -2586,6 +2586,17 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
 
                 } else {
+                    prefProvider.setValue(Constants.TOTAL_PRICE_ACTUAL, final_total.toString())
+                    prefProvider.setValue(Constants.SUB_TOTAL_ACTUAL, viewModel.subTotalPrice.toString())
+                    prefProvider.setValue(Constants.TOTAL_DISCOUNT_ACTUAL, viewModel.totalDiscount.toString())
+                    prefProvider.setValue(
+                        Constants.TOTAL_SERVICE_CHARGE_ACTUAL,
+                        viewModel.totalServiceCharge.toString()
+                    )
+                    prefProvider.setValue(Constants.TAX_CHARGE_ACTUAL, viewModel.totalTax.toString())
+                    prefProvider.setValue(Constants.TIPS_AMOUNT_ACTUAL, "0.0")
+
+
 
                     lifecycleScope.launchWhenStarted {
                         if (findNavController().currentDestination?.id == R.id.dashboardCategoryNew) {
