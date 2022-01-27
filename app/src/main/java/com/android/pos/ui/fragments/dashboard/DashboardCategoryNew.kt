@@ -3713,7 +3713,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     if (kitchenSettingModel.showCustomerAddress) {
 
                         if (receiptModel?.order?.orderType.trim().lowercase() == "Open Order".trim()
-                                .lowercase() && receiptModel?.order?.deliveryType.trim().lowercase() == "Pickup".trim()
+                                .lowercase() && receiptModel?.order?.deliveryType.trim()
+                                .lowercase() == "Pickup".trim()
                                 .lowercase()
                         ) {
 

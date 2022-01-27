@@ -376,7 +376,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             )
 
             bundle.putInt("orderId", orderId ?: 0)
-            bundle.putInt(GUEST_POSITION,0)
+            bundle.putInt(GUEST_POSITION, 0)
 //            orderId?.let { it1 -> prefProvider.setValueInt("ORDER_ID", it1) }
 
             findNavController().navigate(
@@ -911,7 +911,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
         bundle.putBoolean(IS_GUEST_PAYMNET, true)
-        bundle.putInt(GUEST_POSITION,position)
+        bundle.putInt(GUEST_POSITION, position)
         bundle.putParcelableArrayList(
             DINE_IN_ADAPTER_LIST, dineInTableAdapter.getList().toCollection(
                 arrayListOf()
