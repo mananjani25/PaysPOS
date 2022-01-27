@@ -51,113 +51,117 @@ class CreateCategoryViewModel @Inject constructor(
 
 
     fun categoryData(categoryData: TbCategory) {
-        categoryDetails.value?.name = categoryData.name?:""
+        categoryDetails.value?.name = categoryData.name ?: ""
     }
 
     //  val getInventory = catId.value?.let { posRepository.getInventory(it) }
 
-    fun submit(ids: ArrayList<Int>, imagePath: String?, categoryName: String) {
+    fun submit(ids: ArrayList<Int>, imagePath: String?, nameFromUpdate: String) {
 
-        if (TextUtils.isEmpty(categoryDetails.value?.name?.trim())) {
-            _snackbarText.value = Event(R.string.category_name_validate)
-        }
-        else if (categoryName.equals(categoryDetails.value?.name))
-            _snackbarText.value = Event(R.string.same_category_name)
-        else {
-            _showProgress.value = Event(true)
-
-            if (isEdit) {
-                createCategoryRequestModel = CreateCategoryRequestModel().apply {
-                    id = catId
-                    name = categoryDetails.value?.name.toString()
-                    active = true
-                    location_id = prefProvider.getValueInt(Constants.LOCATION_ID, -1)
-                    item_ids = ids
-                    image = imagePath
-                }
+        if (isEdit) {
+            if (categoryDetails.value?.name?.trim()?.isEmpty() == true) {
+                _snackbarText.value = Event(R.string.category_name_validate)
             } else {
-                createCategoryRequestModel = CreateCategoryRequestModel().apply {
-                    name = categoryDetails.value?.name.toString()
-                    active = true
-                    location_id = prefProvider.getValueInt(Constants.LOCATION_ID, -1)
-                    item_ids = ids
-                    image = imagePath
-                }
+                _showProgress.value = Event(true)
+            }
+        } else if (TextUtils.isEmpty(categoryDetails.value?.name?.trim())) {
+            _snackbarText.value = Event(R.string.category_name_validate)
+        } else {
+            _showProgress.value = Event(true)
+        }
+
+        if (isEdit) {
+            createCategoryRequestModel = CreateCategoryRequestModel().apply {
+                id = catId
+                name = categoryDetails.value?.name.toString()
+                active = true
+                location_id = prefProvider.getValueInt(Constants.LOCATION_ID, -1)
+                item_ids = ids
+                image = imagePath
+            }
+        } else {
+            createCategoryRequestModel = CreateCategoryRequestModel().apply {
+                name = categoryDetails.value?.name.toString()
+                active = true
+                location_id = prefProvider.getValueInt(Constants.LOCATION_ID, -1)
+                item_ids = ids
+                image = imagePath
+            }
+        }
+
+        viewModelScope.launch {
+
+            val resource = if (isEdit) {
+                posRepository.updateCategoryCall(catId, createCategoryRequestModel)
+            } else {
+                posRepository.createCategoryCall(createCategoryRequestModel)
             }
 
-            viewModelScope.launch {
+            when (resource.status) {
+                SUCCESS -> {
+                    _showProgress.value = Event(false)
 
-                val resource = if (isEdit) {
-                    posRepository.updateCategoryCall(catId, createCategoryRequestModel)
-                } else {
-                    posRepository.createCategoryCall(createCategoryRequestModel)
-                }
+                    resource.data.let { categoryResponse ->
+                        if (categoryResponse?.status == 200) {
+                            resource.data?.let {
 
-                when (resource.status) {
-                    SUCCESS -> {
-                        _showProgress.value = Event(false)
-
-                        resource.data.let { categoryResponse ->
-                            if (categoryResponse?.status == 200) {
-                                resource.data?.let {
-
-                                    val category = TbCategory().apply {
-                                        name = it.data.name
-                                        id = it.data.id
-                                        locationId = it.data.locationId
-                                        active = it.data.active
-                                        sort = it.data.sort
-                                        createdAt = it.data.createdAt
-                                        updatedAt = it.data.updatedAt
-                                        thumbImgUrl = it.data.thumbImgUrl
-                                        originalImgUrl = it.data.originalImgUrl
-
-                                    }
-                                    posRepository.createCategory(category)
-
-
-                                    if (isEdit) {
-                                        val oldIds = posRepository.getItemsByCategory(category.id)
-                                        oldIds?.forEach { old ->
-                                            posRepository.updateItemCategory(
-                                                category.id,
-                                                category.name?:"",
-                                                null
-                                            )
-                                        }
-                                    }
-
-                                    ids.forEach { itemId ->
-                                        posRepository.updateItemCategory(
-                                            category.id,
-                                            category.name?:"",
-                                            itemId
-                                        )
-                                    }
-
-                                    _data.value = Event(it.message)
-
+                                val category = TbCategory().apply {
+                                    name = it.data.name
+                                    id = it.data.id
+                                    locationId = it.data.locationId
+                                    active = it.data.active
+                                    sort = it.data.sort
+                                    createdAt = it.data.createdAt
+                                    updatedAt = it.data.updatedAt
+                                    thumbImgUrl = it.data.thumbImgUrl
+                                    originalImgUrl = it.data.originalImgUrl
 
                                 }
-                            } else {
-                                _snackbarText.value = Event(resource.message)
+                                posRepository.createCategory(category)
+
+
+                                if (isEdit) {
+                                    val oldIds = posRepository.getItemsByCategory(category.id)
+                                    oldIds?.forEach { old ->
+                                        posRepository.updateItemCategory(
+                                            category.id,
+                                            category.name ?: "",
+                                            null
+                                        )
+                                    }
+                                }
+
+                                ids.forEach { itemId ->
+                                    posRepository.updateItemCategory(
+                                        category.id,
+                                        category.name ?: "",
+                                        itemId
+                                    )
+                                }
+
+                                _data.value = Event(it.message)
+
+
                             }
-
+                        } else {
+                            _snackbarText.value = Event(resource.message)
                         }
-                    }
 
-                    ERROR -> {
-                        _snackbarText.value = Event(resource.message)
-                        _showProgress.value = Event(false)
-                    }
-
-                    LOADING -> {
-                        _showProgress.value = Event(true)
                     }
                 }
-            }
 
+                ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
+                }
+
+                LOADING -> {
+                    _showProgress.value = Event(true)
+                }
+            }
         }
 
     }
+
+
 }

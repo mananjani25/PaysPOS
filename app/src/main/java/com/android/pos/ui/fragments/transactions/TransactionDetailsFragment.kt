@@ -187,8 +187,20 @@ class TransactionDetailsFragment : Fragment() {
                 orderDetailsItemAdapter.addOrderDetailsItems(it.data.order.order_items)
 
 
-                if (!paymentDetailsResponse.data.order.total_discount.equals(0.0)) {
-                    binding.llDiscount.visibility = View.VISIBLE
+
+
+
+                binding.llDiscount.visibility = View.VISIBLE
+                if (paymentDetailsResponse.data.order.total_discount.equals(0.0)) {
+                    binding.txtDiscount.text = "$ " + String.format(
+                        "%.2f",
+                        paymentDetailsResponse.data.order.total_discount
+                    )
+                } else {
+                    binding.txtDiscount.text = "$ " + String.format(
+                        "%.2f",
+                        paymentDetailsResponse.data.order.total_discount
+                    )
                 }
 
                 if (paymentDetailsResponse.data.is_loyalty_applied == true) {
@@ -230,7 +242,7 @@ class TransactionDetailsFragment : Fragment() {
                         if (paymentDetailsResponse.data.cash_discount_type == "SurCharge") {
                             binding.linearCashDiscount.visibility = View.GONE
                             binding.liinearNoncashAdj.visibility = View.VISIBLE
-                            binding.txtNonCashAdjamount.text = "+ $" + String.format(
+                            binding.txtNonCashAdjamount.text = "+ $ " + String.format(
                                 "%.2f",
                                 paymentDetailsResponse.data.cash_discount_or_surcharge
                             )
@@ -248,7 +260,7 @@ class TransactionDetailsFragment : Fragment() {
                                     R.color.colorRed
                                 )
                             )
-                            binding.txtCashAmounntDiscount.text = "- $" + String.format(
+                            binding.txtCashAmounntDiscount.text = "- $ " + String.format(
                                 "%.2f",
                                 paymentDetailsResponse.data.cash_discount_or_surcharge
                             )
