@@ -60,7 +60,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:hint="0.00"
-                android:digits="@string/numbers_digits_string"
+                android:digits="0123456789"
                 android:layout_gravity="center"
                 android:maxLength="11"
                 android:minWidth="@dimen/_250sdp"

@@ -203,7 +203,7 @@
                         android:textColor="@color/txtColor"
                         android:textColorHint="@color/txtColor"
                         android:textSize="@dimen/_6mdpi"
-                        android:digits="@string/disable_emoji_string"/>
+                        android:digits="0123456789"/>
                 </LinearLayout>
 
 

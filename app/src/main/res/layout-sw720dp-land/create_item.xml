@@ -425,13 +425,13 @@
                             android:background="@null"
                             android:hint="$0.00"
                             android:maxLength="11"
-                            android:digits="@string/numbers_digits_string"
+                            android:digits="0123456789"
                             android:imeOptions="actionNext"
                             android:padding="@dimen/_5sdp"
                             android:textColor="@color/black"
                             android:textColorHint="@color/hintColor"
                             android:textSize="@dimen/_5mdpi"
-                            android:inputType="textVisiblePassword"
+                            android:inputType="numberDecimal"
                             />
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
@@ -506,7 +506,7 @@
                             android:background="@null"
                             android:hint="0"
                             android:maxLength="5"
-                            android:digits="@string/disable_emoji_string"
+                            android:digits="0123456789"
                             android:imeOptions="actionNext"
                             android:inputType="number"
                             android:padding="@dimen/_5sdp"
