@@ -22,7 +22,7 @@
             android:layout_height="wrap_content">
 
             <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/imgBack"
+                android:id="@+id/imgBack"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
@@ -351,10 +351,10 @@
                             android:hint="@string/add_note"
                             android:inputType="textMultiLine"
                             android:padding="@dimen/_5sdp"
-                            android:visibility="gone"
                             android:textColor="@color/black"
                             android:textColorHint="@color/hintColor"
-                            android:textSize="@dimen/_5mdpi" />
+                            android:textSize="@dimen/_5mdpi"
+                            android:visibility="gone" />
 
                         <include layout="@layout/divider" />
 

@@ -364,7 +364,7 @@
                     android:layout_gravity="center"
                     android:layout_weight="1"
                     android:gravity="start"
-                    android:text="@string/order_subtotal"
+                    android:text="@string/payment_subtotal"
                     android:textColor="@color/drawerBack"
                     android:textSize="@dimen/_5mdpi" />
 

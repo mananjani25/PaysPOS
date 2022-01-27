@@ -7,8 +7,6 @@ import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -33,7 +31,6 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.android.pos.MainApplication
 import com.android.pos.R
 import com.android.pos.data.entities.*
 import com.android.pos.data.model.CategorySearchData
@@ -108,6 +105,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     DineInAdapter.DineInCallback, CategoryTabAdapter1.TabListner,
     ItemCallback, View.OnClickListener, ScannerAppEngine.IScannerAppEngineDevEventsDelegate {
 
+    private var openORderType: String = ""
     private lateinit var nameObserver: Observer<List<CartModel>>
     private var isOpenOrderUpdate: Boolean = false
     private var orderDiscount: Double = 0.0
@@ -568,6 +566,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         if (openOrder) {
             future_delivery_date = bundle.getString("DATE").toString()
             future_delivery_time = bundle.getString("TIME").toString()
+            openORderType = bundle.getString("TYPE").toString()
             prefProvider.setValueInt(ORDER_TYPE_ID, orderType?.id ?: 3)
             prefProvider.setValue(ORDER_TYPE_NAME, orderType?.name ?: OPEN_ORDER)
             Log.e("!_@_", "523 ${orderType?.orderType ?: ""}")
@@ -823,17 +822,22 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
 
         }
+
+
         if (prefProvider.getValueInt("ORDER_ID", -1) != -1) {
             Log.e(TAG, "ManualSale ORderIDNOt Null")
-            lifecycleScope.launchWhenResumed {
-                if (findNavController().currentDestination?.id == R.id.dashboardCategoryNew) {
-                    val bundle = bundleOf(IS_NEXT_AMOUNT to true)
+            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT).toString() != DINE_IN) {
+                lifecycleScope.launchWhenResumed {
+                    if (findNavController().currentDestination?.id == R.id.dashboardCategoryNew) {
+                        val bundle = bundleOf(IS_NEXT_AMOUNT to true)
 
-                    findNavController().navigate(
-                        R.id.action_dashboardCategoryNew_to_paymentFragment, bundle
-                    )
+                        findNavController().navigate(
+                            R.id.action_dashboardCategoryNew_to_paymentFragment, bundle
+                        )
+                    }
                 }
             }
+
             //gotoPayment()
         }
     }
@@ -1001,7 +1005,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
 
 
-        txtBusinessName.text = getString(R.string.business_name) + ":" + prefProvider.getValue(
+        txtBusinessName.text = getString(R.string.business_name) + ": " + prefProvider.getValue(
             Constants.BUSINESS_NAME,
             ""
         )
@@ -2567,6 +2571,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 bundle.putString("future_delivery_time", future_delivery_time)
                 cartList[0].customer = assignCustomer
                 val cartModel = viewModel.generateCombinedItems(cartList[0])
+                cartModel.openOrderType = openORderType
                 bundle.putParcelable("cartList", cartModel)
                 if (isOrderUpdate) {
                     bundle.putBoolean("update", true)
@@ -2581,6 +2586,17 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
 
                 } else {
+                    prefProvider.setValue(Constants.TOTAL_PRICE_ACTUAL, final_total.toString())
+                    prefProvider.setValue(Constants.SUB_TOTAL_ACTUAL, viewModel.subTotalPrice.toString())
+                    prefProvider.setValue(Constants.TOTAL_DISCOUNT_ACTUAL, viewModel.totalDiscount.toString())
+                    prefProvider.setValue(
+                        Constants.TOTAL_SERVICE_CHARGE_ACTUAL,
+                        viewModel.totalServiceCharge.toString()
+                    )
+                    prefProvider.setValue(Constants.TAX_CHARGE_ACTUAL, viewModel.totalTax.toString())
+                    prefProvider.setValue(Constants.TIPS_AMOUNT_ACTUAL, "0.0")
+
+
 
                     lifecycleScope.launchWhenStarted {
                         if (findNavController().currentDestination?.id == R.id.dashboardCategoryNew) {

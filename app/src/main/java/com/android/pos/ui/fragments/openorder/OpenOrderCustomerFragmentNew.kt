@@ -28,6 +28,7 @@ import com.android.pos.data.entities.TbAddress
 import com.android.pos.data.entities.TbCustomer
 import com.android.pos.data.entities.TbPhones
 import com.android.pos.data.model.requestModel.CreateCustomerRequestModel
+import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentOpenOrderNewBinding
 import com.android.pos.ui.adapter.AddressListAdapter
 import com.android.pos.utils.AlertUtils
@@ -63,6 +64,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
     private val viewModel by viewModels<OpenOrderCustomerViewModel>()
     private lateinit var adapter: AddressListAdapter
     private lateinit var modelAddress: CreateCustomerRequestModel.Customer.Addresses
+    private var type: String = Constants.PICK_UP
 
     private  var addressList:java.util.ArrayList<CreateCustomerRequestModel.Customer.Addresses> = arrayListOf()
     override fun onCreateView(
@@ -510,7 +512,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
 
             }
             R.id.txtPickup -> {
-
+                type = Constants.PICK_UP
                 binding.txtPickup.setTextColor(resources.getColor(color.white))
                 binding.txtDelivery.setTextColor(resources.getColor(color.drawerBack50))
 
@@ -519,7 +521,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
 
             }
             R.id.txtDelivery -> {
-
+                type = Constants.DELIVERY
                 binding.txtPickup.setTextColor(resources.getColor(color.drawerBack50))
                 binding.txtDelivery.setTextColor(resources.getColor(color.white))
 
@@ -641,6 +643,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
                         putParcelable("data", customer)
                         putString("DATE", binding.edtDate.text.toString())
                         putString("TIME", binding.edtTime.text.toString())
+                        putString("TYPE", type)
                         putBoolean("OPEN_ORDER", true)
                     }
                     setFragmentResult("request_key_customer_open_order", result)
