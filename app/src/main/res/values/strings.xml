@@ -693,6 +693,7 @@
     <string name="same_category_name">Name Category name has already been taken.</string>
     <string name="disable_emoji_string">android:digits="0,1,2,3,4,5,6,7,8,9,@,.,#,$,(,),_,-,!,&amp;,%,/,\,+,?,\u003E, &gt;,&lt;,\\,^,uFE64,,,*,qwertzuiopasdfghjklyxcvbnm,QWERTZUIOPASDFGHJKLYXCVBNM"</string>
     <string name="numbers_digits_string">android:digits="0,1,2,3,4,5,6,7,8,9"</string>
+    <string name="send_receipt">Send Receipt</string>
 
 
 </resources>

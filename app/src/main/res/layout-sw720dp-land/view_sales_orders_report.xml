@@ -9,17 +9,12 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/txtHeader"
-            style="@style/ReportTitleStyle"
-            tools:text="@string/refund_details" />
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvNested"
             style="@style/ReportRecyclerViewstyle"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            tools:itemCount="2"
-            tools:listitem="@layout/view_employee_Report_nested" />
+            app:spanCount="5"
+            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+            tools:itemCount="5" />
     </LinearLayout>
 
 </layout>

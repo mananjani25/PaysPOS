@@ -18,7 +18,6 @@ import androidx.viewbinding.ViewBinding
 import com.android.pos.R
 import com.android.pos.data.model.responseModel.VenueDetailsResponse
 import com.android.pos.databinding.FragmentReportEodBinding
-import com.android.pos.databinding.FragmentReportSummaryBinding
 import com.android.pos.ui.adapter.*
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.EventObserver
@@ -53,18 +52,24 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
     private val refundDetailsAdapter by lazy { SalesReportAdapter() }
     private val pendingPaymentsAdapter by lazy { SalesReportAdapter() }
     private val taxDetailsAdapter by lazy { SalesReportAdapter() }
+    private val cashLogAdapter by lazy { SalesReportAdapter() }
     private val discountDetailsAdapter by lazy { SalesReportAdapter() }
     private val salesTaxSummaryAdapter by lazy { SalesReportAdapter() }
-    private val cashEventSummaryAdapter by lazy { SalesReportAdapter() }
-    private val totalExternalPaymentsAdapter by lazy { SalesReportAdapter() }
+    private val cashEventSummaryAdapter by lazy { PaymentDetailsAdapter(hideRefund = true) }
+    private val creditTipAuditAdapter by lazy { PaymentDetailsAdapter(hideRefund = true) }
     private val totalPaymentsAdapter by lazy { SalesReportAdapter() }
     private val cashPaymentsAdapter by lazy { SalesReportAdapter() }
     private val employeeAdapter by lazy { EmployeeAdapter() }
     private val paymentDetailsAdapter by lazy { PaymentDetailsAdapter(hideRefund = true) }
     private val employeeReportsAdapter by lazy { EmployeeReportAdapter() }
-    private val otherDetailsAdapter by lazy { EmployeeReportAdapter() }
+    private val otherDetailsAdapter by lazy { SalesReportAdapter() }
     private val serviceChargeDetailsAdapter by lazy { ServiceChargeDetailsAdapter() }
-    private val tipDetailsAdapter by lazy { PaymentDetailsAdapter(hideRefund = false) }
+    private val tipDetailsAdapter by lazy { PaymentDetailsAdapter(hideRefund = true) }
+
+
+    private val salesOrderDetailsAdapter by lazy { SalesOrderDetailsAdapter() }
+
+    private val wastage_detailsAdapter by lazy { PaymentDetailsAdapter(hideRefund = true) }
 
     val myCalendar = Calendar.getInstance()
     val myCalendar1 = Calendar.getInstance()
@@ -252,12 +257,6 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     private fun setupAdapter() {
 
-        /*binding.rvTerminal.addItemDecoration(
-            DividerItemDecoration(
-                context,
-                LinearLayoutManager.HORIZONTAL
-            )
-        )*/
         binding.rvTerminal.adapter = terminalAdapter
 
         binding.rvSalesSummary.adapter = salesReportAdapter
@@ -267,7 +266,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
         binding.rvDiscountDetails.adapter = discountDetailsAdapter
         binding.rvSalesTaxSummary.adapter = salesTaxSummaryAdapter
         binding.rvCashEventSummary.adapter = cashEventSummaryAdapter
-        binding.rvTotalExternalPayments.adapter = totalExternalPaymentsAdapter
+        binding.rvCreditTipAudit.adapter = creditTipAuditAdapter
         binding.rvTotalPayments.adapter = totalPaymentsAdapter
         binding.rvCashPayments.adapter = cashPaymentsAdapter
         binding.rvEmployeeData.adapter = employeeAdapter
@@ -276,6 +275,11 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
         binding.rvOtherDetails.adapter = otherDetailsAdapter
         binding.rvServiceChargeDetails.adapter = serviceChargeDetailsAdapter
         binding.rvTipsDetails.adapter = tipDetailsAdapter
+        binding.rvCashLog.adapter = cashLogAdapter
+
+        binding.rvWastageDetails.adapter = wastage_detailsAdapter
+
+        binding.rvSalesDetails.adapter = salesOrderDetailsAdapter
     }
 
     private fun initObservers() {
@@ -312,139 +316,157 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
         })
         viewModel.data.observe(viewLifecycleOwner, EventObserver { data ->
             data?.let {
-                terminalAdapter.add(it.terminals)
 
+                //salesSummary
                 showHide(
-                    rvMedia = binding.rvSalesSummary,
-                    textView = binding.txtSalesSummary,
+                    rvMedia = binding.rvSalesTaxSummary,
+                    textView = binding.txtSalesTaxSummary,
                     headerView = null,
-                    visible = it.salesSummary?.isNotEmpty() == true
+                    visible = it.salesSummary.isNotEmpty()
                 )
                 salesReportAdapter.add(it.salesSummary)
-
-                showHide(
-                    rvMedia = binding.rvSalesSummary,
-                    textView = binding.txtSalesSummary,
-                    headerView = null,
-                    visible = it.salesSummary?.isNotEmpty() == true
-                )
-                refundDetailsAdapter.add(it.refundDetails)
-
-                showHide(
-                    rvMedia = binding.rvPendingPayments,
-                    textView = binding.txtPendingPayments,
-                    headerView = null,
-                    visible = it.pendingPayments?.isNotEmpty() == true
-                )
-                pendingPaymentsAdapter.add(it.pendingPayments)
-
-                showHide(
-                    rvMedia = binding.rvTaxDetails,
-                    textView = binding.txtTaxDetails,
-                    headerView = null,
-                    visible = it.taxDetails?.isNotEmpty() == true
-                )
-                taxDetailsAdapter.add(it.taxDetails)
-
-                showHide(
-                    rvMedia = binding.rvDiscountDetails,
-                    textView = binding.txtDiscountDetails,
-                    headerView = null,
-                    visible = it.discountDetails?.isNotEmpty() == true
-                )
-                discountDetailsAdapter.add(it.discountDetails)
 
                 showHide(
                     rvMedia = binding.rvSalesTaxSummary,
                     textView = binding.txtSalesTaxSummary,
                     headerView = null,
-                    visible = it.salesSummary?.isNotEmpty() == true
+                    visible = it.cashLogDetails.isNotEmpty()
                 )
-                salesTaxSummaryAdapter.add(it.salesSummary)
+                cashLogAdapter.add(it.cashLogDetails)
 
                 showHide(
-                    rvMedia = binding.rvCashEventSummary,
-                    textView = binding.txtCashEventSummary,
+                    rvMedia = binding.rvSalesTaxSummary,
+                    textView = binding.txtSalesTaxSummary,
                     headerView = null,
-                    visible = it.cashEventSummary?.isNotEmpty() == true
+                    visible = it.salesAndTaxesSummary.isNotEmpty()
                 )
-                cashEventSummaryAdapter.add(it.cashEventSummary)
+                salesTaxSummaryAdapter.add(it.salesAndTaxesSummary)
+
 
                 showHide(
-                    rvMedia = binding.rvTotalExternalPayments,
-                    textView = binding.txtTotalExternalPayments,
+                    rvMedia = binding.rvSalesTaxSummary,
+                    textView = binding.txtSalesTaxSummary,
                     headerView = null,
-                    visible = it.totalExternalPayments?.isNotEmpty() == true
+                    visible = it.taxDetails.isNotEmpty()
                 )
-                totalExternalPaymentsAdapter.add(it.totalExternalPayments)
+                taxDetailsAdapter.add(it.taxDetails)
+
 
                 showHide(
-                    rvMedia = binding.rvTotalPayments,
-                    textView = binding.txtTotalPayments,
+                    rvMedia = binding.rvSalesTaxSummary,
+                    textView = binding.txtSalesTaxSummary,
                     headerView = null,
-                    visible = it.totalPayments?.isNotEmpty() == true
+                    visible = it.refundDetails.isNotEmpty()
+                )
+                refundDetailsAdapter.add(it.refundDetails)
+
+                showHide(
+                    rvMedia = binding.rvSalesTaxSummary,
+                    textView = binding.txtSalesTaxSummary,
+                    headerView = null,
+                    visible = it.discountDetails.isNotEmpty()
+                )
+                discountDetailsAdapter.add(it.discountDetails)
+
+
+                showHide(
+                    rvMedia = binding.rvSalesTaxSummary,
+                    textView = binding.txtSalesTaxSummary,
+                    headerView = null,
+                    visible = it.totalCashPayments.isNotEmpty()
+                )
+                cashPaymentsAdapter.add(it.totalCashPayments)
+
+
+                showHide(
+                    rvMedia = binding.rvSalesTaxSummary,
+                    textView = binding.txtSalesTaxSummary,
+                    headerView = null,
+                    visible = it.totalPayments.isNotEmpty()
                 )
                 totalPaymentsAdapter.add(it.totalPayments)
 
-                showHide(
-                    rvMedia = binding.rvCashPayments,
-                    textView = binding.txtCashPayments,
-                    headerView = null,
-                    visible = it.cashPayments?.isNotEmpty() == true
-                )
-                cashPaymentsAdapter.add(it.cashPayments)
-
-                showHide(
-                    rvMedia = binding.rvEmployeeData,
-                    textView = binding.txtEmployeeData,
-                    headerView = binding.ilEmployeeData,
-                    visible = it.employeeData?.isNotEmpty() == true
-                )
-                employeeAdapter.add(it.employeeData)
 
                 showHide(
                     rvMedia = binding.rvPaymentDetails,
                     textView = binding.txtPaymentDetails,
                     headerView = binding.ilPaymentDetails,
-                    visible = it.paymentDetails?.isNotEmpty() == true
+                    visible = it.paymentDetails.isNotEmpty()
                 )
                 paymentDetailsAdapter.add(it.paymentDetails)
 
-                showHide(
-                    rvMedia = binding.rvEmpReport,
-                    textView = null,
-                    headerView = null,
-                    visible = it.employeeReports?.isNotEmpty() == true
-                )
-                employeeReportsAdapter.addPrefixHeader(getString(R.string.employee_report))
-                employeeReportsAdapter.add(it.employeeReports)
-
-                showHide(
-                    rvMedia = binding.rvOtherDetails,
-                    textView = null,
-                    headerView = null,
-                    visible = it.otherDetails?.isNotEmpty() == true
-                )
-                otherDetailsAdapter.addPrefixHeader(getString(R.string.other_details))
-                otherDetailsAdapter.add(it.otherDetails)
 
                 showHide(
                     rvMedia = binding.rvServiceChargeDetails,
                     textView = binding.txtServiceChargeDetails,
                     headerView = null,
-                    visible = it.serviceChargeDetails?.isNotEmpty() == true
+                    visible = it.serviceChargeDetails.isNotEmpty()
                 )
                 serviceChargeDetailsAdapter.add(it.serviceChargeDetails)
+
 
                 showHide(
                     rvMedia = binding.rvTipsDetails,
                     textView = binding.txtTipsDetails,
                     headerView = binding.ilTipsDetails,
-                    visible = it.tipsDetails?.isNotEmpty() == true
+                    visible = it.tipDetails.isNotEmpty()
                 )
-                tipDetailsAdapter.add(it.tipsDetails)
+                tipDetailsAdapter.add(it.tipDetails)
 
-                //visible the parent view
+                showHide(
+                    rvMedia = binding.rvTipsDetails,
+                    textView = binding.txtTipsDetails,
+                    headerView = binding.ilTipsDetails,
+                    visible = it.totalCreditPaymentDetails.isNotEmpty()
+                )
+                pendingPaymentsAdapter.add(it.totalCreditPaymentDetails)
+
+                showHide(
+                    rvMedia = binding.rvTipsDetails,
+                    textView = binding.txtTipsDetails,
+                    headerView = binding.ilTipsDetails,
+                    visible = it.creditTipAudit.isNotEmpty()
+                )
+                creditTipAuditAdapter.add(it.creditTipAudit)
+
+                showHide(
+                    rvMedia = binding.rvTipsDetails,
+                    textView = binding.txtTipsDetails,
+                    headerView = binding.ilTipsDetails,
+                    visible = it.refundAndVoidDetails.isNotEmpty()
+                )
+                cashEventSummaryAdapter.add(it.refundAndVoidDetails)
+
+                showHide(
+                    rvMedia = binding.rvTipsDetails,
+                    textView = binding.txtTipsDetails,
+                    headerView = binding.ilTipsDetails,
+                    visible = it.wastageDetails.isNotEmpty()
+                )
+                wastage_detailsAdapter.add(it.wastageDetails)
+
+
+                showHide(
+                    rvMedia = binding.rvOtherDetails,
+                    textView = null,
+                    headerView = null,
+                    visible = it.otherDetails.isNotEmpty()
+                )
+                otherDetailsAdapter.add(it.otherDetails)
+
+
+                showHide(
+                    rvMedia = binding.rvSalesDetails,
+                    textView = null,
+                    headerView = null,
+                    visible = it.orderSalesDetails.isNotEmpty()
+                )
+                salesOrderDetailsAdapter.add(it.orderSalesDetails)
+
+
+
+
+
                 binding.linReports.visible()
             }
         })
@@ -473,7 +495,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     private fun loadTerminals() {
 
-        viewModel.getTerminalListDatabse.observe(viewLifecycleOwner, {
+        viewModel.getTerminalListDatabse.observe(viewLifecycleOwner) {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
@@ -504,7 +526,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     }
                 }
             }
-        })
+        }
     }
 
     private fun setUpTerminalSpinnerAdapter(terminalList: ArrayList<String>) {

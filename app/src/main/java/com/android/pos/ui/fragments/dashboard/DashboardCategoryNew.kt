@@ -1079,6 +1079,15 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             }
         }
 
+        linearSupport.setOnClickListener {
+
+//                findNavController().navigate(R.id.action_dashboardCategoryNew_to_reportEODFragment)
+//                dialog.dismiss()
+
+        }
+
+
+
 
         txtSignOut.setOnClickListener {
 

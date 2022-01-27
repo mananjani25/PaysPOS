@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.android.pos.data.model.responseModel.EodReportResponse
 import com.android.pos.data.model.responseModel.report.Data
 import com.android.pos.data.model.responseModel.report.Terminal
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
@@ -35,8 +36,8 @@ class ReportEODViewModel @Inject constructor(
     private val _endDateSelection = MutableLiveData<Event<Unit>>()
     val endDateSelection: LiveData<Event<Unit>> = _endDateSelection
 
-    private val _data = MutableLiveData<Event<Data?>>()
-    val data: LiveData<Event<Data?>> = _data
+    private val _data = MutableLiveData<Event<EodReportResponse.Data>>()
+    val data: LiveData<Event<EodReportResponse.Data>> = _data
 
     val getTerminalListDatabse = posRepository.getTerminalListDatabse()
 
@@ -74,16 +75,6 @@ class ReportEODViewModel @Inject constructor(
         }
     }
 
-    fun updateLabel(myCalendar: Calendar) {
-        val myFormat = "MM/dd/yyyy" //In which you need put here
-        val sdf = SimpleDateFormat(myFormat, Locale.getDefault())
-
-        if (selectPicker1) {
-            startDate.value = sdf.format(myCalendar.time)
-        } else {
-            endDate.value = sdf.format(myCalendar.time)
-        }
-    }
 
 
     fun getReportSummary() {
@@ -105,7 +96,7 @@ class ReportEODViewModel @Inject constructor(
                     _showProgress.value = Event(false)
                     resourceReport.data.let {
                         if (it?.status == 200) {
-                            _data.postValue(Event(resourceReport.data?.data))
+                            _data.postValue(Event(resourceReport.data?.data!!))
                         }
                     }
                 }

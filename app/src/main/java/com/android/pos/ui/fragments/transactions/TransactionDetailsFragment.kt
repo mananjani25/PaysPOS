@@ -24,6 +24,7 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentTransactionDetailsBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.OrderDetailsItemListAdapter
+import com.android.pos.ui.fragments.payment.OrderCompleteViewModel
 import com.android.pos.utils.*
 import com.android.pos.utils.TimeFormatUtils.convertCurrentDate
 import com.android.pos.utils.TimeFormatUtils.convertCurrentTime
@@ -44,6 +45,7 @@ class TransactionDetailsFragment : Fragment() {
 
     private lateinit var binding: FragmentTransactionDetailsBinding
     private val viewModel by viewModels<TransactionDetailsViewModel>()
+
     private lateinit var orderDetailsItemAdapter: OrderDetailsItemListAdapter
 
     //    private lateinit var orderDetailsResponse: GetOrderDetailsResponse
@@ -146,6 +148,27 @@ class TransactionDetailsFragment : Fragment() {
                 bundle
             )
         }
+
+        binding.txtTextReceipt.setOnClickListener {
+            // 1 : text
+            openReceiptDialog(1)
+        }
+
+        binding.txtEmailReceipt.setOnClickListener {
+            // 1 : email
+            openReceiptDialog(2)
+
+        }
+    }
+
+    private fun openReceiptDialog(type: Int) {
+        val bundle = Bundle()
+        bundle.putInt("orderId", orderId)
+        bundle.putInt("type", type)
+        findNavController().navigate(
+            R.id.action_transactionDetailsFragment_to_sendReceiptFragment,
+            bundle
+        )
     }
 
     @SuppressLint("SetTextI18n")

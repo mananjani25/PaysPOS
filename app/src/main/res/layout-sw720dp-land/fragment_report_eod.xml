@@ -242,6 +242,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/_5sdp"
@@ -304,6 +305,19 @@
                 android:orientation="vertical"
                 android:visibility="gone">
 
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtSalesDetails"
+                    style="@style/ReportTitleStyle"
+                    android:text="Sales Details" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvSalesDetails"
+                    style="@style/ReportRecyclerViewstyle"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:itemCount="2"
+                    tools:listitem="@layout/view_sales_report" />
+
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtSalesSummary"
                     style="@style/ReportTitleStyle"
@@ -315,6 +329,20 @@
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:itemCount="2"
                     tools:listitem="@layout/view_sales_report" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtCashLog"
+                    style="@style/ReportTitleStyle"
+                    app:textAllCaps="true"
+                    android:text="cash log details" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvCashLog"
+                    style="@style/ReportRecyclerViewstyle"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:itemCount="2"
+                    tools:listitem="@layout/view_sales_report" />
+
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtRefundDetails"
@@ -331,7 +359,8 @@
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtPendingPayments"
                     style="@style/ReportTitleStyle"
-                    android:text="@string/pending_payments" />
+                    android:textAllCaps="true"
+                    android:text="total credit payment details" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvPendingPayments"
@@ -391,10 +420,11 @@
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtTotalExternalPayments"
                     style="@style/ReportTitleStyle"
-                    android:text="@string/total_external_payments" />
+                    android:textAllCaps="true"
+                    android:text="credit tip audit" />
 
                 <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvTotalExternalPayments"
+                    android:id="@+id/rvCreditTipAudit"
                     style="@style/ReportRecyclerViewstyle"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:itemCount="2"
@@ -403,7 +433,8 @@
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtCashEventSummary"
                     style="@style/ReportTitleStyle"
-                    android:text="@string/cash_event_summary" />
+                    app:textAllCaps="true"
+                    android:text="refund and void details" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvCashEventSummary"
@@ -457,6 +488,23 @@
                     tools:listitem="@layout/view_payment_details" />
 
                 <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtWastageDetails"
+                    style="@style/ReportTitleStyle"
+                    app:textAllCaps="true"
+                    android:text="wastage details" />
+
+                <include
+                    android:id="@+id/ilPaymentDetails1"
+                    layout="@layout/view_payment_details_header" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvWastageDetails"
+                    style="@style/ReportRecyclerViewstyle"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:itemCount="2"
+                    tools:listitem="@layout/view_payment_details" />
+
+                <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtEmpReport"
                     style="@style/ReportTitleStyle"
                     android:text="@string/employee_report"
@@ -473,7 +521,7 @@
                     android:id="@+id/txtOtherDetails"
                     style="@style/ReportTitleStyle"
                     android:text="@string/other_details"
-                    android:visibility="gone" />
+                    android:visibility="visible" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvOtherDetails"

@@ -465,6 +465,9 @@
             android:id="@+id/action_dashboardCategoryNew_to_hardware"
             app:destination="@id/hardware"
             app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_dashboardCategoryNew_to_reportEODFragment"
+            app:destination="@id/reportEODFragment" />
 
     </fragment>
     <action
@@ -831,6 +834,9 @@
         <action
             android:id="@+id/action_transactionDetailsFragment_to_issueRefundFragment"
             app:destination="@id/issueRefundFragment" />
+        <action
+            android:id="@+id/action_transactionDetailsFragment_to_sendReceiptFragment"
+            app:destination="@id/sendReceiptFragment" />
     </fragment>
     <fragment
         android:id="@+id/editPrinter"
@@ -1074,5 +1080,9 @@
         android:id="@+id/reportEODFragment"
         android:name="com.android.pos.ui.fragments.report.ReportEODFragment"
         android:label="ReportEODFragment" />
+    <dialog
+        android:id="@+id/sendReceiptFragment"
+        android:name="com.android.pos.ui.dialog.SendReceiptFragment"
+        android:label="SendReceiptFragment" />
 
 </navigation>
