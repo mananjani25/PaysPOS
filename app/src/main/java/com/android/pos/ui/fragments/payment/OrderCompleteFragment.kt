@@ -2157,30 +2157,33 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             for (i in 0 until dineInList?.size) {
                 if (dineInList[i].isHeader == 0) {
 
-                    builder.addFeedLine(1)
-                    builder.addTextLineSpace(30)
-                    builder.addFeedUnit(30)
-                    builder.addTextFont(Builder.FONT_E)
-                    // builder.addTextAlign(Builder.ALIGN_LEFT)
-                    builder.addTextLang(Builder.LANG_EN)
-                    addCustomerTextSize(builder, customerSettingModel.fonts)
-                    builder.addTextStyle(
-                        Builder.FALSE,
-                        Builder.FALSE,
-                        Builder.FALSE,
-                        Builder.COLOR_1
-                    )
-                    if (dineInList[i]?.customer == null) {
-                        builder.addText(dineInList[i]?.title)
-                    } else {
-                        builder.addText(
-                            dineInList[i]?.customer?.first_name + " " +
-                                    if (dineInList[i]?.customer?.last_name != null) {
-                                        dineInList[i].customer?.last_name
-                                    } else {
-                                        ""
-                                    }
+                    if (i != (dineInList.size - 1) && dineInList[i + 1].isHeader == 1) {
+
+                        builder.addFeedLine(1)
+                        builder.addTextLineSpace(30)
+                        builder.addFeedUnit(30)
+                        builder.addTextFont(Builder.FONT_E)
+                        // builder.addTextAlign(Builder.ALIGN_LEFT)
+                        builder.addTextLang(Builder.LANG_EN)
+                        addCustomerTextSize(builder, customerSettingModel.fonts)
+                        builder.addTextStyle(
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.COLOR_1
                         )
+                        if (dineInList[i]?.customer == null) {
+                            builder.addText(dineInList[i]?.title)
+                        } else {
+                            builder.addText(
+                                dineInList[i]?.customer?.first_name + " " +
+                                        if (dineInList[i]?.customer?.last_name != null) {
+                                            dineInList[i].customer?.last_name
+                                        } else {
+                                            ""
+                                        }
+                            )
+                        }
                     }
 
 
