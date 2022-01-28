@@ -352,16 +352,12 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             binding.llLoyalty.gone()
             binding.llLoyaltyPoint.gone()
         }
-        if (actualDiscount == 0.0) {
-            binding.linearDiscount.visibility = View.GONE
-        } else {
-            binding.linearDiscount.visibility = View.VISIBLE
-            binding.txtDiscount.text = "- " +
-                    MainApplication.getInstance()!!.getText(R.string.symbole)
-                        .toString() + String.format(
-                "%.2f", actualDiscount
-            )
-        }
+        binding.linearDiscount.visibility = View.VISIBLE
+        binding.txtDiscount.text = "- " +
+                MainApplication.getInstance()!!.getText(R.string.symbole)
+                    .toString() + String.format(
+            "%.2f", actualDiscount
+        )
 
         if (MethodUtils.isEnableCashDiscount(requireContext())) {
             if (cashDiscountType == "CashDiscount") {
@@ -537,16 +533,13 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             binding.llLoyalty.gone()
             binding.llLoyaltyPoint.gone()
         }
-        if (totalDiscount == 0.0) {
-            binding.linearDiscount.visibility = View.GONE
-        } else {
-            binding.linearDiscount.visibility = View.VISIBLE
-            binding.txtDiscount.text = "- " +
-                    MainApplication.getInstance()!!.getText(R.string.symbole)
-                        .toString() + String.format(
-                "%.2f", totalDiscount
-            )
-        }
+        binding.linearDiscount.visibility = View.VISIBLE
+        binding.txtDiscount.text = "- " +
+                MainApplication.getInstance()!!.getText(R.string.symbole)
+                    .toString() + String.format(
+            "%.2f", totalDiscount
+        )
+
         if (MethodUtils.isEnableCashDiscount(requireContext())) {
             if (cashDiscountType == "CashDiscount") {
                 MethodUtils.setPriceTextView(binding.txtCardAmount, totalPrice)
