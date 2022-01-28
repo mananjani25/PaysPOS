@@ -2534,6 +2534,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     }
 
     private fun gotoPayment() {
+        Log.e(TAG, "cartList:  ${cartList.size}")
         if (cartList.isNotEmpty()) {
             if (prefProvider.getValueboolean(DINE_IN_UPDATE, false)) {
                 var itemCount = 0
@@ -2608,7 +2609,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 val cartModel = viewModel.generateCombinedItems(cartList[0])
                 Log.e(TAG, "openORderType  ${openORderType}")
                 cartModel.openOrderType = openORderType
-                Log.e(TAG,"PaymentPAsscartModel: ${Gson().toJson(cartModel)}")
+                Log.e(TAG, "PaymentPAsscartModel: ${Gson().toJson(cartModel)}")
                 bundle.putParcelable("cartList", cartModel)
                 if (isOrderUpdate) {
                     bundle.putBoolean("update", true)
@@ -2665,7 +2666,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                     lifecycleScope.launchWhenStarted {
                         if (findNavController().currentDestination?.id == R.id.dashboardCategoryNew) {
-                            if (prefProvider.getValueInt("ORDER_ID",-1) != -1) {
+                            if (prefProvider.getValueInt("ORDER_ID", -1) != -1) {
                                 bundle.putBoolean(IS_NEXT_AMOUNT, true)
                             }
                             findNavController().navigate(
@@ -2676,6 +2677,15 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     }
                 }
             }
+        }
+        else if(cartList.isEmpty() && prefProvider.getValueInt("ORDER_ID", -1) != -1){
+
+            val bundle = bundleOf(IS_NEXT_AMOUNT to true)
+            findNavController().navigate(
+                R.id.action_dashboardCategoryNew_to_paymentFragment,
+                bundle
+            )
+
         }
 
     }
