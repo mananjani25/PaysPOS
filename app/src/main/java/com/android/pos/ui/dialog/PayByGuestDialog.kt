@@ -1172,17 +1172,12 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
             binding.txtTotalAmount,
             (totalPrice + tipAmount)
         )
-
-        if (totaldiscount == 0.0) {
-            binding.linearDiscount.visibility = View.GONE
-        } else {
-            binding.linearDiscount.visibility = View.VISIBLE
-            binding.txtDiscount.text = "- " +
-                    MainApplication.getInstance()!!.getText(R.string.symbole)
-                        .toString() + String.format(
-                "%.2f", totaldiscount
-            )
-        }
+        binding.linearDiscount.visibility = View.VISIBLE
+        binding.txtDiscount.text = "- " +
+                MainApplication.getInstance()!!.getText(R.string.symbole)
+                    .toString() + String.format(
+            "%.2f", totaldiscount
+        )
         getCashPaymentOptionList(totalPrice + tipAmount)
 
 
@@ -1223,16 +1218,12 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
         //MethodUtils.setPriceTextView(binding.txtDiscount, totalDiscount)
         MethodUtils.setPriceTextView(binding.txtTipAmt, tipAmount)
         MethodUtils.setPriceTextView(binding.txtServiceCharge, totalServiceCharge)
-        if (totaldiscount == 0.0) {
-            binding.linearDiscount.visibility = View.GONE
-        } else {
-            binding.linearDiscount.visibility = View.VISIBLE
-            binding.txtDiscount.text = "- " +
-                    MainApplication.getInstance()!!.getText(R.string.symbole)
-                        .toString() + String.format(
-                "%.2f", totaldiscount
-            )
-        }
+        binding.linearDiscount.visibility = View.VISIBLE
+        binding.txtDiscount.text = "- " +
+                MainApplication.getInstance()!!.getText(R.string.symbole)
+                    .toString() + String.format(
+            "%.2f", totaldiscount
+        )
 
 
         if (MethodUtils.isEnableCashDiscount(requireContext())) {

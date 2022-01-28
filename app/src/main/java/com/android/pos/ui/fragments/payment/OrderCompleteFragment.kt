@@ -201,10 +201,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         setupSnackbar()
         observeShowProgress()
         tipAmount = requireArguments().getDouble("TipAmount")
-        cartList = requireArguments().getParcelable("cartList")
-        redeemLoyaltyInfo = requireArguments().getParcelable("redeemLoyalty")
         isDineIn = requireArguments().getBoolean("isDineIn")
         if (isDineIn) {
+
             paidAmount = requireArguments().getDouble("PaidAmount")
             WholetotalPrice = requireArguments().getDouble("WholetotalPrice")
             remainingAmount = requireArguments().getDouble("remainingAmount")
@@ -234,6 +233,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             //  paidAmount = paidAmount - tipAmount
 
         } else {
+
+            cartList = requireArguments().getParcelable("cartList")
+            redeemLoyaltyInfo = requireArguments().getParcelable("redeemLoyalty")
             paidAmount = requireArguments().getDouble("PaidAmount")
             WholetotalPrice = requireArguments().getDouble("WholetotalPrice")
             remainingAmount = requireArguments().getDouble("remainingAmount")
@@ -253,6 +255,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         setLabelData()
 
         if (!isDineIn) {
+            saveDataInPrefrences()
             if (isSpilt) {
                 binding.constraintSplit.visibility = View.VISIBLE
                 binding.viewSplitLine.visibility = View.VISIBLE
@@ -479,7 +482,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             binding.txtAddCustomer.visibility = View.VISIBLE
         }
 
-        saveDataInPrefrences()
+
         binding.txtHome.setOnClickListener(this)
         binding.txtAddCustomer.setOnClickListener(this)
         binding.llMessage.setOnClickListener(this)
