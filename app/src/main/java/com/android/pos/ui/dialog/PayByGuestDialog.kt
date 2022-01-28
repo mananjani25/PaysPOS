@@ -1397,7 +1397,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                     }
                     else -> {
                         if (remainingAmount == 0.0) {
-                            totalPrice + tipAmount
+                            totalPrice
                         } else {
                             remainingAmount
                         }
