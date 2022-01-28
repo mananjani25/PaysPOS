@@ -61,7 +61,6 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
     private var isEdit = false
     private val viewModel by viewModels<OpenOrderCustomerViewModel>()
     private lateinit var adapter: AddressListAdapter
-    private lateinit var modelAddress: CreateCustomerRequestModel.Customer.Addresses
     private var type: String = Constants.PICK_UP
 
     private  var addressList:java.util.ArrayList<CreateCustomerRequestModel.Customer.Addresses> = arrayListOf()
@@ -98,6 +97,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+/*
         modelAddress = CreateCustomerRequestModel.Customer.Addresses(
             null,
             "",
@@ -110,6 +110,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
             0.0,
             0.0,
         )
+*/
         setAddress()
 
 
@@ -361,6 +362,53 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
 
     private fun setupCustomer(customer: TbCustomer) {
 
+
+        if (isEdit) {
+
+            if (customer?.id != null) {
+                viewModel.isEditData(isEdit, customer?.id!!)
+            }
+
+            viewModel.addCustomerDetails.value?.data?.first_name = customer?.first_name.toString()
+            viewModel.addCustomerDetails.value?.data?.last_name = customer?.last_name.toString()
+
+
+            if (customer?.phones?.size != 0) {
+                viewModel.phoneNo.value =
+                    AlertUtils.usNumberFormat(customer?.phones?.get(0)?.phone_number!!).toString()
+                viewModel.phoneId = customer.phones[0].id
+            }
+            viewModel.addCustomerDetails.value?.data?.email = customer.email
+
+            if (customer.addresses.isNotEmpty()) {
+                var list: ArrayList<CreateCustomerRequestModel.Customer.Addresses> = arrayListOf()
+
+                for (i in 0 until customer.addresses.size) {
+                    list.add(
+                        CreateCustomerRequestModel.Customer.Addresses(
+                            customer.addresses.get(i).id,
+                            customer.addresses.get(i).address1,
+                            customer.addresses.get(i).address2,
+                            customer.addresses.get(i).city,
+                            customer.addresses.get(i).state,
+                            customer.addresses.get(i).country,
+                            customer.addresses.get(i).postcode,
+                            customer.addresses.get(i).type_of_address.toString(),
+                            0.0,
+                            0.0,
+                        )
+                    )
+
+                }
+
+
+                adapter.setAddress(list)
+            }
+
+
+        }
+        else
+            addAddress()
 
         customerID = customer.id
         enrollToLoyalty = customer.enroll_to_loyalty ?: false
