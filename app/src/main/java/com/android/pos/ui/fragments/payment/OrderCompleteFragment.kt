@@ -255,8 +255,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         setLabelData()
 
         if (!isDineIn) {
-            saveDataInPrefrences()
             if (isSpilt) {
+                saveDataInPrefrences()
                 binding.constraintSplit.visibility = View.VISIBLE
                 binding.viewSplitLine.visibility = View.VISIBLE
                 binding.txtRemainingAmount.visibility = View.VISIBLE
@@ -498,6 +498,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         setFragmentResultListener("request_key_customer") { requestKey: String, bundle: Bundle ->
             val result = bundle.getParcelable<TbCustomer>("data")
             if (result != null) {
+                isFromCustomer = true
                 //  Log.e("request_key_customer", result.first_name)
 
                 result.id?.let { viewModel.assignCustomer(orderID, it) }
@@ -2936,12 +2937,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             isCustomCash,
             getDineInOrderDetails,
             dineInList,
-            prefProvider.getValue(Constants.SUB_TOTAL, "").toDouble(),
-            prefProvider.getValue(Constants.SERVICE_CHARGE, "").toDouble(),
-            prefProvider.getValue(Constants.TOTAL_DISCOUNT, "").toDouble(),
-            prefProvider.getValue(Constants.TAX_CHARGE, "").toDouble(),
-            prefProvider.getValue(Constants.TIP, "").toDouble(),
-            prefProvider.getValue(Constants.CASH_DISCOUNT_SURCHARGE, "").toDouble(),
+            prefProvider.getValue(Constants.SUB_TOTAL, "0.0").toDouble(),
+            prefProvider.getValue(Constants.SERVICE_CHARGE, "0.0").toDouble(),
+            prefProvider.getValue(Constants.TOTAL_DISCOUNT, "0.0").toDouble(),
+            prefProvider.getValue(Constants.TAX_CHARGE, "0.0").toDouble(),
+            prefProvider.getValue(Constants.TIP, "0.0").toDouble(),
+            prefProvider.getValue(Constants.CASH_DISCOUNT_SURCHARGE, "0.0").toDouble(),
             cartList,
             redeemLoyaltyInfo
         )
@@ -3753,7 +3754,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     Builder.TRUE,
                     Builder.COLOR_1
                 )
-                var totalAmt = MethodUtils.roundOffAmountDouble(receiptModel?.order?.totalAmount!!)
+
                 /* if (receiptModel?.order?.totalDiscount != 0.0) {
                      totalAmt =
                          (totalAmt - MethodUtils.roundOffAmountDouble(receiptModel?.order?.totalDiscount!!))
@@ -3764,7 +3765,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 builder.addText(
                     padLine(
                         "Total Price",
-                        "$" + MethodUtils.roundOffAmountString(totalAmt),
+                        "$" + MethodUtils.roundOffAmount(paidAmount + tipAmount),
                         if (customerSettingModel.fonts == LARGE) {
                             24
                         } else {

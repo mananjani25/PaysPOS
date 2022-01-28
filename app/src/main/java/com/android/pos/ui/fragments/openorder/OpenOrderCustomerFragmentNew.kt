@@ -37,14 +37,12 @@ import com.android.pos.utils.ProgressUtils
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
-import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.*
-import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
 class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
@@ -59,7 +57,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
     private var currentSelectedDate: Long? = null
     private var selectedHour: Int? = null
     private var selectedMinute: Int? = null
-    private val TAG = "OpenOrderCustomerFragment"
+    private val TAG = "OpenOrderCustomerFra"
     private var isEdit = false
     private val viewModel by viewModels<OpenOrderCustomerViewModel>()
     private lateinit var adapter: AddressListAdapter
@@ -346,6 +344,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
                         putParcelable("data", customer)
                         putString("DATE", binding.edtDate.text.toString())
                         putString("TIME", binding.edtTime.text.toString())
+                        putString("TYPE",type)
                         putBoolean("OPEN_ORDER", true)
                     }
                     setFragmentResult("request_key_customer_open_order", result)

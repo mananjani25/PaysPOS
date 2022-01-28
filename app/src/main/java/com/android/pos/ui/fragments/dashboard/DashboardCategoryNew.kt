@@ -843,6 +843,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     }
 
     private fun hideOrderType() {
+        Log.e(TAG, "ORDERTYPE:  ${prefProvider.getValue(ORDER_TYPE, "")}")
 
         if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
             binding.layoutCart.llCart.visibility = View.VISIBLE
@@ -2240,6 +2241,11 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             event.getContentIfNotHandled()?.let { it ->
                 AlertUtils.showCustomAlert(requireActivity(), it.message)
                 binding.layoutCart.txtSave.text = getString(R.string.save)
+                viewModel.deleteCart()
+                if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
+                    prefProvider.setValue(ORDER_TYPE, "")
+                }
+
                 clearCustomer()
                 hideOrderType()
                 getKitchenPrinters(it)
@@ -2602,6 +2608,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 val cartModel = viewModel.generateCombinedItems(cartList[0])
                 Log.e(TAG, "openORderType  ${openORderType}")
                 cartModel.openOrderType = openORderType
+                Log.e(TAG,"PaymentPAsscartModel: ${Gson().toJson(cartModel)}")
                 bundle.putParcelable("cartList", cartModel)
                 if (isOrderUpdate) {
                     bundle.putBoolean("update", true)
@@ -2658,7 +2665,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                     lifecycleScope.launchWhenStarted {
                         if (findNavController().currentDestination?.id == R.id.dashboardCategoryNew) {
-                            bundle.putBoolean(IS_NEXT_AMOUNT, true)
+                            if (prefProvider.getValueInt("ORDER_ID",-1) != -1) {
+                                bundle.putBoolean(IS_NEXT_AMOUNT, true)
+                            }
                             findNavController().navigate(
                                 R.id.action_dashboardCategoryNew_to_paymentFragment,
                                 bundle
