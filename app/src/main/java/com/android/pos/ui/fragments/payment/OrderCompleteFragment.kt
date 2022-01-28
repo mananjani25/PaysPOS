@@ -3762,11 +3762,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                  }*/
 
+                if (paymentType == "Cash"){
 
-                builder.addText(
+
+                       builder.addText(
                     padLine(
                         "Total Price",
-                        "$" + MethodUtils.roundOffAmount(paidAmount + tipAmount),
+                        "" + MethodUtils.roundOffAmount((paidAmount + tipAmount)- noCashAdjGlobal ) ,
                         if (customerSettingModel.fonts == LARGE) {
                             24
                         } else {
@@ -3774,6 +3776,23 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         }
                     )
                 )
+
+                }
+                else {
+
+
+                    builder.addText(
+                        padLine(
+                            "Total Price",
+                            "" + MethodUtils.roundOffAmount(paidAmount + tipAmount),
+                            if (customerSettingModel.fonts == LARGE) {
+                                24
+                            } else {
+                                48
+                            }
+                        )
+                    )
+                }
 
 
             }
