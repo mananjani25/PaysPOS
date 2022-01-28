@@ -2926,6 +2926,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     }
 
     fun saveDataInPrefrences() {
+        Log.e(TAG,"cartListORderCom:  ${Gson().toJson(cartList)}")
         var model = SplitBundleModel(
             true,
             splitValue,
