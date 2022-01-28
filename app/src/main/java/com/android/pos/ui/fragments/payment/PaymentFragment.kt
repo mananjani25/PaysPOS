@@ -1008,7 +1008,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     }
                     else -> {
                         if (remainingAmount == 0.0) {
-                            totalPrice + tipAmount
+                            totalPrice
                         } else {
                             remainingAmount
                         }
@@ -2028,7 +2028,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                 bundle.putBoolean("isDineIn", false)
 
                                 if (remainingAmount == 0.0) {
-                                    bundle.putDouble("PaidAmount", totalPrice + tipAmount)
+                                    bundle.putDouble("PaidAmount", totalPrice)
                                 } else {
                                     bundle.putDouble("PaidAmount", remainingAmount)
                                 }
