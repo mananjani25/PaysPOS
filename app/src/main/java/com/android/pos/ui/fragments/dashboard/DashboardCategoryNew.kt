@@ -2239,7 +2239,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         viewModelPayment.QueueStart.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let { it ->
-                AlertUtils.showCustomAlert(requireActivity(), it.message)
+               // AlertUtils.showCustomAlert(requireActivity(), it.message)
                 binding.layoutCart.txtSave.text = getString(R.string.save)
                 viewModel.deleteCart()
                 if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
@@ -2250,6 +2250,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 hideOrderType()
                 getKitchenPrinters(it)
                 clearUpdateFlag()
+
+                findNavController().navigate(R.id.action_dashboardCategoryNew_to_orders)
 
 
             }
