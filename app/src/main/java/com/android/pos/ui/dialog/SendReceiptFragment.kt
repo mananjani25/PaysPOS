@@ -40,7 +40,7 @@ class SendReceiptFragment : DialogFragment() {
         setupSnackbar()
         observe()
 
-        orderId = requireArguments().getInt("orderID")
+        orderId = requireArguments().getInt("orderId")
         type = requireArguments().getInt("type")
 
         if (type == 1) {
