@@ -392,10 +392,10 @@ class DineInFragment : Fragment() {
                     val bundle = Bundle()
                     bundle.putBoolean("isFromFloor", true)
                     bundle.putBoolean("isMerged", false)
-                    prefProvider.setValueInt(
+                    /*prefProvider.setValueInt(
                         "ORDER_ID",
                         dineInFloorTableModel.currentOrderDetails.orderId
-                    )
+                    )*/
                     bundle.putParcelable("floorPlan", dineInFloorTableModel)
 
 

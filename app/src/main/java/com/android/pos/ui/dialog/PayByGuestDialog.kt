@@ -545,6 +545,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
     }
 
     private fun gotoPay() {
+        Log.e(TAG,"HEREGOTOPAY")
 
 
         orderId?.let { prefProvider.setValueInt("ORDER_ID", it) }

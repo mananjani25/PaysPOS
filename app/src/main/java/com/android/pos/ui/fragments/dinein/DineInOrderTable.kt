@@ -615,7 +615,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         viewModel.showProgress.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
-                    ProgressUtils.showProgressDialog(requireActivity())
+                    requireActivity()?.runOnUiThread {
+                        ProgressUtils.showProgressDialog(requireActivity())
+                    }
                 } else {
                     ProgressUtils.dismissProgressDialog()
                 }
