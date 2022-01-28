@@ -831,14 +831,14 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     if (findNavController().currentDestination?.id == R.id.dashboardCategoryNew) {
                         val bundle = bundleOf(IS_NEXT_AMOUNT to true)
 
-                        findNavController().navigate(
-                            R.id.action_dashboardCategoryNew_to_paymentFragment, bundle
-                        )
+                        /*  findNavController().navigate(
+                              R.id.action_dashboardCategoryNew_to_paymentFragment, bundle
+                          )*/
                     }
                 }
             }
 
-            //gotoPayment()
+            gotoPayment()
         }
     }
 
@@ -2658,7 +2658,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                     lifecycleScope.launchWhenStarted {
                         if (findNavController().currentDestination?.id == R.id.dashboardCategoryNew) {
-
+                            bundle.putBoolean(IS_NEXT_AMOUNT, true)
                             findNavController().navigate(
                                 R.id.action_dashboardCategoryNew_to_paymentFragment,
                                 bundle

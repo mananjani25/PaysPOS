@@ -110,6 +110,7 @@
                 android:layout_width="@dimen/_10sdp"
                 android:layout_height="@dimen/_10sdp"
                 android:layout_centerVertical="true"
+                android:background="?attr/selectableItemBackground"
                 android:layout_marginEnd="@dimen/_12sdp"
                 android:layout_toStartOf="@+id/refViewLine"
                 android:src="@drawable/print"
