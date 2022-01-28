@@ -54,7 +54,7 @@ class CustomerListAdapter(
                 binding.tvInitialName.text = "${
                     mModel.first_name?.subSequence(
                         0,
-                        2
+                        1
                     )
                 }"
             }

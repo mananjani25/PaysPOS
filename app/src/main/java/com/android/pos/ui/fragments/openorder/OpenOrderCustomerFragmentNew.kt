@@ -280,7 +280,6 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
             val result = bundle.getParcelable<TbCustomer>("data")
             if (result != null) {
                 isEdit = bundle.getBoolean("isEdit")
-                binding.txtSave.text = getString(R.string.update)
                 selectedDate=bundle.getString("SELECTED_DATE")
 
                 binding.edtDate.text=selectedDate
@@ -307,58 +306,51 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
         viewModel._Basedata.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let { baseResponse ->
                 activity?.let {
-                    AlertUtils.showCustomAlertWithListenerWithOK(
-                        it,
-                        baseResponse.message,
-                    )
-                    { _, _ ->
+                    val phonesList: ArrayList<TbPhones> =
+                        arrayListOf()
 
-                        val phonesList: ArrayList<TbPhones> =
-                            arrayListOf()
+                    if (binding.edtPhoneNo.text?.isNotEmpty()!!) {
 
-                        if (binding.edtPhoneNo.text?.isNotEmpty()!!) {
-
-                            val phone = TbPhones(
-                                null, binding.edtPhoneNo.text.toString().trim().replace(
-                                    ("[\\D]").toRegex(),
-                                    ""
-                                )
+                        val phone = TbPhones(
+                            null, binding.edtPhoneNo.text.toString().trim().replace(
+                                ("[\\D]").toRegex(),
+                                ""
                             )
-                            phonesList.add(phone)
-                        }
-
-                        val list: ArrayList<TbAddress> = arrayListOf()
-
-                        for (i in viewModel.listAddress){
-                            list.add(TbAddress(i.id,i.address1,i.address2,i.city,i.state,i.country.toString(),i.postcode,
-                                "",i.latitude.toString(),i.longitude.toString(),i.type_of_address,"",i.address1))
-                        }
-
-
-                        val customer = TbCustomer(
-                            customerID,
-                            MethodUtils.getText(binding.edtFirstName),
-                            MethodUtils.getText(binding.edtLastName),
-                            "",
-                            MethodUtils.getText(binding.edtEmail),
-                            enrollToLoyalty,
-                            finalReward,
-                            MethodUtils.getText(binding.edtCompany),
-                            phonesList,
-                            list
                         )
-
-
-                        val result = Bundle().apply {
-                            putParcelable("data", customer)
-                            putString("DATE", binding.edtDate.text.toString())
-                            putString("TIME", binding.edtTime.text.toString())
-                            putBoolean("OPEN_ORDER", true)
-                        }
-                        setFragmentResult("request_key_customer_open_order", result)
-
-                        findNavController().navigateUp()
+                        phonesList.add(phone)
                     }
+
+                    val list: ArrayList<TbAddress> = arrayListOf()
+
+                    for (i in viewModel.listAddress){
+                        list.add(TbAddress(i.id,i.address1,i.address2,i.city,i.state,i.country.toString(),i.postcode,
+                            "",i.latitude.toString(),i.longitude.toString(),i.type_of_address,"",i.address1))
+                    }
+
+
+                    val customer = TbCustomer(
+                        customerID,
+                        MethodUtils.getText(binding.edtFirstName),
+                        MethodUtils.getText(binding.edtLastName),
+                        "",
+                        MethodUtils.getText(binding.edtEmail),
+                        enrollToLoyalty,
+                        finalReward,
+                        MethodUtils.getText(binding.edtCompany),
+                        phonesList,
+                        list
+                    )
+
+
+                    val result = Bundle().apply {
+                        putParcelable("data", customer)
+                        putString("DATE", binding.edtDate.text.toString())
+                        putString("TIME", binding.edtTime.text.toString())
+                        putBoolean("OPEN_ORDER", true)
+                    }
+                    setFragmentResult("request_key_customer_open_order", result)
+
+                    findNavController().navigateUp()
 
 
                 }
