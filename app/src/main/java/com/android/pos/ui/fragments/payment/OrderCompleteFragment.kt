@@ -479,7 +479,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             binding.txtAddCustomer.visibility = View.VISIBLE
         }
 
-
+        saveDataInPrefrences()
         binding.txtHome.setOnClickListener(this)
         binding.txtAddCustomer.setOnClickListener(this)
         binding.llMessage.setOnClickListener(this)
@@ -2869,33 +2869,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 bundle.putDouble("totalDiscount", totalDiscount)
                 bundle.putDouble("divideCashDiscount", totalDiscount)
                 bundle.putDouble("totalTax", totalTaxAmount)
-
-
-
-
                 navController.previousBackStackEntry?.savedStateHandle?.set("data", bundle)
-                var model = SplitBundleModel(
-                    true,
-                    splitValue,
-                    orderID,
-                    paymentAmount,
-                    remainingAmount,
-                    isSplitByNo,
-                    isSplitByAmount,
-                    isCustomCash,
-                    getDineInOrderDetails,
-                    dineInList,
-                    subTotalWT,
-                    serviceCharge,
-                    totalDiscount,
-                    totalTaxAmount,
-                    0.0,
-                    0.0,
-                    cartlist = cartList,
-                    redeemLoyaltyInfo
-                )
-
-                prefProvider.setValue(SAVE_SPLIT_BUNDLE, Gson().toJson(model).toString())
                 navController.popBackStack()
             } else {
                 val navController = findNavController()
@@ -2913,33 +2887,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     bundle.putBoolean("isSplitByAmount", isSplitByAmount)
                 }
                 bundle.putBoolean("isCustomCash", isCustomCash)
-
                 Log.e(TAG, "ORDER_ID:  ${prefProvider.getValueInt("ORDER_ID", -1)}")
-
-
-                var model = SplitBundleModel(
-                    true,
-                    splitValue,
-                    prefProvider.getValueInt("ORDER_ID", -1),
-                    0.0,
-                    prefProvider.getValue("WholeTotal", "").toDouble(),
-                    isSplitByNo,
-                    isSplitByAmount,
-                    isCustomCash,
-                    getDineInOrderDetails,
-                    dineInList,
-                    prefProvider.getValue(Constants.SUB_TOTAL, "").toDouble(),
-                    prefProvider.getValue(Constants.SERVICE_CHARGE, "").toDouble(),
-                    prefProvider.getValue(Constants.TOTAL_DISCOUNT, "").toDouble(),
-                    prefProvider.getValue(Constants.TAX_CHARGE, "").toDouble(),
-                    prefProvider.getValue(Constants.TIP, "").toDouble(),
-                    prefProvider.getValue(Constants.CASH_DISCOUNT_SURCHARGE, "").toDouble(),
-                    cartList,
-                    redeemLoyaltyInfo
-                )
-
-                prefProvider.setValue(SAVE_SPLIT_BUNDLE, Gson().toJson(model).toString())
-
+                saveDataInPrefrences()
                 navController.previousBackStackEntry?.savedStateHandle?.set("data", bundle)
                 navController.popBackStack()
             }
@@ -2967,6 +2916,32 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
             }
         }
+    }
+
+    fun saveDataInPrefrences() {
+        var model = SplitBundleModel(
+            true,
+            splitValue,
+            prefProvider.getValueInt("ORDER_ID", -1),
+            0.0,
+            prefProvider.getValue("WholeTotal", "").toDouble(),
+            isSplitByNo,
+            isSplitByAmount,
+            isCustomCash,
+            getDineInOrderDetails,
+            dineInList,
+            prefProvider.getValue(Constants.SUB_TOTAL, "").toDouble(),
+            prefProvider.getValue(Constants.SERVICE_CHARGE, "").toDouble(),
+            prefProvider.getValue(Constants.TOTAL_DISCOUNT, "").toDouble(),
+            prefProvider.getValue(Constants.TAX_CHARGE, "").toDouble(),
+            prefProvider.getValue(Constants.TIP, "").toDouble(),
+            prefProvider.getValue(Constants.CASH_DISCOUNT_SURCHARGE, "").toDouble(),
+            cartList,
+            redeemLoyaltyInfo
+        )
+
+        prefProvider.setValue(SAVE_SPLIT_BUNDLE, Gson().toJson(model).toString())
+
     }
 
     private fun getKitchenPrinters() {
