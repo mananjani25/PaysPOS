@@ -263,6 +263,26 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
                     "redeemLoyalty",
                     Gson().toJson(viewModel.redeemLoyaltyInfo)
                 )
+                var finaltotal = viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0
+                prefProvider.setValue(Constants.TOTAL_PRICE_ACTUAL, finaltotal.toString())
+                prefProvider.setValue(
+                    Constants.SUB_TOTAL_ACTUAL,
+                    viewModel.subTotalPrice.toString()
+                )
+                prefProvider.setValue(
+                    Constants.TOTAL_DISCOUNT_ACTUAL,
+                    viewModel.totalDiscount.toString()
+                )
+                prefProvider.setValue(
+                    Constants.TOTAL_SERVICE_CHARGE_ACTUAL,
+                    viewModel.totalServiceCharge.toString()
+                )
+                prefProvider.setValue(
+                    Constants.TAX_CHARGE_ACTUAL,
+                    viewModel.totalTax.toString()
+                )
+                prefProvider.setValue(Constants.TIPS_AMOUNT_ACTUAL, "0.0")
+
             }
             if (it != null && it.isNotEmpty()) {
 

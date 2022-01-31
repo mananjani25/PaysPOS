@@ -67,6 +67,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
     private var isUpdate: Boolean = false
     private var tipAmount: Double = 0.0
     private var tipID: Int? = null
+    private var noCashAdj: Double = 0.0
     private var future_delivery_date: String = ""
     private var future_delivery_time: String = ""
     private var redeemLoyaltyInfo: RedeemLoyaltyInfo? = null
@@ -96,6 +97,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
     var finalPrice: Double = 0.0
     var splitOldValue: Int = 0
     var isFromDashboard: Boolean = false
+    var isFromActiveOrder: Boolean = false
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -129,6 +131,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
             }
 
+        isFromActiveOrder = arguments?.getBoolean("isFromActiveOrder") ?: false
         isFromDashboard = arguments?.getBoolean(Constants.IS_NEXT_AMOUNT) ?: false
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
@@ -351,20 +354,18 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             binding.llLoyalty.gone()
             binding.llLoyaltyPoint.gone()
         }
-        if (actualDiscount == 0.0) {
-            binding.linearDiscount.visibility = View.GONE
-        } else {
-            binding.linearDiscount.visibility = View.VISIBLE
-            binding.txtDiscount.text = "- " +
-                    MainApplication.getInstance()!!.getText(R.string.symbole)
-                        .toString() + String.format(
-                "%.2f", actualDiscount
-            )
-        }
+        binding.linearDiscount.visibility = View.VISIBLE
+        binding.txtDiscount.text = "- " +
+                MainApplication.getInstance()!!.getText(R.string.symbole)
+                    .toString() + String.format(
+            "%.2f", actualDiscount
+        )
 
         if (MethodUtils.isEnableCashDiscount(requireContext())) {
             if (cashDiscountType == "CashDiscount") {
                 binding.linearnoncashAdj.visibility = View.VISIBLE
+                noCashAdj =
+                    MethodUtils.calculateCashDiscount(actualAmount, prefProvider, requireContext())
                 binding.txtNoncashAdj.text = "$ " + String.format(
                     "%.2f",
                     MethodUtils.calculateCashDiscount(actualAmount, prefProvider, requireContext())
@@ -535,22 +536,21 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             binding.llLoyalty.gone()
             binding.llLoyaltyPoint.gone()
         }
-        if (totalDiscount == 0.0) {
-            binding.linearDiscount.visibility = View.GONE
-        } else {
-            binding.linearDiscount.visibility = View.VISIBLE
-            binding.txtDiscount.text = "- " +
-                    MainApplication.getInstance()!!.getText(R.string.symbole)
-                        .toString() + String.format(
-                "%.2f", totalDiscount
-            )
-        }
+        binding.linearDiscount.visibility = View.VISIBLE
+        binding.txtDiscount.text = "- " +
+                MainApplication.getInstance()!!.getText(R.string.symbole)
+                    .toString() + String.format(
+            "%.2f", totalDiscount
+        )
+
         if (MethodUtils.isEnableCashDiscount(requireContext())) {
             if (cashDiscountType == "CashDiscount") {
                 MethodUtils.setPriceTextView(binding.txtCardAmount, totalPrice)
                 // binding.txtCardAmount.text = "$ " + String.format("%.2f", totalPrice)
                 cardPaymentAmount = totalPrice
                 binding.linearnoncashAdj.visibility = View.VISIBLE
+                noCashAdj =
+                    MethodUtils.calculateCashDiscount(totalPrice, prefProvider, requireContext())
                 binding.txtNoncashAdj.text = "$ " + String.format(
                     "%.2f",
                     MethodUtils.calculateCashDiscount(totalPrice, prefProvider, requireContext())
@@ -582,6 +582,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             if (MethodUtils.isEnableCashDiscount(requireContext())) {
                 if (cashDiscountType == "CashDiscount") {
                     binding.linearnoncashAdj.visibility = View.VISIBLE
+                    noCashAdj = MethodUtils.roundOffAmountDouble(cashDiscountSurcharge)
                     binding.txtNoncashAdj.text = "$ " + String.format("%.2f", cashDiscountSurcharge)
                     if (splitValue != -1) {
                         totalPrice -= (cashDiscountSurcharge / splitValue)
@@ -618,10 +619,13 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 } else if (cashDiscountType == "SurCharge") {
                     binding.linearnoncashAdj.visibility = View.VISIBLE
                     if (splitValue != -1) {
+                        noCashAdj =
+                            MethodUtils.roundOffAmountDouble(cashDiscountSurcharge / splitValue)
                         binding.txtNoncashAdj.text =
                             "$ " + String.format("%.2f", cashDiscountSurcharge / splitValue)
                         totalPrice += (cashDiscountSurcharge / splitValue)
                     } else {
+                        noCashAdj = MethodUtils.roundOffAmountDouble(cashDiscountSurcharge)
                         binding.txtNoncashAdj.text =
                             "$ " + String.format("%.2f", cashDiscountSurcharge)
                         totalPrice += (cashDiscountSurcharge)
@@ -855,6 +859,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 paymentType = "Cash"
                 paymentAmount = when {
                     isSplitByNo -> {
+                        Log.e(TAG, "SplitNo")
                         var remaining_payment =
                             String.format(
                                 "%.2f",
@@ -875,15 +880,19 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                         splitAfterAmount
                     }
                     isSplitByAmount -> {
+                        Log.e(TAG, "SplitByAmount")
                         splitAfterAmount
                     }
                     isCustomCash -> {
+                        Log.e(TAG, "CustomCash")
                         paymentAmount
                     }
                     else -> {
                         if (remainingAmount == 0.0) {
+                            Log.e(TAG, "RemainingAmtZero")
                             totalPrice + tipAmount
                         } else {
+                            Log.e(TAG, "RemainingNotZero")
                             remainingAmount
                         }
                     }
@@ -1001,7 +1010,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     }
                     else -> {
                         if (remainingAmount == 0.0) {
-                            totalPrice + tipAmount
+                            totalPrice
                         } else {
                             remainingAmount
                         }
@@ -1332,10 +1341,12 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     tipID
                 )
             }
+            Log.e(TAG, "myRequest  ${Gson().toJson(myRequest)}")
             if (myRequest != null) {
                 viewModel.totalPayAmount((paymentAmount))
 
                 val orderId = prefProvider.getValueInt("ORDER_ID", -1)
+                Log.e(TAG, "orderIdInside  ${orderId}")
 
                 if (orderId == -1) {
                     viewModel.submit(myRequest)
@@ -1384,10 +1395,12 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     tipID
                 )
             }
+            Log.e(TAG, "myRequestSplitNo  ${Gson().toJson(myRequest)}")
             if (myRequest != null) {
                 viewModel.totalPayAmount((paymentAmount))
 
                 val orderId = prefProvider.getValueInt("ORDER_ID", -1)
+                Log.e(TAG, "orderidinsplit  ${orderId}")
 
                 if (orderId == -1) {
                     viewModel.submit(myRequest)
@@ -1437,9 +1450,11 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                         tipID
                     )
                 }
+                Log.e(TAG, "myRequest  ${Gson().toJson(myRequest)}")
                 if (myRequest != null) {
                     viewModel.totalPayAmount(splitAfterAmount)
                     val orderId = prefProvider.getValueInt("ORDER_ID", -1)
+                    Log.e(TAG, "orderIDIsLast  ${orderId})}")
                     if (orderId == -1) {
                         viewModel.submit(myRequest)
                     } else {
@@ -1487,9 +1502,11 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     tipID
                 )
             }
+            Log.e(TAG, "myRequest  ${Gson().toJson(myRequest)}")
             if (myRequest != null) {
                 viewModel.totalPayAmount(paymentAmount)
                 val orderId = prefProvider.getValueInt("ORDER_ID", -1)
+                Log.e(TAG, "orderIdCustom  ${orderId}")
                 if (orderId == -1) {
                     viewModel.submit(myRequest)
                 } else {
@@ -1512,6 +1529,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             }
         } else {
 
+            Log.e(TAG, "cartList:  ${Gson().toJson(cartList)}")
             val myRequest = cartList?.let {
 
                 viewModel.createOrderRequest(
@@ -1534,9 +1552,11 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     tipID
                 )
             }
+            Log.e(TAG, "myRequestOriginal ${Gson().toJson(myRequest)}")
             if (myRequest != null) {
                 viewModel.totalPayAmount(paymentAmount)
                 val orderId = prefProvider.getValueInt("ORDER_ID", -1)
+                Log.e(TAG, "orderIdmyRequestOriginal ${orderId}")
                 if (orderId == -1) {
                     viewModel.submit(myRequest)
                 } else {
@@ -1675,8 +1695,10 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                 bundle.putBoolean("isSplitByAmount", isSplitByAmount)
                                 bundle.putString("paymentType", "Card")
                                 bundle.putBoolean("isDineIn", false)
-                                bundle.putParcelable("cartlist", cartList)
+                                bundle.putParcelable("cartList", cartList)
                                 bundle.putParcelable("redeemLoyalty", redeemLoyaltyInfo)
+                                bundle.putDouble("noCashAdj", noCashAdj)
+                                bundle.putBoolean("isFromActiveOrder", isFromActiveOrder)
                                 findNavController().navigate(
                                     R.id.action_paymentFragment_to_orderCompleteFragment,
                                     bundle
@@ -1736,6 +1758,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                 bundle.putBoolean("isDineIn", false)
                                 bundle.putParcelable("cartList", cartList)
                                 bundle.putParcelable("redeemLoyalty", redeemLoyaltyInfo)
+                                bundle.putDouble("noCashAdj", noCashAdj)
+                                bundle.putBoolean("isFromActiveOrder", isFromActiveOrder)
                                 findNavController().navigate(
                                     R.id.action_paymentFragment_to_orderCompleteFragment,
                                     bundle
@@ -1768,6 +1792,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                 bundle.putString("paymentType", "Card")
                                 bundle.putParcelable("cartList", cartList)
                                 bundle.putParcelable("redeemLoyalty", redeemLoyaltyInfo)
+                                bundle.putDouble("noCashAdj", noCashAdj)
+                                bundle.putBoolean("isFromActiveOrder", isFromActiveOrder)
                                 findNavController().navigate(
                                     R.id.action_paymentFragment_to_orderCompleteFragment,
                                     bundle
@@ -1841,6 +1867,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                 bundle.putBoolean("isDineIn", false)
                                 bundle.putParcelable("cartList", cartList)
                                 bundle.putParcelable("redeemLoyalty", redeemLoyaltyInfo)
+                                bundle.putDouble("noCashAdj", noCashAdj)
+                                bundle.putBoolean("isFromActiveOrder", isFromActiveOrder)
                                 findNavController().navigate(
                                     R.id.action_paymentFragment_to_orderCompleteFragment,
                                     bundle
@@ -1904,6 +1932,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                 bundle.putParcelable("cartList", cartList)
                                 bundle.putParcelable("redeemLoyalty", redeemLoyaltyInfo)
                                 bundle.putBoolean("isDineIn", false)
+                                bundle.putDouble("noCashAdj", noCashAdj)
+                                bundle.putBoolean("isFromActiveOrder", isFromActiveOrder)
                                 findNavController().navigate(
                                     R.id.action_paymentFragment_to_orderCompleteFragment,
                                     bundle
@@ -1940,6 +1970,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                 )
                                 bundle.putInt("orderID", it.data.order.id ?: 0)
                                 bundle.putParcelable("receiptData", it.data)
+                                bundle.putParcelable("cartList", cartList)
                                 bundle.putInt("splitValue", splitValue)
                                 if (remainingAmount == 0.0) {
                                     bundle.putBoolean("isSpilt", false)
@@ -1951,6 +1982,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                 bundle.putBoolean("isSplitByAmount", isSplitByAmount)
                                 bundle.putString("paymentType", "Cash")
                                 bundle.putBoolean("isDineIn", false)
+                                bundle.putDouble("noCashAdj", noCashAdj)
+                                bundle.putBoolean("isFromActiveOrder", isFromActiveOrder)
                                 findNavController().navigate(
                                     R.id.action_paymentFragment_to_orderCompleteFragment,
                                     bundle
@@ -1987,9 +2020,11 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                 bundle.putBoolean("isSplitByAmount", isSplitByAmount)
                                 bundle.putBoolean("isCustomCash", isCustomCash)
                                 bundle.putString("paymentType", "Cash")
-                                bundle.putParcelable("cartlist", cartList)
+                                bundle.putParcelable("cartList", cartList)
                                 bundle.putParcelable("redeemLoyalty", redeemLoyaltyInfo)
                                 bundle.putDouble("TipAmount", tipAmount)
+                                bundle.putDouble("noCashAdj", noCashAdj)
+                                bundle.putBoolean("isFromActiveOrder", isFromActiveOrder)
                                 findNavController().navigate(
                                     R.id.action_paymentFragment_to_orderCompleteFragment,
                                     bundle
@@ -2002,7 +2037,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                 bundle.putBoolean("isDineIn", false)
 
                                 if (remainingAmount == 0.0) {
-                                    bundle.putDouble("PaidAmount", totalPrice + tipAmount)
+                                    bundle.putDouble("PaidAmount", totalPrice)
                                 } else {
                                     bundle.putDouble("PaidAmount", remainingAmount)
                                 }
@@ -2020,9 +2055,11 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                 bundle.putBoolean("isSplitByNo", isSplitByNo)
                                 bundle.putBoolean("isSplitByAmount", isSplitByAmount)
                                 bundle.putString("paymentType", "Cash")
-                                bundle.putParcelable("cartlist", cartList)
+                                bundle.putParcelable("cartList", cartList)
                                 bundle.putParcelable("redeemLoyalty", redeemLoyaltyInfo)
                                 bundle.putDouble("TipAmount", tipAmount)
+                                bundle.putDouble("noCashAdj", noCashAdj)
+                                bundle.putBoolean("isFromActiveOrder", isFromActiveOrder)
                                 if (findNavController().currentDestination?.id == R.id.paymentFragment) {
                                     findNavController().navigate(
                                         R.id.action_paymentFragment_to_orderCompleteFragment,

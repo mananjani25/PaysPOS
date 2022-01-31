@@ -1,9 +1,11 @@
-<?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:layout_marginHorizontal="@dimen/_200sdp"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingDefaultResource">
-
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
@@ -12,7 +14,7 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="@dimen/_20sdp">
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/imgBack"
@@ -48,24 +50,23 @@
             android:layout_gravity="center"
             android:gravity="center"
             android:orientation="vertical"
-            android:padding="@dimen/_10sdp"
+            android:padding="@dimen/_5sdp"
             android:paddingStart="@dimen/_30sdp"
             android:paddingEnd="@dimen/_30sdp"
             android:visibility="visible">
 
 
             <androidx.appcompat.widget.AppCompatEditText
-
                 android:id="@+id/edtEmail"
                 style="@style/CustomFontSemiBold"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_20sdp"
                 android:layout_gravity="center"
                 android:background="@drawable/background_square_border_grey"
                 android:hint="@string/email_receipt"
                 android:imeOptions="actionDone"
                 android:inputType="textEmailAddress"
-                android:minWidth="@dimen/_250sdp"
+
                 android:padding="@dimen/_7sdp"
                 android:textColor="@color/txtColor"
                 android:textColorHint="@color/hintColor"
@@ -76,15 +77,15 @@
             <com.santalu.maskedittext.MaskEditText
                 android:id="@+id/edtPhoneNo"
                 style="@style/CustomFontSemiBold"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_20sdp"
                 android:layout_gravity="center"
                 android:background="@drawable/background_square_border_grey"
                 android:digits="0123456789"
                 android:hint="@string/phone_number"
                 android:imeOptions="actionDone"
                 android:inputType="phone"
-                android:minWidth="@dimen/_250sdp"
+
                 android:padding="@dimen/_7sdp"
                 android:textColor="@color/txtColor"
                 android:textColorHint="@color/hintColor"
@@ -96,18 +97,13 @@
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txt_send"
                 style="@style/CustomFontSemiBold"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_20sdp"
                 android:layout_alignParentEnd="true"
                 android:layout_gravity="center"
-                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_5sdp"
                 android:background="@color/btnColorDark_"
                 android:gravity="center"
-                android:minWidth="@dimen/_250sdp"
-                android:paddingStart="@dimen/_15sdp"
-                android:paddingTop="@dimen/_5sdp"
-                android:paddingEnd="@dimen/_15sdp"
-                android:paddingBottom="@dimen/_5sdp"
                 android:text="Send"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_6mdpi" />
@@ -116,4 +112,4 @@
 
 
     </androidx.appcompat.widget.LinearLayoutCompat>
-</layout>
+</RelativeLayout>

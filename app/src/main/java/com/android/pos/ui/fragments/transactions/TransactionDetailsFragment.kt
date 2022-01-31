@@ -24,7 +24,6 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentTransactionDetailsBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.OrderDetailsItemListAdapter
-import com.android.pos.ui.fragments.payment.OrderCompleteViewModel
 import com.android.pos.utils.*
 import com.android.pos.utils.TimeFormatUtils.convertCurrentDate
 import com.android.pos.utils.TimeFormatUtils.convertCurrentTime
@@ -47,7 +46,7 @@ class TransactionDetailsFragment : Fragment() {
     private val viewModel by viewModels<TransactionDetailsViewModel>()
 
     private lateinit var orderDetailsItemAdapter: OrderDetailsItemListAdapter
-
+    private var orderIDglobal = 0
     //    private lateinit var orderDetailsResponse: GetOrderDetailsResponse
     private var customerSettingModel = GetCustomerReceiptSettingsResponse.Data()
     private lateinit var paymentDetailsResponse: GetPaymentOrderDetailsResponse
@@ -58,6 +57,7 @@ class TransactionDetailsFragment : Fragment() {
     private var isFromTrans: Boolean = false
     private var serviceChargesList: ArrayList<TbServiceCharge>? = arrayListOf()
     private var isSplitPayment = false
+
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -176,8 +176,10 @@ class TransactionDetailsFragment : Fragment() {
         ProgressUtils.showProgressDialog(requireActivity())
         viewModel.dataPayment.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
+                orderIDglobal = it.data.order.id
 
                 paymentDetailsResponse = it
+
                 if (paymentDetailsResponse.data.order.order_split_type == "OrderAmountTab") {
                     isSplitPayment = true
                 }
@@ -210,8 +212,20 @@ class TransactionDetailsFragment : Fragment() {
                 orderDetailsItemAdapter.addOrderDetailsItems(it.data.order.order_items)
 
 
-                if (!paymentDetailsResponse.data.order.total_discount.equals(0.0)) {
-                    binding.llDiscount.visibility = View.VISIBLE
+
+
+
+                binding.llDiscount.visibility = View.VISIBLE
+                if (paymentDetailsResponse.data.order.total_discount.equals(0.0)) {
+                    binding.txtDiscount.text = "$ " + String.format(
+                        "%.2f",
+                        paymentDetailsResponse.data.order.total_discount
+                    )
+                } else {
+                    binding.txtDiscount.text = "$ " + String.format(
+                        "%.2f",
+                        paymentDetailsResponse.data.order.total_discount
+                    )
                 }
 
                 if (paymentDetailsResponse.data.is_loyalty_applied == true) {
@@ -253,7 +267,7 @@ class TransactionDetailsFragment : Fragment() {
                         if (paymentDetailsResponse.data.cash_discount_type == "SurCharge") {
                             binding.linearCashDiscount.visibility = View.GONE
                             binding.liinearNoncashAdj.visibility = View.VISIBLE
-                            binding.txtNonCashAdjamount.text = "+ $" + String.format(
+                            binding.txtNonCashAdjamount.text = "+ $ " + String.format(
                                 "%.2f",
                                 paymentDetailsResponse.data.cash_discount_or_surcharge
                             )
@@ -271,7 +285,7 @@ class TransactionDetailsFragment : Fragment() {
                                     R.color.colorRed
                                 )
                             )
-                            binding.txtCashAmounntDiscount.text = "- $" + String.format(
+                            binding.txtCashAmounntDiscount.text = "- $ " + String.format(
                                 "%.2f",
                                 paymentDetailsResponse.data.cash_discount_or_surcharge
                             )

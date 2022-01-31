@@ -20,20 +20,23 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.R.color
 import com.android.pos.data.entities.TbAddress
 import com.android.pos.data.entities.TbCustomer
 import com.android.pos.data.entities.TbPhones
+import com.android.pos.data.model.requestModel.CreateCustomerRequestModel
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentOpenOrderNewBinding
+import com.android.pos.ui.adapter.AddressListAdapter
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.MethodUtils
+import com.android.pos.utils.ProgressUtils
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
-import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.Instant
 import java.time.LocalDateTime
@@ -47,16 +50,20 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
     private var enrollToLoyalty: Boolean = false
     private var finalReward: Int = 0
     private var deliveryType: String = "Pickup"
-    private var selectedDate: String? = null
+    private var selectedDate: String?=null
     private var country = arrayOf("United States", "Canada")
     private lateinit var binding: FragmentOpenOrderNewBinding
     private lateinit var placesApi: PlaceAPI
     private var currentSelectedDate: Long? = null
     private var selectedHour: Int? = null
     private var selectedMinute: Int? = null
-    private val TAG = "OpenOrderCustomerFragment"
+    private val TAG = "OpenOrderCustomerFra"
+    private var isEdit = false
+    private val viewModel by viewModels<OpenOrderCustomerViewModel>()
+    private lateinit var adapter: AddressListAdapter
     private var type: String = Constants.PICK_UP
 
+    private  var addressList:java.util.ArrayList<CreateCustomerRequestModel.Customer.Addresses> = arrayListOf()
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -64,9 +71,80 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
     ): View? {
         binding = FragmentOpenOrderNewBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
+        binding.viewModel=viewModel
 
+        showObserveProgress()
         setupUI()
+        navigate()
         return binding.root
+    }
+
+    private fun setAddress() {
+
+        adapter = AddressListAdapter(refreshCallBack = { adapterPos ->
+            Log.e(TAG, "callback")
+            if (::adapter.isInitialized) {
+                Log.e(TAG, "notify list")
+                activity?.runOnUiThread {
+                    adapter.notifyItemChanged(adapterPos)
+                }
+            }
+        })
+        binding.rvAddresses.adapter = adapter
+
+    }
+
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+/*
+        modelAddress = CreateCustomerRequestModel.Customer.Addresses(
+            null,
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            0.0,
+            0.0,
+        )
+*/
+        setAddress()
+
+
+        if (!isEdit){
+            var list: java.util.ArrayList<CreateCustomerRequestModel.Customer.Addresses> = arrayListOf()
+            var model = CreateCustomerRequestModel.Customer.Addresses()
+            model.apply {
+                latitude = 0.0
+                longitude = 0.0
+            }
+            list.add(model)
+
+            adapter.setAddress(list)
+            viewModel.setAddressList(adapter.getList())
+        }
+
+    }
+
+
+
+
+
+
+    private fun showObserveProgress() {
+        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    ProgressUtils.showProgressDialog(requireActivity())
+                } else {
+                    ProgressUtils.dismissProgressDialog()
+                }
+            }
+
+        })
     }
 
 
@@ -104,9 +182,10 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
             PlaceAPI.Builder().apiKey(binding.root.context.getString(R.string.api_key))
                 .build(binding.root.context)
 
-        binding.edtStreet.setAdapter(PlacesAutoCompleteAdapter(binding.root.context, placesApi))
+        //binding.edtStreet.setAdapter(PlacesAutoCompleteAdapter(binding.root.context, placesApi))
         binding.edtStreetBill.setAdapter(PlacesAutoCompleteAdapter(binding.root.context, placesApi))
 
+/*
         binding.edtStreet.setOnItemClickListener { parent, view, position, id ->
             val place = parent.getItemAtPosition(position) as Place
 
@@ -115,15 +194,20 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
 
                 }
 
+                @SuppressLint("LongLogTag")
                 override fun onPlaceDetailsFetched(placeDetails: PlaceDetails) {
                     Log.e(TAG, "onPlaceFatched ${Gson().toJson(placeDetails)}")
 
                     MethodUtils.hideKeyboard(requireActivity())
-                    /* val gcd = Geocoder(context, Locale.getDefault())
+                    */
+/* val gcd = Geocoder(context, Locale.getDefault())
                      val address: List<Address> =
                          gcd.getFromLocation(placeDetails.lat, placeDetails.lng, 1)
- */
-                    /*Log.e(TAG, "address   ${Gson().toJson(address)}")*/
+ *//*
+
+                    */
+/*Log.e(TAG, "address   ${Gson().toJson(address)}")*//*
+
                     if (placeDetails.address.isNotEmpty()) {
 
                         var state = ""
@@ -151,6 +235,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
             })
 
         }
+*/
 
         binding.edtStreetBill.setOnItemClickListener { parent, view, position, id ->
             val place = parent.getItemAtPosition(position) as Place
@@ -186,15 +271,17 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
         }
         findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Bundle>("data")
             ?.observe(viewLifecycleOwner) { it ->
-                selectedDate = it.getString("SELECTED_DATE")
-                binding.edtDate.text = selectedDate
+                selectedDate=it.getString("SELECTED_DATE")
+                binding.edtDate.text=selectedDate
             }
 
         setFragmentResultListener("request_key_customer") { requestKey: String, bundle: Bundle ->
             val result = bundle.getParcelable<TbCustomer>("data")
             if (result != null) {
-                selectedDate = bundle.getString("SELECTED_DATE")
-                binding.edtDate.text = selectedDate
+                isEdit = bundle.getBoolean("isEdit")
+                selectedDate=bundle.getString("SELECTED_DATE")
+
+                binding.edtDate.text=selectedDate
                 setupCustomer(result)
             }
         }
@@ -211,8 +298,117 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
 //        }
     }
 
+
+    private fun navigate() {
+
+        Log.e(TAG, "POPBACKCUSTOMER")
+        viewModel._Basedata.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let { baseResponse ->
+                activity?.let {
+                    val phonesList: ArrayList<TbPhones> =
+                        arrayListOf()
+
+                    if (binding.edtPhoneNo.text?.isNotEmpty()!!) {
+
+                        val phone = TbPhones(
+                            null, binding.edtPhoneNo.text.toString().trim().replace(
+                                ("[\\D]").toRegex(),
+                                ""
+                            )
+                        )
+                        phonesList.add(phone)
+                    }
+
+                    val list: ArrayList<TbAddress> = arrayListOf()
+
+                    for (i in viewModel.listAddress){
+                        list.add(TbAddress(i.id,i.address1,i.address2,i.city,i.state,i.country.toString(),i.postcode,
+                            "",i.latitude.toString(),i.longitude.toString(),i.type_of_address,"",i.address1))
+                    }
+
+
+                    val customer = TbCustomer(
+                        customerID,
+                        MethodUtils.getText(binding.edtFirstName),
+                        MethodUtils.getText(binding.edtLastName),
+                        "",
+                        MethodUtils.getText(binding.edtEmail),
+                        enrollToLoyalty,
+                        finalReward,
+                        MethodUtils.getText(binding.edtCompany),
+                        phonesList,
+                        list
+                    )
+
+
+                    val result = Bundle().apply {
+                        putParcelable("data", customer)
+                        putString("DATE", binding.edtDate.text.toString())
+                        putString("TIME", binding.edtTime.text.toString())
+                        putString("TYPE",type)
+                        putBoolean("OPEN_ORDER", true)
+                    }
+                    setFragmentResult("request_key_customer_open_order", result)
+
+                    findNavController().navigateUp()
+
+
+                }
+            }
+        })
+
+    }
+
+
     private fun setupCustomer(customer: TbCustomer) {
 
+
+        if (isEdit) {
+
+            if (customer?.id != null) {
+                viewModel.isEditData(isEdit, customer?.id!!)
+            }
+
+            viewModel.addCustomerDetails.value?.data?.first_name = customer?.first_name.toString()
+            viewModel.addCustomerDetails.value?.data?.last_name = customer?.last_name.toString()
+
+
+            if (customer?.phones?.size != 0) {
+                viewModel.phoneNo.value =
+                    AlertUtils.usNumberFormat(customer?.phones?.get(0)?.phone_number!!).toString()
+                viewModel.phoneId = customer.phones[0].id
+            }
+            viewModel.addCustomerDetails.value?.data?.email = customer.email
+
+            if (customer.addresses.isNotEmpty()) {
+                var list: ArrayList<CreateCustomerRequestModel.Customer.Addresses> = arrayListOf()
+
+                for (i in 0 until customer.addresses.size) {
+                    list.add(
+                        CreateCustomerRequestModel.Customer.Addresses(
+                            customer.addresses.get(i).id,
+                            customer.addresses.get(i).address1,
+                            customer.addresses.get(i).address2,
+                            customer.addresses.get(i).city,
+                            customer.addresses.get(i).state,
+                            customer.addresses.get(i).country,
+                            customer.addresses.get(i).postcode,
+                            customer.addresses.get(i).type_of_address.toString(),
+                            0.0,
+                            0.0,
+                        )
+                    )
+
+                }
+
+
+                adapter.setAddress(list)
+            }
+
+
+        }
+        else
+            addAddress()
 
         customerID = customer.id
         enrollToLoyalty = customer.enroll_to_loyalty ?: false
@@ -220,12 +416,53 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
 
         binding.edtFirstName.setText(customer.first_name)
         binding.edtLastName.setText(customer.last_name)
-        if (customer.phones.size > 0) {
+        if (customer.phones.size>0){
             binding.edtPhoneNo.setText(AlertUtils.usNumberFormat(customer.phones[0].phone_number))
         }
         binding.edtEmail.setText(customer.email)
         binding.edtCompany.setText(customer.company)
 
+        if (customer?.id != null) {
+            viewModel.isEditData(isEdit, customer?.id!!)
+        }
+
+
+        if (customer.addresses.isNotEmpty()) {
+           /* var list: java.util.ArrayList<CreateCustomerRequestModel.Customer.Addresses> = arrayListOf()
+            addressList=list
+            list.add(
+                CreateCustomerRequestModel.Customer.Addresses(
+                    customer.addresses.get(0).id,
+                    customer.addresses.get(0).address1,
+                    customer.addresses.get(0).address2,
+                    customer.addresses.get(0).city,
+                    customer.addresses.get(0).state,
+                    customer.addresses.get(0).country,
+                    customer.addresses.get(0).postcode,
+                    customer.addresses.get(0).type_of_address,
+                    0.0,
+                    0.0,
+                )
+            )*/
+
+
+            var list: java.util.ArrayList<CreateCustomerRequestModel.Customer.Addresses> = arrayListOf()
+            addressList=list
+            customer.addresses.forEach {
+                list.add(CreateCustomerRequestModel.Customer.Addresses(
+                    it.id,it.address1,it.address2,it.city,it.state,it.country,it.postcode,it.type_of_address
+                ))
+            }
+
+
+
+            adapter.setAddress(list)
+        }
+        else
+            addAddress()
+
+
+/*
         if (customer.addresses.isNotEmpty()) {
             for (i in customer.addresses.indices) {
                 if (customer.addresses[i].type_of_address == "Shipping") {
@@ -244,6 +481,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
 
             }
         }
+*/
     }
 
     @SuppressLint("SetTextI18n")
@@ -289,16 +527,15 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
                 }
 
                 findNavController().navigate(
-                    R.id.action_openOrderCustomerFragmentNew_to_assignCustomerOrderFragment, result
+                    R.id.action_openOrderCustomerFragmentNew_to_assignCustomerOrderFragment,result
                 )
             }
             R.id.btnClearDelivery -> {
+                addAddress()
+            }
+            R.id.btnCancelDelivery -> {
+                addAddress()
 
-                binding.edtStreet.setText("")
-                binding.edtSuite.setText("")
-                binding.edtCity.setText("")
-                binding.edtState.setText("")
-                binding.edtZip.setText("")
             }
             R.id.btnClearBill -> {
 
@@ -331,7 +568,6 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
                 binding.txtDelivery.setBackgroundColor(resources.getColor(color.btnColor))
             }
             R.id.btnClearCustomer -> {
-
                 binding.edtFirstName.setText("")
                 binding.edtLastName.setText("")
                 binding.edtPhoneNo.setText("")
@@ -343,7 +579,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
 
             R.id.edtDate -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    selectedDate = null
+                    selectedDate=null
                     showDatePicker()
                 }
             }
@@ -358,7 +594,17 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
 
             R.id.txtSave -> {
 
+              /*  val addressList=ArrayList<CreateCustomerRequestModel.Customer.Addresses>()
+                val address1=binding.edtStreet.text.toString().trim()
+                val address2=binding.edtSuite.text.toString().trim()
+                val city=binding.edtCity.text.toString().trim()
+                val state=binding.edtState.text.toString().trim()
+                val zipCode=binding.edtZip.text.toString().trim()
+                addressList.add(CreateCustomerRequestModel.Customer.Addresses(null,address1,address2,city,state))*/
+                viewModel.setAddressList(adapter.getList())
+                viewModel.submit()
 
+/*
                 if (validation()) {
 
                     val phonesList: ArrayList<TbPhones> =
@@ -444,9 +690,23 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
                     findNavController().navigateUp()
 
                 }
+*/
             }
         }
 
+    }
+
+    private fun addAddress() {
+        var list: java.util.ArrayList<CreateCustomerRequestModel.Customer.Addresses> = arrayListOf()
+        var model = CreateCustomerRequestModel.Customer.Addresses()
+        model.apply {
+            latitude = 0.0
+            longitude = 0.0
+        }
+        list.add(model)
+
+        adapter.setAddress(list)
+        viewModel.setAddressList(adapter.getList())
     }
 
     private fun validation(): Boolean {
@@ -482,7 +742,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
             ArrayAdapter(requireContext(), R.layout.row_spinner_county, country)
         adapter.setDropDownViewResource(R.layout.row_spinner_county)
 
-        binding.spDelivery.adapter = adapter
+       // binding.spDelivery.adapter = adapter
         binding.spBill.adapter = adapter
 
     }
@@ -506,9 +766,10 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
         )
         val dateAsFormattedText: String =
             dateTime.format(DateTimeFormatter.ofPattern("MMM-dd-yyyy"))
-        if (selectedDate != null) {
+        if (selectedDate!=null){
             binding.edtDate.text = selectedDate
-        } else {
+        }
+        else{
             binding.edtDate.text = dateAsFormattedText
         }
 

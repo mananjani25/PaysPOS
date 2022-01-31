@@ -97,9 +97,9 @@ class CreateTeamViewModel @Inject constructor(
         }*/ /*else if (value?.phoneNumber?.length!! < 14) {
             _snackbarText.value = Event(R.string.valid_phone_no_validate)
         }*/ else if (roleId == -1 || roleId == 0) {
-            _snackbarText.value = Event("Please choose role")
+            _snackbarText.value = Event(R.string.please_choos_a_role)
         } else if (TextUtils.isEmpty(value?.passcode?.trim())) {
-            _snackbarText.value = Event("Please enter passcode")
+            _snackbarText.value = Event(R.string.please_enter_passcode)
         } else {
             _showProgress.value = Event(true)
 

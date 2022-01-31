@@ -376,7 +376,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             )
 
             bundle.putInt("orderId", orderId ?: 0)
-            bundle.putInt(GUEST_POSITION,0)
+            bundle.putInt(GUEST_POSITION, 0)
 //            orderId?.let { it1 -> prefProvider.setValueInt("ORDER_ID", it1) }
 
             findNavController().navigate(
@@ -615,7 +615,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         viewModel.showProgress.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
-                    ProgressUtils.showProgressDialog(requireActivity())
+                    requireActivity()?.runOnUiThread {
+                        ProgressUtils.showProgressDialog(requireActivity())
+                    }
                 } else {
                     ProgressUtils.dismissProgressDialog()
                 }
@@ -911,7 +913,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
         bundle.putBoolean(IS_GUEST_PAYMNET, true)
-        bundle.putInt(GUEST_POSITION,position)
+        bundle.putInt(GUEST_POSITION, position)
         bundle.putParcelableArrayList(
             DINE_IN_ADAPTER_LIST, dineInTableAdapter.getList().toCollection(
                 arrayListOf()
@@ -3654,30 +3656,33 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             for (i in 0 until dineInList.size) {
                 if (dineInList[i].isHeader == 0) {
 
-                    builder.addFeedLine(1)
-                    builder.addTextLineSpace(30)
-                    builder.addFeedUnit(30)
-                    builder.addTextFont(Builder.FONT_E)
-                    // builder.addTextAlign(Builder.ALIGN_LEFT)
-                    builder.addTextLang(Builder.LANG_EN)
-                    addCustomerTextSize(builder, customerSettingModel.fonts)
-                    builder.addTextStyle(
-                        Builder.FALSE,
-                        Builder.FALSE,
-                        Builder.FALSE,
-                        Builder.COLOR_1
-                    )
-                    if (dineInList[i].customer == null) {
-                        builder.addText(dineInList[i].title)
-                    } else {
-                        builder.addText(
-                            dineInList[i].customer?.first_name + " " +
-                                    if (dineInList[i].customer?.last_name != null) {
-                                        dineInList[i].customer?.last_name
-                                    } else {
-                                        ""
-                                    }
+                    if (i != (dineInList.size - 1) && dineInList[i + 1].isHeader == 1) {
+
+                        builder.addFeedLine(1)
+                        builder.addTextLineSpace(30)
+                        builder.addFeedUnit(30)
+                        builder.addTextFont(Builder.FONT_E)
+                        // builder.addTextAlign(Builder.ALIGN_LEFT)
+                        builder.addTextLang(Builder.LANG_EN)
+                        addCustomerTextSize(builder, customerSettingModel.fonts)
+                        builder.addTextStyle(
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.COLOR_1
                         )
+                        if (dineInList[i].customer == null) {
+                            builder.addText(dineInList[i].title)
+                        } else {
+                            builder.addText(
+                                dineInList[i].customer?.first_name + " " +
+                                        if (dineInList[i].customer?.last_name != null) {
+                                            dineInList[i].customer?.last_name
+                                        } else {
+                                            ""
+                                        }
+                            )
+                        }
                     }
 
 

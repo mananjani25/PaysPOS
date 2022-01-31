@@ -114,7 +114,12 @@ class TransactionDetailsViewModel @Inject constructor(
 
                             resource.data?.let { createTaxResponse ->
 
-                                cashOutApi(refundData, refundAmount, createTaxResponse)
+                                cashOutApi(
+                                    refundData,
+                                    refundAmount,
+                                    createTaxResponse,
+                                    refundReason
+                                )
                             }
 
 
@@ -174,7 +179,8 @@ class TransactionDetailsViewModel @Inject constructor(
     private suspend fun cashOutApi(
         refundRequestModel: RefundRequestModel,
         amount: Double,
-        createTaxResponse: BaseResponse
+        createTaxResponse: BaseResponse,
+        refundReason: String
     ) {
 
         val order = refundRequestModel.paymentRefund
@@ -189,7 +195,7 @@ class TransactionDetailsViewModel @Inject constructor(
                             "out",
                             it1,
                             it2,
-                            "Change returned after order's payment",
+                            refundReason,
                             it3,
                             null,
                             order.tipsRefunded

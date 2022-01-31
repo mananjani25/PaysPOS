@@ -44,6 +44,7 @@
                 android:id="@+id/imgPrintAll"
                 android:layout_width="@dimen/_15sdp"
                 android:layout_height="@dimen/_9sdp"
+                android:background="?attr/selectableItemBackground"
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="@dimen/_8sdp"
                 android:layout_toStartOf="@+id/txtFloorPlan"

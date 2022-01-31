@@ -108,9 +108,6 @@ class PaymentViewModel @Inject constructor(
                                 if (orderRequestModel.order.openOrderType == Constants.OPEN_ORDER
                                     || orderRequestModel.order.openOrderType == Constants.OPEN_ORDER_
                                 ) {
-                                    prefProvider.setValue(Constants.ORDER_TYPE, "")
-                                    prefProvider.setValue(Constants.CUSTOMER_NAME, "")
-                                    prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
                                     posRepository.deleteCart()
                                 }
 
@@ -200,9 +197,6 @@ class PaymentViewModel @Inject constructor(
                         if (response?.status == 200) {
 
                             if (splitValue != -1) {
-                                prefProvider.setValue(Constants.ORDER_TYPE, "")
-                                prefProvider.setValue(Constants.CUSTOMER_NAME, "")
-                                prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
                                 posRepository.deleteCart()
                             }
                             resource.data?.let { createOrderResponse ->
@@ -395,7 +389,7 @@ class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.date = TimeFormatUtils.getCurrentDate()
         if (future_delivery_date.isNotEmpty())
             orderAttributeRequestModel.futureDeliveryDate = future_delivery_date
-        orderAttributeRequestModel.deliveryType = "Pickup"
+        orderAttributeRequestModel.deliveryType = cartModel.openOrderType
         orderAttributeRequestModel.employeeId = cartModel.employeeID
         orderAttributeRequestModel.locationId = cartModel.locationId
         orderAttributeRequestModel.terminalId = cartModel.terminalId
@@ -411,7 +405,7 @@ class PaymentViewModel @Inject constructor(
 
                 orderAttributeRequestModel.totalAmount = actual_Total - actual_CashDiscountSurCharge
             } else {
-                orderAttributeRequestModel.totalAmount = totalPrice - tipAmount
+                orderAttributeRequestModel.totalAmount = actual_Total
             }
         } /*else if (paymentType == "Card") {
             if (cashdiscountType == "SurCharge") {
@@ -536,7 +530,7 @@ class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.date = TimeFormatUtils.getCurrentDate()
         if (future_delivery_date.isNotEmpty())
             orderAttributeRequestModel.futureDeliveryDate = future_delivery_date
-        orderAttributeRequestModel.deliveryType = "Pickup"
+        orderAttributeRequestModel.deliveryType = cartModel.openOrderType
         orderAttributeRequestModel.employeeId = cartModel.employeeID
         orderAttributeRequestModel.locationId = cartModel.locationId
         orderAttributeRequestModel.terminalId = cartModel.terminalId
@@ -648,7 +642,7 @@ class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.date = TimeFormatUtils.getCurrentDate()
         if (future_delivery_date.isNotEmpty())
             orderAttributeRequestModel.futureDeliveryDate = future_delivery_date
-        orderAttributeRequestModel.deliveryType = "Pickup"
+        orderAttributeRequestModel.deliveryType = cartModel.openOrderType
         orderAttributeRequestModel.employeeId = cartModel.employeeID
         orderAttributeRequestModel.locationId = cartModel.locationId
         orderAttributeRequestModel.terminalId = cartModel.terminalId

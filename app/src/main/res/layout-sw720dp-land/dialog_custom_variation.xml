@@ -216,7 +216,7 @@
                             android:textColor="@color/black"
                             android:textColorHint="@color/hintColor"
                             android:textSize="@dimen/_5mdpi"
-                            android:digits="@string/numbers_digits_string" />
+                            android:digits="0123456789"/>
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -298,7 +298,7 @@
                             android:textColor="@color/black"
                             android:textColorHint="@color/hintColor"
                             android:textSize="@dimen/_5mdpi"
-                            android:digits="@string/numbers_digits_string" />
+                            android:digits="0123456789"/>
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
 

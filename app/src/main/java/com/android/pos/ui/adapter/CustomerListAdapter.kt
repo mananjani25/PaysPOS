@@ -2,6 +2,7 @@ package com.android.pos.ui.adapter
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
@@ -54,7 +55,7 @@ class CustomerListAdapter(
                 binding.tvInitialName.text = "${
                     mModel.first_name?.subSequence(
                         0,
-                        2
+                        1
                     )
                 }"
             }
@@ -74,21 +75,18 @@ class CustomerListAdapter(
             }
 
 
-            if (filterList.get(
-                    pos
-                ).phones.isNotEmpty()
-            ) {
-
-                binding.txtNumber.text = "" + AlertUtils.usNumberFormat(
-                    mModel.phones[0].phone_number
-                ) + " | " + mModel.email
+            if (mModel.phones.isNotEmpty() && mModel.email?.isNotEmpty() == true) {
+                binding.txtNumber.visibility = View.VISIBLE
+                binding.txtNumber.text =
+                    "" + AlertUtils.usNumberFormat(mModel.phones[0].phone_number) + " | " + mModel.email
             } else if (mModel.phones.isNotEmpty()) {
-                binding.txtNumber.text = "" + AlertUtils.usNumberFormat(
-                    filterList[pos].phones.get(
-                        0
-                    ).phone_number
-                )
-
+                binding.txtNumber.visibility = View.VISIBLE
+                binding.txtNumber.text = AlertUtils.usNumberFormat(mModel.phones[0].phone_number)
+            } else if (mModel.email?.isNotEmpty() == true) {
+                binding.txtNumber.visibility = View.VISIBLE
+                binding.txtNumber.text = mModel.email
+            } else {
+                binding.txtNumber.visibility = View.GONE
             }
 
 

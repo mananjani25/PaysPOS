@@ -1,4 +1,4 @@
-package com.android.pos.ui.fragments.customer
+package com.android.pos.ui.fragments.openorder
 
 import android.text.TextUtils
 import android.util.Log
@@ -23,12 +23,13 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AddCustomerViewModel @Inject constructor(
+class OpenOrderCustomerViewModel @Inject constructor(
     private val posRepository: PosRepository,
     private val prefProvider: PrefProvider
-) : ViewModel() {
+):ViewModel()
+{
     private lateinit var resource: Resource<CreateCustomerReponse>
-    private val TAG = "AddCustomerViewModel"
+    private val TAG = "OpenCustomerViewModel"
     private lateinit var addCustomerData: CreateCustomerRequestModel
     val locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 0)
 
@@ -267,6 +268,4 @@ class AddCustomerViewModel @Inject constructor(
 
 
     }
-
-
 }

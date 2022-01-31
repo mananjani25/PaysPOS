@@ -6,7 +6,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
@@ -46,7 +45,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlin.math.ceil
 import kotlin.math.floor
-import kotlin.math.log
 
 @AndroidEntryPoint
 open class PayByGuestDialog : Fragment(), View.OnClickListener {
@@ -71,6 +69,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
     private var secondValue: Int = 0
     private var cartList: CartModel? = null
     private var splitValue: Int = -1
+    private var noCashAdj: Double = 0.0
     private var totalPrice: Double = 0.0
     var cashSurcharge: Double = 0.0
     private var totaldiscount: Double = 0.0
@@ -546,6 +545,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
     }
 
     private fun gotoPay() {
+        Log.e(TAG,"HEREGOTOPAY")
 
 
         orderId?.let { prefProvider.setValueInt("ORDER_ID", it) }
@@ -634,6 +634,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                     bundle.putDouble(DINE_IN_DISCOUNT, totaldiscount)
                     bundle.putDouble(DINE_IN_SERVICECHARGE, totalServiceCharge)
                     bundle.putInt(Constants.GUEST_POSITION, guestSelectedPos)
+                    bundle.putDouble("noCashAdj",noCashAdj)
                     findNavController().navigate(
                         R.id.action_payByGuestDialog_to_orderCompleteFragment,
                         bundle
@@ -707,6 +708,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                     bundle.putDouble(DINE_IN_DISCOUNT, totaldiscount)
                     bundle.putDouble(DINE_IN_SERVICECHARGE, totalServiceCharge)
                     bundle.putInt(Constants.GUEST_POSITION, guestSelectedPos)
+                    bundle.putDouble("noCashAdj",noCashAdj)
                     findNavController().navigate(
                         R.id.action_payByGuestDialog_to_orderCompleteFragment,
                         bundle
@@ -748,6 +750,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                     bundle.putDouble(DINE_IN_DISCOUNT, totaldiscount)
                     bundle.putDouble(DINE_IN_SERVICECHARGE, totalServiceCharge)
                     bundle.putInt(Constants.GUEST_POSITION, guestSelectedPos)
+                    bundle.putDouble("noCashAdj",noCashAdj)
                     if (isLastPayment!!)
                         bundle.putBoolean("isGuest", false)
                     findNavController().navigate(
@@ -843,6 +846,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                         bundle.putDouble(DINE_IN_DISCOUNT, totaldiscount)
                         bundle.putDouble(DINE_IN_SERVICECHARGE, totalServiceCharge)
                         bundle.putInt(Constants.GUEST_POSITION, guestSelectedPos)
+                        bundle.putDouble("noCashAdj",noCashAdj)
 
                         findNavController().navigate(
                             R.id.action_payByGuestDialog_to_orderCompleteFragment,
@@ -927,6 +931,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                         bundle.putDouble(DINE_IN_DISCOUNT, totaldiscount)
                         bundle.putDouble(DINE_IN_SERVICECHARGE, totalServiceCharge)
                         bundle.putInt(Constants.GUEST_POSITION, guestSelectedPos)
+                        bundle.putDouble("noCashAdj",noCashAdj)
 
                         findNavController().navigate(
                             R.id.action_payByGuestDialog_to_orderCompleteFragment,
@@ -985,6 +990,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                         bundle.putDouble(DINE_IN_DISCOUNT, totaldiscount)
                         bundle.putDouble(DINE_IN_SERVICECHARGE, totalServiceCharge)
                         bundle.putInt(Constants.GUEST_POSITION, guestSelectedPos)
+                        bundle.putDouble("noCashAdj",noCashAdj)
                         findNavController().navigate(
                             R.id.action_payByGuestDialog_to_orderCompleteFragment,
                             bundle
@@ -1052,6 +1058,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                         bundle.putDouble(DINE_IN_SERVICECHARGE, totalServiceCharge)
                         bundle.putParcelable(Constants.PRINT_DATA_DINE_IN, getOrderDetailsResponse)
                         bundle.putInt(Constants.GUEST_POSITION, guestSelectedPos)
+                        bundle.putDouble("noCashAdj",noCashAdj)
                         findNavController().navigate(
                             R.id.action_payByGuestDialog_to_orderCompleteFragment,
                             bundle
@@ -1106,6 +1113,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                         bundle.putDouble(DINE_IN_DISCOUNT, totaldiscount)
                         bundle.putDouble(DINE_IN_SERVICECHARGE, totalServiceCharge)
                         bundle.putInt(Constants.GUEST_POSITION, guestSelectedPos)
+                        bundle.putDouble("noCashAdj",noCashAdj)
                         if (isLastPayment!!)
                             bundle.putBoolean("isGuest", false)
                         findNavController().navigate(
@@ -1142,7 +1150,9 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                 binding.txtCardAmount.text = "$ " + String.format("%.2f", totalPrice)
                 cardPaymentAmount = totalPrice
                 binding.linearNonCashAdjamounnt.visibility = View.VISIBLE
+
                 binding.txtNoncashAdj.text = "$ " + String.format("%.2f", divideCashDiscount)
+                noCashAdj = divideCashDiscount
                 totalPrice -= divideCashDiscount
             } else if (cashDiscountType == "SurCharge") {
                 binding.linearNonCashAdjamounnt.visibility = View.GONE
@@ -1163,17 +1173,12 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
             binding.txtTotalAmount,
             (totalPrice + tipAmount)
         )
-
-        if (totaldiscount == 0.0) {
-            binding.linearDiscount.visibility = View.GONE
-        } else {
-            binding.linearDiscount.visibility = View.VISIBLE
-            binding.txtDiscount.text = "- " +
-                    MainApplication.getInstance()!!.getText(R.string.symbole)
-                        .toString() + String.format(
-                "%.2f", totaldiscount
-            )
-        }
+        binding.linearDiscount.visibility = View.VISIBLE
+        binding.txtDiscount.text = "- " +
+                MainApplication.getInstance()!!.getText(R.string.symbole)
+                    .toString() + String.format(
+            "%.2f", totaldiscount
+        )
         getCashPaymentOptionList(totalPrice + tipAmount)
 
 
@@ -1191,10 +1196,12 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
             } else if (optionType == "SurCharge") {
                 binding.linearNonCashAdjamounnt.visibility = View.VISIBLE
                 if (splitValue != -1) {
+                    noCashAdj = MethodUtils.roundOffAmountDouble(divideCashDiscount / splitValue)
                     binding.txtNoncashAdj.text =
                         "$ " + String.format("%.2f", divideCashDiscount / splitValue)
                     totalPrice += (divideCashDiscount / splitValue)
                 } else {
+                    noCashAdj = divideCashDiscount
                     binding.txtNoncashAdj.text =
                         "$ " + String.format("%.2f", divideCashDiscount)
                     totalPrice += (divideCashDiscount)
@@ -1212,16 +1219,12 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
         //MethodUtils.setPriceTextView(binding.txtDiscount, totalDiscount)
         MethodUtils.setPriceTextView(binding.txtTipAmt, tipAmount)
         MethodUtils.setPriceTextView(binding.txtServiceCharge, totalServiceCharge)
-        if (totaldiscount == 0.0) {
-            binding.linearDiscount.visibility = View.GONE
-        } else {
-            binding.linearDiscount.visibility = View.VISIBLE
-            binding.txtDiscount.text = "- " +
-                    MainApplication.getInstance()!!.getText(R.string.symbole)
-                        .toString() + String.format(
-                "%.2f", totaldiscount
-            )
-        }
+        binding.linearDiscount.visibility = View.VISIBLE
+        binding.txtDiscount.text = "- " +
+                MainApplication.getInstance()!!.getText(R.string.symbole)
+                    .toString() + String.format(
+            "%.2f", totaldiscount
+        )
 
 
         if (MethodUtils.isEnableCashDiscount(requireContext())) {
@@ -1229,6 +1232,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                 binding.txtCardAmount.text = "$ " + String.format("%.2f", totalPrice)
                 cardPaymentAmount = totalPrice
                 binding.linearNonCashAdjamounnt.visibility = View.VISIBLE
+                noCashAdj = divideCashDiscount
                 binding.txtNoncashAdj.text = "$ " + String.format("%.2f", divideCashDiscount)
                 totalPrice -= divideCashDiscount
             } else if (cashDiscountType == "SurCharge") {
@@ -1393,7 +1397,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                     }
                     else -> {
                         if (remainingAmount == 0.0) {
-                            totalPrice + tipAmount
+                            totalPrice
                         } else {
                             remainingAmount
                         }

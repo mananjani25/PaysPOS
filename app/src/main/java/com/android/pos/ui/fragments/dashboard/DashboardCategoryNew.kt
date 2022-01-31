@@ -107,12 +107,12 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     private var openORderType: String = ""
     private lateinit var nameObserver: Observer<List<CartModel>>
-    private var isOpenOrderUpdate: Boolean = false
+  //  private var isOpenOrderUpdate: Boolean = false
     private var orderDiscount: Double = 0.0
     private var categoryItemAdapter1: CategoryItemAdapter1? = null
     private var categoryTabAdapter1: CategoryTabAdapter1? = null
     private var clickManualSales: Boolean = false
-    private var customerUpdate: Boolean = false
+    //private var customerUpdate: Boolean = false
     private var orderOfflineId: String = ""
     private var paymentOfflineId: String = ""
     private var orderId: Int? = null
@@ -831,18 +831,19 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     if (findNavController().currentDestination?.id == R.id.dashboardCategoryNew) {
                         val bundle = bundleOf(IS_NEXT_AMOUNT to true)
 
-                        findNavController().navigate(
-                            R.id.action_dashboardCategoryNew_to_paymentFragment, bundle
-                        )
+                        /*  findNavController().navigate(
+                              R.id.action_dashboardCategoryNew_to_paymentFragment, bundle
+                          )*/
                     }
                 }
             }
 
-            //gotoPayment()
+            gotoPayment()
         }
     }
 
     private fun hideOrderType() {
+        Log.e(TAG, "ORDERTYPE:  ${prefProvider.getValue(ORDER_TYPE, "")}")
 
         if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
             binding.layoutCart.llCart.visibility = View.VISIBLE
@@ -2238,12 +2239,17 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         viewModelPayment.QueueStart.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let { it ->
-                AlertUtils.showCustomAlert(requireActivity(), it.message)
+                // AlertUtils.showCustomAlert(requireActivity(), it.message)
                 binding.layoutCart.txtSave.text = getString(R.string.save)
+                viewModel.deleteCart()
+                if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
+                    prefProvider.setValue(ORDER_TYPE, "")
+                }
+
                 clearCustomer()
                 hideOrderType()
-                getKitchenPrinters(it)
                 clearUpdateFlag()
+                getKitchenPrinters(it)
 
 
             }
@@ -2256,16 +2262,21 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             when (it.status) {
                 Status.SUCCESS -> {
                     ProgressUtils.dismissProgressDialog()
-                    if (it.data != null) {
-                        kitchenPrinterList = it.data
-                        for (i in 0 until kitchenPrinterList.size) {
+                    ProgressUtils.showProgressDialog(requireActivity())
+
+                    if (it.data?.isNotEmpty() == true) {
+
+                        for (i in 0 until it.data.size) {
 
                             initKitchenPrinter(
-                                kitchenPrinterList.get(i),
+                                it.data.get(i),
                                 Constants.KITCHEN,
                                 createOrderResponse
                             )
                         }
+                    } else {
+                        ProgressUtils.dismissProgressDialog()
+                        findNavController().navigate(R.id.action_dashboardCategoryNew_to_orders)
                     }
 
                 }
@@ -2274,6 +2285,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 }
                 Status.ERROR -> {
                     ProgressUtils.dismissProgressDialog()
+                    findNavController().navigate(R.id.action_dashboardCategoryNew_to_orders)
 
                 }
             }
@@ -2444,6 +2456,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 if (prefProvider.getValue(ORDER_TYPE, "") != DINE_IN) {
 
                     val cartList = viewModel.generateCombinedItems(cartList[0])
+                    cartList.openOrderType = openORderType
                     if (!isOrderUpdate)
                         cartList.customer = assignCustomer
 
@@ -2527,11 +2540,30 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     }
 
     private fun gotoPayment() {
+        Log.e(TAG, "cartList:  ${cartList.size}")
         if (cartList.isNotEmpty()) {
-            Log.e(TAG, "CartListNotEmpty")
             if (prefProvider.getValueboolean(DINE_IN_UPDATE, false)) {
+                var itemCount = 0
+                for (i in cartList.indices) {
+                    for (j in cartList[i].dineInList?.indices!!) {
+                        if (cartList[i].dineInList?.get(j)?.items?.size!! > 0) {
+                            itemCount++
+                            break
+                        }
+                    }
+                    if (itemCount != 0) {
+                        break
+                    }
 
-                if (cartList.isNotEmpty()) {
+                }
+
+                if (itemCount == 0) {
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        requireContext(),
+                        getString(R.string.please_add_Atleast_one_item_in_cart)
+                    ) { _, _ ->
+                    }
+                } else {
                     val request = viewModel.updateOrder(cartList[0])
 
                     prefProvider.setValueboolean(DINE_IN_UPDATE, false)
@@ -2541,6 +2573,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
 
                 }
+
             } else {
 
                 val bundle = Bundle()
@@ -2580,7 +2613,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 bundle.putString("future_delivery_time", future_delivery_time)
                 cartList[0].customer = assignCustomer
                 val cartModel = viewModel.generateCombinedItems(cartList[0])
+                Log.e(TAG, "openORderType  ${openORderType}")
                 cartModel.openOrderType = openORderType
+                Log.e(TAG, "PaymentPAsscartModel: ${Gson().toJson(cartModel)}")
                 bundle.putParcelable("cartList", cartModel)
                 if (isOrderUpdate) {
                     bundle.putBoolean("update", true)
@@ -2590,26 +2625,56 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     bundle.putString("orderOfflineId", orderOfflineId)
                 }
                 if (prefProvider.getValue(ORDER_TYPE, "").toString() == DINE_IN) {
+                    var itemCount = 0
+                    for (i in cartList.indices) {
+                        for (j in cartList[i].dineInList?.indices!!) {
+                            if (cartList[i].dineInList?.get(j)?.items?.size!! > 0) {
+                                itemCount++
+                                break
+                            }
+                        }
+                        if (itemCount != 0) {
+                            createDineInRequest()
+                            break
+                        }
+                    }
 
-                    createDineInRequest()
+                    if (itemCount == 0) {
+                        bundle.clear()
+                        AlertUtils.showCustomAlertWithListenerWithOK(
+                            requireContext(),
+                            getString(R.string.please_add_Atleast_one_item_in_cart)
+                        ) { _, _ ->
+                        }
 
-
+                    }
                 } else {
                     prefProvider.setValue(Constants.TOTAL_PRICE_ACTUAL, final_total.toString())
-                    prefProvider.setValue(Constants.SUB_TOTAL_ACTUAL, viewModel.subTotalPrice.toString())
-                    prefProvider.setValue(Constants.TOTAL_DISCOUNT_ACTUAL, viewModel.totalDiscount.toString())
+                    prefProvider.setValue(
+                        Constants.SUB_TOTAL_ACTUAL,
+                        viewModel.subTotalPrice.toString()
+                    )
+                    prefProvider.setValue(
+                        Constants.TOTAL_DISCOUNT_ACTUAL,
+                        viewModel.totalDiscount.toString()
+                    )
                     prefProvider.setValue(
                         Constants.TOTAL_SERVICE_CHARGE_ACTUAL,
                         viewModel.totalServiceCharge.toString()
                     )
-                    prefProvider.setValue(Constants.TAX_CHARGE_ACTUAL, viewModel.totalTax.toString())
+                    prefProvider.setValue(
+                        Constants.TAX_CHARGE_ACTUAL,
+                        viewModel.totalTax.toString()
+                    )
                     prefProvider.setValue(Constants.TIPS_AMOUNT_ACTUAL, "0.0")
 
 
 
                     lifecycleScope.launchWhenStarted {
                         if (findNavController().currentDestination?.id == R.id.dashboardCategoryNew) {
-
+                            if (prefProvider.getValueInt("ORDER_ID", -1) != -1) {
+                                bundle.putBoolean(IS_NEXT_AMOUNT, true)
+                            }
                             findNavController().navigate(
                                 R.id.action_dashboardCategoryNew_to_paymentFragment,
                                 bundle
@@ -2618,6 +2683,14 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     }
                 }
             }
+        } else if (cartList.isEmpty() && prefProvider.getValueInt("ORDER_ID", -1) != -1) {
+
+            val bundle = bundleOf(IS_NEXT_AMOUNT to true)
+            findNavController().navigate(
+                R.id.action_dashboardCategoryNew_to_paymentFragment,
+                bundle
+            )
+
         }
 
     }
@@ -3321,6 +3394,30 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         viewModel.updateOrder.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
+
+                viewModel.deleteCart()
+                isOrderUpdate = false
+
+                if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
+                    prefProvider.setValue(ORDER_TYPE, "")
+                }
+                binding.layoutCart.txtSave.text = getString(R.string.save)
+                clearCustomer()
+                hideOrderType()
+                hideOrderMenu()
+                val bundle = Bundle()
+                bundle.putParcelable("cartList", cartList[0])
+                bundle.putBoolean("isGuestPaid", false)
+
+                cartList[0].orderId?.let { it1 -> bundle.putInt("orderId", it1) }
+
+
+                findNavController().navigate(
+                    R.id.action_dashboardCategoryNew_to_dineInOrderTable,
+                    bundle
+                )
+
+/* Old code
                 AlertUtils.showCustomAlertWithListenerWithOK(
                     requireContext(),
                     it.toString()
@@ -3356,6 +3453,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
 
                 // orderId?.let { it1 -> viewModel.apiCallOrderDetails(it1) }
+*/
             }
         })
 
@@ -3414,7 +3512,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             } catch (e: Exception) {
                 Log.e(TAG, "PrinterException: " + e.message)
                 printer = null
-                return
+                ProgressUtils.dismissProgressDialog()
+                findNavController().navigate(R.id.action_dashboardCategoryNew_to_orders)
+
             }
 
             if (printer != null) {
@@ -3426,6 +3526,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         } else {
             Log.e(TAG, "PrinterIsNotNull:")
+            ProgressUtils.dismissProgressDialog()
+            findNavController().navigate(R.id.action_dashboardCategoryNew_to_orders)
         }
 
     }
@@ -3463,6 +3565,25 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 builder.addTextAlign(Builder.ALIGN_CENTER)
 
                 addBuilderText(builder, receiptModel?.order?.orderType.toString())
+            }
+
+            if (receiptModel?.order?.orderType.trim().lowercase() == "Open Order".trim()
+                    .lowercase()
+            ) {
+                builder.addFeedLine(1)
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(2, 2)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+
+                addBuilderText(builder, receiptModel?.order?.deliveryType.toString())
+
             }
 
 
@@ -3690,7 +3811,14 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                  builder.addText(receiptModel?.order?.customer?.email)*/
 
                     if (kitchenSettingModel.showCustomerAddress) {
-                        if (receiptModel.order?.customer?.addresses?.isNotEmpty()) {
+
+                        if (receiptModel?.order?.orderType.trim().lowercase() == "Open Order".trim()
+                                .lowercase() && receiptModel?.order?.deliveryType.trim()
+                                .lowercase() == "Pickup".trim()
+                                .lowercase()
+                        ) {
+
+                        } else if (receiptModel.order?.customer?.addresses?.isNotEmpty()) {
 
                             builder.addTextLineSpace(30)
                             builder.addFeedUnit(30)
@@ -3728,17 +3856,24 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 )
 
                 PrinterClass.closePrinter()
+                ProgressUtils.dismissProgressDialog()
+                findNavController().navigate(R.id.action_dashboardCategoryNew_to_orders)
 
                 //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
             } catch (e: Exception) {
-                PrinterClass.closePrinter()
+                ProgressUtils.dismissProgressDialog()
+                findNavController().navigate(R.id.action_dashboardCategoryNew_to_orders)
+                /*PrinterClass.closePrinter()
                 e.printStackTrace()
                 Log.e(TAG, "PrinterError: " + e.localizedMessage)
+               */
             }
 
 
         } catch (e: Exception) {
             e.printStackTrace()
+            ProgressUtils.dismissProgressDialog()
+            findNavController().navigate(R.id.action_dashboardCategoryNew_to_orders)
         }
 
     }
@@ -3941,10 +4076,17 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         viewModelPayment.QueueCreateSaveOrder.observe(requireActivity(), {
             it.getContentIfNotHandled()?.let {
                 binding.layoutCart.txtSave.text = getString(R.string.save)
+                viewModel.deleteCart()
+                if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
+                    prefProvider.setValue(ORDER_TYPE, "")
+                }
+
+
                 clearCustomer()
                 hideOrderType()
                 //getKitchenPrinters(it)
                 clearUpdateFlag()
+                findNavController().navigate(R.id.action_dashboardCategoryNew_to_orders)
 
 
             }

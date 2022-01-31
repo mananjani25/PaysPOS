@@ -195,6 +195,8 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
             putParcelable("data", customer)
             putBoolean("OPEN_ORDER", false)
             putString("SELECTED_DATE", selectedDate)
+            putBoolean("isEdit",true)
+            putString(Constants.KEY,"FROM_CUSTOMER")
             isFromDineIn?.let { putBoolean("DINE_IN", it) }
             dineInPosition?.let {
                 Log.e(TAG, "position:  $it")

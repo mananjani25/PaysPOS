@@ -74,7 +74,7 @@ object Constants {
     const val CASHDIS_SURCHARGEENABLE = "cashdisurchargeenable"
     const val CASH_DIS_STORED = "cashDisStore"
 
-    const val PICK_UP = "PickUp"
+    const val PICK_UP = "Pickup"
     const val DELIVERY = "Delivery"
 
 

@@ -828,7 +828,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
         if (future_delivery_date.isNotEmpty())
             orderAttributeRequestModel.futureDeliveryDate = future_delivery_date
-        orderAttributeRequestModel.deliveryType = "Pickup"
+        orderAttributeRequestModel.deliveryType = cartModel.openOrderType
         orderAttributeRequestModel.employeeId = cartModel.employeeID
         orderAttributeRequestModel.locationId = cartModel.locationId
         orderAttributeRequestModel.terminalId = cartModel.terminalId

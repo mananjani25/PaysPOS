@@ -1,6 +1,9 @@
 package com.android.pos.ui.dialog
 
+import android.graphics.Color
 import android.graphics.Point
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.InsetDrawable
 import android.os.Bundle
 import android.view.*
 import androidx.databinding.DataBindingUtil
@@ -38,9 +41,11 @@ class SendReceiptFragment : DialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = DataBindingUtil.inflate(inflater, R.layout.dailog_send_receipt, container, false)
-        binding.lifecycleOwner = this
+        binding = DailogSendReceiptBinding.inflate(inflater, container, false)
         dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
+        val back = ColorDrawable(Color.WHITE)
+        val inset = InsetDrawable(back, 150,200,150,200)
+        dialog?.window?.setBackgroundDrawable(inset);
         setupSnackbar()
         observe()
 
@@ -48,7 +53,7 @@ class SendReceiptFragment : DialogFragment() {
 
         isEod = requireArguments().getBoolean("EOD", false)
         if (!isEod)
-            orderId = requireArguments().getInt("orderID")
+            orderId = requireArguments().getInt("orderId")
         type = requireArguments().getInt("type")
 
         if (type == 1) {

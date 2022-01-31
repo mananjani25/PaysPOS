@@ -275,6 +275,7 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
                     "redeemLoyalty",
                     Gson().toJson(redeemLoyaltyInfo)
                 )
+                bundle.putBoolean("isFromActiveOrder", true)
 
                 findNavController().navigate(
                     R.id.action_orders_to_paymentFragment,

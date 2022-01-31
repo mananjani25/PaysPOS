@@ -66,6 +66,7 @@
                     android:layout_height="wrap_content"
                     android:paddingStart="@dimen/_5sdp"
                     android:paddingEnd="@dimen/_5sdp"
+                    android:visibility="gone"
                     android:textSize="@dimen/_5mdpi" />
             </LinearLayout>
 

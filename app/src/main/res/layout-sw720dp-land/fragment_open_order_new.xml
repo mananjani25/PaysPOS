@@ -6,6 +6,9 @@
 
     <data>
 
+        <variable
+            name="viewModel"
+            type="com.android.pos.ui.fragments.openorder.OpenOrderCustomerViewModel" />
     </data>
 
 
@@ -221,7 +224,8 @@
                             android:padding="@dimen/_5sdp"
                             android:textColor="@color/black"
                             android:textColorHint="@color/hint_color_"
-                            android:textSize="@dimen/_5mdpi" />
+                            android:textSize="@dimen/_5mdpi"
+                            android:text="@={viewModel.addCustomerDetails.data.first_name}"/>
 
                         <include layout="@layout/divider" />
 
@@ -239,7 +243,8 @@
                             android:padding="@dimen/_5sdp"
                             android:textColor="@color/black"
                             android:textColorHint="@color/hint_color_"
-                            android:textSize="@dimen/_5mdpi" />
+                            android:textSize="@dimen/_5mdpi"
+                            android:text="@={viewModel.addCustomerDetails.data.last_name}"/>
 
                         <include layout="@layout/divider" />
 
@@ -256,7 +261,8 @@
                             android:textColor="@color/txtColor"
                             android:textColorHint="@color/hint_color_"
                             android:textSize="@dimen/_5mdpi"
-                            app:met_mask="(###) ###-####" />
+                            app:met_mask="(###) ###-####"
+                            android:text="@={viewModel.phoneNo}"/>
 
                         <include layout="@layout/divider" />
 
@@ -274,7 +280,10 @@
                             android:padding="@dimen/_5sdp"
                             android:textColor="@color/black"
                             android:textColorHint="@color/hint_color_"
-                            android:textSize="@dimen/_5mdpi" />
+                            android:textSize="@dimen/_5mdpi"
+                            android:text="@={viewModel.addCustomerDetails.data.email}"
+
+                            />
 
                         <include layout="@layout/divider" />
 
@@ -412,7 +421,17 @@
                     android:orientation="vertical"
                     android:visibility="gone">
 
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvAddresses"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                        tools:listitem="@layout/view_customer_address" />
 
+
+
+<!--
                     <androidx.appcompat.widget.LinearLayoutCompat
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -516,6 +535,7 @@
 
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
+-->
 
                     <androidx.appcompat.widget.LinearLayoutCompat
                         android:layout_width="match_parent"
