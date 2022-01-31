@@ -69,9 +69,8 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvNested"
             style="@style/ReportRecyclerViewstyle"
-            app:spanCount="5"
-            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-            tools:itemCount="5" />
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:itemCount="2" />
     </LinearLayout>
 
 </layout>

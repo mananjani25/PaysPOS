@@ -483,13 +483,18 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 otherDetailsAdapter.add(it.otherDetails)
 
 
-//                showHide(
-//                    rvMedia = binding.rvSalesDetails,
-//                    textView = null,
-//                    headerView = null,
-//                    visible = it.orderSalesDetails.isNotEmpty()
-//                )
-//                salesOrderDetailsAdapter.add(it.orderSalesDetails)
+                showHide(
+                    rvMedia = binding.rvSalesDetails,
+                    textView = null,
+                    headerView = null,
+                    visible = it.orderSalesDetails.data.isNotEmpty()
+                )
+
+                if (it.orderSalesDetails.data.isNotEmpty()) {
+                    binding.llHeader.visible()
+                } else binding.llHeader.gone()
+
+                salesOrderDetailsAdapter.add(it.orderSalesDetails.data)
 
 
                 binding.linReports.visible()
