@@ -2926,7 +2926,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     }
 
     fun saveDataInPrefrences() {
-        Log.e(TAG,"cartListORderCom:  ${Gson().toJson(cartList)}")
+        Log.e(TAG, "cartListORderCom:  ${Gson().toJson(cartList)}")
         var model = SplitBundleModel(
             true,
             splitValue,
@@ -2961,7 +2961,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
                         kitchenPrinterList = it.data
-                        if (!requireArguments().getBoolean("isDineIn")) {
+                        if (!requireArguments().getBoolean("isDineIn") && !requireArguments().getBoolean(
+                                "isFromActiveOrder"
+                            )
+                        ) {
                             for (i in 0 until kitchenPrinterList.size) {
                                 kitchenPrinterList[i].orderTypes.forEach {
 
@@ -3762,23 +3765,22 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                  }*/
 
-                if (paymentType == "Cash"){
+                if (paymentType == "Cash") {
 
 
-                       builder.addText(
-                    padLine(
-                        "Total Price",
-                        "" + MethodUtils.roundOffAmount((paidAmount + tipAmount)- noCashAdjGlobal ) ,
-                        if (customerSettingModel.fonts == LARGE) {
-                            24
-                        } else {
-                            48
-                        }
+                    builder.addText(
+                        padLine(
+                            "Total Price",
+                            "" + MethodUtils.roundOffAmount((paidAmount + tipAmount) - noCashAdjGlobal),
+                            if (customerSettingModel.fonts == LARGE) {
+                                24
+                            } else {
+                                48
+                            }
+                        )
                     )
-                )
 
-                }
-                else {
+                } else {
 
 
                     builder.addText(

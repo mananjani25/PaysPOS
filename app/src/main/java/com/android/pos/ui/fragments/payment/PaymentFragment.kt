@@ -97,6 +97,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
     var finalPrice: Double = 0.0
     var splitOldValue: Int = 0
     var isFromDashboard: Boolean = false
+    var isFromActiveOrder: Boolean = false
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -130,6 +131,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
             }
 
+        isFromActiveOrder = arguments?.getBoolean("isFromActiveOrder") ?: false
         isFromDashboard = arguments?.getBoolean(Constants.IS_NEXT_AMOUNT) ?: false
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
@@ -1527,7 +1529,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             }
         } else {
 
-            Log.e(TAG,"cartList:  ${Gson().toJson(cartList)}")
+            Log.e(TAG, "cartList:  ${Gson().toJson(cartList)}")
             val myRequest = cartList?.let {
 
                 viewModel.createOrderRequest(
@@ -1696,6 +1698,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                 bundle.putParcelable("cartList", cartList)
                                 bundle.putParcelable("redeemLoyalty", redeemLoyaltyInfo)
                                 bundle.putDouble("noCashAdj", noCashAdj)
+                                bundle.putBoolean("isFromActiveOrder", isFromActiveOrder)
                                 findNavController().navigate(
                                     R.id.action_paymentFragment_to_orderCompleteFragment,
                                     bundle
@@ -1756,6 +1759,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                 bundle.putParcelable("cartList", cartList)
                                 bundle.putParcelable("redeemLoyalty", redeemLoyaltyInfo)
                                 bundle.putDouble("noCashAdj", noCashAdj)
+                                bundle.putBoolean("isFromActiveOrder", isFromActiveOrder)
                                 findNavController().navigate(
                                     R.id.action_paymentFragment_to_orderCompleteFragment,
                                     bundle
@@ -1789,6 +1793,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                 bundle.putParcelable("cartList", cartList)
                                 bundle.putParcelable("redeemLoyalty", redeemLoyaltyInfo)
                                 bundle.putDouble("noCashAdj", noCashAdj)
+                                bundle.putBoolean("isFromActiveOrder", isFromActiveOrder)
                                 findNavController().navigate(
                                     R.id.action_paymentFragment_to_orderCompleteFragment,
                                     bundle
@@ -1863,6 +1868,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                 bundle.putParcelable("cartList", cartList)
                                 bundle.putParcelable("redeemLoyalty", redeemLoyaltyInfo)
                                 bundle.putDouble("noCashAdj", noCashAdj)
+                                bundle.putBoolean("isFromActiveOrder", isFromActiveOrder)
                                 findNavController().navigate(
                                     R.id.action_paymentFragment_to_orderCompleteFragment,
                                     bundle
@@ -1927,6 +1933,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                 bundle.putParcelable("redeemLoyalty", redeemLoyaltyInfo)
                                 bundle.putBoolean("isDineIn", false)
                                 bundle.putDouble("noCashAdj", noCashAdj)
+                                bundle.putBoolean("isFromActiveOrder", isFromActiveOrder)
                                 findNavController().navigate(
                                     R.id.action_paymentFragment_to_orderCompleteFragment,
                                     bundle
@@ -1976,6 +1983,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                 bundle.putString("paymentType", "Cash")
                                 bundle.putBoolean("isDineIn", false)
                                 bundle.putDouble("noCashAdj", noCashAdj)
+                                bundle.putBoolean("isFromActiveOrder", isFromActiveOrder)
                                 findNavController().navigate(
                                     R.id.action_paymentFragment_to_orderCompleteFragment,
                                     bundle
@@ -2016,6 +2024,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                 bundle.putParcelable("redeemLoyalty", redeemLoyaltyInfo)
                                 bundle.putDouble("TipAmount", tipAmount)
                                 bundle.putDouble("noCashAdj", noCashAdj)
+                                bundle.putBoolean("isFromActiveOrder", isFromActiveOrder)
                                 findNavController().navigate(
                                     R.id.action_paymentFragment_to_orderCompleteFragment,
                                     bundle
@@ -2050,6 +2059,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                 bundle.putParcelable("redeemLoyalty", redeemLoyaltyInfo)
                                 bundle.putDouble("TipAmount", tipAmount)
                                 bundle.putDouble("noCashAdj", noCashAdj)
+                                bundle.putBoolean("isFromActiveOrder", isFromActiveOrder)
                                 if (findNavController().currentDestination?.id == R.id.paymentFragment) {
                                     findNavController().navigate(
                                         R.id.action_paymentFragment_to_orderCompleteFragment,
