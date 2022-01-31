@@ -142,7 +142,7 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
                 }
             }
 
-            totalItemPrice += totalTax + (totalServiceCharge / noteList.size) - orderDiscount - loyaltyAmountPerItem - cashDiscountDivide
+            totalItemPrice += (totalTax + totalServiceCharge)  - orderDiscount - loyaltyAmountPerItem - cashDiscountDivide
             MethodUtils.setPriceTextView(itemBinding.tvItemPrice, totalItemPrice.toDouble())
 
             itemBinding.ivCheck.setOnClickListener {
