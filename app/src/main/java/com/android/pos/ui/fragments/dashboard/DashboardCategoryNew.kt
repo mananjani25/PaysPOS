@@ -107,7 +107,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     private var openORderType: String = ""
     private lateinit var nameObserver: Observer<List<CartModel>>
-    private var isOpenOrderUpdate: Boolean = false
+  //  private var isOpenOrderUpdate: Boolean = false
     private var orderDiscount: Double = 0.0
     private var categoryItemAdapter1: CategoryItemAdapter1? = null
     private var categoryTabAdapter1: CategoryTabAdapter1? = null
