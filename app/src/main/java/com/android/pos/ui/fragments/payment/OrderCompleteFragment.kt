@@ -3767,11 +3767,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 if (paymentType == "Cash") {
 
-
+                    //PLZCHECK
                     builder.addText(
                         padLine(
                             "Total Price",
-                            "" + MethodUtils.roundOffAmount((paidAmount + tipAmount) - noCashAdjGlobal),
+                            "" + MethodUtils.roundOffAmount(
+                                receiptModel?.order?.totalAmount?.toDouble() ?: 0.0
+                            ),
                             if (customerSettingModel.fonts == LARGE) {
                                 24
                             } else {
@@ -3799,153 +3801,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             }
 
-            if (customerSettingModel.showRefundAmount) {
-                builder.addTextLineSpace(30)
-                builder.addFeedUnit(30)
-
-                builder.addTextFont(Builder.FONT_E)
-                // builder.addTextAlign(Builder.ALIGN_LEFT)
-                builder.addTextLang(Builder.LANG_EN)
-                addCustomerTextSize(builder, customerSettingModel.fonts)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.TRUE,
-                    Builder.COLOR_1
-                )
-
-                //ADDCHANGE
-                builder.addText(
-                    padLine(
-                        "Change Amount",
-                        "$" + changeAmtGlobal,
-                        if (customerSettingModel.fonts == LARGE) {
-                            24
-                        } else {
-                            48
-                        }
-                    )
-                )
-            }
-
-
-            if (isSpilt) {
-                builder.addTextLineSpace(30)
-                builder.addFeedUnit(30)
-
-                builder.addTextFont(Builder.FONT_E)
-                // builder.addTextAlign(Builder.ALIGN_LEFT)
-                builder.addTextLang(Builder.LANG_EN)
-                addCustomerTextSize(builder, customerSettingModel.fonts)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.TRUE,
-                    Builder.COLOR_1
-                )
-
-                builder.addText(
-                    padLine(
-                        "Remaining Amount",
-                        "$" + MethodUtils.roundOffAmountString(remainingAmount),
-                        if (customerSettingModel.fonts == LARGE) {
-                            24
-                        } else {
-                            48
-                        }
-                    )
-                )
-            }
-
-
-
-            if (receiptModel?.order?.totalTips == 0.0) {
-                builder.addFeedLine(1)
-                builder.addTextLineSpace(30)
-                builder.addFeedUnit(30)
-
-                builder.addTextFont(Builder.FONT_E)
-                // builder.addTextAlign(Builder.ALIGN_LEFT)
-                builder.addTextLang(Builder.LANG_EN)
-                addCustomerTextSize(builder, customerSettingModel.fonts)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.TRUE,
-                    Builder.COLOR_1
-                )
-
-                var tip = ""
-
-                if (receiptModel?.order?.totalTips != 0.0) {
-                    tip = receiptModel?.order?.totalTips.toString()
-                }
-                builder.addText(
-                    padLine(
-                        "Tips",
-                        if (customerSettingModel.showTipLineForCash) {
-                            "_____________"
-                        } else {
-                            ""
-                        },
-                        if (customerSettingModel.fonts == LARGE) {
-                            24
-                        } else {
-                            48
-                        }
-                    )
-                )
-            }
-
-
-            if (customerSettingModel.showTipSuggestion) {
-                builder.addFeedLine(1)
-                builder.addTextLineSpace(30)
-                builder.addFeedUnit(30)
-
-                builder.addTextFont(Builder.FONT_E)
-                builder.addTextAlign(Builder.ALIGN_LEFT)
-                builder.addTextLang(Builder.LANG_EN)
-                addCustomerTextSize(builder, customerSettingModel.fonts)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.TRUE,
-                    Builder.COLOR_1
-                )
-                builder.addText(
-                    padLine(
-                        "Additional Tips",
-                        "",
-                        if (customerSettingModel.fonts == LARGE) {
-                            24
-                        } else {
-                            48
-                        }
-                    )
-                )
-
-
-                builder.addFeedLine(1)
-
-                addHorizontalLine(builder)
-
-                if (tipsList.isNotEmpty()) {
-                    addTipsList(
-                        builder,
-                        tipsList,
-                        if (receiptModel?.order?.totalDiscount != 0.0) {
-                            (receiptModel?.order?.totalAmount!!.toDouble() - receiptModel?.order?.totalDiscount!!.toDouble())
-                        } else {
-                            receiptModel?.order?.totalAmount!!
-                        },
-                        customerSettingModel.fonts
-                    )
-
-                }
-            }
-
-            builder.addFeedLine(1)
             builder.addTextLineSpace(30)
             builder.addFeedUnit(30)
 
@@ -3953,6 +3808,183 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             // builder.addTextAlign(Builder.ALIGN_LEFT)
             builder.addTextLang(Builder.LANG_EN)
             addCustomerTextSize(builder, customerSettingModel.fonts)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.TRUE,
+                Builder.COLOR_1
+            )
+
+            builder.addText(
+                padLine(
+                    "Paid Amount",
+                    "" + MethodUtils.roundOffAmount(
+                        paidAmount),
+                        if (customerSettingModel.fonts == LARGE) {
+                            24
+                        } else {
+                            48
+                        }
+                    )
+                )
+
+
+
+                if (customerSettingModel.showRefundAmount) {
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+
+                    builder.addTextFont(Builder.FONT_E)
+                    // builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    addCustomerTextSize(builder, customerSettingModel.fonts)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.TRUE,
+                        Builder.COLOR_1
+                    )
+
+                    //ADDCHANGE
+                    builder.addText(
+                        padLine(
+                            "Change Amount",
+                            "$" + changeAmtGlobal,
+                            if (customerSettingModel.fonts == LARGE) {
+                                24
+                            } else {
+                                48
+                            }
+                        )
+                    )
+                }
+
+
+                if (isSpilt) {
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+
+                    builder.addTextFont(Builder.FONT_E)
+                    // builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    addCustomerTextSize(builder, customerSettingModel.fonts)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.TRUE,
+                        Builder.COLOR_1
+                    )
+
+                    builder.addText(
+                        padLine(
+                            "Remaining Amount",
+                            "$" + MethodUtils.roundOffAmountString(remainingAmount),
+                            if (customerSettingModel.fonts == LARGE) {
+                                24
+                            } else {
+                                48
+                            }
+                        )
+                    )
+                }
+
+
+
+                if (receiptModel?.order?.totalTips == 0.0) {
+                    builder.addFeedLine(1)
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+
+                    builder.addTextFont(Builder.FONT_E)
+                    // builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    addCustomerTextSize(builder, customerSettingModel.fonts)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.TRUE,
+                        Builder.COLOR_1
+                    )
+
+                    var tip = ""
+
+                    if (receiptModel?.order?.totalTips != 0.0) {
+                        tip = receiptModel?.order?.totalTips.toString()
+                    }
+                    builder.addText(
+                        padLine(
+                            "Tips",
+                            if (customerSettingModel.showTipLineForCash) {
+                                "_____________"
+                            } else {
+                                ""
+                            },
+                            if (customerSettingModel.fonts == LARGE) {
+                                24
+                            } else {
+                                48
+                            }
+                        )
+                    )
+                }
+
+
+                if (customerSettingModel.showTipSuggestion) {
+                    builder.addFeedLine(1)
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+
+                    builder.addTextFont(Builder.FONT_E)
+                    builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    addCustomerTextSize(builder, customerSettingModel.fonts)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.TRUE,
+                        Builder.COLOR_1
+                    )
+                    builder.addText(
+                        padLine(
+                            "Additional Tips",
+                            "",
+                            if (customerSettingModel.fonts == LARGE) {
+                                24
+                            } else {
+                                48
+                            }
+                        )
+                    )
+
+
+                    builder.addFeedLine(1)
+
+                    addHorizontalLine(builder)
+
+                    if (tipsList.isNotEmpty()) {
+                        addTipsList(
+                            builder,
+                            tipsList,
+                            if (receiptModel?.order?.totalDiscount != 0.0) {
+                                (receiptModel?.order?.totalAmount!!.toDouble() - receiptModel?.order?.totalDiscount!!.toDouble())
+                            } else {
+                                receiptModel?.order?.totalAmount!!
+                            },
+                            customerSettingModel.fonts
+                        )
+
+                    }
+                }
+
+                        builder . addFeedLine (1)
+                        builder . addTextLineSpace (30)
+                        builder . addFeedUnit (30)
+
+                        builder . addTextFont (Builder.FONT_E)
+                        // builder.addTextAlign(Builder.ALIGN_LEFT)
+                        builder . addTextLang (Builder.LANG_EN)
+                        addCustomerTextSize (builder, customerSettingModel.fonts
+            )
             builder.addTextStyle(
                 Builder.FALSE,
                 Builder.FALSE,
