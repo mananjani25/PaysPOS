@@ -69,7 +69,8 @@ class OrderCompleteViewModel @Inject constructor(
             if (type == "Email") {
                 data["email"] = email
             } else {
-                data["phone_no"] = phoneNumber.replace(("[\\D]").toRegex(), "")
+                // data["phone_no"] = phoneNumber.replace(("[\\D]").toRegex(), "")
+                data["phone_no"] = phoneNumber
             }
 
             data["id"] = orderID.toString()

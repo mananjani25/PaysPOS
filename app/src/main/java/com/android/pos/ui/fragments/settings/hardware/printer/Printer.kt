@@ -1676,7 +1676,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                     Builder.COLOR_1
                 )
                 val current = LocalDateTime.now()
-                val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy HH:mm:ss.SSS")
+                val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:a")
                 val formatted = current.format(formatter)
                 builder.addText(formatted)
             }

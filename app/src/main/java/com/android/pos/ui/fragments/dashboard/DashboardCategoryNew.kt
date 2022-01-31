@@ -2239,7 +2239,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         viewModelPayment.QueueStart.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let { it ->
-               // AlertUtils.showCustomAlert(requireActivity(), it.message)
+                // AlertUtils.showCustomAlert(requireActivity(), it.message)
                 binding.layoutCart.txtSave.text = getString(R.string.save)
                 viewModel.deleteCart()
                 if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
@@ -2248,10 +2248,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                 clearCustomer()
                 hideOrderType()
-                getKitchenPrinters(it)
                 clearUpdateFlag()
-
-               // findNavController().navigate(R.id.action_dashboardCategoryNew_to_orders)
+                getKitchenPrinters(it)
 
 
             }
@@ -2264,16 +2262,21 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             when (it.status) {
                 Status.SUCCESS -> {
                     ProgressUtils.dismissProgressDialog()
-                    if (it.data != null) {
-                        kitchenPrinterList = it.data
-                        for (i in 0 until kitchenPrinterList.size) {
+                    ProgressUtils.showProgressDialog(requireActivity())
+
+                    if (it.data?.isNotEmpty() == true) {
+
+                        for (i in 0 until it.data.size) {
 
                             initKitchenPrinter(
-                                kitchenPrinterList.get(i),
+                                it.data.get(i),
                                 Constants.KITCHEN,
                                 createOrderResponse
                             )
                         }
+                    } else {
+                        ProgressUtils.dismissProgressDialog()
+                        findNavController().navigate(R.id.action_dashboardCategoryNew_to_orders)
                     }
 
                 }
@@ -2282,6 +2285,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 }
                 Status.ERROR -> {
                     ProgressUtils.dismissProgressDialog()
+                    findNavController().navigate(R.id.action_dashboardCategoryNew_to_orders)
 
                 }
             }
@@ -2679,8 +2683,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     }
                 }
             }
-        }
-        else if(cartList.isEmpty() && prefProvider.getValueInt("ORDER_ID", -1) != -1){
+        } else if (cartList.isEmpty() && prefProvider.getValueInt("ORDER_ID", -1) != -1) {
 
             val bundle = bundleOf(IS_NEXT_AMOUNT to true)
             findNavController().navigate(
@@ -3484,7 +3487,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             } catch (e: Exception) {
                 Log.e(TAG, "PrinterException: " + e.message)
                 printer = null
-                return
+                ProgressUtils.dismissProgressDialog()
+                findNavController().navigate(R.id.action_dashboardCategoryNew_to_orders)
+
             }
 
             if (printer != null) {
@@ -3496,6 +3501,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         } else {
             Log.e(TAG, "PrinterIsNotNull:")
+            ProgressUtils.dismissProgressDialog()
+            findNavController().navigate(R.id.action_dashboardCategoryNew_to_orders)
         }
 
     }
@@ -3824,17 +3831,24 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 )
 
                 PrinterClass.closePrinter()
+                ProgressUtils.dismissProgressDialog()
+                findNavController().navigate(R.id.action_dashboardCategoryNew_to_orders)
 
                 //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
             } catch (e: Exception) {
-                PrinterClass.closePrinter()
+                ProgressUtils.dismissProgressDialog()
+                findNavController().navigate(R.id.action_dashboardCategoryNew_to_orders)
+                /*PrinterClass.closePrinter()
                 e.printStackTrace()
                 Log.e(TAG, "PrinterError: " + e.localizedMessage)
+               */
             }
 
 
         } catch (e: Exception) {
             e.printStackTrace()
+            ProgressUtils.dismissProgressDialog()
+            findNavController().navigate(R.id.action_dashboardCategoryNew_to_orders)
         }
 
     }
@@ -4037,10 +4051,17 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         viewModelPayment.QueueCreateSaveOrder.observe(requireActivity(), {
             it.getContentIfNotHandled()?.let {
                 binding.layoutCart.txtSave.text = getString(R.string.save)
+                viewModel.deleteCart()
+                if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
+                    prefProvider.setValue(ORDER_TYPE, "")
+                }
+
+
                 clearCustomer()
                 hideOrderType()
                 //getKitchenPrinters(it)
                 clearUpdateFlag()
+                findNavController().navigate(R.id.action_dashboardCategoryNew_to_orders)
 
 
             }

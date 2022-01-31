@@ -151,10 +151,10 @@ class AddCustomerViewModel @Inject constructor(
         /*else if (TextUtils.isEmpty(value?.data?.last_name?.trim())) {
             _snackbarText.value = Event(R.string.last_name_validate)
         }*/
-       /* else if (value?.data?.phones_attributes?.size == 0) {
+        /* else if (value?.data?.phones_attributes?.size == 0) {
 
-            _snackbarText.value = Event(R.string.phone_no_validate)
-        }*/ /*else if (value?.data?.phones_attributes?.get(0)?.phone_number?.length!! < 10) {
+             _snackbarText.value = Event(R.string.phone_no_validate)
+         }*/ /*else if (value?.data?.phones_attributes?.get(0)?.phone_number?.length!! < 10) {
             _snackbarText.value = Event(R.string.valid_phone_no_validate)
         }*/
         /* else if (TextUtils.isEmpty(value?.data?.email)) {
