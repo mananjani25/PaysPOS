@@ -53,6 +53,9 @@ class CashLogViewModel @Inject constructor(
             Locale.getDefault()
         ).format(Date())
     }
+    fun setNumerFormat(){
+
+    }
 
     fun datePicker(selectPicker: Boolean) {
         selectPicker1 = selectPicker
