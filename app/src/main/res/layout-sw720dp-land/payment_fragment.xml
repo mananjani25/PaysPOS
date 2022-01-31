@@ -158,13 +158,14 @@
                         style="@style/CustomFontBold"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
+                        android:layout_gravity="center_horizontal"
                         android:layout_weight="1.4"
                         android:paddingVertical="@dimen/_10sdp"
                         android:background="?attr/selectableItemBackground"
-                        android:gravity="center"
+                        android:gravity="start"
                         android:textColor="@color/btnColorDark_"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textSize="@dimen/_6mdpi"
+                        />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtSecondAmount"
@@ -252,13 +253,14 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_weight="1.6"
+                        android:layout_weight="1.4"
                         android:paddingVertical="@dimen/_10sdp"
+                        android:paddingStart="@dimen/_1sdp"
                         android:background="?attr/selectableItemBackground"
-                        android:gravity="center"
-                        android:text=""
+                        android:gravity="start"
                         android:textColor="@color/btnColorDark_"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textSize="@dimen/_6mdpi"
+                        />
 
                     <androidx.appcompat.widget.LinearLayoutCompat
                         android:layout_width="0dp"

@@ -354,7 +354,7 @@
                     android:layout_weight="1"
                     android:orientation="vertical"
                     android:paddingTop="@dimen/_5sdp"
-                    android:paddingEnd="@dimen/_5sdp"
+                    android:paddingEnd="@dimen/_3sdp"
                     android:paddingBottom="@dimen/_5sdp">
 
                     <androidx.appcompat.widget.LinearLayoutCompat

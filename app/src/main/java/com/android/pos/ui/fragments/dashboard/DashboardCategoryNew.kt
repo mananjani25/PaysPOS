@@ -107,12 +107,12 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     private var openORderType: String = ""
     private lateinit var nameObserver: Observer<List<CartModel>>
-    private var isOpenOrderUpdate: Boolean = false
+  //  private var isOpenOrderUpdate: Boolean = false
     private var orderDiscount: Double = 0.0
     private var categoryItemAdapter1: CategoryItemAdapter1? = null
     private var categoryTabAdapter1: CategoryTabAdapter1? = null
     private var clickManualSales: Boolean = false
-    private var customerUpdate: Boolean = false
+    //private var customerUpdate: Boolean = false
     private var orderOfflineId: String = ""
     private var paymentOfflineId: String = ""
     private var orderId: Int? = null
@@ -3394,6 +3394,30 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         viewModel.updateOrder.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
+
+                viewModel.deleteCart()
+                isOrderUpdate = false
+
+                if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
+                    prefProvider.setValue(ORDER_TYPE, "")
+                }
+                binding.layoutCart.txtSave.text = getString(R.string.save)
+                clearCustomer()
+                hideOrderType()
+                hideOrderMenu()
+                val bundle = Bundle()
+                bundle.putParcelable("cartList", cartList[0])
+                bundle.putBoolean("isGuestPaid", false)
+
+                cartList[0].orderId?.let { it1 -> bundle.putInt("orderId", it1) }
+
+
+                findNavController().navigate(
+                    R.id.action_dashboardCategoryNew_to_dineInOrderTable,
+                    bundle
+                )
+
+/* Old code
                 AlertUtils.showCustomAlertWithListenerWithOK(
                     requireContext(),
                     it.toString()
@@ -3429,6 +3453,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
 
                 // orderId?.let { it1 -> viewModel.apiCallOrderDetails(it1) }
+*/
             }
         })
 
