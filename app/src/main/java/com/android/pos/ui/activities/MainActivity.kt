@@ -35,10 +35,12 @@ import com.android.pos.ui.fragments.settings.hardware.Hardware
 import com.android.pos.utils.FileUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.alert
+import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 import java.io.IOException
 import javax.inject.Inject
+
 
 @AndroidEntryPoint
 class MainActivity : BaseScannerActivity() {
@@ -61,9 +63,13 @@ class MainActivity : BaseScannerActivity() {
 
     @Inject
     lateinit var repo: UserRepository
+    private lateinit var mFirebaseAnalytics: FirebaseAnalytics
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+
+
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
@@ -377,7 +383,7 @@ class MainActivity : BaseScannerActivity() {
         return null
     }
 
-    public var fragmentCallBack :((Fragment?)->Unit)?= null
+    public var fragmentCallBack: ((Fragment?) -> Unit)? = null
     fun loadFragmentInSettings(fragment: Fragment?) {
         fragmentCallBack?.invoke(fragment)
     }
