@@ -225,6 +225,7 @@
                             android:textColor="@color/black"
                             android:textColorHint="@color/hint_color_"
                             android:textSize="@dimen/_5mdpi"
+                            android:digits="@string/character_String"
                             android:text="@={viewModel.addCustomerDetails.data.first_name}"/>
 
                         <include layout="@layout/divider" />
@@ -244,6 +245,8 @@
                             android:textColor="@color/black"
                             android:textColorHint="@color/hint_color_"
                             android:textSize="@dimen/_5mdpi"
+                            android:digits="@string/character_String"
+
                             android:text="@={viewModel.addCustomerDetails.data.last_name}"/>
 
                         <include layout="@layout/divider" />
