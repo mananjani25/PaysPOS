@@ -1082,7 +1082,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         }
 
         linearSupport.setOnClickListener {
-            throw RuntimeException("Test Crash") // Force a crash
+           // throw RuntimeException("Test Crash") // Force a crash
 
 //                findNavController().navigate(R.id.action_dashboardCategoryNew_to_reportEODFragment)
 //                dialog.dismiss()
