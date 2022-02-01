@@ -77,7 +77,7 @@ class ReportEODViewModel @Inject constructor(
     }
 
 
-    fun getReportSummary(email: String) {
+    fun getReportSummary(emailId: String) {
 
         _showProgress.value = Event(true)
         viewModelScope.launch {
@@ -88,7 +88,7 @@ class ReportEODViewModel @Inject constructor(
                     endDate = endDate.value ?: "",
                     terminalId = selectedTerminalId,
                     employee_id = prefProvider.getValueInt(EMPLOYEE_ID, 0).toString(),
-                    email = email
+                    email = emailId
 
                 )
             when (resourceReport.status) {
@@ -97,10 +97,10 @@ class ReportEODViewModel @Inject constructor(
                     resourceReport.data.let {
                         if (it?.status == 200) {
 
-                            if (email.isEmpty()) {
+                            if (emailId.isEmpty()) {
                                 _data.postValue(Event(resourceReport.data?.data!!))
                             } else {
-                                _snackbarText.value = Event(resourceReport.message)
+                                _snackbarText.value = Event(it.message)
                             }
                         }
                     }

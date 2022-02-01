@@ -6,7 +6,6 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.InsetDrawable
 import android.os.Bundle
 import android.view.*
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
@@ -15,6 +14,7 @@ import com.android.pos.R
 import com.android.pos.databinding.DailogSendReceiptBinding
 import com.android.pos.ui.fragments.payment.OrderCompleteViewModel
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.extensions.showAlert
@@ -26,6 +26,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class SendReceiptFragment : DialogFragment() {
 
+    private var emailAddress: String? = null
     private var isEod: Boolean = false
     private lateinit var binding: DailogSendReceiptBinding
     var orderId: Int = 0
@@ -44,7 +45,7 @@ class SendReceiptFragment : DialogFragment() {
         binding = DailogSendReceiptBinding.inflate(inflater, container, false)
         dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
         val back = ColorDrawable(Color.WHITE)
-        val inset = InsetDrawable(back, 150,200,150,200)
+        val inset = InsetDrawable(back, 150, 200, 150, 200)
         dialog?.window?.setBackgroundDrawable(inset);
         setupSnackbar()
         observe()
@@ -52,6 +53,12 @@ class SendReceiptFragment : DialogFragment() {
 
 
         isEod = requireArguments().getBoolean("EOD", false)
+        if (isEod) {
+            emailAddress = requireArguments().getString("email")
+            if (emailAddress != null)
+                binding.edtEmail.setText(emailAddress)
+        }
+
         if (!isEod)
             orderId = requireArguments().getInt("orderId")
         type = requireArguments().getInt("type")
@@ -66,6 +73,8 @@ class SendReceiptFragment : DialogFragment() {
             dismiss()
         }
         binding.txtSend.setOnClickListener {
+
+            MethodUtils.hideKeyboard(requireActivity())
 
             if (isEod) {
 

@@ -7,7 +7,7 @@
 
         <variable
             name="model"
-            type="com.android.pos.data.model.responseModel.EodReportResponse.Data.OrderSalesDetails.Data" />
+            type="com.android.pos.data.model.responseModel.EodReportResponse.Data.OrderSalesDetails.Details" />
     </data>
 
     <LinearLayout
@@ -25,13 +25,14 @@
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txtAmtAllocated"
             style="@style/ReportItemText"
-            android:text="@{model.showTip()}"
+
+            android:text="@{@string/symbole +``+String.format(@string/format,model.amount)}"
             tools:text="Amount Allocated" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txtItems"
             style="@style/ReportItemText"
-            android:text="@{model.showSc()}"
+            android:text="@{@string/symbole +``+String.format(@string/format,model.serviceCharge)}"
             tools:text="Items" />
 
         <androidx.appcompat.widget.AppCompatTextView
@@ -43,8 +44,14 @@
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txtRefunds"
             style="@style/ReportItemText"
-            android:text="@{model.showAmount()}"
+            android:text="@{@string/symbole +``+String.format(@string/format,model.amount)}"
             tools:text="Refunds" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txtTerminalName"
+            style="@style/ReportItemText"
+            android:text="@{model.terminal}"
+            tools:text="Employee Name" />
 
     </LinearLayout>
 </layout>

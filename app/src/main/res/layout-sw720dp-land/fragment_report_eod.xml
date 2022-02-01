@@ -310,7 +310,7 @@
                     android:id="@+id/txtSalesDetails"
                     style="@style/ReportTitleStyle"
                     android:visibility="gone"
-                    android:text="Sales Details" />
+                    android:text="ORDER SALES DETAILS" />
 
 
                 <LinearLayout
@@ -326,6 +326,7 @@
                         android:layout_height="wrap_content"
                         android:gravity="center"
                         android:layout_weight="1"
+                        style="@style/CustomFontSemiBold"
                         android:textSize="@dimen/_5mdpi"
                         android:textColor="@color/txtColor"
                         android:text="Order Id" />
@@ -335,6 +336,7 @@
                         android:layout_height="wrap_content"
                         android:gravity="center"
                         android:layout_weight="1"
+                        style="@style/CustomFontSemiBold"
                         android:textSize="@dimen/_5mdpi"
                         android:textColor="@color/txtColor"
                         android:text="Tip" />
@@ -344,6 +346,7 @@
                         android:layout_height="wrap_content"
                         android:gravity="center"
                         android:layout_weight="1"
+                        style="@style/CustomFontSemiBold"
                         android:textSize="@dimen/_5mdpi"
                         android:textColor="@color/txtColor"
                         android:text="Service Charge" />
@@ -352,6 +355,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:gravity="center"
+                        style="@style/CustomFontSemiBold"
                         android:layout_weight="1"
                         android:textSize="@dimen/_5mdpi"
                         android:textColor="@color/txtColor"
@@ -363,9 +367,20 @@
                         android:layout_height="wrap_content"
                         android:gravity="center"
                         android:layout_weight="1"
+                        style="@style/CustomFontSemiBold"
                         android:textSize="@dimen/_5mdpi"
                         android:textColor="@color/txtColor"
                         android:text="Amount" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:layout_weight="1"
+                        style="@style/CustomFontSemiBold"
+                        android:textSize="@dimen/_5mdpi"
+                        android:textColor="@color/txtColor"
+                        android:text="Terminal" />
 
 
                 </LinearLayout>
@@ -378,6 +393,84 @@
                     tools:itemCount="2"
                     android:visibility="gone"
                     tools:listitem="@layout/view_sales_details_data" />
+
+                <LinearLayout
+                    android:id="@+id/llTotal"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/_5sdp">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:layout_weight="1"
+                        style="@style/CustomFontSemiBold"
+                        android:textSize="@dimen/_5mdpi"
+                        android:textColor="@color/txtColor"
+                        android:text="Total" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:layout_weight="1"
+                        android:visibility="invisible"
+                        style="@style/CustomFontSemiBold"
+                        android:textSize="@dimen/_5mdpi"
+                        android:textColor="@color/txtColor"
+                        android:text="Tip" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:layout_width="0dp"
+                        android:visibility="invisible"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:layout_weight="1"
+                        style="@style/CustomFontSemiBold"
+                        android:textSize="@dimen/_5mdpi"
+                        android:textColor="@color/txtColor"
+                        android:text="Service Charge" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:visibility="invisible"
+                        style="@style/CustomFontSemiBold"
+                        android:layout_weight="1"
+                        android:textSize="@dimen/_5mdpi"
+                        android:textColor="@color/txtColor"
+                        android:text="Pay Type" />
+
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtTotalAmount"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:visibility="visible"
+                        android:layout_weight="1"
+                        style="@style/CustomFontSemiBold"
+                        android:textSize="@dimen/_5mdpi"
+                        android:textColor="@color/txtColor"
+                        android:text="Amount" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:visibility="invisible"
+                        android:layout_weight="1"
+                        style="@style/CustomFontSemiBold"
+                        android:textSize="@dimen/_5mdpi"
+                        android:textColor="@color/txtColor"
+                        android:text="Terminal" />
+
+
+                </LinearLayout>
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtSalesSummary"
@@ -479,9 +572,10 @@
                     tools:listitem="@layout/view_sales_report" />
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/txtTotalExternalPayments"
+                    android:id="@+id/txtCreditTipAudit"
                     style="@style/ReportTitleStyle"
                     android:textAllCaps="true"
+                    android:visibility="gone"
                     android:text="credit tip audit" />
 
                 <androidx.recyclerview.widget.RecyclerView
@@ -489,6 +583,7 @@
                     style="@style/ReportRecyclerViewstyle"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:itemCount="2"
+                    android:visibility="gone"
                     tools:listitem="@layout/view_sales_report" />
 
                 <androidx.appcompat.widget.AppCompatTextView

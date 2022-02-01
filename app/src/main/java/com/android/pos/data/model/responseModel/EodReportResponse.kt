@@ -69,11 +69,11 @@ data class EodReportResponse(
 
         data class OrderSalesDetails(
             @SerializedName("data")
-            var `data`: List<Data>,
+            var `data`: List<Details>,
             @SerializedName("Total")
             var total: Double
         ) {
-            data class Data(
+            data class Details(
                 @SerializedName("Amount")
                 var amount: Double,
                 @SerializedName("Order Id")
@@ -83,20 +83,10 @@ data class EodReportResponse(
                 @SerializedName("Service Charge")
                 var serviceCharge: Double,
                 @SerializedName("Tip")
-                var tip: Double
-            ) {
-                fun showAmount() = "$" + String.format(
-                    "%.2f", amount
-                )
-
-                fun showTip() = "$" + String.format(
-                    "%.2f", tip
-                )
-
-                fun showSc() = "$" + String.format(
-                    "%.2f", serviceCharge
-                )
-            }
+                var tip: Double,
+                @SerializedName("Terminal")
+                var terminal: String
+            )
         }
 
 

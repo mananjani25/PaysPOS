@@ -9,10 +9,14 @@ import com.android.pos.databinding.ViewSalesDetailsDataBinding
 class SalesOrderDetailsAdapter :
     RecyclerView.Adapter<SalesOrderDetailsAdapter.MyViewHolder>() {
 
-    private var arrayList = ArrayList<EodReportResponse.Data.OrderSalesDetails.Data>()
+    private var arrayList = ArrayList<EodReportResponse.Data.OrderSalesDetails.Details>()
 
     inner class MyViewHolder(val binding: ViewSalesDetailsDataBinding) :
         RecyclerView.ViewHolder(binding.root) {
+        fun bind(model: EodReportResponse.Data.OrderSalesDetails.Details, position: Int) {
+            binding.model = model
+            binding.executePendingBindings()
+        }
     }
 
     override fun onCreateViewHolder(
@@ -25,17 +29,15 @@ class SalesOrderDetailsAdapter :
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        val itemBinding = holder.binding
-        itemBinding.model = arrayList[position]
-        itemBinding.executePendingBindings()
+        holder.bind(arrayList.get(position), position)
     }
 
     override fun getItemCount(): Int {
         return arrayList.size
     }
 
-    fun add(arrayList: List<EodReportResponse.Data.OrderSalesDetails.Data>) {
-        this.arrayList = arrayList as ArrayList<EodReportResponse.Data.OrderSalesDetails.Data>
+    fun add(arrayList: List<EodReportResponse.Data.OrderSalesDetails.Details>) {
+        this.arrayList = arrayList as ArrayList<EodReportResponse.Data.OrderSalesDetails.Details>
         notifyDataSetChanged()
     }
 }
