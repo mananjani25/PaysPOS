@@ -20,14 +20,12 @@ import com.android.pos.R
 import com.android.pos.data.model.responseModel.VenueDetailsResponse
 import com.android.pos.databinding.FragmentReportEodBinding
 import com.android.pos.ui.adapter.*
+import com.android.pos.ui.fragments.loginscreen.ClockInOwnerViewModel
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.EventObserver
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
-import com.android.pos.utils.extensions.gone
-import com.android.pos.utils.extensions.liveSnackBar
-import com.android.pos.utils.extensions.showAlert
-import com.android.pos.utils.extensions.visible
+import com.android.pos.utils.extensions.*
 import com.android.pos.utils.statusUtils.Status
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -40,6 +38,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     private lateinit var binding: FragmentReportEodBinding
     private val viewModel by viewModels<ReportEODViewModel>()
+    private val viewModelClockOut by viewModels<ClockInOwnerViewModel>()
 
     private lateinit var startDate: DatePickerDialog.OnDateSetListener
     private lateinit var endDate: DatePickerDialog.OnDateSetListener
@@ -133,6 +132,28 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
 
             bundle.getString("email")?.let { viewModel.getReportSummary(it) }
+        }
+
+        binding.txtClockOut.setOnClickListener {
+
+            alert(
+                getString(R.string.app_name),
+                getString(R.string.clockout_message)
+            ) {
+                positiveButton(getString(android.R.string.ok)) {
+                    //  viewModelClockOut.submit()
+
+                    val bundle = Bundle()
+                    bundle.putBoolean("isDashboard", true)
+                    findNavController().navigate(
+                        R.id.action_reportEODFragment_to_passcode,
+                        bundle
+                    )
+                }
+                negativeButton(R.string.tv_cancel) {
+                    // Do negative stuff here
+                }
+            }
         }
     }
 
@@ -313,6 +334,9 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     private fun initObservers() {
         binding.root.liveSnackBar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
+
+
+
 
 
         viewModel.startDateSelection.observe(requireActivity(), { event ->

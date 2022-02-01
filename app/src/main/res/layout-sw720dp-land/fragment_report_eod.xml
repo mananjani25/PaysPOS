@@ -68,6 +68,18 @@
                 android:visibility="visible" />
 
             <TextView
+                android:id="@+id/txtClockOut"
+                style="@style/CustomFontBold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/_10sdp"
+                android:padding="@dimen/_3sdp"
+                android:textColor="@color/btnColor"
+                android:text="@string/tv_clock_out"
+                android:textSize="@dimen/_7mdpi"
+                android:visibility="visible" />
+
+            <TextView
                 android:id="@+id/txtHome"
                 style="@style/CustomFontBold"
                 android:layout_width="wrap_content"
