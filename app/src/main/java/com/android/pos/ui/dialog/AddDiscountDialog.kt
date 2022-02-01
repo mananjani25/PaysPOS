@@ -114,7 +114,8 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                 if (defaultModel.discountType == getString(R.string.disc_percentage)) {
                     val applyDiscount =
                         (defaultModel.discountPrice * 100) / ((defaultModel.price + modifierPrice) * defaultModel.itemQuantity)
-                    binding.edtAmount.setText(MethodUtils.roundOffAmountString(applyDiscount))
+                    binding.edtAmount.setText(MethodUtils.roundOffAmountString(Math.round(applyDiscount)
+                        .toDouble()))
                     percentageView()
                 } else {
                     binding.edtAmount.setText(MethodUtils.roundOffAmountString(defaultModel.discountPrice))

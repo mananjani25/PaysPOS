@@ -106,9 +106,10 @@
                         android:layout_gravity="end"
                         android:layout_marginTop="@dimen/_2sdp"
                         android:gravity="start"
+                        android:visibility="gone"
                         android:textColor="@color/colorRed"
                         android:textSize="@dimen/_5mdpi"
-                        tools:text="$20.00" />
+                        tools:text="" />
 
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
