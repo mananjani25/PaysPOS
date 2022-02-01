@@ -28,6 +28,7 @@ import com.android.pos.data.entities.TbAddress
 import com.android.pos.data.entities.TbCustomer
 import com.android.pos.data.entities.TbPhones
 import com.android.pos.data.model.requestModel.CreateCustomerRequestModel
+import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentOpenOrderNewBinding
 import com.android.pos.ui.adapter.AddressListAdapter
@@ -43,6 +44,7 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.*
+import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
 class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
@@ -428,31 +430,33 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
 
 
         if (customer.addresses.isNotEmpty()) {
-           /* var list: java.util.ArrayList<CreateCustomerRequestModel.Customer.Addresses> = arrayListOf()
+            var list: java.util.ArrayList<CreateCustomerRequestModel.Customer.Addresses> = arrayListOf()
             addressList=list
             list.add(
                 CreateCustomerRequestModel.Customer.Addresses(
-                    customer.addresses.get(0).id,
-                    customer.addresses.get(0).address1,
-                    customer.addresses.get(0).address2,
-                    customer.addresses.get(0).city,
-                    customer.addresses.get(0).state,
-                    customer.addresses.get(0).country,
-                    customer.addresses.get(0).postcode,
-                    customer.addresses.get(0).type_of_address,
+                    customer.addresses.get(customer.addresses.size-1).id,
+                    customer.addresses.get(customer.addresses.size-1).address1,
+                    customer.addresses.get(customer.addresses.size-1).address2,
+                    customer.addresses.get(customer.addresses.size-1).city,
+                    customer.addresses.get(customer.addresses.size-1).state,
+                    customer.addresses.get(customer.addresses.size-1).country,
+                    customer.addresses.get(customer.addresses.size-1).postcode,
+                    customer.addresses.get(customer.addresses.size-1).type_of_address,
                     0.0,
                     0.0,
                 )
-            )*/
+            )
 
-
-            var list: java.util.ArrayList<CreateCustomerRequestModel.Customer.Addresses> = arrayListOf()
-            addressList=list
+          /*  var list: java.util.ArrayList<CreateCustomerRequestModel.Customer.Addresses> = arrayListOf()
+            val data=customer.addresses.get(customer.addresses.size-1)
+            list.addAll(data)*/
+/*
             customer.addresses.forEach {
                 list.add(CreateCustomerRequestModel.Customer.Addresses(
                     it.id,it.address1,it.address2,it.city,it.state,it.country,it.postcode,it.type_of_address
                 ))
             }
+*/
 
 
 
