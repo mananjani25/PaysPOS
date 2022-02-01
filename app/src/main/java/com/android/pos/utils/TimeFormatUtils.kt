@@ -67,4 +67,27 @@ object TimeFormatUtils {
 
 
     }
+
+    fun convertDateFormatForOpenOrder(selectedDate: String, context: Context?): String {
+        try {
+            var inputFormat = SimpleDateFormat("yyyy-MM-dd")
+            inputFormat.timeZone = TimeZone.getTimeZone("UTC")
+            var outFormat = SimpleDateFormat("MMM-dd-yyyy")
+            prefProvider = PrefProvider(context = context!!)
+            inputFormat.timeZone = TimeZone.getTimeZone(prefProvider.getValue(SYSTEM_TIMEZONE, ""))
+            var date = inputFormat.parse(selectedDate)
+            var formatedDate = outFormat.format(date)
+            return formatedDate
+        } catch (e: Exception) {
+            var inputFormat = SimpleDateFormat("yyyy-MM-dd")
+            inputFormat.timeZone = TimeZone.getTimeZone("UTC")
+            prefProvider = PrefProvider(context = context!!)
+            var outFormat = SimpleDateFormat("MMM-dd-yyyy")
+            inputFormat.timeZone = TimeZone.getTimeZone(prefProvider.getValue(SYSTEM_TIMEZONE, ""))
+            var date = inputFormat.parse(selectedDate)
+            var formatedDate = outFormat.format(date)
+            return formatedDate
+        }
+    }
+
 }
