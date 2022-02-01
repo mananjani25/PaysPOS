@@ -747,7 +747,11 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
 
                         }
                     }
-                    val bundle = bundleOf("isFromDetails" to false)
+                    val bundle = Bundle().apply {
+                        putBoolean("isFromDetails", true)
+                        putParcelable("model", cartAdapter.getItem(pos))
+                    }
+
                     findNavController().navigate(
                         R.id.action_manualSaleNew_to_addDiscountDialog,
                         bundle
