@@ -748,7 +748,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
                         }
                     }
                     val bundle = Bundle().apply {
-                        putBoolean("isFromDetails", true)
+                        putBoolean("isFromDetails", false)
                         putParcelable("model", cartAdapter.getItem(pos))
                     }
 

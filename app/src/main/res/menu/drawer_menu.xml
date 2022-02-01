@@ -14,6 +14,7 @@
             android:id="@+id/menuTransactions"
             android:title="Transactions" />
 
+
         <item
             android:id="@+id/menuCashLog"
             android:title="Cash Log" />
@@ -37,6 +38,11 @@
         <item
             android:id="@+id/menuSupport"
             android:title="Support" />
+
+        <item
+            android:id="@+id/menuHardware"
+            android:title="Hardware" />
+
 
         <item
             android:id="@+id/menuLogout"
