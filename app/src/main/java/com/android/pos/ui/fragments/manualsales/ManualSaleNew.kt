@@ -260,7 +260,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
                 bundle.putDouble("totalServiceCharge", viewModel.totalServiceCharge)
                 cartList?.get(0)?.customer = assignCustomer
                 bundle.putParcelable("cartList", cartList?.get(0))
-                Log.e(TAG,"cartListManualSale  ${Gson().toJson(cartList?.get(0))}")
+                Log.e(TAG, "cartListManualSale  ${Gson().toJson(cartList?.get(0))}")
                 bundle.putString(
                     "redeemLoyalty",
                     Gson().toJson(viewModel.redeemLoyaltyInfo)
@@ -674,7 +674,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
                     Log.e(TAG, "cartModelPArseMsd   ${Gson().toJson(cartModel)}")
                     viewModel.cartLogic(cartList, cartModel, Constants.UPDATE)
 
-                } else if (cartAdapter.getItem(pos).price > result.percentage) {
+                } else if (result.discountType == "Amount") {
                     val cartModel = cartAdapter.getItem(pos)
                     cartModel.discountPrice = result.percentage
                     cartModel.isDiscountDefault = false
@@ -684,6 +684,14 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
 
 
                     Log.e(TAG, "DiscountInDollar")
+                } else {
+                    val cartModel = cartAdapter.getItem(pos)
+                    cartModel.discountPrice = 0.0
+                    cartModel.discountType = ""
+                    cartModel.isManualSales = true
+                    viewModel.cartLogic(cartList, cartModel, Constants.UPDATE)
+
+
                 }
 
 
@@ -754,7 +762,11 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
                 ) { pos ->
 
 
-                    val bundle = bundleOf("isFromDetails" to false, "pos" to pos)
+                    val bundle = bundleOf(
+                        "isFromDetails" to false,
+                        "pos" to pos,
+                        "model" to cartAdapter.getItem(pos)
+                    )
                     findNavController().navigate(
                         R.id.action_manualSaleNew_to_addDiscountDialog,
                         bundle
@@ -974,10 +986,10 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
                             ((model.price * model.itemQuantity) - model.discountPrice)
                         )
 
-                    } else if ((model.price * model.itemQuantity) > result.percentage) {
+                    } else if (result.discountType == "Amount") {
 
                         model.discountPrice = result.percentage
-                        model.discountId = 0
+                        model.discountId = result.id
                         model.discountType = result.discountType
                         model.isManualSales = true
 

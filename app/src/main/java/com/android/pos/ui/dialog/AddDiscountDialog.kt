@@ -19,6 +19,7 @@ import com.android.pos.data.remote.Constants.PERCENTAGE
 import com.android.pos.databinding.DailogAddDiscountBinding
 import com.android.pos.ui.adapter.DialogDiscountListAdapter
 import com.android.pos.ui.fragments.settings.discount.DiscountListViewModel
+import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.MethodUtils
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
@@ -29,6 +30,7 @@ import java.util.*
 class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountInterface,
     TextWatcher {
 
+    private var itemPrice: Double = 0.0
     private var orderDiscountType: String = ""
     private var orderDiscountPrice: Double = 0.0
     private var totalOrderPrice: Double = 0.0
@@ -75,6 +77,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
             }
         }
 
+        itemPrice = defaultModel.price + modifierPrice
 
 
         selectedCurrency = defaultModel.discountType
@@ -114,8 +117,12 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                 if (defaultModel.discountType == getString(R.string.disc_percentage)) {
                     val applyDiscount =
                         (defaultModel.discountPrice * 100) / ((defaultModel.price + modifierPrice) * defaultModel.itemQuantity)
-                    binding.edtAmount.setText(MethodUtils.roundOffAmountString(Math.round(applyDiscount)
-                        .toDouble()))
+                    binding.edtAmount.setText(
+                        MethodUtils.roundOffAmountString(
+                            Math.round(applyDiscount)
+                                .toDouble()
+                        )
+                    )
                     percentageView()
                 } else {
                     binding.edtAmount.setText(MethodUtils.roundOffAmountString(defaultModel.discountPrice))
@@ -356,7 +363,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                     } else {
                         TbDiscount(
                             "",
-                            "",
+                            "Amount",
                             -1,
                             0,
                             "",
@@ -427,6 +434,69 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
     override fun selectedItem(model: TbDiscount, pos: Int) {
         Log.e(TAG, "SelectedItem:  ${Gson().toJson(model)}")
+
+        if (isOrderDiscount) {
+
+            if (model.discountType == requireContext().getString(R.string.disc_percentage)) {
+
+                val percentage = (totalOrderPrice * model.percentage) / 100
+
+                if (percentage <= totalOrderPrice) {
+                    setData(model, pos)
+                } else {
+                    displayError("Discount amount should less then item amount.")
+
+                }
+
+            } else {
+                if (model.percentage <= totalOrderPrice) {
+
+                    setData(model, pos)
+
+                } else {
+                    displayError("Discount amount should less then total amount.")
+
+                }
+            }
+
+
+        } else {
+
+            if (model.discountType == requireContext().getString(R.string.disc_percentage)) {
+
+                val percentage = (itemPrice * model.percentage) / 100
+
+                if (percentage <= itemPrice) {
+                    setData(model, pos)
+                } else {
+                    displayError("Discount amount should less then item amount.")
+
+                }
+            } else {
+                if (model.percentage <= itemPrice) {
+
+                    setData(model, pos)
+
+                } else {
+                    displayError("Discount amount should less then item amount.")
+                }
+            }
+
+
+        }
+
+    }
+
+    private fun displayError(message: String) {
+
+        AlertUtils.showCustomAlert(
+            requireContext(),
+            message
+        )
+        discountAdapter.clearSelectedItem()
+    }
+
+    private fun setData(model: TbDiscount, pos: Int) {
         discountModel.apply { model }
 
         val discount: Double = model.percentage
@@ -437,7 +507,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
             amountView()
         }
 
-
+        binding.edtAmount.removeTextChangedListener(this)
         binding.edtAmount.setText(MethodUtils.roundOffAmountString(discount))
         selectedListPos = pos
     }
@@ -487,7 +557,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
             if (selectedCurrency == AMOUNT) {
 
                 var price =
-                    (((defaultModel.price+modifierPrice) - defaultModel.discountPrice) * defaultModel.itemQuantity)
+                    (((defaultModel.price + modifierPrice) - defaultModel.discountPrice) * defaultModel.itemQuantity)
 
                 if (isOrderDiscount) {
                     price = totalOrderPrice
