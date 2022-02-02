@@ -306,6 +306,7 @@
                             android:inputType="textCapWords"
                             android:padding="@dimen/_5sdp"
                             android:textColor="@color/black"
+                            android:digits="@string/character_String"
                             android:textColorHint="@color/hint_color_"
                             android:textSize="@dimen/_5mdpi" />
 
@@ -325,7 +326,8 @@
                             android:padding="@dimen/_5sdp"
                             android:textColor="@color/black"
                             android:textColorHint="@color/hint_color_"
-                            android:textSize="@dimen/_5mdpi" />
+                            android:textSize="@dimen/_5mdpi"
+                            android:digits="@string/character_String"/>
 
                         <include layout="@layout/divider" />
 

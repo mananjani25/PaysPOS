@@ -43,7 +43,6 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
     private lateinit var defaultModel: TbItem
     private var selectedCurrency: String = AMOUNT
     var modifierPrice: Double = 0.0
-    var position = 0
 
     companion object {
         fun newInstance() = AddDiscountDialog()
@@ -68,7 +67,6 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
         isFromDetails = requireArguments().getBoolean("isFromDetails", false)
         val model: TbItem? = requireArguments().getParcelable("model")
-        position = requireArguments().getInt("pos")
         defaultModel = model ?: TbItem()
 
         if (defaultModel.modifiers.isNotEmpty()) {
@@ -116,12 +114,8 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                 if (defaultModel.discountType == getString(R.string.disc_percentage)) {
                     val applyDiscount =
                         (defaultModel.discountPrice * 100) / ((defaultModel.price + modifierPrice) * defaultModel.itemQuantity)
-                    binding.edtAmount.setText(
-                        MethodUtils.roundOffAmountString(
-                            Math.round(applyDiscount)
-                                .toDouble()
-                        )
-                    )
+                    binding.edtAmount.setText(MethodUtils.roundOffAmountString(Math.round(applyDiscount)
+                        .toDouble()))
                     percentageView()
                 } else {
                     binding.edtAmount.setText(MethodUtils.roundOffAmountString(defaultModel.discountPrice))
@@ -329,11 +323,8 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                         setFragmentResult("request_key_discount_order", result)
                     }
                     else -> {
-                        var result1 = Bundle().apply {
-                            putParcelable("data", discount)
-                            putInt("pos", position)
-                        }
-                        setFragmentResult("request_key_discount", result1)
+
+                        setFragmentResult("request_key_discount", result)
                     }
                 }
                 findNavController().navigateUp()
@@ -385,11 +376,8 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                         setFragmentResult("request_key_discount_order", result)
                     }
                     else -> {
-                        var result1 = Bundle().apply {
-                            putParcelable("data", discountModel)
-                            putInt("pos", position)
-                        }
-                        setFragmentResult("request_key_discount", result1)
+
+                        setFragmentResult("request_key_discount", result)
                     }
                 }
                 findNavController().navigateUp()
@@ -418,11 +406,8 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                 setFragmentResult("request_key_discount_order", result)
             }
             else -> {
-                var result1 = Bundle().apply {
-                    putParcelable("data", discount)
-                    putInt("pos", position)
-                }
-                setFragmentResult("request_key_discount", result1)
+
+                setFragmentResult("request_key_discount", result)
             }
         }
         findNavController().navigateUp()
@@ -502,7 +487,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
             if (selectedCurrency == AMOUNT) {
 
                 var price =
-                    (((defaultModel.price + modifierPrice) - defaultModel.discountPrice) * defaultModel.itemQuantity)
+                    (((defaultModel.price+modifierPrice) - defaultModel.discountPrice) * defaultModel.itemQuantity)
 
                 if (isOrderDiscount) {
                     price = totalOrderPrice

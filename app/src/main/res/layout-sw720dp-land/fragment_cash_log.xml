@@ -6,6 +6,8 @@
 
     <data>
 
+        <import type="java.util.Locale" />
+        <import type="java.text.NumberFormat" />
 
         <variable
             name="viewModel"
@@ -287,7 +289,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_marginStart="@dimen/_1sdp"
-                        android:text="@{@string/symbole +` `+String.format(@string/format,cashLogModel.totalLeftAmountInDrawer)}"
+                        android:text="@{@string/symbole +` `+NumberFormat.getNumberInstance(Locale.US).format(cashLogModel.totalLeftAmountInDrawer)}"
                         android:textColor="@color/btnColor"
                         android:textSize="@dimen/_5mdpi" />
 

@@ -182,17 +182,11 @@ class AddEditCustomer : Fragment() {
             /*Log.e(TAG, "Date  ${getDay(editModel?.birth_date!!)}")
             Log.e(TAG, "Month  ${getMonth(editModel?.birth_date!!)}")
             Log.e(TAG, "Year  ${getYear(editModel?.birth_date!!)}")*/
-
-            if (editModel?.birth_date != null) {
-                viewModel.addCustomerDetails.value?.data?.birth_day = editModel?.birth_date?.let {
-                    getDay(
-                        it
-                    )
-                }
-            } else {
-                viewModel.addCustomerDetails.value?.data?.birth_day = ""
+            viewModel.addCustomerDetails.value?.data?.birth_day = editModel?.birth_date?.let {
+                getDay(
+                    it
+                )
             }
-
             if (editModel?.birth_date != null)
                 viewModel.addCustomerDetails.value?.data?.birthday_year =
                     getYear(editModel.birth_date)

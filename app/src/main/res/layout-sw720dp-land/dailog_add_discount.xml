@@ -99,7 +99,7 @@
                         android:layout_marginEnd="@dimen/_10sdp"
                         android:background="@null"
                         android:enabled="false"
-                        android:digits="@string/disable_emoji_string"
+                        android:digits="0123456789"
                         android:hint="0.00"
                         android:textColor="@color/txtColor"
                         android:textColorHint="@color/hintColor"

@@ -152,8 +152,8 @@ class ReportSummaryFragment : Fragment(), AdapterView.OnItemSelectedListener {
             TimePickerDialog(
                 requireActivity(),
                 startTime,
-                myCalendar2.get(Calendar.HOUR),
-                myCalendar2.get(Calendar.MINUTE),
+                myCalendar2.get(2),
+                myCalendar2.get(2),
                 false
             ).show()
 
@@ -165,9 +165,9 @@ class ReportSummaryFragment : Fragment(), AdapterView.OnItemSelectedListener {
             myCalendar1.set(Calendar.DAY_OF_MONTH, dayOfMonth)
             TimePickerDialog(
                 requireActivity(),
-                startTime,
-                myCalendar2.get(Calendar.HOUR),
-                myCalendar2.get(Calendar.MINUTE),
+                endTime,
+                myCalendar1.get(2),
+                myCalendar1.get(2),
                 false
             ).show()
 

@@ -113,6 +113,11 @@ class MainActivity : BaseScannerActivity() {
                     navController?.navigate(R.id.action_global_dashboardCategory)
                     return@setNavigationItemSelectedListener true
                 }
+                R.id.menuHardware -> {
+                    disableDrawer()
+                    navController?.navigate(R.id.hardware)
+                    return@setNavigationItemSelectedListener true
+                }
                 R.id.menuOrders -> {
                     disableDrawer()
                     navController?.navigate(R.id.action_global_orders)

@@ -111,10 +111,6 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
 
             var totalItemPrice: Double = (item.totalPrice - item.discountAmount)
 
-            item.orderItemModifiers.forEach { modifiers ->
-                totalItemPrice += (modifiers.price * modifiers.quantity)
-            }
-
             item.orderItemTaxes.forEach { tax ->
                 tax.taxTotalAmount.let {
                     totalTax += it
@@ -131,6 +127,10 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
 
 
 
+            item.orderItemModifiers.forEach { modifiers ->
+                totalItemPrice += (modifiers.price * modifiers.quantity)
+            }
+
             var cashDiscountDivide = 0.0
             if (paymentType == "Cash") {
                 if (cashdiscountType == "CashDiscount") {
@@ -142,7 +142,7 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
                 }
             }
 
-            totalItemPrice += (totalTax + totalServiceCharge) - orderDiscount - loyaltyAmountPerItem - cashDiscountDivide
+            totalItemPrice += (totalTax + totalServiceCharge)  - orderDiscount - loyaltyAmountPerItem - cashDiscountDivide
             MethodUtils.setPriceTextView(itemBinding.tvItemPrice, totalItemPrice.toDouble())
 
             itemBinding.ivCheck.setOnClickListener {
