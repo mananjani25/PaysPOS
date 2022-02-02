@@ -73,11 +73,11 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
         if (defaultModel.modifiers.isNotEmpty()) {
             for (i in defaultModel.modifiers.indices) {
-                modifierPrice += defaultModel.modifiers[i].price
+                modifierPrice += (defaultModel.modifiers[i].price * defaultModel.modifiers[i].itemQuantity)
             }
         }
 
-        itemPrice = defaultModel.price + modifierPrice
+        itemPrice = (defaultModel.price * defaultModel.itemQuantity) + modifierPrice
 
 
         selectedCurrency = defaultModel.discountType
@@ -97,7 +97,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                 if (defaultModel.discountPrice != 0.0) {
                     if (defaultModel.discountType == getString(R.string.disc_percentage)) {
                         val applyDiscount =
-                            (defaultModel.discountPrice * 100) / ((defaultModel.price + modifierPrice) * defaultModel.itemQuantity)
+                            (defaultModel.discountPrice * 100) / (itemPrice/*(defaultModel.price + modifierPrice) * defaultModel.itemQuantity*/)
                         binding.edtAmount.setText(MethodUtils.roundOffAmountString(applyDiscount))
                         percentageView()
                     } else {
@@ -116,7 +116,8 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                     selectedListPos = discountAdapter.selectedPosition
                 if (defaultModel.discountType == getString(R.string.disc_percentage)) {
                     val applyDiscount =
-                        (defaultModel.discountPrice * 100) / ((defaultModel.price + modifierPrice) * defaultModel.itemQuantity)
+                        (defaultModel.discountPrice * 100) / (itemPrice/*(defaultModel.price + modifierPrice) * defaultModel.itemQuantity*/)
+
                     binding.edtAmount.setText(
                         MethodUtils.roundOffAmountString(
                             Math.round(applyDiscount)
@@ -556,8 +557,8 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
             if (selectedCurrency == AMOUNT) {
 
-                var price =
-                    (((defaultModel.price + modifierPrice) - defaultModel.discountPrice) * defaultModel.itemQuantity)
+                var price = itemPrice - defaultModel.discountPrice
+//                    (((defaultModel.price + modifierPrice) - defaultModel.discountPrice) * defaultModel.itemQuantity)
 
                 if (isOrderDiscount) {
                     price = totalOrderPrice
