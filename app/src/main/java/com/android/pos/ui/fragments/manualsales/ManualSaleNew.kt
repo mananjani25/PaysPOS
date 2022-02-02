@@ -1218,7 +1218,11 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
     override fun onItemClickListener(view: View?, data: TbItem, pos: Int) {
         when (view?.id) {
             R.id.txt_discount -> {
-                val bundle = bundleOf("isFromDetails" to false, "pos" to pos)
+                val bundle = Bundle().apply {
+                    putBoolean("isFromDetails", true)
+                    putParcelable("model", data)
+                }
+
                 findNavController().navigate(
                     R.id.action_manualSaleNew_to_addDiscountDialog,
                     bundle
