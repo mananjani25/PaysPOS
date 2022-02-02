@@ -3,9 +3,7 @@ package com.android.pos.ui.adapter
 import android.annotation.SuppressLint
 import android.graphics.Paint
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
@@ -13,14 +11,18 @@ import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.ManualSaleCartModel
 import com.android.pos.databinding.ViewManualSaleItemBinding
+import com.android.pos.utils.CustomSwipeLayout.SwipeLayout
 import com.android.pos.utils.MethodUtils
+import com.android.pos.utils.callback.ManualSaleOptionsCustomCallback
 
 class ManualSaleCartAdapter : RecyclerView.Adapter<ManualSaleCartAdapter.MyViewHolder>() {
     var list = ArrayList<TbItem>()
     private lateinit var listnerCall: ManualSaleInterface
+    private lateinit var itemlistnerCall: ManualSaleOptionsCustomCallback
     val TAG = "ManualSaleCartAdapter"
 
 
+    @SuppressLint("ClickableViewAccessibility")
     inner class MyViewHolder(private val binding: ViewManualSaleItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
@@ -52,21 +54,59 @@ class ManualSaleCartAdapter : RecyclerView.Adapter<ManualSaleCartAdapter.MyViewH
 
             binding.model = model
             binding.executePendingBindings()
+
         }
 
-        init {
-            binding.root.setOnClickListener {
-                listnerCall.onItemClicked(list[layoutPosition], layoutPosition)
 
+        init {
+/*
+            binding.rlRoot!!.setOnTouchListener(View.OnTouchListener { view, motionEvent ->
+                when (motionEvent.getAction()) {
+                    MotionEvent.ACTION_DOWN -> {
+                        listnerCall.onItemClicked(list[layoutPosition], layoutPosition)
+
+                    }
+                    MotionEvent.ACTION_UP -> {
+                        listnerCall.onItemClicked(list[layoutPosition], layoutPosition)
+                    }
+                }
+
+                return@OnTouchListener true
+            })
+*/
+
+            binding.swipeLayout.setOnDragListener { _, _ ->
+                if (binding.swipeLayout.isOpened)
+                    binding.swipeLayout.close(true)
+
+                false
+            }
+            binding.llRoot.setOnClickListener {
+                listnerCall.onItemClicked(list[layoutPosition], layoutPosition)
+            }
+
+            binding.txtDiscount.setOnClickListener {
+                itemlistnerCall.onItemClickListener(binding.txtDiscount,list[layoutPosition],layoutPosition)
+            }
+            binding.txtNote.setOnClickListener {
+                itemlistnerCall.onItemClickListener(binding.txtNote,list[layoutPosition],layoutPosition)
+            }
+            binding.txtRename.setOnClickListener {
+                itemlistnerCall.onItemClickListener(binding.txtRename,list[layoutPosition],layoutPosition)
+            }
+            binding.txtDelete.setOnClickListener {
+                itemlistnerCall.onItemClickListener(binding.txtDelete,list[layoutPosition],layoutPosition)
             }
 
         }
-
-
     }
 
     fun setCallBack(listner: ManualSaleInterface) {
         this.listnerCall = listner
+    }
+
+    fun setItemCallBack(listner: ManualSaleOptionsCustomCallback) {
+        this.itemlistnerCall = listner
     }
 
     override fun onCreateViewHolder(
