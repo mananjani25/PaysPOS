@@ -39,6 +39,7 @@ import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.utils.AmountTextWatcher
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.SwipeHelper
+import com.android.pos.utils.callback.ManualSaleOptionsCustomCallback
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.visible
@@ -47,7 +48,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
+class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
+        ManualSaleOptionsCustomCallback {
 
     private var manualItemId: Int = 0
     private var manualCategoryId: Int = 0
@@ -709,98 +711,97 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
 
         cartAdapter = ManualSaleCartAdapter()
         cartAdapter.setCallBack(this)
+        cartAdapter.setItemCallBack(this)
         binding.rvSaleCart.adapter = cartAdapter
 
-        object : SwipeHelper(activity, binding.rvSaleCart) {
-            override fun instantiateUnderlayButton(
-                viewHolder: RecyclerView.ViewHolder?,
-                underlayButtons: MutableList<UnderlayButton?>
-            ) {
-                underlayButtons.add(
-                    UnderlayButton(
-                        "Rename",
-                        0,
-                        Color.parseColor("#08CAE3")
-                    ) { pos ->
+        /*
+              object : SwipeHelper(activity, binding.rvSaleCart) {
+                  override fun instantiateUnderlayButton(
+                      viewHolder: RecyclerView.ViewHolder?,
+                      underlayButtons: MutableList<UnderlayButton?>
+                  ) {
+                      underlayButtons.add(
+                          UnderlayButton(
+                              "Rename",
+                              0,
+                              Color.parseColor("#08CAE3")
+                          ) { pos ->
 
-                        Log.e(TAG, "pospospos  ${pos}")
+                              Log.e(TAG, "pospospos  ${pos}")
 
-                        cartItemModel = cartAdapter.getItem(pos)
-                        val bundle: Bundle = bundleOf("item_name" to cartItemModel.name)
+                              cartItemModel = cartAdapter.getItem(pos)
+                              val bundle: Bundle = bundleOf("item_name" to cartItemModel.name)
 
-                        findNavController().navigate(
-                            R.id.action_manualSaleNew_to_itemRenameDialog,
-                            bundle
-                        )
+                              findNavController().navigate(
+                                  R.id.action_manualSaleNew_to_itemRenameDialog,
+                                  bundle
+                              )
 
-                    }
+                          }
 
-                )
+                      )
 
-                underlayButtons.add(UnderlayButton(
-                    "Note",
-                    0,
-                    Color.parseColor("#FA9905")
-                ) { pos ->
-                    cartItemModel = cartAdapter.getItem(pos)
-                    val bundle = Bundle().apply {
-                        putString("note", cartItemModel.note)
-                    }
+                      underlayButtons.add(UnderlayButton(
+                          "Note",
+                          0,
+                          Color.parseColor("#FA9905")
+                      ) { pos ->
+                          cartItemModel = cartAdapter.getItem(pos)
+                          val bundle = Bundle().apply {
+                              putString("note", cartItemModel.note)
+                          }
 
-                    findNavController().navigate(
-                        R.id.action_manualSaleNew_to_addNoteDialog,
-                        bundle
-                    )
-
-
-                })
-
-                underlayButtons.add(UnderlayButton(
-                    "Discount",
-                    0,
-                    Color.parseColor("#2997cc")
-                ) { pos ->
+                          findNavController().navigate(
+                              R.id.action_manualSaleNew_to_addNoteDialog,
+                              bundle
+                          )
 
 
-                    val bundle = bundleOf(
-                        "isFromDetails" to false,
-                        "pos" to pos,
-                        "model" to cartAdapter.getItem(pos)
-                    )
-                    findNavController().navigate(
-                        R.id.action_manualSaleNew_to_addDiscountDialog,
-                        bundle
-                    )
+                      })
 
-                })
+                      underlayButtons.add(UnderlayButton(
+                          "Discount",
+                          0,
+                          Color.parseColor("#2997cc")
+                      ) { pos ->
 
-                underlayButtons.add(
-                    UnderlayButton(
-                        "Delete",
-                        0,
-                        Color.parseColor("#FF3C30")
-                    ) { pos ->
 
-                        alert(
-                            getString(R.string.app_name),
-                            getString(R.string.delete_item_message)
-                        ) {
-                            positiveButton(getString(R.string.tv_delete)) {
-                                // Do positive stuff here
-                                val item = cartAdapter.getItem(pos)
+                          val bundle = bundleOf("isFromDetails" to false, "pos" to pos)
+                          findNavController().navigate(
+                              R.id.action_manualSaleNew_to_addDiscountDialog,
+                              bundle
+                          )
 
-                                Log.e(TAG, "item ${Gson().toJson(item)}")
-                                viewModel.cartLogic(cartList, item, Constants.DELETE)
-                            }
-                            negativeButton(R.string.tv_cancel) {
-                                // Do negative stuff here
-                            }
-                        }
+                      })
 
-                    })
-            }
+                      underlayButtons.add(
+                          UnderlayButton(
+                              "Delete",
+                              0,
+                              Color.parseColor("#FF3C30")
+                          ) { pos ->
 
-        }
+                              alert(
+                                  getString(R.string.app_name),
+                                  getString(R.string.delete_item_message)
+                              ) {
+                                  positiveButton(getString(R.string.tv_delete)) {
+                                      // Do positive stuff here
+                                      val item = cartAdapter.getItem(pos)
+
+                                      Log.e(TAG, "item ${Gson().toJson(item)}")
+                                      viewModel.cartLogic(cartList, item, Constants.DELETE)
+                                  }
+                                  negativeButton(R.string.tv_cancel) {
+                                      // Do negative stuff here
+                                  }
+                              }
+
+                          })
+                  }
+
+              }
+      */
 
         binding.layoutMenu.txtProducts.setTextColor(resources.getColor(R.color.txtColor))
         binding.layoutMenu.txtKeypad.setTextColor(resources.getColor(R.color.txt_color_blue))
@@ -1221,4 +1222,149 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
             binding.llOrderMenu.visibility = View.VISIBLE
         }
     }
+
+    override fun onItemClickListener(view: View?, data: TbItem, pos: Int) {
+        when (view?.id) {
+            R.id.txt_discount -> {
+                val bundle = Bundle().apply {
+                    putBoolean("isFromDetails", true)
+                    putParcelable("model", data)
+                }
+
+                findNavController().navigate(
+                    R.id.action_manualSaleNew_to_addDiscountDialog,
+                    bundle
+                )
+            }
+            R.id.txt_delete -> {
+                alert(
+                    getString(R.string.app_name),
+                    getString(R.string.delete_item_message)
+                ) {
+                    positiveButton(getString(R.string.tv_delete)) {
+                        // Do positive stuff here
+                        val item = cartAdapter.getItem(pos)
+
+                        Log.e(TAG, "item ${Gson().toJson(item)}")
+                        viewModel.cartLogic(cartList, item, Constants.DELETE)
+                    }
+                    negativeButton(R.string.tv_cancel) {
+                        // Do negative stuff here
+                    }
+                }
+            }
+            R.id.txt_note -> {
+                cartItemModel = cartAdapter.getItem(pos)
+                val bundle = Bundle().apply {
+                    putString("note", cartItemModel.note)
+                }
+
+                findNavController().navigate(
+                    R.id.action_manualSaleNew_to_addNoteDialog,
+                    bundle
+                )
+            }
+            R.id.txt_rename -> {
+                Log.e(TAG, "pospospos  ${pos}")
+
+                cartItemModel = cartAdapter.getItem(pos)
+                val bundle: Bundle = bundleOf("item_name" to cartItemModel.name)
+
+                findNavController().navigate(
+                    R.id.action_manualSaleNew_to_itemRenameDialog,
+                    bundle
+                )
+
+            }
+        }
+    }
 }
+
+/*
+  object : SwipeHelper(activity, binding.rvSaleCart) {
+      override fun instantiateUnderlayButton(
+          viewHolder: RecyclerView.ViewHolder?,
+          underlayButtons: MutableList<UnderlayButton?>
+      ) {
+          underlayButtons.add(
+              UnderlayButton(
+                  "Rename",
+                  0,
+                  Color.parseColor("#08CAE3")
+              ) { pos ->
+
+                  Log.e(TAG, "pospospos  ${pos}")
+
+                  cartItemModel = cartAdapter.getItem(pos)
+                  val bundle: Bundle = bundleOf("item_name" to cartItemModel.name)
+
+                  findNavController().navigate(
+                      R.id.action_manualSaleNew_to_itemRenameDialog,
+                      bundle
+                  )
+
+              }
+
+          )
+
+          underlayButtons.add(UnderlayButton(
+              "Note",
+              0,
+              Color.parseColor("#FA9905")
+          ) { pos ->
+              cartItemModel = cartAdapter.getItem(pos)
+              val bundle = Bundle().apply {
+                  putString("note", cartItemModel.note)
+              }
+
+              findNavController().navigate(
+                  R.id.action_manualSaleNew_to_addNoteDialog,
+                  bundle
+              )
+
+
+          })
+
+          underlayButtons.add(UnderlayButton(
+              "Discount",
+              0,
+              Color.parseColor("#2997cc")
+          ) { pos ->
+
+
+              val bundle = bundleOf("isFromDetails" to false, "pos" to pos)
+              findNavController().navigate(
+                  R.id.action_manualSaleNew_to_addDiscountDialog,
+                  bundle
+              )
+
+          })
+
+          underlayButtons.add(
+              UnderlayButton(
+                  "Delete",
+                  0,
+                  Color.parseColor("#FF3C30")
+              ) { pos ->
+
+                  alert(
+                      getString(R.string.app_name),
+                      getString(R.string.delete_item_message)
+                  ) {
+                      positiveButton(getString(R.string.tv_delete)) {
+                          // Do positive stuff here
+                          val item = cartAdapter.getItem(pos)
+
+                          Log.e(TAG, "item ${Gson().toJson(item)}")
+                          viewModel.cartLogic(cartList, item, Constants.DELETE)
+                      }
+                      negativeButton(R.string.tv_cancel) {
+                          // Do negative stuff here
+                      }
+                  }
+
+              })
+      }
+
+  }
+*/

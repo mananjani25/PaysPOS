@@ -1883,7 +1883,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                                 * txtQty.text.toString().toInt()
                                 )
                     } else {
-                        //data.discountPrice = discountPrice
+                        data.discountPrice = discountPrice
                     }
 
                 }
