@@ -52,7 +52,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
     private var enrollToLoyalty: Boolean = false
     private var finalReward: Int = 0
     private var deliveryType: String = "Pickup"
-    private var selectedDate: String?=null
+    private var selectedDate: String? = null
     private var country = arrayOf("United States", "Canada")
     private lateinit var binding: FragmentOpenOrderNewBinding
     private lateinit var placesApi: PlaceAPI
@@ -65,7 +65,9 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
     private lateinit var adapter: AddressListAdapter
     private var type: String = Constants.PICK_UP
 
-    private  var addressList:java.util.ArrayList<CreateCustomerRequestModel.Customer.Addresses> = arrayListOf()
+    private var addressList: java.util.ArrayList<CreateCustomerRequestModel.Customer.Addresses> =
+        arrayListOf()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -73,7 +75,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
     ): View? {
         binding = FragmentOpenOrderNewBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
-        binding.viewModel=viewModel
+        binding.viewModel = viewModel
 
         showObserveProgress()
         setupUI()
@@ -116,8 +118,9 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
         setAddress()
 
 
-        if (!isEdit){
-            var list: java.util.ArrayList<CreateCustomerRequestModel.Customer.Addresses> = arrayListOf()
+        if (!isEdit) {
+            var list: java.util.ArrayList<CreateCustomerRequestModel.Customer.Addresses> =
+                arrayListOf()
             var model = CreateCustomerRequestModel.Customer.Addresses()
             model.apply {
                 latitude = 0.0
@@ -130,10 +133,6 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
         }
 
     }
-
-
-
-
 
 
     private fun showObserveProgress() {
@@ -273,17 +272,17 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
         }
         findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Bundle>("data")
             ?.observe(viewLifecycleOwner) { it ->
-                selectedDate=it.getString("SELECTED_DATE")
-                binding.edtDate.text=selectedDate
+                selectedDate = it.getString("SELECTED_DATE")
+                binding.edtDate.text = selectedDate
             }
 
         setFragmentResultListener("request_key_customer") { requestKey: String, bundle: Bundle ->
             val result = bundle.getParcelable<TbCustomer>("data")
             if (result != null) {
                 isEdit = bundle.getBoolean("isEdit")
-                selectedDate=bundle.getString("SELECTED_DATE")
+                selectedDate = bundle.getString("SELECTED_DATE")
 
-                binding.edtDate.text=selectedDate
+                binding.edtDate.text = selectedDate
                 setupCustomer(result)
             }
         }
@@ -306,10 +305,9 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
         Log.e(TAG, "POPBACKCUSTOMER")
         viewModel._Basedata.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let { baseResponse ->
+                val phonesList: ArrayList<TbPhones> =
+                    arrayListOf()
                 activity?.let {
-                    val phonesList: ArrayList<TbPhones> =
-                        arrayListOf()
-
                     if (binding.edtPhoneNo.text?.isNotEmpty()!!) {
 
                         val phone = TbPhones(
@@ -320,42 +318,58 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
                         )
                         phonesList.add(phone)
                     }
-
-                    val list: ArrayList<TbAddress> = arrayListOf()
-
-                    for (i in viewModel.listAddress){
-                        list.add(TbAddress(i.id,i.address1,i.address2,i.city,i.state,i.country.toString(),i.postcode,
-                            "",i.latitude.toString(),i.longitude.toString(),i.type_of_address,"",i.address1))
-                    }
-
-
-                    val customer = TbCustomer(
-                        customerID,
-                        MethodUtils.getText(binding.edtFirstName),
-                        MethodUtils.getText(binding.edtLastName),
-                        "",
-                        MethodUtils.getText(binding.edtEmail),
-                        enrollToLoyalty,
-                        finalReward,
-                        MethodUtils.getText(binding.edtCompany),
-                        phonesList,
-                        list
-                    )
-
-
-                    val result = Bundle().apply {
-                        putParcelable("data", customer)
-                        putString("DATE", binding.edtDate.text.toString())
-                        putString("TIME", binding.edtTime.text.toString())
-                        putString("TYPE", type)
-                        putBoolean("OPEN_ORDER", true)
-                    }
-                    setFragmentResult("request_key_customer_open_order", result)
-
-                    findNavController().navigateUp()
-
-
                 }
+
+
+                val list: ArrayList<TbAddress> = arrayListOf()
+
+                for (i in viewModel.listAddress) {
+                    list.add(
+                        TbAddress(
+                            i.id,
+                            i.address1,
+                            i.address2,
+                            i.city,
+                            i.state,
+                            i.country.toString(),
+                            i.postcode,
+                            "",
+                            i.latitude.toString(),
+                            i.longitude.toString(),
+                            i.type_of_address,
+                            "",
+                            i.address1
+                        )
+                    )
+                }
+
+
+                val customer = TbCustomer(
+                    baseResponse.id,
+                    MethodUtils.getText(binding.edtFirstName),
+                    MethodUtils.getText(binding.edtLastName),
+                    "",
+                    MethodUtils.getText(binding.edtEmail),
+                    enrollToLoyalty,
+                    finalReward,
+                    MethodUtils.getText(binding.edtCompany),
+                    phonesList,
+                    list
+                )
+
+
+                val result = Bundle().apply {
+                    putParcelable("data", customer)
+                    putString("DATE", binding.edtDate.text.toString())
+                    putString("TIME", binding.edtTime.text.toString())
+                    putString("TYPE", type)
+                    putBoolean("OPEN_ORDER", true)
+                }
+                setFragmentResult("request_key_customer_open_order", result)
+
+                findNavController().navigateUp()
+
+
             }
         })
 
@@ -429,26 +443,27 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
 
 
         if (customer.addresses.isNotEmpty()) {
-            var list: java.util.ArrayList<CreateCustomerRequestModel.Customer.Addresses> = arrayListOf()
-            addressList=list
+            var list: java.util.ArrayList<CreateCustomerRequestModel.Customer.Addresses> =
+                arrayListOf()
+            addressList = list
             list.add(
                 CreateCustomerRequestModel.Customer.Addresses(
-                    customer.addresses.get(customer.addresses.size-1).id,
-                    customer.addresses.get(customer.addresses.size-1).address1,
-                    customer.addresses.get(customer.addresses.size-1).address2,
-                    customer.addresses.get(customer.addresses.size-1).city,
-                    customer.addresses.get(customer.addresses.size-1).state,
-                    customer.addresses.get(customer.addresses.size-1).country,
-                    customer.addresses.get(customer.addresses.size-1).postcode,
-                    customer.addresses.get(customer.addresses.size-1).type_of_address,
+                    customer.addresses.get(customer.addresses.size - 1).id,
+                    customer.addresses.get(customer.addresses.size - 1).address1,
+                    customer.addresses.get(customer.addresses.size - 1).address2,
+                    customer.addresses.get(customer.addresses.size - 1).city,
+                    customer.addresses.get(customer.addresses.size - 1).state,
+                    customer.addresses.get(customer.addresses.size - 1).country,
+                    customer.addresses.get(customer.addresses.size - 1).postcode,
+                    customer.addresses.get(customer.addresses.size - 1).type_of_address,
                     0.0,
                     0.0,
                 )
             )
 
-          /*  var list: java.util.ArrayList<CreateCustomerRequestModel.Customer.Addresses> = arrayListOf()
-            val data=customer.addresses.get(customer.addresses.size-1)
-            list.addAll(data)*/
+            /*  var list: java.util.ArrayList<CreateCustomerRequestModel.Customer.Addresses> = arrayListOf()
+              val data=customer.addresses.get(customer.addresses.size-1)
+              list.addAll(data)*/
 /*
             customer.addresses.forEach {
                 list.add(CreateCustomerRequestModel.Customer.Addresses(
@@ -460,8 +475,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
 
 
             adapter.setAddress(list)
-        }
-        else
+        } else
             addAddress()
 
 
@@ -578,6 +592,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
                 binding.edtNote.setText("")
                 binding.edtDate.text = ""
                 binding.edtTime.text = ""
+                binding.edtCompany.setText("")
             }
 
             R.id.edtDate -> {

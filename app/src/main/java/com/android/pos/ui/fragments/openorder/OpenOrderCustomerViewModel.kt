@@ -46,7 +46,7 @@ class OpenOrderCustomerViewModel @Inject constructor(
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
-    val _Basedata = MutableLiveData<Event<BaseResponse?>>()
+    val _Basedata = MutableLiveData<Event<TbCustomer?>>()
 
     val addCustomerDetails = MutableLiveData(CreateCustomerRequestModel())
     var listAddress: ArrayList<CreateCustomerRequestModel.Customer.Addresses> = arrayListOf()
@@ -244,7 +244,7 @@ class OpenOrderCustomerViewModel @Inject constructor(
 
                                     posRepository.addCustomer(model)
 
-                                    _Basedata.value = Event(customerListReposne)
+                                    _Basedata.value = Event(model)
 
                                 }
                             } else {
