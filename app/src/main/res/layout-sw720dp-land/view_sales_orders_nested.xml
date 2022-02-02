@@ -21,8 +21,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            style="@style/CustomFontSemiBold"
             android:text="@{keyValue.key}"
+            android:textSize="@dimen/_5mdpi"
             android:textColor="@color/txtColor"
             tools:text="Service Charge" />
 
@@ -32,6 +32,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:textColor="@color/txtColor"
+            android:textSize="@dimen/_5mdpi"
             android:text="@{keyValue.showFormattedValue()}"
             tools:text="$103.59" />
 

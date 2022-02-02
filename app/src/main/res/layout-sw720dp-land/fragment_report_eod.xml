@@ -68,6 +68,18 @@
                 android:visibility="visible" />
 
             <TextView
+                android:id="@+id/txtClockOut"
+                style="@style/CustomFontBold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/_10sdp"
+                android:padding="@dimen/_3sdp"
+                android:textColor="@color/btnColor"
+                android:text="@string/tv_clock_out"
+                android:textSize="@dimen/_7mdpi"
+                android:visibility="visible" />
+
+            <TextView
                 android:id="@+id/txtHome"
                 style="@style/CustomFontBold"
                 android:layout_width="wrap_content"
@@ -309,14 +321,168 @@
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtSalesDetails"
                     style="@style/ReportTitleStyle"
-                    android:text="Sales Details" />
+                    android:visibility="gone"
+                    android:text="ORDER SALES DETAILS" />
+
+
+                <LinearLayout
+                    android:id="@+id/llHeader"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/_5sdp">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:layout_weight="1"
+                        style="@style/CustomFontSemiBold"
+                        android:textSize="@dimen/_5mdpi"
+                        android:textColor="@color/txtColor"
+                        android:text="Order Id" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:layout_weight="1"
+                        style="@style/CustomFontSemiBold"
+                        android:textSize="@dimen/_5mdpi"
+                        android:textColor="@color/txtColor"
+                        android:text="Tip" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:layout_weight="1"
+                        style="@style/CustomFontSemiBold"
+                        android:textSize="@dimen/_5mdpi"
+                        android:textColor="@color/txtColor"
+                        android:text="Service Charge" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        style="@style/CustomFontSemiBold"
+                        android:layout_weight="1"
+                        android:textSize="@dimen/_5mdpi"
+                        android:textColor="@color/txtColor"
+                        android:text="Pay Type" />
+
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:layout_weight="1"
+                        style="@style/CustomFontSemiBold"
+                        android:textSize="@dimen/_5mdpi"
+                        android:textColor="@color/txtColor"
+                        android:text="Amount" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:layout_weight="1"
+                        style="@style/CustomFontSemiBold"
+                        android:textSize="@dimen/_5mdpi"
+                        android:textColor="@color/txtColor"
+                        android:text="Terminal" />
+
+
+                </LinearLayout>
+
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvSalesDetails"
                     style="@style/ReportRecyclerViewstyle"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:itemCount="2"
-                    tools:listitem="@layout/view_sales_report" />
+                    android:visibility="gone"
+                    tools:listitem="@layout/view_sales_details_data" />
+
+                <LinearLayout
+                    android:id="@+id/llTotal"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/_5sdp">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:layout_weight="1"
+                        style="@style/CustomFontSemiBold"
+                        android:textSize="@dimen/_5mdpi"
+                        android:textColor="@color/txtColor"
+                        android:text="Total" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:layout_weight="1"
+                        android:visibility="invisible"
+                        style="@style/CustomFontSemiBold"
+                        android:textSize="@dimen/_5mdpi"
+                        android:textColor="@color/txtColor"
+                        android:text="Tip" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:layout_width="0dp"
+                        android:visibility="invisible"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:layout_weight="1"
+                        style="@style/CustomFontSemiBold"
+                        android:textSize="@dimen/_5mdpi"
+                        android:textColor="@color/txtColor"
+                        android:text="Service Charge" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:visibility="invisible"
+                        style="@style/CustomFontSemiBold"
+                        android:layout_weight="1"
+                        android:textSize="@dimen/_5mdpi"
+                        android:textColor="@color/txtColor"
+                        android:text="Pay Type" />
+
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtTotalAmount"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:visibility="visible"
+                        android:layout_weight="1"
+                        style="@style/CustomFontSemiBold"
+                        android:textSize="@dimen/_5mdpi"
+                        android:textColor="@color/txtColor"
+                        android:text="Amount" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:visibility="invisible"
+                        android:layout_weight="1"
+                        style="@style/CustomFontSemiBold"
+                        android:textSize="@dimen/_5mdpi"
+                        android:textColor="@color/txtColor"
+                        android:text="Terminal" />
+
+
+                </LinearLayout>
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtSalesSummary"
@@ -418,9 +584,10 @@
                     tools:listitem="@layout/view_sales_report" />
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/txtTotalExternalPayments"
+                    android:id="@+id/txtCreditTipAudit"
                     style="@style/ReportTitleStyle"
                     android:textAllCaps="true"
+                    android:visibility="gone"
                     android:text="credit tip audit" />
 
                 <androidx.recyclerview.widget.RecyclerView
@@ -428,6 +595,7 @@
                     style="@style/ReportRecyclerViewstyle"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:itemCount="2"
+                    android:visibility="gone"
                     tools:listitem="@layout/view_sales_report" />
 
                 <androidx.appcompat.widget.AppCompatTextView

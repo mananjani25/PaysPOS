@@ -1079,7 +1079,17 @@
     <fragment
         android:id="@+id/reportEODFragment"
         android:name="com.android.pos.ui.fragments.report.ReportEODFragment"
-        android:label="ReportEODFragment" />
+        android:label="ReportEODFragment">
+        <action
+            android:id="@+id/action_reportEODFragment_to_sendReceiptFragment"
+            app:destination="@id/sendReceiptFragment" />
+        <action
+            android:id="@+id/action_reportEODFragment_to_login"
+            app:destination="@id/login" />
+        <action
+            android:id="@+id/action_reportEODFragment_to_passcode"
+            app:destination="@id/passcode" />
+    </fragment>
     <dialog
         android:id="@+id/sendReceiptFragment"
         android:name="com.android.pos.ui.dialog.SendReceiptFragment"

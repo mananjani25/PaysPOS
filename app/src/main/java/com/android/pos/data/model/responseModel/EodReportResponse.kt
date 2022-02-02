@@ -2,7 +2,6 @@ package com.android.pos.data.model.responseModel
 
 
 import com.android.pos.data.model.responseModel.report.KeyValue
-import com.android.pos.data.model.responseModel.report.KeyValueWithString
 import com.google.gson.annotations.SerializedName
 
 data class EodReportResponse(
@@ -21,7 +20,7 @@ data class EodReportResponse(
         @SerializedName("discount_details")
         val discountDetails: List<KeyValue>,
         @SerializedName("order_sales_details")
-        val orderSalesDetails: ArrayList<ArrayList<KeyValueWithString>>,
+        val orderSalesDetails: OrderSalesDetails,
         @SerializedName("other_details")
         val otherDetails: List<KeyValue>,
         @SerializedName("payment_details")
@@ -69,11 +68,26 @@ data class EodReportResponse(
         )
 
         data class OrderSalesDetails(
-            @SerializedName("key")
-            val key: String,
-            @SerializedName("value")
-            val value: String
-        )
+            @SerializedName("data")
+            var `data`: List<Details>,
+            @SerializedName("Total")
+            var total: Double
+        ) {
+            data class Details(
+                @SerializedName("Amount")
+                var amount: Double,
+                @SerializedName("Order Id")
+                var orderId: String,
+                @SerializedName("Pay Type")
+                var payType: String,
+                @SerializedName("Service Charge")
+                var serviceCharge: Double,
+                @SerializedName("Tip")
+                var tip: Double,
+                @SerializedName("Terminal")
+                var terminal: String
+            )
+        }
 
 
     }

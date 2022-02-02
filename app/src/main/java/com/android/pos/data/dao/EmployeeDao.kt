@@ -28,7 +28,7 @@ interface EmployeeDao {
     fun allEmployeeList(): List<Employee>
 
     @Query("SELECT * from TbEmployee where TbEmployee.id  = :id LIMIT 1")
-    fun employeeById(id: Int?): Employee
+    fun employeeById(id: Int?): LiveData<Employee>
 
     @Query("DELETE FROM TbEmployee")
     suspend fun delete()

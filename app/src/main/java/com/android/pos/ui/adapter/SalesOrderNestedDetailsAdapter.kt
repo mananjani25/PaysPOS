@@ -6,6 +6,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.model.responseModel.report.KeyValueWithString
 import com.android.pos.databinding.ViewSalesOrdersNestedBinding
+import com.android.pos.utils.extensions.gone
+import com.android.pos.utils.extensions.visible
 
 class SalesOrderNestedDetailsAdapter :
     RecyclerView.Adapter<SalesOrderNestedDetailsAdapter.MyViewHolder>() {
@@ -18,6 +20,10 @@ class SalesOrderNestedDetailsAdapter :
         @SuppressLint("SetTextI18n")
         fun bind(keyValueList: KeyValueWithString) {
             binding.keyValue = keyValueList
+
+            if (arrayList.size < 2) {
+                binding.txtKey.visible()
+            } else binding.txtKey.gone()
         }
     }
 

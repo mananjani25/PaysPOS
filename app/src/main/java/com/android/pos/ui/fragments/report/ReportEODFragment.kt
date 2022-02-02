@@ -11,6 +11,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
@@ -19,13 +20,12 @@ import com.android.pos.R
 import com.android.pos.data.model.responseModel.VenueDetailsResponse
 import com.android.pos.databinding.FragmentReportEodBinding
 import com.android.pos.ui.adapter.*
+import com.android.pos.ui.fragments.loginscreen.ClockInOwnerViewModel
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.EventObserver
+import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
-import com.android.pos.utils.extensions.gone
-import com.android.pos.utils.extensions.liveSnackBar
-import com.android.pos.utils.extensions.showAlert
-import com.android.pos.utils.extensions.visible
+import com.android.pos.utils.extensions.*
 import com.android.pos.utils.statusUtils.Status
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -38,6 +38,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     private lateinit var binding: FragmentReportEodBinding
     private val viewModel by viewModels<ReportEODViewModel>()
+    private val viewModelClockOut by viewModels<ClockInOwnerViewModel>()
 
     private lateinit var startDate: DatePickerDialog.OnDateSetListener
     private lateinit var endDate: DatePickerDialog.OnDateSetListener
@@ -50,7 +51,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
     private val terminalAdapter by lazy { TerminalAdapter() }
     private val salesReportAdapter by lazy { SalesReportAdapter() }
     private val refundDetailsAdapter by lazy { SalesReportAdapter() }
-    private val pendingPaymentsAdapter by lazy { SalesReportAdapter() }
+    private val creditPaymentDetailsAdapter by lazy { SalesReportAdapter() }
     private val taxDetailsAdapter by lazy { SalesReportAdapter() }
     private val cashLogAdapter by lazy { SalesReportAdapter() }
     private val discountDetailsAdapter by lazy { SalesReportAdapter() }
@@ -102,9 +103,58 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
             findNavController().navigateUp()
         }
         binding.txtSearch.setOnClickListener {
-            viewModel.getReportSummary()
+            viewModel.getReportSummary("")
         }
 
+        binding.txtEmail.setOnClickListener {
+
+
+            viewModel.getEmployeeEmail.observe(viewLifecycleOwner, {
+
+                if (it.status == Status.SUCCESS) {
+
+                    val bundle = Bundle()
+                    bundle.putBoolean("EOD", true)
+                    bundle.putInt("type", 2)
+                    bundle.putString("email", it.data?.email)
+                    findNavController().navigate(
+                        R.id.action_reportEODFragment_to_sendReceiptFragment,
+                        bundle
+                    )
+                }
+            })
+
+
+            //  viewModel.getReportSummary("")
+        }
+
+        setFragmentResultListener("request_key_eod") { requestKey: String, bundle: Bundle ->
+
+
+            bundle.getString("email")?.let { viewModel.getReportSummary(it) }
+        }
+
+        binding.txtClockOut.setOnClickListener {
+
+            alert(
+                getString(R.string.app_name),
+                getString(R.string.clockout_message)
+            ) {
+                positiveButton(getString(android.R.string.ok)) {
+                    //  viewModelClockOut.submit()
+
+                    val bundle = Bundle()
+                    bundle.putBoolean("isDashboard", true)
+                    findNavController().navigate(
+                        R.id.action_reportEODFragment_to_passcode,
+                        bundle
+                    )
+                }
+                negativeButton(R.string.tv_cancel) {
+                    // Do negative stuff here
+                }
+            }
+        }
     }
 
     private fun initControls() {
@@ -122,7 +172,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
             timecalender.set(Calendar.MINUTE, minute)
             viewModel.startDate.value = timeCalculateForStartEndTime(hour, minute, "isstart")
             if (differnceTrue(viewModel.startDate.value!!, viewModel.endDate.value) <= 30) {
-                viewModel.getReportSummary()
+                viewModel.getReportSummary("")
             } else {
                 AlertUtils.showCustomAlertWithListenerWithOK(
                     requireActivity(),
@@ -138,7 +188,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
             timecalender.set(Calendar.MINUTE, minute)
             viewModel.endDate.value = timeCalculateForStartEndTime(hour, minute, "isend")
             if (differnceTrue(viewModel.endDate.value!!, viewModel.startDate.value) <= 30) {
-                viewModel.getReportSummary()
+                viewModel.getReportSummary("")
             } else {
                 AlertUtils.showCustomAlertWithListenerWithOK(
                     requireActivity(),
@@ -261,7 +311,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
         binding.rvSalesSummary.adapter = salesReportAdapter
         binding.rvRefundDetails.adapter = refundDetailsAdapter
-        binding.rvPendingPayments.adapter = pendingPaymentsAdapter
+        binding.rvPendingPayments.adapter = creditPaymentDetailsAdapter
         binding.rvTaxDetails.adapter = taxDetailsAdapter
         binding.rvDiscountDetails.adapter = discountDetailsAdapter
         binding.rvSalesTaxSummary.adapter = salesTaxSummaryAdapter
@@ -284,6 +334,11 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     private fun initObservers() {
         binding.root.liveSnackBar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
+
+
+
+
+
         viewModel.startDateSelection.observe(requireActivity(), { event ->
             event.getContentIfNotHandled()?.let {
 
@@ -319,16 +374,16 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
                 //salesSummary
                 showHide(
-                    rvMedia = binding.rvSalesTaxSummary,
-                    textView = binding.txtSalesTaxSummary,
+                    rvMedia = binding.rvSalesSummary,
+                    textView = binding.txtSalesSummary,
                     headerView = null,
                     visible = it.salesSummary.isNotEmpty()
                 )
                 salesReportAdapter.add(it.salesSummary)
 
                 showHide(
-                    rvMedia = binding.rvSalesTaxSummary,
-                    textView = binding.txtSalesTaxSummary,
+                    rvMedia = binding.rvCashLog,
+                    textView = binding.txtCashLog,
                     headerView = null,
                     visible = it.cashLogDetails.isNotEmpty()
                 )
@@ -344,8 +399,8 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
 
                 showHide(
-                    rvMedia = binding.rvSalesTaxSummary,
-                    textView = binding.txtSalesTaxSummary,
+                    rvMedia = binding.rvTaxDetails,
+                    textView = binding.txtTaxDetails,
                     headerView = null,
                     visible = it.taxDetails.isNotEmpty()
                 )
@@ -353,16 +408,16 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
 
                 showHide(
-                    rvMedia = binding.rvSalesTaxSummary,
-                    textView = binding.txtSalesTaxSummary,
+                    rvMedia = binding.rvRefundDetails,
+                    textView = binding.txtRefundDetails,
                     headerView = null,
                     visible = it.refundDetails.isNotEmpty()
                 )
                 refundDetailsAdapter.add(it.refundDetails)
 
                 showHide(
-                    rvMedia = binding.rvSalesTaxSummary,
-                    textView = binding.txtSalesTaxSummary,
+                    rvMedia = binding.rvDiscountDetails,
+                    textView = binding.txtDiscountDetails,
                     headerView = null,
                     visible = it.discountDetails.isNotEmpty()
                 )
@@ -370,8 +425,8 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
 
                 showHide(
-                    rvMedia = binding.rvSalesTaxSummary,
-                    textView = binding.txtSalesTaxSummary,
+                    rvMedia = binding.rvCashPayments,
+                    textView = binding.txtCashPayments,
                     headerView = null,
                     visible = it.totalCashPayments.isNotEmpty()
                 )
@@ -379,8 +434,8 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
 
                 showHide(
-                    rvMedia = binding.rvSalesTaxSummary,
-                    textView = binding.txtSalesTaxSummary,
+                    rvMedia = binding.rvTotalPayments,
+                    textView = binding.txtTotalPayments,
                     headerView = null,
                     visible = it.totalPayments.isNotEmpty()
                 )
@@ -414,33 +469,33 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 tipDetailsAdapter.add(it.tipDetails)
 
                 showHide(
-                    rvMedia = binding.rvTipsDetails,
-                    textView = binding.txtTipsDetails,
-                    headerView = binding.ilTipsDetails,
+                    rvMedia = binding.rvPendingPayments,
+                    textView = binding.txtPendingPayments,
+                    headerView = null,
                     visible = it.totalCreditPaymentDetails.isNotEmpty()
                 )
-                pendingPaymentsAdapter.add(it.totalCreditPaymentDetails)
+                creditPaymentDetailsAdapter.add(it.totalCreditPaymentDetails)
+
+//                showHide(
+//                    rvMedia = binding.rvCreditTipAudit,
+//                    textView = binding.txtCreditTipAudit,
+//                    headerView = null,
+//                    visible = it.creditTipAudit.isNotEmpty()
+//                )
+//                creditTipAuditAdapter.add(it.creditTipAudit)
 
                 showHide(
-                    rvMedia = binding.rvTipsDetails,
-                    textView = binding.txtTipsDetails,
-                    headerView = binding.ilTipsDetails,
-                    visible = it.creditTipAudit.isNotEmpty()
-                )
-                creditTipAuditAdapter.add(it.creditTipAudit)
-
-                showHide(
-                    rvMedia = binding.rvTipsDetails,
-                    textView = binding.txtTipsDetails,
-                    headerView = binding.ilTipsDetails,
+                    rvMedia = binding.rvCashEventSummary,
+                    textView = binding.txtCashEventSummary,
+                    headerView = null,
                     visible = it.refundAndVoidDetails.isNotEmpty()
                 )
                 cashEventSummaryAdapter.add(it.refundAndVoidDetails)
 
                 showHide(
-                    rvMedia = binding.rvTipsDetails,
-                    textView = binding.txtTipsDetails,
-                    headerView = binding.ilTipsDetails,
+                    rvMedia = binding.rvWastageDetails,
+                    textView = null,
+                    headerView = null,
                     visible = it.wastageDetails.isNotEmpty()
                 )
                 wastage_detailsAdapter.add(it.wastageDetails)
@@ -457,14 +512,22 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
                 showHide(
                     rvMedia = binding.rvSalesDetails,
-                    textView = null,
+                    textView = binding.txtSalesDetails,
                     headerView = null,
-                    visible = it.orderSalesDetails.isNotEmpty()
+                    visible = it.orderSalesDetails.data.isNotEmpty()
                 )
-                salesOrderDetailsAdapter.add(it.orderSalesDetails)
 
+                if (it.orderSalesDetails.data.isNotEmpty()) {
+                    binding.llHeader.visible()
+                    binding.llTotal.visible()
+                    MethodUtils.setPriceTextView(binding.txtTotalAmount, it.orderSalesDetails.total)
 
+                } else {
+                    binding.llHeader.gone()
+                    binding.llTotal.gone()
+                }
 
+                salesOrderDetailsAdapter.add(it.orderSalesDetails.data)
 
 
                 binding.linReports.visible()
@@ -553,7 +616,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
         /*viewModel.apiCallTimeSheet(
             getTerminalId(binding.spTerminals.selectedItemPosition).toString()
         )*/
-        viewModel.getReportSummary()
+        viewModel.getReportSummary("")
 
     }
 
