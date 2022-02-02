@@ -13,6 +13,7 @@ import com.android.pos.data.model.DineInModel
 import com.android.pos.databinding.ViewDineInHeaderBinding
 import com.android.pos.databinding.ViewDineInTableItemsBinding
 import com.android.pos.utils.MethodUtils
+import com.google.gson.Gson
 import java.util.*
 
 class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -93,9 +94,9 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 if (list.get(i).isHeader == 1) {
                     noItem = false
                     list.get(i).item?.let {
-                        guestSubTotal += (it.itemQuantity * it.price) - it.discountPrice
                         if (!it.isPaid) {
                             guestAmt += (it.itemQuantity * it.price) - it.discountPrice
+                            guestSubTotal += (it.itemQuantity * it.price) - it.discountPrice
                             if (it.modifiers.isNotEmpty()) {
                                 it.modifiers.forEach { it ->
 
@@ -105,38 +106,37 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                                 }
                             }
 
+                            if (it.taxes?.isNotEmpty() == true) {
+                                Log.e(TAG, "taxesList:  ${Gson().toJson(it.taxes)}")
+                                it.taxes?.forEach { tax ->
+                                    if (tax.isActive) {
+                                        totalTaxAmt += if (tax.taxType == "Percentage") {
 
+                                            var modifierPrice = 0.0
+                                            val price =
+                                                (it.price * it.itemQuantity) - it.discountPrice
 
+                                            it.modifiers.forEach {
+                                                modifierPrice += (it.price * it.itemQuantity)
+                                            }
 
-                        }
-                        if (it.taxes?.isNotEmpty() == true) {
+                                            val totalPrice = price + modifierPrice
 
-                            it.taxes?.forEach { tax ->
-                                if (tax.isActive) {
-                                    totalTaxAmt += if (tax.taxType == "Percentage") {
+                                            val itemTaxPrice =
+                                                (tax.rate * totalPrice) / 100
 
-                                        var modifierPrice = 0.0
-                                        val price =
-                                            (it.price * it.itemQuantity) - it.discountPrice
+                                            String.format("%.2f", itemTaxPrice)
+                                                .toDouble()
+                                        } else {
 
-                                        it.modifiers.forEach {
-                                            modifierPrice += (it.price * it.itemQuantity)
+                                            String.format("%.2f", tax.rate * it.itemQuantity)
+                                                .toDouble()
                                         }
-
-                                        val totalPrice = price + modifierPrice
-
-                                        val itemTaxPrice =
-                                            (tax.rate * totalPrice) / 100
-
-                                        String.format("%.2f", itemTaxPrice)
-                                            .toDouble()
-                                    } else {
-
-                                        String.format("%.2f", tax.rate * it.itemQuantity)
-                                            .toDouble()
                                     }
+                                    guestAmt += tax.rate
                                 }
-                                guestAmt += tax.rate
+
+
                             }
 
 
@@ -225,9 +225,6 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
             var finalAmt =
                 guestSubTotal + totalServiceCharge + totalTaxAmt + (list.get(0).guestDividedAmt) - list[0].orderDiscount
-
-            Log.e(TAG, "guestDivided  ${list.get(0).guestDividedAmt}")
-
 
 
 

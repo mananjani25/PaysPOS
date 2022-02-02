@@ -63,6 +63,7 @@ import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
 class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
+    private var totalDiscountM: Double = 0.0
     private var customerList: List<PrinterResponse.Data.CustomerReceiptPrinters> = listOf()
     private var toFinalAmt: Double = 0.0
     private var totalTaxAmt: Double = 0.0
@@ -1110,6 +1111,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     serviceCharge = 0.0
                     totalDiscount = 0.0
 
+                    totalDiscountM = baseResponse.totalDiscount
+
                     if (baseResponse.floorPlanTable.status == MERGEDANDOCCUPIED) {
                         binding.imgMergeTable.visibility = View.VISIBLE
                         binding.imgMergeTable.setImageDrawable(
@@ -1362,12 +1365,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
 
-
                     for (i in 1 until dineInList.size) {
 
                         if (dineInList.get(i).isHeader == 1) {
                             dineInList.get(i).item?.let {
                                 if (!it.isPaid) {
+
                                     WTSubTotal += (it.itemQuantity * it.price) - it.discountPrice
 
                                     if (it.modifiers.isNotEmpty()) {
@@ -1433,6 +1436,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                     Log.e(TAG, "totalDiscount:  ${baseResponse.totalDiscount}")
                     Log.e(TAG, "itemsDiscount:  ${itemsDiscount}")
+
 
 
 

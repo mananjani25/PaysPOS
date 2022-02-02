@@ -2995,41 +2995,45 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 "isFromActiveOrder"
                             )
                         ) {
-                            for (i in 0 until kitchenPrinterList.size) {
-                                kitchenPrinterList[i].orderTypes.forEach {
+                            if (isSpilt && splitList.size == 1) {
+
+                                for (i in 0 until kitchenPrinterList.size) {
+                                    kitchenPrinterList[i].orderTypes.forEach {
 
 
-                                    if (it.orderTypeName.trim()
-                                            .lowercase().equals(
-                                                receiptModel?.order?.orderType?.toString()?.trim()
-                                                    ?.lowercase()
-                                            )
-                                    ) {
-
-                                        it.printerSettings.forEach {
-                                            if (it.printType.lowercase()
-                                                    .equals(KITCHEN.lowercase()) && it.autoPrinting
-                                            ) {
-                                                initKitchenPrinter(
-                                                    kitchenPrinterList.get(i),
-                                                    KITCHEN
+                                        if (it.orderTypeName.trim()
+                                                .lowercase().equals(
+                                                    receiptModel?.order?.orderType?.toString()
+                                                        ?.trim()
+                                                        ?.lowercase()
                                                 )
+                                        ) {
 
+                                            it.printerSettings.forEach {
+                                                if (it.printType.lowercase()
+                                                        .equals(KITCHEN.lowercase()) && it.autoPrinting
+                                                ) {
+                                                    initKitchenPrinter(
+                                                        kitchenPrinterList.get(i),
+                                                        KITCHEN
+                                                    )
+
+                                                }
                                             }
+
                                         }
-
                                     }
+
+
                                 }
-
-
                             }
-                        }
 
-                        if (requireArguments().getBoolean("isDineIn")) {
-                            customerPrintWholeOrder()
+                            if (requireArguments().getBoolean("isDineIn")) {
+                                customerPrintWholeOrder()
 
-                        } else {
-                            getCustomerPrinters(false)
+                            } else {
+                                getCustomerPrinters(false)
+                            }
                         }
 
 

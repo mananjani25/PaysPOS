@@ -222,6 +222,10 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
             "PAY" -> {
 
                 val cartModel = cartModel(order)
+                prefProvider.setValue(
+                    Constants.CUSTOMER_NAME,
+                    order.customer?.firstName + " " + order.customer?.lastName
+                )
 
                 val bundle = Bundle()
                 bundle.putDouble("totalPrice", order.totalAmount)
