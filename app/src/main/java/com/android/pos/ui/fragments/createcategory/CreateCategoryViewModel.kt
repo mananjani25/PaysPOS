@@ -58,109 +58,112 @@ class CreateCategoryViewModel @Inject constructor(
 
     fun submit(ids: ArrayList<Int>, imagePath: String?, nameFromUpdate: String) {
 
-        if (isEdit) {
-            if (categoryDetails.value?.name?.trim()?.isEmpty() == true) {
-                _snackbarText.value = Event(R.string.category_name_validate)
-            } else {
-                _showProgress.value = Event(true)
-            }
-        } else if (TextUtils.isEmpty(categoryDetails.value?.name?.trim())) {
+//        if (isEdit) {
+//            if (categoryDetails.value?.name?.trim()?.isEmpty() == true) {
+//                _snackbarText.value = Event(R.string.category_name_validate)
+//            } else {
+//                _showProgress.value = Event(true)
+//            }
+//        } else
+
+        if (TextUtils.isEmpty(categoryDetails.value?.name?.trim())) {
             _snackbarText.value = Event(R.string.category_name_validate)
         } else {
             _showProgress.value = Event(true)
-        }
 
-        if (isEdit) {
-            createCategoryRequestModel = CreateCategoryRequestModel().apply {
-                id = catId
-                name = categoryDetails.value?.name.toString()
-                active = true
-                location_id = prefProvider.getValueInt(Constants.LOCATION_ID, -1)
-                item_ids = ids
-                image = imagePath
-            }
-        } else {
-            createCategoryRequestModel = CreateCategoryRequestModel().apply {
-                name = categoryDetails.value?.name.toString()
-                active = true
-                location_id = prefProvider.getValueInt(Constants.LOCATION_ID, -1)
-                item_ids = ids
-                image = imagePath
-            }
-        }
 
-        viewModelScope.launch {
-
-            val resource = if (isEdit) {
-                posRepository.updateCategoryCall(catId, createCategoryRequestModel)
+            if (isEdit) {
+                createCategoryRequestModel = CreateCategoryRequestModel().apply {
+                    id = catId
+                    name = categoryDetails.value?.name.toString()
+                    active = true
+                    location_id = prefProvider.getValueInt(Constants.LOCATION_ID, -1)
+                    item_ids = ids
+                    image = imagePath
+                }
             } else {
-                posRepository.createCategoryCall(createCategoryRequestModel)
+                createCategoryRequestModel = CreateCategoryRequestModel().apply {
+                    name = categoryDetails.value?.name.toString()
+                    active = true
+                    location_id = prefProvider.getValueInt(Constants.LOCATION_ID, -1)
+                    item_ids = ids
+                    image = imagePath
+                }
             }
 
-            when (resource.status) {
-                SUCCESS -> {
-                    _showProgress.value = Event(false)
+            viewModelScope.launch {
 
-                    resource.data.let { categoryResponse ->
-                        if (categoryResponse?.status == 200) {
-                            resource.data?.let {
+                val resource = if (isEdit) {
+                    posRepository.updateCategoryCall(catId, createCategoryRequestModel)
+                } else {
+                    posRepository.createCategoryCall(createCategoryRequestModel)
+                }
 
-                                val category = TbCategory().apply {
-                                    name = it.data.name
-                                    id = it.data.id
-                                    locationId = it.data.locationId
-                                    active = it.data.active
-                                    sort = it.data.sort
-                                    createdAt = it.data.createdAt
-                                    updatedAt = it.data.updatedAt
-                                    thumbImgUrl = it.data.thumbImgUrl
-                                    originalImgUrl = it.data.originalImgUrl
+                when (resource.status) {
+                    SUCCESS -> {
+                        _showProgress.value = Event(false)
 
-                                }
-                                posRepository.createCategory(category)
+                        resource.data.let { categoryResponse ->
+                            if (categoryResponse?.status == 200) {
+                                resource.data?.let {
+
+                                    val category = TbCategory().apply {
+                                        name = it.data.name
+                                        id = it.data.id
+                                        locationId = it.data.locationId
+                                        active = it.data.active
+                                        sort = it.data.sort
+                                        createdAt = it.data.createdAt
+                                        updatedAt = it.data.updatedAt
+                                        thumbImgUrl = it.data.thumbImgUrl
+                                        originalImgUrl = it.data.originalImgUrl
+
+                                    }
+                                    posRepository.createCategory(category)
 
 
-                                if (isEdit) {
-                                    val oldIds = posRepository.getItemsByCategory(category.id)
-                                    oldIds?.forEach { old ->
+                                    if (isEdit) {
+                                        val oldIds = posRepository.getItemsByCategory(category.id)
+                                        oldIds?.forEach { old ->
+                                            posRepository.updateItemCategory(
+                                                category.id,
+                                                category.name ?: "",
+                                                null
+                                            )
+                                        }
+                                    }
+
+                                    ids.forEach { itemId ->
                                         posRepository.updateItemCategory(
                                             category.id,
                                             category.name ?: "",
-                                            null
+                                            itemId
                                         )
                                     }
+
+                                    _data.value = Event(it.message)
+
+
                                 }
-
-                                ids.forEach { itemId ->
-                                    posRepository.updateItemCategory(
-                                        category.id,
-                                        category.name ?: "",
-                                        itemId
-                                    )
-                                }
-
-                                _data.value = Event(it.message)
-
-
+                            } else {
+                                _snackbarText.value = Event(resource.message)
                             }
-                        } else {
-                            _snackbarText.value = Event(resource.message)
-                        }
 
+                        }
+                    }
+
+                    ERROR -> {
+                        _snackbarText.value = Event(resource.message)
+                        _showProgress.value = Event(false)
+                    }
+
+                    LOADING -> {
+                        _showProgress.value = Event(true)
                     }
                 }
-
-                ERROR -> {
-                    _snackbarText.value = Event(resource.message)
-                    _showProgress.value = Event(false)
-                }
-
-                LOADING -> {
-                    _showProgress.value = Event(true)
-                }
             }
-        }
 
+        }
     }
 
 
