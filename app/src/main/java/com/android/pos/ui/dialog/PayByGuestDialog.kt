@@ -362,9 +362,9 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
         getCashPaymentOptionList(_totalPrice + tipAmount)
         MethodUtils.setPriceTextView(binding.txtTipAmt, tipAmount)
         MethodUtils.setPriceTextView(binding.txtTotal, _totalPrice + tipAmount)
-
+        cardPaymentAmount+=tipAmount
         binding.txtCardAmount.text =
-            "$ " + String.format("%.2f", cardPaymentAmount + tipAmount)
+            "$ " + String.format("%.2f", cardPaymentAmount)
     }
 
     @SuppressLint("SetTextI18n")
@@ -1210,7 +1210,14 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
         } else {
             binding.linearNonCashAdjamounnt.visibility = View.GONE
         }
-        MethodUtils.setPriceTextView(binding.txtTotalAmount, cardPaymentAmount)
+        if (tipAmount == 0.00) {
+            MethodUtils.setPriceTextView(binding.txtTotalAmount, cardPaymentAmount)
+        } else {
+            binding.txtTotalAmount.text =
+                MethodUtils.roundOffAmount(cardPaymentAmount) + " (" + MethodUtils.roundOffAmount(
+                    tipAmount
+                ) + " Tip Added)"
+        }
     }
 
     private fun setupGuestWiseData() {
