@@ -676,7 +676,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                     Log.e(TAG, "cartModelPArseMsd   ${Gson().toJson(cartModel)}")
                     viewModel.cartLogic(cartList, cartModel, Constants.UPDATE)
 
-                } else if (cartAdapter.getItem(pos).price > result.percentage) {
+                } else if (result.discountType == "Amount") {
                     val cartModel = cartAdapter.getItem(pos)
                     cartModel.discountPrice = result.percentage
                     cartModel.isDiscountDefault = false
@@ -686,6 +686,14 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
 
                     Log.e(TAG, "DiscountInDollar")
+                } else {
+                    val cartModel = cartAdapter.getItem(pos)
+                    cartModel.discountPrice = 0.0
+                    cartModel.discountType = ""
+                    cartModel.isManualSales = true
+                    viewModel.cartLogic(cartList, cartModel, Constants.UPDATE)
+
+
                 }
 
 
@@ -979,10 +987,10 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                             ((model.price * model.itemQuantity) - model.discountPrice)
                         )
 
-                    } else if ((model.price * model.itemQuantity) > result.percentage) {
+                    } else if (result.discountType == "Amount") {
 
                         model.discountPrice = result.percentage
-                        model.discountId = 0
+                        model.discountId = result.id
                         model.discountType = result.discountType
                         model.isManualSales = true
 
