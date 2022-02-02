@@ -218,15 +218,15 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:background="@null"
+                            android:digits="@string/character_String"
                             android:hint="@string/first_name"
                             android:imeOptions="actionNext"
                             android:inputType="textCapWords|textVisiblePassword"
                             android:padding="@dimen/_5sdp"
+                            android:text="@={viewModel.addCustomerDetails.data.first_name}"
                             android:textColor="@color/black"
                             android:textColorHint="@color/hint_color_"
-                            android:textSize="@dimen/_5mdpi"
-                            android:digits="@string/character_String"
-                            android:text="@={viewModel.addCustomerDetails.data.first_name}"/>
+                            android:textSize="@dimen/_5mdpi" />
 
                         <include layout="@layout/divider" />
 
@@ -238,16 +238,16 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:background="@null"
+                            android:digits="@string/character_String"
                             android:hint="@string/last_name_"
                             android:imeOptions="actionNext"
                             android:inputType="textCapWords|textVisiblePassword"
                             android:padding="@dimen/_5sdp"
+                            android:text="@={viewModel.addCustomerDetails.data.last_name}"
                             android:textColor="@color/black"
                             android:textColorHint="@color/hint_color_"
-                            android:textSize="@dimen/_5mdpi"
-                            android:digits="@string/character_String"
 
-                            android:text="@={viewModel.addCustomerDetails.data.last_name}"/>
+                            android:textSize="@dimen/_5mdpi" />
 
                         <include layout="@layout/divider" />
 
@@ -261,11 +261,11 @@
                             android:inputType="number"
                             android:maxLength="20"
                             android:padding="@dimen/_5sdp"
+                            android:text="@={viewModel.phoneNo}"
                             android:textColor="@color/txtColor"
                             android:textColorHint="@color/hint_color_"
                             android:textSize="@dimen/_5mdpi"
-                            app:met_mask="(###) ###-####"
-                            android:text="@={viewModel.phoneNo}"/>
+                            app:met_mask="(###) ###-####" />
 
                         <include layout="@layout/divider" />
 
@@ -281,10 +281,10 @@
                             android:imeOptions="actionDone"
                             android:inputType="textCapWords|textVisiblePassword"
                             android:padding="@dimen/_5sdp"
+                            android:text="@={viewModel.addCustomerDetails.data.email}"
                             android:textColor="@color/black"
                             android:textColorHint="@color/hint_color_"
                             android:textSize="@dimen/_5mdpi"
-                            android:text="@={viewModel.addCustomerDetails.data.email}"
 
                             />
 
@@ -424,17 +424,17 @@
                     android:orientation="vertical"
                     android:visibility="gone">
 
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/rvAddresses"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                        tools:listitem="@layout/view_customer_address" />
+                    <!--  <androidx.recyclerview.widget.RecyclerView
+                          android:id="@+id/rvAddresses"
+                          android:layout_width="match_parent"
+                          android:layout_height="wrap_content"
+                          android:orientation="vertical"
+                          app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                          tools:listitem="@layout/view_customer_address" />
+
+  -->
 
 
-
-<!--
                     <androidx.appcompat.widget.LinearLayoutCompat
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -538,7 +538,7 @@
 
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
--->
+
 
                     <androidx.appcompat.widget.LinearLayoutCompat
                         android:layout_width="match_parent"

@@ -28,7 +28,6 @@ import com.android.pos.data.entities.TbAddress
 import com.android.pos.data.entities.TbCustomer
 import com.android.pos.data.entities.TbPhones
 import com.android.pos.data.model.requestModel.CreateCustomerRequestModel
-import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentOpenOrderNewBinding
 import com.android.pos.ui.adapter.AddressListAdapter
@@ -38,13 +37,13 @@ import com.android.pos.utils.ProgressUtils
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.*
-import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
 class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
@@ -94,7 +93,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
                 }
             }
         })
-        binding.rvAddresses.adapter = adapter
+        //  binding.rvAddresses.adapter = adapter
 
     }
 
@@ -183,10 +182,15 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
             PlaceAPI.Builder().apiKey(binding.root.context.getString(R.string.api_key))
                 .build(binding.root.context)
 
-        //binding.edtStreet.setAdapter(PlacesAutoCompleteAdapter(binding.root.context, placesApi))
-        binding.edtStreetBill.setAdapter(PlacesAutoCompleteAdapter(binding.root.context, placesApi))
+        binding.edtStreet.setAdapter(PlacesAutoCompleteAdapter(binding.root.context, placesApi))
 
-/*
+        binding.edtStreet.setOnFocusChangeListener { v, hasFocus ->
+
+            Log.e(TAG,"HasFocusChanged")
+
+        }
+        //   binding.edtStreetBill.setAdapter(PlacesAutoCompleteAdapter(binding.root.context, placesApi))
+
         binding.edtStreet.setOnItemClickListener { parent, view, position, id ->
             val place = parent.getItemAtPosition(position) as Place
 
@@ -199,15 +203,14 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
                 override fun onPlaceDetailsFetched(placeDetails: PlaceDetails) {
                     Log.e(TAG, "onPlaceFatched ${Gson().toJson(placeDetails)}")
 
-                    MethodUtils.hideKeyboard(requireActivity())
-                    */
-/* val gcd = Geocoder(context, Locale.getDefault())
-                     val address: List<Address> =
-                         gcd.getFromLocation(placeDetails.lat, placeDetails.lng, 1)
- *//*
 
-                    */
-/*Log.e(TAG, "address   ${Gson().toJson(address)}")*//*
+                    MethodUtils.hideKeyboard(requireActivity())
+                    val gcd = Geocoder(context, Locale.getDefault())
+                    val address: List<Address> =
+                        gcd.getFromLocation(placeDetails.lat, placeDetails.lng, 1)
+
+
+                    Log.e(TAG, "address   ${Gson().toJson(address)}")
 
                     if (placeDetails.address.isNotEmpty()) {
 
@@ -227,6 +230,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
                         binding.edtCity.setText(placeDetails.vicinity)
                         binding.edtState.setText(state)
                         binding.edtZip.setText(pincode)
+                        binding.edtStreet.dismissDropDown()
 
 
                     }
@@ -236,7 +240,6 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
             })
 
         }
-*/
 
         binding.edtStreetBill.setOnItemClickListener { parent, view, position, id ->
             val place = parent.getItemAtPosition(position) as Place
@@ -253,6 +256,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
                     val gcd = Geocoder(context, Locale.getDefault())
                     val address: List<Address> =
                         gcd.getFromLocation(placeDetails.lat, placeDetails.lng, 1)
+                    Log.e(TAG, "address:  ${Gson().toJson(address)}")
 
                     if (address.isNotEmpty()) {
 
@@ -760,7 +764,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
             ArrayAdapter(requireContext(), R.layout.row_spinner_county, country)
         adapter.setDropDownViewResource(R.layout.row_spinner_county)
 
-        // binding.spDelivery.adapter = adapter
+        binding.spDelivery.adapter = adapter
         binding.spBill.adapter = adapter
 
     }
