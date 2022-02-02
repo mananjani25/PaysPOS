@@ -699,6 +699,7 @@
     <string name="please_choos_a_role">Please choose a Role</string>
     <string name="please_enter_passcode">Please enter passcode</string>
     <string name="character_String">qwertzuiopasdfghjklyxcvbnm,QWERTZUIOPASDFGHJKLYXCVBNM</string>
+    <string name="rename">Rename</string>
 
 
 </resources>
