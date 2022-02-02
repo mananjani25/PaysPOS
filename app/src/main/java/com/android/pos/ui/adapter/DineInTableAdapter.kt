@@ -13,7 +13,6 @@ import com.android.pos.data.model.DineInModel
 import com.android.pos.databinding.ViewDineInHeaderBinding
 import com.android.pos.databinding.ViewDineInTableItemsBinding
 import com.android.pos.utils.MethodUtils
-import com.google.gson.Gson
 import java.util.*
 
 class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -100,14 +99,14 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                             if (it.modifiers.isNotEmpty()) {
                                 it.modifiers.forEach { it ->
 
-                                    guestAmt += it.itemQuantity * it.price
-                                    guestSubTotal += it.itemQuantity * it.price
+                                    guestAmt += (it.itemQuantity * it.price)
+                                    guestSubTotal += (it.itemQuantity * it.price)
 
                                 }
                             }
 
                             if (it.taxes?.isNotEmpty() == true) {
-                                Log.e(TAG, "taxesList:  ${Gson().toJson(it.taxes)}")
+
                                 it.taxes?.forEach { tax ->
                                     if (tax.isActive) {
                                         totalTaxAmt += if (tax.taxType == "Percentage") {
@@ -224,7 +223,16 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
 
             var finalAmt =
-                guestSubTotal + totalServiceCharge + totalTaxAmt + (list.get(0).guestDividedAmt) - list[0].orderDiscount
+                guestSubTotal + totalServiceCharge + totalTaxAmt + (list.get(0).guestDividedAmt)
+
+            Log.e(TAG,"GuestguestSubTotal  ${guestSubTotal}")
+            Log.e(TAG,"GuesttotalServiceCharge  ${totalServiceCharge}")
+            Log.e(TAG,"GuesttotalTaxAmt  ${totalTaxAmt}")
+            Log.e(TAG,"GuestguestDividedAmt  ${list.get(0).guestDividedAmt}")
+         //   Log.e(TAG,"GuestguestSubTotal  ${guestSubTotal}")
+
+           // Log.e(TAG,"guestDivided  ${list.get(0).guestDividedAmt}")
+
 
 
 

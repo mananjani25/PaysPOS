@@ -85,6 +85,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     var divideCashDiscount = 0.0
     private var paymentAmount: Double = 0.0
     private var subTotalWT = 0.0
+    private var discountsubTotalWT = 0.0
     private var subTotalDInin = 0.0
     private var WTOnlyTax = 0.0
     private var WTServiceTax = 0.0
@@ -96,6 +97,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     private var future_delivery_time: String = ""
     var totalAmount = 0.0
     var totalAmtnew: Double = 0.0
+    var totalAmtnewDiscount: Double = 0.0
     private var allCustomerList: ArrayList<TbCustomer> = arrayListOf()
     private var popupWindow: PopupWindow? = null
     private var floorPlanModel: GetFloorPlanResponse.Data.FloorPlanTable? = null
@@ -1188,6 +1190,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                             totalGuestPrice += (it.price * it.quantity)
                                             fullAmt += it.quantity * it.price
                                             subTotalWT += (it.quantity * it.price)
+                                            discountsubTotalWT += it.discountAmount
                                             itemsDiscount += it.discountAmount
 
                                         }
@@ -1199,6 +1202,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                                     totalGuestPrice += (it1.price * it1.quantity)
                                                     fullAmt += it1.quantity * it1.price
                                                     subTotalWT += it1.quantity * it1.price
+
 
                                                 }
                                             }
@@ -1239,9 +1243,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         totalPay += fullAmt
 
 
-                        var dividedAmt = subTotalWT / (baseResponse.guestAttributes.size - 1)
+                        Log.e("NewsubTotalWT", "subTotalWT  ${subTotalWT}")
+                        Log.e("NewSubTotaldisubTotalWT", "${discountsubTotalWT}")
+                        var dividedAmt =
+                            (subTotalWT) / (baseResponse.guestAttributes.size - 1)
                         model.guestDividedAmt = dividedAmt
-                        Log.d("one", "navigateDineInOrder: " + model.guestDividedAmt)
+                        Log.d("one", "NewSubTotalDivided: " + dividedAmt)
                         totalGuestPrice +=
                             fullAmt / (baseResponse.guestAttributes.size - 1)
 
@@ -1356,6 +1363,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                     //Whole Table Calculation
                     var WTSubTotal: Double = 0.0
+                    var WTSubTotalDiscountPrice: Double = 0.0
                     var WTTaxes: Double = 0.0
                     var WTServiceCharge: Double = 0.0
 
@@ -1369,6 +1377,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                 if (!it.isPaid) {
 //                                    WTSubTotal += (it.itemQuantity * it.price) - it.discountPrice
                                     WTSubTotal += (it.itemQuantity * it.price)
+                                    WTSubTotalDiscountPrice += it.discountPrice
 
                                     if (it.modifiers.isNotEmpty()) {
                                         it.modifiers.forEach {
@@ -1419,7 +1428,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     if (serviceChargeList?.isNotEmpty() == true) {
                         serviceChargeList?.forEach {
                             if (it.isEnabled) {
-                                WTServiceCharge += (WTSubTotal * it.percentage) / 100
+                                WTServiceCharge += ((WTSubTotal - WTSubTotalDiscountPrice) * it.percentage) / 100
                             }
                         }
 
@@ -1458,10 +1467,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
                     dineInList.get(0).guestDividedAmt =
-                        MethodUtils.roundOffAmountDouble((WTSubTotal + WTTaxes + WTServiceCharge - itemsDiscount) / (baseResponse.guestAttributes.size - 1))
+                        MethodUtils.roundOffAmountDouble(((WTSubTotal - WTSubTotalDiscountPrice) + WTTaxes + WTServiceCharge) / (baseResponse.guestAttributes.size - 1))
                     dineInList.get(0).totalGuestCount = baseResponse.guestAttributes.size - 1
                     dineInList.get(0).wholeTableSubTotal =
-                        WTSubTotal / dineInList.get(0).totalGuestCount
+                        (WTSubTotal - WTSubTotalDiscountPrice) / dineInList.get(0).totalGuestCount
                     dineInList.get(0).wholeTableTax = WTTaxes / dineInList.get(0).totalGuestCount
                     dineInList.get(0).wholeTableSurTax =
                         WTServiceCharge / dineInList.get(0).totalGuestCount
@@ -1482,6 +1491,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             if (dineInList.get(i).item?.isPaid == false) {
                                 dineInList.get(i).item?.let {
                                     totalAmtnew += (it.price * it.itemQuantity)
+                                    totalAmtnewDiscount += it.discountPrice
 //                                    totalAmtnew += (it.price * it.itemQuantity) - it.discountPrice
                                     if (it.modifiers.isNotEmpty()) {
                                         it.modifiers.forEach {

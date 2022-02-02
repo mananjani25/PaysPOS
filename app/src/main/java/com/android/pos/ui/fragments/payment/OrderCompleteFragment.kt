@@ -75,7 +75,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private var serviceCharge = 0.0
     private var totalTaxAmount = 0.0
     private var totalDiscount = 0.0
-    private var changeAmtGlobal = 0.0
+    private var changeAmtGlobal = 0.00
     private var payTypeGlb = ""
     private var redeemLoyaltyInfo: RedeemLoyaltyInfo? = null
     private var isSpilt: Boolean = false
@@ -1480,7 +1480,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             builder.addText(
                 padLine(
                     "Change Amount",
-                    "$" + changeAmtGlobal,
+                    MethodUtils.roundOffAmount(changeAmtGlobal),
                     if (customerSettingModel.fonts == LARGE) {
                         24
                     } else {
@@ -2496,6 +2496,35 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             )
 
 
+            builder.addTextLineSpace(30)
+            builder.addFeedUnit(30)
+
+            builder.addTextFont(Builder.FONT_E)
+            // builder.addTextAlign(Builder.ALIGN_LEFT)
+            builder.addTextLang(Builder.LANG_EN)
+            addCustomerTextSize(builder, customerSettingModel.fonts)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.TRUE,
+                Builder.COLOR_1
+            )
+
+            builder.addText(
+                padLine(
+                    "Paid Amount",
+                    "" + MethodUtils.roundOffAmount(
+                        paidAmount
+                    ),
+                    if (customerSettingModel.fonts == LARGE) {
+                        24
+                    } else {
+                        48
+                    }
+                )
+            )
+
+
 
             builder.addTextLineSpace(30)
             builder.addFeedUnit(30)
@@ -2515,7 +2544,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             builder.addText(
                 padLine(
                     "Change Amount",
-                    "$" + changeAmtGlobal,
+                    MethodUtils.roundOffAmount(changeAmtGlobal),
                     if (customerSettingModel.fonts == LARGE) {
                         24
                     } else {
@@ -2989,38 +3018,43 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     ProgressUtils.dismissProgressDialog()
                     if (it.data != null) {
 
+                        Log.e(TAG, "isFromDinein:  ${requireArguments().getBoolean("isDineIn")}")
+                        Log.e(TAG, "splitSize:  ${splitList.size}")
+                        Log.e(TAG, "isSpilt ${isSpilt}")
 
                         kitchenPrinterList = it.data
-                        if (!requireArguments().getBoolean("isDineIn") && !requireArguments().getBoolean(
+                        if (!requireArguments().getBoolean(
                                 "isFromActiveOrder"
                             )
                         ) {
                             if (isSpilt && splitList.size == 1) {
+                                if (!requireArguments().getBoolean("isDineIn")) {
 
-                                for (i in 0 until kitchenPrinterList.size) {
-                                    kitchenPrinterList[i].orderTypes.forEach {
+                                    for (i in 0 until kitchenPrinterList.size) {
+                                        kitchenPrinterList[i].orderTypes.forEach {
 
 
-                                        if (it.orderTypeName.trim()
-                                                .lowercase().equals(
-                                                    receiptModel?.order?.orderType?.toString()
-                                                        ?.trim()
-                                                        ?.lowercase()
-                                                )
-                                        ) {
-
-                                            it.printerSettings.forEach {
-                                                if (it.printType.lowercase()
-                                                        .equals(KITCHEN.lowercase()) && it.autoPrinting
-                                                ) {
-                                                    initKitchenPrinter(
-                                                        kitchenPrinterList.get(i),
-                                                        KITCHEN
+                                            if (it.orderTypeName.trim()
+                                                    .lowercase().equals(
+                                                        receiptModel?.order?.orderType?.toString()
+                                                            ?.trim()
+                                                            ?.lowercase()
                                                     )
+                                            ) {
 
+                                                it.printerSettings.forEach {
+                                                    if (it.printType.lowercase()
+                                                            .equals(KITCHEN.lowercase()) && it.autoPrinting
+                                                    ) {
+                                                        initKitchenPrinter(
+                                                            kitchenPrinterList.get(i),
+                                                            KITCHEN
+                                                        )
+
+                                                    }
                                                 }
-                                            }
 
+                                            }
                                         }
                                     }
 
@@ -3884,7 +3918,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 builder.addText(
                     padLine(
                         "Change Amount",
-                        "$" + changeAmtGlobal,
+                        MethodUtils.roundOffAmount(changeAmtGlobal),
                         if (customerSettingModel.fonts == LARGE) {
                             24
                         } else {
