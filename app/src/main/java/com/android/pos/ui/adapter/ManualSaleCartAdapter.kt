@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.graphics.Paint
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -11,7 +12,6 @@ import com.android.pos.R
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.ManualSaleCartModel
-
 import com.android.pos.databinding.ViewManualSaleItemBinding
 import com.android.pos.utils.MethodUtils
 
@@ -30,6 +30,14 @@ class ManualSaleCartAdapter : RecyclerView.Adapter<ManualSaleCartAdapter.MyViewH
             MethodUtils.setPriceTextView(binding.txtItemPrice, (model.price * model.itemQuantity))
 
 
+
+            if (model.note.isNotEmpty()) {
+                binding.txtNoteMannualcart.visibility = View.VISIBLE
+                binding.txtNoteMannualcart.text = "Note: " + model.note
+            } else {
+                binding.txtNoteMannualcart.visibility = View.INVISIBLE
+
+            }
             txtItem.text = list[pos].name
             if (list[pos].discountPrice != 0.0) {
                 binding.txtItemPrice.paintFlags =

@@ -17,12 +17,14 @@
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
+        android:layout_marginBottom="@dimen/_4sdp"
         android:layout_height="wrap_content"
         android:weightSum="1">
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/_1sdp"
             android:layout_gravity="center"
             android:layout_weight="0.6"
             android:gravity="center"
@@ -42,6 +44,7 @@
                 android:textSize="@dimen/_5mdpi" />
 
             <TextView
+                android:id="@+id/txt_note_mannualcart"
                 style="@style/CustomFontRegularStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -49,7 +52,6 @@
                 android:lines="1"
                 android:maxLines="1"
                 android:singleLine="true"
-                android:text="@{model.note}"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_5mdpi" />
         </androidx.appcompat.widget.LinearLayoutCompat>

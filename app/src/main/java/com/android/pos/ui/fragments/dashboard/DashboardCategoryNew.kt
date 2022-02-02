@@ -2014,7 +2014,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             viewModel.cartLogic(cartList, data, UPDATE)
 
                         }
-                        result.discountType == "" -> {
+                        result.discountType == "Amount" -> {
                             totalDiscountMannualAdded = data.discountPrice
                             data.discountPrice = result.percentage
                             data.discountId = 0
@@ -2025,12 +2025,14 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             viewModel.cartLogic(cartList, data, UPDATE)
                         }
                         else -> {
-                            /*  data.discountPrice = 0.0
-                                          data.discountType = ""
-                                          data.isManualSales = false
-                                          data.discountId = 0
-                                          discountPrice = data.discountPrice*/
+                            totalDiscountMannualAdded = data.discountPrice
+                            data.discountPrice = result.percentage
+                            data.discountId = 0
+                            data.discountType = result.discountType
+                            data.isManualSales = false
+                            discountPrice = data.discountPrice / data.itemQuantity
 
+                            viewModel.cartLogic(cartList, data, UPDATE)
                         }
                     }
 
@@ -2864,7 +2866,18 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
 
                                 }
-                                "" -> {
+                                "Amount" -> {
+
+                                    data.discountPrice = result.percentage
+                                    data.discountId = 0
+                                    data.discountType = result.discountType
+                                    data.isManualSales = false
+                                    // discountPrice = data.discountPrice
+
+                                    viewModel.cartLogic(cartList, data, UPDATE)
+
+                                }
+                                else -> {
 
                                     data.discountPrice = result.percentage
                                     data.discountId = 0

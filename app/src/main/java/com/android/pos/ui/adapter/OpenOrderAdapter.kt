@@ -41,14 +41,17 @@ class OpenOrderAdapter(val context: Context) :
 
             binding.llShowLayout.visibility = View.GONE
 
-            binding.tvDate.text =
-                TimeFormatUtils.convertCurrentDate(
-                    item.createdAt,
-                    context
-                ) + "\n" + TimeFormatUtils.convertCurrentTime(
-                    item.createdAt,
-                    context
-                )
+
+            if (item.futureDeliveryDate?.isNotEmpty() == true && item.futureDeliveryDate != null) {
+                binding.tvDate.text =
+                    TimeFormatUtils.convertDateFormatForOpenOrder(
+                        item.futureDeliveryDate!!,
+                        context
+                    ) + "\n" + item.futureDeliveryTime
+            } else {
+
+            }
+
             binding.txtCustomerName.text =
                 (item.customer?.firstName ?: "") + " " + (item.customer?.lastName ?: "")
 

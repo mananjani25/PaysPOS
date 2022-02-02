@@ -21,6 +21,12 @@ class CashLogAdapter(val context: Context?) :
         fun bind(item: CashLogResponse.Data.Cashe) {
             binding.viewModel = item
             binding.executePendingBindings()
+            if (item.reason.isNotEmpty()) {
+                binding.txtReason.text = item.reason
+            } else {
+                binding.txtReason.text = "-"
+            }
+
 
             binding.txtDateTime.text =
                 TimeFormatUtils.convertCurrentDate(

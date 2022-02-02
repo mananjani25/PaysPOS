@@ -54,7 +54,7 @@ class CustomAmountFragment : DialogFragment() {
             } else {
                 AlertUtils.showCustomAlertWithListenerWithOK(
                     requireContext(),
-                    "Please Enter Amount Greater than Actual Amount"
+                    "Please enter amount greater than actual amount"
                 ) { _, _ ->
                 }
             }

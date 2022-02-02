@@ -323,7 +323,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                     totalItemPrice,
                     prefProvider,
                     requireContext()
-                ) / refundItemListAdapter.itemCount)
+                ) / refundItemListAdapter.selectedItemList().size)
             }
         } else if (paymentOrderDetailsResponse.data.payment_type == "Card") {
             if (paymentOrderDetailsResponse.data.cash_discount_type == "SurCharge") {
@@ -331,7 +331,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                     totalItemPrice,
                     prefProvider,
                     requireContext()
-                ) / refundItemListAdapter.itemCount)
+                ) / refundItemListAdapter.selectedItemList().size)
             }
         }
 
