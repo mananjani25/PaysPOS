@@ -50,7 +50,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
     private var enrollToLoyalty: Boolean = false
     private var finalReward: Int = 0
     private var deliveryType: String = "Pickup"
-    private var selectedDate: String?=null
+    private var selectedDate: String? = null
     private var country = arrayOf("United States", "Canada")
     private lateinit var binding: FragmentOpenOrderNewBinding
     private lateinit var placesApi: PlaceAPI
@@ -63,7 +63,9 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
     private lateinit var adapter: AddressListAdapter
     private var type: String = Constants.PICK_UP
 
-    private  var addressList:java.util.ArrayList<CreateCustomerRequestModel.Customer.Addresses> = arrayListOf()
+    private var addressList: java.util.ArrayList<CreateCustomerRequestModel.Customer.Addresses> =
+        arrayListOf()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -71,7 +73,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
     ): View? {
         binding = FragmentOpenOrderNewBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
-        binding.viewModel=viewModel
+        binding.viewModel = viewModel
 
         showObserveProgress()
         setupUI()
@@ -114,8 +116,9 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
         setAddress()
 
 
-        if (!isEdit){
-            var list: java.util.ArrayList<CreateCustomerRequestModel.Customer.Addresses> = arrayListOf()
+        if (!isEdit) {
+            var list: java.util.ArrayList<CreateCustomerRequestModel.Customer.Addresses> =
+                arrayListOf()
             var model = CreateCustomerRequestModel.Customer.Addresses()
             model.apply {
                 latitude = 0.0
@@ -128,10 +131,6 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
         }
 
     }
-
-
-
-
 
 
     private fun showObserveProgress() {
@@ -271,17 +270,17 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
         }
         findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Bundle>("data")
             ?.observe(viewLifecycleOwner) { it ->
-                selectedDate=it.getString("SELECTED_DATE")
-                binding.edtDate.text=selectedDate
+                selectedDate = it.getString("SELECTED_DATE")
+                binding.edtDate.text = selectedDate
             }
 
         setFragmentResultListener("request_key_customer") { requestKey: String, bundle: Bundle ->
             val result = bundle.getParcelable<TbCustomer>("data")
             if (result != null) {
                 isEdit = bundle.getBoolean("isEdit")
-                selectedDate=bundle.getString("SELECTED_DATE")
+                selectedDate = bundle.getString("SELECTED_DATE")
 
-                binding.edtDate.text=selectedDate
+                binding.edtDate.text = selectedDate
                 setupCustomer(result)
             }
         }
@@ -321,9 +320,24 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
 
                     val list: ArrayList<TbAddress> = arrayListOf()
 
-                    for (i in viewModel.listAddress){
-                        list.add(TbAddress(i.id,i.address1,i.address2,i.city,i.state,i.country.toString(),i.postcode,
-                            "",i.latitude.toString(),i.longitude.toString(),i.type_of_address,"",i.address1))
+                    for (i in viewModel.listAddress) {
+                        list.add(
+                            TbAddress(
+                                i.id,
+                                i.address1,
+                                i.address2,
+                                i.city,
+                                i.state,
+                                i.country.toString(),
+                                i.postcode,
+                                "",
+                                i.latitude.toString(),
+                                i.longitude.toString(),
+                                i.type_of_address,
+                                "",
+                                i.address1
+                            )
+                        )
                     }
 
 
@@ -345,7 +359,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
                         putParcelable("data", customer)
                         putString("DATE", binding.edtDate.text.toString())
                         putString("TIME", binding.edtTime.text.toString())
-                        putString("TYPE",type)
+                        putString("TYPE", type)
                         putBoolean("OPEN_ORDER", true)
                     }
                     setFragmentResult("request_key_customer_open_order", result)
@@ -406,8 +420,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
             }
 
 
-        }
-        else
+        } else
             addAddress()
 
         customerID = customer.id
@@ -416,7 +429,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
 
         binding.edtFirstName.setText(customer.first_name)
         binding.edtLastName.setText(customer.last_name)
-        if (customer.phones.size>0){
+        if (customer.phones.size > 0) {
             binding.edtPhoneNo.setText(AlertUtils.usNumberFormat(customer.phones[0].phone_number))
         }
         binding.edtEmail.setText(customer.email)
@@ -428,37 +441,46 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
 
 
         if (customer.addresses.isNotEmpty()) {
-           /* var list: java.util.ArrayList<CreateCustomerRequestModel.Customer.Addresses> = arrayListOf()
-            addressList=list
-            list.add(
-                CreateCustomerRequestModel.Customer.Addresses(
-                    customer.addresses.get(0).id,
-                    customer.addresses.get(0).address1,
-                    customer.addresses.get(0).address2,
-                    customer.addresses.get(0).city,
-                    customer.addresses.get(0).state,
-                    customer.addresses.get(0).country,
-                    customer.addresses.get(0).postcode,
-                    customer.addresses.get(0).type_of_address,
-                    0.0,
-                    0.0,
-                )
-            )*/
+            /* var list: java.util.ArrayList<CreateCustomerRequestModel.Customer.Addresses> = arrayListOf()
+             addressList=list
+             list.add(
+                 CreateCustomerRequestModel.Customer.Addresses(
+                     customer.addresses.get(0).id,
+                     customer.addresses.get(0).address1,
+                     customer.addresses.get(0).address2,
+                     customer.addresses.get(0).city,
+                     customer.addresses.get(0).state,
+                     customer.addresses.get(0).country,
+                     customer.addresses.get(0).postcode,
+                     customer.addresses.get(0).type_of_address,
+                     0.0,
+                     0.0,
+                 )
+             )*/
 
 
-            var list: java.util.ArrayList<CreateCustomerRequestModel.Customer.Addresses> = arrayListOf()
-            addressList=list
+            var list: java.util.ArrayList<CreateCustomerRequestModel.Customer.Addresses> =
+                arrayListOf()
+            addressList = list
             customer.addresses.forEach {
-                list.add(CreateCustomerRequestModel.Customer.Addresses(
-                    it.id,it.address1,it.address2,it.city,it.state,it.country,it.postcode,it.type_of_address
-                ))
+                list.add(
+                    CreateCustomerRequestModel.Customer.Addresses(
+                        it.id,
+                        it.address1,
+                        it.address2,
+                        it.city,
+                        it.state,
+                        it.country,
+                        it.postcode,
+                        it.type_of_address
+                    )
+                )
             }
 
 
 
             adapter.setAddress(list)
-        }
-        else
+        } else
             addAddress()
 
 
@@ -527,7 +549,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
                 }
 
                 findNavController().navigate(
-                    R.id.action_openOrderCustomerFragmentNew_to_assignCustomerOrderFragment,result
+                    R.id.action_openOrderCustomerFragmentNew_to_assignCustomerOrderFragment, result
                 )
             }
             R.id.btnClearDelivery -> {
@@ -579,7 +601,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
 
             R.id.edtDate -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    selectedDate=null
+                    selectedDate = null
                     showDatePicker()
                 }
             }
@@ -594,13 +616,13 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
 
             R.id.txtSave -> {
 
-              /*  val addressList=ArrayList<CreateCustomerRequestModel.Customer.Addresses>()
-                val address1=binding.edtStreet.text.toString().trim()
-                val address2=binding.edtSuite.text.toString().trim()
-                val city=binding.edtCity.text.toString().trim()
-                val state=binding.edtState.text.toString().trim()
-                val zipCode=binding.edtZip.text.toString().trim()
-                addressList.add(CreateCustomerRequestModel.Customer.Addresses(null,address1,address2,city,state))*/
+                /*  val addressList=ArrayList<CreateCustomerRequestModel.Customer.Addresses>()
+                  val address1=binding.edtStreet.text.toString().trim()
+                  val address2=binding.edtSuite.text.toString().trim()
+                  val city=binding.edtCity.text.toString().trim()
+                  val state=binding.edtState.text.toString().trim()
+                  val zipCode=binding.edtZip.text.toString().trim()
+                  addressList.add(CreateCustomerRequestModel.Customer.Addresses(null,address1,address2,city,state))*/
                 viewModel.setAddressList(adapter.getList())
                 viewModel.submit()
 
@@ -742,7 +764,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
             ArrayAdapter(requireContext(), R.layout.row_spinner_county, country)
         adapter.setDropDownViewResource(R.layout.row_spinner_county)
 
-       // binding.spDelivery.adapter = adapter
+        // binding.spDelivery.adapter = adapter
         binding.spBill.adapter = adapter
 
     }
@@ -766,10 +788,9 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
         )
         val dateAsFormattedText: String =
             dateTime.format(DateTimeFormatter.ofPattern("MMM-dd-yyyy"))
-        if (selectedDate!=null){
+        if (selectedDate != null) {
             binding.edtDate.text = selectedDate
-        }
-        else{
+        } else {
             binding.edtDate.text = dateAsFormattedText
         }
 

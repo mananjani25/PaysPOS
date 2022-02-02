@@ -302,8 +302,7 @@ fun addOrdersForKitchenDineIn(
 ): Builder {
 
 
-
-    list.forEach {obj ->
+    list.forEach { obj ->
 
 
         builder.addTextLineSpace(30)
@@ -543,55 +542,56 @@ fun addWholeTbItemToGuest(
     var serviceCharge = 0.0
 
 
-    obj.taxes?.forEach { tax ->
-        if (tax.isActive) {
-            WTTaxes += if (tax.taxType == "Percentage") {
+    /*  obj.taxes?.forEach { tax ->
+          if (tax.isActive) {
+              WTTaxes += if (tax.taxType == "Percentage") {
 
-                var modifierPrice = 0.0
-                val price =
-                    (obj.price * obj.itemQuantity) - obj.discountPrice
+                  var modifierPrice = 0.0
+                  val price =
+                      (obj.price * obj.itemQuantity) - obj.discountPrice
 
-                obj.modifiers.forEach {
-                    modifierPrice += (it.price * it.itemQuantity)
-                }
+                  obj.modifiers.forEach {
+                      modifierPrice += (it.price * it.itemQuantity)
+                  }
 
-                val totalPrice = price + modifierPrice
+                  val totalPrice = price + modifierPrice
 
-                val itemTaxPrice =
-                    (tax.rate * totalPrice) / 100
-                Log.e("itemTaxPrice", "" + itemTaxPrice)
-                String.format("%.2f", itemTaxPrice)
-                    .toDouble()
-            } else {
+                  val itemTaxPrice =
+                      (tax.rate * totalPrice) / 100
+                  Log.e("itemTaxPrice", "" + itemTaxPrice)
+                  String.format("%.2f", itemTaxPrice)
+                      .toDouble()
+              } else {
 
-                String.format(
-                    "%.2f",
-                    tax.rate * obj.itemQuantity
-                )
-                    .toDouble()
-            }
-        }
+                  String.format(
+                      "%.2f",
+                      tax.rate * obj.itemQuantity
+                  )
+                      .toDouble()
+              }
+          }
 
 
-    }
+      }*/
 
-    if (serviceChargeList?.isNotEmpty() == true) {
-        serviceChargeList?.forEach {
-            if (it.isEnabled) {
-                serviceCharge += (subTotal * it.percentage) / 100
-            }
-        }
+    /* if (serviceChargeList?.isNotEmpty() == true) {
+         serviceChargeList?.forEach {
+             if (it.isEnabled) {
+                 serviceCharge += (subTotal * it.percentage) / 100
+             }
+         }
 
-        Log.e(TAG,"serviceCharge  ${serviceCharge}")
-        Log.e(TAG,"serviceWTTaxes  ${WTTaxes}")
-        Log.e(TAG,"serviceSubTotal  ${subTotal}")
-    }
+         Log.e(TAG, "serviceCharge  ${serviceCharge}")
+         Log.e(TAG, "serviceWTTaxes  ${WTTaxes}")
+         Log.e(TAG, "serviceSubTotal  ${subTotal}")
+         Log.e(TAG, "serviceguestCount  ${guestCount}")
+     }*/
 
-    var finalAmt = MethodUtils.roundOffAmount((subTotal+WTTaxes +serviceCharge)/guestCount)
+    var finalAmt = MethodUtils.roundOffAmount((subTotal + WTTaxes + serviceCharge) / guestCount)
     builder.addText(
         padLineCustomerItem(
             obj.itemQuantity.toString() + "x " + obj.name,
-            "" +finalAmt,
+            "" + finalAmt,
             if (font == Constants.LARGE) {
                 24
             } else {

@@ -259,6 +259,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface {
                 bundle.putDouble("totalServiceCharge", viewModel.totalServiceCharge)
                 cartList?.get(0)?.customer = assignCustomer
                 bundle.putParcelable("cartList", cartList?.get(0))
+                Log.e(TAG,"cartListManualSale  ${Gson().toJson(cartList?.get(0))}")
                 bundle.putString(
                     "redeemLoyalty",
                     Gson().toJson(viewModel.redeemLoyaltyInfo)

@@ -1041,8 +1041,8 @@ class PaymentViewModel @Inject constructor(
 
                 val orderItemVariationAttribute = OrderItemVariationAttribute()
                 orderItemVariationAttribute.name = it.name
-                orderItemVariationAttribute.price = it.price!!
-                orderItemVariationAttribute.totalPrice = it.price!! * item.itemQuantity
+                orderItemVariationAttribute.price = it.price ?: 0.0
+                orderItemVariationAttribute.totalPrice = it.price ?: 0.0 * item.itemQuantity
                 orderItemVariationAttribute.variationId = it.id!!
                 orderItemVariationAttribute.quantity = item.itemQuantity
 
