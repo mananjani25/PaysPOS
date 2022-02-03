@@ -27,11 +27,13 @@ class AddressListAdapter(val refreshCallBack: (Int) -> Unit) :
     private val TAG = "AddressListAdapter"
     private lateinit var placesApi: PlaceAPI
     private var list: ArrayList<CreateCustomerRequestModel.Customer.Addresses> = arrayListOf()
+    private var templist: ArrayList<CreateCustomerRequestModel.Customer.Addresses> = arrayListOf()
     private var country = arrayOf("United States", "Canada")
 
 
     fun addData(model: CreateCustomerRequestModel.Customer.Addresses) {
         list.add(model)
+        templist.add(model)
         notifyItemInserted(list.size )
         //notifyItemRangeInserted(0,list.size )
     }
@@ -57,6 +59,11 @@ class AddressListAdapter(val refreshCallBack: (Int) -> Unit) :
         init {
 
             binding.imgDelete.setOnClickListener {
+
+                if (bindingAdapterPosition<=templist.size){
+                    templist.get(bindingAdapterPosition)._destroy="true"
+                }
+
                 list.removeAt(bindingAdapterPosition)
                 notifyItemRemoved(bindingAdapterPosition)
 
@@ -124,15 +131,15 @@ class AddressListAdapter(val refreshCallBack: (Int) -> Unit) :
 
                         if (address.isNotEmpty()) {
                             try {
-                                list[layoutPosition].address1 = placeDetails.name
-                                list[layoutPosition].address2 = placeDetails.name ?: ""
-                                list[layoutPosition].city = address[0].locality ?: ""
-                                list[layoutPosition].country = "United States"
+                               templist[layoutPosition].address1 = placeDetails.name
+                               templist[layoutPosition].address2 = placeDetails.name ?: ""
+                               templist[layoutPosition].city = address[0].locality ?: ""
+                               templist[layoutPosition].country = "United States"
 
-                                list[layoutPosition].state = address[0].adminArea ?: ""
-                                list[layoutPosition].postcode = address[0].postalCode ?: ""
+                               templist[layoutPosition].state = address[0].adminArea ?: ""
+                               templist[layoutPosition].postcode = address[0].postalCode ?: ""
 
-                                Log.e(TAG, "Updatelist:  ${Gson().toJson(list)}")
+                                Log.e(TAG, "Updatelist:  ${Gson().toJson(templist)}")
                             } catch (e: Exception) {
                                 Log.e(TAG, "exception in pplaces api")
                             } finally {
@@ -192,12 +199,13 @@ class AddressListAdapter(val refreshCallBack: (Int) -> Unit) :
     }
 
     fun getList(): ArrayList<CreateCustomerRequestModel.Customer.Addresses> {
-        return list
+        return templist
     }
 
     @SuppressLint("NotifyDataSetChanged")
     fun setAddress(listAdd: ArrayList<CreateCustomerRequestModel.Customer.Addresses>) {
         this.list = listAdd
+        this.templist.addAll(listAdd)
         notifyDataSetChanged()
 
     }
