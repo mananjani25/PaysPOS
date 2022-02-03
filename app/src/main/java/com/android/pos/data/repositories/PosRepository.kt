@@ -410,6 +410,9 @@ class PosRepository @Inject constructor(
     suspend fun addCustomer(data: TbCustomer) =
         appDatabase.customerDao().addCustomer(data)
 
+    suspend fun updateFinalRewards(finalrewards: Int,customerId: Int) =
+        appDatabase.customerDao().updateLoyaltyRewards(finalrewards,customerId)
+
     fun getCustomerDetailsByID(id: Int?): LiveData<TbCustomer> {
 
         return appDatabase.customerDao().getCustomerDetailsByID(id)

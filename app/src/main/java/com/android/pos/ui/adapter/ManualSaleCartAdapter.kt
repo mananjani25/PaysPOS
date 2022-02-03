@@ -14,13 +14,14 @@ import com.android.pos.databinding.ViewManualSaleItemBinding
 import com.android.pos.utils.CustomSwipeLayout.SwipeLayout
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.callback.ManualSaleOptionsCustomCallback
+import com.android.pos.utils.swipereveallayout.ViewBinderHelper
 
 class ManualSaleCartAdapter : RecyclerView.Adapter<ManualSaleCartAdapter.MyViewHolder>() {
     var list = ArrayList<TbItem>()
     private lateinit var listnerCall: ManualSaleInterface
     private lateinit var itemlistnerCall: ManualSaleOptionsCustomCallback
     val TAG = "ManualSaleCartAdapter"
-
+    var  viewBinderHelper :ViewBinderHelper = ViewBinderHelper()
 
     @SuppressLint("ClickableViewAccessibility")
     inner class MyViewHolder(private val binding: ViewManualSaleItemBinding) :
@@ -28,6 +29,7 @@ class ManualSaleCartAdapter : RecyclerView.Adapter<ManualSaleCartAdapter.MyViewH
 
         private val txtItem: TextView = binding.root.findViewById(R.id.txtItem)
         fun bind(model: TbItem, pos: Int) {
+            viewBinderHelper.bind(binding.swipeLayout,absoluteAdapterPosition.toString())
             binding.txtQuantity.text = "x ${model.itemQuantity}"
             MethodUtils.setPriceTextView(binding.txtItemPrice, (model.price * model.itemQuantity))
 
@@ -59,6 +61,7 @@ class ManualSaleCartAdapter : RecyclerView.Adapter<ManualSaleCartAdapter.MyViewH
 
 
         init {
+            viewBinderHelper.setOpenOnlyOne(true)
 /*
             binding.rlRoot!!.setOnTouchListener(View.OnTouchListener { view, motionEvent ->
                 when (motionEvent.getAction()) {
@@ -75,12 +78,12 @@ class ManualSaleCartAdapter : RecyclerView.Adapter<ManualSaleCartAdapter.MyViewH
             })
 */
 
-            binding.swipeLayout.setOnDragListener { _, _ ->
-                if (binding.swipeLayout.isOpened)
-                    binding.swipeLayout.close(true)
-
-                false
-            }
+//            binding.swipeLayout.setOnDragListener { _, _ ->
+//                if (binding.swipeLayout.isOpened)
+//                    binding.swipeLayout.close(true)
+//
+//                false
+//            }
             binding.llRoot.setOnClickListener {
                 listnerCall.onItemClicked(list[layoutPosition], layoutPosition)
             }
