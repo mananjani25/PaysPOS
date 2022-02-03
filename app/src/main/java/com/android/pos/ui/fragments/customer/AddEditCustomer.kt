@@ -6,7 +6,6 @@ import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.os.Build
 import android.os.Bundle
-import android.text.InputFilter
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -26,7 +25,6 @@ import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
 import com.google.android.material.snackbar.Snackbar
-import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.*
@@ -112,7 +110,7 @@ class AddEditCustomer : Fragment() {
                     adapter.notifyItemChanged(adapterPos)
                 }
             }
-        })
+        },requireContext())
         binding.rvAddresses.adapter = adapter
 
     }

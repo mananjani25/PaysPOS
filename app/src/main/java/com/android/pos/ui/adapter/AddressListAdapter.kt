@@ -6,7 +6,7 @@ import `in`.madapps.placesautocomplete.listener.OnPlacesDetailsListener
 import `in`.madapps.placesautocomplete.model.Place
 import `in`.madapps.placesautocomplete.model.PlaceDetails
 import android.annotation.SuppressLint
-import android.location.Address
+import android.content.Context
 import android.location.Geocoder
 import android.os.Build
 import android.util.Log
@@ -22,7 +22,7 @@ import com.google.gson.Gson
 import java.util.*
 
 
-class AddressListAdapter(val refreshCallBack: (Int) -> Unit) :
+class AddressListAdapter(val refreshCallBack: (Int) -> Unit, val context: Context) :
     RecyclerView.Adapter<AddressListAdapter.MyViewHolder>() {
     private val TAG = "AddressListAdapter"
     private lateinit var placesApi: PlaceAPI
@@ -32,7 +32,7 @@ class AddressListAdapter(val refreshCallBack: (Int) -> Unit) :
 
     fun addData(model: CreateCustomerRequestModel.Customer.Addresses) {
         list.add(model)
-        notifyItemInserted(list.size )
+        notifyItemInserted(list.size)
         //notifyItemRangeInserted(0,list.size )
     }
 
@@ -51,6 +51,96 @@ class AddressListAdapter(val refreshCallBack: (Int) -> Unit) :
             } else {
                 binding.imgDelete.visibility = View.VISIBLE
             }
+
+            placesApi =
+                PlaceAPI.Builder().apiKey(binding.root.context.getString(R.string.api_key))
+                    .build(binding.root.context)
+
+
+            edtStreet.setAdapter(PlacesAutoCompleteAdapter(binding.root.context, placesApi))
+            edtStreet.setOnItemClickListener { parent, view, position, id ->
+
+                Log.e(TAG, "onItemSelected")
+                val place = parent.getItemAtPosition(position) as Place
+                Log.e(TAG, "gotPlaceID:  ${place.id}")
+
+                //binding.edtStreet.setText("${place.description}")
+                placesApi.fetchPlaceDetails(place.id, object : OnPlacesDetailsListener {
+                    override fun onError(errorMessage: String) {
+                        Log.e(TAG, "errorMessage:  ${errorMessage}")
+                    }
+
+                    override fun onPlaceDetailsFetched(placeDetails: PlaceDetails) {
+                        Log.e(TAG, "placeDetails:  ${Gson().toJson(placeDetails)}")
+
+                        val gcd = Geocoder(context, Locale.getDefault())
+                        /*val address: List<Address> =
+                            gcd.getFromLocation(placeDetails.lat, placeDetails.lng, 1)*/
+                        var street = ""
+                        var suite = ""
+                        var city = ""
+                        var state = ""
+                        var zip = ""
+                        placeDetails.address.forEach {
+                            it.type.forEach { type ->
+                                if (type.trim().lowercase() == "street_number".trim().lowercase()) {
+                                    street += it.longName
+                                } else if (type.trim().lowercase() == "route".trim().lowercase()) {
+                                    street += it.longName
+                                } else if (type.trim().lowercase() == "neighborhood".trim()
+                                        .lowercase()
+                                ) {
+                                    suite = it.longName
+                                } else if (type.trim().lowercase() == "locality".trim()
+                                        .lowercase()
+                                ) {
+                                    city = it.longName
+                                } else if (type.trim()
+                                        .lowercase() == "administrative_area_level_1".trim()
+                                        .lowercase()
+                                ) {
+                                    state = it.longName
+                                } else if (type.trim().lowercase() == "postal_code".trim()
+                                        .lowercase()
+                                ) {
+                                    zip = it.longName
+                                }
+
+                            }
+
+                        }
+                        Log.e(TAG, "CountryNAme ${country}")
+
+                        if (placeDetails.address.isNotEmpty()) {
+                            try {
+
+                                list[layoutPosition].address1 = street
+                                list[layoutPosition].address2 = suite
+                                list[layoutPosition].city = city
+                                list[layoutPosition].country = "United States"
+
+                                list[layoutPosition].state = state
+                                list[layoutPosition].postcode = zip
+
+                                Log.e(TAG, "Updatelist:  ${Gson().toJson(list)}")
+                            } catch (e: Exception) {
+                                Log.e(TAG, "exception in pplaces api")
+                                e.printStackTrace()
+                            } finally {
+                                Log.e(TAG, "notify callback")
+                                refreshCallBack.invoke(layoutPosition)
+
+
+                            }
+                        }
+
+                        Log.e(TAG, "placeDetails:  ${Gson().toJson(placeDetails.name)}")
+
+                    }
+
+                })
+            }
+
 
         }
 
@@ -99,63 +189,11 @@ class AddressListAdapter(val refreshCallBack: (Int) -> Unit) :
                 }
             //binding.edtAddress.setText("United States")
 
-            placesApi =
-                PlaceAPI.Builder().apiKey(binding.root.context.getString(R.string.api_key))
-                    .build(binding.root.context)
-
-
-            edtStreet.setAdapter(PlacesAutoCompleteAdapter(binding.root.context, placesApi))
-            edtStreet.setOnItemClickListener { parent, view, position, id ->
-                val place = parent.getItemAtPosition(position) as Place
-
-                //binding.edtStreet.setText("${place.description}")
-                placesApi.fetchPlaceDetails(place.id, object : OnPlacesDetailsListener {
-                    override fun onError(errorMessage: String) {
-                    }
-
-                    override fun onPlaceDetailsFetched(placeDetails: PlaceDetails) {
-
-                        decodeLocation(placeDetails.lat, placeDetails.lng, placeDetails.name)
-
-                        val gcd = Geocoder(itemView.context, Locale.getDefault())
-                        val address: List<Address> =
-                            gcd.getFromLocation(placeDetails.lat, placeDetails.lng, 1)
-                        Log.e(TAG, "CountryNAme ${address.get(0).countryName}")
-
-                        if (address.isNotEmpty()) {
-                            try {
-                                list[layoutPosition].address1 = placeDetails.name
-                                list[layoutPosition].address2 = placeDetails.name ?: ""
-                                list[layoutPosition].city = address[0].locality ?: ""
-                                list[layoutPosition].country = "United States"
-
-                                list[layoutPosition].state = address[0].adminArea ?: ""
-                                list[layoutPosition].postcode = address[0].postalCode ?: ""
-
-                                Log.e(TAG, "Updatelist:  ${Gson().toJson(list)}")
-                            } catch (e: Exception) {
-                                Log.e(TAG, "exception in pplaces api")
-                            } finally {
-                                Log.e(TAG, "notify callback")
-                                refreshCallBack.invoke(layoutPosition)
-                            }
-                        }
-
-                        Log.e(TAG, "placeDetails:  ${Gson().toJson(placeDetails.name)}")
-
-                    }
-
-                })
-            }
-
 
         }
 
     }
 
-    private fun decodeLocation(lat: Double, lng: Double, place: String) {
-
-    }
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -168,8 +206,9 @@ class AddressListAdapter(val refreshCallBack: (Int) -> Unit) :
     }
 
     override fun onBindViewHolder(holder: AddressListAdapter.MyViewHolder, position: Int) {
-        Log.e(TAG, "BindListSize:  ${list.size}")
+        Log.e(TAG, "BindListSize:  ${list.get(position).address1}")
         holder.bind(list[position], position)
+
 
         holder.edtStreet.setText(list[position].address1)
         holder.edtZip.setText(list[position].postcode)

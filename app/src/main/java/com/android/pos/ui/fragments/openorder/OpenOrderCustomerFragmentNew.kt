@@ -92,7 +92,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
                     adapter.notifyItemChanged(adapterPos)
                 }
             }
-        })
+        },requireContext())
         //  binding.rvAddresses.adapter = adapter
 
     }
