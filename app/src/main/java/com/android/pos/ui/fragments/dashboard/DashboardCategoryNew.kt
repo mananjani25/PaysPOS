@@ -107,11 +107,13 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     private var openORderType: String = ""
     private lateinit var nameObserver: Observer<List<CartModel>>
-  //  private var isOpenOrderUpdate: Boolean = false
+
+    //  private var isOpenOrderUpdate: Boolean = false
     private var orderDiscount: Double = 0.0
     private var categoryItemAdapter1: CategoryItemAdapter1? = null
     private var categoryTabAdapter1: CategoryTabAdapter1? = null
     private var clickManualSales: Boolean = false
+
     //private var customerUpdate: Boolean = false
     private var orderOfflineId: String = ""
     private var paymentOfflineId: String = ""
@@ -1973,11 +1975,16 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
             } else {
 
-                if (data.quantity >= qty) {
+                if (data.isManualSales) {
                     txtQty.setText(qty.toString())
                 } else {
-                    qty -= 1
-                    stockValidationAlert(qty, txtQty)
+
+                    if (data.quantity >= qty) {
+                        txtQty.setText(qty.toString())
+                    } else {
+                        qty -= 1
+                        stockValidationAlert(qty, txtQty)
+                    }
                 }
             }
 
