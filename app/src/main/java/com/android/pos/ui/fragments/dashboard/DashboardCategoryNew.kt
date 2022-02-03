@@ -1842,6 +1842,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         imgClose.setOnClickListener {
             dialog.dismiss()
+            totalDiscountMannualAdded = 0.0
         }
         txtSave.setOnClickListener {
 
@@ -1902,11 +1903,13 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 }
 
                 //check is_edited flag
-                if (totalDiscountMannualAdded > 0) {
-                    data.discountPrice = totalDiscountMannualAdded
-                } else {
-                    data.discountPrice = totalDiscountMannualAdded
-                }
+
+//                if (totalDiscountMannualAdded > 0) {
+//                    data.discountPrice = totalDiscountMannualAdded
+//                } else {
+//                    data.discountPrice = totalDiscountMannualAdded
+//                }
+
                 makeItemEdited(data)
 
                 if (isItemClick) {
@@ -1941,6 +1944,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 )
 
             }
+
+            totalDiscountMannualAdded = 0.0
         }
 
         llPlus.setOnClickListener {
@@ -2001,7 +2006,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         result.discountType == requireContext().getString(R.string.disc_percentage) -> {
 
                             data.discountPrice = calculateDiscountPercentage(
-                                totalPrice(data),
+                                data.price,
                                 result.percentage
                             )
                             totalDiscountMannualAdded = data.discountPrice
@@ -2402,6 +2407,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     positiveButton(getString(R.string.tv_delete)) {
                         // Do positive stuff here
 
+                        totalDiscountMannualAdded = 0.0
                         if (prefProvider.getValue(ORDER_TYPE, "").toString() == DINE_IN) {
 
                             val dList = dineInCartAdapter.getList()

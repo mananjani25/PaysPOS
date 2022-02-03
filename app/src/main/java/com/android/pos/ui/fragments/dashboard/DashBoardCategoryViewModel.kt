@@ -532,7 +532,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     dine.items.forEach { item ->
                         totalCount += item.itemQuantity
 
-                        subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice)
+                        subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
 
                         taxCalculation(item)
 
@@ -545,11 +545,11 @@ class DashBoardCategoryViewModel @Inject constructor(
                 }
 
                 serviceChargeCalculation(cartList)
-                subTotalPrice -= cartList[0].discountPrice
+                subTotalPrice -= (cartList[0].discountPrice)
 
                 cartList[0].dineInList?.forEach {
                     totalDiscount += it.items.map {
-                        it.discountPrice
+                        (it.discountPrice * it.itemQuantity)
                     }.sum()
                 }
 
@@ -564,7 +564,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 cartList[0].items?.forEach { item ->
                     totalCount += item.itemQuantity
 
-                    subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice)
+                    subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
 
                     taxCalculation(item)
 
@@ -580,7 +580,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
                 totalDiscount = cartList[0].items!!.map {
-                    it.discountPrice
+                    (it.discountPrice * it.itemQuantity)
                 }.sum()
 
                 totalPrice = (subTotalPrice + totalTax + totalServiceCharge)
@@ -1095,7 +1095,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 orderItemsAttribute.id = item.orderItemId
 
-                orderItemsAttribute.discountAmount = item.discountPrice
+                orderItemsAttribute.discountAmount = (item.discountPrice * item.itemQuantity)
                 orderItemsAttribute.discountType = item.discountType
                 if (item.discountId != -1)
                     orderItemsAttribute.discountId = item.discountId

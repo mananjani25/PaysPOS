@@ -26,6 +26,7 @@ interface DBItemDao {
     /*@get:Query("select * from TbItem whe  re TbItem.isManualSales = 1")
     val manualItems : LiveData<List<TabItem?>>?
 */
+
     @get:Query("select * from TbItem where TbItem.isHide = 0 and TbItem.name != 'Manual Item' ORDER BY TbItem.sort DESC")
     val unhideItem: LiveData<List<TbItem>>
 
