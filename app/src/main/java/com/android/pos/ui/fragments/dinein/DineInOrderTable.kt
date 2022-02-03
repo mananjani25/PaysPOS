@@ -141,7 +141,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         observeTipsList()
 
-        navigateDineInOrder()
+        navigateDineInOrderNew()
         observeUnMergeTable()
         return binding.root
     }
@@ -1109,6 +1109,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         viewModel.Basedata.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let { baseResponse ->
                 if (baseResponse != null) {
+
+
                     //Manan's Code
                     //for Merge Icon
                     if (baseResponse.floorPlanTable.status == MERGEDANDOCCUPIED) {
@@ -1165,7 +1167,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         model.title = baseResponse.guestAttributes.get(i).name
                         model.isHeader = 0
                         model.id = baseResponse.guestAttributes[i].id
-                        if (baseResponse.guestAttributes.get(i).guestItemAttributes.isEmpty()) {
+                        if (baseResponse.guestAttributes.get(i).guestItemAttributes.isNotEmpty()) {
+                            if (baseResponse.guestAttributes.get(i).name.trim()
+                                    .lowercase() != "Whole Table".trim().lowercase()
+                            ) {
+                                totalGuestCount++
+                            }
                             model.isPaid =
                                 baseResponse.guestAttributes.get(i).guestItemAttributes.get(0).isPaid
                         }
@@ -1184,10 +1191,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                         }
 
+                        dineInList.add(model)
+
                         var guestSubTotal: Double = 0.0
                         var guestTotalTax: Double = 0.0
                         var guestServiceCharge: Double = 0.0
-
 
 
                         for (j in 0 until baseResponse.guestAttributes.get(i).guestItemAttributes.size) {
@@ -1306,49 +1314,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                             isAllFired = false
                                         }
 
-                                        if (guestAttr.name.trim()
-                                                .lowercase() == "Whole Table".trim().lowercase()
-                                        ) {
-                                            guestAttr.guestItemAttributes.forEach { gue ->
-
-                                                if (!it.isPaid) {
-
-                                                    subTotalWT += (it.quantity * it.price) - it.discountAmount
-                                                    if (it.orderItemModifiers.isNotEmpty()) {
-                                                        it.orderItemModifiers.forEach { mod ->
-                                                            subTotalWT += mod.price * mod.quantity
-
-                                                        }
-                                                    }
-
-                                                }
-                                            }
-
-                                            if (it.orderItemTaxes.isNotEmpty()) {
-                                                it.orderItemTaxes.forEach { tax ->
-                                                    if (!it.isPaid) {
-                                                        totalTaxWT += tax.rate
-
-                                                    }
-                                                }
-
-                                            }
-                                            serviceChargeList.forEach {
-                                                if (it.isEnabled) {
-                                                    serviceChargeWT += (subTotalWT * it.percentage) / 100
-
-                                                }
-                                            }
-
-                                            totalPriceWT = subTotalWT + totalTaxWT + serviceChargeWT
-                                            Log.e("TODO", "totalPriceWT:  ${totalPriceWT}")
-
-                                            guestShareTotal =
-                                                totalPriceWT / (baseResponse.guestAttributes.size - 1)
-                                            Log.e("TODO", "guestTotalShare:  ${guestShareTotal}")
-
-                                        }
-
 
                                     }
 
@@ -1357,22 +1322,127 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             }
                         }
 
-                        serviceChargeList.forEach {
-                            totalServiceChargeAmount += (totalSubTotal * it.percentage) / 100
+
+                    }
+
+
+                    for (k in 0 until baseResponse.guestAttributes.size) {
+                        val obj = baseResponse.guestAttributes.get(k)
+
+                        obj.guestItemAttributes.forEach {
+                            baseResponse.orderItems.forEach { oi ->
+                                if (it.timestamp.trim().lowercase() == oi.timestamp.trim()
+                                        .lowercase()
+                                ) {
+                                    if (obj.name.trim()
+                                            .lowercase() == "Whole Table".trim().lowercase()
+                                    ) {
+
+
+                                        if (!oi.isPaid) {
+
+                                            subTotalWT += (oi.quantity * oi.price) - oi.discountAmount
+                                            if (oi.orderItemModifiers.isNotEmpty()) {
+                                                oi.orderItemModifiers.forEach { mod ->
+                                                    subTotalWT += mod.price * mod.quantity
+
+                                                }
+                                            }
+
+                                        }
+
+
+                                        if (oi.orderItemTaxes.isNotEmpty()) {
+                                            oi.orderItemTaxes.forEach { tax ->
+                                                if (!oi.isPaid) {
+                                                    totalTaxWT += tax.rate
+
+                                                }
+                                            }
+
+                                        }
+                                        serviceChargeList.forEach {
+                                            if (it.isEnabled) {
+                                                serviceChargeWT += (subTotalWT * it.percentage) / 100
+
+                                            }
+                                        }
+
+                                        totalPriceWT = subTotalWT + totalTaxWT + serviceChargeWT
+                                        Log.e("TODO", "totalPriceWT:  ${totalPriceWT}")
+
+                                        guestShareTotal =
+                                            totalPriceWT / (baseResponse.guestAttributes.size - 1)
+                                        Log.e("TODO", "subTotalWT:  ${subTotalWT}")
+                                        Log.e("TODO", "totalTaxWT:  ${totalTaxWT}")
+                                        Log.e("TODO", "serviceChargeWT:  ${serviceChargeWT}")
+
+                                    }
+
+                                }
+
+                            }
+
+
                         }
 
 
                     }
+
+
                     var orderDiscount = 0.0
                     if (baseResponse.totalDiscount - totalItemDiscount > 0) {
                         orderDiscount = baseResponse.totalDiscount - totalItemDiscount
 
                     }
+                    totalServiceChargeAmount = 0.0
+                    serviceChargeList.forEach {
+                        Log.e("TODO", "serviceChargepercentage:  ${it.percentage}")
+                        totalServiceChargeAmount = (totalSubTotal * it.percentage) / 100
+                    }
 
+                    Log.e("TODO", "totalSubTotal ${totalSubTotal}")
+                    Log.e("TODO", "totalTaxAmount ${totalTaxAmount}")
+                    Log.e("TODO", "totalServiceChargeAmount ${totalServiceChargeAmount}")
+                    Log.e("TODO", "orderDiscount ${orderDiscount}")
 
                     var finalAmount =
                         totalSubTotal + totalTaxAmount + totalServiceChargeAmount - orderDiscount
                     Log.e("TODO", "finalAmount  ${finalAmount}")
+                    Log.e("TODO", "guestShareTotal  ${guestShareTotal}")
+                    dineInList.get(0).guestDividedAmt = guestShareTotal
+                    dineInList.get(0).totalGuestCount = baseResponse.guestAttributes.size - 1
+                    dineInList.get(0).wholeTableSubTotal =
+                        subTotalWT / (baseResponse.guestAttributes.size - 1)
+                    dineInList.get(0).wholeTableTax =
+                        totalTaxWT / (baseResponse.guestAttributes.size - 1)
+                    dineInList.get(0).wholeTableSurTax =
+                        serviceChargeWT / (baseResponse.guestAttributes.size - 1)
+                    dineInList.get(0).orderDiscount = baseResponse.totalDiscount
+
+                    viewModel.totalTaxAmount = totalTaxAmount
+                    subTotalDInin = totalSubTotal
+                    serviceCharge = totalServiceChargeAmount
+                    totalDiscount = orderDiscount + totalItemDiscount
+                    finalTaxAmt = totalTaxAmount
+                    binding.txtTotalAmountNew.text = MethodUtils.roundOffAmount(
+                        finalAmount
+                    )
+                    toFinalAmt = finalAmount
+
+
+
+                    if (dineInList.isNotEmpty()) {
+                        dineInTableAdapter.setList(dineInList)
+                        checkForAutoFire(true)
+
+
+                        //  binding.txtTotalAmountNew.setText("${MethodUtils.roundOffAmount(totalAmtnew)}")
+
+                        if (!notPayAnyAmount) {
+                            touchHelper.attachToRecyclerView(binding.rvItemList)
+                        }
+                    }
 
 
                 }
@@ -2196,7 +2266,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             }
 
         }
-        guestShare += (wholeTableAmt + WTServiceCharge + WTTax - WTDiscount) / (guestCount - 1)
+        Log.e("AfterMove", "wholeTableAmt  ${wholeTableAmt}")
+        Log.e("AfterMove", "WTServiceCharge  ${WTServiceCharge}")
+        Log.e("AfterMove", "WTTax  ${WTTax}")
+        Log.e("AfterMove", "WTTax  ${WTDiscount}")
+        Log.e("AfterMode", "guestCount  ${guestCount}")
+        guestShare = (wholeTableAmt + WTServiceCharge + WTTax) / (guestCount - 1)
+
 
         for (i in 0 until oldList.size) {
             var model = DineInModel()
@@ -2234,6 +2310,16 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 guestAmt = 0.0
             }
         }
+        newList.get(0).guestDividedAmt = guestShare
+        newList.get(0).totalGuestCount = guestCount - 1
+        newList.get(0).wholeTableSubTotal =
+            wholeTableAmt / (guestCount - 1)
+        newList.get(0).wholeTableTax =
+            WTTax / (guestCount - 1)
+        newList.get(0).wholeTableSurTax =
+            WTServiceCharge / (guestCount - 1)
+        newList.get(0).orderDiscount = getOrderDetailsResponse?.totalDiscount ?: 0.0
+        totalGuestCount = guestCount - 1
 
         dineInTableAdapter.setList(newList)
 
