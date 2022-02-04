@@ -264,17 +264,16 @@ class CreateModifierSet : Fragment(), TextWatcher {
                         it, message
                     ) { _, _ ->
                         lifecycleScope.launchWhenResumed {
-                            findNavController().navigateUp()
+                            val navControll = findNavController()
+                            navControll.previousBackStackEntry?.savedStateHandle?.set(
+                                Constants.KEY,
+                                Constants.CREATEMODIFIER
+                            )
+                            navControll.popBackStack()
                         }
                     }
                 }
 
-                val navControll = findNavController()
-                navControll.previousBackStackEntry?.savedStateHandle?.set(
-                    Constants.KEY,
-                    Constants.CREATEMODIFIER
-                )
-                navControll.popBackStack()
 
             }
         })

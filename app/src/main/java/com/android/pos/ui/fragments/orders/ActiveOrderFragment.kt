@@ -441,7 +441,7 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
                 locationId,
                 it.name,
                 it.rate,
-                "Percentage",
+                it.taxType,
                 it.updatedAt,
                 true,
                 it.isDefault,
