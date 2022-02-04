@@ -96,7 +96,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:layout_marginBottom="@dimen/_3sdp"
-                            android:text="@string/first_name_normal"
+                            android:text="@string/first_name"
                             android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi" />
 
@@ -107,7 +107,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:background="@drawable/edt_border_light_gray"
-                            android:hint="@string/first_name"
+                            android:hint="@string/first_name_normal"
                             android:imeOptions="actionNext"
                             android:inputType="textCapWords"
                             android:padding="@dimen/_5sdp"
@@ -131,7 +131,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:layout_marginBottom="@dimen/_3sdp"
-                            android:text="@string/last_name_normal"
+                            android:text="@string/last_name_teammember"
                             android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi" />
 
@@ -142,7 +142,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:background="@drawable/edt_border_light_gray"
-                            android:hint="Last Name"
+                            android:hint="@string/last_name_normal"
                             android:imeOptions="actionNext"
                             android:inputType="textCapWords"
                             android:padding="@dimen/_5sdp"
@@ -166,7 +166,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_marginBottom="@dimen/_3sdp"
-                        android:text="@string/tv_email"
+                        android:text="@string/email_address_teammember"
                         android:textColor="@color/txtColor"
                         android:textSize="@dimen/_5mdpi" />
 
@@ -177,7 +177,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:background="@drawable/edt_border_light_gray"
-                        android:hint="Email Address"
+                        android:hint="@string/tv_email"
                         android:imeOptions="actionNext"
                         android:inputType="textCapWords"
                         android:padding="@dimen/_5sdp"
@@ -375,7 +375,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_weight="1"
-                        android:text="@string/tv_personal_passcode"
+                        android:text="@string/tv_personal_passcode_"
                         android:textColor="@color/txtColor"
                         android:textSize="@dimen/_5mdpi" />
 

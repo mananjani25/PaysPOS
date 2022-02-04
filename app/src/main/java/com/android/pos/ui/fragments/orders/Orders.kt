@@ -1,5 +1,9 @@
 package com.android.pos.ui.fragments.orders
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -35,12 +39,22 @@ class Orders : Fragment() {
         return binding.root
     }
 
+
+    var broadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            var position = intent?.getIntExtra("position", 0)
+            changePosition(position!!)
+            setAdapter(position)
+        }
+
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         configureToolbar()
-
         changePosition(0)
         setAdapter(0)
+        requireContext().registerReceiver(broadcastReceiver, IntentFilter("cancelled"));
         findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<String>(KEY)
             ?.observe(viewLifecycleOwner) { it ->
                 Log.e(TAG, "InventoryLifeCycler  $it")
@@ -69,6 +83,10 @@ class Orders : Fragment() {
 
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        requireContext().unregisterReceiver(broadcastReceiver)
+    }
     private fun configureToolbar() {
         binding.commonToolbar.imgDrawer.setOnClickListener {
             (requireActivity() as MainActivity).enableDrawer()
