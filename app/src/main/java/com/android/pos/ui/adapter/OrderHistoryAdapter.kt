@@ -19,12 +19,16 @@ import com.android.pos.utils.MethodUtils.Companion.getFormattedDateTime
 
 class OrderHistoryAdapter (val callBack: (View, Orders) -> Unit ) :
     RecyclerView.Adapter<OrderHistoryAdapter.MyViewHolder>() {
-
+    lateinit var myOnclickedListner:MyOnclickedListner
     private var arrayList = ArrayList<Orders>()
 
     var finalreward = ""
     var enrolltrueloyalty = false
 
+    fun setListner(listner: MyOnclickedListner) {
+        this.myOnclickedListner = listner
+
+    }
     inner class MyViewHolder(private val binding: ViewOrderHistoryBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
@@ -57,10 +61,8 @@ class OrderHistoryAdapter (val callBack: (View, Orders) -> Unit ) :
             }
 
             //Reorder
-            binding.txtReorder.setOnClickListener {view->
-                view?.let {
-                    callBack.invoke(it, arrayList[absoluteAdapterPosition])
-                }
+            binding.txtReorder.setOnClickListener {
+                myOnclickedListner.onclickedReorder(arrayList[absoluteAdapterPosition])
             }
         }
 
@@ -189,4 +191,7 @@ class OrderHistoryAdapter (val callBack: (View, Orders) -> Unit ) :
         notifyDataSetChanged()
     }
 
+    interface MyOnclickedListner{
+        fun onclickedReorder(orders: Orders)
+    }
 }
