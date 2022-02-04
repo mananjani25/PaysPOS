@@ -35,7 +35,7 @@ class AddressListAdapter(val refreshCallBack: (Int) -> Unit, val context: Contex
         list.add(model)
         notifyItemInserted(list.size)
         templist.add(model)
-        notifyItemInserted(list.size )
+        notifyItemInserted(list.size)
         //notifyItemRangeInserted(0,list.size )
     }
 
@@ -61,8 +61,8 @@ class AddressListAdapter(val refreshCallBack: (Int) -> Unit, val context: Contex
 
             binding.imgDelete.setOnClickListener {
 
-                if (bindingAdapterPosition<=templist.size){
-                    templist.get(bindingAdapterPosition)._destroy="true"
+                if (bindingAdapterPosition <= templist.size) {
+                    templist.get(bindingAdapterPosition)._destroy = "true"
                 }
 
                 list.removeAt(bindingAdapterPosition)
@@ -126,19 +126,53 @@ class AddressListAdapter(val refreshCallBack: (Int) -> Unit, val context: Contex
                         decodeLocation(placeDetails.lat, placeDetails.lng, placeDetails.name)
 
                         val gcd = Geocoder(itemView.context, Locale.getDefault())
-                        val address: List<Address> =
-                            gcd.getFromLocation(placeDetails.lat, placeDetails.lng, 1)
-                        Log.e(TAG, "CountryNAme ${address.get(0).countryName}")
+                        /* val address: List<Address> =
+                             gcd.getFromLocation(placeDetails.lat, placeDetails.lng, 1)*/
 
-                        if (address.isNotEmpty()) {
+                        var street = ""
+                        var suite = ""
+                        var city = ""
+                        var state = ""
+                        var zip = ""
+                        placeDetails.address.forEach {
+                            it.type.forEach { type ->
+                                if (type.trim().lowercase() == "street_number".trim().lowercase()) {
+                                    street += it.longName
+                                } else if (type.trim().lowercase() == "route".trim().lowercase()) {
+                                    street += it.longName
+                                } else if (type.trim().lowercase() == "neighborhood".trim()
+                                        .lowercase()
+                                ) {
+                                    suite = it.longName
+                                } else if (type.trim().lowercase() == "locality".trim()
+                                        .lowercase()
+                                ) {
+                                    city = it.longName
+                                } else if (type.trim()
+                                        .lowercase() == "administrative_area_level_1".trim()
+                                        .lowercase()
+                                ) {
+                                    state = it.longName
+                                } else if (type.trim().lowercase() == "postal_code".trim()
+                                        .lowercase()
+                                ) {
+                                    zip = it.longName
+                                }
+
+                            }
+
+                        }
+
+
+                        if (placeDetails.address.isNotEmpty()) {
                             try {
-                               templist[layoutPosition].address1 = placeDetails.name
-                               templist[layoutPosition].address2 = placeDetails.name ?: ""
-                               templist[layoutPosition].city = address[0].locality ?: ""
-                               templist[layoutPosition].country = "United States"
+                                templist[layoutPosition].address1 = street
+                                templist[layoutPosition].address2 = suite
+                                templist[layoutPosition].city = city
+                                templist[layoutPosition].country = "United States"
 
-                               templist[layoutPosition].state = address[0].adminArea ?: ""
-                               templist[layoutPosition].postcode = address[0].postalCode ?: ""
+                                templist[layoutPosition].state = state
+                                templist[layoutPosition].postcode = zip
 
                                 Log.e(TAG, "Updatelist:  ${Gson().toJson(templist)}")
                             } catch (e: Exception) {

@@ -45,7 +45,7 @@ class SendReceiptFragment : DialogFragment() {
         binding = DailogSendReceiptBinding.inflate(inflater, container, false)
         dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
         val back = ColorDrawable(Color.WHITE)
-        val inset = InsetDrawable(back, 150, 200, 150, 200)
+        val inset = InsetDrawable(back, 150, 100, 150, 100)
         dialog?.window?.setBackgroundDrawable(inset);
         setupSnackbar()
         observe()
