@@ -30,7 +30,7 @@ class AssignRoleTeamMemberListDialog : DialogFragment(), View.OnClickListener {
     var isEdit: Boolean = false
     private lateinit var employeeList: ArrayList<Employee>
     private lateinit var roleList: TeamRole
-
+    var isSelectedAll = false
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -50,6 +50,44 @@ class AssignRoleTeamMemberListDialog : DialogFragment(), View.OnClickListener {
         binding.imgBack.setOnClickListener(this)
         binding.txtCancel.setOnClickListener(this)
         binding.tvAssignRole.setOnClickListener(this)
+        binding.imgSelectall.setOnClickListener {
+            if (!isSelectedAll) {
+                for (i in adapter.filterList.indices) {
+                    if (!adapter.filterList[i].isChecked) {
+                        adapter.filterList[i].isChecked = true
+                        adapter.selectedItemList.add(adapter.filterList[i])
+                    }
+                }
+                binding.imgSelectall.setImageResource(R.drawable.ic_check_circle)
+                isSelectedAll = true
+            } else {
+                for (i in adapter.filterList.indices) {
+                    if (adapter.filterList[i].isChecked) {
+                        adapter.filterList[i].isChecked = false
+                        adapter.selectedItemList.remove(adapter.filterList[i])
+                    }
+
+                }
+                binding.imgSelectall.setImageResource(R.drawable.ic_uncheck_circle)
+                isSelectedAll = false
+            }
+
+            adapter.notifyDataSetChanged()
+        }
+        binding.searchEditEmployee.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                adapter.filter.filter(s.toString().trim())
+            }
+
+        })
 
         setAdapter()
         observeShowProgress()
@@ -151,8 +189,14 @@ class AssignRoleTeamMemberListDialog : DialogFragment(), View.OnClickListener {
                         ProgressUtils.dismissProgressDialog()
                         binding.rvEmployeeList.visibility = View.VISIBLE
                         resource.data?.let { employeeList ->
+                            if (employeeList.size > 0) {
+                                binding.imgSelectall.visibility = View.VISIBLE
+                            } else {
+                                binding.imgSelectall.visibility = View.GONE
+                            }
                             adapter.add(employeeList)
                             roleList = arguments?.getParcelable("teamRole")!!
+
                             adapter.selectedItemFromEdit(roleList.employees!!)
 
                         }

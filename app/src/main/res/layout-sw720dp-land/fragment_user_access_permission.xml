@@ -82,6 +82,7 @@
                     style="@style/CustomFontSemiBold"
                     android:layout_width="wrap_content"
                     android:id="@+id/tvRoleNameLabel"
+                    android:layout_marginBottom="@dimen/_5sdp"
                     android:layout_height="wrap_content"
                     android:text="@string/tv_add_new_role_name"
                     android:textColor="@color/black"
@@ -273,7 +274,7 @@
                         android:gravity="center"
                         android:onClick="@{() -> viewModel.submit()}"
                         android:padding="@dimen/_5sdp"
-                        android:text="@string/tv_add_role"
+                        android:text="@string/save"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_6mdpi"
                         app:textAllCaps="false" />
@@ -305,11 +306,14 @@
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontMediumStyle"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/_10sdp"
                         android:layout_marginRight="@dimen/_10sdp"
                         android:text="@string/tv_role"
+                        android:gravity="center"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
                         android:textColor="@color/txtColor"
                         android:textSize="@dimen/_7mdpi" />
 

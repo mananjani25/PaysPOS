@@ -104,6 +104,14 @@ class PaymentViewModel @Inject constructor(
                         if (response?.status == 200) {
 
                             resource.data?.let { createOrderResponse ->
+                                if (createOrderResponse.data.order.customer != null) {
+                                    posRepository.updateFinalRewards(
+                                        createOrderResponse.data.order.customer.final_reward.toInt(),
+                                        createOrderResponse.data.order.customer.id
+                                    )
+                                }
+
+
 
                                 if (orderRequestModel.order.openOrderType == Constants.OPEN_ORDER
                                     || orderRequestModel.order.openOrderType == Constants.OPEN_ORDER_

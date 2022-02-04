@@ -26,6 +26,9 @@ interface CustomerDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addCustomer(customerModel: TbCustomer): Long
 
+    @Query("UPDATE TbCustomer SET final_reward = :rewards WHERE id =:customer_id")
+    suspend fun updateLoyaltyRewards(rewards: Int, customer_id: Int)
+
     @Query("DELETE FROM TbCustomer")
     suspend fun deleteCustomerTb()
 

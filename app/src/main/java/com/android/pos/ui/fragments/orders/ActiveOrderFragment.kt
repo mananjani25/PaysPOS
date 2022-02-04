@@ -1,6 +1,7 @@
 package com.android.pos.ui.fragments.orders
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Point
 import android.os.Build
@@ -120,14 +121,14 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
 
         viewModel.data.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let { baseResponse ->
-
-
-                adapter.update(itemPos)
-
                 activity?.let {
                     AlertUtils.showCustomAlertWithListenerWithOK(
                         it, baseResponse.message
                     ) { _, _ ->
+                        var intent = Intent()
+                        intent.action = "cancelled"
+                        intent.putExtra("position", 3)
+                        requireContext().sendBroadcast(intent)
                     }
                 }
             }

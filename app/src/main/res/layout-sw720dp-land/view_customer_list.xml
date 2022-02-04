@@ -32,8 +32,8 @@
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvInitialName"
                     style="@style/CustomFontBold"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="@dimen/_18sdp"
+                    android:layout_height="@dimen/_18sdp"
                     android:layout_gravity="center"
                     android:background="@drawable/bg_circle_name"
                     android:gravity="center"

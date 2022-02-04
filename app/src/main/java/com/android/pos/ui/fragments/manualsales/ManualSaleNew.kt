@@ -1230,13 +1230,14 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                     putBoolean("isFromDetails", true)
                     putParcelable("model", data)
                 }
-
+                cartAdapter.viewBinderHelper.closeLayout(pos.toString())
                 findNavController().navigate(
                     R.id.action_manualSaleNew_to_addDiscountDialog,
                     bundle
                 )
             }
             R.id.txt_delete -> {
+                cartAdapter.viewBinderHelper.closeLayout(pos.toString())
                 alert(
                     getString(R.string.app_name),
                     getString(R.string.delete_item_message)
@@ -1247,6 +1248,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
                         Log.e(TAG, "item ${Gson().toJson(item)}")
                         viewModel.cartLogic(cartList, item, Constants.DELETE)
+
                     }
                     negativeButton(R.string.tv_cancel) {
                         // Do negative stuff here
@@ -1258,7 +1260,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 val bundle = Bundle().apply {
                     putString("note", cartItemModel.note)
                 }
-
+                cartAdapter.viewBinderHelper.closeLayout(pos.toString())
                 findNavController().navigate(
                     R.id.action_manualSaleNew_to_addNoteDialog,
                     bundle
@@ -1269,7 +1271,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
                 cartItemModel = cartAdapter.getItem(pos)
                 val bundle: Bundle = bundleOf("item_name" to cartItemModel.name)
-
+                cartAdapter.viewBinderHelper.closeLayout(pos.toString())
                 findNavController().navigate(
                     R.id.action_manualSaleNew_to_itemRenameDialog,
                     bundle

@@ -158,6 +158,8 @@ data class CreateOrderResponse(
                 @SerializedName("company") var company: String,
                 @SerializedName("location_id") var locationId: Int,
                 @SerializedName("created_at") var createdAt: String,
+                @SerializedName("enroll_to_loyalty") var enroll_to_loyalty: Boolean,
+                @SerializedName("final_reward") var final_reward: String,
                 @SerializedName("updated_at") var updatedAt: String,
                 @SerializedName("birth_date") var birthDate: String,
                 @SerializedName("email") var email: String,
