@@ -135,6 +135,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
         wholePaymentObservor()
         isTotalPayment = requireArguments().getBoolean("isTotalPayment")
         isLastPayment = requireArguments().getBoolean("isLastPayment")
+        Log.e(TAG, "isLastPayment:  ${isLastPayment}")
         totalPrice = requireArguments().getDouble("totalPrice")
         subTotalPrice = requireArguments().getDouble("subTotalPrice")
         totalServiceCharge = requireArguments().getDouble("totalServiceCharge")
@@ -362,7 +363,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
         getCashPaymentOptionList(_totalPrice + tipAmount)
         MethodUtils.setPriceTextView(binding.txtTipAmt, tipAmount)
         MethodUtils.setPriceTextView(binding.txtTotal, _totalPrice + tipAmount)
-        cardPaymentAmount+=tipAmount
+        cardPaymentAmount += tipAmount
         binding.txtCardAmount.text =
             "$ " + String.format("%.2f", cardPaymentAmount)
     }
@@ -545,7 +546,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
     }
 
     private fun gotoPay() {
-        Log.e(TAG,"HEREGOTOPAY")
+        Log.e(TAG, "HEREGOTOPAY")
 
 
         orderId?.let { prefProvider.setValueInt("ORDER_ID", it) }
@@ -634,7 +635,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                     bundle.putDouble(DINE_IN_DISCOUNT, totaldiscount)
                     bundle.putDouble(DINE_IN_SERVICECHARGE, totalServiceCharge)
                     bundle.putInt(Constants.GUEST_POSITION, guestSelectedPos)
-                    bundle.putDouble("noCashAdj",noCashAdj)
+                    bundle.putDouble("noCashAdj", noCashAdj)
                     findNavController().navigate(
                         R.id.action_payByGuestDialog_to_orderCompleteFragment,
                         bundle
@@ -708,7 +709,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                     bundle.putDouble(DINE_IN_DISCOUNT, totaldiscount)
                     bundle.putDouble(DINE_IN_SERVICECHARGE, totalServiceCharge)
                     bundle.putInt(Constants.GUEST_POSITION, guestSelectedPos)
-                    bundle.putDouble("noCashAdj",noCashAdj)
+                    bundle.putDouble("noCashAdj", noCashAdj)
                     findNavController().navigate(
                         R.id.action_payByGuestDialog_to_orderCompleteFragment,
                         bundle
@@ -750,7 +751,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                     bundle.putDouble(DINE_IN_DISCOUNT, totaldiscount)
                     bundle.putDouble(DINE_IN_SERVICECHARGE, totalServiceCharge)
                     bundle.putInt(Constants.GUEST_POSITION, guestSelectedPos)
-                    bundle.putDouble("noCashAdj",noCashAdj)
+                    bundle.putDouble("noCashAdj", noCashAdj)
                     if (isLastPayment!!)
                         bundle.putBoolean("isGuest", false)
                     findNavController().navigate(
@@ -846,7 +847,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                         bundle.putDouble(DINE_IN_DISCOUNT, totaldiscount)
                         bundle.putDouble(DINE_IN_SERVICECHARGE, totalServiceCharge)
                         bundle.putInt(Constants.GUEST_POSITION, guestSelectedPos)
-                        bundle.putDouble("noCashAdj",noCashAdj)
+                        bundle.putDouble("noCashAdj", noCashAdj)
 
                         findNavController().navigate(
                             R.id.action_payByGuestDialog_to_orderCompleteFragment,
@@ -931,7 +932,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                         bundle.putDouble(DINE_IN_DISCOUNT, totaldiscount)
                         bundle.putDouble(DINE_IN_SERVICECHARGE, totalServiceCharge)
                         bundle.putInt(Constants.GUEST_POSITION, guestSelectedPos)
-                        bundle.putDouble("noCashAdj",noCashAdj)
+                        bundle.putDouble("noCashAdj", noCashAdj)
 
                         findNavController().navigate(
                             R.id.action_payByGuestDialog_to_orderCompleteFragment,
@@ -990,7 +991,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                         bundle.putDouble(DINE_IN_DISCOUNT, totaldiscount)
                         bundle.putDouble(DINE_IN_SERVICECHARGE, totalServiceCharge)
                         bundle.putInt(Constants.GUEST_POSITION, guestSelectedPos)
-                        bundle.putDouble("noCashAdj",noCashAdj)
+                        bundle.putDouble("noCashAdj", noCashAdj)
                         findNavController().navigate(
                             R.id.action_payByGuestDialog_to_orderCompleteFragment,
                             bundle
@@ -1058,7 +1059,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                         bundle.putDouble(DINE_IN_SERVICECHARGE, totalServiceCharge)
                         bundle.putParcelable(Constants.PRINT_DATA_DINE_IN, getOrderDetailsResponse)
                         bundle.putInt(Constants.GUEST_POSITION, guestSelectedPos)
-                        bundle.putDouble("noCashAdj",noCashAdj)
+                        bundle.putDouble("noCashAdj", noCashAdj)
                         findNavController().navigate(
                             R.id.action_payByGuestDialog_to_orderCompleteFragment,
                             bundle
@@ -1113,7 +1114,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                         bundle.putDouble(DINE_IN_DISCOUNT, totaldiscount)
                         bundle.putDouble(DINE_IN_SERVICECHARGE, totalServiceCharge)
                         bundle.putInt(Constants.GUEST_POSITION, guestSelectedPos)
-                        bundle.putDouble("noCashAdj",noCashAdj)
+                        bundle.putDouble("noCashAdj", noCashAdj)
                         if (isLastPayment!!)
                             bundle.putBoolean("isGuest", false)
                         findNavController().navigate(

@@ -108,18 +108,19 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                             if (it.taxes?.isNotEmpty() == true) {
 
                                 it.taxes?.forEach { tax ->
+
                                     if (tax.isActive) {
                                         totalTaxAmt += if (tax.taxType == "Percentage") {
 
                                             var modifierPrice = 0.0
                                             val price =
-                                                (it.price * it.itemQuantity) - it.discountPrice
+                                                (it.price * it.itemQuantity)
 
                                             it.modifiers.forEach {
                                                 modifierPrice += (it.price * it.itemQuantity)
                                             }
 
-                                            val totalPrice = price + modifierPrice
+                                            val totalPrice = price + modifierPrice - it.discountPrice
 
                                             val itemTaxPrice =
                                                 (tax.rate * totalPrice) / 100
@@ -224,16 +225,26 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
             var finalAmt =
                 guestSubTotal + totalServiceCharge + totalTaxAmt + (list.get(0).guestDividedAmt)
+            Log.e("TODAY","guestSubTotal  ${guestSubTotal}")
+            Log.e("TODAY","totalTaxAmt  ${totalTaxAmt}")
+            Log.e("TODAY","guestDividedAmt  ${(list.get(0).guestDividedAmt)}")
+            Log.e("TODAY","totalServiceCharge  ${(totalServiceCharge)}")
 
-            Log.e(TAG,"GuestguestSubTotal  ${guestSubTotal}")
-            Log.e(TAG,"GuesttotalServiceCharge  ${totalServiceCharge}")
-            Log.e(TAG,"GuesttotalTaxAmt  ${totalTaxAmt}")
-            Log.e(TAG,"GuestguestDividedAmt  ${list.get(0).guestDividedAmt}")
-         //   Log.e(TAG,"GuestguestSubTotal  ${guestSubTotal}")
+            var guestOrderDisShare = 0.0
+            if (list.get(0).orderDiscount > 0) {
+                guestOrderDisShare = (finalAmt * list.get(0).orderDiscount) / 100
+                Log.e(TAG, "guestOrderDisShare  ${guestOrderDisShare}")
 
-           // Log.e(TAG,"guestDivided  ${list.get(0).guestDividedAmt}")
+            }
+            finalAmt = finalAmt - guestOrderDisShare
 
+            Log.e(TAG, "GuestguestSubTotal  ${guestSubTotal}")
+            Log.e(TAG, "GuesttotalServiceCharge  ${totalServiceCharge}")
+            Log.e(TAG, "GuesttotalTaxAmt  ${totalTaxAmt}")
+            Log.e(TAG, "GuestguestDividedAmt  ${list.get(0).guestDividedAmt}")
+            //   Log.e(TAG,"GuestguestSubTotal  ${guestSubTotal}")
 
+            // Log.e(TAG,"guestDivided  ${list.get(0).guestDividedAmt}")
 
 
             binding.txtPay.setText("Pay " + MethodUtils.roundOffAmount(finalAmt))
