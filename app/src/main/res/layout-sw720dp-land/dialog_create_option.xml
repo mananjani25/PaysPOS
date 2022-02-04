@@ -92,7 +92,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/tv_option_set"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textSize="@dimen/_5mdpi" />
 
 
                     <androidx.appcompat.widget.AppCompatEditText
@@ -109,7 +109,7 @@
                         android:textColor="@color/txtColor"
                         android:digits="@string/disable_emoji_string"
                         android:textColorHint="@color/hintColor"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textSize="@dimen/_5mdpi" />
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -127,7 +127,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/display_name"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textSize="@dimen/_5mdpi" />
 
 
                     <androidx.appcompat.widget.AppCompatEditText
@@ -143,7 +143,7 @@
                         android:text="@={createOptionViewModel.optionDetails.displayName}"
                         android:textColor="@color/txtColor"
                         android:textColorHint="@color/hintColor"
-                        android:textSize="@dimen/_6mdpi"
+                        android:textSize="@dimen/_5mdpi"
                         android:digits="@string/disable_emoji_string"/>
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
@@ -162,7 +162,7 @@
                         android:text="@string/options"
                         android:textAllCaps="true"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textSize="@dimen/_5mdpi" />
 
 
                     <androidx.recyclerview.widget.RecyclerView
@@ -200,7 +200,7 @@
                             android:padding="@dimen/_5sdp"
                             android:textColor="@color/txtColor"
                             android:textColorHint="@color/colorC5"
-                            android:textSize="@dimen/_6mdpi"
+                            android:textSize="@dimen/_5mdpi"
                             android:inputType="textVisiblePassword"
                             android:digits="@string/disable_emoji_string"/>
 

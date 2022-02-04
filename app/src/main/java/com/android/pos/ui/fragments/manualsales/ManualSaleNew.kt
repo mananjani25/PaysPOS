@@ -305,7 +305,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
                     dashboardViewModel.addCart(mainCartList[0])
 
-                    viewModel.deleteCart()
+                    if (isPayClicked)
+                        viewModel.deleteCart()
 
                     dashboardViewModel.mAllWords(
                         prefProvider.getValue(Constants.ORDER_TYPE, "").toString()
@@ -416,27 +417,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                     viewLifecycleOwner, nameObserver
                 )
 
-                /*   val bundle = Bundle()
-                   Log.e(
-                       "!_@_",
-                       "Total Price: ${viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0}"
-                   )
-                   bundle.putDouble(
-                       "totalPrice",
-                       viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0
-                   )
-                   bundle.putDouble("subTotalPrice", viewModel.subTotalPrice)
-                   bundle.putDouble("totalTax", viewModel.totalTax)
-                   bundle.putDouble("totalDiscount", viewModel.totalDiscount)
-                   bundle.putDouble("totalServiceCharge", viewModel.totalServiceCharge)
-                   cartList?.get(0)?.customer = assignCustomer
-                   bundle.putParcelable("cartList", cartList?.get(0))
-                   bundle.putString(
-                       "redeemLoyalty",
-                       Gson().toJson(viewModel.redeemLoyaltyInfo)
-                   )
 
-                   findNavController().navigate(R.id.action_manualSaleNew_to_paymentFragment, bundle)*/
             }
         }
 
@@ -1227,7 +1208,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         when (view?.id) {
             R.id.txt_discount -> {
                 val bundle = Bundle().apply {
-                    putBoolean("isFromDetails", true)
+                    putBoolean("isFromDetails", false)
                     putParcelable("model", data)
                 }
                 cartAdapter.viewBinderHelper.closeLayout(pos.toString())

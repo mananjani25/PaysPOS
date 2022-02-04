@@ -118,6 +118,7 @@
     <string name="tv_access">Access</string>
     <string name="tv_permission_set_">Role <font color='#E90C0C'>*</font></string>
     <string name="tv_permission_set">Permission Set</string>
+    <string name="tv_permission_set_m">Permission Set <font color='#E90C0C'>*</font></string>
     <string name="tv_personal_passcode">Passcode</string>
     <string name="tv_personal_passcode_">Passcode<font color='#E90C0C'>*</font></string>
     <string name="tv_location">Location</string>

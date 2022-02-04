@@ -216,7 +216,8 @@ data class OpenOrderResponse(
                     val taxId: Int,
                     @SerializedName("tax_total_amount")
                     val taxTotalAmount: Double,
-
+                    @SerializedName("tax_type")
+                    val taxType: String,
                     @SerializedName("updated_at")
                     val updatedAt: String
                 )
