@@ -953,7 +953,7 @@ class PaymentViewModel @Inject constructor(
 
                 orderItemsAttribute.category_id = item.categoryId
 
-                orderItemsAttribute.discountAmount = item.discountPrice
+                orderItemsAttribute.discountAmount = (item.discountPrice * item.itemQuantity)
                 orderItemsAttribute.discountType = item.discountType
                 if (item.discountId != -1)
                     orderItemsAttribute.discountId = item.discountId
@@ -1007,7 +1007,7 @@ class PaymentViewModel @Inject constructor(
 
             orderItemsAttribute.category_id = item.categoryId
 
-            orderItemsAttribute.discountAmount = item.discountPrice
+            orderItemsAttribute.discountAmount = (item.discountPrice * item.itemQuantity)
             orderItemsAttribute.discountType = item.discountType
             if (item.discountId != -1)
                 orderItemsAttribute.discountId = item.discountId

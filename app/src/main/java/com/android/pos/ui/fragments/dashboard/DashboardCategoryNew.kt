@@ -107,11 +107,13 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     private var openORderType: String = ""
     private lateinit var nameObserver: Observer<List<CartModel>>
-  //  private var isOpenOrderUpdate: Boolean = false
+
+    //  private var isOpenOrderUpdate: Boolean = false
     private var orderDiscount: Double = 0.0
     private var categoryItemAdapter1: CategoryItemAdapter1? = null
     private var categoryTabAdapter1: CategoryTabAdapter1? = null
     private var clickManualSales: Boolean = false
+
     //private var customerUpdate: Boolean = false
     private var orderOfflineId: String = ""
     private var paymentOfflineId: String = ""
@@ -1842,6 +1844,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         imgClose.setOnClickListener {
             dialog.dismiss()
+            totalDiscountMannualAdded = 0.0
         }
         txtSave.setOnClickListener {
 
@@ -1902,11 +1905,13 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 }
 
                 //check is_edited flag
-                if (totalDiscountMannualAdded > 0) {
-                    data.discountPrice = totalDiscountMannualAdded
-                } else {
-                    data.discountPrice = totalDiscountMannualAdded
-                }
+
+//                if (totalDiscountMannualAdded > 0) {
+//                    data.discountPrice = totalDiscountMannualAdded
+//                } else {
+//                    data.discountPrice = totalDiscountMannualAdded
+//                }
+
                 makeItemEdited(data)
 
                 if (isItemClick) {
@@ -1941,6 +1946,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 )
 
             }
+
+            totalDiscountMannualAdded = 0.0
         }
 
         llPlus.setOnClickListener {
@@ -1968,11 +1975,16 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
             } else {
 
-                if (data.quantity >= qty) {
+                if (data.isManualSales) {
                     txtQty.setText(qty.toString())
                 } else {
-                    qty -= 1
-                    stockValidationAlert(qty, txtQty)
+
+                    if (data.quantity >= qty) {
+                        txtQty.setText(qty.toString())
+                    } else {
+                        qty -= 1
+                        stockValidationAlert(qty, txtQty)
+                    }
                 }
             }
 
@@ -2001,7 +2013,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         result.discountType == requireContext().getString(R.string.disc_percentage) -> {
 
                             data.discountPrice = calculateDiscountPercentage(
-                                totalPrice(data),
+                                data.price,
                                 result.percentage
                             )
                             totalDiscountMannualAdded = data.discountPrice
@@ -2402,6 +2414,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     positiveButton(getString(R.string.tv_delete)) {
                         // Do positive stuff here
 
+                        totalDiscountMannualAdded = 0.0
                         if (prefProvider.getValue(ORDER_TYPE, "").toString() == DINE_IN) {
 
                             val dList = dineInCartAdapter.getList()
