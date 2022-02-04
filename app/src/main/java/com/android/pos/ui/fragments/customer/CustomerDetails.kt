@@ -13,6 +13,7 @@ import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.*
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
+import com.android.pos.data.model.responseModel.orderhistory.Orders
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentCustomerDetailsBinding
 import com.android.pos.di.PrefProvider
@@ -30,7 +31,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class CustomerDetails : Fragment() {
+class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
 
     private lateinit var binding: FragmentCustomerDetailsBinding
     lateinit var customerModel: TbCustomer
@@ -141,6 +142,7 @@ class CustomerDetails : Fragment() {
         }
 
         binding.rvOrderHistory.adapter = orderHistoryAdapter
+        orderHistoryAdapter.setListner(this)
     }
 
     private fun initObservers() {
@@ -398,5 +400,12 @@ class CustomerDetails : Fragment() {
             }
         }
         return selectedIds
+    }
+
+    override fun onclickedReorder(order: Orders) {
+        order.id?.let {
+            viewModel.apiCallOrderDetails(orderId = order.id)
+        } ?: viewModel.showError(getString(R.string.error_order_id_not_available))
+
     }
 }
