@@ -89,7 +89,8 @@ class PosRepository @Inject constructor(
     suspend fun createQueuePrinter(createQueuePrinterRequest: CreateQueuePrinterRequestModel) =
         apiHelperNew.createQueuePrinter(createQueuePrinterRequest)
 
-    suspend fun deletePrinter(id: Int,status:String?=null) = apiHelperNew.deletePrinter(id,status)
+    suspend fun deletePrinter(id: Int, status: String? = null) =
+        apiHelperNew.deletePrinter(id, status)
 
     suspend fun deleteQueuePrinter(id: Int) = apiHelperNew.deleteQueuePrinter(id)
 
@@ -410,8 +411,8 @@ class PosRepository @Inject constructor(
     suspend fun addCustomer(data: TbCustomer) =
         appDatabase.customerDao().addCustomer(data)
 
-    suspend fun updateFinalRewards(finalrewards: Int,customerId: Int) =
-        appDatabase.customerDao().updateLoyaltyRewards(finalrewards,customerId)
+    suspend fun updateFinalRewards(finalrewards: Int, customerId: Int) =
+        appDatabase.customerDao().updateLoyaltyRewards(finalrewards, customerId)
 
     fun getCustomerDetailsByID(id: Int?): LiveData<TbCustomer> {
 
@@ -439,6 +440,9 @@ class PosRepository @Inject constructor(
 
     suspend fun deleteEmployee(data: Int) =
         apiHelperNew.deleteEmployee(data)
+
+    suspend fun searchCustomer(query: String) =
+        apiHelperNew.searchCustomers(query)
 
     suspend fun deleteEmployeeDatabase(employeeId: Int) =
         appDatabase.employeeDao().deleteEmployeeById(employeeId)
@@ -712,9 +716,9 @@ class PosRepository @Inject constructor(
         empId: Int,
         terminalId: Int,
         status: String,
-        clearTable:Boolean
+        clearTable: Boolean
     ) =
-        apiHelperNew.getTableStatus(tableId, empId, terminalId, status,clearTable)
+        apiHelperNew.getTableStatus(tableId, empId, terminalId, status, clearTable)
 
     suspend fun mergeFloorTable(
         parentTableId: Int,

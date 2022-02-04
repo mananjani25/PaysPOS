@@ -3,6 +3,7 @@ package com.android.pos.data.remote
 
 import com.android.pos.data.entities.VariationsAttribute
 import com.android.pos.data.model.CustomerListResponse
+import com.android.pos.data.model.CustomerSearchList
 import com.android.pos.data.model.GetPaymentOrderDetailsResponse
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.*
@@ -18,6 +19,7 @@ import com.android.pos.data.remote.Constants.CATEGORY_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.CLOCK_OUT
 import com.android.pos.data.remote.Constants.CREATE_QUEUE_PRINTER
 import com.android.pos.data.remote.Constants.CUSTOMERS
+import com.android.pos.data.remote.Constants.CUSTOMERS_SEARCH
 import com.android.pos.data.remote.Constants.CUSTOMER_RECEIPTS_UPDATE_SETTINGS
 import com.android.pos.data.remote.Constants.CUSTOMER_RECEIPT_SETTINGS
 import com.android.pos.data.remote.Constants.CUSTOMER_UPDATE
@@ -346,6 +348,11 @@ interface ApiService {
         @Query("team_role_id") teamRoleId: String,
 
         ): GetEmployeesTimeSheetResponse
+
+    @GET(CUSTOMERS_SEARCH)
+    suspend fun customerSearch(
+        @Query("searchtext") searchtext: String
+    ): CustomerSearchList
 
     @GET(EMPLOYEES_TIMESHEET_DETAILS)
     suspend fun employeesTimeSheetDetails(

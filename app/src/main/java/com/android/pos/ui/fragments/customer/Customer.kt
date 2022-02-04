@@ -17,7 +17,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
-import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.entities.TbCustomer
 import com.android.pos.data.remote.Constants.CUSTOMERDETAILS
 import com.android.pos.data.remote.Constants.KEY
@@ -111,7 +110,19 @@ class Customer : Fragment() {
             }
 
         })
-
+//
+//        viewModel.customerListResponse.observe(viewLifecycleOwner, { event ->
+//            event.getContentIfNotHandled()?.let { customerList ->
+//                var data: ArrayList<TbCustomer>
+//                if (customerList.data.isNotEmpty()) {
+//                    dynamicCustomerList.clear()
+//                    data = customerList.data as ArrayList<TbCustomer>
+//                    dynamicCustomerList.addAll(data)
+//                    customerAdapter.setList(data)
+//                }
+//
+//            }
+//        })
 
         return binding.root
     }
@@ -270,7 +281,7 @@ class Customer : Fragment() {
             }
 
             override fun afterTextChanged(s: Editable?) {
-
+//                searchByText(s?.trim().toString())
                 try {
                     customerAdapter.filter.filter(
                         s.toString().trim().lowercase()
@@ -279,9 +290,14 @@ class Customer : Fragment() {
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
+
             }
 
         })
+    }
+
+    fun searchByText(query: String) {
+        viewModel.searchByTextCustomer(query)
     }
 
     private fun loadFragment(model: TbCustomer) {

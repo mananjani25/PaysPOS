@@ -128,11 +128,12 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
         }
         if (customerModel.addresses.isNotEmpty()) {
             var address = ""
-            var pos=0
+            var pos = 0
             for (i in customerModel.addresses.indices) {
-                if (customerModel.addresses[i].full_address.isNotEmpty()){
-                    pos=i+1
-                    address = address + "Address" + pos.toString() + " : " + customerModel.addresses[i].full_address + "\n\n"
+                if (customerModel.addresses[i].full_address.isNotEmpty()) {
+                    pos = i + 1
+                    address =
+                        address + "Address" + pos.toString() + " : " + customerModel.addresses[i].full_address + "\n\n"
                 }
 
             }
@@ -355,7 +356,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                 locationId,
                 it.name,
                 it.rate,
-                "Percentage",
+                it.taxType,
                 it.updatedAt,
                 true,
                 it.isDefault,

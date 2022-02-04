@@ -4,6 +4,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.android.pos.data.entities.TbCustomer
+import com.android.pos.data.model.CustomerListResponse
+import com.android.pos.data.model.CustomerSearchList
 import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.data.model.responseModel.orderhistory.Orders
@@ -31,6 +34,11 @@ public class CustomerListViewModel @Inject constructor(
     private val _orderResponse = MutableLiveData<Event<GetOrderDetailsResponse.Data>>()
     val orderResponse: LiveData<Event<GetOrderDetailsResponse.Data>> = _orderResponse
 
+
+    private val _customerListResponse = MutableLiveData<Event<CustomerListResponse?>>()
+
+
+
     private val mdata = MutableLiveData<Event<BaseResponse?>>()
     val data: LiveData<Event<BaseResponse?>> = mdata
 
@@ -53,6 +61,33 @@ public class CustomerListViewModel @Inject constructor(
         viewModelScope.launch {
 
             //   posRepository.deleteCustomer()
+        }
+    }
+
+    fun searchByTextCustomer(query: String) {
+        viewModelScope.launch {
+            val resource = posRepository.searchCustomer(query)
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    resource.data?.let { response ->
+                        if (response.status == 200) {
+                            resource.data?.let { customerlist ->
+//                                _customerListResponse.value = Event(customerlist)
+                            }
+                        } else {
+                            _snackbarText.value = Event(resource.message)
+                        }
+                    }
+                }
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+
+                    _showProgress.value = Event(false)
+                }
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
+            }
         }
     }
 

@@ -567,6 +567,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
 
                     taxCalculation(item)
+                    Log.d("yash", "TaxCalculation: "+totalTax)
 
                     item.modifiers.forEach {
                         subTotalPrice += (it.price * it.itemQuantity)
@@ -584,6 +585,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 }.sum()
 
                 totalPrice = (subTotalPrice + totalTax + totalServiceCharge)
+
 
                 //loyalty point and price calculation
                 amountToBePaid = totalPrice
@@ -690,6 +692,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         item.taxes?.forEach { tax ->
             if (tax.isActive) {
                 totalTax += if (tax.taxType == "Percentage") {
+                    Log.d("yash", "taxCalculation: "+tax.taxType)
 
                     var modifierPrice = 0.0
                     val price =
@@ -707,7 +710,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     String.format("%.2f", itemTaxPrice)
                         .toDouble()
                 } else {
-
+                    Log.d("yash", "taxCalculation: "+tax.taxType)
                     String.format("%.2f", tax.rate * item.itemQuantity)
                         .toDouble()
                 }

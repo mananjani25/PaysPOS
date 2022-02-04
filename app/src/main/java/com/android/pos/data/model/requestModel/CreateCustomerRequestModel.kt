@@ -25,7 +25,7 @@ data class CreateCustomerRequestModel(
         @SerializedName("email")
         var email: String? = "",
         @SerializedName("enroll_to_loyalty")
-        var enroll_to_loyalty: Boolean? = false,
+        var enroll_to_loyalty: Boolean? = true,
         @SerializedName("final_reward")
         var final_reward: Int? = 0,
         @SerializedName("phones_attributes")
