@@ -19,7 +19,6 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.constraintlayout.widget.ConstraintSet
-import androidx.constraintlayout.widget.Group
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
@@ -1424,7 +1423,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     @SuppressLint("SetTextI18n")
     private fun showPopupWindow(view: View) {
 
-        val popupView: View = layoutInflater.inflate(R.layout.info_popup_window, null)
+        val popupView: View = layoutInflater.inflate(R.layout.info_popup_window_new, null)
 
         //set pop up data
         setPopUpData(popupView)
@@ -1476,9 +1475,12 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         val txtTotalAmount: AppCompatTextView = popupView.findViewById(R.id.txtTotalAmount)
         val txtTotalTax: AppCompatTextView = popupView.findViewById(R.id.txtTotalTax)
         val txtLoyaltyAmount: AppCompatTextView = popupView.findViewById(R.id.txtLoyaltyAmount)
-        val groupLoyalty: Group = popupView.findViewById(R.id.groupLoyalty)
+     //   val groupLoyalty: Group = popupView.findViewById(R.id.groupLoyalty)
         val chkLoyalty: CheckBox = popupView.findViewById(R.id.chkLoyaltyAmount)
         val txtLoyaltyPoints: AppCompatTextView = popupView.findViewById(R.id.txtLoyaltyPoints)
+        val lblLoyaltyPoints: AppCompatTextView = popupView.findViewById(R.id.lblLoyaltyPoints)
+        val lblLoyaltyAmount: AppCompatTextView = popupView.findViewById(R.id.lblLoyaltyAmount)
+
         Log.e(TAG, "subTotalPrice:   ${viewModel.subTotalPrice - (cartList[0].discountPrice)}")
 
 
@@ -1512,18 +1514,30 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         val customer = viewModel.selectedCustomer
         if (viewModel.loyaltyPointCondition(customer)) {
 
+            lblLoyaltyPoints.visible()
+            txtLoyaltyPoints.visible()
+            lblLoyaltyAmount.visible()
+            txtLoyaltyAmount.visible()
+
+            Log.e(TAG,"InsideLoyalty")
             Log.e(TAG, Gson().toJson(viewModel.redeemLoyaltyInfo))
             amountToBepaid = viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0
             txtLoyaltyAmount.text =
                 "- $${String.format("%.2f", viewModel.redeemLoyaltyInfo.usedLoyaltyAmount)}"
             txtLoyaltyPoints.text = "${viewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
 
-            groupLoyalty.visible()
+
+           // groupLoyalty.gone()
             chkLoyalty.visible()
             chkLoyalty.isChecked = viewModel.redeemLoyaltyInfo.needToApplyLoyalty
         } else {
             amountToBepaid = viewModel.totalPrice
-            groupLoyalty.gone()
+            lblLoyaltyPoints.gone()
+            txtLoyaltyPoints.gone()
+            lblLoyaltyAmount.gone()
+            txtLoyaltyAmount.gone()
+
+         //   groupLoyalty.gone()
             chkLoyalty.gone()
         }
 

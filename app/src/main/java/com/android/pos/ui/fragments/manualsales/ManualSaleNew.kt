@@ -23,7 +23,6 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.entities.*
 import com.android.pos.data.remote.Constants
@@ -38,7 +37,6 @@ import com.android.pos.ui.adapter.ManualSaleCartAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.utils.AmountTextWatcher
 import com.android.pos.utils.MethodUtils
-import com.android.pos.utils.SwipeHelper
 import com.android.pos.utils.callback.ManualSaleOptionsCustomCallback
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.gone
@@ -49,7 +47,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
-        ManualSaleOptionsCustomCallback {
+    ManualSaleOptionsCustomCallback {
 
     private var manualItemId: Int = 0
     private var manualCategoryId: Int = 0
@@ -110,6 +108,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
         binding.layoutMenu.imgSearch.visibility = View.GONE
         binding.layoutMenu.autoSearch.visibility = View.GONE
+        binding.layoutMenu.imgSync.visibility = View.GONE
+        binding.layoutMenu.imgOptionMenu.visibility = View.GONE
         viewModel.redeemLoyaltyInfo.needToApplyLoyalty =
             prefProvider.getValueboolean(LOYALTY_ADDED, false)
         //    prefProvider.setValue(CUSTOMER_NAME, "")
@@ -305,8 +305,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
                     dashboardViewModel.addCart(mainCartList[0])
 
-                    if (isPayClicked)
-                        viewModel.deleteCart()
+                    viewModel.deleteCart()
 
                     dashboardViewModel.mAllWords(
                         prefProvider.getValue(Constants.ORDER_TYPE, "").toString()
@@ -345,10 +344,10 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 if (isPayClicked && viewModel.totalPrice != 0.0) {
 
 
-                    findNavController().navigate(
+                 /*   findNavController().navigate(
                         R.id.action_manualSaleNew_to_paymentFragment,
                         bundle
-                    )
+                    )*/
 
                 } else {
                     val navControll = findNavController()
@@ -409,15 +408,35 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         binding.btnPay.setOnClickListener {
 
             if (binding.txtTotalAmount.text.toString() != "$0.00") {
-                isPayClicked = true
+              /*  isPayClicked = true
 
                 dashboardViewModel.mAllWords(
                     prefProvider.getValue(Constants.ORDER_TYPE, "").toString()
                 ).observe(
                     viewLifecycleOwner, nameObserver
                 )
+*/
+                  val bundle = Bundle()
+                   Log.e(
+                       "!_@_",
+                       "Total Price: ${viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0}"
+                   )
+                   bundle.putDouble(
+                       "totalPrice",
+                       viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0
+                   )
+                   bundle.putDouble("subTotalPrice", viewModel.subTotalPrice)
+                   bundle.putDouble("totalTax", viewModel.totalTax)
+                   bundle.putDouble("totalDiscount", viewModel.totalDiscount)
+                   bundle.putDouble("totalServiceCharge", viewModel.totalServiceCharge)
+                   cartList?.get(0)?.customer = assignCustomer
+                   bundle.putParcelable("cartList", cartList?.get(0))
+                   bundle.putString(
+                       "redeemLoyalty",
+                       Gson().toJson(viewModel.redeemLoyaltyInfo)
+                   )
 
-
+                   findNavController().navigate(R.id.action_manualSaleNew_to_paymentFragment, bundle)
             }
         }
 

@@ -16,6 +16,7 @@ import com.android.pos.R
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.CashDiscountModel
 import com.android.pos.data.entities.RedeemLoyaltyInfo
+import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.SplitBundleModel
 import com.android.pos.data.model.requestModel.CreateQueuePrinterRequestModel
 import com.android.pos.data.model.requestModel.OrderAttributeRequestModel
@@ -56,6 +57,7 @@ import kotlin.math.floor
 
 @AndroidEntryPoint
 open class PaymentFragment : Fragment(), View.OnClickListener {
+    private var cartItems: List<TbItem>? =null
     private var isSplitByNo: Boolean = false
     private var isSplitByAmount: Boolean = false
     private var splitAfterAmount: Double = 0.0
@@ -98,6 +100,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
     var splitOldValue: Int = 0
     var isFromDashboard: Boolean = false
     var isFromActiveOrder: Boolean = false
+    var manualSaleCart: CartModel? = null
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -161,6 +164,9 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
 
         cartList = requireArguments().getParcelable("cartList")
+        cartItems = cartList?.items
+        manualSaleCart = requireArguments().getParcelable("cartList")
+
         totalPrice = requireArguments().getDouble("totalPrice")
         subTotalPrice = requireArguments().getDouble("subTotalPrice")
         totalTax = requireArguments().getDouble("totalTax")
@@ -1155,6 +1161,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             )
 
         if (isSplitByNo) {
+            Log.e(TAG, "isSplitByNo:  ${isSplitByNo}")
             val myRequest = cartList?.let {
                 viewModel.createOrderRequestForCard(
                     it,
@@ -1319,6 +1326,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
         var isLastPayment = prefProvider.getValueboolean("isLastPayment", false)
         if (isSplitByNo && !isLastPayment && isCustomCash) {
+
             val myRequest = cartList?.let {
 
                 viewModel.createOrderRequest(
@@ -1531,6 +1539,10 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         } else {
 
             Log.e(TAG, "cartList:  ${Gson().toJson(cartList)}")
+            Log.e(TAG, "cartListcartItems:  ${Gson().toJson(cartItems)}")
+            if (cartItems?.isNotEmpty() == true && cartList?.items?.isEmpty() == true){
+                cartList?.items = cartItems
+            }
             val myRequest = cartList?.let {
 
                 viewModel.createOrderRequest(

@@ -32,6 +32,7 @@ import com.android.pos.data.remote.Constants.DINE_IN_ADAPTER_LIST
 import com.android.pos.data.remote.Constants.GUEST_POSITION
 import com.android.pos.data.remote.Constants.KITCHEN
 import com.android.pos.data.remote.Constants.LARGE
+import com.android.pos.data.remote.Constants.OPEN_ORDER
 import com.android.pos.data.remote.Constants.OPEN_ORDER_
 import com.android.pos.data.remote.Constants.PRINT_DATA_DINE_IN
 import com.android.pos.data.remote.Constants.SAVE_SPLIT_BUNDLE
@@ -357,15 +358,16 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     MethodUtils.roundOffAmount(paidAmount)
 
                 if (isCustomCash) {
-                    changeAmtGlobal = MethodUtils.roundOffAmountDouble(remainingAmount-tipAmount).toDouble()
+                    changeAmtGlobal =
+                        MethodUtils.roundOffAmountDouble(remainingAmount - tipAmount).toDouble()
                     binding.txtChangeAmount.text =
-                        MethodUtils.roundOffAmount(remainingAmount-tipAmount) + " Change"
+                        MethodUtils.roundOffAmount(remainingAmount - tipAmount) + " Change"
                 } else {
                     if (remainingAmount < 0) {
                         changeAmtGlobal =
-                            MethodUtils.roundOffAmountDouble(remainingAmount-tipAmount).toDouble()
+                            MethodUtils.roundOffAmountDouble(remainingAmount - tipAmount).toDouble()
                         binding.txtChangeAmount.text =
-                            MethodUtils.roundOffAmount(remainingAmount-tipAmount) + " Change"
+                            MethodUtils.roundOffAmount(remainingAmount - tipAmount) + " Change"
                     }
                 }
 
@@ -459,9 +461,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     MethodUtils.roundOffAmount(paidAmount)
 
                 if (isCustomCash) {
-                    changeAmtGlobal = MethodUtils.roundOffAmountDouble(remainingAmount-tipAmount)
+                    changeAmtGlobal = MethodUtils.roundOffAmountDouble(remainingAmount - tipAmount)
                     binding.txtChangeAmount.text =
-                        MethodUtils.roundOffAmount(remainingAmount-tipAmount) + " Change"
+                        MethodUtils.roundOffAmount(remainingAmount - tipAmount) + " Change"
                 } else {
                     if (remainingAmount < 0) {
                         changeAmtGlobal = MethodUtils.roundOffAmountDouble(remainingAmount)
@@ -3336,41 +3338,25 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             builder.addTextAlign(Builder.ALIGN_CENTER)
             builder.addText(receiptModel?.order?.orderType + "\n")
             Log.e(TAG, "orderType:  ${receiptModel?.order?.orderType}")
-            if (receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER_
-                    .lowercase()
+            if (receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER_.lowercase()
+                || receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER.lowercase()
             ) {
-                if (receiptModel?.order?.deliveryType?.lowercase() == "Pickup".lowercase() || receiptModel?.order?.deliveryType?.lowercase() == "Delivery".lowercase()) {
 
-                    builder.addFeedLine(1)
 
-                    builder.addTextFont(Builder.FONT_E)
+                builder.addFeedLine(1)
 
-                    builder.addTextLang(Builder.LANG_EN)
-                    builder.addTextSize(2, 2)
-                    builder.addTextStyle(
-                        Builder.FALSE,
-                        Builder.FALSE,
-                        Builder.FALSE,
-                        Builder.COLOR_1
-                    )
-                    builder.addTextAlign(Builder.ALIGN_CENTER)
-                    builder.addText(receiptModel?.order?.deliveryType + "\n")
-                } else {
-                    builder.addFeedLine(1)
+                builder.addTextFont(Builder.FONT_E)
 
-                    builder.addTextFont(Builder.FONT_E)
-
-                    builder.addTextLang(Builder.LANG_EN)
-                    builder.addTextSize(2, 2)
-                    builder.addTextStyle(
-                        Builder.FALSE,
-                        Builder.FALSE,
-                        Builder.FALSE,
-                        Builder.COLOR_1
-                    )
-                    builder.addTextAlign(Builder.ALIGN_CENTER)
-                    builder.addText("Delivery" + "\n")
-                }
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(2, 2)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addText(receiptModel?.order?.deliveryType + "\n")
 
 
             }
