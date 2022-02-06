@@ -70,7 +70,7 @@ class MethodUtils {
 
         }
 
-            fun roundOffAmount(price: Double): String {
+        fun roundOffAmount(price: Double): String {
             return MainApplication.getInstance()!!.getText(R.string.symbole)
                 .toString() + String.format("%.2f", price)
         }
@@ -263,7 +263,11 @@ class MethodUtils {
                     if (finalAmount <= rateorAmount.toDouble()) {
                         return finalAmount
                     } else {
-                        return rateorAmount.toDouble()
+                        if (rateorAmount.toDouble() < 0.toDouble()) {
+                            return 0.0
+                        } else {
+                            return rateorAmount.toDouble()
+                        }
                     }
                 } else {
                     return 0.00

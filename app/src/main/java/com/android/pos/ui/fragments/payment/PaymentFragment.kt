@@ -57,7 +57,7 @@ import kotlin.math.floor
 
 @AndroidEntryPoint
 open class PaymentFragment : Fragment(), View.OnClickListener {
-    private var cartItems: List<TbItem>? =null
+    private var cartItems: List<TbItem>? = null
     private var isSplitByNo: Boolean = false
     private var isSplitByAmount: Boolean = false
     private var splitAfterAmount: Double = 0.0
@@ -221,6 +221,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         } else {
             cardActualAmount = totalPrice
         }
+        Log.e(TAG, "gottotalPrice:  ${totalPrice}")
         viewModel.saveActualValue(
             totalPrice,
             subTotalPrice,
@@ -561,7 +562,11 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     "%.2f",
                     MethodUtils.calculateCashDiscount(totalPrice, prefProvider, requireContext())
                 )
+                Log.e(TAG, "cashDiscountSurcharge:  ${cashDiscountSurcharge}")
                 totalPrice -= cashDiscountSurcharge
+                if (totalPrice < 0.0) {
+                    totalPrice = 0.0
+                }
             } else if (cashDiscountType == "SurCharge") {
                 binding.linearnoncashAdj.visibility = View.GONE
                 MethodUtils.setPriceTextView(
@@ -1540,7 +1545,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
             Log.e(TAG, "cartList:  ${Gson().toJson(cartList)}")
             Log.e(TAG, "cartListcartItems:  ${Gson().toJson(cartItems)}")
-            if (cartItems?.isNotEmpty() == true && cartList?.items?.isEmpty() == true){
+            if (cartItems?.isNotEmpty() == true && cartList?.items?.isEmpty() == true) {
                 cartList?.items = cartItems
             }
             val myRequest = cartList?.let {

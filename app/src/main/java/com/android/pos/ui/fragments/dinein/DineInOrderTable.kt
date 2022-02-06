@@ -5407,6 +5407,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         var list = dineInTableAdapter.getList()
         val builder = ArrayList<String>()
         var listItem: ArrayList<TbItem> = arrayListOf()
+        Log.e(TAG, "dineInList:  ${Gson().toJson(list)}")
         list.forEach {
             if (it.isHeader == 1) {
                 it.item?.let {
@@ -5423,22 +5424,21 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             }
 
         }
+        Log.e(TAG, "listItem:  ${Gson().toJson(listItem)}")
 
         if (listItem.isNotEmpty()) {
             var autoPrintEnable = false
             kitchenPrinterList.forEach { kit ->
                 if (isCheckAndFire) {
                     kit.orderTypes.forEach {
-                        if (it.orderTypeName.trim()
-                                .lowercase().equals(
-                                    getOrderDetailsResponse?.orderType?.toString()?.trim()
-                                        ?.lowercase()
-                                )
-                        ) {
+                        if (it.orderTypeId == getOrderDetailsResponse?.orderTypeId) {
+                            Log.e(TAG,"orderTypeIdSettings  ${it.orderTypeName}")
+                            Log.e(TAG,"orderTypeIdMainData  ${getOrderDetailsResponse?.orderType}")
                             it.printerSettings.forEach {
                                 if (it.printType.lowercase()
                                         .equals(Constants.KITCHEN.lowercase()) && it.autoPrinting
                                 ) {
+
                                     autoPrintEnable = true
                                     initKitchenPrinter(kit, Constants.KITCHEN, listItem)
                                 }
