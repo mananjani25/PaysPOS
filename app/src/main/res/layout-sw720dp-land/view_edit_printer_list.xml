@@ -36,12 +36,13 @@
             android:background="@color/colorNewBorder" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintCustomer"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="3">
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/txtTestPrint"
+                android:id="@+id/txtCustomerReceipt"
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -125,12 +126,14 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <View
+            android:id="@+id/viewLine3"
             android:layout_width="1dp"
             android:layout_height="match_parent"
             android:background="@color/colorNewBorder"
             android:visibility="gone" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintCustomerChkbx"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1">

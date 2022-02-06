@@ -4,10 +4,12 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.android.pos.data.model.EditPrinterModel
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.ViewEditPrinterListBinding
+import com.android.pos.utils.extensions.gone
+import com.android.pos.utils.extensions.invisible
+import com.android.pos.utils.extensions.visible
 
 class EditPrinterListAdapter : RecyclerView.Adapter<EditPrinterListAdapter.MyViewHolder>() {
     private var list: ArrayList<PrinterResponse.Data.OrderTypes> = arrayListOf()
@@ -17,6 +19,8 @@ class EditPrinterListAdapter : RecyclerView.Adapter<EditPrinterListAdapter.MyVie
         fun bind(model: PrinterResponse.Data.OrderTypes) {
             binding.model = model
             binding.txtPrintersLabel.setText(model.orderTypeName)
+
+
             if (model.printerSettings.size == 2) {
                 if (model.printerSettings.get(0).printType == Constants.CUSTOMER) {
                     binding.chBoxCustomerManual.isChecked =
@@ -47,6 +51,38 @@ class EditPrinterListAdapter : RecyclerView.Adapter<EditPrinterListAdapter.MyVie
                         model.printerSettings.get(1).autoPrinting
                 }
 
+            } else if (model.printerSettings.size == 1) {
+
+
+                if (model.printerSettings.get(0).printType == Constants.CUSTOMER) {
+                    binding.chBoxKitchenManual2.gone()
+                    binding.chBoxCustomerManual2.visible()
+                    binding.viewLine.gone()
+                    binding.viewLine2.invisible()
+                    binding.txtCustomerReceipt.visible()
+
+                    binding.txtKitReceipt.gone()
+
+
+                    binding.chBoxCustomerManual2.isChecked =
+                        model.printerSettings.get(0).autoPrinting
+
+
+                } else if (model.printerSettings.get(0).printType == Constants.KITCHEN) {
+                    binding.chBoxKitchenManual2.visible()
+                    binding.chBoxCustomerManual2.gone()
+                    binding.viewLine.gone()
+                    binding.viewLine2.invisible()
+                    binding.txtKitReceipt.visible()
+                    binding.txtCustomerReceipt.gone()
+
+                    binding.chBoxKitchenManual.isChecked =
+                        model.printerSettings.get(0).manualPrinting
+                    binding.chBoxKitchenManual2.isChecked =
+                        model.printerSettings.get(0).autoPrinting
+
+                }
+
             }
 
             binding.chBoxCustomerManual.setOnCheckedChangeListener { buttonView, isChecked ->
@@ -64,6 +100,7 @@ class EditPrinterListAdapter : RecyclerView.Adapter<EditPrinterListAdapter.MyVie
             }
             binding.chBoxCustomerManual2.setOnCheckedChangeListener { buttonView, isChecked ->
                 if (model.printerSettings.size == 2) {
+
                     if (model.printerSettings.get(0).printType == Constants.CUSTOMER) {
 
                         model.printerSettings.get(0).autoPrinting = isChecked
@@ -71,6 +108,15 @@ class EditPrinterListAdapter : RecyclerView.Adapter<EditPrinterListAdapter.MyVie
                         model.printerSettings.get(1).autoPrinting = isChecked
 
                     }
+                } else if (model.printerSettings.size == 1) {
+                    if (model.printerSettings.get(0).printType == Constants.CUSTOMER) {
+
+                        model.printerSettings.get(0).autoPrinting = isChecked
+                    } else {
+                        model.printerSettings.get(0).autoPrinting = isChecked
+
+                    }
+
                 }
 
             }
@@ -100,6 +146,15 @@ class EditPrinterListAdapter : RecyclerView.Adapter<EditPrinterListAdapter.MyVie
                         model.printerSettings.get(1).autoPrinting = isChecked
 
                     }
+                } else if (model.printerSettings.size == 1) {
+                    if (model.printerSettings.get(0).printType == Constants.CUSTOMER) {
+
+                        model.printerSettings.get(0).autoPrinting = isChecked
+                    } else {
+                        model.printerSettings.get(0).autoPrinting = isChecked
+
+                    }
+
                 }
 
 
