@@ -276,6 +276,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             val adapterList = dineInTableAdapter.getList()
             var offlineId = randomOfflineId()
 
+            totalTax = 0.0
             var subTotal = 0.0
             var amtToPay = 0.0
             val totalItem: ArrayList<TbItem> = arrayListOf()
@@ -297,7 +298,33 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         }
 
                         it.taxes?.forEach { tax ->
-                            totalTax += tax.rate
+                            totalTax += if (tax.taxType == "Percentage") {
+
+                                var modifierPrice = 0.0
+                                val price =
+                                    (it.price * it.quantity) - it.discountPrice
+
+                                it.modifiers.forEach {
+                                    modifierPrice += (it.price * it.itemQuantity)
+                                }
+
+                                val totalPrice = price + modifierPrice
+
+                                val itemTaxPrice =
+                                    (tax.rate * totalPrice) / 100
+                                Log.e("itemTaxPrice", "" + itemTaxPrice)
+                                String.format("%.2f", itemTaxPrice)
+                                    .toDouble()
+                            } else {
+
+                                String.format(
+                                    "%.2f",
+                                    tax.rate * it.quantity
+                                )
+                                    .toDouble()
+                            }
+
+
                         }
                     }
                 }
@@ -819,9 +846,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         if (totalItem.isNotEmpty()) {
             totalItem.forEach {
                 subTotal += it.price * it.itemQuantity
-                it.taxes?.forEach { tax ->
-                    totalTax += tax.rate
-                }
+
             }
         }
         subTotal += dineInTableAdapter.getList().get(0).guestDividedAmt
@@ -1306,7 +1331,32 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                             if (it.orderItemTaxes.isNotEmpty()) {
                                                 it.orderItemTaxes.forEach { tax ->
                                                     if (!it.isPaid) {
-                                                        totalTaxAmount += tax.rate
+                                                        totalTaxAmount += if (tax.taxType == "Percentage") {
+
+                                                            var modifierPrice = 0.0
+                                                            val price =
+                                                                (it.price * it.quantity) - it.discountAmount
+
+                                                            it.orderItemModifiers.forEach {
+                                                                modifierPrice += (it.price * it.quantity)
+                                                            }
+
+                                                            val totalPrice = price + modifierPrice
+
+                                                            val itemTaxPrice =
+                                                                (tax.rate * totalPrice) / 100
+                                                            Log.e("itemTaxPrice", "" + itemTaxPrice)
+                                                            String.format("%.2f", itemTaxPrice)
+                                                                .toDouble()
+                                                        } else {
+
+                                                            String.format(
+                                                                "%.2f",
+                                                                tax.rate * it.quantity
+                                                            )
+                                                                .toDouble()
+                                                        }
+
 
                                                     }
                                                 }
@@ -1431,6 +1481,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
 
+                    Log.e(TAG, "totalTaxAmount:  ${totalTaxAmount}")
                     viewModel.totalTaxAmount = totalTaxAmount
                     subTotalDInin = totalSubTotal
                     serviceCharge = totalServiceChargeAmount
@@ -1492,7 +1543,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             var tempTax = totalTaxWT / (baseResponse.guestAttributes.size - 1)
 
                             var guestTax = totalTaxAmount - totalTaxWT
-                            finalTaxAmt = (tempTax * unpaidCount) +  guestTax
+                            finalTaxAmt = (tempTax * unpaidCount) + guestTax
                             //finalTaxAmt = (subTotalWT / totalGuestCount) * unpaidCount + totalTaxAmt
 
                         }

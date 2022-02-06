@@ -344,10 +344,10 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 if (isPayClicked && viewModel.totalPrice != 0.0) {
 
 
-                 /*   findNavController().navigate(
-                        R.id.action_manualSaleNew_to_paymentFragment,
-                        bundle
-                    )*/
+                    /*   findNavController().navigate(
+                           R.id.action_manualSaleNew_to_paymentFragment,
+                           bundle
+                       )*/
 
                 } else {
                     val navControll = findNavController()
@@ -407,36 +407,36 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
         binding.btnPay.setOnClickListener {
 
-            if (binding.txtTotalAmount.text.toString() != "$0.00") {
-              /*  isPayClicked = true
+            if (binding.txtTotalAmount.text.toString() != "$0.00" && cartList?.isNotEmpty() == true) {
+                /*  isPayClicked = true
 
-                dashboardViewModel.mAllWords(
-                    prefProvider.getValue(Constants.ORDER_TYPE, "").toString()
-                ).observe(
-                    viewLifecycleOwner, nameObserver
+                  dashboardViewModel.mAllWords(
+                      prefProvider.getValue(Constants.ORDER_TYPE, "").toString()
+                  ).observe(
+                      viewLifecycleOwner, nameObserver
+                  )
+  */
+                val bundle = Bundle()
+                Log.e(
+                    "!_@_",
+                    "Total Price: ${viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0}"
                 )
-*/
-                  val bundle = Bundle()
-                   Log.e(
-                       "!_@_",
-                       "Total Price: ${viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0}"
-                   )
-                   bundle.putDouble(
-                       "totalPrice",
-                       viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0
-                   )
-                   bundle.putDouble("subTotalPrice", viewModel.subTotalPrice)
-                   bundle.putDouble("totalTax", viewModel.totalTax)
-                   bundle.putDouble("totalDiscount", viewModel.totalDiscount)
-                   bundle.putDouble("totalServiceCharge", viewModel.totalServiceCharge)
-                   cartList?.get(0)?.customer = assignCustomer
-                   bundle.putParcelable("cartList", cartList?.get(0))
-                   bundle.putString(
-                       "redeemLoyalty",
-                       Gson().toJson(viewModel.redeemLoyaltyInfo)
-                   )
+                bundle.putDouble(
+                    "totalPrice",
+                    viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0
+                )
+                bundle.putDouble("subTotalPrice", viewModel.subTotalPrice)
+                bundle.putDouble("totalTax", viewModel.totalTax)
+                bundle.putDouble("totalDiscount", viewModel.totalDiscount)
+                bundle.putDouble("totalServiceCharge", viewModel.totalServiceCharge)
+                cartList?.get(0)?.customer = assignCustomer
+                bundle.putParcelable("cartList", cartList?.get(0))
+                bundle.putString(
+                    "redeemLoyalty",
+                    Gson().toJson(viewModel.redeemLoyaltyInfo)
+                )
 
-                   findNavController().navigate(R.id.action_manualSaleNew_to_paymentFragment, bundle)
+                findNavController().navigate(R.id.action_manualSaleNew_to_paymentFragment, bundle)
             }
         }
 

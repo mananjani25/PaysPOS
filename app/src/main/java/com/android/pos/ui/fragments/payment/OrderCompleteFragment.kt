@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import androidx.activity.OnBackPressedCallback
+import androidx.core.text.trimmedLength
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
@@ -3020,56 +3021,86 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     ProgressUtils.dismissProgressDialog()
                     if (it.data != null) {
 
-                        Log.e(TAG, "isFromDinein:  ${requireArguments().getBoolean("isDineIn")}")
-                        Log.e(TAG, "splitSize:  ${splitList.size}")
-                        Log.e(TAG, "isSpilt ${isSpilt}")
 
                         kitchenPrinterList = it.data
-                        if (!requireArguments().getBoolean(
+
+                        /*if (!requireArguments().getBoolean(
+                                "isFromActiveOrder"
+                            )
+                        ) {*/
+                        if (isSpilt && splitList.size == 1) {
+                            if (!requireArguments().getBoolean("isDineIn")) {
+
+
+                                for (i in 0 until kitchenPrinterList.size) {
+                                    kitchenPrinterList[i].orderTypes.forEach {
+
+
+                                        if (it.orderTypeId == receiptModel?.order?.orderTypeId
+
+                                        ) {
+
+
+                                            it.printerSettings.forEach {
+                                                if (it.printType.lowercase()
+                                                        .equals(KITCHEN.lowercase()) && it.autoPrinting
+                                                ) {
+                                                    initKitchenPrinter(
+                                                        kitchenPrinterList.get(i),
+                                                        KITCHEN
+                                                    )
+
+                                                }
+                                            }
+
+                                        }
+                                    }
+                                }
+
+
+                            }
+                        } else if (!requireArguments().getBoolean("isDineIn") && !requireArguments().getBoolean(
                                 "isFromActiveOrder"
                             )
                         ) {
-                            if (isSpilt && splitList.size == 1) {
-                                if (!requireArguments().getBoolean("isDineIn")) {
+                            Log.e(
+                                TAG,
+                                "PlacedOrderorderType:  ${receiptModel?.order?.orderType}"
+                            )
 
-                                    for (i in 0 until kitchenPrinterList.size) {
-                                        kitchenPrinterList[i].orderTypes.forEach {
+                            for (i in 0 until kitchenPrinterList.size) {
+                                kitchenPrinterList[i].orderTypes.forEach {
+                                    Log.e(TAG, "orderTypeName:  ${it.orderTypeName}")
+                                    Log.e(TAG, "orderType:  ${it.orderType}")
 
 
-                                            if (it.orderTypeName.trim()
-                                                    .lowercase().equals(
-                                                        receiptModel?.order?.orderType?.toString()
-                                                            ?.trim()
-                                                            ?.lowercase()
-                                                    )
+                                    if (it.orderTypeId == receiptModel?.order?.orderTypeId) {
+
+
+                                        it.printerSettings.forEach {
+                                            if (it.printType.lowercase()
+                                                    .equals(KITCHEN.lowercase()) && it.autoPrinting
                                             ) {
-
-                                                it.printerSettings.forEach {
-                                                    if (it.printType.lowercase()
-                                                            .equals(KITCHEN.lowercase()) && it.autoPrinting
-                                                    ) {
-                                                        initKitchenPrinter(
-                                                            kitchenPrinterList.get(i),
-                                                            KITCHEN
-                                                        )
-
-                                                    }
-                                                }
+                                                initKitchenPrinter(
+                                                    kitchenPrinterList.get(i),
+                                                    KITCHEN
+                                                )
 
                                             }
                                         }
+
                                     }
-
-
                                 }
                             }
 
-                            if (requireArguments().getBoolean("isDineIn")) {
-                                customerPrintWholeOrder()
 
-                            } else {
-                                getCustomerPrinters(false)
-                            }
+                        }
+
+                        if (requireArguments().getBoolean("isDineIn")) {
+                            customerPrintWholeOrder()
+
+                        } else {
+                            getCustomerPrinters(false)
                         }
 
 
@@ -4320,8 +4351,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 addBuilderText(builder, receiptModel?.order?.orderType.toString())
             }
+            var tmps = "Open Order".toString().trim()
+                .toString().lowercase()
+            Log.e(TAG,"LowerCAse ${tmps.trimmedLength()}")
 
-            if (receiptModel?.order?.orderType?.trim().toString().lowercase() == "Open Order".trim()
+            if (receiptModel?.order?.orderType.toString().lowercase() == "OpenOrder".trim()
+                    .toString().lowercase() || receiptModel?.order?.orderType.toString().lowercase() == "Open Order".trim()
                     .toString().lowercase()
             ) {
                 builder.addFeedLine(1)

@@ -3612,9 +3612,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 addBuilderText(builder, receiptModel?.order?.orderType.toString())
             }
 
-            if (receiptModel?.order?.orderType.trim().lowercase() == "Open Order".trim()
+           /* if (receiptModel?.order?.orderType.trim().lowercase() == "OpenOrder".trim()
                     .lowercase()
-            ) {
+              ) {*/
                 builder.addFeedLine(1)
                 builder.addTextFont(Builder.FONT_E)
                 builder.addTextLang(Builder.LANG_EN)
@@ -3629,7 +3629,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                 addBuilderText(builder, receiptModel?.order?.deliveryType.toString())
 
-            }
+            /*}*/
 
 
             builder.addFeedLine(2)

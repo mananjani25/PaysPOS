@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.databinding.ViewOrderItemListBinding
-import kotlin.math.roundToInt
 
 
 class OrderDetailsItemListAdapter :
@@ -34,9 +33,9 @@ class OrderDetailsItemListAdapter :
         itemBinding.tvQuantity.text = "x" + taxList[position].quantity
 
         var totalPrice = taxList[position].price * taxList[position].quantity
-        var modifierPrices = 0
+        var modifierPrices = 0.0
         taxList[position].orderItemModifiers.forEach {
-            modifierPrices += ((it.price * it.quantity).roundToInt())
+            modifierPrices += ((it.price * it.quantity)).toDouble()
         }
         totalPrice += modifierPrices
 
