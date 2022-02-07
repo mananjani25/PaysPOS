@@ -842,7 +842,7 @@
                     android:textSize="@dimen/_6mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/txtTextReceipt"
+                        android:id="@+id/txtTextReceipt"
                     style="@style/CustomFontBold"
                     android:layout_width="match_parent"
                     android:visibility="visible"

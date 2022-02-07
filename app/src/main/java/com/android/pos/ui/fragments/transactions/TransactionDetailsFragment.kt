@@ -47,6 +47,7 @@ class TransactionDetailsFragment : Fragment() {
 
     private lateinit var orderDetailsItemAdapter: OrderDetailsItemListAdapter
     private var orderIDglobal = 0
+
     //    private lateinit var orderDetailsResponse: GetOrderDetailsResponse
     private var customerSettingModel = GetCustomerReceiptSettingsResponse.Data()
     private lateinit var paymentDetailsResponse: GetPaymentOrderDetailsResponse
