@@ -732,6 +732,30 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
             builder.addTextAlign(Builder.ALIGN_CENTER)
             builder.addText(receiptModel?.orderType + "\n")
 
+            if (receiptModel?.orderType?.lowercase() == Constants.OPEN_ORDER_.lowercase()
+                || receiptModel?.orderType?.lowercase() == Constants.OPEN_ORDER.lowercase()
+            ) {
+
+
+                builder.addFeedLine(1)
+
+                builder.addTextFont(Builder.FONT_E)
+
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(2, 2)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addText(receiptModel?.deliveryType + "\n")
+
+
+            }
+
+
 
 
             if (customerSettingModel.fonts == Constants.LARGE) {

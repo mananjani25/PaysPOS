@@ -1121,26 +1121,36 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
     override fun onPrinterActive(printerListModel: PrinterListModel, layoutPosition: Int) {
         Log.e(TAG, "printerListModel: ${Gson().toJson(printerListModel)}")
-        var list: ArrayList<CreatePrinterRequestModel.PrinterSettingsAttributes> = arrayListOf()
-        for (i in 0 until orderTypeList.size) {
-            list.add(
-                CreatePrinterRequestModel.PrinterSettingsAttributes(
-                    printType = CUSTOMER,
-                    orderTypeId = orderTypeList.get(i).id
-                )
-            )
-            list.add(
-                CreatePrinterRequestModel.PrinterSettingsAttributes(
-                    printType = KITCHEN,
-                    orderTypeId = orderTypeList.get(i).id
-                )
-            )
-        }
+
+        /* for (i in 0 until orderTypeList.size) {
+             list.add(
+                 CreatePrinterRequestModel.PrinterSettingsAttributes(
+                     printType = CUSTOMER,
+                     orderTypeId = orderTypeList.get(i).id
+                 )
+             )
+             list.add(
+                 CreatePrinterRequestModel.PrinterSettingsAttributes(
+                     printType = KITCHEN,
+                     orderTypeId = orderTypeList.get(i).id
+                 )
+             )
+         }*/
 
         setFragmentResultListener("request_printer_type") { requestKey: String, bundle: Bundle ->
             val data = bundle.getString("type")
+            var list: ArrayList<CreatePrinterRequestModel.PrinterSettingsAttributes> = arrayListOf()
             when (data) {
                 KITCHEN -> {
+
+                    for (i in 0 until orderTypeList.size) {
+                        list.add(
+                            CreatePrinterRequestModel.PrinterSettingsAttributes(
+                                printType = KITCHEN,
+                                orderTypeId = orderTypeList.get(i).id
+                            )
+                        )
+                    }
 
                     val createPrinter = CreatePrinterRequestModel(
                         name = printerListModel.printerName,
@@ -1161,6 +1171,15 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
                 }
                 CUSTOMER -> {
+                    for (i in 0 until orderTypeList.size) {
+                        list.add(
+                            CreatePrinterRequestModel.PrinterSettingsAttributes(
+                                printType = CUSTOMER,
+                                orderTypeId = orderTypeList.get(i).id
+                            )
+                        )
+
+                    }
                     val createPrinter = CreatePrinterRequestModel(
                         name = printerListModel.printerName,
                         macAddress = printerListModel.deviceModel?.macAddress,
@@ -1181,6 +1200,20 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
                 }
                 KITCHENANDCUSTOMER -> {
+                    for (i in 0 until orderTypeList.size) {
+                        list.add(
+                            CreatePrinterRequestModel.PrinterSettingsAttributes(
+                                printType = CUSTOMER,
+                                orderTypeId = orderTypeList.get(i).id
+                            )
+                        )
+                        list.add(
+                            CreatePrinterRequestModel.PrinterSettingsAttributes(
+                                printType = KITCHEN,
+                                orderTypeId = orderTypeList.get(i).id
+                            )
+                        )
+                    }
                     val createBothPrinter = CreatePrinterRequestModel(
                         name = printerListModel.printerName,
                         macAddress = printerListModel.deviceModel?.macAddress,

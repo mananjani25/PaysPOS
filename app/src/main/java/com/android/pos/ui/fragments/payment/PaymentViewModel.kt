@@ -996,6 +996,7 @@ class PaymentViewModel @Inject constructor(
 
         val orderItemsAttributeList: ArrayList<OrderItemsAttribute> =
             arrayListOf()
+        Log.e(TAG,"insideSize  ${cartModel.items?.size}")
 
         cartModel.items?.forEach { item ->
 
@@ -1041,6 +1042,7 @@ class PaymentViewModel @Inject constructor(
 
             orderItemsAttributeList.add(orderItemsAttribute)
         }
+        Log.e(TAG, "orderItemsAttributeList:  ${Gson().toJson(orderItemsAttributeList)}")
         return orderItemsAttributeList
     }
 

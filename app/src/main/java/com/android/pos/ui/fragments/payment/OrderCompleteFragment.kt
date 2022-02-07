@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import androidx.activity.OnBackPressedCallback
+import androidx.core.text.trimmedLength
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
@@ -32,6 +33,7 @@ import com.android.pos.data.remote.Constants.DINE_IN_ADAPTER_LIST
 import com.android.pos.data.remote.Constants.GUEST_POSITION
 import com.android.pos.data.remote.Constants.KITCHEN
 import com.android.pos.data.remote.Constants.LARGE
+import com.android.pos.data.remote.Constants.OPEN_ORDER
 import com.android.pos.data.remote.Constants.OPEN_ORDER_
 import com.android.pos.data.remote.Constants.PRINT_DATA_DINE_IN
 import com.android.pos.data.remote.Constants.SAVE_SPLIT_BUNDLE
@@ -357,15 +359,16 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     MethodUtils.roundOffAmount(paidAmount)
 
                 if (isCustomCash) {
-                    changeAmtGlobal = MethodUtils.roundOffAmountDouble(remainingAmount-tipAmount).toDouble()
+                    changeAmtGlobal =
+                        MethodUtils.roundOffAmountDouble(remainingAmount - tipAmount).toDouble()
                     binding.txtChangeAmount.text =
-                        MethodUtils.roundOffAmount(remainingAmount-tipAmount) + " Change"
+                        MethodUtils.roundOffAmount(remainingAmount - tipAmount) + " Change"
                 } else {
                     if (remainingAmount < 0) {
                         changeAmtGlobal =
-                            MethodUtils.roundOffAmountDouble(remainingAmount-tipAmount).toDouble()
+                            MethodUtils.roundOffAmountDouble(remainingAmount - tipAmount).toDouble()
                         binding.txtChangeAmount.text =
-                            MethodUtils.roundOffAmount(remainingAmount-tipAmount) + " Change"
+                            MethodUtils.roundOffAmount(remainingAmount - tipAmount) + " Change"
                     }
                 }
 
@@ -459,9 +462,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     MethodUtils.roundOffAmount(paidAmount)
 
                 if (isCustomCash) {
-                    changeAmtGlobal = MethodUtils.roundOffAmountDouble(remainingAmount-tipAmount)
+                    changeAmtGlobal = MethodUtils.roundOffAmountDouble(remainingAmount - tipAmount)
                     binding.txtChangeAmount.text =
-                        MethodUtils.roundOffAmount(remainingAmount-tipAmount) + " Change"
+                        MethodUtils.roundOffAmount(remainingAmount - tipAmount) + " Change"
                 } else {
                     if (remainingAmount < 0) {
                         changeAmtGlobal = MethodUtils.roundOffAmountDouble(remainingAmount)
@@ -3018,56 +3021,86 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     ProgressUtils.dismissProgressDialog()
                     if (it.data != null) {
 
-                        Log.e(TAG, "isFromDinein:  ${requireArguments().getBoolean("isDineIn")}")
-                        Log.e(TAG, "splitSize:  ${splitList.size}")
-                        Log.e(TAG, "isSpilt ${isSpilt}")
 
                         kitchenPrinterList = it.data
-                        if (!requireArguments().getBoolean(
+
+                        /*if (!requireArguments().getBoolean(
+                                "isFromActiveOrder"
+                            )
+                        ) {*/
+                        if (isSpilt && splitList.size == 1) {
+                            if (!requireArguments().getBoolean("isDineIn")) {
+
+
+                                for (i in 0 until kitchenPrinterList.size) {
+                                    kitchenPrinterList[i].orderTypes.forEach {
+
+
+                                        if (it.orderTypeId == receiptModel?.order?.orderTypeId
+
+                                        ) {
+
+
+                                            it.printerSettings.forEach {
+                                                if (it.printType.lowercase()
+                                                        .equals(KITCHEN.lowercase()) && it.autoPrinting
+                                                ) {
+                                                    initKitchenPrinter(
+                                                        kitchenPrinterList.get(i),
+                                                        KITCHEN
+                                                    )
+
+                                                }
+                                            }
+
+                                        }
+                                    }
+                                }
+
+
+                            }
+                        } else if (!requireArguments().getBoolean("isDineIn") && !requireArguments().getBoolean(
                                 "isFromActiveOrder"
                             )
                         ) {
-                            if (isSpilt && splitList.size == 1) {
-                                if (!requireArguments().getBoolean("isDineIn")) {
+                            Log.e(
+                                TAG,
+                                "PlacedOrderorderType:  ${receiptModel?.order?.orderType}"
+                            )
 
-                                    for (i in 0 until kitchenPrinterList.size) {
-                                        kitchenPrinterList[i].orderTypes.forEach {
+                            for (i in 0 until kitchenPrinterList.size) {
+                                kitchenPrinterList[i].orderTypes.forEach {
+                                    Log.e(TAG, "orderTypeName:  ${it.orderTypeName}")
+                                    Log.e(TAG, "orderType:  ${it.orderType}")
 
 
-                                            if (it.orderTypeName.trim()
-                                                    .lowercase().equals(
-                                                        receiptModel?.order?.orderType?.toString()
-                                                            ?.trim()
-                                                            ?.lowercase()
-                                                    )
+                                    if (it.orderTypeId == receiptModel?.order?.orderTypeId) {
+
+
+                                        it.printerSettings.forEach {
+                                            if (it.printType.lowercase()
+                                                    .equals(KITCHEN.lowercase()) && it.autoPrinting
                                             ) {
-
-                                                it.printerSettings.forEach {
-                                                    if (it.printType.lowercase()
-                                                            .equals(KITCHEN.lowercase()) && it.autoPrinting
-                                                    ) {
-                                                        initKitchenPrinter(
-                                                            kitchenPrinterList.get(i),
-                                                            KITCHEN
-                                                        )
-
-                                                    }
-                                                }
+                                                initKitchenPrinter(
+                                                    kitchenPrinterList.get(i),
+                                                    KITCHEN
+                                                )
 
                                             }
                                         }
+
                                     }
-
-
                                 }
                             }
 
-                            if (requireArguments().getBoolean("isDineIn")) {
-                                customerPrintWholeOrder()
 
-                            } else {
-                                getCustomerPrinters(false)
-                            }
+                        }
+
+                        if (requireArguments().getBoolean("isDineIn")) {
+                            customerPrintWholeOrder()
+
+                        } else {
+                            getCustomerPrinters(false)
                         }
 
 
@@ -3336,41 +3369,25 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             builder.addTextAlign(Builder.ALIGN_CENTER)
             builder.addText(receiptModel?.order?.orderType + "\n")
             Log.e(TAG, "orderType:  ${receiptModel?.order?.orderType}")
-            if (receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER_
-                    .lowercase()
+            if (receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER_.lowercase()
+                || receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER.lowercase()
             ) {
-                if (receiptModel?.order?.deliveryType?.lowercase() == "Pickup".lowercase() || receiptModel?.order?.deliveryType?.lowercase() == "Delivery".lowercase()) {
 
-                    builder.addFeedLine(1)
 
-                    builder.addTextFont(Builder.FONT_E)
+                builder.addFeedLine(1)
 
-                    builder.addTextLang(Builder.LANG_EN)
-                    builder.addTextSize(2, 2)
-                    builder.addTextStyle(
-                        Builder.FALSE,
-                        Builder.FALSE,
-                        Builder.FALSE,
-                        Builder.COLOR_1
-                    )
-                    builder.addTextAlign(Builder.ALIGN_CENTER)
-                    builder.addText(receiptModel?.order?.deliveryType + "\n")
-                } else {
-                    builder.addFeedLine(1)
+                builder.addTextFont(Builder.FONT_E)
 
-                    builder.addTextFont(Builder.FONT_E)
-
-                    builder.addTextLang(Builder.LANG_EN)
-                    builder.addTextSize(2, 2)
-                    builder.addTextStyle(
-                        Builder.FALSE,
-                        Builder.FALSE,
-                        Builder.FALSE,
-                        Builder.COLOR_1
-                    )
-                    builder.addTextAlign(Builder.ALIGN_CENTER)
-                    builder.addText("Delivery" + "\n")
-                }
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(2, 2)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addText(receiptModel?.order?.deliveryType + "\n")
 
 
             }
@@ -4334,8 +4351,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 addBuilderText(builder, receiptModel?.order?.orderType.toString())
             }
+            var tmps = "Open Order".toString().trim()
+                .toString().lowercase()
+            Log.e(TAG,"LowerCAse ${tmps.trimmedLength()}")
 
-            if (receiptModel?.order?.orderType?.trim().toString().lowercase() == "Open Order".trim()
+            if (receiptModel?.order?.orderType.toString().lowercase() == "OpenOrder".trim()
+                    .toString().lowercase() || receiptModel?.order?.orderType.toString().lowercase() == "Open Order".trim()
                     .toString().lowercase()
             ) {
                 builder.addFeedLine(1)

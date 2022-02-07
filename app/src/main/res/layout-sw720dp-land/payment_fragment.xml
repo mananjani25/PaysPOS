@@ -162,7 +162,7 @@
                         android:layout_weight="1.4"
                         android:paddingVertical="@dimen/_10sdp"
                         android:background="?attr/selectableItemBackground"
-                        android:gravity="start"
+                        android:gravity="center"
                         android:textColor="@color/btnColorDark_"
                         android:textSize="@dimen/_6mdpi"
                         />
@@ -255,9 +255,8 @@
                         android:layout_gravity="center"
                         android:layout_weight="1.4"
                         android:paddingVertical="@dimen/_10sdp"
-                        android:paddingStart="@dimen/_1sdp"
                         android:background="?attr/selectableItemBackground"
-                        android:gravity="start"
+                        android:gravity="center"
                         android:textColor="@color/btnColorDark_"
                         android:textSize="@dimen/_6mdpi"
                         />
@@ -267,7 +266,10 @@
                         android:layout_height="match_parent"
                         android:layout_weight="4.8" />
 
-                    <include layout="@layout/right_side_arrow" />
+                   <include layout="@layout/right_side_arrow"
+                       android:layout_weight="0.3"
+                       android:layout_width="0dp"
+                       android:layout_height="match_parent"/>
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
