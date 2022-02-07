@@ -5,6 +5,7 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,7 +22,9 @@ import com.android.pos.databinding.FragmentLoginBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -74,9 +77,25 @@ class LoginFragment : Fragment() {
         }
 
         binding.terminalId.text = getDeviceId()
+        firebaseToken()
         prefProvider.setValue(Constants.UNIQUE_ID, binding.terminalId.text.toString().trim())
 
         return binding.root
+    }
+
+    private fun firebaseToken() {
+
+        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Log.w("FirebaseMessaging", "Fetching FCM registration token failed", task.exception)
+                return@OnCompleteListener
+            }
+
+            // Get new FCM registration token
+            val token = task.result
+
+            Log.e("FirebaseMessaging Token", token)
+        })
     }
 
     private fun copy() {

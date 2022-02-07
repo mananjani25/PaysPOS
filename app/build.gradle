@@ -82,6 +82,8 @@ dependencies {
     implementation 'com.intuit.sdp:sdp-android:1.0.6'
 
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'com.google.firebase:firebase-messaging-ktx:23.0.0'
+
 
     //Navigation
     def nav_version = "2.3.5"
@@ -158,9 +160,12 @@ dependencies {
 
     //firebase crashanalytics
     implementation 'com.google.firebase:firebase-crashlytics:18.2.7'
-    implementation 'com.google.firebase:firebase-analytics:20.0.2'
     implementation 'com.google.firebase:firebase-crash:16.2.1'
+
+
     implementation platform('com.google.firebase:firebase-bom:29.0.4')
+    implementation 'com.google.firebase:firebase-analytics-ktx'
+
 
     implementation 'com.testfairy:testfairy-android-sdk:1.+@aar'
 }
