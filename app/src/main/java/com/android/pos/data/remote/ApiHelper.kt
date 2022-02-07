@@ -422,8 +422,8 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun phoneReceipt(data: HashMap<String, String>) =
         getResult { apiService.phoneReceipt(data) }
 
-    suspend fun assignCustomerOrder(orderId: Int, customerId: Int, newPos: Int) =
-        getResult { apiService.assignCustomerOrder(orderId, customerId, newPos) }
+    suspend fun assignCustomerOrder(orderId: Int, customerId: Int, newPos: Int,paymentId: Int,finalrewards:Int) =
+        getResult { apiService.assignCustomerOrder(orderId, customerId, newPos,paymentId,finalrewards) }
 
     suspend fun getOpenOrders(param1: String) =
         getResult { apiService.getOpenOrders(param1) }

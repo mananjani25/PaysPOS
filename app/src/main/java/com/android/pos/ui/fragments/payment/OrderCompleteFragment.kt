@@ -35,6 +35,7 @@ import com.android.pos.data.remote.Constants.KITCHEN
 import com.android.pos.data.remote.Constants.LARGE
 import com.android.pos.data.remote.Constants.OPEN_ORDER
 import com.android.pos.data.remote.Constants.OPEN_ORDER_
+import com.android.pos.data.remote.Constants.PAYMENT_ID
 import com.android.pos.data.remote.Constants.PRINT_DATA_DINE_IN
 import com.android.pos.data.remote.Constants.SAVE_SPLIT_BUNDLE
 import com.android.pos.data.remote.Constants.SUB_TOTAL
@@ -504,8 +505,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             if (result != null) {
                 isFromCustomer = true
                 //  Log.e("request_key_customer", result.first_name)
-
-                result.id?.let { viewModel.assignCustomer(orderID, it) }
+                val payment_id = prefProvider.getValueInt(PAYMENT_ID, 0)
+                val final_Reward = result.final_reward
+                result.id?.let { viewModel.assignCustomer(orderID, it, payment_id, final_Reward!!) }
             }
         }
 
@@ -2938,6 +2940,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 bundle.putDouble("totalDiscount", totalDiscount)
                 bundle.putDouble("divideCashDiscount", totalDiscount)
                 bundle.putDouble("totalTax", totalTaxAmount)
+                prefProvider.setValueInt(PAYMENT_ID, 0)
                 navController.previousBackStackEntry?.savedStateHandle?.set("data", bundle)
                 navController.popBackStack()
             } else {
@@ -2958,6 +2961,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 bundle.putBoolean("isCustomCash", isCustomCash)
                 Log.e(TAG, "ORDER_ID:  ${prefProvider.getValueInt("ORDER_ID", -1)}")
                 saveDataInPrefrences()
+                prefProvider.setValueInt(PAYMENT_ID, 0)
                 navController.previousBackStackEntry?.savedStateHandle?.set("data", bundle)
                 navController.popBackStack()
             }
@@ -4353,10 +4357,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
             var tmps = "Open Order".toString().trim()
                 .toString().lowercase()
-            Log.e(TAG,"LowerCAse ${tmps.trimmedLength()}")
+            Log.e(TAG, "LowerCAse ${tmps.trimmedLength()}")
 
             if (receiptModel?.order?.orderType.toString().lowercase() == "OpenOrder".trim()
-                    .toString().lowercase() || receiptModel?.order?.orderType.toString().lowercase() == "Open Order".trim()
+                    .toString().lowercase() || receiptModel?.order?.orderType.toString()
+                    .lowercase() == "Open Order".trim()
                     .toString().lowercase()
             ) {
                 builder.addFeedLine(1)
@@ -4716,6 +4721,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         prefProvider.setValue("PaidAmount", "")
         prefProvider.setValue(TOTAL_PRICE_DINEIN, "")
         prefProvider.setValue(SUB_TOTAL_DINEIN, "")
+        prefProvider.setValueInt(PAYMENT_ID, 0)
         prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE_DINEIN, "")
         prefProvider.setValue(Constants.TOTAL_DISCOUNT_DINEIN, "")
         prefProvider.setValue(Constants.TIPS_AMOUNT_DINEIN, "")
@@ -4737,7 +4743,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         prefProvider.setValue(Constants.TAX_CHARGE, "")
         prefProvider.setValue(Constants.SERVICE_CHARGE, "")
         prefProvider.setValueInt("ORDER_ID", -1)
-
+        prefProvider.setValueInt(PAYMENT_ID, 0)
         prefProvider.setValue(Constants.TOTAL_PRICE_ACTUAL, "0.0")
         prefProvider.setValue(Constants.SUB_TOTAL_ACTUAL, "0.0")
         prefProvider.setValue(Constants.TOTAL_DISCOUNT_ACTUAL, "0.0")

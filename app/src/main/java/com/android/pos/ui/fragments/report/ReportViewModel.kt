@@ -54,15 +54,11 @@ class ReportViewModel @Inject constructor(
         val sdf = SimpleDateFormat(myFormat, Locale.getDefault())
 
 
-        startDate.value = sdf.format(myCalendar.time) + " " + SimpleDateFormat(
-            "hh:mm a",
-            Locale.getDefault()
-        ).format(Date(System.currentTimeMillis() - 60000 * 30))
-
+        startDate.value = sdf.format(myCalendar.time) + " " + "12:00 AM"
         endDate.value = sdf.format(myCalendar.time) + " " + SimpleDateFormat(
             "hh:mm a",
             Locale.getDefault()
-        ).format(Date())
+        ).format(Date(System.currentTimeMillis() + 300000))
 
     }
     fun datePicker(selectPicker: Boolean) {

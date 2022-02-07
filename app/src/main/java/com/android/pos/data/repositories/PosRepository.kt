@@ -645,12 +645,16 @@ class PosRepository @Inject constructor(
     suspend fun assignCustomerOrder(
         orderId: Int,
         customerId: Int,
-        newPos: Int
+        newPos: Int,
+        paymentId: Int,
+        finalrewards: Int
     ) =
         apiHelperNew.assignCustomerOrder(
             orderId,
             customerId,
-            newPos
+            newPos,
+            paymentId,
+            finalrewards
         )
 
     suspend fun deleteTerminalsFromDb() =

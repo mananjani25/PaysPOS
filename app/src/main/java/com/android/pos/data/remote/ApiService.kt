@@ -592,7 +592,9 @@ interface ApiService {
         @Path("id") orderId: Int,
         @Query("customer_id") customer_id: Int,
         @Query("customer_address_id") customer_address_id: Int,
-    ): BaseResponse
+        @Query("payment_id") payment_id: Int,
+        @Query("finalrewards") finalrewards: Int,
+    ): CustomerAssignedResponse
 
     @GET(OPEN_ORDERS)
     suspend fun getOpenOrders(@Query("payment_status") payment_status: String): OpenOrderResponse

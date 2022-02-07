@@ -538,6 +538,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                 /*    AlertUtils.showCustomAlertWithListenerWithOK(requireContext(), it) { _, _ ->*/
                 gotoPay()
 
+
                 /*}*/
 
             }
@@ -550,6 +551,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
 
 
         orderId?.let { prefProvider.setValueInt("ORDER_ID", it) }
+
         when {
             paymentType == "Card" -> {
                 if (isSplitByNo) {

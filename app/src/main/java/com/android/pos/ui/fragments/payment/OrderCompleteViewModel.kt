@@ -10,7 +10,9 @@ import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.model.SplitDetailListModel
 import com.android.pos.data.model.requestModel.CreateNoteRequest
 import com.android.pos.data.model.responseModel.BaseResponse
+import com.android.pos.data.model.responseModel.CustomerAssignedResponse
 import com.android.pos.data.model.responseModel.PrinterResponse
+import com.android.pos.data.remote.Constants
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
@@ -18,6 +20,7 @@ import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import retrofit2.Response
 import javax.inject.Inject
 
 
@@ -36,8 +39,8 @@ class OrderCompleteViewModel @Inject constructor(
     private val _data = MutableLiveData<Event<BaseResponse?>>()
     val data: LiveData<Event<BaseResponse?>> = _data
 
-    private val _data1 = MutableLiveData<Event<BaseResponse?>>()
-    val data1: LiveData<Event<BaseResponse?>> = _data1
+    private val _data1 = MutableLiveData<Event<CustomerAssignedResponse?>>()
+    val data1: LiveData<Event<CustomerAssignedResponse?>> = _data1
 
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
@@ -123,31 +126,37 @@ class OrderCompleteViewModel @Inject constructor(
         return posRepository.getKitchenPrinters()
     }
 
-    fun assignCustomer(orderID: Int, custId: Int) {
+    fun assignCustomer(orderID: Int, custId: Int, payment_id: Int, final_Reward: Int) {
 
         viewModelScope.launch {
 
-            val resource = posRepository.assignCustomerOrder(orderID, custId, 0)
+            val resource: Resource<CustomerAssignedResponse> =
+                posRepository.assignCustomerOrder(orderID, custId, 0, payment_id, final_Reward)
+                        as Resource<CustomerAssignedResponse>
 
             when (resource.status) {
                 Status.SUCCESS -> {
                     _showProgress.value = Event(false)
-                    resource.data.let { baseResponse ->
-                        if (baseResponse?.status == 200) {
-
-                            resource.data?.let { response ->
-
-                                _data1.value = Event(response)
-
+                    resource.data.let { response ->
+                        if (response?.status == 200) {
+                            resource.data.let {
+                                if (it?.data?.order?.customer != null) {
+                                    posRepository.updateFinalRewards(
+                                        it.data.order.customer.final_reward.toInt(),
+                                        it.data.order.customer.id
+                                    )
+                                }
                             }
+                            prefProvider.setValueInt(Constants.PAYMENT_ID, 0)
+                            _data1.value = Event(resource.data)
                         } else {
-                            _snackbarText.value = Event(resource.message)
+                            _snackbarText.value = Event(resource.data)
                         }
                     }
                 }
 
                 Status.ERROR -> {
-                    _snackbarText.value = Event(resource.message)
+                    _snackbarText.value = Event(resource.data)
                     _showProgress.value = Event(false)
                 }
 

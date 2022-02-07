@@ -13,6 +13,7 @@ import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
+import com.android.pos.data.remote.Constants.PAYMENT_ID
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
@@ -111,7 +112,12 @@ class PaymentViewModel @Inject constructor(
                                     )
                                 }
 
-
+                                if (createOrderResponse.data.order.payments.isNotEmpty()) {
+                                    prefProvider.setValueInt(
+                                        PAYMENT_ID,
+                                        createOrderResponse.data.order.payments[createOrderResponse.data.order.payments.size - 1].id
+                                    )
+                                }
 
                                 if (orderRequestModel.order.openOrderType == Constants.OPEN_ORDER
                                     || orderRequestModel.order.openOrderType == Constants.OPEN_ORDER_
@@ -208,6 +214,12 @@ class PaymentViewModel @Inject constructor(
                                 posRepository.deleteCart()
                             }
                             resource.data?.let { createOrderResponse ->
+                                if (createOrderResponse.data.order.payments.isNotEmpty()) {
+                                    prefProvider.setValueInt(
+                                        PAYMENT_ID,
+                                        createOrderResponse.data.order.payments[createOrderResponse.data.order.payments.size - 1].id
+                                    )
+                                }
 
                                 if (onlySave) {
                                     _data.value = Event(createOrderResponse)
@@ -996,7 +1008,7 @@ class PaymentViewModel @Inject constructor(
 
         val orderItemsAttributeList: ArrayList<OrderItemsAttribute> =
             arrayListOf()
-        Log.e(TAG,"insideSize  ${cartModel.items?.size}")
+        Log.e(TAG, "insideSize  ${cartModel.items?.size}")
 
         cartModel.items?.forEach { item ->
 
@@ -1472,6 +1484,12 @@ class PaymentViewModel @Inject constructor(
                         if (response?.status == 200) {
 
                             resource.data?.let { createOrderResponse ->
+                                if (createOrderResponse.data.order.payments.isNotEmpty()) {
+                                    prefProvider.setValueInt(
+                                        PAYMENT_ID,
+                                        createOrderResponse.data.order.payments[createOrderResponse.data.order.payments.size - 1].id
+                                    )
+                                }
 
                                 if (onlySave) {
                                     _data.value = Event(createOrderResponse)
