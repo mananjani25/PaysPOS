@@ -1,10 +1,11 @@
 package com.android.pos.data.dao
 
 import androidx.lifecycle.LiveData
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
 import com.android.pos.data.entities.TaxData
-import com.android.pos.data.model.responseModel.CreateTaxResponse
-import com.android.pos.data.model.responseModel.GetTaxResponse
 
 
 @Dao
@@ -21,6 +22,9 @@ interface TaxDao {
 
     @get:Query("select * from TbTax")
     val allTax: LiveData<List<TaxData>>
+
+    @get:Query("select * from TbTax where TbTax.isActive = 1")
+    val enableTax: LiveData<List<TaxData>>
 
     @Query("select * from TbTax")
     fun allTaxList(): List<TaxData>

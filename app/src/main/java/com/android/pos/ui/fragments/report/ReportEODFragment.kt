@@ -17,6 +17,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.android.pos.R
+import com.android.pos.data.entities.Employee
 import com.android.pos.data.model.responseModel.VenueDetailsResponse
 import com.android.pos.databinding.FragmentReportEodBinding
 import com.android.pos.ui.adapter.*
@@ -28,6 +29,7 @@ import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.*
 import com.android.pos.utils.statusUtils.Status
 import com.google.android.material.snackbar.Snackbar
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.*
@@ -36,6 +38,7 @@ import kotlin.math.abs
 @AndroidEntryPoint
 class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
+    private var defaultEmployeePos: Int = 0
     private lateinit var binding: FragmentReportEodBinding
     private val viewModel by viewModels<ReportEODViewModel>()
     private val viewModelClockOut by viewModels<ClockInOwnerViewModel>()
@@ -71,6 +74,8 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
     private val salesOrderDetailsAdapter by lazy { SalesOrderDetailsAdapter() }
 
     private val wastage_detailsAdapter by lazy { PaymentDetailsAdapter(hideRefund = true) }
+
+    private lateinit var teamEmployeeListGlobal: ArrayList<Employee>
 
     val myCalendar = Calendar.getInstance()
     val myCalendar1 = Calendar.getInstance()
@@ -315,19 +320,19 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
         binding.rvTaxDetails.adapter = taxDetailsAdapter
         binding.rvDiscountDetails.adapter = discountDetailsAdapter
         binding.rvSalesTaxSummary.adapter = salesTaxSummaryAdapter
-        binding.rvCashEventSummary.adapter = cashEventSummaryAdapter
-        binding.rvCreditTipAudit.adapter = creditTipAuditAdapter
+        binding.rvRefundAndVoid.adapter = cashEventSummaryAdapter
+//        binding.rvCreditTipAudit.adapter = creditTipAuditAdapter
         binding.rvTotalPayments.adapter = totalPaymentsAdapter
         binding.rvCashPayments.adapter = cashPaymentsAdapter
-        binding.rvEmployeeData.adapter = employeeAdapter
+//        binding.rvEmployeeData.adapter = employeeAdapter
         binding.rvPaymentDetails.adapter = paymentDetailsAdapter
-        binding.rvEmpReport.adapter = employeeReportsAdapter
+//        binding.rvEmpReport.adapter = employeeReportsAdapter
         binding.rvOtherDetails.adapter = otherDetailsAdapter
         binding.rvServiceChargeDetails.adapter = serviceChargeDetailsAdapter
         binding.rvTipsDetails.adapter = tipDetailsAdapter
         binding.rvCashLog.adapter = cashLogAdapter
 
-        binding.rvWastageDetails.adapter = wastage_detailsAdapter
+//        binding.rvWastageDetails.adapter = wastage_detailsAdapter
 
         binding.rvSalesDetails.adapter = salesOrderDetailsAdapter
     }
@@ -395,6 +400,9 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     headerView = null,
                     visible = it.salesAndTaxesSummary.isNotEmpty()
                 )
+                if (it.salesAndTaxesSummary.isEmpty()) {
+                    binding.headerSalesTaxSummary.gone()
+                }
                 salesTaxSummaryAdapter.add(it.salesAndTaxesSummary)
 
 
@@ -476,29 +484,17 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 )
                 creditPaymentDetailsAdapter.add(it.totalCreditPaymentDetails)
 
-//                showHide(
-//                    rvMedia = binding.rvCreditTipAudit,
-//                    textView = binding.txtCreditTipAudit,
-//                    headerView = null,
-//                    visible = it.creditTipAudit.isNotEmpty()
-//                )
-//                creditTipAuditAdapter.add(it.creditTipAudit)
 
                 showHide(
-                    rvMedia = binding.rvCashEventSummary,
+                    rvMedia = binding.rvRefundAndVoid,
                     textView = binding.txtCashEventSummary,
                     headerView = null,
                     visible = it.refundAndVoidDetails.isNotEmpty()
                 )
+                if (it.refundAndVoidDetails.isEmpty()) {
+                    binding.headerRefundsVoids.gone()
+                }
                 cashEventSummaryAdapter.add(it.refundAndVoidDetails)
-
-                showHide(
-                    rvMedia = binding.rvWastageDetails,
-                    textView = null,
-                    headerView = null,
-                    visible = it.wastageDetails.isNotEmpty()
-                )
-                wastage_detailsAdapter.add(it.wastageDetails)
 
 
                 showHide(
@@ -558,25 +554,55 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     private fun loadTerminals() {
 
-        viewModel.getTerminalListDatabse.observe(viewLifecycleOwner) {
+        viewModel.employeeData.observe(viewLifecycleOwner, {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
                         ProgressUtils.dismissProgressDialog()
-                        resource.data?.let { terminalList ->
-                            terminalListGlobal =
-                                terminalList as ArrayList<VenueDetailsResponse.Data.Terminal>
-                            terminalListGlobal.add(
-                                0, VenueDetailsResponse.Data.Terminal(
-                                    createdAt = "", id = 0, locationId = 0, masterTerminal = false,
-                                    name = "All Terminal", uniqId = "", updatedAt = ""
+                        resource.data?.let { employeeList ->
+                            teamEmployeeListGlobal = employeeList as ArrayList<Employee>
+
+                            Log.e("teamEmployeeListGlobal", Gson().toJson(teamEmployeeListGlobal))
+
+                            val isPresent =
+                                teamEmployeeListGlobal.any { it.name == "All Team Members" }
+                            if (!isPresent) {
+                                //  teamEmployeeListGlobal.removeAt(0)
+                                teamEmployeeListGlobal.add(
+                                    0,
+                                    Employee(
+                                        "",
+                                        "",
+                                        -1,
+                                        false,
+                                        "",
+                                        -1,
+                                        "All Team Members",
+                                        "",
+                                        "",
+                                        "",
+                                        false,
+                                        -1,
+                                        "",
+                                        -1,
+                                        0.0,
+                                        false
+                                    )
                                 )
-                            )
+                            }
 
-                            val roleName = terminalListGlobal.map { it.name }
+                            teamEmployeeListGlobal.forEachIndexed { index, employee ->
 
-                            setUpTerminalSpinnerAdapter(roleName as ArrayList<String>)
+                                if (viewModel.employeeId() == employee.id) {
+                                    defaultEmployeePos = index
+                                    return@forEachIndexed
+                                }
 
+                            }
+
+                            val roleName = teamEmployeeListGlobal.map { it.name }
+
+                            setUpEmployeeSpinnerAdapter(roleName as ArrayList<String>)
                         }
                     }
                     Status.ERROR -> {
@@ -589,10 +615,10 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     }
                 }
             }
-        }
+        })
     }
 
-    private fun setUpTerminalSpinnerAdapter(terminalList: ArrayList<String>) {
+    private fun setUpEmployeeSpinnerAdapter(terminalList: ArrayList<String>) {
         val spinnerAdapter = ArrayAdapter(
             requireActivity(),
             R.layout.row_spinner,
@@ -602,20 +628,33 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
         spinnerAdapter.setDropDownViewResource(R.layout.row_spinner)
         binding.spTerminals.adapter = spinnerAdapter
 
-        binding.spTerminals.setSelection(0)
+        binding.spTerminals.setSelection(defaultEmployeePos)
 
     }
 
+    private fun getEmployeeId(position: Int): Int? {
+        return if (this::teamEmployeeListGlobal.isInitialized) {
+
+            if (position == -1) {
+                teamEmployeeListGlobal?.get(0)?.id
+            } else {
+                teamEmployeeListGlobal?.get(position)?.id
+            }
+        } else {
+            -1
+        }
+    }
+
+
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
 
-        if (terminalListGlobal.size > 0 && position > 0 && position < terminalListGlobal.size) {
-            viewModel.selectedTerminalId = terminalListGlobal[position].id.toString()
+        if (teamEmployeeListGlobal.size > 0 && position > 0 && position < teamEmployeeListGlobal.size) {
+            viewModel.selectedTerminalId = teamEmployeeListGlobal[position].id.toString()
+            Log.e("selectedEmpId", teamEmployeeListGlobal[position].id.toString())
         } else {
             viewModel.selectedTerminalId = ""
         }
-        /*viewModel.apiCallTimeSheet(
-            getTerminalId(binding.spTerminals.selectedItemPosition).toString()
-        )*/
+
         viewModel.getReportSummary("")
 
     }

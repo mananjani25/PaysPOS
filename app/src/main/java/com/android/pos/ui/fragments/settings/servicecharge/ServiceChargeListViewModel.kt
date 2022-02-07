@@ -5,11 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.data.entities.TbServiceCharge
-import com.android.pos.data.model.responseModel.CreateDiscountResponse
 import com.android.pos.data.model.responseModel.CreateServiceChargeResponse
-import com.android.pos.data.model.responseModel.CreateTaxResponse
-import com.android.pos.data.model.responseModel.GetServiceChargeResponse
-import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.TaxServiceChargeRepository
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Status
@@ -31,8 +27,8 @@ class ServiceChargeListViewModel @Inject constructor(
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
-    private val _notifydata = MutableLiveData<Event<Boolean?>>()
-    val notifydata: LiveData<Event<Boolean?>> = _notifydata
+    private val _notifydata = MutableLiveData<Event<CreateServiceChargeResponse.Data?>>()
+    val notifydata: LiveData<Event<CreateServiceChargeResponse.Data?>> = _notifydata
 
 
     val getDiscountList = taxServiceChargeRepository.getServiceChargeList()
@@ -58,11 +54,8 @@ class ServiceChargeListViewModel @Inject constructor(
                     resource.data.let {
                         if (it?.status == 200) {
                             resource.data?.let { baseResponse ->
-                                taxServiceChargeRepository.serChargeActiveDatabase(
-                                    serChargeItem.id,
-                                    serChargeItem.isEnabled
-                                )
-                                _notifydata.value = Event(true)
+
+                                _notifydata.value = Event(baseResponse.data)
 
                             }
                         } else {
@@ -120,6 +113,33 @@ class ServiceChargeListViewModel @Inject constructor(
                     _showProgress.value = Event(true)
                 }
             }
+        }
+    }
+
+    fun updateData(data: CreateServiceChargeResponse.Data) {
+
+        viewModelScope.launch {
+            taxServiceChargeRepository.serChargeActiveDatabase(
+                data.id,
+                data.isEnabled
+            )
+        }
+
+    }
+
+    fun updateData(
+        serviceChargeList: ArrayList<TbServiceCharge>,
+        data: CreateServiceChargeResponse.Data
+    ) {
+
+        serviceChargeList.forEach {
+            if (data.id == it.id) {
+                it.isEnabled = data.isEnabled
+            } else
+                it.isEnabled = false
+        }
+        viewModelScope.launch {
+            taxServiceChargeRepository.addServiceCharges(serviceChargeList)
         }
     }
 }

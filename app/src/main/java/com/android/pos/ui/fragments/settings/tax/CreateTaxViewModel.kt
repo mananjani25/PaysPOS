@@ -9,7 +9,6 @@ import com.android.pos.R
 import com.android.pos.data.entities.TaxData
 import com.android.pos.data.model.requestModel.CreateTaxRequestModel
 import com.android.pos.data.model.responseModel.CreateTaxResponse
-import com.android.pos.data.model.responseModel.GetTaxResponse
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.repositories.TaxServiceChargeRepository
 import com.android.pos.di.PrefProvider
@@ -92,11 +91,14 @@ class CreateTaxViewModel @Inject constructor(
         val value = createTaxDetails.value
         if (TextUtils.isEmpty(value?.name?.trim())) {
             _snackbarText.value = Event(R.string.tax_name_validate)
-        } else if (TextUtils.isEmpty(value?.rate?.toString()?.trim()) || value?.rate == 0.00) {
+        } else if (TextUtils.isEmpty(
+                value?.rate?.toString()?.trim()
+            ) || value?.rate == 0.0 || value?.rate == 0.00
+        ) {
             _snackbarText.value = Event(R.string.tax_rate_validate)
-        } else if (TextUtils.isEmpty(itemPricingViewModel.trim())) {
+        } /*else if (TextUtils.isEmpty(itemPricingViewModel.trim())) {
             _snackbarText.value = Event(R.string.item_pricing_validate)
-        } else {
+        } */ else {
             _showProgress.value = Event(true)
 
 
@@ -107,7 +109,7 @@ class CreateTaxViewModel @Inject constructor(
                 isDefault = enableTaxViewModel
                 isCustomAmount = customAmountViewModel
                 itemIds = itemIdsViewModel
-                itemPricing = itemPricingViewModel
+                itemPricing = /*itemPricingViewModel*/ "Add Tax To Item Price"
                 taxType = taxTypeViewModel
                 isActive = isEnableTax
                 locationId = prefProvider.getValueInt(LOCATION_ID, -1)
@@ -141,20 +143,20 @@ class CreateTaxViewModel @Inject constructor(
 
                                 resource.data?.let { createTaxResponse ->
                                     val tax = createTaxResponse.data
-                                       /* TaxData(
-                                            name = createTaxResponse.data.name,
-                                            id = createTaxResponse.data.id,
-                                            locationId = createTaxResponse.data.locationId,
-                                            rate = createTaxResponse.data.rate,
-                                            taxType = createTaxResponse.data.taxType,
-                                            isActive = createTaxResponse.data.isActive,
-                                            isDefault = createTaxResponse.data.isDefault,
-                                            isCustomAmount = createTaxResponse.data.isCustomAmount,
-                                            itemPricing = createTaxResponse.data.itemPricing,
-                                            itemIds = createTaxResponse.data.itemIds,
-                                            createdAt = createTaxResponse.data.createdAt,
-                                            updatedAt = createTaxResponse.data.updatedAt
-                                        )*/
+                                    /* TaxData(
+                                         name = createTaxResponse.data.name,
+                                         id = createTaxResponse.data.id,
+                                         locationId = createTaxResponse.data.locationId,
+                                         rate = createTaxResponse.data.rate,
+                                         taxType = createTaxResponse.data.taxType,
+                                         isActive = createTaxResponse.data.isActive,
+                                         isDefault = createTaxResponse.data.isDefault,
+                                         isCustomAmount = createTaxResponse.data.isCustomAmount,
+                                         itemPricing = createTaxResponse.data.itemPricing,
+                                         itemIds = createTaxResponse.data.itemIds,
+                                         createdAt = createTaxResponse.data.createdAt,
+                                         updatedAt = createTaxResponse.data.updatedAt
+                                     )*/
 
                                     taxServiceChargeRepository.createTaxDatabase(tax)
 

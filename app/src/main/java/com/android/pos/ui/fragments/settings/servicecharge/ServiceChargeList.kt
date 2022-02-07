@@ -12,7 +12,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.entities.TbServiceCharge
-import com.android.pos.data.model.responseModel.GetServiceChargeResponse
 import com.android.pos.databinding.ServiceChargeFragmentBinding
 import com.android.pos.ui.adapter.ServiceChargeListAdapter
 import com.android.pos.utils.AlertUtils
@@ -145,7 +144,8 @@ class ServiceChargeList : Fragment() {
     private fun notifyAdapter() {
         viewModel.notifydata.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
-                serviceChargeListadapter.notifyDataSetChanged()
+
+                viewModel.updateData(serviceChargeListadapter.serviceChargeList, it)
             }
         })
     }
@@ -176,14 +176,9 @@ class ServiceChargeList : Fragment() {
 
         viewModel.data.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
-                /* AlertUtils.showAlert(requireActivity(), it.message)
-                 var adapter = binding.rvTaxList.adapter as TaxListAdapter
-                 var list = adapter.taxList
-                 list.remove(taxObject)
-                 adapter.taxList = list
-                 adapter.notifyDataSetChanged()*/
 
-                AlertUtils.showCustomAlert(requireActivity(), it.message)
+
+            AlertUtils.showCustomAlert(requireActivity(), it.message)
                 discountListUpdateDelete.remove(serviceChargeObject)
                 serviceChargeListadapter.addServiceCharge(discountListUpdateDelete)
                 serviceChargeListadapter.notifyItemRemoved(position)

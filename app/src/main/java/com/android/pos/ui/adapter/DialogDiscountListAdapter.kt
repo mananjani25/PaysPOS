@@ -7,12 +7,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.entities.TbDiscount
 import com.android.pos.databinding.ViewDialogDiscountListBinding
+import com.android.pos.databinding.ViewDialogDiscountListUpdateBinding
 
 class DialogDiscountListAdapter : RecyclerView.Adapter<DialogDiscountListAdapter.MyViewHolder>() {
     var selectedPosition = -1
     private lateinit var listner: DiscountInterface
 
-    inner class MyViewHolder(private val binding: ViewDialogDiscountListBinding) :
+    inner class MyViewHolder(private val binding: ViewDialogDiscountListUpdateBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(model: TbDiscount, position: Int) {
             if (selectedPosition == position) {
@@ -61,7 +62,7 @@ class DialogDiscountListAdapter : RecyclerView.Adapter<DialogDiscountListAdapter
         viewType: Int
     ): DialogDiscountListAdapter.MyViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val binding = ViewDialogDiscountListBinding.inflate(inflater, parent, false)
+        val binding = ViewDialogDiscountListUpdateBinding.inflate(inflater, parent, false)
         return MyViewHolder(binding)
 
     }

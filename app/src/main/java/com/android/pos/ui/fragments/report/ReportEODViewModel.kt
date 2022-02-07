@@ -1,12 +1,16 @@
 package com.android.pos.ui.fragments.report
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.data.model.responseModel.EodReportResponse
 import com.android.pos.data.model.responseModel.report.Terminal
+import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
+import com.android.pos.data.remote.Constants.LOCATION_ID
+import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
@@ -23,6 +27,7 @@ class ReportEODViewModel @Inject constructor(
     private val prefProvider: PrefProvider
 ) : ViewModel() {
 
+    val locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 0)
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
@@ -42,6 +47,8 @@ class ReportEODViewModel @Inject constructor(
 
     val getEmployeeEmail = posRepository.getEmployeeEmail()
 
+    val employeeData = posRepository.getEmployeeListLocationWiseDatabse(locationId)
+
     var selectPicker1: Boolean = false
     val startDate = MutableLiveData<String>()
 
@@ -49,6 +56,9 @@ class ReportEODViewModel @Inject constructor(
     var selectedTerminalId = ""
     val terminalTitle = Terminal("Terminal", -9.9)
 
+    fun employeeId(): Int {
+        return prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+    }
 
     fun setCurrentDate(myCalendar: Calendar) {
         val myFormat = "MM/dd/yyyy" //In which you need put here
@@ -82,12 +92,15 @@ class ReportEODViewModel @Inject constructor(
         _showProgress.value = Event(true)
         viewModelScope.launch {
 
+            Log.e("startDate", startDate.value ?: "")
+            Log.e("endDate", endDate.value ?: "")
+
             val resourceReport =
                 posRepository.getReportEOD(
                     startDate = startDate.value ?: "",
                     endDate = endDate.value ?: "",
-                    terminalId = selectedTerminalId,
-                    employee_id = prefProvider.getValueInt(EMPLOYEE_ID, 0).toString(),
+                    terminalId = prefProvider.getValueInt(TERMINAL_ID, 0).toString(),
+                    employee_id = selectedTerminalId,
                     email = emailId
 
                 )

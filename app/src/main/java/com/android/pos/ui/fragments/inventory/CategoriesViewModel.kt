@@ -26,6 +26,8 @@ class CategoriesViewModel @Inject constructor(
     val unhideCategories = posRepository.unhideCategoryList()
     val taxList = taxServiceChargeRepository.getTaxList()
 
+    val enableTaxes = taxServiceChargeRepository.enableTaxes()
+
     fun _getCategories(): LiveData<Resource<List<TbCategory>>> {
         return posRepository.getCategoryList()
     }

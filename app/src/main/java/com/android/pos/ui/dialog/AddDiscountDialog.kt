@@ -11,6 +11,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.pos.R
 import com.android.pos.data.entities.TbDiscount
 import com.android.pos.data.entities.TbItem
@@ -81,6 +82,10 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
 
         selectedCurrency = defaultModel.discountType
+        if (selectedCurrency.isEmpty()) {
+            selectedCurrency = AMOUNT
+        }
+
         binding.edtAmount.addTextChangedListener(this)
 
         setDiscountList()
@@ -182,7 +187,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         binding.txtCurrencyPercentage.background =
             requireContext().resources.getDrawable(R.drawable.background_discount_unselected)
 
-
+        binding.edtAmount.setText(binding.edtAmount.text.toString().trim())
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
@@ -195,6 +200,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         binding.txtCurrencyPercentage.background =
             requireContext().resources.getDrawable(R.drawable.background_discount_selected)
 
+        binding.edtAmount.setText(binding.edtAmount.text.toString().trim())
 
     }
 
@@ -204,6 +210,9 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
     ): View? {
         binding = DailogAddDiscountBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
+
+        binding.rvDiscountList.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         return binding.root
     }
 
@@ -302,7 +311,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
                 var a = binding.edtAmount.text.toString().toDouble()
 
-                if (isOrderDiscount) {
+                if (isOrderDiscount && selectedCurrency == PERCENTAGE) {
 
                     a = totalOrderPrice * a / 100
                 }
@@ -557,11 +566,13 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
             if (selectedCurrency == AMOUNT) {
 
-                var price = itemPrice - defaultModel.discountPrice
-//                    (((defaultModel.price + modifierPrice) - defaultModel.discountPrice) * defaultModel.itemQuantity)
+                var price = 0.0
+
 
                 if (isOrderDiscount) {
                     price = totalOrderPrice
+                } else {
+                    price = itemPrice - defaultModel.discountPrice
                 }
 
                 if (defaultModel.discountPrice == 0.0) {

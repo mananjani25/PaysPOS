@@ -97,7 +97,7 @@ class TaxesDialog : DialogFragment(), View.OnClickListener {
 
     private fun initObservers() {
 
-        viewModel.taxList.observe(viewLifecycleOwner, {
+        viewModel.enableTaxes.observe(viewLifecycleOwner, {
 
             it?.let { resource ->
                 when (resource.status) {

@@ -52,7 +52,7 @@
         <item name="android:background">@drawable/background_white_with_border</item>
     </style>
 
-    <style name="ReportItemHeaderText" parent="CustomFontSemiBold">
+    <style name="ReportItemHeaderText" parent="CustomFontBold">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_weight">1</item>
