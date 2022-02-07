@@ -3029,7 +3029,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             )
                         ) {*/
                         if (isSpilt && splitList.size == 1) {
-                            if (!requireArguments().getBoolean("isDineIn")) {
+                            if (!requireArguments().getBoolean("isDineIn")  && !requireArguments().getBoolean(
+                                "isFromActiveOrder"
+                            )) {
 
 
                                 for (i in 0 until kitchenPrinterList.size) {
@@ -3059,7 +3061,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
                             }
-                        } else if (!requireArguments().getBoolean("isDineIn") && !requireArguments().getBoolean(
+                        }
+                        /*else if (!requireArguments().getBoolean("isDineIn") && !requireArguments().getBoolean(
                                 "isFromActiveOrder"
                             )
                         ) {
@@ -3095,7 +3098,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
                         }
-
+*/
                         if (requireArguments().getBoolean("isDineIn")) {
                             customerPrintWholeOrder()
 
