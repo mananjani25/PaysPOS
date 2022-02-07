@@ -35,18 +35,20 @@
             android:layout_height="match_parent"
             android:background="@color/colorNewBorder" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
             android:id="@+id/constraintCustomer"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="3">
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:orientation="vertical">
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtCustomerReceipt"
                 style="@style/CustomFontMediumStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_20sdp"
                 android:layout_marginStart="@dimen/_5sdp"
+                android:paddingVertical="@dimen/_6sdp"
                 android:text="Customer Receipt"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_5mdpi"
@@ -66,11 +68,12 @@
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtKitReceipt"
                 style="@style/CustomFontMediumStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_20sdp"
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/_5sdp"
-                android:gravity="center"
+                android:gravity="start"
+                android:paddingVertical="@dimen/_5sdp"
                 android:text="Kitchen Receipt"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_5mdpi"
@@ -79,14 +82,18 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/viewLine" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp" />
+
+        </LinearLayout>
 
         <View
             android:layout_width="1dp"
             android:layout_height="match_parent"
             android:background="@color/colorNewBorder" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <!--<androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -123,7 +130,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/viewLine1" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>-->
 
         <View
             android:id="@+id/viewLine3"
@@ -132,46 +139,42 @@
             android:background="@color/colorNewBorder"
             android:visibility="gone" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
             android:id="@+id/constraintCustomerChkbx"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1">
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
 
             <CheckBox
                 android:id="@+id/chBoxCustomerManual2"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-
-                app:layout_constraintBottom_toTopOf="@+id/viewLine2"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:layout_height="@dimen/_20sdp"
+                android:layout_gravity="center"
+                android:gravity="center" />
 
             <View
                 android:id="@+id/viewLine2"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="@color/colorNewBorder"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/chBoxCustomerManual2" />
 
             <CheckBox
                 android:id="@+id/chBoxKitchenManual2"
                 android:layout_width="wrap_content"
-
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/_20sdp"
                 android:layout_gravity="center"
-                android:gravity="center"
 
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/viewLine2" />
+                android:gravity="center" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp" />
 
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
 
     </LinearLayout>
 </layout>

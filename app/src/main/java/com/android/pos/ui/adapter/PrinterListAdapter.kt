@@ -21,14 +21,15 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
         fun bind(model: PrinterListModel?) {
             if (list[layoutPosition].connectionType == WIFI) {
                 binding.imgConnectionType.setImageDrawable(
-                    binding.root.context.resources.getDrawable(
+                    binding.root.context.getDrawable(
                         R.drawable.ic_lan
                     )
                 )
 
             } else {
+
                 binding.imgConnectionType.setImageDrawable(
-                    binding.root.context.resources.getDrawable(
+                    binding.root.context.getDrawable(
                         R.drawable.ic_baseline_bluetooth_24
                     )
                 )

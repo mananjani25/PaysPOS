@@ -25,6 +25,8 @@ import com.android.pos.R
 import com.android.pos.data.entities.TbOrderType
 import com.android.pos.data.model.PrinterListModel
 import com.android.pos.data.model.requestModel.CreatePrinterRequestModel
+import com.android.pos.data.model.responseModel.PrinterResponse
+import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.AVAILABLE
 import com.android.pos.data.remote.Constants.BLUETOOTH
 import com.android.pos.data.remote.Constants.CUSTOMER
@@ -146,6 +148,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                 Status.SUCCESS -> {
                     ProgressUtils.dismissProgressDialog()
                     if (it.data != null) {
+                        orderTypeList.clear()
+                        orderTypeList = arrayListOf()
                         orderTypeList.addAll(it.data.toCollection(ArrayList()))
 
                     }
@@ -1140,6 +1144,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         setFragmentResultListener("request_printer_type") { requestKey: String, bundle: Bundle ->
             val data = bundle.getString("type")
             var list: ArrayList<CreatePrinterRequestModel.PrinterSettingsAttributes> = arrayListOf()
+            Log.e(TAG, "getOrderTypeList: ${Gson().toJson(orderTypeList)}")
             when (data) {
                 KITCHEN -> {
 
@@ -1983,7 +1988,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
              )
 
              builder.addText("7450 DW 51 FH AT,Suite 503")
- */
+    */
 
             //PrinterReceipt.padLine()
             builder.addFeedLine(2)
