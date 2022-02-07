@@ -1217,7 +1217,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
                 val myRequest = cartList?.let {
 
-                    viewModel.createOrderRequest(
+                    viewModel.createOrderRequestForCard(
                         it,
                         subTotalPrice,
                         cardPaymentAmount,
@@ -1270,7 +1270,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
             val myRequest = cartList?.let {
 
-                viewModel.createOrderRequest(
+                viewModel.createOrderRequestForCard(
                     it,
                     subTotalPrice,
                     cardPaymentAmount,
