@@ -3028,10 +3028,15 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 "isFromActiveOrder"
                             )
                         ) {*/
-                        if (isSpilt && splitList.size == 1) {
-                            if (!requireArguments().getBoolean("isDineIn")  && !requireArguments().getBoolean(
-                                "isFromActiveOrder"
-                            )) {
+                        if (!isSpilt || (isSpilt && splitList.size == 1)) {
+                            if (!requireArguments().getBoolean("isDineIn") && !requireArguments().getBoolean(
+                                    "isFromActiveOrder"
+                                )
+                            ) {
+                                Log.e(
+                                    TAG,
+                                    "kitchenPrinterList:  ${Gson().toJson(kitchenPrinterList)}"
+                                )
 
 
                                 for (i in 0 until kitchenPrinterList.size) {
@@ -4356,10 +4361,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
             var tmps = "Open Order".toString().trim()
                 .toString().lowercase()
-            Log.e(TAG,"LowerCAse ${tmps.trimmedLength()}")
+            Log.e(TAG, "LowerCAse ${tmps.trimmedLength()}")
 
             if (receiptModel?.order?.orderType.toString().lowercase() == "OpenOrder".trim()
-                    .toString().lowercase() || receiptModel?.order?.orderType.toString().lowercase() == "Open Order".trim()
+                    .toString().lowercase() || receiptModel?.order?.orderType.toString()
+                    .lowercase() == "Open Order".trim()
                     .toString().lowercase()
             ) {
                 builder.addFeedLine(1)
