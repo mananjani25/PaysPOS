@@ -106,7 +106,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
         getOrderType()
         navigate()
         orderUpdateTips()
-
+        setUpPaymentTypeSpinnerAdapter()
         binding.includeView.spTerminals.onItemSelectedListener = this
         binding.includeView.spRoles.onItemSelectedListener = this
         binding.includeView.spEmployees.onItemSelectedListener = this
@@ -114,7 +114,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
         binding.includeView.spTipTypes.onItemSelectedListener = this
         binding.includeView.spTransactionTypes.onItemSelectedListener = this
         setUpTipTypeSpinnerAdapter()
-        setUpPaymentTypeSpinnerAdapter()
+
 
 
         startTime = TimePickerDialog.OnTimeSetListener { view, hour, minute ->
@@ -562,7 +562,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
     }
 
     private fun getPaymentType(position: Int): String {
-        return paymentTypeList[position]
+        return paymentTypeList[position].toString()
     }
 
 

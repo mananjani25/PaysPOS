@@ -33,6 +33,7 @@ import com.android.pos.data.remote.Constants.MANUAL_SALE_CATEGORY_ID
 import com.android.pos.data.remote.Constants.MANUAL_SALE_ITEM_ID
 import com.android.pos.databinding.FragmentManualSaleNewBinding
 import com.android.pos.di.PrefProvider
+import com.android.pos.di.RolePermission
 import com.android.pos.ui.adapter.ManualSaleCartAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.utils.AmountTextWatcher
@@ -59,6 +60,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
     private var cartItemModel = TbItem()
     private val viewModel by viewModels<ManualSaleViewModel>()
 
+    @Inject
+    lateinit var rolePermission: RolePermission
     private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
     private var serviceChargesList: List<TbServiceCharge>? = null
     private var discountList: List<TbDiscount>? = null
@@ -445,6 +448,15 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             dialogPOSMenu()
         }
 
+        binding.footer.linearTransaction.setOnClickListener {
+            if (rolePermission.hasTransactionPermission(binding.root)) {
+                findNavController().navigate(R.id.action_manualSaleNew_to_transactionFragment)
+
+            }
+        }
+        binding.footer.linearOpenOrders.setOnClickListener {
+            findNavController().navigate(R.id.action_manualSaleNew_to_orders)
+        }
         binding.llInfo.setOnClickListener {
             showPopupWindow(it)
         }
