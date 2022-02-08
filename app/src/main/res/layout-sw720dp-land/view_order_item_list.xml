@@ -7,7 +7,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_2sdp"
-        android:layout_marginEnd="@dimen/_2sdp"
         android:orientation="horizontal"
         android:padding="@dimen/_2sdp">
 

@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.databinding.ViewOrderItemListBinding
+import com.android.pos.utils.MethodUtils
 
 
 class OrderDetailsItemListAdapter :
@@ -39,10 +40,12 @@ class OrderDetailsItemListAdapter :
         }
         totalPrice += modifierPrices
 
-        itemBinding.tvRate.text = context.getString(R.string.symbole) + " " + String.format(
+       /* itemBinding.tvRate.text = context.getString(R.string.symbole) + " " + String.format(
             context.getString(R.string.format),
             totalPrice
-        )
+        )*/
+
+        itemBinding.tvRate.text = MethodUtils.roundOffAmount(totalPrice)
 
         val modifierNames = taxList[position].orderItemModifiers.map {
             it.name + " (" + itemBinding.root.context.getString(R.string.symbole) + " " + String.format(

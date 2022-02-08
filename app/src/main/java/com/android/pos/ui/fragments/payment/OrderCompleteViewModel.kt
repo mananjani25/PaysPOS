@@ -63,7 +63,7 @@ class OrderCompleteViewModel @Inject constructor(
             _snackbarText.value = Event(R.string.valid_email_validate)
         } else if (type == "Message" && phoneNumber.isEmpty()) {
             _snackbarText.value = Event(R.string.phone_validate)
-        } else if (type == "Message" && phoneNumber.replace(("[\\D]").toRegex(), "").length > 10) {
+        } else if (type == "Message" && phoneNumber.replace(("[\\D]").toRegex(), "").length < 10) {
             _snackbarText.value = Event(R.string.valid_phone_validate)
         } else {
             _showProgress.value = Event(true)

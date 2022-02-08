@@ -83,7 +83,7 @@
         <activity
             android:name=".ui.activities.MainActivity"
             android:screenOrientation="landscape"
-            android:windowSoftInputMode="adjustResize|adjustPan">
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
