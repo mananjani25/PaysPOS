@@ -90,16 +90,17 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
     private fun getDiscountList() {
         dashboardViewModel.discountList.observe(requireActivity(), {
-            discountList = it.data
+
+            if (it.data != null)
+                discountList = it.data
         })
     }
 
 
     private fun getTaxList() {
         dashboardViewModel.taxList.observe(requireActivity(), {
-            Log.e(TAG, "getTaxList:  ${Gson().toJson(it.data)}")
-            taxList = it.data
-            //getCartList()
+            if (it.data != null)
+                taxList = it.data
         })
     }
 
@@ -181,8 +182,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
     private fun getServiceCharge() {
         viewModel.serviceCharge.observe(requireActivity(), {
-            Log.e(TAG, "serviceCharge: ${Gson().toJson(it)}")
-            serviceChargesList = it.data
+            if (it.data != null)
+                serviceChargesList = it.data
         })
     }
 

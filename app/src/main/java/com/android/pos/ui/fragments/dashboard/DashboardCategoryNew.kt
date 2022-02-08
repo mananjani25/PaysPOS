@@ -89,6 +89,7 @@ import com.android.pos.utils.callback.MyCallback
 import com.android.pos.utils.extensions.*
 import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.scanner.helpers.ScannerAppEngine
+import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
 import com.epson.eposprint.Builder
 import com.epson.eposprint.Print
@@ -104,6 +105,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     DineInAdapter.DineInCallback, CategoryTabAdapter1.TabListner,
     ItemCallback, View.OnClickListener, ScannerAppEngine.IScannerAppEngineDevEventsDelegate {
 
+    private var serviceChargesObserve: Observer<Resource<List<TbServiceCharge>>>? = null
     private var openORderType: String = ""
     private lateinit var nameObserver: Observer<List<CartModel>>
 
@@ -238,46 +240,14 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
 
         binding.footer.txtEmployeeName.setOnClickListener {
-            alert(
-                getString(R.string.app_name),
-                getString(R.string.clockout_message)
-            ) {
-                positiveButton(getString(android.R.string.ok)) {
-                    val bundle = Bundle()
-                    bundle.putBoolean("isDashboard", true)
-                    findNavController().navigate(
-                        R.id.action_dashboardCategoryNew_to_passcode,
-                        bundle
-                    )
-                }
-                negativeButton(R.string.tv_cancel) {
-                    // Do negative stuff here
-                }
-            }
+
+            findNavController().navigate(R.id.action_dashboardCategoryNew_to_reportEODFragment)
         }
 
         binding.footer.imgClock.setOnClickListener {
 
             findNavController().navigate(R.id.action_dashboardCategoryNew_to_reportEODFragment)
-//            alert(
-//                getString(R.string.app_name),
-//                getString(R.string.clockout_message)
-//            ) {
-//                positiveButton(getString(android.R.string.ok)) {
-//
-//                    findNavController().navigate(R.id.action_dashboardCategoryNew_to_reportEODFragment)
-//
-////                    val bundle = Bundle()
-////                    bundle.putBoolean("isDashboard", true)
-////                    findNavController().navigate(
-////                        R.id.action_dashboardCategoryNew_to_passcode,
-////                        bundle
-////                    )
-//                }
-//                negativeButton(R.string.tv_cancel) {
-//                    // Do negative stuff here
-//                }
-//            }
+
         }
 
         val callback: OnBackPressedCallback =
@@ -523,6 +493,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     override fun onPause() {
         super.onPause()
         ProgressUtils.dismissProgressDialog()
+
+        serviceChargesObserve?.let { viewModel.serviceCharges.removeObserver(it) }
+
     }
 
     private fun removeCustomerViewSet() {
@@ -620,14 +593,18 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     private fun getServiceCharges() {
 
-        viewModel.serviceCharges.observe(requireActivity(), {
+        serviceChargesObserve = Observer {
 
             if (it.status == Status.SUCCESS) {
                 serviceChargesList = it.data
                 getCartList()
             }
-        })
+
+        }
+
+        viewModel.serviceCharges.observe(requireActivity(), serviceChargesObserve!!)
     }
+
 
     private fun hideMenu() {
         if (binding.layoutCart.llCustomerDialog.visibility == View.VISIBLE) {
@@ -1475,7 +1452,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         val txtTotalAmount: AppCompatTextView = popupView.findViewById(R.id.txtTotalAmount)
         val txtTotalTax: AppCompatTextView = popupView.findViewById(R.id.txtTotalTax)
         val txtLoyaltyAmount: AppCompatTextView = popupView.findViewById(R.id.txtLoyaltyAmount)
-     //   val groupLoyalty: Group = popupView.findViewById(R.id.groupLoyalty)
+        //   val groupLoyalty: Group = popupView.findViewById(R.id.groupLoyalty)
         val chkLoyalty: CheckBox = popupView.findViewById(R.id.chkLoyaltyAmount)
         val txtLoyaltyPoints: AppCompatTextView = popupView.findViewById(R.id.txtLoyaltyPoints)
         val lblLoyaltyPoints: AppCompatTextView = popupView.findViewById(R.id.lblLoyaltyPoints)
@@ -1519,7 +1496,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             lblLoyaltyAmount.visible()
             txtLoyaltyAmount.visible()
 
-            Log.e(TAG,"InsideLoyalty")
+            Log.e(TAG, "InsideLoyalty")
             Log.e(TAG, Gson().toJson(viewModel.redeemLoyaltyInfo))
             amountToBepaid = viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0
             txtLoyaltyAmount.text =
@@ -1527,7 +1504,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             txtLoyaltyPoints.text = "${viewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
 
 
-           // groupLoyalty.gone()
+            // groupLoyalty.gone()
             chkLoyalty.visible()
             chkLoyalty.isChecked = viewModel.redeemLoyaltyInfo.needToApplyLoyalty
         } else {
@@ -1537,7 +1514,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             lblLoyaltyAmount.gone()
             txtLoyaltyAmount.gone()
 
-         //   groupLoyalty.gone()
+            //   groupLoyalty.gone()
             chkLoyalty.gone()
         }
 
@@ -3612,22 +3589,22 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 addBuilderText(builder, receiptModel?.order?.orderType.toString())
             }
 
-           /* if (receiptModel?.order?.orderType.trim().lowercase() == "OpenOrder".trim()
-                    .lowercase()
-              ) {*/
-                builder.addFeedLine(1)
-                builder.addTextFont(Builder.FONT_E)
-                builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(2, 2)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.TRUE,
-                    Builder.COLOR_1
-                )
-                builder.addTextAlign(Builder.ALIGN_CENTER)
+            /* if (receiptModel?.order?.orderType.trim().lowercase() == "OpenOrder".trim()
+                     .lowercase()
+               ) {*/
+            builder.addFeedLine(1)
+            builder.addTextFont(Builder.FONT_E)
+            builder.addTextLang(Builder.LANG_EN)
+            builder.addTextSize(2, 2)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.TRUE,
+                Builder.COLOR_1
+            )
+            builder.addTextAlign(Builder.ALIGN_CENTER)
 
-                addBuilderText(builder, receiptModel?.order?.deliveryType.toString())
+            addBuilderText(builder, receiptModel?.order?.deliveryType.toString())
 
             /*}*/
 

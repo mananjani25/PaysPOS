@@ -4,7 +4,6 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.entities.TbServiceCharge
-import com.android.pos.data.model.responseModel.GetServiceChargeResponse
 import com.android.pos.databinding.ViewServiceChargeItemBinding
 import com.android.pos.ui.fragments.settings.servicecharge.ServiceChargeListViewModel
 
@@ -48,15 +47,19 @@ class ServiceChargeListAdapter(val viewModel: ServiceChargeListViewModel) :
     }
 
     inner class MyViewHolder(val discountItemBinding: ViewServiceChargeItemBinding) :
-        RecyclerView.ViewHolder(discountItemBinding.root){
+        RecyclerView.ViewHolder(discountItemBinding.root) {
 
-            init {
-                discountItemBinding.imgCheckBox.setOnClickListener {
-                    serviceChargeList[layoutPosition].isChecked =
-                        !serviceChargeList[layoutPosition].isChecked
-                    notifyDataSetChanged()
-                }
+        init {
+            discountItemBinding.imgCheckBox.setOnClickListener {
+
+
+                serviceChargeList[layoutPosition].isChecked =
+                    !serviceChargeList[layoutPosition].isChecked
+                notifyDataSetChanged()
             }
         }
+    }
+
+
 
 }

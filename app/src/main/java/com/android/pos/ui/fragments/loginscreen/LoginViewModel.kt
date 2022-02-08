@@ -59,8 +59,8 @@ class LoginViewModel @Inject constructor(
             _showProgress.value = Event(true)
 
             val data = HashMap<String, String>()
-            data["email"] = loginDetails.value?.emailAddress.toString()
-            data["password"] = loginDetails.value?.password.toString()
+            data["email"] = loginDetails.value?.emailAddress.toString().trim()
+            data["password"] = loginDetails.value?.password.toString().trim()
 
             viewModelScope.launch {
                 val resource = userRepository.userLogIn(data)

@@ -28,12 +28,16 @@ class TaxServiceChargeRepository @Inject constructor(
         apiHelperNew.editLoyaltyPoint(loyaltyPointRequest)
 
 
-
     fun getTaxList() =
         performGetOperation(
             databaseQuery = { appDatabase.taxDao().allTax },
             networkCall = { apiHelperNew.getTaxList() },
             saveCallResult = { appDatabase.taxDao().addAllTaxes(it.data) })
+
+
+    fun enableTaxes() =
+        performGetOperationDatabase(
+            databaseQuery = { appDatabase.taxDao().enableTax })
 
     suspend fun addAllTaxDatabase(data: List<TaxData>) =
         appDatabase.taxDao().addAllTaxesSuspend(data)
