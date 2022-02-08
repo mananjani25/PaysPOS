@@ -26,6 +26,7 @@ import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.SwipeHelper
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.statusUtils.Status
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -37,6 +38,7 @@ class Categories : Fragment() {
     /* private var position: Int = -1
      private lateinit var categoryListUpdateDelete: ArrayList<TbCategory>*/
     private val viewModel by viewModels<CategoriesViewModel>()
+    private val TAG = "Categories"
     var dragFrom = -1
     var dragTo = -1
 
@@ -70,6 +72,7 @@ class Categories : Fragment() {
                     Status.SUCCESS -> {
                         binding.rvCategoriesList.visibility = View.VISIBLE
                         binding.progressCircular.visibility = View.GONE
+                        Log.e(TAG, "getCategoryData  ${Gson().toJson(it.data)}")
                         it.data?.let { it1 ->
                             adapter.add(it1)
                             binding.etSearch.hint = "Search (" + it1.size + ") Categories"
@@ -220,15 +223,13 @@ class Categories : Fragment() {
                 ): Boolean {
                     val oldPos = viewHolder.layoutPosition
                     val newPos = target.layoutPosition
-                    Log.e(
-                        "reorder after",
-                        viewHolder.layoutPosition.toString() + " :::  " + target.layoutPosition.toString()
-                    )
+                    Log.e(TAG,"posoldPos ${oldPos}")
+                    Log.e(TAG,"posnewPos ${newPos}")
 
                     if (dragFrom == -1) {
                         dragFrom = oldPos
                     }
-                    dragTo = newPos
+                    dragTo = target.layoutPosition
 
                     adapter.onItemMove(
                         viewHolder.layoutPosition,
@@ -252,11 +253,18 @@ class Categories : Fragment() {
                 ) {
 
                     if (dragFrom != -1 && dragTo != -1 && dragFrom != dragTo) {
+
+                       /*  reallyMoved(
+                              adapter.getItem(dragFrom).sort,
+                              adapter.getItem(dragTo).sort,
+                              adapter.getItem(viewHolder.layoutPosition).id
+                          )*/
                         reallyMoved(
-                            adapter.getItem(dragFrom).sort,
-                            adapter.getItem(dragTo).sort,
-                            adapter.getItem(viewHolder.layoutPosition).id
+                            dragFrom,
+                            dragTo,
+                            adapter.getItem(dragTo).id
                         )
+
                     }
 
                     dragFrom = -1
@@ -294,7 +302,9 @@ class Categories : Fragment() {
         if (categoryIdOld != null) {
 
             isreOrder = true
-            viewModel.reOrderCategory(categoryIdOld, newPos, oldPos)
+            Log.e(TAG, "positionnewPos  ${newPos}")
+            Log.e(TAG, "positionoldPos  ${oldPos}")
+            viewModel.reOrderCategory(categoryIdOld, oldPos, newPos)
         }
 
     }

@@ -1,7 +1,6 @@
 package com.android.pos.ui.adapter
 
 import android.text.TextUtils
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Filter
@@ -119,8 +118,8 @@ class CategoriesListAdapter(private val isChoose: Boolean) :
 
                         val order1: Int = filterList[i].sort
                         val order2: Int = filterList[i + 1].sort
-                        filterList[i].sort = order2
-                        filterList[i + 1].sort = order1
+                        filterList[i].sort = order1
+                        filterList[i + 1].sort = order2
                     }
                 } else {
                     for (i in fromPosition downTo toPosition + 1) {
@@ -128,8 +127,8 @@ class CategoriesListAdapter(private val isChoose: Boolean) :
 
                         val order1: Int = filterList[i].sort
                         val order2: Int = filterList[i - 1].sort
-                        filterList[i].sort = (order2)
-                        filterList[i - 1].sort = (order1)
+                        filterList[i].sort = (order1)
+                        filterList[i - 1].sort = (order2)
                     }
                 }
                 notifyItemMoved(fromPosition, toPosition)
