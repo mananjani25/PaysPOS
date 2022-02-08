@@ -64,7 +64,9 @@ class CreateTeamViewModel @Inject constructor(
         createTaxDetails.value?.passcode = employeeModel.passcode ?: ""
         createTaxDetails.value?.isActive = employeeModel.isActive
         createTaxDetails.value?.hourly_wages = employeeModel.hourlyWages
-        roleId = employeeModel.teamRoleId!!
+        if (employeeModel.teamRoleId != null) {
+            roleId = employeeModel.teamRoleId
+        }
 
     }
 
