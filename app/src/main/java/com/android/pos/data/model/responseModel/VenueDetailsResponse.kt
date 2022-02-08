@@ -40,6 +40,8 @@ data class VenueDetailsResponse(
         val notes: List<NoteResponse.Data>,
         @SerializedName("phone_number")
         val phoneNumber: String,
+        @SerializedName("address")
+        val address: String,
         @SerializedName("start_time_for_report_summary")
         val startTimeForReportSummary: String,
         @SerializedName("taxes")

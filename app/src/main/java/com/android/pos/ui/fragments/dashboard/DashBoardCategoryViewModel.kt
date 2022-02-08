@@ -14,6 +14,7 @@ import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ADD
+import com.android.pos.data.remote.Constants.BUSINESS_ADDRESS
 import com.android.pos.data.remote.Constants.BUSINESS_NAME
 import com.android.pos.data.remote.Constants.BUSINESS_PHONE_NO
 import com.android.pos.data.remote.Constants.BUSINESS_WEBSITE
@@ -1567,6 +1568,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 prefProvider.setValue(BUSINESS_NAME, it.data.businessName)
                                 prefProvider.setValue(SYSTEM_TIMEZONE, it.data.timeZone)
                                 prefProvider.setValue(BUSINESS_PHONE_NO, it.data.phoneNumber)
+                                prefProvider.setValue(BUSINESS_ADDRESS,it.data.address)
                                 prefProvider.setValueboolean(
                                     IS_PRINTER_QUEUE_ENABLE,
                                     it.data.isPrinterQueueEnable
