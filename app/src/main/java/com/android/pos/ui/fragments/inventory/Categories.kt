@@ -221,21 +221,19 @@ class Categories : Fragment() {
                     viewHolder: RecyclerView.ViewHolder,
                     target: RecyclerView.ViewHolder
                 ): Boolean {
-                    val oldPos = viewHolder.bindingAdapterPosition
-                    val newPos = target.bindingAdapterPosition
-                    Log.e(
-                        "reorder after",
-                        viewHolder.bindingAdapterPosition.toString() + " :::  " + target.bindingAdapterPosition.toString()
-                    )
+                    val oldPos = viewHolder.layoutPosition
+                    val newPos = target.layoutPosition
+                    Log.e(TAG,"posoldPos ${oldPos}")
+                    Log.e(TAG,"posnewPos ${newPos}")
 
                     if (dragFrom == -1) {
                         dragFrom = oldPos
                     }
-                    dragTo = newPos
+                    dragTo = target.layoutPosition
 
                     adapter.onItemMove(
-                        viewHolder.bindingAdapterPosition,
-                        target.bindingAdapterPosition
+                        viewHolder.layoutPosition,
+                        target.layoutPosition
                     )
 
                     return true
@@ -256,10 +254,15 @@ class Categories : Fragment() {
 
                     if (dragFrom != -1 && dragTo != -1 && dragFrom != dragTo) {
 
+                       /*  reallyMoved(
+                              adapter.getItem(dragFrom).sort,
+                              adapter.getItem(dragTo).sort,
+                              adapter.getItem(viewHolder.layoutPosition).id
+                          )*/
                         reallyMoved(
-                            adapter.getItem(dragFrom).sort,
-                            adapter.getItem(dragTo).sort,
-                            adapter.getItem(viewHolder.bindingAdapterPosition).id
+                            dragFrom,
+                            dragTo,
+                            adapter.getItem(dragTo).id
                         )
 
                     }
@@ -299,7 +302,9 @@ class Categories : Fragment() {
         if (categoryIdOld != null) {
 
             isreOrder = true
-            viewModel.reOrderCategory(categoryIdOld, newPos, oldPos)
+            Log.e(TAG, "positionnewPos  ${newPos}")
+            Log.e(TAG, "positionoldPos  ${oldPos}")
+            viewModel.reOrderCategory(categoryIdOld, oldPos, newPos)
         }
 
     }
