@@ -528,10 +528,12 @@
     <string name="tv_date">Date</string>
     <string name="company">Company</string>
     <string name="tv_options">Add Options</string>
+    <string name="tv_options_update">Update Options</string>
     <string name="tv_roles">Roles</string>
     <string name="tv_team_members">Team Members</string>
     <string name="tv_select_option_set">Select Option Set</string>
     <string name="tv_create_variation">Create Variation</string>
+    <string name="tv_update_variation">Update Variation</string>
     <string name="tv_variations">Variations</string>
     <string name="tv_sku">SKU</string>
     <string name="tv_display_name">Display Name</string>
@@ -672,6 +674,7 @@
     <string name="hidden_categories_title">Hidden Categories</string>
     <string name="hidden_items_title">Hidden Items</string>
     <string name="update_customer">Update Customer</string>
+    <string name="create_customer">Create Customer</string>
     <string name="printer_queue_list">Printer Queue List</string>
     <string name="delete">Delete</string>
     <string name="delete_all">Delete all</string>

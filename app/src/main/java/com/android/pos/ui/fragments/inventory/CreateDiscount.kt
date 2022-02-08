@@ -30,7 +30,7 @@ class CreateDiscount : Fragment() {
     }
 
     private fun onCLick() {
-        binding.imgBack.setOnClickListener {
+        binding.header.imgBack.setOnClickListener {
             val navControll = findNavController()
             navControll.previousBackStackEntry?.savedStateHandle?.set(
                 Constants.KEY,

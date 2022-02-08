@@ -12,7 +12,6 @@ import com.android.pos.R
 import com.android.pos.data.model.responseModel.GetTipReponse
 import com.android.pos.data.remote.Constants.CREATE_TIP
 import com.android.pos.data.remote.Constants.KEY
-import com.android.pos.data.remote.Constants.SETTING_KEY
 import com.android.pos.databinding.DialogAddNewTipBinding
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
@@ -39,9 +38,13 @@ class CreateTip : Fragment() {
 
         isEdit = arguments?.getBoolean("isEdit")!!
 
+        binding.header.txtSave.text = getString(R.string.save)
+        binding.header.txtTitle.text = getString(R.string.create_tip)
+
         if (isEdit) {
-            binding.txtSave.text = getString(R.string.update)
-            binding.txtTipTitle.text = getString(R.string.update_tip)
+            binding.header.txtSave.text = getString(R.string.update)
+            binding.header.txtTitle.text = getString(R.string.update_tip)
+
             tipData = arguments?.getParcelable("tipObject")!!
 
             viewModel.setTipData(tipData)
@@ -59,13 +62,18 @@ class CreateTip : Fragment() {
                 }
             }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+
+        binding.header.txtSave.setOnClickListener {
+            viewModel.submit()
+        }
+
         return binding.root
     }
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.imgBack.setOnClickListener {
+        binding.header.imgBack.setOnClickListener {
             backPressManage()
         }
     }

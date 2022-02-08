@@ -45,10 +45,11 @@ class CreateLoyaltyFragment : Fragment() {
     private fun initControls() {
         isEdit = arguments?.getBoolean("isEdit")!!
 
+
         if (isEdit) {
 
-            binding.txtSave.text = getString(R.string.update)
-            binding.txtHeader.text = getString(R.string.update_loyalty_point)
+            binding.header.txtSave.text = getString(R.string.update)
+            binding.header.txtTitle.text = getString(R.string.update_loyalty_point)
             loyaltyProgramsModel = arguments?.getParcelable("loyaltyObject")
 
             viewModel.setLoyaltyData(loyaltyProgramsModel)
@@ -57,7 +58,9 @@ class CreateLoyaltyFragment : Fragment() {
                 loyaltyProgramsModel?.rewardType == getString(R.string.percentage_symbol)
 
         } else {
-            binding.txtHeader.text = getString(R.string.create_loyalty_point)
+            binding.header.txtSave.text = getString(R.string.save)
+            binding.header.txtTitle.text = getString(R.string.create_loyalty_point)
+
             binding.swtCreateLoyalty.isChecked = true
         }
         discountType(binding.swtCreateLoyalty.isChecked)
@@ -85,8 +88,11 @@ class CreateLoyaltyFragment : Fragment() {
     }
 
     private fun onCLick() {
-        binding.imgBack.setOnClickListener {
+        binding.header.imgBack.setOnClickListener {
             backPressManage()
+        }
+        binding.header.txtSave.setOnClickListener {
+            viewModel.submit()
         }
     }
 

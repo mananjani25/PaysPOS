@@ -69,7 +69,7 @@ class OpenOrderCustomerFragment : Fragment(), View.OnClickListener {
         binding.txtCustomerDetails.setOnClickListener(this)
         binding.txtDeliveryAddress.setOnClickListener(this)
         binding.txtBillingAddress.setOnClickListener(this)
-        binding.imgBack.setOnClickListener(this)
+        binding.header.imgBack.setOnClickListener(this)
         binding.llSearch.setOnClickListener(this)
         binding.etSearch.setOnClickListener(this)
         binding.btnClearDelivery.setOnClickListener(this)
@@ -78,8 +78,8 @@ class OpenOrderCustomerFragment : Fragment(), View.OnClickListener {
         binding.edtTime.setOnClickListener(this)
         binding.btnClearCustomer.setOnClickListener(this)
         binding.btnCancelCustomer.setOnClickListener(this)
-        binding.txtSave.setOnClickListener(this)
-        binding.txtSave.setOnClickListener(this)
+        binding.header.txtSave.setOnClickListener(this)
+        binding.header.txtSave.setOnClickListener(this)
         binding.btnCancelDelivery.setOnClickListener(this)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

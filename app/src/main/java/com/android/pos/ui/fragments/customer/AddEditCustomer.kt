@@ -155,9 +155,11 @@ class AddEditCustomer : Fragment() {
         binding.chkIsLoyalty.setOnClickListener {
             viewModel.enroll_to_loyalty.value = binding.chkIsLoyalty.isChecked
         }
+        binding.header.txtTitle.text = getString(com.android.pos.R.string.create_customer)
+        binding.header.txtSave.text = getString(com.android.pos.R.string.save)
         if (isEdit) {
-            binding.txtCustomerType.text = getString(com.android.pos.R.string.update_customer)
-            binding.txtSave.text = getString(com.android.pos.R.string.update)
+            binding.header.txtTitle.text = getString(com.android.pos.R.string.update_customer)
+            binding.header.txtSave.text = getString(com.android.pos.R.string.update)
 
             val editModel: TbCustomer? =
                 requireArguments().getParcelable<TbCustomer>(
@@ -235,7 +237,7 @@ class AddEditCustomer : Fragment() {
             }
 
         } else {
-            binding.txtCustomerType.text = "New Customer"
+
             var list: ArrayList<CreateCustomerRequestModel.Customer.Addresses> = arrayListOf()
             var model = CreateCustomerRequestModel.Customer.Addresses()
             model.apply {
@@ -249,7 +251,7 @@ class AddEditCustomer : Fragment() {
 
         }
 
-        binding.imgBack.setOnClickListener {
+        binding.header.imgBack.setOnClickListener {
             findNavController().navigateUp()
         }
 
@@ -288,7 +290,7 @@ class AddEditCustomer : Fragment() {
 
         }
 
-        binding.txtSave.setOnClickListener {
+        binding.header.txtSave.setOnClickListener {
             viewModel.setAddressList(adapter.getList())
             viewModel.submit()
         }

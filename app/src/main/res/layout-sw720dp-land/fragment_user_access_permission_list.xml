@@ -20,8 +20,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:padding="@dimen/_5sdp"
-                android:layout_marginStart="@dimen/_5sdp"
+                android:padding="@dimen/_6sdp"
+                android:background="?attr/selectableItemBackground"
                 android:src="@drawable/ic_cancel_black" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -43,8 +43,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/_5sdp"
-                android:padding="@dimen/_4sdp"
+                android:padding="@dimen/_6sdp"
                 android:text="@string/tv_home"
+                android:background="?attr/selectableItemBackground"
                 android:textColor="@color/txt_color_blue"
                 android:textSize="@dimen/_7mdpi" />
         </LinearLayout>

@@ -16,47 +16,10 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
 
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/imgClose"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:background="?attr/selectableItemBackground"
-                android:padding="@dimen/_5sdp"
-                android:src="@drawable/ic_cancel_black" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/txtTitle"
-                style="@style/CustomFontMediumStyle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="@string/tv_create_team_member"
-                android:textColor="@color/viewTextColor"
-                android:textSize="@dimen/_6mdpi" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/btnSave"
-                style="@style/CustomFontMediumStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:background="@drawable/bg_button_border"
-                android:gravity="center"
-                android:paddingLeft="@dimen/_30sdp"
-                android:paddingTop="@dimen/_5ssp"
-                android:paddingRight="@dimen/_30sdp"
-                android:paddingBottom="@dimen/_5ssp"
-                android:text="@string/save"
-                android:textColor="@color/white"
-                android:textSize="@dimen/_6mdpi" />
-        </LinearLayout>
+        <include
+            android:id="@+id/header"
+            layout="@layout/view_header_toolbar" />
 
         <View
             android:layout_width="match_parent"

@@ -24,9 +24,8 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
-                android:layout_marginStart="@dimen/_7sdp"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:layout_marginBottom="@dimen/_5sdp"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:padding="@dimen/_6sdp"
                 android:src="@drawable/ic_baseline_menu" />
 
 
@@ -77,13 +76,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_20sdp"
                 android:layout_marginEnd="@dimen/_5sdp"
+                android:contentDescription="@string/menu"
                 android:src="@drawable/ic_dot_menu"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:tint="@color/viewTextColor"
-                android:contentDescription="@string/menu" />
+                app:tint="@color/viewTextColor" />
 
             <TextView
                 android:id="@+id/txtHome"
@@ -91,6 +90,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/_10sdp"
                 android:fontFamily="@font/sf_pro_display_semibold"
+                android:padding="@dimen/_6sdp"
                 android:text="@string/tv_home"
                 android:textColor="@color/txt_color_blue"
                 android:textSize="@dimen/_6mdpi"
