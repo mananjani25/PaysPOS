@@ -1,10 +1,12 @@
 package com.android.pos.ui.adapter
 
 import android.annotation.SuppressLint
+import android.content.ContentValues.TAG
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.TextUtils
 import android.text.style.TextAppearanceSpan
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -35,35 +37,43 @@ class OrderHistoryAdapter (val callBack: (View, Orders) -> Unit ) :
         @SuppressLint("SetTextI18n")
         fun bind(order: Orders) {
 
-            //Date Time
-            setupDateTime(order.createdAt)
-
-            //details
-            binding.txtOrderDetails.text = "${order.itemDetails}"
-
-            //Id and status
-            setupIdAndStatus(order.id, order.paymentStatus)
-
-            //amount and pay type
-            if (order.paymentDetails?.isNotEmpty() == true) {
-                setupAmountPayType(order.total, order.paymentDetails)
+            if (order.paymentStatus.equals("Paid",ignoreCase = true)||order.paymentStatus.equals("Cancelled",ignoreCase = true)){
+                Log.d(TAG,"unpaid or cancelled" + order.paymentStatus)
+                itemView.visibility=View.GONE
             }
-            setupAmountPayType(order.total, order.paymentDetails)
+            else{
+                itemView.visibility=View.VISIBLE
 
-            //loyalty points
-            if (enrolltrueloyalty) {
-                binding.txtLoyaltyPoints.visibility = View.VISIBLE
-                binding.txtLoyaltyPoints.text = "${order.order_loyalty_points ?: 0}"
-                binding.txtUsedLoyaltyPoints.visibility = View.VISIBLE
-                binding.txtUsedLoyaltyPoints.text = "${order.used_reward_points ?: 0}"
-            } else {
-                binding.txtLoyaltyPoints.visibility = View.GONE
-            }
+                //Date Time
+                    setupDateTime(order.createdAt)
 
-            //Reorder
-            binding.txtReorder.setOnClickListener {
-                myOnclickedListner.onclickedReorder(arrayList[absoluteAdapterPosition])
-            }
+                    //details
+                    binding.txtOrderDetails.text = "${order.itemDetails}"
+
+                    //Id and status
+                    setupIdAndStatus(order.id, order.paymentStatus)
+
+                    //amount and pay type
+                    if (order.paymentDetails?.isNotEmpty() == true) {
+                        setupAmountPayType(order.total, order.paymentDetails)
+                    }
+                    setupAmountPayType(order.total, order.paymentDetails)
+
+                    //loyalty points
+                    if (enrolltrueloyalty) {
+                        binding.txtLoyaltyPoints.visibility = View.VISIBLE
+                        binding.txtLoyaltyPoints.text = "${order.order_loyalty_points ?: 0}"
+                        binding.txtUsedLoyaltyPoints.visibility = View.VISIBLE
+                        binding.txtUsedLoyaltyPoints.text = "${order.used_reward_points ?: 0}"
+                    } else {
+                        binding.txtLoyaltyPoints.visibility = View.GONE
+                    }
+
+                    //Reorder
+                    binding.txtReorder.setOnClickListener {
+                        myOnclickedListner.onclickedReorder(arrayList[absoluteAdapterPosition])
+                    }
+                }
         }
 
         private fun setupAmountPayType(total: Double?, paymentDetails: List<PaymentDetail>?) {
