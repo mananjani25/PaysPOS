@@ -21,7 +21,8 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_gravity="center"
-                android:layout_marginStart="@dimen/_10sdp"
+                android:padding="@dimen/_6sdp"
+                android:background="?attr/selectableItemBackground"
                 app:srcCompat="@drawable/ic_cancel_black"
                 app:tint="@color/viewTextColor" />
 
@@ -46,9 +47,9 @@
                 android:background="@color/btnColor"
                 android:gravity="center"
                 android:paddingStart="@dimen/_15sdp"
-                android:paddingTop="@dimen/_5sdp"
+                android:paddingTop="@dimen/_6sdp"
                 android:paddingEnd="@dimen/_15sdp"
-                android:paddingBottom="@dimen/_5sdp"
+                android:paddingBottom="@dimen/_6sdp"
                 android:text="@string/save"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_7mdpi" />

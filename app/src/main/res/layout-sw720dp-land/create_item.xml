@@ -35,7 +35,7 @@
                     android:layout_centerVertical="true"
                     android:layout_gravity="center"
                     android:background="?attr/selectableItemBackground"
-                    android:padding="@dimen/_4sdp"
+                    android:padding="@dimen/_6sdp"
                     app:srcCompat="@drawable/ic_cancel_black"
                     app:tint="@color/viewTextColor" />
 
@@ -62,9 +62,9 @@
                     android:background="@color/btnColor"
                     android:gravity="center"
                     android:paddingStart="@dimen/_15sdp"
-                    android:paddingTop="@dimen/_5sdp"
+                    android:paddingTop="@dimen/_6sdp"
                     android:paddingEnd="@dimen/_15sdp"
-                    android:paddingBottom="@dimen/_5sdp"
+                    android:paddingBottom="@dimen/_6sdp"
                     android:text="@string/save"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_6mdpi" />
@@ -150,15 +150,15 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_10sdp"
                     android:background="@drawable/edt_border_light_gray"
+                    android:digits="@string/disable_emoji_string"
                     android:hint="@string/item_name_1"
                     android:imeOptions="actionNext"
+                    android:inputType="textVisiblePassword"
                     android:padding="@dimen/_5sdp"
                     android:text="@={createItemVewModel.itemDetails.name}"
                     android:textColor="@color/black"
                     android:textColorHint="@color/hintColor"
-                    android:textSize="@dimen/_5mdpi"
-                    android:inputType="textVisiblePassword"
-                    android:digits="@string/disable_emoji_string"/>
+                    android:textSize="@dimen/_5mdpi" />
 
                 <androidx.appcompat.widget.AppCompatEditText
                     style="@style/CustomFontSemiBold"
@@ -166,8 +166,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_10sdp"
                     android:background="@drawable/edt_border_light_gray"
+                    android:digits="@string/disable_emoji_string"
                     android:enabled="false"
-                    android:visibility="gone"
                     android:hint="@string/product_code"
                     android:imeOptions="actionNext"
                     android:inputType="textCapWords"
@@ -176,7 +176,7 @@
                     android:textColor="@color/black"
                     android:textColorHint="@color/hintColor"
                     android:textSize="@dimen/_5mdpi"
-                    android:digits="@string/disable_emoji_string"/>
+                    android:visibility="gone" />
 
 
                 <androidx.appcompat.widget.LinearLayoutCompat
@@ -424,16 +424,15 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:background="@null"
-                            android:hint="$0.00"
-                            android:maxLength="11"
                             android:digits="0123456789"
+                            android:hint="$0.00"
                             android:imeOptions="actionNext"
+                            android:inputType="numberDecimal"
+                            android:maxLength="11"
                             android:padding="@dimen/_5sdp"
                             android:textColor="@color/black"
                             android:textColorHint="@color/hintColor"
-                            android:textSize="@dimen/_5mdpi"
-                            android:inputType="numberDecimal"
-                            />
+                            android:textSize="@dimen/_5mdpi" />
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -464,16 +463,16 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:background="@null"
-                            android:hint="Sku"
                             android:digits="@string/disable_emoji_string"
+                            android:hint="Sku"
                             android:imeOptions="actionNext"
 
+                            android:inputType="textVisiblePassword"
                             android:maxLength="200"
                             android:padding="@dimen/_5sdp"
                             android:textColor="@color/black"
                             android:textColorHint="@color/hintColor"
-                            android:textSize="@dimen/_5mdpi"
-                            android:inputType="textVisiblePassword"/>
+                            android:textSize="@dimen/_5mdpi" />
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -493,9 +492,9 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:layout_weight="1"
+                            android:maxLength="5"
                             android:padding="@dimen/_5sdp"
                             android:text="@string/stock"
-                            android:maxLength="5"
                             android:textColor="@color/viewTextColor"
                             android:textSize="@dimen/_5mdpi" />
 
@@ -505,16 +504,15 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:background="@null"
-                            android:hint="0"
-                            android:maxLength="5"
                             android:digits="0123456789"
+                            android:hint="0"
                             android:imeOptions="actionNext"
                             android:inputType="number"
+                            android:maxLength="5"
                             android:padding="@dimen/_5sdp"
                             android:textColor="@color/black"
                             android:textColorHint="@color/hintColor"
-                            android:textSize="@dimen/_5mdpi"
-                            />
+                            android:textSize="@dimen/_5mdpi" />
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -566,8 +564,8 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:text="@string/stock"
                         android:maxLength="5"
+                        android:text="@string/stock"
                         android:textColor="@color/txtColor"
                         android:textSize="@dimen/_5mdpi" />
 
@@ -646,8 +644,8 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="top"
                     android:background="@drawable/edt_border_light_gray"
-                    android:gravity="top"
                     android:digits="@string/disable_emoji_string"
+                    android:gravity="top"
                     android:hint="@string/description"
                     android:inputType="textMultiLine|textVisiblePassword"
                     android:minLines="3"
