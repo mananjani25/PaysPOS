@@ -26,6 +26,7 @@ import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.SwipeHelper
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.statusUtils.Status
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -37,6 +38,7 @@ class Categories : Fragment() {
     /* private var position: Int = -1
      private lateinit var categoryListUpdateDelete: ArrayList<TbCategory>*/
     private val viewModel by viewModels<CategoriesViewModel>()
+    private val TAG = "Categories"
     var dragFrom = -1
     var dragTo = -1
 
@@ -70,6 +72,7 @@ class Categories : Fragment() {
                     Status.SUCCESS -> {
                         binding.rvCategoriesList.visibility = View.VISIBLE
                         binding.progressCircular.visibility = View.GONE
+                        Log.e(TAG, "getCategoryData  ${Gson().toJson(it.data)}")
                         it.data?.let { it1 ->
                             adapter.add(it1)
                             binding.etSearch.hint = "Search (" + it1.size + ") Categories"
@@ -218,11 +221,11 @@ class Categories : Fragment() {
                     viewHolder: RecyclerView.ViewHolder,
                     target: RecyclerView.ViewHolder
                 ): Boolean {
-                    val oldPos = viewHolder.layoutPosition
-                    val newPos = target.layoutPosition
+                    val oldPos = viewHolder.bindingAdapterPosition
+                    val newPos = target.bindingAdapterPosition
                     Log.e(
                         "reorder after",
-                        viewHolder.layoutPosition.toString() + " :::  " + target.layoutPosition.toString()
+                        viewHolder.bindingAdapterPosition.toString() + " :::  " + target.bindingAdapterPosition.toString()
                     )
 
                     if (dragFrom == -1) {
@@ -231,8 +234,8 @@ class Categories : Fragment() {
                     dragTo = newPos
 
                     adapter.onItemMove(
-                        viewHolder.layoutPosition,
-                        target.layoutPosition
+                        viewHolder.bindingAdapterPosition,
+                        target.bindingAdapterPosition
                     )
 
                     return true
@@ -252,11 +255,13 @@ class Categories : Fragment() {
                 ) {
 
                     if (dragFrom != -1 && dragTo != -1 && dragFrom != dragTo) {
+
                         reallyMoved(
                             adapter.getItem(dragFrom).sort,
                             adapter.getItem(dragTo).sort,
-                            adapter.getItem(viewHolder.layoutPosition).id
+                            adapter.getItem(viewHolder.bindingAdapterPosition).id
                         )
+
                     }
 
                     dragFrom = -1
