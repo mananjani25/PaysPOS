@@ -1171,12 +1171,32 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         val linearReports: LinearLayout = dialog.findViewById(R.id.linearReports)
         val linearCust: LinearLayout = dialog.findViewById(R.id.linearCust)
         val linearTeam: LinearLayout = dialog.findViewById(R.id.linearTeam)
+        val linearHardware: LinearLayout = dialog.findViewById(R.id.linearHardware)
         val linearInventory: LinearLayout = dialog.findViewById(R.id.linearInventory)
         val linearSetting: LinearLayout = dialog.findViewById(R.id.linearSetting)
         val linearSupport: LinearLayout = dialog.findViewById(R.id.linearSupport)
 
         linearHome.setOnClickListener {
             findNavController().popBackStack()
+            closeDialog(dialog)
+        }
+
+        linearHardware.setOnClickListener {
+            findNavController().navigate(R.id.action_manualSaleNew_to_hardware)
+            closeDialog(dialog)
+        }
+
+        linearCash.setOnClickListener {
+            findNavController().navigate(R.id.action_manualSaleNew_to_Cashlog)
+            closeDialog(dialog)
+        }
+
+        linearTransaction.setOnClickListener {
+            findNavController().navigate(R.id.action_manualSaleNew_to_transactionFragment)
+            closeDialog(dialog)
+        }
+        linearOrders.setOnClickListener {
+            findNavController().navigate(R.id.action_manualSaleNew_to_orders)
             closeDialog(dialog)
         }
         linearCust.setOnClickListener {
@@ -1199,6 +1219,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             findNavController().navigate(R.id.action_manualSaleNew_to_settings)
             dialog.dismiss()
         }
+
 
         imgCalculator.setColorFilter(resources.getColor(R.color.txtColor))
         txtCheckOut.setTextColor(resources.getColor(R.color.txtColor))
