@@ -24,7 +24,7 @@
                     android:layout_centerVertical="true"
                     android:layout_gravity="center"
                     android:background="?attr/selectableItemBackground"
-                    android:padding="@dimen/_4sdp"
+                    android:padding="@dimen/_6sdp"
                     app:srcCompat="@drawable/ic_cancel_black" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -50,9 +50,9 @@
                     android:background="@color/btnColor"
                     android:gravity="center"
                     android:paddingStart="@dimen/_15sdp"
-                    android:paddingTop="@dimen/_5sdp"
+                    android:paddingTop="@dimen/_6sdp"
                     android:paddingEnd="@dimen/_15sdp"
-                    android:paddingBottom="@dimen/_5sdp"
+                    android:paddingBottom="@dimen/_7sdp"
                     android:text="Add"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_6mdpi" />
