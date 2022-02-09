@@ -106,54 +106,6 @@ class ManualSaleViewModel @Inject constructor(
 
                 }
 
-//                if (type == ADD) {
-////                    var index = -1
-////
-////                    list.forEachIndexed { pos, tbItem ->
-////                        if (item != null) {
-////                            if (tbItem.itemId == item.itemId) {
-////                                index = pos
-////                                return@forEachIndexed
-////                            }
-////                        }
-////                    }
-////                    if (index != -1) {
-////                        val model = cartList[0].items?.get(index)
-////                        if (model != null) {
-////                            if (type == "UPDATE") {
-////                                if (item != null) {
-////                                    model.itemQuantity = item.itemQuantity
-////                                    if (item.isEdited) {
-////                                        model.isEdited = item.isEdited
-////                                    }
-////                                }
-////                                list[index] = model
-////                            } else {
-////                                if (index != -1) {
-////                                    if (item != null) {
-////                                        model.itemQuantity =
-////                                            item.itemQuantity + model.itemQuantity
-////                                    }
-////
-////                                    list[index] = model
-////                                } else {
-////                                    if (item != null) {
-////                                        model.itemQuantity = item.itemQuantity
-////                                        if (item.isEdited) {
-////                                            model.isEdited = item.isEdited
-////                                        }
-////                                    }
-////                                    list[index] = model
-////                                }
-////                            }
-////
-////                        }
-////                    } else {
-////                        if (item != null) {
-////                            list.add(item)
-////                        }
-////                    }
-//                }
 
                 else if (type == DELETE) {
 

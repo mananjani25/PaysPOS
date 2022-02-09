@@ -32,7 +32,7 @@ class CategoriesListAdapter(private val isChoose: Boolean) :
                     binding.imageCheck.setImageResource(R.drawable.ic_uncheck_circle)
                 }
             } else {
-                binding.imageCheck.setImageResource(R.drawable.ic_arrow_forward)
+                binding.imageCheck.setImageResource(R.drawable.ic_baseline_menu)
             }
         }
 

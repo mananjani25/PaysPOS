@@ -48,7 +48,7 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/_5sdp"
                 android:layout_marginEnd="@dimen/_10sdp"
-                app:srcCompat="@drawable/ic_arrow_forward" />
+                app:srcCompat="@drawable/ic_baseline_menu" />
 
 
         </androidx.appcompat.widget.LinearLayoutCompat>
