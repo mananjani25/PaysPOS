@@ -89,7 +89,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:text="@string/first_name"
+                        android:text="@string/first_name_normal"
                         android:textColor="@color/txtColor"
                         android:textSize="@dimen/_6mdpi" />
 
@@ -123,7 +123,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:text="@string/last_name"
+                        android:text="@string/last_name_normal"
                         android:textColor="@color/txtColor"
                         android:textSize="@dimen/_6mdpi" />
 
@@ -157,7 +157,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:text="@string/tv_hint_email"
+                        android:text="@string/tv_email_address_"
                         android:textColor="@color/txtColor"
                         android:textSize="@dimen/_6mdpi" />
 
@@ -191,7 +191,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:text="@string/phone"
+                        android:text="@string/_phone"
                         android:textColor="@color/txtColor"
                         android:textSize="@dimen/_6mdpi" />
 
