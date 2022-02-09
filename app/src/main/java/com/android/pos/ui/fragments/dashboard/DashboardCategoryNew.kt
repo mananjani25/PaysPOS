@@ -2466,73 +2466,76 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                 if (prefProvider.getValue(ORDER_TYPE, "") != DINE_IN) {
 
-                    val cartList = viewModel.generateCombinedItems(cartList[0])
-                    cartList.openOrderType = openORderType
-                    if (!isOrderUpdate)
-                        cartList.customer = assignCustomer
+                    if (viewModel.restrictedAmount(binding.layoutCart.txtTotalAmount)) {
+                        val cartList = viewModel.generateCombinedItems(cartList[0])
+                        cartList.openOrderType = openORderType
+                        if (!isOrderUpdate)
+                            cartList.customer = assignCustomer
 
 
-                    //set the latest parameter in viewmodel
-                    viewModelPayment.updateOrder(
-                        isOrderUpdate,
-                        orderId,
-                        paymentId,
-                        paymentOfflineId,
-                        orderOfflineId
-                    )
+                        //set the latest parameter in viewmodel
+                        viewModelPayment.updateOrder(
+                            isOrderUpdate,
+                            orderId,
+                            paymentId,
+                            paymentOfflineId,
+                            orderOfflineId
+                        )
 
-                    // (viewModel.redeemLoyaltyInfo.getAmountToBePaid() + (viewModel.redeemLoyaltyInfo.cashDiscount
-                    //                            ?: 0.0)),
+                        // (viewModel.redeemLoyaltyInfo.getAmountToBePaid() + (viewModel.redeemLoyaltyInfo.cashDiscount
+                        //                            ?: 0.0)),
 
 
 //                    (viewModel.redeemLoyaltyInfo.remainingLoyaltyAmount + (viewModel.redeemLoyaltyInfo.cashDiscount
 //                        ?: 0.0)),
 
-                    var totalAmountTobeSave = 0.0
-                    if (viewModel.redeemLoyaltyInfo.isLoyaltyApplied == true) {
-                        totalAmountTobeSave =
-                            (viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0)
+                        var totalAmountTobeSave = 0.0
+                        if (viewModel.redeemLoyaltyInfo.isLoyaltyApplied == true) {
+                            totalAmountTobeSave =
+                                (viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0)
+                        } else {
+                            totalAmountTobeSave =
+                                (binding.layoutCart.txtTotalAmount.text.toString().subSequence(
+                                    2,
+                                    binding.layoutCart.txtTotalAmount.text.length
+                                ) as String).toDouble()
+                        }
+
+                        if (cartList.futureDeliveryDate.isNotEmpty()) {
+                            future_delivery_date = cartList.futureDeliveryDate
+                        }
+
+                        val request = viewModelPayment.createOpenOrderRequest(
+                            cartList,
+                            viewModel.subTotalPrice,
+                            totalAmountTobeSave,
+                            viewModel.totalServiceCharge,
+                            viewModel.totalTax,
+                            OPEN_ORDER,
+                            future_delivery_date,
+                            future_delivery_time,
+                            false,
+                            viewModel.totalDiscount + cartList.discountPrice,
+                            0.00,
+                            -1,
+                            viewModel.redeemLoyaltyInfo,
+                            MethodUtils.calculateCashDiscount(
+                                viewModel.totalPrice,
+                                prefProvider,
+                                requireContext()
+                            ),
+                            false,
+                            "Cash",
+                            cashDiscountType
+
+                        )
+                        viewModelPayment.saveOrder(true)
+                        viewModelPayment.submit(request)
                     } else {
-                        totalAmountTobeSave =
-                            (binding.layoutCart.txtTotalAmount.text.toString().subSequence(
-                                2,
-                                binding.layoutCart.txtTotalAmount.text.length
-                            ) as String).toDouble()
+                        showMessage()
                     }
-
-                    if (cartList.futureDeliveryDate.isNotEmpty()) {
-                        future_delivery_date = cartList.futureDeliveryDate
-                    }
-
-                    val request = viewModelPayment.createOpenOrderRequest(
-                        cartList,
-                        viewModel.subTotalPrice,
-                        totalAmountTobeSave,
-                        viewModel.totalServiceCharge,
-                        viewModel.totalTax,
-                        OPEN_ORDER,
-                        future_delivery_date,
-                        future_delivery_time,
-                        false,
-                        viewModel.totalDiscount + cartList.discountPrice,
-                        0.00,
-                        -1,
-                        viewModel.redeemLoyaltyInfo,
-                        MethodUtils.calculateCashDiscount(
-                            viewModel.totalPrice,
-                            prefProvider,
-                            requireContext()
-                        ),
-                        false,
-                        "Cash",
-                        cashDiscountType
-
-                    )
-                    viewModelPayment.saveOrder(true)
-                    viewModelPayment.submit(request)
-                }
 //                }
-
+                }
             }
 
             R.id.btnPay -> {
@@ -2542,12 +2545,21 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 //                prefProvider.setValue(Constants.SPLIT_PAY_TYPE, "")
 //                prefProvider.setValueInt("ORDER_ID", -1)
 
-                gotoPayment()
+                if (viewModel.restrictedAmount(binding.layoutCart.txtTotalAmount)) {
+                    gotoPayment()
+                } else {
+                    showMessage()
+                }
             }
             R.id.llCartMenu -> {
 
             }
         }
+    }
+
+    private fun showMessage() {
+
+        AlertUtils.showCustomAlert(requireContext(), "Order should be less than 1 million usd.")
     }
 
     private fun gotoPayment() {
