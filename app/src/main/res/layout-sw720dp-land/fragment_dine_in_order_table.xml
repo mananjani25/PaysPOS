@@ -43,20 +43,22 @@
             <ImageView
                 android:id="@+id/imgPrintAll"
                 android:layout_width="@dimen/_15sdp"
-                android:layout_height="@dimen/_9sdp"
-                android:background="?attr/selectableItemBackground"
+                android:layout_height="@dimen/_15sdp"
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="@dimen/_8sdp"
+                android:padding="@dimen/_2sdp"
                 android:layout_toStartOf="@+id/txtFloorPlan"
+                android:background="?attr/selectableItemBackground"
                 android:src="@drawable/print_all" />
 
             <ImageView
                 android:id="@+id/imgMergeTable"
                 android:layout_width="@dimen/_17sdp"
-                android:layout_height="@dimen/_10sdp"
+                android:layout_height="@dimen/_15sdp"
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="@dimen/_8sdp"
                 android:layout_toStartOf="@+id/imgPrintAll"
+                android:padding="@dimen/_2sdp"
 
                 android:src="@drawable/merge" />
 
@@ -71,6 +73,7 @@
                 android:layout_marginEnd="@dimen/_4sdp"
                 android:gravity="center"
                 android:text="Floor Plan"
+                android:padding="@dimen/_6sdp"
                 android:textColor="@color/btnColor"
                 android:textSize="@dimen/_6mdpi" />
 

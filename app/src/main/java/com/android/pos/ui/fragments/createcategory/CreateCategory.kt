@@ -56,17 +56,23 @@ class CreateCategory : Fragment() {
         binding.lifecycleOwner = this
         binding.createCategoryViewModel = viewModel
 
+
+
         isEdit = arguments?.getBoolean("isEdit")!!
 
         if (isEdit) {
             categoryData = arguments?.getParcelable("categoryObject")!!
-            binding.txtSave.text = getString(R.string.update)
-            binding.txtTitle.text = getString(R.string.update_category)
+            binding.header.txtSave.text = getString(R.string.update)
+            binding.header.txtTitle.text = getString(R.string.update_category)
+
             viewModel.categoryData(categoryData!!)
             viewModel.isEditData(isEdit, categoryData!!.id)
 
             //load image from edit
             viewProfile(categoryData!!.thumbImgUrl)
+        } else {
+            binding.header.txtTitle.text = getString(R.string.create_category)
+            binding.header.txtSave.text = getString(R.string.save)
         }
 
         setupSnackbar()
@@ -89,7 +95,7 @@ class CreateCategory : Fragment() {
 
     private fun onClick() {
 
-        binding.txtSave.setOnClickListener {
+        binding.header.txtSave.setOnClickListener {
             var newImagePathToUpload = imagePath
             if (isEdit && imagePath.equals(categoryData?.thumbImgUrl, true)) {
                 //send image if its altered.
@@ -102,7 +108,7 @@ class CreateCategory : Fragment() {
                 viewModel.submit(adapter.getIds(), newImagePathToUpload, "")
             }
         }
-        binding.imgBack.setOnClickListener {
+        binding.header.imgBack.setOnClickListener {
             onSubmitBack()
         }
         binding.ilImage.relImage.setOnClickListener {

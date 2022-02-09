@@ -66,7 +66,7 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
             false
         }
 
-        binding.txtDone.setOnClickListener {
+        binding.header.txtSave.setOnClickListener {
 
             if (selectedOptionSetNameAdapter.optionSetList.size > 0) {
 
@@ -87,8 +87,16 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
             arguments?.getParcelableArrayList("optionSets")
         }
 
-        binding.imgBack.setOnClickListener {
+        binding.header.imgBack.setOnClickListener {
             dismiss()
+        }
+
+        if (isEdit) {
+            binding.header.txtSave.text = getString(R.string.tv_update_variation)
+            binding.header.txtTitle.text = getString(R.string.tv_options_update)
+        } else {
+            binding.header.txtSave.text = getString(R.string.tv_create_variation)
+            binding.header.txtTitle.text = getString(R.string.tv_options)
         }
 
         return binding.root

@@ -20,7 +20,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:background="?attr/selectableItemBackground"
-                android:padding="@dimen/_5sdp"
+                android:padding="@dimen/_6sdp"
                 android:src="@drawable/ic_cancel_black" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -39,7 +39,7 @@
             <ImageView
                 android:id="@+id/imgUnMergeTable"
                 android:layout_width="@dimen/_27sdp"
-                android:layout_height="@dimen/_12sdp"
+                android:layout_height="@dimen/_15sdp"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="@dimen/_8sdp"

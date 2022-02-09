@@ -106,7 +106,7 @@
                 android:layout_centerVertical="true"
                 android:layout_toStartOf="@+id/imgSearch"
                 android:contentDescription="@string/search"
-                android:padding="@dimen/_4sdp"
+                android:padding="@dimen/_5sdp"
                 android:background="?attr/selectableItemBackground"
                 android:src="@drawable/ic_sync"
                 app:tint="@color/txtColor" />
@@ -119,9 +119,10 @@
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:layout_gravity="center"
+                android:layout_marginStart="@dimen/_2sdp"
                 android:background="?attr/selectableItemBackground"
                 android:contentDescription="@string/menu"
-                android:padding="@dimen/_4sdp"
+                android:padding="@dimen/_5sdp"
                 android:src="@drawable/ic_dot_menu"
                 app:tint="@color/txtColor" />
 

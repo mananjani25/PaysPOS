@@ -121,14 +121,11 @@ class CreateTeamViewModel @Inject constructor(
 
 
             viewModelScope.launch {
-
                 resource = if (isEdit) {
                     posRepository.updateEmployee(taxId, createEmployeeData)
                 } else {
                     posRepository.createEmployee(createEmployeeData)
                 }
-
-
                 when (resource.status) {
                     Status.SUCCESS -> {
                         _showProgress.value = Event(false)

@@ -19,50 +19,9 @@
         android:orientation="vertical">
 
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/imgBack"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_gravity="center"
-                android:padding="@dimen/_6sdp"
-                app:srcCompat="@drawable/ic_cancel_black"
-                app:tint="@color/viewTextColor" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                style="@style/CustomFontSemiBold"
-                android:id="@+id/txtNoteTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:text="@string/create_note"
-                android:textSize="@dimen/_7mdpi" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/txtSave"
-                style="@style/CustomFontSemiBold"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_gravity="center"
-                android:background="@color/btnColor"
-                android:gravity="center"
-                android:onClick="@{() -> viewModel.submit()}"
-                android:paddingStart="@dimen/_15sdp"
-                android:paddingTop="@dimen/_6sdp"
-                android:paddingEnd="@dimen/_15sdp"
-                android:paddingBottom="@dimen/_6sdp"
-                android:text="@string/create"
-                android:textColor="@color/white"
-                android:textSize="@dimen/_7mdpi" />
-
-        </RelativeLayout>
+        <include
+            android:id="@+id/header"
+            layout="@layout/view_header_toolbar" />
 
         <View
             android:layout_width="match_parent"

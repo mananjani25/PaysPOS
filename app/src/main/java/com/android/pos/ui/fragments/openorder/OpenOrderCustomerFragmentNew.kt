@@ -158,6 +158,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
         binding.etSearch.setOnClickListener(this)
         binding.btnClearDelivery.setOnClickListener(this)
         binding.btnClearBill.setOnClickListener(this)
+        binding.btnCancelDelivery.setOnClickListener(this)
         binding.edtDate.setOnClickListener(this)
         binding.edtTime.setOnClickListener(this)
         binding.btnClearCustomer.setOnClickListener(this)
@@ -611,7 +612,10 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
 
             R.id.btnCancelCustomer -> {
                 findNavController().navigateUp()
+            }
 
+            R.id.btnCancelDelivery -> {
+                findNavController().navigateUp()
             }
             R.id.txtPickup -> {
                 type = Constants.PICK_UP

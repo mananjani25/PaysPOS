@@ -688,6 +688,16 @@
         android:name="com.android.pos.ui.fragments.manualsales.ManualSaleNew"
         android:label="ManualSaleNew"
         tools:layout="@layout/fragment_manual_sale_new">
+
+        <action
+            android:id="@+id/action_manualSaleNew_to_transactionFragment"
+            app:destination="@id/transactionFragment"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+
+        <action
+            android:id="@+id/action_manualSaleNew_to_orders"
+            app:destination="@id/orders"
+            app:enterAnim="@anim/nav_default_enter_anim" />
         <action
             android:id="@+id/action_manualSaleNew_to_assignCustomerOrderFragment"
             app:destination="@id/assignCustomerOrderFragment"

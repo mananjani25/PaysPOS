@@ -27,7 +27,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:padding="@dimen/_5sdp"
+                android:padding="@dimen/_6sdp"
+                android:background="?attr/selectableItemBackground"
                 android:src="@drawable/ic_cancel_black" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -49,7 +50,8 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:gravity="center"
-                android:padding="@dimen/_5sdp"
+                android:background="?attr/selectableItemBackground"
+                android:padding="@dimen/_6sdp"
                 android:text="@string/tv_print"
                 android:textSize="@dimen/_6mdpi" />
 
@@ -61,7 +63,7 @@
                 android:layout_gravity="center"
                 android:layout_marginEnd="@dimen/_10sdp"
                 android:gravity="center"
-                android:padding="@dimen/_5sdp"
+                android:padding="@dimen/_6sdp"
                 android:text="@string/tv_home"
                 android:textColor="@color/txt_color_blue"
                 android:textSize="@dimen/_6mdpi" />

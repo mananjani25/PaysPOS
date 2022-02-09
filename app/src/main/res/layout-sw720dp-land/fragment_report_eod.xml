@@ -34,8 +34,8 @@
                     android:layout_centerVertical="true"
                     android:layout_gravity="center"
                     android:background="?attr/selectableItemBackground"
-                    android:padding="@dimen/_4sdp"
-                    app:srcCompat="@drawable/ic_arrow_back"
+                    android:padding="@dimen/_6sdp"
+                    app:srcCompat="@drawable/ic_cancel_white"
                     app:tint="@color/viewTextColor" />
 
             </RelativeLayout>
@@ -61,7 +61,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginEnd="@dimen/_10sdp"
-                android:padding="@dimen/_4sdp"
+                android:padding="@dimen/_6sdp"
                 android:text="@string/tv_email"
                 android:gravity="center"
                 android:layout_gravity="center"
@@ -75,7 +75,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginEnd="@dimen/_10sdp"
-                android:padding="@dimen/_3sdp"
+                android:padding="@dimen/_6sdp"
                 android:gravity="center"
                 android:layout_gravity="center"
                 android:text="@string/tv_clock_out"
@@ -89,7 +89,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/_10sdp"
-                android:padding="@dimen/_3sdp"
+                android:padding="@dimen/_6sdp"
                 android:text="@string/tv_home"
                 android:textColor="@color/txt_color_blue"
                 android:textSize="@dimen/_7mdpi"

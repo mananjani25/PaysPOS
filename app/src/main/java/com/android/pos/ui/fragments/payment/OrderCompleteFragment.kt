@@ -484,7 +484,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         if (prefProvider.getValue(Constants.CUSTOMER_NAME, "").toString().isNotEmpty()) {
             binding.txtAddCustomer.visibility = View.GONE
         } else {
-            binding.txtAddCustomer.visibility = View.VISIBLE
+            if(isSpilt){
+                binding.txtAddCustomer.visibility = View.GONE
+            }else{
+                binding.txtAddCustomer.visibility = View.VISIBLE
+            }
         }
 
 

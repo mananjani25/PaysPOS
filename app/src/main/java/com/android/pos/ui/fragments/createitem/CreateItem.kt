@@ -111,7 +111,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
             findNavController().navigate(R.id.action_createItem_to_customVariationDialog)
         }
 
-        binding.txtSave.setOnClickListener {
+        binding.header.txtSave.setOnClickListener {
             saveItem()
         }
 
@@ -402,10 +402,13 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
     private fun setupData() {
 
 
+        binding.header.txtSave.text = getString(R.string.save)
+        binding.header.txtTitle.text = getString(R.string.create_item)
+
         if (isEdit) {
 
-            binding.txtSave.text = getString(R.string.update)
-            binding.txtTitle.text = getString(R.string.update_item)
+            binding.header.txtSave.text = getString(R.string.update)
+            binding.header.txtTitle.text = getString(R.string.update_item)
             itemObject = arguments?.getParcelable("itemObject")!!
             viewModel.setData(itemObject)
             selectedId = itemObject.categoryId
@@ -491,7 +494,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.imgBack.setOnClickListener {
+        binding.header.imgBack.setOnClickListener {
             val navControll = findNavController()
             navControll.previousBackStackEntry?.savedStateHandle?.set(
                 Constants.KEY,

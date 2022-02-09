@@ -4,14 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CompoundButton
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.TbDiscount
-import com.android.pos.data.model.responseModel.GetDiscountResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentCreateDiscountBinding
 import com.android.pos.utils.AlertUtils
@@ -44,9 +42,12 @@ class CreateDiscount : Fragment() {
         isEdit = arguments?.getBoolean("isEdit")!!
         binding.tvSymbolPer.visibility = View.VISIBLE
 
+        binding.header.txtSave.text = getString(R.string.save)
+        binding.header.txtTitle.text = getString(R.string.create_discount)
+
         if (isEdit) {
-            binding.txtSave.text = getString(R.string.update)
-            binding.txtDiscountTitle.text = getString(R.string.update_discount)
+            binding.header.txtSave.text = getString(R.string.update)
+            binding.header.txtTitle.text = getString(R.string.update_discount)
             discountData = arguments?.getParcelable("discountObject")!!
 
             viewModel.setDiscountData(discountData)
@@ -90,8 +91,12 @@ class CreateDiscount : Fragment() {
     }
 
     private fun onCLick() {
-        binding.imgBack.setOnClickListener {
+        binding.header.imgBack.setOnClickListener {
             backPressManage()
+        }
+
+        binding.header.txtSave.setOnClickListener {
+            viewModel.submit()
         }
     }
 

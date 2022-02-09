@@ -180,8 +180,8 @@ class TransactionViewModel @Inject constructor(
                 "Cash" -> {
                     data["payment_type"] = "Cash"
                 }
-                "External" -> {
-                    data["payment_type"] = "External"
+                "Card" -> {
+                    data["payment_type"] = "Card"
                 }
             }
 

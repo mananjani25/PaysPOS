@@ -27,47 +27,9 @@
             android:background="@color/white"
             android:orientation="vertical">
 
-            <androidx.appcompat.widget.LinearLayoutCompat
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/imgBack"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:padding="@dimen/_4sdp"
-                    app:srcCompat="@drawable/ic_cancel_black" />
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    style="@style/CustomFontSemiBold"
-                    android:id="@+id/txtServiceChargeTitle"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_weight="1"
-
-                    android:gravity="center"
-                    android:text="@string/add_service_charge"
-                    android:textSize="@dimen/_7mdpi" />
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/txtSave"
-                    style="@style/CustomFontSemiBold"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_weight="0.1"
-                    android:background="@color/btnColor"
-                    android:gravity="center"
-                    android:onClick="@{() -> viewModel.submit()}"
-                    android:padding="@dimen/_5sdp"
-                    android:text="@string/save"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/_7mdpi" />
-
-            </androidx.appcompat.widget.LinearLayoutCompat>
+            <include
+                android:id="@+id/header"
+                layout="@layout/view_header_toolbar" />
 
             <View
                 android:layout_width="match_parent"
@@ -85,6 +47,7 @@
 
 
                 <View
+                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:background="@color/view" />
@@ -124,6 +87,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
+                    android:visibility="gone"
                     android:background="@color/view" />
 
 

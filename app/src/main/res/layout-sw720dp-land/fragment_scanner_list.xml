@@ -27,7 +27,7 @@
                     android:layout_centerVertical="true"
                     android:layout_gravity="center"
                     android:background="?attr/selectableItemBackground"
-                    android:padding="@dimen/_4sdp"
+                    android:padding="@dimen/_6sdp"
                     app:srcCompat="@drawable/ic_arrow_back"
                     app:tint="@color/viewTextColor" />
 
@@ -52,7 +52,7 @@
                 android:id="@+id/txtResetDevice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="@dimen/_4sdp"
+                android:padding="@dimen/_6sdp"
                 android:text="Reset Device"
                 android:textColor="@color/txt_color_blue"
                 android:textSize="@dimen/_6mdpi" />

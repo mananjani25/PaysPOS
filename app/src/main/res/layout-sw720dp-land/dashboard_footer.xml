@@ -26,8 +26,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_marginEnd="@dimen/_5sdp"
             android:layout_toStartOf="@+id/imgInfo"
+            android:padding="@dimen/_5sdp"
             android:textColor="@color/txt_color_blue"
             android:textSize="@dimen/_6mdpi"
             tools:ignore="RelativeOverlap"
@@ -51,8 +51,6 @@
             android:layout_width="@dimen/_12sdp"
             android:layout_height="@dimen/_12sdp"
             android:layout_centerVertical="true"
-            android:layout_marginTop="@dimen/_2sdp"
-            android:layout_marginEnd="@dimen/_10sdp"
             android:layout_toStartOf="@+id/imgClock"
             android:elevation="@dimen/_5sdp"
             android:tint="@color/txt_color_blue"
@@ -62,12 +60,13 @@
 
         <ImageView
             android:id="@+id/imgClock"
-            android:layout_width="@dimen/_8sdp"
-            android:layout_height="@dimen/_8sdp"
+            android:layout_width="@dimen/_18sdp"
+            android:layout_height="@dimen/_18sdp"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:layout_marginEnd="@dimen/_5sdp"
             android:contentDescription="@string/clock"
+            android:padding="@dimen/_5sdp"
             android:src="@drawable/ic_tab_clock" />
 
 
@@ -108,6 +107,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:background="?attr/selectableItemBackground"
                 android:id="@+id/linearTransaction"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -118,6 +118,7 @@
                 tools:ignore="UseCompoundDrawables">
 
                 <ImageView
+                    android:layout_marginStart="@dimen/_5sdp"
                     android:layout_width="@dimen/_8sdp"
                     android:layout_height="@dimen/_8sdp"
                     android:contentDescription="@string/transactions"
@@ -135,6 +136,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:background="?attr/selectableItemBackground"
                 android:id="@+id/linearOpenOrders"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -146,6 +148,7 @@
                 tools:ignore="UseCompoundDrawables">
 
                 <ImageView
+                    android:layout_marginStart="@dimen/_5sdp"
                     android:layout_width="@dimen/_8sdp"
                     android:layout_height="@dimen/_8sdp"
                     android:contentDescription="@string/notification"
@@ -163,6 +166,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:background="?attr/selectableItemBackground"
                 android:id="@+id/linearMore"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -173,6 +177,7 @@
                 tools:ignore="UseCompoundDrawables">
 
                 <ImageView
+                    android:layout_marginStart="@dimen/_5sdp"
                     android:id="@+id/imgMore"
                     android:layout_width="@dimen/_8sdp"
                     android:layout_height="@dimen/_8sdp"

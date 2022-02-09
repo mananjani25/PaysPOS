@@ -63,6 +63,9 @@ class CreateModifierSet : Fragment(), TextWatcher {
 
     private fun setupUI() {
 
+        binding.header.txtTitle.text = getString(R.string.new_modifier_set)
+        binding.header.txtSave.text = getString(R.string.save)
+
         binding.edtModifier.addTextChangedListener(this)
         binding.edtPrice.addTextChangedListener(this)
 
@@ -82,8 +85,8 @@ class CreateModifierSet : Fragment(), TextWatcher {
         }
 
         if (isEdit) {
-            binding.txtTitle.text = getString(R.string.update_modifier_set)
-            binding.btnSave.text = getString(R.string.update)
+            binding.header.txtTitle.text = getString(R.string.update_modifier_set)
+            binding.header.txtSave.text = getString(R.string.update)
 
             modifierSet = arguments?.getParcelable("modifierObject")!!
             itemIds = modifierSet!!.itemIds as ArrayList<Int>
@@ -102,7 +105,7 @@ class CreateModifierSet : Fragment(), TextWatcher {
             adapter.addAll(modifierSet!!.modifiers)
         }
 
-        binding.btnSave.setOnClickListener {
+        binding.header.txtSave.setOnClickListener {
             viewModel.setModifiers(adapter.getAll())
             viewModel.setDeleteModifiers(adapter.getDelete())
             viewModel.submit()
@@ -180,7 +183,7 @@ class CreateModifierSet : Fragment(), TextWatcher {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.imgBack.setOnClickListener {
+        binding.header.imgBack.setOnClickListener {
             val navControll = findNavController()
             navControll.previousBackStackEntry?.savedStateHandle?.set(
                 Constants.KEY,
