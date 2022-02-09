@@ -15,8 +15,10 @@
         android:layout_height="match_parent">
 
         <LinearLayout
+            android:id="@+id/linearLogin"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
             android:background="@color/white"
             android:gravity="center"
             android:orientation="vertical">
@@ -144,8 +146,10 @@
             style="@style/CustomFontSemiBold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_above="@+id/terminal_id"
+            android:layout_below="@+id/linearLogin"
             android:layout_alignParentBottom="true"
-            android:layout_centerInParent="true"
+            android:layout_centerHorizontal="true"
             android:layout_gravity="center"
             android:layout_marginBottom="@dimen/_26sdp"
             android:gravity="bottom|center"
@@ -159,6 +163,7 @@
             style="@style/CustomFontSemiBold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_above="@+id/txtBottom"
             android:layout_alignParentBottom="true"
             android:layout_centerInParent="true"
             android:layout_gravity="center"
@@ -170,6 +175,7 @@
             tools:text="@string/tv_pos_2021" />
 
         <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txtBottom"
             style="@style/CustomFontMediumStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

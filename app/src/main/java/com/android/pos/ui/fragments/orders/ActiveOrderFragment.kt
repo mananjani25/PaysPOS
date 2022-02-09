@@ -318,7 +318,7 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
     }
 
     private fun cartModel(order: OpenOrderResponse.Data.Order): CartModel {
-        Log.e("futureDeliveryDate", order.futureDeliveryDate.toString())
+        Log.e("futureDeliveryDate  ", Gson().toJson(order))
         return CartModel().apply {
             terminalId = order.terminalId
             employeeID = order.employeeId
