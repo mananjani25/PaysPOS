@@ -60,6 +60,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
     private var cartItemModel = TbItem()
     private val viewModel by viewModels<ManualSaleViewModel>()
     var amountToBepaid = 0.0
+    var totalquantity = 0
     @Inject
     lateinit var rolePermission: RolePermission
     private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
@@ -891,7 +892,9 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         val edtItemName: AppCompatEditText = dialog.findViewById(R.id.edtItemName)
 
         edtNote.setText(model.note)
+        totalquantity = 0
         var qty = model.itemQuantity
+        totalquantity = qty
 
         txtQty.addTextChangedListener(object : TextWatcher {
             override fun onTextChanged(
@@ -964,6 +967,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
         llPlus.setOnClickListener {
             qty += 1
+            totalquantity = qty
             txtQty.setText(qty.toString())
         }
         llMinus.setOnClickListener {
@@ -971,6 +975,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             if (qty > 1) {
                 qty -= 1
             }
+            totalquantity = qty
             txtQty.setText(qty.toString())
         }
 
@@ -988,7 +993,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                     if (result.discountType == requireContext().getString(R.string.disc_percentage)) {
 
                         model.discountPrice = calculateDiscountPercentage(
-                            model.price * model.itemQuantity,
+                            model.price * totalquantity,
                             result.percentage
                         )
                         model.discountId = result.id
@@ -997,7 +1002,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                         viewModel.cartLogic(cartList, model, Constants.UPDATE)
                         txtTitle.text = model.name + "  $" + String.format(
                             "%.2f",
-                            ((model.price * model.itemQuantity) - model.discountPrice)
+                            ((model.price * totalquantity) - model.discountPrice)
                         )
 
                     } else if (result.discountType == "Amount") {
@@ -1010,7 +1015,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                         viewModel.cartLogic(cartList, model, Constants.UPDATE)
                         txtTitle.text = model.name + "  $" + String.format(
                             "%.2f",
-                            ((model.price * model.itemQuantity) - model.discountPrice)
+                            ((model.price * totalquantity) - model.discountPrice)
                         )
                     }
                 } else {
