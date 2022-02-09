@@ -41,9 +41,12 @@ class CreateNote : Fragment() {
 
         isEdit = arguments?.getBoolean("isEdit")!!
 
+        binding.header.txtSave.text = getString(R.string.save)
+        binding.header.txtTitle.text = getString(R.string.create_note)
+
         if (isEdit) {
-            binding.txtSave.text = getString(R.string.update)
-            binding.txtNoteTitle.text = getString(R.string.update_note)
+            binding.header.txtSave.text = getString(R.string.update)
+            binding.header.txtTitle.text = getString(R.string.update_note)
             noteData = arguments?.getParcelable("taxObject")!!
 
             viewModel.setNoteData(noteData)
@@ -60,13 +63,17 @@ class CreateNote : Fragment() {
                 }
             }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+
+        binding.header.txtSave.setOnClickListener {
+            viewModel.submit()
+        }
         return binding.root
     }
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.imgBack.setOnClickListener {
+        binding.header.imgBack.setOnClickListener {
             backPressManage()
         }
     }

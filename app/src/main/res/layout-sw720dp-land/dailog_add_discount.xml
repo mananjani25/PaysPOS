@@ -51,9 +51,9 @@
                     android:background="@color/btnColor"
                     android:gravity="center"
                     android:paddingStart="@dimen/_15sdp"
-                    android:paddingTop="@dimen/_6sdp"
+                    android:paddingTop="@dimen/_7sdp"
                     android:paddingEnd="@dimen/_15sdp"
-                    android:paddingBottom="@dimen/_6sdp"
+                    android:paddingBottom="@dimen/_7sdp"
                     android:text="Add"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_6mdpi" />

@@ -54,15 +54,18 @@ class CreateTeamMember : Fragment() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
-        binding.imgClose.setOnClickListener {
+        binding.header.imgBack.setOnClickListener {
             findNavController().navigateUp()
         }
 
         employeeModel = arguments?.getParcelable("data")
 
+        binding.header.txtSave.text = getString(R.string.save)
+        binding.header.txtTitle.text = getString(R.string.tv_create_team_member)
+
         if (employeeModel != null) {
-            binding.btnSave.text = getString(R.string.update)
-            binding.txtTitle.text = getString(R.string.tv_update_team_member)
+            binding.header.txtSave.text = getString(R.string.update)
+            binding.header.txtTitle.text = getString(R.string.tv_update_team_member)
 
             employeeModel!!.teamRoleId?.let { viewModel.setRoleId(it) }
             viewModel.setTaxData(employeeModel!!)
@@ -70,7 +73,8 @@ class CreateTeamMember : Fragment() {
 
 
             employeeModel?.teamRoleId?.let { viewModel.roleNameById(it) }
-                ?.observe(viewLifecycleOwner,
+                ?.observe(
+                    viewLifecycleOwner,
                     {
                         binding.txtRoleName.text = it.data?.name
                     })
@@ -110,7 +114,7 @@ class CreateTeamMember : Fragment() {
                 .show()
         }
 
-        binding.btnSave.setOnClickListener {
+        binding.header.txtSave.setOnClickListener {
 
             viewModel.createTaxDetails.value?.firstName =
                 binding.edtFirstName.text.toString().trim()

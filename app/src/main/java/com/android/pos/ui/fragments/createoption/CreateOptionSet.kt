@@ -64,11 +64,12 @@ class CreateOptionSet : Fragment(), TextWatcher {
     private fun setupUI() {
 
         binding.edtOption.addTextChangedListener(this)
-
+        binding.header.txtTitle.text = getString(R.string.create_option)
+        binding.header.txtSave.text = getString(R.string.save)
 
         if (isEdit) {
-            binding.txtTitle.text = getString(R.string.update_option_set)
-            binding.txtSave.text = getString(R.string.update)
+            binding.header.txtTitle.text = getString(R.string.update_option_set)
+            binding.header.txtSave.text = getString(R.string.update)
 
 
             optionSet = arguments?.getParcelable("optionObject")!!
@@ -83,7 +84,7 @@ class CreateOptionSet : Fragment(), TextWatcher {
             adapter.addAll(optionSet!!.options)
         }
 
-        binding.txtSave.setOnClickListener {
+        binding.header.txtSave.setOnClickListener {
             viewModel.setModifiers(adapter.getAll())
             viewModel.setDeleteModifiers(adapter.getDelete())
             viewModel.submit()
@@ -180,7 +181,7 @@ class CreateOptionSet : Fragment(), TextWatcher {
     }
 
     private fun onCLick() {
-        binding.imgBack.setOnClickListener {
+        binding.header.imgBack.setOnClickListener {
             val navControll = findNavController()
             navControll.previousBackStackEntry?.savedStateHandle?.set(
                 Constants.KEY,

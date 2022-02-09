@@ -58,10 +58,13 @@ class CreateTax : Fragment() {
         isEdit = arguments?.getBoolean("isEdit")!!
         binding.tvSymbolPer.visibility = View.VISIBLE
 
+        binding.header.txtSave.text = getString(R.string.save)
+        binding.header.txtTitle.text = getString(R.string.tv_new_tax)
+
         if (isEdit) {
             taxData = arguments?.getParcelable("taxObject")!!
-            binding.txtSave.text = getString(R.string.update)
-            binding.txtTaxTitle.text = getString(R.string.tv_update_tax)
+            binding.header.txtSave.text = getString(R.string.update)
+            binding.header.txtTitle.text = getString(R.string.tv_update_tax)
             viewModel.setTaxData(taxData)
 
             binding.itemsCount.text = "" + taxData.itemIds.size + " Items"
@@ -92,6 +95,10 @@ class CreateTax : Fragment() {
         setupSnackbar()
         observeShowProgress()
         navigate()
+
+        binding.header.txtSave.setOnClickListener {
+            viewModel.submit()
+        }
 
         val callback: OnBackPressedCallback =
             object : OnBackPressedCallback(true /* enabled by default */) {

@@ -28,7 +28,7 @@
                 android:layout_centerVertical="true"
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/_5sdp"
-                android:padding="@dimen/_5sdp"
+                android:padding="@dimen/_6sdp"
                 android:visibility="gone"
                 app:srcCompat="@drawable/ic_arrow_back"
                 app:tint="@color/black" />
@@ -40,7 +40,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_gravity="center"
-                android:padding="@dimen/_5sdp"
+                android:padding="@dimen/_6sdp"
                 android:text="@string/tv_home"
                 android:textColor="@color/btnColorDark_"
                 android:textSize="@dimen/_6sdp"
@@ -81,7 +81,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:layout_gravity="center"
-                android:padding="@dimen/_5sdp"
+                android:padding="@dimen/_6sdp"
                 android:text="@string/add_customer"
                 android:textColor="@color/btnColorDark_"
                 android:textSize="@dimen/_6sdp" />

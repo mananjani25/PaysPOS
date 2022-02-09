@@ -10,7 +10,6 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.TbServiceCharge
-import com.android.pos.data.model.responseModel.GetServiceChargeResponse
 import com.android.pos.data.remote.Constants.ADD_SERVICE_CHARGE
 import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.databinding.DialogAddServiceChargeBinding
@@ -42,9 +41,12 @@ class CreateServiceCharge : Fragment() {
 
         isEdit = arguments?.getBoolean("isEdit")!!
 
+        binding.header.txtSave.text = getString(R.string.save)
+        binding.header.txtTitle.text = getString(R.string.add_service_charge)
+
         if (isEdit) {
-            binding.txtSave.text = getString(R.string.update)
-            binding.txtServiceChargeTitle.text = getString(R.string.update_service_charge)
+            binding.header.txtSave.text = getString(R.string.update)
+            binding.header.txtTitle.text = getString(R.string.update_service_charge)
             serviceChargeData = arguments?.getParcelable("serviceChargeObject")!!
 
             viewModel.setDiscountData(serviceChargeData)
@@ -66,13 +68,17 @@ class CreateServiceCharge : Fragment() {
             }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 
+        binding.header.txtSave.setOnClickListener {
+            viewModel.submit()
+        }
+
         return binding.root
     }
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.imgBack.setOnClickListener {
+        binding.header.imgBack.setOnClickListener {
             backPressManage()
         }
 
