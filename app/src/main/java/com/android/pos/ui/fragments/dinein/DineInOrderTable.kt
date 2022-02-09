@@ -3158,7 +3158,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                     builder.addText(
                         padLine(
-                            if (customerSettingModel.showTeam) {
+                            if (customerSettingModel.showOrderTime) {
                                 "Order Time:" + Constants.getReceiptFormatDateFromUTCServer(
                                     getOrderDetailsResponse?.createdAt.toString()
                                 )
@@ -3200,7 +3200,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                         builder.addText(
                             padLine(
-                                if (customerSettingModel.showTeam) {
+                                if (customerSettingModel.showPrintTime) {
                                     "Print Time:" + formatted
                                 } else {
                                     ""

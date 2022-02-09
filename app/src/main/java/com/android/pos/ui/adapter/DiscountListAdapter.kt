@@ -5,7 +5,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.entities.TbDiscount
-import com.android.pos.data.model.responseModel.GetDiscountResponse
 import com.android.pos.databinding.ViewDiscountItemBinding
 import com.android.pos.ui.fragments.settings.discount.DiscountListViewModel
 
@@ -54,6 +53,7 @@ class DiscountListAdapter(val viewModel: DiscountListViewModel) :
 
         this.discountList.apply {
             clear()
+
             addAll(discountList)
         }
     }

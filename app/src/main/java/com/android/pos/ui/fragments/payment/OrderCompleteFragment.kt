@@ -1095,7 +1095,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                     builder.addText(
                         padLine(
-                            if (customerSettingModel.showTeam) {
+                            if (customerSettingModel.showOrderTime) {
                                 "Order Time:" + Constants.getReceiptFormatDateFromUTCServer(
                                     getDineInOrderDetails?.createdAt.toString()
                                 )
@@ -1137,7 +1137,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                         builder.addText(
                             padLine(
-                                if (customerSettingModel.showTeam) {
+                                if (customerSettingModel.showPrintTime) {
                                     "Print Time:" + formatted
                                 } else {
                                     ""
@@ -2131,7 +2131,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                     builder.addText(
                         padLine(
-                            if (customerSettingModel.showTeam) {
+                            if (customerSettingModel.showOrderTime) {
                                 "Order Time:" + Constants.getReceiptFormatDateFromUTCServer(
                                     getDineInOrderDetails?.createdAt.toString()
                                 )
@@ -2173,7 +2173,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                         builder.addText(
                             padLine(
-                                if (customerSettingModel.showTeam) {
+                                if (customerSettingModel.showPrintTime) {
                                     "Print Time:" + formatted
                                 } else {
                                     ""
@@ -3589,7 +3589,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                     builder.addText(
                         padLine(
-                            if (customerSettingModel.showTeam) {
+                            if (customerSettingModel.showOrderTime) {
                                 "Order Time:" + getReceiptFormatDateFromUTCServer(receiptModel?.order?.createdAt.toString())
                             } else {
                                 ""
@@ -3628,7 +3628,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                         builder.addText(
                             padLine(
-                                if (customerSettingModel.showTeam) {
+                                if (customerSettingModel.showPrintTime) {
                                     "Print Time:" + formatted
                                 } else {
                                     ""

@@ -337,6 +337,8 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
                 itemDiscount += it.discountPrice
             }
             discountPrice = (order.totalDiscount - itemDiscount)
+            deliveryType = order.deliveryType
+
         }
     }
 
@@ -634,6 +636,7 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
         printType: String
     ) {
         var builder: Builder? = null
+        Log.e(TAG, "customerSettingModel:  ${Gson().toJson(customerSettingModel)}")
         try {
             builder =
                 Builder(
@@ -938,7 +941,7 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
 
                     builder.addText(
                         padLine(
-                            if (customerSettingModel.showTeam) {
+                            if (customerSettingModel.showOrderTime) {
                                 "Order Time:" + Constants.getReceiptFormatDateFromUTCServer(
                                     receiptModel?.createdAt.toString()
                                 )
@@ -955,6 +958,7 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
                     )
 
                 }
+
 
                 if (customerSettingModel.showPrintTime) {
 
@@ -979,7 +983,7 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
 
                         builder.addText(
                             padLine(
-                                if (customerSettingModel.showTeam) {
+                                if (customerSettingModel.showPrintTime) {
                                     "Print Time:" + formatted
                                 } else {
                                     ""

@@ -409,7 +409,12 @@ class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.date = TimeFormatUtils.getCurrentDate()
         if (future_delivery_date.isNotEmpty())
             orderAttributeRequestModel.futureDeliveryDate = future_delivery_date
-        orderAttributeRequestModel.deliveryType = cartModel.openOrderType
+        if (cartModel.openOrderType.isNotEmpty() && cartModel.openOrderType != null) {
+            orderAttributeRequestModel.deliveryType = cartModel.openOrderType
+        }
+        else{
+            orderAttributeRequestModel.deliveryType = cartModel.deliveryType
+        }
         orderAttributeRequestModel.employeeId = cartModel.employeeID
         orderAttributeRequestModel.locationId = cartModel.locationId
         orderAttributeRequestModel.terminalId = cartModel.terminalId
@@ -555,7 +560,12 @@ class PaymentViewModel @Inject constructor(
             orderAttributeRequestModel.futureDeliveryTime = future_delivery_time
 
 
-        orderAttributeRequestModel.deliveryType = cartModel.openOrderType
+        if (cartModel.openOrderType.isNotEmpty() && cartModel.openOrderType != null) {
+            orderAttributeRequestModel.deliveryType = cartModel.openOrderType
+        }
+        else{
+            orderAttributeRequestModel.deliveryType = cartModel.deliveryType
+        }
         orderAttributeRequestModel.employeeId = cartModel.employeeID
         orderAttributeRequestModel.locationId = cartModel.locationId
         orderAttributeRequestModel.terminalId = cartModel.terminalId
@@ -667,7 +677,12 @@ class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.date = TimeFormatUtils.getCurrentDate()
         if (future_delivery_date.isNotEmpty())
             orderAttributeRequestModel.futureDeliveryDate = future_delivery_date
-        orderAttributeRequestModel.deliveryType = cartModel.openOrderType
+        if (cartModel.openOrderType.isNotEmpty() && cartModel.openOrderType != null) {
+            orderAttributeRequestModel.deliveryType = cartModel.openOrderType
+        }
+        else{
+            orderAttributeRequestModel.deliveryType = cartModel.deliveryType
+        }
         orderAttributeRequestModel.employeeId = cartModel.employeeID
         orderAttributeRequestModel.locationId = cartModel.locationId
         orderAttributeRequestModel.terminalId = cartModel.terminalId

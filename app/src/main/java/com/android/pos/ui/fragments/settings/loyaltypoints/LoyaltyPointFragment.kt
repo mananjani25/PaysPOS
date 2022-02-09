@@ -22,6 +22,7 @@ import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.statusUtils.Status
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.*
 
 @AndroidEntryPoint
 class LoyaltyPointFragment : Fragment() {
@@ -131,7 +132,10 @@ class LoyaltyPointFragment : Fragment() {
                     Status.SUCCESS -> {
                         ProgressUtils.dismissProgressDialog()
                         binding.rvServiceCharge.visibility = View.VISIBLE
-                        resource.data?.let { taxList -> setTaxData(taxList) }
+                        resource.data?.let { taxList ->
+                        Collections.reverse(taxList)
+                            setTaxData(taxList)
+                        }
                     }
                     Status.ERROR -> {
                         ProgressUtils.dismissProgressDialog()
