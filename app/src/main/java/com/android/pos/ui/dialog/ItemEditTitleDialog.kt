@@ -2,6 +2,8 @@ package com.android.pos.ui.dialog
 
 import android.Manifest
 import android.app.Activity.RESULT_OK
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -26,6 +28,7 @@ import com.android.pos.data.remote.Constants.DIALOG_IMAGE_PATH
 import com.android.pos.databinding.DialogEditItemTitleBinding
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.ChooseColorsAdapter
+import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.FileUtils.handleImageOnKitkat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.Priority
@@ -34,9 +37,10 @@ import com.bumptech.glide.load.DecodeFormat
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
 import dagger.hilt.android.AndroidEntryPoint
+import java.io.File
+import kotlin.math.log
 
 
 @AndroidEntryPoint
@@ -51,7 +55,7 @@ class ItemEditTitleDialog : DialogFragment() {
     private val OPERATION_CHOOSE_PHOTO = 2
     private val PERMISSION = 3
     private var selectOption: String = ""
-
+    var MEGABYTE = 1024 * 1024
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -62,7 +66,7 @@ class ItemEditTitleDialog : DialogFragment() {
         binding.lifecycleOwner = this
 
         imgUrl = arguments?.getString("imgUrl") ?: ""
-        if(imgUrl?.isNotEmpty() == true){
+        if (imgUrl?.isNotEmpty() == true) {
             imagePath = imgUrl
             showImage()
         }
@@ -192,20 +196,70 @@ class ItemEditTitleDialog : DialogFragment() {
         when (requestCode) {
             OPERATION_CAPTURE_PHOTO -> if (resultCode == RESULT_OK) {
 
-                imagePath = mUri.toString()
-                if (imagePath != null) {
-                    viewProfile(imagePath)
-                } else {
-                    show("ImagePath is null")
+                try {
+                    imagePath = mUri.toString()
+                    var file: File = File(imagePath)
+                    var length = file.length()
+                    var mb_string = ""
+                    var size_kb = length / 1024f
+                    var size_mb = String.format("%.2f", size_kb / 1024f).toDouble()
+                    if (size_mb > 0) {
+                        mb_string = "$size_mb MB"
+                    } else {
+                        mb_string = "$size_kb KB"
+                    }
+                    Log.d("yash", "onActivityResult: " + mb_string)
+                    if (length > 2048000) {
+                        AlertUtils.showCustomAlertWithListenerWithOK(
+                            requireContext(),
+                            "The file is $mb_string exceeding the maximum file size of 2 MB."
+                        ) { _, _ ->
+                            dismiss()
+                        }
+                    } else {
+                        if (imagePath != null) {
+                            viewProfile(imagePath)
+                        } else {
+                            show("ImagePath is null")
+                        }
+                    }
+                } catch (e: Exception) {
+                    Log.d("yash", "onActivityResult: " + e.message)
                 }
+
 
             }
             OPERATION_CHOOSE_PHOTO -> if (resultCode == RESULT_OK) {
-                imagePath = handleImageOnKitkat(data, requireActivity())
-                showImage()
+                try {
+                    imagePath = handleImageOnKitkat(data, requireActivity())
+                    var file: File = File(imagePath)
+                    var length = file.length()
+                    var mb_string = ""
+                    var size_kb = length / 1024f
+                    var size_mb = String.format("%.2f", size_kb / 1024f).toDouble()
+                    if (size_mb > 0) {
+                        mb_string = "$size_mb MB"
+                    } else {
+                        mb_string = "$size_kb KB"
+                    }
+                    Log.d("yash", "onActivityResult: " + mb_string)
+                    if (length > 2048000) {
+                        AlertUtils.showCustomAlertWithListenerWithOK(
+                            requireContext(),
+                            "The file is $mb_string exceeding the maximum file size of 2 MB."
+                        ) { _, _ ->
+                            dismiss()
+                        }
+                    } else {
+                        showImage()
+                    }
+                } catch (e: Exception) {
+                    Log.d("yash", "onActivityResult: " + e.message)
+                }
             }
         }
     }
+
 
     private fun showImage() {
         if (imagePath != null) {
