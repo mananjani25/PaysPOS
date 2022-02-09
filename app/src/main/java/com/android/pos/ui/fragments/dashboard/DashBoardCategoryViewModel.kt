@@ -548,6 +548,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 serviceChargeCalculation(cartList)
                 subTotalPrice -= (cartList[0].discountPrice)
 
+
                 cartList[0].dineInList?.forEach {
                     totalDiscount += it.items.map {
                         (it.discountPrice * it.itemQuantity)
@@ -579,6 +580,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 serviceChargeCalculation(cartList)
                 subTotalPrice -= cartList[0].discountPrice
+
 
 
                 totalDiscount = cartList[0].items!!.map {

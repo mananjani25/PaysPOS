@@ -1469,11 +1469,11 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         txtSubTotal.text = "$" + String.format(
             "%.2f",
-            viewModel.subTotalPrice
+            if (viewModel.subTotalPrice < 0.0) 0.0 else viewModel.subTotalPrice
         )
         txtServiceCharge.text = "$" + String.format(
             "%.2f",
-            viewModel.totalServiceCharge
+            if (viewModel.subTotalPrice < 0.0) 0.0 else viewModel.totalServiceCharge
         )
         txtDiscount.text = "- $" + String.format(
             "%.2f",
@@ -1484,7 +1484,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         //  txtTotalAmount.text = total.toString()
         txtTotalTax.text = "$" + String.format(
             "%.2f",
-            viewModel.totalTax
+            if (viewModel.subTotalPrice < 0.0) 0.0 else viewModel.totalTax
         )
 
         //display the loyalty point
@@ -2625,13 +2625,13 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         ).toString()
                     )
                 }
-                bundle.putDouble("subTotalPrice", viewModel.subTotalPrice)
-                bundle.putDouble("totalTax", viewModel.totalTax)
+                bundle.putDouble("subTotalPrice", if (viewModel.subTotalPrice < 0) 0.0 else viewModel.subTotalPrice)
+                bundle.putDouble("totalTax", if (viewModel.subTotalPrice < 0) 0.0 else viewModel.totalTax)
                 bundle.putDouble(
                     "totalDiscount",
                     viewModel.totalDiscount + cartList[0].discountPrice
                 )
-                bundle.putDouble("totalServiceCharge", viewModel.totalServiceCharge)
+                bundle.putDouble("totalServiceCharge", if (viewModel.subTotalPrice < 0) 0.0 else viewModel.totalServiceCharge )
                 bundle.putString("future_delivery_date", future_delivery_date)
                 bundle.putString("future_delivery_time", future_delivery_time)
                 cartList[0].customer = assignCustomer

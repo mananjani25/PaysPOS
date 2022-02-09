@@ -134,6 +134,7 @@ class CategoriesViewModel @Inject constructor(
 
         if (allCategories.isNotEmpty()) {
             viewModelScope.launch {
+               // posRepository.deleteAllCategories()
                 posRepository.updateCategorySort(allCategories)
             }
         }
