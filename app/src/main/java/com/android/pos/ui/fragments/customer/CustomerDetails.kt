@@ -96,7 +96,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
             )!!
 
         binding.model = customerModel
-        binding.executePendingBindings()
+       // binding.executePendingBindings()
 
         viewModel.customerId = customerModel.id.toString()
 

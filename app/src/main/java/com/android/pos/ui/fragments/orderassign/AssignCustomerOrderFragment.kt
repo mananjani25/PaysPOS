@@ -17,12 +17,14 @@ import com.android.pos.R
 import com.android.pos.data.entities.TbCustomer
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentAssignCustomerOrderBinding
+import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.AssignCustomerToOrderAdapter
 import com.android.pos.ui.fragments.customer.CustomerListViewModel
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.callback.PaginationScrollListener
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class AssignCustomerOrderFragment : Fragment(), ItemCallback {
@@ -39,6 +41,9 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
     private var dineInPosition: Int? = null
     private var isFromCompletePayment: Boolean = false
 
+
+    @Inject
+    lateinit var prefProvider: PrefProvider
 
     private var currentpage = 1
     private val perpagedata = 50
@@ -190,13 +195,18 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
     override fun onItemClickListener(view: View?, pos: Int) {
 
         val customer = adapter.getItem(pos)
-
+        prefProvider.setValue(
+            Constants.CUSTOMER_NAME,
+            customer.first_name + " " + customer.last_name
+        )
+        prefProvider.saveCustomerData(customer)
         val result = Bundle().apply {
             putParcelable("data", customer)
             putBoolean("OPEN_ORDER", false)
             putString("SELECTED_DATE", selectedDate)
             putBoolean("isEdit", true)
             putString(Constants.KEY, "FROM_CUSTOMER")
+
             isFromDineIn?.let { putBoolean("DINE_IN", it) }
             dineInPosition?.let {
                 Log.e(TAG, "position:  $it")

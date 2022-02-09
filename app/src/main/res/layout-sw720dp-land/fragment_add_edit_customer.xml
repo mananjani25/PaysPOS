@@ -66,6 +66,7 @@
                             android:background="@drawable/background_square_border_grey"
                             android:imeOptions="actionNext"
                             android:padding="@dimen/_5sdp"
+                            android:maxLength="30"
                             android:inputType="textCapWords|textVisiblePassword"
                             android:digits="@string/character_String"
                             android:text="@={viewModel.addCustomerDetails.data.first_name}"
@@ -104,7 +105,8 @@
                             android:text="@={viewModel.addCustomerDetails.data.last_name}"
                             android:textColor="@color/txtColor"
                             android:textColorHint="@color/hintColor"
-                            android:textSize="@dimen/_5mdpi" />
+                            android:textSize="@dimen/_5mdpi"
+                            android:maxLength="30"/>
                     </LinearLayout>
 
                 </LinearLayout>
@@ -115,7 +117,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/_15sdp"
                     android:layout_marginTop="@dimen/_10sdp"
-                    android:text="@string/phone"
+                    android:text="@string/_phone"
                     android:textColor="@color/color65"
                     android:textSize="@dimen/_5mdpi"
                     android:visibility="visible" />

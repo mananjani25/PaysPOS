@@ -1,6 +1,7 @@
 package com.android.pos.ui.adapter
 
 import android.text.TextUtils
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -106,8 +107,15 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
 
 
             orderDiscount = (totalDiscount) / itemCount
+            Log.d(
+                "yash",
+                "bind: [" + absoluteAdapterPosition + "] orderDiscount : " + orderDiscount
+            )
             loyaltyAmountPerItem = loyaltyAmount / itemCount
-
+            Log.d(
+                "yash",
+                "bind: [" + absoluteAdapterPosition + "] loyaltyAmountPerItem : " + loyaltyAmountPerItem
+            )
 
             var totalItemPrice: Double = (item.totalPrice - item.discountAmount)
 
@@ -116,11 +124,15 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
                     totalTax += it
                 }
             }
-
+            Log.d("yash", "bind: [" + absoluteAdapterPosition + "] totaltax : " + totalTax)
 
             item.orderItemModifiers.forEach { modifiers ->
                 totalItemPrice += (modifiers.price * modifiers.quantity)
             }
+            Log.d(
+                "yash",
+                "bind: [" + absoluteAdapterPosition + "] totalItemPrice : " + totalItemPrice
+            )
 
             var totalServiceCharge = 0.0
             serviceChargeList.forEach {
@@ -128,7 +140,10 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
                     totalServiceCharge += (totalItemPrice * it.percentage) / 100
                 }
             }
-
+            Log.d(
+                "yash",
+                "bind: [" + absoluteAdapterPosition + "] totalServiceCharge : " + totalServiceCharge
+            )
             var cashDiscountDivide = 0.0
             if (paymentType == "Cash") {
                 if (cashdiscountType == "CashDiscount") {
@@ -139,17 +154,31 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
                     cashDiscountDivide = (cash_discount_or_surcharge / itemCount)
                 }
             }
+            Log.d(
+                "yash",
+                "bind: [" + absoluteAdapterPosition + "] cashDiscountDivide : " + cashDiscountDivide
+            )
 
-            totalItemPrice += (totalTax + totalServiceCharge) - orderDiscount - loyaltyAmountPerItem - cashDiscountDivide
+            totalItemPrice += (totalTax + totalServiceCharge) - orderDiscount - loyaltyAmountPerItem
+            if (paymentType == "Cash") {
+                totalItemPrice -= cashDiscountDivide
+            } else if (paymentType == "Card") {
+                totalItemPrice += cashDiscountDivide
+            }
+            Log.d("yash", "bind: [" + absoluteAdapterPosition + "] finalTotal : " + totalItemPrice)
             MethodUtils.setPriceTextView(itemBinding.tvItemPrice, totalItemPrice.toDouble())
-
+            var count = 0.0
             itemBinding.ivCheck.setOnClickListener {
                 item.isChecked = !item.isChecked
 
                 if (item.isChecked) {
-                    selectedItemList.add(item)
+                    count += totalItemPrice
+                    Log.d("yash", "bind: sellecttotal :  "+count)
+//                    selectedItemList.add(item)
                 } else {
-                    selectedItemList.remove(item)
+                    count -= totalItemPrice
+                    Log.d("yash", "bind: sellecttotal :  "+count)
+//                    selectedItemList.remove(item)
                 }
 
                 showItemSubTotal?.invoke()

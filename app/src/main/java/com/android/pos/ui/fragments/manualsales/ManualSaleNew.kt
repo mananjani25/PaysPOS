@@ -59,7 +59,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
     private lateinit var cartAdapter: ManualSaleCartAdapter
     private var cartItemModel = TbItem()
     private val viewModel by viewModels<ManualSaleViewModel>()
-
+    var amountToBepaid = 0.0
     @Inject
     lateinit var rolePermission: RolePermission
     private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
@@ -1039,7 +1039,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
     private fun showPopupWindow(view: View) {
 
-        val popupView: View = layoutInflater.inflate(R.layout.info_popup_window, null)
+        val popupView: View = layoutInflater.inflate(R.layout.info_popup_window_new, null)
 
         val chkLoyalty: CheckBox = popupView.findViewById(R.id.chkLoyaltyAmount)
         val txtSubTotal: AppCompatTextView = popupView.findViewById(R.id.txtSubTotal)
@@ -1048,8 +1048,13 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         val txtTotalAmount: AppCompatTextView = popupView.findViewById(R.id.txtTotalAmount)
         val txtTotalTax: AppCompatTextView = popupView.findViewById(R.id.txtTotalTax)
         val txtLoyaltyAmount: AppCompatTextView = popupView.findViewById(R.id.txtLoyaltyAmount)
-        val groupLoyalty: Group = popupView.findViewById(R.id.groupLoyalty)
+//        val groupLoyalty: Group = popupView.findViewById(R.id.groupLoyalty)
         val txtLoyaltyPoints: AppCompatTextView = popupView.findViewById(R.id.txtLoyaltyPoints)
+        val lblLoyaltyPoints: AppCompatTextView = popupView.findViewById(R.id.lblLoyaltyPoints)
+        val lblLoyaltyAmount: AppCompatTextView = popupView.findViewById(R.id.lblLoyaltyAmount)
+        val txtTotalcashAdj: AppCompatTextView = popupView.findViewById(R.id.txtnoncashadj)
+        val linear_NonCashDiscount: LinearLayoutCompat =
+            popupView.findViewById(R.id.linear_NonCashDiscount)
 
         //listeners
         chkLoyalty.setOnCheckedChangeListener { _, p1 ->
@@ -1074,21 +1079,35 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         }
 
         //display the loyalty point
+
+
         val customer = viewModel.selectedCustomer
-        Log.e(TAG, Gson().toJson(viewModel.redeemLoyaltyInfo))
-        var amountToBepaid = viewModel.redeemLoyaltyInfo.getAmountToBePaid()
         if (viewModel.loyaltyPointCondition(customer)) {
 
+            lblLoyaltyPoints.visible()
+            txtLoyaltyPoints.visible()
+            lblLoyaltyAmount.visible()
+            txtLoyaltyAmount.visible()
+
+            Log.e(TAG, "InsideLoyalty")
+            Log.e(TAG, Gson().toJson(viewModel.redeemLoyaltyInfo))
+            amountToBepaid = viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0
             txtLoyaltyAmount.text =
                 "- $${String.format("%.2f", viewModel.redeemLoyaltyInfo.usedLoyaltyAmount)}"
             txtLoyaltyPoints.text = "${viewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
 
-            groupLoyalty.visible()
+
+            // groupLoyalty.gone()
             chkLoyalty.visible()
             chkLoyalty.isChecked = viewModel.redeemLoyaltyInfo.needToApplyLoyalty
-
         } else {
-            groupLoyalty.gone()
+            amountToBepaid = viewModel.totalPrice
+            lblLoyaltyPoints.gone()
+            txtLoyaltyPoints.gone()
+            lblLoyaltyAmount.gone()
+            txtLoyaltyAmount.gone()
+
+            //   groupLoyalty.gone()
             chkLoyalty.gone()
         }
 
@@ -1109,6 +1128,20 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             "%.2f",
             viewModel.totalTax
         )
+
+        if (prefProvider.getValueboolean(Constants.CASHDIS_SURCHARGEENABLE, false)) {
+            linear_NonCashDiscount.visibility = View.VISIBLE
+            txtTotalcashAdj.text = "$" + String.format(
+                "%.2f",
+                MethodUtils.calculateCashDiscount(
+                    amountToBepaid!!,
+                    prefProvider,
+                    requireContext()
+                )
+            )
+        } else {
+            linear_NonCashDiscount.visibility = View.GONE
+        }
 
         //display total price to be paid
         MethodUtils.setPriceTextView(txtTotalAmount, amountToBepaid ?: 0.0)
@@ -1171,12 +1204,32 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         val linearReports: LinearLayout = dialog.findViewById(R.id.linearReports)
         val linearCust: LinearLayout = dialog.findViewById(R.id.linearCust)
         val linearTeam: LinearLayout = dialog.findViewById(R.id.linearTeam)
+        val linearHardware: LinearLayout = dialog.findViewById(R.id.linearHardware)
         val linearInventory: LinearLayout = dialog.findViewById(R.id.linearInventory)
         val linearSetting: LinearLayout = dialog.findViewById(R.id.linearSetting)
         val linearSupport: LinearLayout = dialog.findViewById(R.id.linearSupport)
 
         linearHome.setOnClickListener {
             findNavController().popBackStack()
+            closeDialog(dialog)
+        }
+
+        linearHardware.setOnClickListener {
+            findNavController().navigate(R.id.action_manualSaleNew_to_hardware)
+            closeDialog(dialog)
+        }
+
+        linearCash.setOnClickListener {
+            findNavController().navigate(R.id.action_manualSaleNew_to_Cashlog)
+            closeDialog(dialog)
+        }
+
+        linearTransaction.setOnClickListener {
+            findNavController().navigate(R.id.action_manualSaleNew_to_transactionFragment)
+            closeDialog(dialog)
+        }
+        linearOrders.setOnClickListener {
+            findNavController().navigate(R.id.action_manualSaleNew_to_orders)
             closeDialog(dialog)
         }
         linearCust.setOnClickListener {
@@ -1199,6 +1252,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             findNavController().navigate(R.id.action_manualSaleNew_to_settings)
             dialog.dismiss()
         }
+
 
         imgCalculator.setColorFilter(resources.getColor(R.color.txtColor))
         txtCheckOut.setTextColor(resources.getColor(R.color.txtColor))

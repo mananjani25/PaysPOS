@@ -65,6 +65,7 @@
                 android:gravity="center"
                 android:padding="@dimen/_6sdp"
                 android:text="@string/tv_home"
+                android:background="?attr/selectableItemBackground"
                 android:textColor="@color/txt_color_blue"
                 android:textSize="@dimen/_6mdpi" />
         </LinearLayout>
