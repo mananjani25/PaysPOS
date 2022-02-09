@@ -277,7 +277,8 @@ class AddEditCustomer : Fragment() {
                     modelAddress
                 )
 
-            } else if (adapter.getList()[adapter.getList().size - 1].address1.isNotEmpty()) {
+            } else if (adapter.getList()[adapter.getList().size - 1].address1.isNotEmpty() || adapter.getList()[adapter.getList().size - 1].city.isNotEmpty()) {
+                Log.d("yash", "onClick: " + adapter.getList()[adapter.getList().size - 1].address1)
                 modelAddress = CreateCustomerRequestModel.Customer.Addresses()
                 modelAddress.apply {
                     latitude = 0.0
