@@ -107,7 +107,7 @@
                         android:layout_marginEnd="@dimen/_5sdp"
                         android:background="@null"
                         android:imeOptions="actionDone"
-                        android:inputType="text"
+                        android:inputType="textVisiblePassword"
                         android:digits="@string/disable_emoji_string"
                         android:textColor="@color/colorAB"
                         android:textSize="@dimen/_5mdpi" />

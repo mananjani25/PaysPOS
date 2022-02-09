@@ -121,7 +121,8 @@
                         android:layout_marginBottom="@dimen/_3sdp"
                         android:text="@{model.first_name +' '+model.last_name}"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textSize="@dimen/_6mdpi"
+                        android:maxLength="30"/>
 
                     <View
                         android:layout_width="match_parent"

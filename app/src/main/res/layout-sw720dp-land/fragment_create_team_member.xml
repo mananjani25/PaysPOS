@@ -72,8 +72,9 @@
                             android:background="@drawable/edt_border_light_gray"
                             android:hint="@string/first_name_normal"
                             android:imeOptions="actionNext"
-                            android:inputType="textCapWords"
+                            android:inputType="textCapWords|textVisiblePassword"
                             android:padding="@dimen/_5sdp"
+                            android:maxLength="30"
                             android:textColor="@color/txtColor"
                             android:textColorHint="@color/hint_color_"
                             android:textSize="@dimen/_5mdpi"
@@ -105,14 +106,16 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:background="@drawable/edt_border_light_gray"
+                            android:digits="@string/character_String"
                             android:hint="@string/last_name_normal"
                             android:imeOptions="actionNext"
-                            android:inputType="textCapWords"
                             android:padding="@dimen/_5sdp"
-                            android:digits="@string/character_String"
                             android:textColor="@color/txtColor"
                             android:textColorHint="@color/hint_color_"
-                            android:textSize="@dimen/_5mdpi" />
+                            android:textSize="@dimen/_5mdpi"
+                            android:maxLength="30"
+                            android:inputType="textCapWords|textVisiblePassword"
+                            />
 
                     </LinearLayout>
                 </LinearLayout>
@@ -142,7 +145,7 @@
                         android:background="@drawable/edt_border_light_gray"
                         android:hint="@string/tv_email"
                         android:imeOptions="actionNext"
-                        android:inputType="textCapWords"
+                        android:inputType="textVisiblePassword"
                         android:padding="@dimen/_5sdp"
                         android:digits="@string/disable_emoji_string"
                         android:textColor="@color/txtColor"
@@ -350,7 +353,7 @@
                         android:layout_gravity="center"
                         android:background="@null"
                         android:hint="6548"
-                        android:digits="@string/disable_emoji_string"
+                        android:digits="@string/numbers_digits_string"
                         android:inputType="number"
                         android:maxLength="4"
 
