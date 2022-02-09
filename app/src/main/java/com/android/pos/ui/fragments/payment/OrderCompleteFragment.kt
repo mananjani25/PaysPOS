@@ -484,9 +484,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         if (prefProvider.getValue(Constants.CUSTOMER_NAME, "").toString().isNotEmpty()) {
             binding.txtAddCustomer.visibility = View.GONE
         } else {
-            if(isSpilt){
+            if (isSpilt) {
                 binding.txtAddCustomer.visibility = View.GONE
-            }else{
+            } else {
                 binding.txtAddCustomer.visibility = View.VISIBLE
             }
         }
@@ -4180,6 +4180,37 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                         builder.addText(receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName)
                     }
+                    if (customerSettingModel.showCustomerPhone) {
+                        if (receiptModel?.order?.customer?.phones?.isNotEmpty() == true) {
+                            builder.addTextLineSpace(30)
+                            builder.addFeedUnit(30)
+                            builder.addTextFont(Builder.FONT_E)
+                            //builder.addTextAlign(Builder.ALIGN_LEFT)
+                            builder.addTextLang(Builder.LANG_EN)
+                            addCustomerTextSize(builder, customerSettingModel.fonts)
+                            builder.addTextStyle(
+                                Builder.FALSE,
+                                Builder.FALSE,
+                                Builder.FALSE,
+                                Builder.COLOR_1
+                            )
+
+                            builder.addText(
+                                receiptModel?.order?.customer?.phones?.size?.minus(
+                                    1
+                                )?.let {
+                                    receiptModel?.order?.customer?.phones?.get(
+                                        it
+                                    )?.phoneNumber
+                                }
+                            )
+
+                        }
+
+
+                    }
+
+
 
                     if (customerSettingModel.showCustomerAddress) {
                         if (receiptModel?.order?.customer?.addresses?.isNotEmpty() == true) {

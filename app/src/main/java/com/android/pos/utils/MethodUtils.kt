@@ -17,6 +17,8 @@ import com.android.pos.data.model.requestModel.CreateItemRequestModel
 import com.android.pos.data.remote.Constants
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.extensions.toMultiPartRequestBody
+import com.google.i18n.phonenumbers.PhoneNumberUtil
+import com.google.i18n.phonenumbers.Phonenumber
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.File
@@ -125,6 +127,22 @@ class MethodUtils {
         fun getTextTextView(edtFirstName: AppCompatTextView): String {
 
             return edtFirstName.text.toString().trim()
+        }
+
+        fun getUSFormatNumber(inputNumber: String): String {
+
+
+            val pnu: PhoneNumberUtil = PhoneNumberUtil.getInstance()
+            var outPutNumber = inputNumber
+            try {
+                val pn: Phonenumber.PhoneNumber = pnu.parse(inputNumber, "US")
+                outPutNumber =
+                    pnu.format(pn, PhoneNumberUtil.PhoneNumberFormat.NATIONAL)
+
+            } catch (e: NumberFormatException) {
+                return inputNumber
+            }
+            return outPutNumber
         }
 
         fun generateItemRequest(data: CreateItemRequestModel): HashMap<String, RequestBody> {

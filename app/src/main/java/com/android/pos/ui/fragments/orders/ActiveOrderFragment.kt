@@ -1399,7 +1399,7 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
                 )
 
             }
-            if (customerSettingModel.showCustomerAddress != false or customerSettingModel.showCustomerPhone != false or customerSettingModel.showCustomerName) {
+            if (customerSettingModel.showCustomerAddress or customerSettingModel.showCustomerPhone or customerSettingModel.showCustomerName) {
 
                 if (receiptModel.customer != null) {
 
@@ -1448,6 +1448,35 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
 
                         builder.addText(receiptModel.customer.firstName + " " + receiptModel.customer.lastName)
                     }
+
+                    if (customerSettingModel.showCustomerPhone) {
+                        if (receiptModel?.customer?.phones?.isNotEmpty()) {
+                            builder.addTextLineSpace(30)
+                            builder.addFeedUnit(30)
+                            builder.addTextFont(Builder.FONT_E)
+                            //builder.addTextAlign(Builder.ALIGN_LEFT)
+                            builder.addTextLang(Builder.LANG_EN)
+                            addCustomerTextSize(builder, customerSettingModel.fonts)
+                            builder.addTextStyle(
+                                Builder.FALSE,
+                                Builder.FALSE,
+                                Builder.FALSE,
+                                Builder.COLOR_1
+                            )
+
+                            var phoneNoFormatted = MethodUtils.getUSFormatNumber(
+                                receiptModel?.customer?.phones?.get(receiptModel?.customer?.phones?.size - 1).phoneNumber
+                            )
+                            Log.e(TAG, "phoneNoFormatted:  ${phoneNoFormatted}")
+                            builder.addText(phoneNoFormatted)
+
+                        }
+
+
+                    }
+
+
+
 
                     if (customerSettingModel.showCustomerAddress) {
                         if (receiptModel.customer?.addresses?.isNotEmpty() == true) {
