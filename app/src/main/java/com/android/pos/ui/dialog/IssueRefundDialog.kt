@@ -217,7 +217,6 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
             totalItemDiscount += it.discountAmount
         }
 
-
         refundItemListAdapter.addItems(
             paymentOrderDetailsResponse.data.order.order_items,
             serviceChargesList,
@@ -228,9 +227,10 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
             ),
             if (paymentOrderDetailsResponse.data.cash_discount_type != null) paymentOrderDetailsResponse.data.cash_discount_type else "",
             paymentOrderDetailsResponse.data.payment_type,
-            paymentOrderDetailsResponse.data.total_discount - totalItemDiscount,
+            if (paymentOrderDetailsResponse.data.total_discount > totalItemDiscount) paymentOrderDetailsResponse.data.total_discount - totalItemDiscount else 0.0,
             paymentOrderDetailsResponse.data.loyalty_amount
         )
+
 
         refundItemListAdapter.setSelectedItemList(
             paymentOrderDetailsResponse.data.order.order_items.toCollection(
@@ -263,12 +263,15 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
             totalItemDiscount += it.discountAmount
         }
 
-        val totalDiscount = paymentOrderDetailsResponse.data.total_discount - totalItemDiscount
-
+        var totalDiscount = 0.0
+        if (paymentOrderDetailsResponse.data.total_discount > totalItemDiscount) {
+            totalDiscount = paymentOrderDetailsResponse.data.total_discount - totalItemDiscount
+        }
+        var count = 0
         refundItemListAdapter.selectedItemList().forEach {
             subTotalPrice = 0.0
             if (it.isChecked) {
-
+                count++
                 subTotalPrice += it.totalPrice - it.discountAmount
 
                 it.orderItemTaxes.forEach { tax ->
@@ -278,6 +281,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                 it.orderItemModifiers.forEach { modifiers ->
                     subTotalPrice += (modifiers.price * modifiers.quantity)
                 }
+
 
                 totalServiceCharge +=
                     (paymentOrderDetailsResponse.data.service_charge_amount / refundItemListAdapter.itemCount)
@@ -307,31 +311,42 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
         }
 
 
-        var totalServiceCharge = 0.0
-        serviceChargesList?.forEach {
-            if (it.isEnabled) {
-                totalServiceCharge += (totalItemPrice * it.percentage) / 100
-            }
-        }
 
 
         totalItemPrice += totalTax + totalServiceCharge - applyDiscount - loyaltyAmount
 
         if (paymentOrderDetailsResponse.data.payment_type == "Cash") {
             if (paymentOrderDetailsResponse.data.cash_discount_type == "CashDiscount") {
-                totalItemPrice -= (MethodUtils.calculateCashDiscount(
-                    totalItemPrice,
-                    prefProvider,
-                    requireContext()
-                ) / refundItemListAdapter.selectedItemList().size)
+                if (count == refundItemListAdapter.itemCount) {
+                    totalItemPrice -= (MethodUtils.calculateCashDiscount(
+                        totalItemPrice,
+                        prefProvider,
+                        requireContext()
+                    ))
+                } else {
+                    totalItemPrice -= (MethodUtils.calculateCashDiscount(
+                        totalItemPrice,
+                        prefProvider,
+                        requireContext()
+                    ) / refundItemListAdapter.itemCount)
+                }
+
             }
         } else if (paymentOrderDetailsResponse.data.payment_type == "Card") {
             if (paymentOrderDetailsResponse.data.cash_discount_type == "SurCharge") {
-                totalItemPrice += (MethodUtils.calculateCashDiscount(
-                    totalItemPrice,
-                    prefProvider,
-                    requireContext()
-                ) / refundItemListAdapter.selectedItemList().size)
+                if (count == refundItemListAdapter.itemCount) {
+                    totalItemPrice += (MethodUtils.calculateCashDiscount(
+                        totalItemPrice,
+                        prefProvider,
+                        requireContext()
+                    ))
+                } else {
+                    totalItemPrice += (MethodUtils.calculateCashDiscount(
+                        totalItemPrice,
+                        prefProvider,
+                        requireContext()
+                    ) / refundItemListAdapter.itemCount)
+                }
             }
         }
 
