@@ -3036,6 +3036,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 "isFromActiveOrder"
                             )
                         ) {*/
+                        Log.e(
+                            TAG,
+                            "customerReceiptdeliveryType:  ${receiptModel?.order?.deliveryType}"
+                        )
                         if (!isSpilt || (isSpilt && splitList.size == 1)) {
                             if (!requireArguments().getBoolean("isDineIn") && !requireArguments().getBoolean(
                                     "isFromActiveOrder"
@@ -3116,7 +3120,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             customerPrintWholeOrder()
 
                         } else {
-                            getCustomerPrinters(false)
+                            getCustomerPrinters(true)
                         }
 
 
@@ -3189,6 +3193,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                 requireActivity().runOnUiThread {
                                                     ProgressUtils.showProgressDialog(requireActivity())
                                                 }
+
                                                 initPrinter(cus, CUSTOMER)
 
 

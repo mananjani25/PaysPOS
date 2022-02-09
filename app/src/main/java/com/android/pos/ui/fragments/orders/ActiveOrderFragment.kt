@@ -337,7 +337,7 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
                 itemDiscount += it.discountPrice
             }
             discountPrice = (order.totalDiscount - itemDiscount)
-            deliveryType = order.deliveryType
+            deliveryType = order.deliveryType ?: ""
 
         }
     }
