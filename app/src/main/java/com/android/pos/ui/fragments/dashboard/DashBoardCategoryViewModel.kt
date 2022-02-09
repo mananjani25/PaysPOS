@@ -14,6 +14,7 @@ import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ADD
+import com.android.pos.data.remote.Constants.BUSINESS_ADDRESS
 import com.android.pos.data.remote.Constants.BUSINESS_NAME
 import com.android.pos.data.remote.Constants.BUSINESS_PHONE_NO
 import com.android.pos.data.remote.Constants.BUSINESS_WEBSITE
@@ -567,7 +568,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
 
                     taxCalculation(item)
-                    Log.d("yash", "TaxCalculation: "+totalTax)
+                    Log.d("yash", "TaxCalculation: " + totalTax)
 
                     item.modifiers.forEach {
                         subTotalPrice += (it.price * it.itemQuantity)
@@ -692,7 +693,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         item.taxes?.forEach { tax ->
             if (tax.isActive) {
                 totalTax += if (tax.taxType == "Percentage") {
-                    Log.d("yash", "taxCalculation: "+tax.taxType)
+                    Log.d("yash", "taxCalculation: " + tax.taxType)
 
                     var modifierPrice = 0.0
                     val price =
@@ -710,7 +711,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     String.format("%.2f", itemTaxPrice)
                         .toDouble()
                 } else {
-                    Log.d("yash", "taxCalculation: "+tax.taxType)
+                    Log.d("yash", "taxCalculation: " + tax.taxType)
                     String.format("%.2f", tax.rate * item.itemQuantity)
                         .toDouble()
                 }
@@ -1567,6 +1568,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 prefProvider.setValue(BUSINESS_NAME, it.data.businessName)
                                 prefProvider.setValue(SYSTEM_TIMEZONE, it.data.timeZone)
                                 prefProvider.setValue(BUSINESS_PHONE_NO, it.data.phoneNumber)
+                                prefProvider.setValue(BUSINESS_ADDRESS,it.data.address)
                                 prefProvider.setValueboolean(
                                     IS_PRINTER_QUEUE_ENABLE,
                                     it.data.isPrinterQueueEnable
@@ -1632,4 +1634,21 @@ class DashBoardCategoryViewModel @Inject constructor(
     fun showErrorMessage(errorMessage: String) {
         _snackbarText.value = Event(errorMessage)
     }
+
+    fun restrictedAmount(txtTotalAmount: AppCompatTextView): Boolean {
+
+        val cleanAmount: String =
+            txtTotalAmount.text.toString().trim().replace("""[$,]""".toRegex(), "").trim()
+        if (cleanAmount.isNotEmpty()) {
+
+            if (cleanAmount.toDouble() >= 1000000) {
+                return false
+            }
+        }
+
+        return true
+
+    }
+
+
 }

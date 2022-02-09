@@ -727,6 +727,10 @@
             app:destination="@id/customer"
             app:enterAnim="@anim/nav_default_enter_anim" />
         <action
+            android:id="@+id/action_manualSaleNew_to_hardware"
+            app:destination="@id/hardware"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
             android:id="@+id/action_manualSaleNew_to_reports"
             app:destination="@id/reports"
             app:enterAnim="@anim/nav_default_enter_anim" />
@@ -741,6 +745,10 @@
         <action
             android:id="@+id/action_manualSaleNew_to_settings"
             app:destination="@id/settings"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_manualSaleNew_to_Cashlog"
+            app:destination="@id/cashLogFragment"
             app:enterAnim="@anim/nav_default_enter_anim" />
     </fragment>
     <dialog
