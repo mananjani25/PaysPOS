@@ -1496,17 +1496,23 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     toFinalAmt = finalAmount
 
 
-
-
-
                     var paidGuestCount = 0
-                    for (i in 0 until dineInList.size) {
+
+                    for (i in 0 until baseResponse.guestAttributes.size){
+                        val obj = baseResponse.guestAttributes.get(i)
+
+                        if (obj.isPaid){
+                            paidGuestCount++
+                        }
+                    }
+                /*    for (i in 0 until dineInList.size) {
                         if (i != 0 && dineInList.size > i + 1) {
                             if (dineInList.get(i + 1).item != null && dineInList.get(i + 1).item?.isPaid == true) {
                                 paidGuestCount++
                             }
                         }
-                    }
+                    }*/
+                    Log.e("TODO", "paidGuestCount:  ${paidGuestCount}")
                     if (paidGuestCount > 0) {
 
                         paidGuestAmount = paidGuestCount
@@ -1515,6 +1521,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             paidGuestAmount = paidGuestCount
                             var perGTotal =
                                 subTotalWT / (baseResponse.guestAttributes.size - 1)
+                            Log.e(TAG,"perGTotal:  ${perGTotal}")
                             subTotalDInin = totalSubTotal - (perGTotal * paidGuestCount)
                         } else {
                             subTotalDInin = totalSubTotal
@@ -1523,7 +1530,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         //subTotalDInin -= baseResponse.totalDiscount
 
 
-                        Log.d(TAG, "navigateDineInOrder: " + subTotalDInin)
+                        Log.d("TODO", "suTotalPaidGuest: " + subTotalDInin)
 
                         var tempServicecharge = 0.0
                         if (paidGuestCount > 0) {
