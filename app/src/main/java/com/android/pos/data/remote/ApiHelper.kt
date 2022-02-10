@@ -337,7 +337,7 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
         getResult { apiService.getCategories() }
 
     suspend fun reOrderCategoryCall(id: Int, oldPos: Int, newPos: Int) =
-        getResult { apiService.reOrderCategory(id, oldPos, newPos) }
+        getResult { apiService.reOrderCategory(id, newPos, oldPos) }
 
     suspend fun getItemsCall() =
         getResult { apiService.getItems() }

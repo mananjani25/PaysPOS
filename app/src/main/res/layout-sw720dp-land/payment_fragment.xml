@@ -36,7 +36,8 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_gravity="center"
-                    android:padding="@dimen/_4sdp"
+                    android:padding="@dimen/_5sdp"
+                    android:background="?attr/selectableItemBackground"
                     app:srcCompat="@drawable/ic_cancel_black" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -47,10 +48,11 @@
                     android:layout_gravity="center"
                     android:layout_weight="1"
                     android:gravity="center"
+
                     android:paddingStart="@dimen/_10sdp"
-                    android:paddingTop="@dimen/_5sdp"
+                    android:paddingTop="@dimen/_6sdp"
                     android:paddingEnd="@dimen/_10sdp"
-                    android:paddingBottom="@dimen/_5sdp"
+                    android:paddingBottom="@dimen/_6sdp"
                     android:textColor="@color/btnColor"
                     android:textSize="@dimen/_6mdpi" />
 
@@ -62,9 +64,9 @@
                     android:layout_height="wrap_content"
                     android:background="?attr/selectableItemBackground"
                     android:paddingStart="@dimen/_5sdp"
-                    android:paddingTop="@dimen/_5sdp"
+                    android:paddingTop="@dimen/_6sdp"
                     android:paddingEnd="@dimen/_5sdp"
-                    android:paddingBottom="@dimen/_5sdp"
+                    android:paddingBottom="@dimen/_6sdp"
                     android:text="@string/split_amount"
                     android:textColor="@color/btnColor"
                     android:textSize="@dimen/_6mdpi" />
@@ -79,10 +81,7 @@
                     android:layout_marginEnd="@dimen/_5sdp"
                     android:background="?attr/selectableItemBackground"
                     android:gravity="center"
-                    android:paddingStart="@dimen/_5sdp"
-                    android:paddingTop="@dimen/_5sdp"
-                    android:paddingEnd="@dimen/_5sdp"
-                    android:paddingBottom="@dimen/_5sdp"
+                    android:padding="@dimen/_6sdp"
                     android:text="@string/add_tips"
                     android:textColor="@color/btnColor"
                     android:textSize="@dimen/_6mdpi" />
@@ -160,12 +159,11 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:layout_weight="1.4"
-                        android:paddingVertical="@dimen/_10sdp"
                         android:background="?attr/selectableItemBackground"
                         android:gravity="center"
+                        android:paddingVertical="@dimen/_10sdp"
                         android:textColor="@color/btnColorDark_"
-                        android:textSize="@dimen/_6mdpi"
-                        />
+                        android:textSize="@dimen/_6mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtSecondAmount"
@@ -174,9 +172,9 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_weight="1.4"
-                        android:paddingVertical="@dimen/_10sdp"
                         android:background="?attr/selectableItemBackground"
                         android:gravity="center"
+                        android:paddingVertical="@dimen/_10sdp"
 
                         android:textColor="@color/btnColorDark_"
                         android:textSize="@dimen/_6mdpi" />
@@ -188,9 +186,9 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_weight="1.4"
-                        android:paddingVertical="@dimen/_10sdp"
                         android:background="?attr/selectableItemBackground"
                         android:gravity="center"
+                        android:paddingVertical="@dimen/_10sdp"
                         android:textColor="@color/btnColorDark_"
                         android:textSize="@dimen/_6mdpi" />
 
@@ -202,9 +200,9 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_weight="1.4"
-                        android:paddingVertical="@dimen/_10sdp"
                         android:background="?attr/selectableItemBackground"
                         android:gravity="center"
+                        android:paddingVertical="@dimen/_10sdp"
                         android:textColor="@color/btnColorDark_"
                         android:textSize="@dimen/_6mdpi" />
 
@@ -219,9 +217,9 @@
                         android:gravity="center"
                         android:paddingVertical="@dimen/_10sdp"
                         android:text="@string/custom"
-                        android:visibility="visible"
                         android:textColor="@color/btnColorDark_"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textSize="@dimen/_6mdpi"
+                        android:visibility="visible" />
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -254,22 +252,22 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_weight="1.4"
-                        android:paddingVertical="@dimen/_10sdp"
                         android:background="?attr/selectableItemBackground"
                         android:gravity="center"
+                        android:paddingVertical="@dimen/_10sdp"
                         android:textColor="@color/btnColorDark_"
-                        android:textSize="@dimen/_6mdpi"
-                        />
+                        android:textSize="@dimen/_6mdpi" />
 
                     <androidx.appcompat.widget.LinearLayoutCompat
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="4.8" />
 
-                   <include layout="@layout/right_side_arrow"
-                       android:layout_weight="0.3"
-                       android:layout_width="0dp"
-                       android:layout_height="match_parent"/>
+                    <include
+                        layout="@layout/right_side_arrow"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.3" />
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -291,8 +289,7 @@
                         android:padding="@dimen/_10sdp"
                         android:text="@string/send_payment_link"
                         android:textColor="@color/drawerBack"
-                        android:textSize="@dimen/_6mdpi"
-                        />
+                        android:textSize="@dimen/_6mdpi" />
 
                     <include layout="@layout/right_side_arrow" />
 

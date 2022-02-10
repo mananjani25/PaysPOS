@@ -1648,7 +1648,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                         when {
                             isSplitByNo -> {
                                 val bundle = Bundle()
-                                bundle.putDouble("PaidAmount", cardPaymentAmount)
+                                bundle.putDouble("PaidAmount", cardPaymentAmount - tipAmount)
                                 var wholetotalPriceTemp = String.format(
                                     "%.2f",
                                     prefProvider.getValue("WholeTotal", "").toDouble()
@@ -1725,7 +1725,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                             }
                             isSplitByAmount -> {
                                 val bundle = Bundle()
-                                bundle.putDouble("PaidAmount", cardPaymentAmount)
+                                bundle.putDouble("PaidAmount", cardPaymentAmount - tipAmount)
                                 var wholetotalPriceTemp = String.format(
                                     "%.2f",
                                     prefProvider.getValue("WholeTotal", "").toDouble()

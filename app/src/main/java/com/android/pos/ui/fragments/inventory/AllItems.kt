@@ -304,7 +304,7 @@ class AllItems : Fragment() {
         if (categoryId != null) {
             isreOrder = true
             Log.e("reallyMoved", "$oldPos :: $newPos")
-            viewModel.reOrderItem(inventoryId!!, newPos, oldPos)
+            viewModel.reOrderItem(inventoryId!!, oldPos, newPos)
         }
 
     }
