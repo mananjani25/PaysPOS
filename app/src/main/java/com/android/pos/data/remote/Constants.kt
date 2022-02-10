@@ -160,6 +160,7 @@ object Constants {
     const val CUSTOMER_RECEIPTS_UPDATE_SETTINGS = "customer_receipts/{id}"
 
     const val TRANSACTION_LIST = "payments"
+    const val TRANSACTION_DETAIL = "TRANSACTION_DETAIL"
     const val REFUND_PAYMENT = "payments/refund"
 
 

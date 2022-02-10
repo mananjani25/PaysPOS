@@ -2,6 +2,7 @@ package com.android.pos.ui.fragments.transactions
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.nfc.Tag
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -23,6 +24,8 @@ import com.android.pos.data.entities.TeamRole
 import com.android.pos.data.model.responseModel.GetTransactionListResponse
 import com.android.pos.data.model.responseModel.VenueDetailsResponse
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.KEY
+import com.android.pos.data.remote.Constants.TRANSACTION_DETAIL
 import com.android.pos.databinding.FragmentTransactionBinding
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.TransactionAdapter
@@ -65,6 +68,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
     val myCalendar2 = Calendar.getInstance()
     val myCalendar3 = Calendar.getInstance()
     private var spinnerTouched = false
+    val TAG="TransactionFragment"
 
     private var employeeTimeSheet = ArrayList<GetTransactionListResponse.Data.Payment>()
 
@@ -80,18 +84,15 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
     ): View? {
         // Inflate the layout for this fragment
 
-        binding =
-            DataBindingUtil.inflate(
-                inflater,
-                R.layout.fragment_transaction,
-                container,
-                false
-            )
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_transaction, container, false)
 
         binding.viewModel = viewModel
 
         currentPage = 1
+
         binding.lifecycleOwner = this
+
+
 
 
         startDatePickerObserver()
@@ -292,16 +293,52 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
         })
 
 
-        viewModel.apiCallTimeSheet(
-            currentPage,
-            getTerminalId(binding.includeView.spTerminals.selectedItemPosition).toString(),
-            getRoleId(binding.includeView.spRoles.selectedItemPosition).toString(),
-            getEmployeeId(binding.includeView.spEmployees.selectedItemPosition).toString(),
-            getOrderId(binding.includeView.spOrders.selectedItemPosition).toString(),
-            getTipType(binding.includeView.spTipTypes.selectedItemPosition),
-            getPaymentType(binding.includeView.spTransactionTypes.selectedItemPosition)
 
-        )
+        if (findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Bundle>(KEY)?.value==null){
+            viewModel.apiCallTimeSheet(
+                currentPage,
+                getTerminalId(binding.includeView.spTerminals.selectedItemPosition).toString(),
+                getRoleId(binding.includeView.spRoles.selectedItemPosition).toString(),
+                getEmployeeId(binding.includeView.spEmployees.selectedItemPosition).toString(),
+                getOrderId(binding.includeView.spOrders.selectedItemPosition).toString(),
+                getTipType(binding.includeView.spTipTypes.selectedItemPosition),
+                getPaymentType(binding.includeView.spTransactionTypes.selectedItemPosition)
+
+            )
+        }
+        else{
+            findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Bundle>(KEY)
+                ?.observe(viewLifecycleOwner) { it ->
+                    Log.e(TAG, "transactionDetails :  "+" selectedorderType ${it.getString("selectedorderType").toString()}"+" selectedtransactionType ${it.getString("selectedtransactionType").toString()}")
+
+
+                    /*  putString("selectedorderType", binding.includeView.spOrders.selectedItemPosition.toString())
+                      putString("selectedtransactionType", binding.includeView.spTransactionTypes.selectedItemPosition.toString())
+                      putString("selectedroleType", binding.includeView.spRoles.selectedItemPosition.toString())
+                      putString("selectedemployeeType", binding.includeView.spEmployees.selectedItemPosition.toString())
+                      putString("selectedterminalType", binding.includeView.spTerminals.selectedItemPosition.toString())*/
+
+                    it.getString("selectedorderType")?.toInt()?.let { it1 -> binding.includeView.spOrders.setSelection(it1) }
+                    it.getString("selectedtransactionType")?.toInt()?.let { it1 -> binding.includeView.spTransactionTypes.setSelection(it1) }
+                    it.getString("selectedroleType")?.toInt()?.let { it1 -> binding.includeView.spRoles.setSelection(it1) }
+                    it.getString("selectedemployeeType")?.toInt()?.let { it1 -> binding.includeView.spEmployees.setSelection(it1) }
+                    it.getString("selectedterminalType")?.toInt()?.let { it1 -> binding.includeView.spTerminals.setSelection(it1) }
+                    viewModel.apiCallTimeSheet(
+                        currentPage,
+                        getTerminalId(binding.includeView.spTerminals.selectedItemPosition).toString(),
+                        getRoleId(binding.includeView.spRoles.selectedItemPosition).toString(),
+                        getEmployeeId(binding.includeView.spEmployees.selectedItemPosition).toString(),
+                        getOrderId(binding.includeView.spOrders.selectedItemPosition).toString(),
+                        getTipType(binding.includeView.spTipTypes.selectedItemPosition),
+                        getPaymentType(binding.includeView.spTransactionTypes.selectedItemPosition)
+                    )
+                }
+
+        }
+
+
+
+
 
 
         return binding.root
@@ -874,6 +911,12 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                     putInt("paymentId", it.id)
                     putBoolean("isFromTrans", true)
                     putString("orderType", it.orderDetails.orderType)
+
+                    putString("selectedorderType", binding.includeView.spOrders.selectedItemPosition.toString())
+                    putString("selectedtransactionType", binding.includeView.spTransactionTypes.selectedItemPosition.toString())
+                    putString("selectedroleType", binding.includeView.spRoles.selectedItemPosition.toString())
+                    putString("selectedemployeeType", binding.includeView.spEmployees.selectedItemPosition.toString())
+                    putString("selectedterminalType", binding.includeView.spTerminals.selectedItemPosition.toString())
                 }
                 findNavController().navigate(
                     R.id.action_transactionFragment_to_transactionDetailsFragment,

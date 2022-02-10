@@ -117,7 +117,6 @@ class CreateCategoryViewModel @Inject constructor(
                                         updatedAt = it.data.updatedAt
                                         thumbImgUrl = it.data.thumbImgUrl
                                         originalImgUrl = it.data.originalImgUrl
-
                                     }
                                     posRepository.createCategory(category)
 
