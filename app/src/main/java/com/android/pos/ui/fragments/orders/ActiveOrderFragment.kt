@@ -1510,7 +1510,7 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
                                 Builder.COLOR_1
                             )
 
-                            builder.addText(receiptModel.customer?.addresses?.get(0)?.fullAddress)
+                            builder.addText(receiptModel.customer?.addresses?.get(receiptModel.customer?.addresses?.size - 1)?.fullAddress)
                         }
                     }
 
