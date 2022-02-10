@@ -72,6 +72,8 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>(), MyCall
 
                 if (layoutPosition == 0) {
                     binding.imgProfile.setColorFilter(binding.root.context.resources.getColor(R.color.white))
+                } else {
+                    binding.imgProfile.colorFilter = null
                 }
 
             } else {
@@ -83,6 +85,9 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>(), MyCall
                 binding.imgOrderMenu.setColorFilter(binding.root.context.resources.getColor(R.color.txtColor))
                 if (layoutPosition == 0) {
                     binding.imgProfile.setColorFilter(binding.root.context.resources.getColor(R.color.txtColor))
+                } else {
+                    // binding.imgProfile.setColorFilter(binding.root.context.resources.getColor(R.color.white))
+                    binding.imgProfile.colorFilter = null
                 }
             }
 
