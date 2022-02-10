@@ -110,19 +110,29 @@ class Customer : Fragment() {
             }
 
         })
-//
-//        viewModel.customerListResponse.observe(viewLifecycleOwner, { event ->
-//            event.getContentIfNotHandled()?.let { customerList ->
-//                var data: ArrayList<TbCustomer>
-//                if (customerList.data.isNotEmpty()) {
-//                    dynamicCustomerList.clear()
-//                    data = customerList.data as ArrayList<TbCustomer>
-//                    dynamicCustomerList.addAll(data)
-//                    customerAdapter.setList(data)
-//                }
-//
-//            }
-//        })
+
+        viewModel._customerListResponse.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let { customerList ->
+                var data: ArrayList<TbCustomer>
+                if (customerList.isNotEmpty()) {
+                    dynamicCustomerList.clear()
+                    data = customerList as ArrayList<TbCustomer>
+                    dynamicCustomerList.addAll(data)
+                    customerAdapter.setList(data)
+                    try {
+                        if (!firstDetailLoad) {
+                            if(data.isNotEmpty()){
+                                loadFragment(data[0])
+                            }
+                        }
+                    } catch (e: Exception) {
+
+                    }
+
+                }
+
+            }
+        })
 
         return binding.root
     }
@@ -281,12 +291,13 @@ class Customer : Fragment() {
             }
 
             override fun afterTextChanged(s: Editable?) {
-//                searchByText(s?.trim().toString())
-                try {
-                    customerAdapter.filter.filter(
-                        s.toString().trim().lowercase()
-                    )
 
+                try {
+                    if(s?.trim()?.isNotEmpty() == true){
+                        searchByText(s?.trim().toString())
+                    }else{
+                        loadCustomerLocalList(1)
+                    }
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }

@@ -68,7 +68,12 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
                 binding.tvRate.paintFlags = binding.tvRate.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
                 Log.e(TAG, "PriceOriginalTotal  ${totalPrice(item)}")
                 Log.e(TAG, "PriceDiscounted  ${item.discountPrice}")
-                val dPrice = totalPrice(item) - (item.discountPrice * item.itemQuantity)
+                var dPrice = 0.0
+                if(!item.isManualSales){
+                    dPrice= totalPrice(item) - (item.discountPrice * item.itemQuantity)
+                }else{
+                    dPrice= totalPrice(item) - item.discountPrice
+                }
                 MethodUtils.setPriceTextView(binding.tvDiscountRate, dPrice)
             } else {
                 binding.tvRate.paintFlags = 0

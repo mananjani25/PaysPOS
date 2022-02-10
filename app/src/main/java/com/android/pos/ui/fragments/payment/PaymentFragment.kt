@@ -902,7 +902,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     else -> {
                         if (remainingAmount == 0.0) {
                             Log.e(TAG, "RemainingAmtZero")
-                            totalPrice + tipAmount
+                            totalPrice
                         } else {
                             Log.e(TAG, "RemainingNotZero")
                             remainingAmount
