@@ -104,10 +104,7 @@ class ManualSaleViewModel @Inject constructor(
                         }
                     }
 
-                }
-
-
-                else if (type == DELETE) {
+                } else if (type == DELETE) {
 
                     if (mPosition != -1) {
                         val model = cartList[0].items?.get(mPosition)
@@ -166,11 +163,15 @@ class ManualSaleViewModel @Inject constructor(
         itemList?.forEach { item ->
             totalCount += item.itemQuantity
             subTotalPrice += item.price * item.itemQuantity
-
             item.taxes?.forEach { tax ->
                 if (tax.isActive) {
                     if (tax.taxType == "Percentage") {
                         val itemTaxPrice = (tax.rate * (item.price * item.itemQuantity)) / 100
+                        Log.e("itemTaxPrice", "" + itemTaxPrice)
+                        totalTax += String.format("%.2f", itemTaxPrice)
+                            .toDouble()
+                    } else if (tax.taxType == "Dollar") {
+                        val itemTaxPrice = tax.rate * item.itemQuantity
                         Log.e("itemTaxPrice", "" + itemTaxPrice)
                         totalTax += String.format("%.2f", itemTaxPrice)
                             .toDouble()
@@ -182,7 +183,7 @@ class ManualSaleViewModel @Inject constructor(
                 it.discountPrice
             }.sum()
         }
-
+        subTotalPrice -= totalDiscount
         val serviceChargeList = serviceCharge.value?.data
         Log.e(TAG, "serviceChargesList:  ${Gson().toJson(serviceChargeList)}")
         if (serviceChargeList != null && serviceChargeList.isNotEmpty()) {
@@ -195,7 +196,7 @@ class ManualSaleViewModel @Inject constructor(
             }
         }
 
-        totalPrice = (subTotalPrice + totalTax + totalServiceCharge) - totalDiscount
+        totalPrice = (subTotalPrice + totalTax + totalServiceCharge)
 
         //loyalty point and price calculation
         checkAppliedLoyaltyProgram(

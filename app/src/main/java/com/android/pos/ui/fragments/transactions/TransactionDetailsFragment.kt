@@ -10,6 +10,7 @@ import android.util.Log
 import android.view.*
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -21,6 +22,7 @@ import com.android.pos.data.model.responseModel.GetCustomerReceiptSettingsRespon
 import com.android.pos.data.model.responseModel.GetTipReponse
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.databinding.FragmentTransactionDetailsBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.OrderDetailsItemListAdapter
@@ -117,8 +119,26 @@ class TransactionDetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         binding.imgBack.setOnClickListener {
-            findNavController().popBackStack(R.id.transactionFragment, false)
+            val bundle = Bundle().apply {
+                putString("selectedorderType", requireArguments().getString("selectedorderType"))
+                putString("selectedtransactionType", requireArguments()?.getString("selectedtransactionType"))
+                putString("selectedroleType", requireArguments()?.getString("selectedroleType"))
+                putString("selectedemployeeType", requireArguments()?.getString("selectedemployeeType"))
+                putString("selectedterminalType", requireArguments()?.getString("selectedterminalType"))
+            }
+          /*  findNavController().navigate(
+                R.id.action_transactionFragment_to_transactionDetailsFragment,
+                bundle
+            )*/
+
+            val navControll = findNavController()
+            navControll.previousBackStackEntry?.savedStateHandle?.set(KEY, bundle)
+            //findNavController().navigate(R.id.transactionFragment)
+
+            navControll.popBackStack()
+
         }
 
         binding.txtHome.setOnClickListener {

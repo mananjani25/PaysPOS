@@ -357,7 +357,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 binding.txtHome.text = getString(R.string.tv_home)
                 viewModel.deleteSplitDb()
                 binding.txtTitle.text =
-                    MethodUtils.roundOffAmount(paidAmount)
+                    MethodUtils.roundOffAmount(paidAmount + tipAmount)
 
                 if (isCustomCash) {
                     changeAmtGlobal =
@@ -374,7 +374,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
 
                 binding.txtPaymentAmount.text =
-                    "Out of " + MethodUtils.roundOffAmount(paidAmount)
+                    "Out of " + MethodUtils.roundOffAmount(paidAmount + tipAmount)
 
 
             }
@@ -3013,7 +3013,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             splitValue,
             prefProvider.getValueInt("ORDER_ID", -1),
             0.0,
-            prefProvider.getValue("WholeTotal", "").toDouble(),
+            prefProvider.getValue("WholeTotal", "0.0").toDouble(),
             isSplitByNo,
             isSplitByAmount,
             isCustomCash,
@@ -3029,6 +3029,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             redeemLoyaltyInfo
         )
 
+        Log.e("SAVE_SPLIT_BUNDLE", Gson().toJson(model))
         prefProvider.setValue(SAVE_SPLIT_BUNDLE, Gson().toJson(model).toString())
 
     }

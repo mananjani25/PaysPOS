@@ -208,11 +208,12 @@ class ItemEditTitleDialog : DialogFragment() {
                     } else {
                         mb_string = "$size_kb KB"
                     }
-                    Log.d("yash", "onActivityResult: " + mb_string)
-                    if (length > 2048000) {
+                    Log.d("yash", "onActivityResult: $mb_string")
+                    Log.d("yash", "onActivityResult: $length")
+                    if (length > 5242880) {
                         AlertUtils.showCustomAlertWithListenerWithOK(
                             requireContext(),
-                            "The file is $mb_string exceeding the maximum file size of 2 MB."
+                            "The file is $mb_string exceeding the maximum file size of 5 MB."
                         ) { _, _ ->
                             dismiss()
                         }
@@ -242,11 +243,12 @@ class ItemEditTitleDialog : DialogFragment() {
                     } else {
                         mb_string = "$size_kb KB"
                     }
-                    Log.d("yash", "onActivityResult: " + mb_string)
-                    if (length > 2048000) {
+                    Log.d("yash", "onActivityResult: $mb_string")
+                    Log.d("yash", "onActivityResult: $length")
+                    if (length > 5242880) {
                         AlertUtils.showCustomAlertWithListenerWithOK(
                             requireContext(),
-                            "The file is $mb_string exceeding the maximum file size of 2 MB."
+                            "The file is $mb_string exceeding the maximum file size of 5 MB."
                         ) { _, _ ->
                             dismiss()
                         }

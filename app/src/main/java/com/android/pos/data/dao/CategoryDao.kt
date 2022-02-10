@@ -18,7 +18,7 @@ interface CategoryDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addAll(categoryModel: List<TbCategory>)
 
-    @Query("select * from TbCategory where TbCategory.active = 1 and TbCategory.name != 'Manual Sales' ORDER BY TbCategory.sort DESC")
+    @Query("select * from TbCategory where TbCategory.active = 1 and TbCategory.name != 'Manual Sales' ORDER BY TbCategory.sort ASC")
     fun all(): LiveData<List<TbCategory>>
 
     @get:Query("select * from TbCategory where TbCategory.active = 0 and TbCategory.name != 'Manual Sales' ORDER BY TbCategory.sort DESC")

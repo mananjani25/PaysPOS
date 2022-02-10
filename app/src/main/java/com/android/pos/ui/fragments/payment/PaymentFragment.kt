@@ -746,10 +746,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
         getCashPaymentOptionList(_totalPrice + tipAmount)
         MethodUtils.setPriceTextView(binding.txtTipAmt, tipAmount)
-        MethodUtils.setPriceTextView(binding.txtTotal, _totalPrice + tipAmount)
-        cardPaymentAmount += tipAmount
         binding.txtCardAmount.text =
-            "$ " + String.format("%.2f", cardPaymentAmount)
+            "$ " + String.format("%.2f", cardPaymentAmount+tipAmount)
     }
 
 
@@ -902,7 +900,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     else -> {
                         if (remainingAmount == 0.0) {
                             Log.e(TAG, "RemainingAmtZero")
-                            totalPrice + tipAmount
+                            totalPrice
                         } else {
                             Log.e(TAG, "RemainingNotZero")
                             remainingAmount
@@ -1725,7 +1723,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                             }
                             isSplitByAmount -> {
                                 val bundle = Bundle()
-                                bundle.putDouble("PaidAmount", cardPaymentAmount)
+                                bundle.putDouble("PaidAmount", cardPaymentAmount )
                                 var wholetotalPriceTemp = String.format(
                                     "%.2f",
                                     prefProvider.getValue("WholeTotal", "").toDouble()
@@ -1852,6 +1850,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                 bundle.putInt("splitValue", splitValue)
                                 bundle.putDouble("TipAmount", tipAmount)
 
+                                Log.e("TipAmount 1:: ", tipAmount.toString())
+
                                 if (splitValue != -1) {
                                     if (remainingAmount <= 0.0) {
                                         bundle.putBoolean("isSpilt", false)
@@ -1917,7 +1917,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                 bundle.putParcelable("receiptData", it.data)
                                 bundle.putInt("splitValue", splitValue)
                                 bundle.putDouble("TipAmount", tipAmount)
-
+                                Log.e("TipAmount 2:: ", tipAmount.toString())
                                 if (splitValue != -1) {
                                     if (remainingAmount <= 0.0) {
                                         bundle.putBoolean("isSpilt", false)
@@ -1996,6 +1996,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                 } else {
                                     bundle.putBoolean("isSpilt", true)
                                 }
+                                bundle.putDouble("TipAmount", tipAmount)
                                 bundle.putBoolean("isSplitByNo", isSplitByNo)
                                 bundle.putBoolean("isSplitByAmount", isSplitByAmount)
                                 bundle.putString("paymentType", "Cash")
@@ -2041,6 +2042,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                 bundle.putParcelable("cartList", cartList)
                                 bundle.putParcelable("redeemLoyalty", redeemLoyaltyInfo)
                                 bundle.putDouble("TipAmount", tipAmount)
+                                Log.e("TipAmount 3:: ", tipAmount.toString())
                                 bundle.putDouble("noCashAdj", noCashAdj)
                                 bundle.putBoolean("isFromActiveOrder", isFromActiveOrder)
                                 findNavController().navigate(
@@ -2051,6 +2053,9 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                 prefProvider.setValueInt("ORDER_ID", -1)
                             }
                             else -> {
+
+                                Log.e("TipAmount 4:: ", tipAmount.toString())
+
                                 val bundle = Bundle()
                                 bundle.putBoolean("isDineIn", false)
 
@@ -2076,6 +2081,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                 bundle.putParcelable("cartList", cartList)
                                 bundle.putParcelable("redeemLoyalty", redeemLoyaltyInfo)
                                 bundle.putDouble("TipAmount", tipAmount)
+
                                 bundle.putDouble("noCashAdj", noCashAdj)
                                 bundle.putBoolean("isFromActiveOrder", isFromActiveOrder)
                                 if (findNavController().currentDestination?.id == R.id.paymentFragment) {

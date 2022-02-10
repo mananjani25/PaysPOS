@@ -252,6 +252,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
         nameObserver = Observer<List<CartModel>> {
 
+
             val bundle = Bundle()
             if (isPayClicked && cartList?.isNotEmpty() == true) {
                 Log.e(
@@ -843,12 +844,12 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         if (model.discountPrice != 0.0) {
             txtTitle.text = model.name + "  $" + String.format(
                 "%.2f",
-                (model.price - model.discountPrice)
+                ((model.price * model.itemQuantity)  - model.discountPrice)
             )
         } else {
             txtTitle.text = model.name + "  $" + String.format(
                 "%.2f",
-                model.price
+                (model.price * model.itemQuantity)
             )
         }
 
@@ -1043,7 +1044,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             "%.2f",
             viewModel.totalServiceCharge
         )
-        txtDiscount.text = "$" + String.format(
+        txtDiscount.text = "- $" + String.format(
             "%.2f",
             viewModel.totalDiscount
         )

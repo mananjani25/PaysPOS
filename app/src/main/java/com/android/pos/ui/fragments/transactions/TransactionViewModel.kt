@@ -13,6 +13,7 @@ import com.android.pos.data.repositories.TaxServiceChargeRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Status
+import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.text.ParseException
@@ -184,6 +185,7 @@ class TransactionViewModel @Inject constructor(
                     data["payment_type"] = "Card"
                 }
             }
+            Log.e("TransactionViewModel", "filteredData $data")
 
             val resource = taxServiceChargeRepository.getTransactionList(data)
 
