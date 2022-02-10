@@ -4142,7 +4142,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     }
                 )
             )
-            if (customerSettingModel.showCustomerAddress != false or customerSettingModel.showCustomerPhone != false or customerSettingModel.showCustomerName) {
+            if (customerSettingModel.showCustomerAddress  or customerSettingModel.showCustomerPhone  or customerSettingModel.showCustomerName) {
 
                 if (receiptModel?.order?.customer != null) {
 

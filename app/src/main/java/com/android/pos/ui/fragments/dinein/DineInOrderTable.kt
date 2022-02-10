@@ -1498,20 +1498,20 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                     var paidGuestCount = 0
 
-                    for (i in 0 until baseResponse.guestAttributes.size){
+                    for (i in 0 until baseResponse.guestAttributes.size) {
                         val obj = baseResponse.guestAttributes.get(i)
 
-                        if (obj.isPaid){
+                        if (obj.isPaid) {
                             paidGuestCount++
                         }
                     }
-                /*    for (i in 0 until dineInList.size) {
-                        if (i != 0 && dineInList.size > i + 1) {
-                            if (dineInList.get(i + 1).item != null && dineInList.get(i + 1).item?.isPaid == true) {
-                                paidGuestCount++
+                    /*    for (i in 0 until dineInList.size) {
+                            if (i != 0 && dineInList.size > i + 1) {
+                                if (dineInList.get(i + 1).item != null && dineInList.get(i + 1).item?.isPaid == true) {
+                                    paidGuestCount++
+                                }
                             }
-                        }
-                    }*/
+                        }*/
                     Log.e("TODO", "paidGuestCount:  ${paidGuestCount}")
                     if (paidGuestCount > 0) {
 
@@ -1521,7 +1521,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             paidGuestAmount = paidGuestCount
                             var perGTotal =
                                 subTotalWT / (baseResponse.guestAttributes.size - 1)
-                            Log.e(TAG,"perGTotal:  ${perGTotal}")
+                            Log.e(TAG, "perGTotal:  ${perGTotal}")
                             subTotalDInin = totalSubTotal - (perGTotal * paidGuestCount)
                         } else {
                             subTotalDInin = totalSubTotal
@@ -2835,6 +2835,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         listGuestItem.forEach {
             guestSubTotal += (it.price * it.itemQuantity) - it.discountPrice
+
+            it.modifiers.forEach { mod ->
+                guestSubTotal += (mod.price * mod.itemQuantity)
+            }
 
 
             it.taxes?.forEach { tax ->
