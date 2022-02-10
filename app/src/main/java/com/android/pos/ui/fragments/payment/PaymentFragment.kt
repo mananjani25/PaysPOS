@@ -1852,6 +1852,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                 bundle.putInt("splitValue", splitValue)
                                 bundle.putDouble("TipAmount", tipAmount)
 
+                                Log.e("TipAmount 1:: ", tipAmount.toString())
+
                                 if (splitValue != -1) {
                                     if (remainingAmount <= 0.0) {
                                         bundle.putBoolean("isSpilt", false)
@@ -1917,7 +1919,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                 bundle.putParcelable("receiptData", it.data)
                                 bundle.putInt("splitValue", splitValue)
                                 bundle.putDouble("TipAmount", tipAmount)
-
+                                Log.e("TipAmount 2:: ", tipAmount.toString())
                                 if (splitValue != -1) {
                                     if (remainingAmount <= 0.0) {
                                         bundle.putBoolean("isSpilt", false)
@@ -2041,6 +2043,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                 bundle.putParcelable("cartList", cartList)
                                 bundle.putParcelable("redeemLoyalty", redeemLoyaltyInfo)
                                 bundle.putDouble("TipAmount", tipAmount)
+                                Log.e("TipAmount 3:: ", tipAmount.toString())
                                 bundle.putDouble("noCashAdj", noCashAdj)
                                 bundle.putBoolean("isFromActiveOrder", isFromActiveOrder)
                                 findNavController().navigate(
@@ -2076,6 +2079,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                 bundle.putParcelable("cartList", cartList)
                                 bundle.putParcelable("redeemLoyalty", redeemLoyaltyInfo)
                                 bundle.putDouble("TipAmount", tipAmount)
+                                Log.e("TipAmount 4:: ", tipAmount.toString())
                                 bundle.putDouble("noCashAdj", noCashAdj)
                                 bundle.putBoolean("isFromActiveOrder", isFromActiveOrder)
                                 if (findNavController().currentDestination?.id == R.id.paymentFragment) {
