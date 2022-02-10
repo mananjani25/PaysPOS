@@ -1197,14 +1197,14 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         model.title = baseResponse.guestAttributes.get(i).name
                         model.isHeader = 0
                         model.id = baseResponse.guestAttributes[i].id
+                        model.isPaid = baseResponse.guestAttributes.get(i).isPaid
                         if (baseResponse.guestAttributes.get(i).guestItemAttributes.isNotEmpty()) {
                             if (baseResponse.guestAttributes.get(i).name.trim()
                                     .lowercase() != "Whole Table".trim().lowercase()
                             ) {
                                 totalGuestCount++
                             }
-                            model.isPaid =
-                                baseResponse.guestAttributes.get(i).guestItemAttributes.get(0).isPaid
+
                         }
                         model.serviceChargeList = serviceChargeList
 
@@ -1480,7 +1480,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         serviceChargeWT / (baseResponse.guestAttributes.size - 1)
                     dineInList.get(0).orderDiscount = orderDiscount
                     dineInList.get(0).orderTotalAmount =
-                        MethodUtils.roundOffAmountDouble(totalSubTotal + totalServiceChargeAmount + totalTaxAmount)
+                        MethodUtils.roundOffAmountDouble(baseResponse.subTotal + baseResponse.totalTaxAmount+baseResponse.totalServiceCharges)
 
 
 
@@ -1547,8 +1547,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                         var unpaidCount = (baseResponse.guestAttributes.size - 1) - paidGuestCount
 
-                        Log.d("yash", "navigateDineInOrder: serviceCharge " + serviceCharge)
-
                         if (paidGuestCount > 0) {
                             var tempTax = totalTaxWT / (baseResponse.guestAttributes.size - 1)
 
@@ -1563,10 +1561,19 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         var orderDis = orderDiscount - (perGuestorderDis * paidGuestCount)
 
 
+
+                        Log.e("MYFN","subTotalDInin  ${subTotalDInin}")
+                        Log.e("MYFN","serviceCharge  ${serviceCharge}")
+                        Log.e("MYFN","finalTaxAmt  ${finalTaxAmt}")
+                        Log.e("MYFN","orderDis  ${orderDis}")
+
+
                         var finalAmount = subTotalDInin + serviceCharge + finalTaxAmt - orderDis
                         binding.txtTotalAmountNew.text = MethodUtils.roundOffAmount(
                             finalAmount
                         )
+
+                        toFinalAmt = finalAmount
 
 
                     }
