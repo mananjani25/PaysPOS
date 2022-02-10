@@ -844,12 +844,12 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         if (model.discountPrice != 0.0) {
             txtTitle.text = model.name + "  $" + String.format(
                 "%.2f",
-                (model.price - model.discountPrice)
+                ((model.price * model.itemQuantity)  - model.discountPrice)
             )
         } else {
             txtTitle.text = model.name + "  $" + String.format(
                 "%.2f",
-                model.price
+                (model.price * model.itemQuantity)
             )
         }
 
