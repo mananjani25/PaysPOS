@@ -120,15 +120,25 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                 if (discountAdapter.selectedPosition != -1)
                     selectedListPos = discountAdapter.selectedPosition
                 if (defaultModel.discountType == getString(R.string.disc_percentage)) {
-                    val applyDiscount =
-                        (defaultModel.discountPrice * 100) / (itemPrice/*(defaultModel.price + modifierPrice) * defaultModel.itemQuantity*/)
-
-                    binding.edtAmount.setText(
-                        MethodUtils.roundOffAmountString(
-                            Math.round(applyDiscount)
-                                .toDouble()
+                    if(discountAdapter.selectedPosition!=-1){
+                        var applydis = discountAdapter.discountList[selectedListPos].percentage
+                        binding.edtAmount.setText(
+                            MethodUtils.roundOffAmountString(
+                                Math.round(applydis)
+                                    .toDouble()
+                            )
                         )
-                    )
+                    }else{
+                        val applyDiscount =
+                            (defaultModel.discountPrice * 100) / (itemPrice/*(defaultModel.price + modifierPrice) * defaultModel.itemQuantity*/)
+                        binding.edtAmount.setText(
+                            MethodUtils.roundOffAmountString(
+                                Math.round(applyDiscount)
+                                    .toDouble()
+                            )
+                        )
+                    }
+
                     percentageView()
                 } else {
                     binding.edtAmount.setText(MethodUtils.roundOffAmountString(defaultModel.discountPrice))
