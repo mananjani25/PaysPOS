@@ -761,6 +761,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         var guestTaxes = 0.0
         var guestServiceCharge = 0.0
         var guestDiscount = 0.0
+        var orderDiscount = 0.0
 
         val guestCount = dineInList.size - 1
         Log.e(TAG, "guestCount:  ${guestCount}")
@@ -802,6 +803,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             guestDiscount += it.discountPrice
 
         }
+
+        orderDiscount = (getDineInOrderDetails?.totalDiscount?.minus(guestDiscount))?.div(
+            ((getDineInOrderDetails?.guestAttributes?.size!! - 1)))!!
+            var finaldisLocal = 0.0
+        finaldisLocal = orderDiscount + guestDiscount
+
 
         dineInList.get(0).serviceChargeList?.forEach {
             if (it.isEnabled) {
@@ -869,7 +876,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             addBuilderText(
                 builder,
-                prefProvider.getValue(Constants.BUSINESS_ADDRESS, "7450 DW 51 FH,AT,Suite 503")
+                prefProvider.getValue(Constants.BUSINESS_ADDRESS, "")
                     .toString()
             )
             builder.addFeedLine(1)
@@ -1161,9 +1168,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
             for (i in 0 until listWTitems.size) {
-                builder.addFeedLine(1)
-                builder.addTextLineSpace(30)
-                builder.addFeedUnit(30)
+               // builder.addFeedLine(1)
+               /* builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)*/
                 builder.addTextFont(Builder.FONT_E)
                 // builder.addTextAlign(Builder.ALIGN_LEFT)
                 builder.addTextLang(Builder.LANG_EN)
@@ -1184,37 +1191,40 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     dineInList.get(0).serviceChargeList ?: arrayListOf()
                 )
             }
-
-
             builder.addFeedLine(1)
-            builder.addTextLineSpace(30)
-            builder.addFeedUnit(30)
-            builder.addTextFont(Builder.FONT_E)
-            // builder.addTextAlign(Builder.ALIGN_LEFT)
-            builder.addTextLang(Builder.LANG_EN)
-            addCustomerTextSize(builder, customerSettingModel.fonts)
-            builder.addTextStyle(
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.COLOR_1
-            )
-
-            builder.addText(guestName)
 
 
-            listGuestItem.forEach {
-                addOrderItemForDineIn(
-                    builder,
-                    it,
-                    customerSettingModel.fonts,
-                    customerSettingModel.showModifiers
+            if (listGuestItem.isNotEmpty()) {
+                builder.addFeedLine(1)
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addTextFont(Builder.FONT_E)
+                // builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
                 )
 
-            }
-            builder.addFeedLine(2)
+                builder.addText(guestName)
 
-            if (getDineInOrderDetails?.totalDiscount != null) {
+
+                listGuestItem.forEach {
+                    addOrderItemForDineIn(
+                        builder,
+                        it,
+                        customerSettingModel.fonts,
+                        customerSettingModel.showModifiers
+                    )
+
+                }
+                builder.addFeedLine(2)
+            }
+
+            if (finaldisLocal != null) {
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addTextFont(Builder.FONT_E)
@@ -1230,11 +1240,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     padLine(
                         "Total Discount",
 
-                        if (guestDiscount == 0.0) {
+                        if (finaldisLocal == 0.0) {
                             "$" + MethodUtils.roundOffAmountString(0.0)
                         } else {
 
-                            "-$" + MethodUtils.roundOffAmountString(guestDiscount)
+                            "-$" + MethodUtils.roundOffAmountString(finaldisLocal)
 
                         },
                         if (customerSettingModel.fonts == Constants.LARGE) {
@@ -1265,7 +1275,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 padLine(
                     "Sub Total",
                     "$" + MethodUtils.roundOffAmountString(
-                        subTotalWT
+                        subTotalWT - orderDiscount
                     ),
                     if (customerSettingModel.fonts == Constants.LARGE) {
                         24
@@ -1419,7 +1429,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             )
             var totalAmt =
                 MethodUtils.roundOffAmountDouble(
-                    subTotalWT + totalTaxAmount + serviceCharge
+                    subTotalWT + totalTaxAmount + serviceCharge - orderDiscount
                 )
 
             if (payTypeGlb == "Cash") {
