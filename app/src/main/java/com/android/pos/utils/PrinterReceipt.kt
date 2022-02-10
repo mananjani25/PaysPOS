@@ -302,8 +302,7 @@ fun addOrdersForKitchenDineIn(
 ): Builder {
 
 
-
-    list.forEach {obj ->
+    list.forEach { obj ->
 
 
         builder.addTextLineSpace(30)
@@ -582,16 +581,16 @@ fun addWholeTbItemToGuest(
             }
         }
 
-        Log.e(TAG,"serviceCharge  ${serviceCharge}")
-        Log.e(TAG,"serviceWTTaxes  ${WTTaxes}")
-        Log.e(TAG,"serviceSubTotal  ${subTotal}")
+        Log.e(TAG, "serviceCharge  ${serviceCharge}")
+        Log.e(TAG, "serviceWTTaxes  ${WTTaxes}")
+        Log.e(TAG, "serviceSubTotal  ${subTotal}")
     }
 
-    var finalAmt = MethodUtils.roundOffAmount((subTotal+WTTaxes +serviceCharge)/guestCount)
+    var finalAmt = MethodUtils.roundOffAmount((subTotal) / guestCount)
     builder.addText(
         padLineCustomerItem(
             obj.itemQuantity.toString() + "x " + obj.name,
-            "" +finalAmt,
+            "" + finalAmt,
             if (font == Constants.LARGE) {
                 24
             } else {

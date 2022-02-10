@@ -1,7 +1,6 @@
 package com.android.pos.data.model.responseModel
 
 import android.os.Parcelable
-import com.android.pos.data.model.requestModel.PaymentAttributes
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
@@ -76,4 +75,8 @@ class GuestPaymentAttributes : Parcelable {
 
     @SerializedName("payments_attributes")
     var paymentAttributes: List<GuestPaymentAttributes>? = null
+
+    @SerializedName("is_paid")
+    var isPaid: Boolean = true
+
 }
