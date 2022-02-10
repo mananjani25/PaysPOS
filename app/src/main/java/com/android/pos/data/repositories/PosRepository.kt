@@ -799,5 +799,8 @@ class PosRepository @Inject constructor(
         appDatabase.kitchenSettingsDao().delete()
         appDatabase.customerSettingsDao().delete()
     }
+
+    fun orderCounts() =
+        performGetOperationNew(networkCall = { apiHelperNew.orderCounts() })
 }
 

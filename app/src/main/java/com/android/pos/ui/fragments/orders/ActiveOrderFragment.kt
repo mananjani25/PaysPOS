@@ -8,8 +8,10 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -127,6 +129,7 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
                     ) { _, _ ->
                         var intent = Intent()
                         intent.action = "cancelled"
+                        intent.putExtra("isCount", false)
                         intent.putExtra("position", 3)
                         requireContext().sendBroadcast(intent)
                     }
@@ -164,12 +167,21 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
                                 binding.txtNodata.visibility = View.GONE
                                 val data = it.data.orders
                                 adapter.add(data)
+                                Log.e("DATA", data.size.toString())
                             } else {
                                 binding.txtNodata.visibility = View.VISIBLE
                                 binding.txtNodata.text = it.message
                                 binding.rvOpenOrder.visibility = View.GONE
 
                             }
+
+
+                            val intent = Intent()
+                            intent.action = "cancelled"
+                            intent.putExtra("isCount", true)
+                            intent.putExtra("param1", param1)
+                            intent.putExtra("count", it.data.orders.size)
+                            requireContext().sendBroadcast(intent)
                         }
                     }
                     Status.ERROR -> {
