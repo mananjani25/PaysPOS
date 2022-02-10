@@ -357,7 +357,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 binding.txtHome.text = getString(R.string.tv_home)
                 viewModel.deleteSplitDb()
                 binding.txtTitle.text =
-                    MethodUtils.roundOffAmount(paidAmount)
+                    MethodUtils.roundOffAmount(paidAmount + tipAmount)
 
                 if (isCustomCash) {
                     changeAmtGlobal =
@@ -374,7 +374,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
 
                 binding.txtPaymentAmount.text =
-                    "Out of " + MethodUtils.roundOffAmount(paidAmount)
+                    "Out of " + MethodUtils.roundOffAmount(paidAmount + tipAmount)
 
 
             }
