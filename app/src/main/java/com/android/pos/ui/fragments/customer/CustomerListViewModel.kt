@@ -35,8 +35,7 @@ public class CustomerListViewModel @Inject constructor(
     val orderResponse: LiveData<Event<GetOrderDetailsResponse.Data>> = _orderResponse
 
 
-    private val _customerListResponse = MutableLiveData<Event<CustomerListResponse?>>()
-
+    val _customerListResponse = MutableLiveData<Event<ArrayList<TbCustomer?>>>()
 
 
     private val mdata = MutableLiveData<Event<BaseResponse?>>()
@@ -66,13 +65,31 @@ public class CustomerListViewModel @Inject constructor(
 
     fun searchByTextCustomer(query: String) {
         viewModelScope.launch {
-            val resource = posRepository.searchCustomer(query)
+            val resource: Resource<CustomerSearchList> = posRepository.searchCustomer(query)
             when (resource.status) {
                 Status.SUCCESS -> {
                     resource.data?.let { response ->
                         if (response.status == 200) {
                             resource.data?.let { customerlist ->
-//                                _customerListResponse.value = Event(customerlist)
+                                var customerdatalist: ArrayList<TbCustomer?> =
+                                    arrayListOf<TbCustomer?>()
+                                customerlist.data.forEach {
+                                    customerdatalist.add(
+                                        TbCustomer(
+                                            id = it.id,
+                                            first_name = it.first_name,
+                                            last_name = it.last_name,
+                                            birth_date = it.birth_date,
+                                            email = it.email,
+                                            enroll_to_loyalty = it.enroll_to_loyalty,
+                                            final_reward = it.final_reward,
+                                            company = it.company,
+                                            phones = it.phones,
+                                            addresses = it.addresses
+                                        )
+                                    )
+                                }
+                                _customerListResponse.value = Event(customerdatalist)
                             }
                         } else {
                             _snackbarText.value = Event(resource.message)

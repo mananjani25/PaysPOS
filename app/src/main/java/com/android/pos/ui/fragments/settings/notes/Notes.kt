@@ -22,6 +22,7 @@ import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.statusUtils.Status
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.*
 
 @AndroidEntryPoint
 class Notes : Fragment() {
@@ -122,7 +123,10 @@ class Notes : Fragment() {
                     Status.SUCCESS -> {
                         ProgressUtils.dismissProgressDialog()
                         binding.rvNoteLise.visibility = View.VISIBLE
-                        resource.data?.let { taxList -> setTaxData(taxList) }
+                        resource.data?.let { taxList ->
+                            Collections.reverse(taxList)
+                            setTaxData(taxList)
+                        }
                     }
                     Status.ERROR -> {
                         ProgressUtils.dismissProgressDialog()

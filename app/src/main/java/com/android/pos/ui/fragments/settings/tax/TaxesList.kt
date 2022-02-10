@@ -2,6 +2,7 @@ package com.android.pos.ui.fragments.settings.tax
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,12 +10,10 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.entities.TaxData
-import com.android.pos.data.model.responseModel.GetTaxResponse
 import com.android.pos.databinding.FragmentTaxesBinding
 import com.android.pos.ui.adapter.TaxListAdapter
 import com.android.pos.utils.AlertUtils
@@ -25,7 +24,9 @@ import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.statusUtils.Status
 import com.google.android.material.snackbar.Snackbar
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.*
 
 @AndroidEntryPoint
 class TaxesList : Fragment() {
@@ -36,6 +37,7 @@ class TaxesList : Fragment() {
     private val viewModel by activityViewModels<TaxListViewModel>()
     private lateinit var taxListadapter: TaxListAdapter
     private lateinit var taxObject: TaxData
+    private val TAG = "TaxesList"
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -124,9 +126,13 @@ class TaxesList : Fragment() {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
+                        Log.e(TAG, "taxListData ${Gson().toJson(it.data)}")
                         ProgressUtils.dismissProgressDialog()
                         binding.rvTaxList.visibility = View.VISIBLE
-                        resource.data?.let { taxList -> setTaxData(taxList) }
+                        resource.data?.let { taxList ->
+                            Collections.reverse(taxList)
+                            setTaxData(taxList)
+                        }
                         viewModel.setTaxData()
                     }
                     Status.ERROR -> {

@@ -63,6 +63,7 @@ import com.android.pos.data.remote.Constants.OPTION_SETS
 import com.android.pos.data.remote.Constants.OPTION_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.ORDERS
 import com.android.pos.data.remote.Constants.ORDER_ASSIGN_CUSTOMER
+import com.android.pos.data.remote.Constants.ORDER_COUNTS
 import com.android.pos.data.remote.Constants.ORDER_DETAILS
 import com.android.pos.data.remote.Constants.ORDER_EMAIL_RECEIPT
 import com.android.pos.data.remote.Constants.ORDER_HISTORY
@@ -712,4 +713,6 @@ interface ApiService {
     @POST(CREATE_QUEUE_PRINTER)
     suspend fun createQueuePrinter(@Body createPrinterQueueRequest: CreateQueuePrinterRequestModel): BaseResponse
 
+    @GET(ORDER_COUNTS)
+    suspend fun orderCounts(): OrderCountsResponse
 }

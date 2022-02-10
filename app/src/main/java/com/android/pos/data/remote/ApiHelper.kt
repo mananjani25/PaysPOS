@@ -510,4 +510,8 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
         getResult {
             apiService.createQueuePrinter(createQueuePrinterModel)
         }
+
+    suspend fun orderCounts() =
+        getResult { apiService.orderCounts() }
+
 }

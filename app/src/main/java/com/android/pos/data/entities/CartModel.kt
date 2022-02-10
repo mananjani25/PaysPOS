@@ -39,5 +39,6 @@ class CartModel : Parcelable {
     var isEdited: Boolean = false
     var orderId: Int? = null
     var openOrderType =""
+    var deliveryType = ""
 
 }

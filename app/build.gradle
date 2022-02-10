@@ -168,4 +168,7 @@ dependencies {
 
 
     implementation 'com.testfairy:testfairy-android-sdk:1.+@aar'
+
+    //Phone no Fromating
+    implementation 'com.googlecode.libphonenumber:libphonenumber:7.2.2'
 }

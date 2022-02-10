@@ -1469,11 +1469,11 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         txtSubTotal.text = "$" + String.format(
             "%.2f",
-            viewModel.subTotalPrice
+            if (viewModel.subTotalPrice < 0.0) 0.0 else viewModel.subTotalPrice
         )
         txtServiceCharge.text = "$" + String.format(
             "%.2f",
-            viewModel.totalServiceCharge
+            if (viewModel.subTotalPrice < 0.0) 0.0 else viewModel.totalServiceCharge
         )
         txtDiscount.text = "- $" + String.format(
             "%.2f",
@@ -1484,7 +1484,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         //  txtTotalAmount.text = total.toString()
         txtTotalTax.text = "$" + String.format(
             "%.2f",
-            viewModel.totalTax
+            if (viewModel.subTotalPrice < 0.0) 0.0 else viewModel.totalTax
         )
 
         //display the loyalty point
@@ -1839,18 +1839,21 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         }
         txtSave.setOnClickListener {
 
-            /*showPriceTitle(
-                variationsAttribute = null,
-                variationAdapter,
-                data,
-                txtTitle,
-                isItemClick
-            )*/
 
             if (data.price == 0.0 && data.variationsAttributes.isNotEmpty()) {
                 AlertUtils.showCustomAlert(
                     requireActivity(),
                     "Please enter atleast one price of item"
+                )
+                return@setOnClickListener
+            }
+
+            Log.e("checkItemQty", checkItemQty(data, variationAdapter).toString())
+
+            if (!checkItemQty(data, variationAdapter)) {
+                AlertUtils.showCustomAlert(
+                    requireActivity(),
+                    getString(R.string.qty_validation)
                 )
                 return@setOnClickListener
             }
@@ -2068,6 +2071,35 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         dialog.setCanceledOnTouchOutside(false)
         dialog.show()
+    }
+
+    private fun checkItemQty(
+        data: TbItem,
+        variationAdapter: VariationDashboardListAdapter?
+    ): Boolean {
+
+        if (data.variationsAttributes.isNotEmpty()) {
+
+            val stockQty = variationAdapter?.getItem()?.stockQty
+
+            return if (stockQty?.isNotEmpty() == true) {
+
+                stockQty.toInt() >= 1
+
+            } else {
+                false
+            }
+
+        } else {
+
+            return if (data.isManualSales) {
+                true
+            } else {
+                data.quantity >= 1
+            }
+        }
+
+        return false
     }
 
     private fun stockValidationAlert(qty: Int, txtQty: AppCompatEditText) {
@@ -2625,13 +2657,13 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         ).toString()
                     )
                 }
-                bundle.putDouble("subTotalPrice", viewModel.subTotalPrice)
-                bundle.putDouble("totalTax", viewModel.totalTax)
+                bundle.putDouble("subTotalPrice", if (viewModel.subTotalPrice < 0) 0.0 else viewModel.subTotalPrice)
+                bundle.putDouble("totalTax", if (viewModel.subTotalPrice < 0) 0.0 else viewModel.totalTax)
                 bundle.putDouble(
                     "totalDiscount",
                     viewModel.totalDiscount + cartList[0].discountPrice
                 )
-                bundle.putDouble("totalServiceCharge", viewModel.totalServiceCharge)
+                bundle.putDouble("totalServiceCharge", if (viewModel.subTotalPrice < 0) 0.0 else viewModel.totalServiceCharge )
                 bundle.putString("future_delivery_date", future_delivery_date)
                 bundle.putString("future_delivery_time", future_delivery_time)
                 cartList[0].customer = assignCustomer
@@ -3135,13 +3167,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         }
         txtSave.setOnClickListener {
 
-            /*showPriceTitle(
-                variationsAttribute = null,
-                variationAdapter,
-                data,
-                txtTitle,
-                isItemClick
-            )*/
+
             val variationList = ArrayList<VariationsAttribute>()
             if (data.variationsAttributes.isNotEmpty()) {
                 val variation = variationAdapter?.getItem()!!
@@ -3211,6 +3237,38 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             qty += 1
             txtQty.setText(qty.toString())
 
+            if (data.variationsAttributes.isNotEmpty()) {
+
+                val stockQty = variationAdapter?.getItem()?.stockQty
+
+                if (stockQty?.isNotEmpty() == true) {
+
+                    if (stockQty.toInt() >= qty) {
+                        txtQty.setText(qty.toString())
+                    } else {
+                        qty -= 1
+                        stockValidationAlert(qty, txtQty)
+                    }
+
+                } else {
+                    qty -= 1
+                    stockValidationAlert(qty, txtQty)
+                }
+
+            } else {
+
+                if (data.isManualSales) {
+                    txtQty.setText(qty.toString())
+                } else {
+
+                    if (data.quantity >= qty) {
+                        txtQty.setText(qty.toString())
+                    } else {
+                        qty -= 1
+                        stockValidationAlert(qty, txtQty)
+                    }
+                }
+            }
 
         }
         llMinus.setOnClickListener {

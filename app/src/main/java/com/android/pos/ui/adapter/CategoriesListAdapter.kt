@@ -32,7 +32,7 @@ class CategoriesListAdapter(private val isChoose: Boolean) :
                     binding.imageCheck.setImageResource(R.drawable.ic_uncheck_circle)
                 }
             } else {
-                binding.imageCheck.setImageResource(R.drawable.ic_arrow_forward)
+                binding.imageCheck.setImageResource(R.drawable.ic_baseline_menu)
             }
         }
 
@@ -118,8 +118,8 @@ class CategoriesListAdapter(private val isChoose: Boolean) :
 
                         val order1: Int = filterList[i].sort
                         val order2: Int = filterList[i + 1].sort
-                        filterList[i].sort = order1
-                        filterList[i + 1].sort = order2
+                        filterList[i].sort = order2
+                        filterList[i + 1].sort = order1
                     }
                 } else {
                     for (i in fromPosition downTo toPosition + 1) {
@@ -127,8 +127,8 @@ class CategoriesListAdapter(private val isChoose: Boolean) :
 
                         val order1: Int = filterList[i].sort
                         val order2: Int = filterList[i - 1].sort
-                        filterList[i].sort = (order1)
-                        filterList[i - 1].sort = (order2)
+                        filterList[i].sort = (order2)
+                        filterList[i - 1].sort = (order1)
                     }
                 }
                 notifyItemMoved(fromPosition, toPosition)

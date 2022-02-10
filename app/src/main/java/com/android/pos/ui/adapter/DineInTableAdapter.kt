@@ -120,7 +120,8 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                                                 modifierPrice += (it.price * it.itemQuantity)
                                             }
 
-                                            val totalPrice = price + modifierPrice - it.discountPrice
+                                            val totalPrice =
+                                                price + modifierPrice - it.discountPrice
 
                                             val itemTaxPrice =
                                                 (tax.rate * totalPrice) / 100
@@ -225,14 +226,17 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
             var finalAmt =
                 guestSubTotal + totalServiceCharge + totalTaxAmt + (list.get(0).guestDividedAmt)
-            Log.e("TODAY","guestSubTotal  ${guestSubTotal}")
-            Log.e("TODAY","totalTaxAmt  ${totalTaxAmt}")
-            Log.e("TODAY","guestDividedAmt  ${(list.get(0).guestDividedAmt)}")
-            Log.e("TODAY","totalServiceCharge  ${(totalServiceCharge)}")
+            Log.e("TODAY", "guestSubTotal  ${guestSubTotal}")
+            Log.e("TODAY", "totalTaxAmt  ${totalTaxAmt}")
+            Log.e("TODAY", "guestDividedAmt  ${(list.get(0).guestDividedAmt)}")
+            Log.e("TODAY", "totalServiceCharge  ${(totalServiceCharge)}")
+            Log.e("TODAY", "orderTotalAmount  ${list.get(0).orderTotalAmount}")
 
             var guestOrderDisShare = 0.0
             if (list.get(0).orderDiscount > 0) {
-                guestOrderDisShare = (finalAmt * list.get(0).orderDiscount) / 100
+                guestOrderDisShare =
+                    (finalAmt * list.get(0).orderDiscount) / list.get(0).orderTotalAmount
+                
                 Log.e(TAG, "guestOrderDisShare  ${guestOrderDisShare}")
 
             }
@@ -257,7 +261,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                     MethodUtils.roundOffAmountDouble(finalAmt),
                     MethodUtils.roundOffAmountDouble(totalTaxAmt + list.get(0).wholeTableTax),
                     MethodUtils.roundOffAmountDouble(totalServiceCharge + list.get(0).wholeTableSurTax),
-                    list[0].orderDiscount
+                    guestOrderDisShare
 
                 )
             }

@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
+import com.android.pos.data.model.CustomerSearchList
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.data.model.responseModel.OpenOrderResponse
 import com.android.pos.data.typeconvert.TypeConvertorAddress
@@ -53,6 +54,21 @@ data class TbCustomer(
                 enroll_to_loyalty = customer.enroll_to_loyalty,
                 final_reward = customer.final_reward,
                 company = customer.company,
+            )
+        }
+
+        fun customerMapping(customer: CustomerSearchList.Data): TbCustomer {
+            return TbCustomer(
+                id = customer.id,
+                first_name = customer.first_name,
+                last_name = customer.last_name,
+                birth_date = customer.birth_date,
+                email = customer.email,
+                enroll_to_loyalty = customer.enroll_to_loyalty,
+                final_reward = customer.final_reward,
+                company = customer.company,
+                phones = customer.phones,
+                addresses = customer.addresses
             )
         }
     }

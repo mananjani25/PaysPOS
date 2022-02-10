@@ -65,7 +65,7 @@ import kotlin.collections.ArrayList
 class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     private var customerList: List<PrinterResponse.Data.CustomerReceiptPrinters> = listOf()
     private var toFinalAmt: Double = 0.0
-    private var totalTaxAmt: Double = 0.0
+    private var totalTaxAmt: Double = 0.00
     private var isFireAll: Boolean = false
     private var clickedPos: Int = 0
     private lateinit var binding: FragmentDineInOrderTableBinding
@@ -1418,6 +1418,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                             }
 
                                         }
+                                        serviceChargeWT = 0.0
                                         serviceChargeList.forEach {
                                             if (it.isEnabled) {
                                                 serviceChargeWT += (subTotalWT * it.percentage) / 100
@@ -1478,12 +1479,14 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     dineInList.get(0).wholeTableSurTax =
                         serviceChargeWT / (baseResponse.guestAttributes.size - 1)
                     dineInList.get(0).orderDiscount = orderDiscount
+                    dineInList.get(0).orderTotalAmount =
+                        MethodUtils.roundOffAmountDouble(totalSubTotal + totalServiceChargeAmount + totalTaxAmount)
 
 
 
                     Log.e(TAG, "totalTaxAmount:  ${totalTaxAmount}")
                     viewModel.totalTaxAmount = totalTaxAmount
-                    subTotalDInin = totalSubTotal
+                    subTotalDInin = totalSubTotal - orderDiscount
                     serviceCharge = totalServiceChargeAmount
                     totalDiscount = orderDiscount + totalItemDiscount
                     finalTaxAmt = totalTaxAmount
@@ -1493,7 +1496,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     toFinalAmt = finalAmount
 
 
-                    dineInList.get(0).orderTotalAmount = finalAmount
+
 
 
                     var paidGuestCount = 0
@@ -2932,7 +2935,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             addBuilderText(
                 builder,
-                prefProvider.getValue(Constants.BUSINESS_ADDRESS, "7450 DW 51 FH,AT,Suite 503")
+                prefProvider.getValue(Constants.BUSINESS_ADDRESS, "")
                     .toString()
             )
             builder.addFeedLine(1)
@@ -3158,7 +3161,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                     builder.addText(
                         padLine(
-                            if (customerSettingModel.showTeam) {
+                            if (customerSettingModel.showOrderTime) {
                                 "Order Time:" + Constants.getReceiptFormatDateFromUTCServer(
                                     getOrderDetailsResponse?.createdAt.toString()
                                 )
@@ -3200,7 +3203,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                         builder.addText(
                             padLine(
-                                if (customerSettingModel.showTeam) {
+                                if (customerSettingModel.showPrintTime) {
                                     "Print Time:" + formatted
                                 } else {
                                     ""
@@ -3872,7 +3875,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             addBuilderText(
                 builder,
-                prefProvider.getValue(Constants.BUSINESS_ADDRESS, "7450 DW 51 FH,AT,Suite 503")
+                prefProvider.getValue(Constants.BUSINESS_ADDRESS, "")
                     .toString()
             )
             builder.addFeedLine(1)
@@ -4263,11 +4266,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 Builder.FALSE,
                 Builder.COLOR_1
             )
+            Log.e(TAG, "subTotalWT  ${subTotalDInin}")
 
             builder.addText(
                 padLine(
                     "Sub Total",
-                    "$" + MethodUtils.roundOffAmountString(subTotalWT),
+                    "$" + MethodUtils.roundOffAmountString(subTotalDInin),
                     if (customerSettingModel.fonts == Constants.LARGE) {
                         24
                     } else {
@@ -4422,7 +4426,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 Builder.COLOR_1
             )
             var totalAmt =
-                MethodUtils.roundOffAmountDouble(subTotalWT + serviceCharge + finalTaxAmt)
+                MethodUtils.roundOffAmountDouble(subTotalDInin + serviceCharge + finalTaxAmt)
 
 
 
@@ -5432,8 +5436,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 if (isCheckAndFire) {
                     kit.orderTypes.forEach {
                         if (it.orderTypeId == getOrderDetailsResponse?.orderTypeId) {
-                            Log.e(TAG,"orderTypeIdSettings  ${it.orderTypeName}")
-                            Log.e(TAG,"orderTypeIdMainData  ${getOrderDetailsResponse?.orderType}")
+                            Log.e(TAG, "orderTypeIdSettings  ${it.orderTypeName}")
+                            Log.e(TAG, "orderTypeIdMainData  ${getOrderDetailsResponse?.orderType}")
                             it.printerSettings.forEach {
                                 if (it.printType.lowercase()
                                         .equals(Constants.KITCHEN.lowercase()) && it.autoPrinting

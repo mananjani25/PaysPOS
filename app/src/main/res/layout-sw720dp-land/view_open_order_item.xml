@@ -216,7 +216,7 @@
                     android:layout_marginLeft="@dimen/_5sdp"
                     android:layout_marginRight="@dimen/_5sdp"
                     android:layout_weight="1"
-                    android:background="@drawable/bg_button_border_gray"
+                    android:background="@drawable/btn_hover_active_order"
                     android:gravity="center"
                     android:padding="@dimen/_5sdp"
                     android:text="@string/tv_print_receipt"

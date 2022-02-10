@@ -2,17 +2,16 @@ package com.android.pos.ui.fragments.settings.discount
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.entities.TbDiscount
-import com.android.pos.data.model.responseModel.GetDiscountResponse
 import com.android.pos.databinding.DiscountFragmentBinding
 import com.android.pos.ui.adapter.DiscountListAdapter
 import com.android.pos.utils.AlertUtils
@@ -23,7 +22,9 @@ import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.statusUtils.Status
 import com.google.android.material.snackbar.Snackbar
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.*
 
 @AndroidEntryPoint
 class DiscountList : Fragment() {
@@ -35,6 +36,7 @@ class DiscountList : Fragment() {
     private val viewModel by activityViewModels<DiscountListViewModel>()
     private lateinit var discountListadapter: DiscountListAdapter
     private lateinit var discountObject: TbDiscount
+    private val TAG = "DiscountList"
 
 
     override fun onCreateView(
@@ -130,7 +132,12 @@ class DiscountList : Fragment() {
                     Status.SUCCESS -> {
                         ProgressUtils.dismissProgressDialog()
                         binding.rvDiscountList.visibility = View.VISIBLE
-                        resource.data?.let { taxList -> setTaxData(taxList) }
+                        resource.data?.let { taxList ->
+                            Log.e(TAG,"taxList:  ${Gson().toJson(taxList)}")
+                           // Collections.reverse(taxList)
+                            //Log.e(TAG,"taxListReversed:  ${Gson().toJson(taxList)}")
+                            setTaxData(taxList)
+                        }
                     }
                     Status.ERROR -> {
                         ProgressUtils.dismissProgressDialog()
@@ -149,6 +156,7 @@ class DiscountList : Fragment() {
     private fun notifyAdapter() {
         viewModel.notifydata.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
+
                 discountListadapter.notifyDataSetChanged()
             }
         })

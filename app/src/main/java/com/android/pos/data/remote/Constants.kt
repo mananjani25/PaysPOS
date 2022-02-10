@@ -233,6 +233,7 @@ object Constants {
     const val ORDER_PHONE_RECEIPT = "orders/sms_order_detail"
     const val ORDER_ASSIGN_CUSTOMER = "orders/{id}/assign_customer_into_order"
     const val ORDER_PAY_AMOUNT_WISE = "payments/pay_amount_wise"
+    const val ORDER_COUNTS = "orders/open_orders_show_count"
 
     const val ACTIVE_ORDER = "active_order"
     const val UPCOMING_ORDER = "upcoming_order"

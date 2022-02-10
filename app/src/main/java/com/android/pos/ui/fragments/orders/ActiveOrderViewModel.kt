@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.android.pos.data.model.requestModel.OrderCancelRequest
 import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.model.responseModel.OpenOrderResponse
+import com.android.pos.data.model.responseModel.OrderCountsResponse
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.utils.Event
@@ -39,6 +40,9 @@ class ActiveOrderViewModel @Inject constructor(
 
     fun openOrders(param1: String): LiveData<Resource<OpenOrderResponse>> =
         posRepository.getOpenOrders(param1)
+
+    fun orderCounts(): LiveData<Resource<OrderCountsResponse>> =
+        posRepository.orderCounts()
 
     fun cancelOrder(orderId: Int) {
         _showProgress.value = Event(true)

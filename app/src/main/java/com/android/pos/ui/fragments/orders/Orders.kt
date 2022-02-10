@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.model.InventoryItemModel
@@ -23,12 +24,21 @@ import com.android.pos.data.remote.Constants.UPCOMING_ORDER
 import com.android.pos.databinding.FragmentInventoryBinding
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.InventoryAdapter
+import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class Orders : Fragment() {
+    private var mPos: Int = 0
+    private var activeOrdersCount: Int? = 0
+    private var cancelledOrdersCount: Int? = 0
+    private var completedOrdersCount: Int? = 0
+    private var upcomingOrdersCount: Int? = 0
     val TAG = this.javaClass.name
     private lateinit var binding: FragmentInventoryBinding
+
+    private val viewModel by viewModels<ActiveOrderViewModel>()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -42,9 +52,41 @@ class Orders : Fragment() {
 
     var broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            var position = intent?.getIntExtra("position", 0)
-            changePosition(position!!)
-            setAdapter(position)
+
+            val isCount = intent?.getBooleanExtra("isCount", false)
+            if (isCount == true) {
+
+                val count = intent.getIntExtra("count", 0)
+                val orderType = intent.getStringExtra("param1")
+                when (orderType) {
+                    "0" -> {
+                        //active
+                        activeOrdersCount = count
+                        setAdapter(0)
+                    }
+                    "1" -> {
+                        //complete
+                        completedOrdersCount = count
+                        setAdapter(2)
+                    }
+                    "2" -> {
+                        //cancel
+                        cancelledOrdersCount = count
+                        setAdapter(3)
+                    }
+                    "Upcoming" -> {
+
+                        upcomingOrdersCount = count
+                        setAdapter(1)
+                    }
+                }
+
+                Log.e("broadcastReceiver", count.toString())
+            } else {
+                val position = intent?.getIntExtra("position", 0)
+                changePosition(position!!)
+                setAdapter(position)
+            }
         }
 
     }
@@ -53,7 +95,8 @@ class Orders : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         configureToolbar()
         changePosition(0)
-        setAdapter(0)
+        // setAdapter(0)
+        getOrderCountsObserver()
         requireContext().registerReceiver(broadcastReceiver, IntentFilter("cancelled"));
         findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<String>(KEY)
             ?.observe(viewLifecycleOwner) { it ->
@@ -80,13 +123,41 @@ class Orders : Fragment() {
 
             }
 
+    }
 
+
+    private fun getOrderCountsObserver() {
+        viewModel.orderCounts().observe(viewLifecycleOwner, {
+
+
+            it?.let { resource ->
+                when (resource.status) {
+                    Status.SUCCESS -> {
+
+                        activeOrdersCount = it.data?.data?.activeOrders
+                        cancelledOrdersCount = it.data?.data?.cancelledOrders
+                        completedOrdersCount = it.data?.data?.completedOrders
+                        upcomingOrdersCount = it.data?.data?.upcomingOrders
+
+                        setAdapter(mPos)
+
+                    }
+                    Status.ERROR -> {
+                        setAdapter(mPos)
+                    }
+                    Status.LOADING -> {
+                        setAdapter(mPos)
+                    }
+                }
+            }
+        })
     }
 
     override fun onDestroy() {
         super.onDestroy()
         requireContext().unregisterReceiver(broadcastReceiver)
     }
+
     private fun configureToolbar() {
         binding.commonToolbar.imgDrawer.setOnClickListener {
             (requireActivity() as MainActivity).enableDrawer()
@@ -102,6 +173,7 @@ class Orders : Fragment() {
     }
 
     private fun changePosition(position: Int) {
+        mPos = position
         when (position) {
             0 -> {
                 val activeOrders = ActiveOrderFragment.newInstance("0")
@@ -142,33 +214,36 @@ class Orders : Fragment() {
     }
 
     private fun setAdapter(pos: Int) {
+
+        mPos = pos
+
         val list: ArrayList<InventoryItemModel> = arrayListOf()
         when (pos) {
             0 -> {
-                list.add(InventoryItemModel(0, "Active Orders", true))
-                list.add(InventoryItemModel(0, "Upcoming Orders"))
-                list.add(InventoryItemModel(0, "Completed"))
-                list.add(InventoryItemModel(0, "Cancelled Orders"))
+                list.add(InventoryItemModel(0, "Active Orders ($activeOrdersCount)", true))
+                list.add(InventoryItemModel(0, "Upcoming Orders ($upcomingOrdersCount)"))
+                list.add(InventoryItemModel(0, "Completed ($completedOrdersCount)"))
+                list.add(InventoryItemModel(0, "Cancelled Orders ($cancelledOrdersCount)"))
             }
             1 -> {
-                list.add(InventoryItemModel(0, "Active Orders"))
-                list.add(InventoryItemModel(0, "Upcoming Orders", true))
-                list.add(InventoryItemModel(0, "Completed"))
-                list.add(InventoryItemModel(0, "Cancelled Orders"))
+                list.add(InventoryItemModel(0, "Active Orders ($activeOrdersCount)"))
+                list.add(InventoryItemModel(0, "Upcoming Orders ($upcomingOrdersCount)", true))
+                list.add(InventoryItemModel(0, "Completed ($completedOrdersCount)"))
+                list.add(InventoryItemModel(0, "Cancelled Orders ($cancelledOrdersCount)"))
 
             }
             2 -> {
-                list.add(InventoryItemModel(0, "Active Orders"))
-                list.add(InventoryItemModel(0, "Upcoming Orders"))
-                list.add(InventoryItemModel(0, "Completed", true))
-                list.add(InventoryItemModel(0, "Cancelled Orders"))
+                list.add(InventoryItemModel(0, "Active Orders ($activeOrdersCount)"))
+                list.add(InventoryItemModel(0, "Upcoming Orders ($upcomingOrdersCount)"))
+                list.add(InventoryItemModel(0, "Completed ($completedOrdersCount)", true))
+                list.add(InventoryItemModel(0, "Cancelled Orders ($cancelledOrdersCount)"))
 
             }
             3 -> {
-                list.add(InventoryItemModel(0, "Active Orders"))
-                list.add(InventoryItemModel(0, "Upcoming Orders"))
-                list.add(InventoryItemModel(0, "Completed"))
-                list.add(InventoryItemModel(0, "Cancelled Orders", true))
+                list.add(InventoryItemModel(0, "Active Orders ($activeOrdersCount)"))
+                list.add(InventoryItemModel(0, "Upcoming Orders ($upcomingOrdersCount)"))
+                list.add(InventoryItemModel(0, "Completed ($completedOrdersCount)"))
+                list.add(InventoryItemModel(0, "Cancelled Orders ($cancelledOrdersCount)", true))
 
             }
         }

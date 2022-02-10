@@ -200,6 +200,8 @@ class PosRepository @Inject constructor(
 
     suspend fun deleteCategory(catId: Int) = appDatabase.categoryDao().deleteCategoryById(catId)
 
+    suspend fun deleteAllCategories() = appDatabase.categoryDao().delete()
+
     suspend fun hideCategory(catId: Int, active: Boolean) =
         appDatabase.categoryDao().hideCategory(catId, active)
 
@@ -797,5 +799,8 @@ class PosRepository @Inject constructor(
         appDatabase.kitchenSettingsDao().delete()
         appDatabase.customerSettingsDao().delete()
     }
+
+    fun orderCounts() =
+        performGetOperationNew(networkCall = { apiHelperNew.orderCounts() })
 }
 

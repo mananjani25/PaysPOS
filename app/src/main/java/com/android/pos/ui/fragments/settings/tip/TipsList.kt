@@ -22,6 +22,7 @@ import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.statusUtils.Status
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.*
 
 @AndroidEntryPoint
 class TipsList : Fragment() {
@@ -117,7 +118,10 @@ class TipsList : Fragment() {
                     Status.SUCCESS -> {
                         ProgressUtils.dismissProgressDialog()
                         binding.rvTipList.visibility = View.VISIBLE
-                        resource.data?.let { tipList -> setTipData(tipList) }
+                        resource.data?.let { tipList ->
+                            Collections.reverse(tipList)
+                            setTipData(tipList)
+                        }
                     }
                     Status.ERROR -> {
                         ProgressUtils.dismissProgressDialog()
