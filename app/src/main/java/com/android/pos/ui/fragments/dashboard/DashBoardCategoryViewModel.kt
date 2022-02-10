@@ -532,8 +532,11 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                     dine.items.forEach { item ->
                         totalCount += item.itemQuantity
-
-                        subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+                        if (!item.isManualSales) {
+                            subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+                        } else {
+                            subTotalPrice += (item.price * item.itemQuantity) - item.discountPrice
+                        }
 
                         taxCalculation(item)
 
@@ -550,9 +553,13 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
                 cartList[0].dineInList?.forEach {
-                    totalDiscount += it.items.map {
-                        (it.discountPrice * it.itemQuantity)
-                    }.sum()
+                    it.items.forEach {
+                        if (!it.isManualSales) {
+                            totalDiscount += (it.discountPrice * it.itemQuantity)
+                        } else {
+                            totalDiscount += it.discountPrice
+                        }
+                    }
                 }
 
 
@@ -565,8 +572,11 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 cartList[0].items?.forEach { item ->
                     totalCount += item.itemQuantity
-
-                    subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+                    if (!item.isManualSales) {
+                        subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+                    } else {
+                        subTotalPrice += (item.price * item.itemQuantity) - item.discountPrice
+                    }
 
                     taxCalculation(item)
                     Log.d("yash", "TaxCalculation: " + totalTax)
@@ -583,9 +593,13 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
 
-                totalDiscount = cartList[0].items!!.map {
-                    (it.discountPrice * it.itemQuantity)
-                }.sum()
+                cartList[0].items!!.forEach {
+                    if (!it.isManualSales) {
+                        totalDiscount += (it.discountPrice * it.itemQuantity)
+                    } else {
+                        totalDiscount += it.discountPrice
+                    }
+                }
 
                 totalPrice = (subTotalPrice + totalTax + totalServiceCharge)
 

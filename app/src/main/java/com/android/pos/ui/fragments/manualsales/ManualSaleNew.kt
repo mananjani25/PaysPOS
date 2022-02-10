@@ -252,6 +252,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
         nameObserver = Observer<List<CartModel>> {
 
+
             val bundle = Bundle()
             if (isPayClicked && cartList?.isNotEmpty() == true) {
                 Log.e(
@@ -1043,7 +1044,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             "%.2f",
             viewModel.totalServiceCharge
         )
-        txtDiscount.text = "$" + String.format(
+        txtDiscount.text = "- $" + String.format(
             "%.2f",
             viewModel.totalDiscount
         )
