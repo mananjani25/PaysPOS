@@ -2905,7 +2905,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                                 PERCENTAGE -> {
 
                                     data.discountPrice = calculateDiscountPercentage(
-                                        totalPrice(data),
+                                        data.price,
                                         result.percentage
                                     )
 
