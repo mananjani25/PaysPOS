@@ -25,7 +25,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="start"
-                android:padding="@dimen/_5sdp"
+                android:padding="@dimen/_6sdp"
                 android:text="@string/take_out_order"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_5mdpi"

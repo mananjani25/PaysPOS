@@ -724,7 +724,7 @@ class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.totalDiscount = actual_TotalDiscount
         orderAttributeRequestModel.totalServiceCharges = actual_TotalServiceCharge
         orderAttributeRequestModel.totalTaxAmount = actual_TotalTax
-        orderAttributeRequestModel.totalTips = actual_TotalTips
+        orderAttributeRequestModel.totalTips = tipAmount
 
         orderAttributeRequestModel.is_loyalty_applied = redeemLoyaltyInfo?.needToApplyLoyalty
         if (orderAttributeRequestModel.is_loyalty_applied == true) {
