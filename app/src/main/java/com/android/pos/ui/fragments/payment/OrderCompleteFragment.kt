@@ -1470,7 +1470,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             builder.addText(
                 padLine(
                     "Paid Amount",
-                    "$" + MethodUtils.roundOffAmountDouble(
+                    "$" + MethodUtils.roundOffAmountString(
                         paidAmount + tipAmount
                     ),
                     if (customerSettingModel.fonts == LARGE) {
@@ -1500,7 +1500,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             builder.addText(
                 padLine(
                     "Change Amount",
-                    "$" + MethodUtils.roundOffAmountDouble(changeAmtGlobal),
+                    "$" + MethodUtils.roundOffAmountString(changeAmtGlobal),
                     if (customerSettingModel.fonts == LARGE) {
                         24
                     } else {
@@ -2533,7 +2533,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             builder.addText(
                 padLine(
                     "Paid Amount",
-                    "$" + MethodUtils.roundOffAmountDouble(
+                    "$" + MethodUtils.roundOffAmountString(
                         paidAmount + tipAmount
                     ),
                     if (customerSettingModel.fonts == LARGE) {
@@ -2564,7 +2564,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             builder.addText(
                 padLine(
                     "Change Amount",
-                    "$" + MethodUtils.roundOffAmountDouble(changeAmtGlobal),
+                    "$" + MethodUtils.roundOffAmountString(changeAmtGlobal),
                     if (customerSettingModel.fonts == LARGE) {
                         24
                     } else {
@@ -3789,8 +3789,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 )
             }
 
-            Log.e(TAG, "totalTips:  ${receiptModel?.order?.totalTips}")
-            if (receiptModel?.order?.totalTips != 0.0) {
+            Log.e(TAG, "totalTips:  ${tipAmount}")
+            if (tipAmount > 0) {
 
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
@@ -3806,11 +3806,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 builder.addText(
                     padLine(
                         "Tips",
-                        "$" + receiptModel?.order?.totalTips?.let {
-                            MethodUtils.roundOffAmountString(
-                                it
-                            )
-                        },
+                        "$" + MethodUtils.roundOffAmountString(tipAmount.toDouble()),
                         if (customerSettingModel.fonts == LARGE) {
                             24
                         } else {
@@ -3885,7 +3881,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     builder.addText(
                         padLine(
                             "Total Price",
-                            "$" + MethodUtils.roundOffAmountDouble(
+                            "$" + MethodUtils.roundOffAmountString(
                                 receiptModel?.order?.totalAmount?.toDouble() ?: 0.0
                             ),
                             if (customerSettingModel.fonts == LARGE) {
@@ -3902,7 +3898,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     builder.addText(
                         padLine(
                             "Total Price",
-                            "$" + MethodUtils.roundOffAmountDouble(paidAmount + tipAmount),
+                            "$" + MethodUtils.roundOffAmountString(paidAmount + tipAmount),
                             if (customerSettingModel.fonts == LARGE) {
                                 24
                             } else {
@@ -3932,7 +3928,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             builder.addText(
                 padLine(
                     "Paid Amount",
-                    "$" + MethodUtils.roundOffAmountDouble(
+                    "$" + MethodUtils.roundOffAmountString(
                         paidAmount + tipAmount
                     ),
                     if (customerSettingModel.fonts == LARGE) {
@@ -3964,7 +3960,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 builder.addText(
                     padLine(
                         "Change Amount",
-                        "$" + MethodUtils.roundOffAmountDouble(changeAmtGlobal),
+                        "$" + MethodUtils.roundOffAmountString(changeAmtGlobal),
                         if (customerSettingModel.fonts == LARGE) {
                             24
                         } else {

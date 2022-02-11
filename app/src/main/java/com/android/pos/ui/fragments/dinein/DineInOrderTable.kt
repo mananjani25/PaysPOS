@@ -1480,7 +1480,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         serviceChargeWT / (baseResponse.guestAttributes.size - 1)
                     dineInList.get(0).orderDiscount = orderDiscount
                     dineInList.get(0).orderTotalAmount =
-                        MethodUtils.roundOffAmountDouble(baseResponse.subTotal + baseResponse.totalTaxAmount+baseResponse.totalServiceCharges)
+                        MethodUtils.roundOffAmountDouble(baseResponse.subTotal + baseResponse.totalTaxAmount + baseResponse.totalServiceCharges)
 
 
 
@@ -1562,10 +1562,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
 
-                        Log.e("MYFN","subTotalDInin  ${subTotalDInin}")
-                        Log.e("MYFN","serviceCharge  ${serviceCharge}")
-                        Log.e("MYFN","finalTaxAmt  ${finalTaxAmt}")
-                        Log.e("MYFN","orderDis  ${orderDis}")
+                        Log.e("MYFN", "subTotalDInin  ${subTotalDInin}")
+                        Log.e("MYFN", "serviceCharge  ${serviceCharge}")
+                        Log.e("MYFN", "finalTaxAmt  ${finalTaxAmt}")
+                        Log.e("MYFN", "orderDis  ${orderDis}")
 
 
                         var finalAmount = subTotalDInin + serviceCharge + finalTaxAmt - orderDis
@@ -3311,7 +3311,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         "Total Discount",
 
                         if (guestDiscount == 0.0) {
-                            "$" + MethodUtils.roundOffAmountString(0.0)
+                            "$" + MethodUtils.roundOffAmountString(0.00)
                         } else {
 
                             "-$" + MethodUtils.roundOffAmountString(guestDiscount)
@@ -4451,7 +4451,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             builder.addText(
                 padLine(
                     "Total Price",
-                    "$" +totalAmt,
+                    "$" + MethodUtils.roundOffAmountString(totalAmt),
                     if (customerSettingModel.fonts == Constants.LARGE) {
                         24
                     } else {
