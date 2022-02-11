@@ -86,24 +86,43 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
 
             if (mData.order.refund_detail.refunded_amount.equals(0.0)) {
 
-                MethodUtils.setRefundPriceTextView(
-                    binding.tvTotalRefundAmount,
-                    (mData.amount)
-                )
+                if (mData.payment_type == "Card") {
+                    var totalamount_tip = mData.amount + mData.tips
+                    MethodUtils.setRefundPriceTextView(
+                        binding.tvTotalRefundAmount,
+                        (totalamount_tip)
+                    )
+                    binding.edtAmount.setText((totalamount_tip * 100).toString())
+                } else {
+                    MethodUtils.setRefundPriceTextView(
+                        binding.tvTotalRefundAmount,
+                        (mData.amount)
+                    )
 
-                binding.edtAmount.setText((mData.amount * 100).toString())
-
+                    binding.edtAmount.setText((mData.amount * 100).toString())
+                }
             } else {
+                if (mData.payment_type == "Card") {
+                    val price =
+                        (mData.amount + mData.tips) - mData.order.refund_detail.refunded_amount
+                    MethodUtils.setRefundPriceTextView(
+                        binding.tvTotalRefundAmount,
+                        price
+                    )
 
-                val price = (mData.amount - mData.tips) - mData.order.refund_detail.refunded_amount
-                MethodUtils.setRefundPriceTextView(
-                    binding.tvTotalRefundAmount,
-                    price
-                )
+                    binding.edtAmount.setText((price * 100).toString())
+                } else {
+                    val price =
+                        (mData.amount + mData.tips) - mData.order.refund_detail.refunded_amount
+                    MethodUtils.setRefundPriceTextView(
+                        binding.tvTotalRefundAmount,
+                        price
+                    )
 
-                binding.edtAmount.setText((price * 100).toString())
+                    binding.edtAmount.setText((price * 100).toString())
+                }
+
             }
-
 
         }
 
