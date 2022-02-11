@@ -222,10 +222,10 @@ class TransactionDetailsFragment : Fragment() {
 
 
                 binding.llDiscount.visibility = View.VISIBLE
-                if (paymentDetailsResponse.data.order.total_discount.equals(0.0)) {
+                if (paymentDetailsResponse.data.total_discount != 0.0) {
                     binding.txtDiscount.text = "$ " + String.format(
                         "%.2f",
-                        paymentDetailsResponse.data.order.total_discount
+                        paymentDetailsResponse.data.total_discount
                     )
                 } else {
                     binding.txtDiscount.text = "$ " + String.format(
@@ -486,7 +486,7 @@ class TransactionDetailsFragment : Fragment() {
 
             addBuilderText(
                 builder,
-                prefProvider.getValue(Constants.BUSINESS_ADDRESS, "7450 DW 51 FH,AT,Suite 503")
+                prefProvider.getValue(Constants.BUSINESS_ADDRESS, "")
                     .toString()
             )
             builder.addFeedLine(1)
@@ -813,8 +813,8 @@ class TransactionDetailsFragment : Fragment() {
                     padLine(
                         "Total Discount",
 
-                        if (paymentDetailsResponse?.data.order.total_discount == 0.0) {
-                            "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse?.data.order.total_discount)
+                        if (paymentDetailsResponse?.data.total_discount != 0.0) {
+                            "-$" + MethodUtils.roundOffAmountString(paymentDetailsResponse?.data.total_discount)
                         } else {
                             "-$" + MethodUtils.roundOffAmountString(paymentDetailsResponse?.data.order.total_discount)
                         },
@@ -848,7 +848,7 @@ class TransactionDetailsFragment : Fragment() {
             builder.addText(
                 padLine(
                     "Sub Total",
-                    "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse?.data.order?.sub_total!!),
+                    "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.sub_total),
                     if (customerSettingModel.fonts == Constants.LARGE) {
                         24
                     } else {
@@ -858,7 +858,7 @@ class TransactionDetailsFragment : Fragment() {
             )
 
 
-            if (paymentDetailsResponse.data.order?.total_tax_amount != null) {
+            if (paymentDetailsResponse.data?.tax_amount != null) {
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addTextFont(Builder.FONT_E)
@@ -875,7 +875,7 @@ class TransactionDetailsFragment : Fragment() {
                 builder.addText(
                     padLine(
                         "Tax",
-                        "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.order?.total_tax_amount),
+                        "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.tax_amount),
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             24
                         } else {
@@ -885,7 +885,7 @@ class TransactionDetailsFragment : Fragment() {
                 )
             }
 
-            if (paymentDetailsResponse.data.order?.total_service_charges != null) {
+            if (paymentDetailsResponse.data?.service_charge_amount != null) {
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addTextFont(Builder.FONT_E)
@@ -902,7 +902,7 @@ class TransactionDetailsFragment : Fragment() {
                 builder.addText(
                     padLine(
                         "Service Charge",
-                        "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.order.total_service_charges),
+                        "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.service_charge_amount),
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             24
                         } else {
@@ -912,7 +912,7 @@ class TransactionDetailsFragment : Fragment() {
                 )
             }
 
-            if (paymentDetailsResponse.data.order?.total_tips != 0.0) {
+            if (paymentDetailsResponse.data?.tips != 0.0) {
 
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
@@ -928,7 +928,7 @@ class TransactionDetailsFragment : Fragment() {
                 builder.addText(
                     padLine(
                         "Tips",
-                        "$" + paymentDetailsResponse.data.order?.total_tips?.let {
+                        "$" + paymentDetailsResponse.data.tips?.let {
                             MethodUtils.roundOffAmountString(
                                 it
                             )
@@ -945,7 +945,7 @@ class TransactionDetailsFragment : Fragment() {
 
 
 
-            if (paymentDetailsResponse.data.order?.cash_discount_or_surcharge != null) {
+            if (paymentDetailsResponse.data?.cash_discount_or_surcharge != null) {
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addTextFont(Builder.FONT_E)
@@ -962,8 +962,8 @@ class TransactionDetailsFragment : Fragment() {
                 builder.addText(
                     padLine(
                         "Cash Discount",
-                        if (paymentDetailsResponse.data.order.cash_discount_or_surcharge == 0.0) {
-                            "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.order?.cash_discount_or_surcharge)
+                        if (paymentDetailsResponse.data.cash_discount_or_surcharge != 0.0) {
+                            "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data?.cash_discount_or_surcharge)
                         } else {
                             "-$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.order?.cash_discount_or_surcharge)
                         },
@@ -980,7 +980,7 @@ class TransactionDetailsFragment : Fragment() {
             builder.addFeedUnit(30)
 
 
-            if (paymentDetailsResponse.data.order?.total_amount != null) {
+
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
 
@@ -995,7 +995,7 @@ class TransactionDetailsFragment : Fragment() {
                     Builder.COLOR_1
                 )
                 var totalAmt =
-                    MethodUtils.roundOffAmountDouble(paymentDetailsResponse.data.order?.total_amount)
+                    MethodUtils.roundOffAmountDouble(paymentDetailsResponse.data.amount + paymentDetailsResponse.data.tips)
                 /* if (receiptModel?.order?.totalDiscount != 0.0) {
                      totalAmt =
                          (totalAmt - MethodUtils.roundOffAmountDouble(receiptModel?.order?.totalDiscount!!))
@@ -1014,7 +1014,7 @@ class TransactionDetailsFragment : Fragment() {
                     )
                 )
 
-            }
+
 
             if (paymentDetailsResponse?.data?.order.refund_detail != null && paymentDetailsResponse?.data?.order?.refund_detail?.refunded_amount != 0.0) {
                 builder.addTextLineSpace(30)
@@ -1152,9 +1152,14 @@ class TransactionDetailsFragment : Fragment() {
                     }
                 )
             )
-            if (customerSettingModel.showCustomerAddress != false or customerSettingModel.showCustomerPhone != false or customerSettingModel.showCustomerName) {
+            if (customerSettingModel.showCustomerAddress or customerSettingModel.showCustomerPhone or customerSettingModel.showCustomerName) {
+
 
                 if (paymentDetailsResponse?.data.order?.customer != null) {
+                    Log.e(
+                        TAG,
+                        "paymentDetailsResponse:  ${Gson().toJson(paymentDetailsResponse?.data.order?.customer)}"
+                    )
 
                     builder.addFeedLine(1)
                     builder.addTextLineSpace(30)
@@ -1201,6 +1206,59 @@ class TransactionDetailsFragment : Fragment() {
 
                         builder.addText(paymentDetailsResponse?.data.order?.customer.firstName + " " + paymentDetailsResponse?.data.order?.customer.lastName)
                     }
+
+                    if (customerSettingModel.showCustomerPhone) {
+                        if (paymentDetailsResponse?.data?.order?.customer?.phones?.isNotEmpty()) {
+                            builder.addTextLineSpace(30)
+                            builder.addFeedUnit(30)
+                            builder.addTextFont(Builder.FONT_E)
+                            //builder.addTextAlign(Builder.ALIGN_LEFT)
+                            builder.addTextLang(Builder.LANG_EN)
+                            addCustomerTextSize(builder, customerSettingModel.fonts)
+                            builder.addTextStyle(
+                                Builder.FALSE,
+                                Builder.FALSE,
+                                Builder.FALSE,
+                                Builder.COLOR_1
+                            )
+
+                            var phoneNoFormatted = MethodUtils.getUSFormatNumber(
+                                paymentDetailsResponse?.data?.order?.customer?.phones?.get(
+                                    paymentDetailsResponse?.data?.order?.customer.phones?.size - 1
+                                ).phoneNumber
+                            )
+                            Log.e(TAG, "phoneNoFormatted:  ${phoneNoFormatted}")
+                            builder.addText(phoneNoFormatted)
+
+                        }
+
+
+                    }
+
+                    if (customerSettingModel.showCustomerAddress) {
+                        if (paymentDetailsResponse?.data?.order?.customer?.addresses?.isNotEmpty() == true) {
+
+                            builder.addTextLineSpace(30)
+                            builder.addFeedUnit(30)
+                            builder.addTextFont(Builder.FONT_E)
+                            //builder.addTextAlign(Builder.ALIGN_LEFT)
+                            builder.addTextLang(Builder.LANG_EN)
+                            addCustomerTextSize(builder, customerSettingModel.fonts)
+                            builder.addTextStyle(
+                                Builder.FALSE,
+                                Builder.FALSE,
+                                Builder.FALSE,
+                                Builder.COLOR_1
+                            )
+
+                            builder.addText(
+                                paymentDetailsResponse?.data?.order?.customer?.addresses?.get(
+                                    paymentDetailsResponse?.data?.order?.customer?.addresses?.size - 1
+                                )?.fullAddress
+                            )
+                        }
+                    }
+
 
                     /*  if (customerSettingModel.showCustomerAddress) {
                           if (paymentDetailsResponse?.data.order?.customer.addresses?.isNotEmpty() == true) {

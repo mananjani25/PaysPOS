@@ -805,8 +805,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         }
 
         orderDiscount = (getDineInOrderDetails?.totalDiscount?.minus(guestDiscount))?.div(
-            ((getDineInOrderDetails?.guestAttributes?.size!! - 1)))!!
-            var finaldisLocal = 0.0
+            ((getDineInOrderDetails?.guestAttributes?.size!! - 1))
+        )!!
+        var finaldisLocal = 0.0
         finaldisLocal = orderDiscount + guestDiscount
 
 
@@ -1168,9 +1169,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
             for (i in 0 until listWTitems.size) {
-               // builder.addFeedLine(1)
-               /* builder.addTextLineSpace(30)
-                builder.addFeedUnit(30)*/
+                // builder.addFeedLine(1)
+                /* builder.addTextLineSpace(30)
+                 builder.addFeedUnit(30)*/
                 builder.addTextFont(Builder.FONT_E)
                 // builder.addTextAlign(Builder.ALIGN_LEFT)
                 builder.addTextLang(Builder.LANG_EN)
@@ -1469,7 +1470,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             builder.addText(
                 padLine(
                     "Paid Amount",
-                    "" + MethodUtils.roundOffAmount(
+                    "$" + MethodUtils.roundOffAmountDouble(
                         paidAmount
                     ),
                     if (customerSettingModel.fonts == LARGE) {
@@ -1499,7 +1500,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             builder.addText(
                 padLine(
                     "Change Amount",
-                    MethodUtils.roundOffAmount(changeAmtGlobal),
+                    "$" + MethodUtils.roundOffAmountDouble(changeAmtGlobal),
                     if (customerSettingModel.fonts == LARGE) {
                         24
                     } else {
@@ -2532,7 +2533,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             builder.addText(
                 padLine(
                     "Paid Amount",
-                    "" + MethodUtils.roundOffAmount(
+                    "$" + MethodUtils.roundOffAmountDouble(
                         paidAmount
                     ),
                     if (customerSettingModel.fonts == LARGE) {
@@ -2563,7 +2564,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             builder.addText(
                 padLine(
                     "Change Amount",
-                    MethodUtils.roundOffAmount(changeAmtGlobal),
+                    "$" + MethodUtils.roundOffAmountDouble(changeAmtGlobal),
                     if (customerSettingModel.fonts == LARGE) {
                         24
                     } else {
@@ -3190,12 +3191,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             customerList.forEach { cus ->
                                 cus.orderTypes.forEach {
 
-                                    if (it.orderTypeName.trim()
-                                            .lowercase().equals(
-                                                receiptModel?.order?.orderType?.toString()?.trim()
-                                                    ?.lowercase()
-                                            )
-                                    ) {
+                                    if (it.orderTypeId == receiptModel?.order?.orderTypeId) {
 
                                         it.printerSettings.forEach {
                                             if (it.printType.lowercase()
@@ -3888,7 +3884,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     builder.addText(
                         padLine(
                             "Total Price",
-                            "" + MethodUtils.roundOffAmount(
+                            "$" + MethodUtils.roundOffAmountDouble(
                                 receiptModel?.order?.totalAmount?.toDouble() ?: 0.0
                             ),
                             if (customerSettingModel.fonts == LARGE) {
@@ -3905,7 +3901,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     builder.addText(
                         padLine(
                             "Total Price",
-                            "" + MethodUtils.roundOffAmount(paidAmount + tipAmount),
+                            "$" + MethodUtils.roundOffAmountDouble(paidAmount + tipAmount),
                             if (customerSettingModel.fonts == LARGE) {
                                 24
                             } else {
@@ -3935,7 +3931,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             builder.addText(
                 padLine(
                     "Paid Amount",
-                    "" + MethodUtils.roundOffAmount(
+                    "$" + MethodUtils.roundOffAmountDouble(
                         paidAmount
                     ),
                     if (customerSettingModel.fonts == LARGE) {
@@ -3967,7 +3963,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 builder.addText(
                     padLine(
                         "Change Amount",
-                        MethodUtils.roundOffAmount(changeAmtGlobal),
+                        "$" + MethodUtils.roundOffAmountDouble(changeAmtGlobal),
                         if (customerSettingModel.fonts == LARGE) {
                             24
                         } else {
@@ -4147,7 +4143,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     }
                 )
             )
-            if (customerSettingModel.showCustomerAddress != false or customerSettingModel.showCustomerPhone != false or customerSettingModel.showCustomerName) {
+            if (customerSettingModel.showCustomerAddress  or customerSettingModel.showCustomerPhone  or customerSettingModel.showCustomerName) {
 
                 if (receiptModel?.order?.customer != null) {
 

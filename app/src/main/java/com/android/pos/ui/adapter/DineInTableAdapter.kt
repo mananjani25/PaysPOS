@@ -162,6 +162,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             }
 
 
+            Log.e("GuestPAid","${list.get(position).isPaid}")
 
             guestAmt += list.get(0).guestDividedAmt
 
@@ -181,7 +182,14 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 binding.btnPay.visibility = View.GONE
                 binding.btnPaid.visibility = View.VISIBLE
 
-            } else if (noItem && guestAmt == 0.0) {
+            }
+            else if (list.get(position).isPaid){
+                binding.btnPay.visibility = View.GONE
+                binding.btnPaid.visibility = View.VISIBLE
+
+
+            }
+            else if (noItem && guestAmt == 0.0) {
                 binding.btnPaid.visibility = View.GONE
                 binding.btnPay.visibility = View.GONE
             } else {
@@ -231,21 +239,22 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             Log.e("TODAY", "guestDividedAmt  ${(list.get(0).guestDividedAmt)}")
             Log.e("TODAY", "totalServiceCharge  ${(totalServiceCharge)}")
             Log.e("TODAY", "orderTotalAmount  ${list.get(0).orderTotalAmount}")
+            Log.e("TODAY", "orderfinalAmt:  ${finalAmt}")
 
             var guestOrderDisShare = 0.0
             if (list.get(0).orderDiscount > 0) {
                 guestOrderDisShare =
                     (finalAmt * list.get(0).orderDiscount) / list.get(0).orderTotalAmount
-                
-                Log.e(TAG, "guestOrderDisShare  ${guestOrderDisShare}")
+
+                Log.e("TODAY", "guestOrderDisShare  ${guestOrderDisShare}")
 
             }
             finalAmt = finalAmt - guestOrderDisShare
 
-            Log.e(TAG, "GuestguestSubTotal  ${guestSubTotal}")
-            Log.e(TAG, "GuesttotalServiceCharge  ${totalServiceCharge}")
-            Log.e(TAG, "GuesttotalTaxAmt  ${totalTaxAmt}")
-            Log.e(TAG, "GuestguestDividedAmt  ${list.get(0).guestDividedAmt}")
+            Log.e("TODAY", "GuestguestSubTotal  ${guestSubTotal}")
+            Log.e("TODAY", "GuesttotalServiceCharge  ${totalServiceCharge}")
+            Log.e("TODAY", "GuesttotalTaxAmt  ${totalTaxAmt}")
+            Log.e("TODAY", "GuestguestDividedAmt  ${list.get(0).guestDividedAmt}")
             //   Log.e(TAG,"GuestguestSubTotal  ${guestSubTotal}")
 
             // Log.e(TAG,"guestDivided  ${list.get(0).guestDividedAmt}")

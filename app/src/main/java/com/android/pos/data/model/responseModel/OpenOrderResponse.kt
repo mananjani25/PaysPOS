@@ -1,8 +1,10 @@
 package com.android.pos.data.model.responseModel
 
 
+import android.os.Parcelable
 import com.android.pos.data.model.requestModel.OrderItemVariationAttribute
 import com.google.gson.annotations.SerializedName
+import kotlinx.parcelize.Parcelize
 
 data class OpenOrderResponse(
     @SerializedName("data")
@@ -319,6 +321,7 @@ data class OpenOrderResponse(
                 @SerializedName("final_reward")
                 val final_reward: Int? = 0
             ) {
+                @Parcelize
                 data class Address(
                     @SerializedName("address1")
                     val address1: String,
@@ -343,15 +346,16 @@ data class OpenOrderResponse(
                     @SerializedName("street")
                     val street: String,
                     @SerializedName("type_of_address")
-                    val typeOfAddress: Any
-                )
+                    val typeOfAddress: String
+                ):Parcelable{}
 
+                @Parcelize
                 data class Phone(
                     @SerializedName("id")
                     val id: Int,
                     @SerializedName("phone_number")
                     val phoneNumber: String
-                )
+                ):Parcelable{}
             }
 
             data class Employee(
