@@ -121,24 +121,9 @@ class TransactionDetailsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.imgBack.setOnClickListener {
-            val bundle = Bundle().apply {
-                putString("selectedorderType", requireArguments().getString("selectedorderType"))
-                putString("selectedtransactionType", requireArguments()?.getString("selectedtransactionType"))
-                putString("selectedroleType", requireArguments()?.getString("selectedroleType"))
-                putString("selectedemployeeType", requireArguments()?.getString("selectedemployeeType"))
-                putString("selectedterminalType", requireArguments()?.getString("selectedterminalType"))
-            }
-          /*  findNavController().navigate(
-                R.id.action_transactionFragment_to_transactionDetailsFragment,
-                bundle
-            )*/
-
             val navControll = findNavController()
-            navControll.previousBackStackEntry?.savedStateHandle?.set(KEY, bundle)
-            //findNavController().navigate(R.id.transactionFragment)
-
+            navControll.previousBackStackEntry?.savedStateHandle?.set(KEY, arguments)
             navControll.popBackStack()
-
         }
 
         binding.txtHome.setOnClickListener {

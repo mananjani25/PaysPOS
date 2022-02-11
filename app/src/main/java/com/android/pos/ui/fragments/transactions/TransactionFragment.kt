@@ -126,15 +126,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
             if (differnceTrue(viewModel.startDate.value!!, viewModel.endDate.value) <= 30) {
                 checkFilter = true
                 currentPage = 1
-                viewModel.apiCallTimeSheet(
-                    currentPage,
-                    getTerminalId(binding.includeView.spTerminals.selectedItemPosition).toString(),
-                    getRoleId(binding.includeView.spRoles.selectedItemPosition).toString(),
-                    getEmployeeId(binding.includeView.spEmployees.selectedItemPosition).toString(),
-                    getOrderId(binding.includeView.spOrders.selectedItemPosition).toString(),
-                    getTipType(binding.includeView.spTipTypes.selectedItemPosition),
-                    getPaymentType(binding.includeView.spTransactionTypes.selectedItemPosition)
-                )
+                apiCallTimeSheet()
             } else {
                 AlertUtils.showCustomAlertWithListenerWithOK(
                     requireActivity(),
@@ -151,18 +143,9 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
             viewModel.endDate.value = timeCalculateForStartEndTime(hour, minute, "isend")
             checkFilter = true
             currentPage = 1
-            if (differnceTrue(viewModel.endDate.value!!, viewModel.startDate.value) <= 30) {
-                viewModel.apiCallTimeSheet(
-                    currentPage,
-                    getTerminalId(binding.includeView.spTerminals.selectedItemPosition).toString(),
-                    getRoleId(binding.includeView.spRoles.selectedItemPosition).toString(),
-                    getEmployeeId(binding.includeView.spEmployees.selectedItemPosition).toString(),
-                    getOrderId(binding.includeView.spOrders.selectedItemPosition).toString(),
-                    getTipType(binding.includeView.spTipTypes.selectedItemPosition),
-                    getPaymentType(binding.includeView.spTransactionTypes.selectedItemPosition)
-
-                )
-            } else {
+            if (differnceTrue(viewModel.endDate.value!!, viewModel.startDate.value) <= 30)
+                apiCallTimeSheet()
+            else {
                 AlertUtils.showCustomAlertWithListenerWithOK(
                     requireActivity(),
                     "Please Select date in 30 Days."
@@ -275,15 +258,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                 currentPage += 1
                 if (currentPage <= TOTAL_PAGES) {
                     isLoading = true
-                    viewModel.apiCallTimeSheet(
-                        currentPage,
-                        getTerminalId(binding.includeView.spTerminals.selectedItemPosition).toString(),
-                        getRoleId(binding.includeView.spRoles.selectedItemPosition).toString(),
-                        getEmployeeId(binding.includeView.spEmployees.selectedItemPosition).toString(),
-                        getOrderId(binding.includeView.spOrders.selectedItemPosition).toString(),
-                        getTipType(binding.includeView.spTipTypes.selectedItemPosition),
-                        getPaymentType(binding.includeView.spTransactionTypes.selectedItemPosition)
-                    )
+                    apiCallTimeSheet()
                 } else {
                     transactionAdapter.showLoading(false)
                 }
@@ -294,54 +269,34 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
 
 
-        if (findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Bundle>(KEY)?.value==null){
-            viewModel.apiCallTimeSheet(
-                currentPage,
-                getTerminalId(binding.includeView.spTerminals.selectedItemPosition).toString(),
-                getRoleId(binding.includeView.spRoles.selectedItemPosition).toString(),
-                getEmployeeId(binding.includeView.spEmployees.selectedItemPosition).toString(),
-                getOrderId(binding.includeView.spOrders.selectedItemPosition).toString(),
-                getTipType(binding.includeView.spTipTypes.selectedItemPosition),
-                getPaymentType(binding.includeView.spTransactionTypes.selectedItemPosition)
-
-            )
-        }
+        if (findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Bundle>(KEY)?.value==null)
+            apiCallTimeSheet()
         else{
             findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Bundle>(KEY)
                 ?.observe(viewLifecycleOwner) { it ->
-                    Log.e(TAG, "transactionDetails :  "+" selectedorderType ${it.getString("selectedorderType").toString()}"+" selectedtransactionType ${it.getString("selectedtransactionType").toString()}")
-
-
-                    /*  putString("selectedorderType", binding.includeView.spOrders.selectedItemPosition.toString())
-                      putString("selectedtransactionType", binding.includeView.spTransactionTypes.selectedItemPosition.toString())
-                      putString("selectedroleType", binding.includeView.spRoles.selectedItemPosition.toString())
-                      putString("selectedemployeeType", binding.includeView.spEmployees.selectedItemPosition.toString())
-                      putString("selectedterminalType", binding.includeView.spTerminals.selectedItemPosition.toString())*/
-
                     it.getString("selectedorderType")?.toInt()?.let { it1 -> binding.includeView.spOrders.setSelection(it1) }
                     it.getString("selectedtransactionType")?.toInt()?.let { it1 -> binding.includeView.spTransactionTypes.setSelection(it1) }
                     it.getString("selectedroleType")?.toInt()?.let { it1 -> binding.includeView.spRoles.setSelection(it1) }
                     it.getString("selectedemployeeType")?.toInt()?.let { it1 -> binding.includeView.spEmployees.setSelection(it1) }
                     it.getString("selectedterminalType")?.toInt()?.let { it1 -> binding.includeView.spTerminals.setSelection(it1) }
-                    viewModel.apiCallTimeSheet(
-                        currentPage,
-                        getTerminalId(binding.includeView.spTerminals.selectedItemPosition).toString(),
-                        getRoleId(binding.includeView.spRoles.selectedItemPosition).toString(),
-                        getEmployeeId(binding.includeView.spEmployees.selectedItemPosition).toString(),
-                        getOrderId(binding.includeView.spOrders.selectedItemPosition).toString(),
-                        getTipType(binding.includeView.spTipTypes.selectedItemPosition),
-                        getPaymentType(binding.includeView.spTransactionTypes.selectedItemPosition)
-                    )
+                    apiCallTimeSheet()
                 }
-
         }
-
-
-
-
-
-
         return binding.root
+    }
+
+    private fun apiCallTimeSheet() {
+        viewModel.apiCallTimeSheet(
+            currentPage,
+            getTerminalId(binding.includeView.spTerminals.selectedItemPosition).toString(),
+            getRoleId(binding.includeView.spRoles.selectedItemPosition).toString(),
+            getEmployeeId(binding.includeView.spEmployees.selectedItemPosition).toString(),
+            getOrderId(binding.includeView.spOrders.selectedItemPosition).toString(),
+            getTipType(binding.includeView.spTipTypes.selectedItemPosition),
+            getPaymentType(binding.includeView.spTransactionTypes.selectedItemPosition)
+
+        )
+
     }
 
     private fun differnceTrue(date1: String, date2: String?): Long {
@@ -621,7 +576,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
     private fun getEmployeesTimeSheetObserver() {
         viewModel.data.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let { timeSheet ->
-                if (timeSheet.data.payments.size > 0) {
+                if (timeSheet.data.payments.isNotEmpty()) {
                     binding.txtNodata.visibility = View.GONE
                     binding.rvTeamTimeSheet.visibility = View.VISIBLE
                     // employeeTimeSheet.addAll(timeSheet.data.payments)
@@ -641,6 +596,10 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                         transactionAdapter.showLoading(true)
                     }
                 } else {
+                    Log.e(TAG,"itemCount ${transactionAdapter.itemCount}")
+                   /* binding.rvTeamTimeSheet.visibility = View.GONE
+                    binding.txtNodata.visibility = View.VISIBLE
+                    binding.txtNodata.text = timeSheet.message*/
                     if (transactionAdapter.itemCount == 0) {
                         binding.rvTeamTimeSheet.visibility = View.GONE
                         binding.txtNodata.visibility = View.VISIBLE
@@ -857,16 +816,9 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
         if (spinnerTouched) {
             currentPage = 1
             checkFilter = true
-            viewModel.apiCallTimeSheet(
-                currentPage,
-                getTerminalId(binding.includeView.spTerminals.selectedItemPosition).toString(),
-                getRoleId(binding.includeView.spRoles.selectedItemPosition).toString(),
-                getEmployeeId(binding.includeView.spEmployees.selectedItemPosition).toString(),
-                getOrderId(binding.includeView.spOrders.selectedItemPosition).toString(),
-                getTipType(binding.includeView.spTipTypes.selectedItemPosition),
-                getPaymentType(binding.includeView.spTransactionTypes.selectedItemPosition)
-            )
 
+            transactionAdapter.clear()
+            apiCallTimeSheet()
         }
         spinnerTouched = false
     }
