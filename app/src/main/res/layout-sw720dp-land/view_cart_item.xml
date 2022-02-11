@@ -27,7 +27,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:padding="@dimen/_3sdp"
-                android:weightSum="10"
+                android:weightSum="11.3"
                 >
 
                 <LinearLayout
@@ -65,11 +65,11 @@
                 </LinearLayout>
 
                 <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtQty"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/_2sdp"
-                    android:layout_weight="1"
+                    android:layout_weight="1.3"
                     android:maxLines="1"
                     android:text="@{`x `+model.itemQuantity}"
                     android:textColor="@color/color88"
@@ -83,7 +83,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:layout_weight="2"
+                    android:layout_weight="3"
                     android:layout_marginHorizontal="@dimen/_2sdp"
                   >
 
