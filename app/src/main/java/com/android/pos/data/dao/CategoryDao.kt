@@ -52,7 +52,7 @@ interface CategoryDao {
     suspend fun hideCategory(id: Int, active: Boolean?): Int
 
     @Transaction
-    @Query("SELECT * FROM TbCategory where TbCategory.active = 1 and TbCategory.name != 'Manual Sales' ORDER BY TbCategory.sort DESC")
+    @Query("SELECT * FROM TbCategory where TbCategory.active = 1 and TbCategory.name != 'Manual Sales' ORDER BY TbCategory.sort ASC")
     fun categoryWithInventory(): LiveData<List<CategoryWithInventory?>>?
 
     @Query("SELECT * FROM TbCategory WHERE TbCategory.id IN (:userIds)")
