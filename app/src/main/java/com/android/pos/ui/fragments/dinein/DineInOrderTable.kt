@@ -63,6 +63,7 @@ import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
 class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
+    private var cashDiscountGlobal: Double = 0.0
     private var customerList: List<PrinterResponse.Data.CustomerReceiptPrinters> = listOf()
     private var toFinalAmt: Double = 0.0
     private var totalTaxAmt: Double = 0.00
@@ -1412,7 +1413,32 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                         if (oi.orderItemTaxes.isNotEmpty()) {
                                             oi.orderItemTaxes.forEach { tax ->
                                                 if (!oi.isPaid) {
-                                                    totalTaxWT += tax.rate
+                                                    totalTaxWT += if (tax.taxType == "Percentage") {
+
+                                                        var modifierPrice = 0.0
+                                                        val price =
+                                                            (oi.price * oi.quantity)
+
+                                                        oi.orderItemModifiers.forEach { mod ->
+                                                            modifierPrice += (mod.price * mod.quantity)
+                                                        }
+
+                                                        val totalPrice =
+                                                            price + modifierPrice - oi.discountAmount
+
+                                                        val itemTaxPrice =
+                                                            (tax.rate * totalPrice) / 100
+
+                                                        String.format("%.2f", itemTaxPrice)
+                                                            .toDouble()
+                                                    } else {
+
+                                                        String.format(
+                                                            "%.2f",
+                                                            oi.price * it.quantity
+                                                        )
+                                                            .toDouble()
+                                                    }
 
                                                 }
                                             }
@@ -1575,6 +1601,16 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                         toFinalAmt = finalAmount
 
+
+                    }
+
+                    if (prefProvider.getValueboolean(Constants.CASHDIS_SURCHARGEENABLE, false)) {
+
+                        cashDiscountGlobal = MethodUtils.calculateCashDiscount(
+                            toFinalAmt,
+                            prefProvider,
+                            requireContext()
+                        )
 
                     }
 
@@ -2801,8 +2837,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         )
 
                     } else {
-
-
                         generatePrint(customerReceiptPrinters, type, "")
                     }
 
@@ -2836,9 +2870,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         var guestDiscount = 0.0
 
         val guestCount = dineInTableAdapter.getList().size - 1
-        Log.e(TAG, "guestCount:  ${guestCount}")
-
-
 
         listGuestItem.forEach {
             guestSubTotal += (it.price * it.itemQuantity) - it.discountPrice
@@ -3410,8 +3441,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 )
             }
 
-
-            /*if (getOrderDetailsResponse?.cash_discount_or_surcharge != null) {
+            if (cashDiscountGlobal > 0) {
+                var cashDis =
+                    cashDiscountGlobal / (getOrderDetailsResponse?.guestAttributes?.size?.minus(
+                        1
+                    ) ?: 1)
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addTextFont(Builder.FONT_E)
@@ -3428,19 +3462,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 builder.addText(
                     padLine(
                         "Cash Discount",
-                        if (getOrderDetailsResponse?.cash_discount_or_surcharge == 0.0) {
-                            "$" + getOrderDetailsResponse?.cash_discount_or_surcharge?.let {
-                                MethodUtils.roundOffAmountString(
-                                    it
-                                )
-                            }
-                        } else {
-                            "-$" + getOrderDetailsResponse?.cash_discount_or_surcharge?.let {
-                                MethodUtils.roundOffAmountString(
-                                    it
-                                )
-                            }
-                        },
+
+                        "-$" + MethodUtils.roundOffAmountString(cashDis),
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             24
                         } else {
@@ -3448,7 +3471,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         }
                     )
                 )
-            }*/
+            }
+
 
             builder.addTextLineSpace(30)
             builder.addFeedUnit(30)
@@ -4386,7 +4410,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
 
-            if (getOrderDetailsResponse?.cash_discount_or_surcharge != null) {
+            if (cashDiscountGlobal > 0) {
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addTextFont(Builder.FONT_E)
@@ -4403,19 +4427,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 builder.addText(
                     padLine(
                         "Cash Discount",
-                        if (getOrderDetailsResponse?.cash_discount_or_surcharge == 0.0) {
-                            "$" + getOrderDetailsResponse?.cash_discount_or_surcharge?.let {
-                                MethodUtils.roundOffAmountString(
-                                    it
-                                )
-                            }
-                        } else {
-                            "-$" + getOrderDetailsResponse?.cash_discount_or_surcharge?.let {
-                                MethodUtils.roundOffAmountString(
-                                    it
-                                )
-                            }
-                        },
+
+                        "-$" + MethodUtils.roundOffAmountString(cashDiscountGlobal),
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             24
                         } else {
