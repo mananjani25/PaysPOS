@@ -210,7 +210,7 @@ class Options : Fragment(), TextWatcher {
         if (modifierSetId != null) {
 
             isreOrder = true
-            viewModel.reOrderOption(modifierSetId, newPos, oldPos)
+            viewModel.reOrderOption(modifierSetId, oldPos, newPos)
         }
 
     }

@@ -746,10 +746,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
         getCashPaymentOptionList(_totalPrice + tipAmount)
         MethodUtils.setPriceTextView(binding.txtTipAmt, tipAmount)
-        MethodUtils.setPriceTextView(binding.txtTotal, _totalPrice + tipAmount)
-        cardPaymentAmount += tipAmount
         binding.txtCardAmount.text =
-            "$ " + String.format("%.2f", cardPaymentAmount)
+            "$ " + String.format("%.2f", cardPaymentAmount+tipAmount)
     }
 
 
@@ -1725,7 +1723,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                             }
                             isSplitByAmount -> {
                                 val bundle = Bundle()
-                                bundle.putDouble("PaidAmount", cardPaymentAmount)
+                                bundle.putDouble("PaidAmount", cardPaymentAmount )
                                 var wholetotalPriceTemp = String.format(
                                     "%.2f",
                                     prefProvider.getValue("WholeTotal", "").toDouble()
@@ -1793,7 +1791,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                             else -> {
                                 val bundle = Bundle()
                                 bundle.putBoolean("isDineIn", false)
-                                bundle.putDouble("PaidAmount", cardPaymentAmount - tipAmount)
+                                bundle.putDouble("PaidAmount", cardPaymentAmount)
                                 bundle.putDouble("WholetotalPrice", WholetotalPrice)
                                 bundle.putDouble(
                                     "remainingAmount",

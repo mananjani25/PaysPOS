@@ -219,7 +219,7 @@ class Modifiers : Fragment(), TextWatcher {
         if (modifierSetId != null) {
 
             isreOrder = true
-            viewModel.reOrderModifier(modifierSetId, newPos, oldPos)
+            viewModel.reOrderModifier(modifierSetId, oldPos, newPos)
         }
 
     }
