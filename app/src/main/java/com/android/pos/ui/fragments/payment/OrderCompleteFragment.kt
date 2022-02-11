@@ -1471,7 +1471,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 padLine(
                     "Paid Amount",
                     "$" + MethodUtils.roundOffAmountDouble(
-                        paidAmount
+                        paidAmount + tipAmount
                     ),
                     if (customerSettingModel.fonts == LARGE) {
                         24
@@ -2534,7 +2534,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 padLine(
                     "Paid Amount",
                     "$" + MethodUtils.roundOffAmountDouble(
-                        paidAmount
+                        paidAmount+ tipAmount
                     ),
                     if (customerSettingModel.fonts == LARGE) {
                         24
@@ -3350,7 +3350,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             addBuilderText(
                 builder,
-                prefProvider.getValue(BUSINESS_ADDRESS, "7450 DW 51 FH,AT,Suite 503").toString()
+                prefProvider.getValue(BUSINESS_ADDRESS, "").toString()
             )
             builder.addFeedLine(1)
 
@@ -3932,7 +3932,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 padLine(
                     "Paid Amount",
                     "$" + MethodUtils.roundOffAmountDouble(
-                        paidAmount
+                        paidAmount +tipAmount
                     ),
                     if (customerSettingModel.fonts == LARGE) {
                         24
@@ -4143,7 +4143,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     }
                 )
             )
-            if (customerSettingModel.showCustomerAddress  or customerSettingModel.showCustomerPhone  or customerSettingModel.showCustomerName) {
+
+            Log.e(TAG, "customerDetails:   ${Gson().toJson(receiptModel?.order?.customer)}")
+            Log.e(TAG, "customerSettingModel  ${Gson().toJson(customerSettingModel)}")
+            if (customerSettingModel.showCustomerAddress or customerSettingModel.showCustomerPhone or customerSettingModel.showCustomerName) {
 
                 if (receiptModel?.order?.customer != null) {
 
@@ -4190,7 +4193,17 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             Builder.COLOR_1
                         )
 
-                        builder.addText(receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName)
+                        builder.addText(
+                            padLine(
+                                receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName,
+                                "",
+                                if (customerSettingModel.fonts == LARGE) {
+                                    24
+                                } else {
+                                    48
+                                }
+                            )
+                        )
                     }
                     if (customerSettingModel.showCustomerPhone) {
                         if (receiptModel?.order?.customer?.phones?.isNotEmpty() == true) {
@@ -4208,13 +4221,19 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             )
 
                             builder.addText(
-                                receiptModel?.order?.customer?.phones?.size?.minus(
-                                    1
-                                )?.let {
-                                    receiptModel?.order?.customer?.phones?.get(
-                                        it
-                                    )?.phoneNumber
-                                }
+                                padLine(
+                                    receiptModel?.order?.customer?.phones?.size?.minus(
+                                        1
+                                    )?.let {
+                                        receiptModel?.order?.customer?.phones?.get(
+                                            it
+                                        )?.phoneNumber
+                                    }, "", if (customerSettingModel.fonts == LARGE) {
+                                        24
+                                    } else {
+                                        48
+                                    }
+                                )
                             )
 
                         }
@@ -4240,7 +4259,19 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 Builder.COLOR_1
                             )
 
-                            builder.addText(receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress)
+                            builder.addText(
+                                padLine(
+                                    receiptModel?.order?.customer?.addresses?.size?.minus(1)?.let {
+                                        receiptModel?.order?.customer?.addresses?.get(
+                                            it
+                                        )?.fullAddress
+                                    }, "", if (customerSettingModel.fonts == LARGE) {
+                                        24
+                                    } else {
+                                        48
+                                    }
+                                )
+                            )
                         }
                     }
 

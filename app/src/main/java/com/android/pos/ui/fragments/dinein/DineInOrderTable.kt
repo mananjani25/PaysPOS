@@ -4016,7 +4016,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
                         val current = LocalDateTime.now()
-                        val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:aa")
+                        val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:a")
                         val formatted = current.format(formatter)
 
                         builder.addTextLineSpace(30)
@@ -4120,7 +4120,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                     builder.addText(
                         padLine(
-                            if (customerSettingModel.showTeam) {
+                            if (customerSettingModel.showOrderTime) {
                                 "Order Time:" + Constants.getReceiptFormatDateFromUTCServer(
                                     getOrderDetailsResponse?.createdAt.toString()
                                 )
@@ -4162,7 +4162,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                         builder.addText(
                             padLine(
-                                if (customerSettingModel.showTeam) {
+                                if (customerSettingModel.showPrintTime) {
                                     "Print Time:" + formatted
                                 } else {
                                     ""
@@ -4256,7 +4256,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         "Total Discount",
 
                         if (getOrderDetailsResponse?.totalDiscount == 0.0) {
-                            "$" + MethodUtils.roundOffAmountString(0.0)
+                            "$" + MethodUtils.roundOffAmountString(0.00)
                         } else {
                             getOrderDetailsResponse?.totalDiscount?.let {
                                 "-$" + MethodUtils.roundOffAmountString(it)
@@ -4451,7 +4451,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             builder.addText(
                 padLine(
                     "Total Price",
-                    "$" + MethodUtils.roundOffAmountString(totalAmt),
+                    "$" +totalAmt,
                     if (customerSettingModel.fonts == Constants.LARGE) {
                         24
                     } else {
@@ -4496,7 +4496,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 }
             }
 
-            if (getOrderDetailsResponse?.totalTips == 0.0) {
+            /*if (getOrderDetailsResponse?.totalTips == 0.0) {
                 builder.addFeedLine(1)
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
@@ -4532,7 +4532,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         }
                     )
                 )
-            }
+            }*/
 
 
             if (customerSettingModel.showTipSuggestion) {
