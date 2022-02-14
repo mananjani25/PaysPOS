@@ -63,6 +63,7 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: TbItem, pos: Int) {
+
             if (item.discountPrice != 0.0) {
                 binding.tvDiscountRate.visibility = View.VISIBLE
                 binding.tvRate.paintFlags = binding.tvRate.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
@@ -81,8 +82,6 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
                 binding.tvDiscountRate.visibility = View.GONE
 
             }
-            binding.model = item
-            binding.executePendingBindings()
 
             MethodUtils.setPriceTextView(binding.tvRate, totalPrice(item))
 
@@ -100,6 +99,10 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
             } else {
                 binding.txtNote.visibility = View.VISIBLE
             }
+
+            Log.e("itemQuantity", "" + item.itemQuantity)
+            binding.model = item
+            binding.executePendingBindings()
         }
 
         init {

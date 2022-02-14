@@ -63,6 +63,7 @@ import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
 class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
+    private var cashDiscountGlobal: Double = 0.0
     private var customerList: List<PrinterResponse.Data.CustomerReceiptPrinters> = listOf()
     private var toFinalAmt: Double = 0.0
     private var totalTaxAmt: Double = 0.00
@@ -1412,7 +1413,32 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                         if (oi.orderItemTaxes.isNotEmpty()) {
                                             oi.orderItemTaxes.forEach { tax ->
                                                 if (!oi.isPaid) {
-                                                    totalTaxWT += tax.rate
+                                                    totalTaxWT += if (tax.taxType == "Percentage") {
+
+                                                        var modifierPrice = 0.0
+                                                        val price =
+                                                            (oi.price * oi.quantity)
+
+                                                        oi.orderItemModifiers.forEach { mod ->
+                                                            modifierPrice += (mod.price * mod.quantity)
+                                                        }
+
+                                                        val totalPrice =
+                                                            price + modifierPrice - oi.discountAmount
+
+                                                        val itemTaxPrice =
+                                                            (tax.rate * totalPrice) / 100
+
+                                                        String.format("%.2f", itemTaxPrice)
+                                                            .toDouble()
+                                                    } else {
+
+                                                        String.format(
+                                                            "%.2f",
+                                                            oi.price * it.quantity
+                                                        )
+                                                            .toDouble()
+                                                    }
 
                                                 }
                                             }
@@ -1480,7 +1506,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         serviceChargeWT / (baseResponse.guestAttributes.size - 1)
                     dineInList.get(0).orderDiscount = orderDiscount
                     dineInList.get(0).orderTotalAmount =
-                        MethodUtils.roundOffAmountDouble(baseResponse.subTotal + baseResponse.totalTaxAmount+baseResponse.totalServiceCharges)
+                        MethodUtils.roundOffAmountDouble(baseResponse.subTotal + baseResponse.totalTaxAmount + baseResponse.totalServiceCharges)
 
 
 
@@ -1562,10 +1588,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
 
-                        Log.e("MYFN","subTotalDInin  ${subTotalDInin}")
-                        Log.e("MYFN","serviceCharge  ${serviceCharge}")
-                        Log.e("MYFN","finalTaxAmt  ${finalTaxAmt}")
-                        Log.e("MYFN","orderDis  ${orderDis}")
+                        Log.e("MYFN", "subTotalDInin  ${subTotalDInin}")
+                        Log.e("MYFN", "serviceCharge  ${serviceCharge}")
+                        Log.e("MYFN", "finalTaxAmt  ${finalTaxAmt}")
+                        Log.e("MYFN", "orderDis  ${orderDis}")
 
 
                         var finalAmount = subTotalDInin + serviceCharge + finalTaxAmt - orderDis
@@ -1575,6 +1601,16 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                         toFinalAmt = finalAmount
 
+
+                    }
+
+                    if (prefProvider.getValueboolean(Constants.CASHDIS_SURCHARGEENABLE, false)) {
+
+                        cashDiscountGlobal = MethodUtils.calculateCashDiscount(
+                            toFinalAmt,
+                            prefProvider,
+                            requireContext()
+                        )
 
                     }
 
@@ -2801,8 +2837,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         )
 
                     } else {
-
-
                         generatePrint(customerReceiptPrinters, type, "")
                     }
 
@@ -2836,9 +2870,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         var guestDiscount = 0.0
 
         val guestCount = dineInTableAdapter.getList().size - 1
-        Log.e(TAG, "guestCount:  ${guestCount}")
-
-
 
         listGuestItem.forEach {
             guestSubTotal += (it.price * it.itemQuantity) - it.discountPrice
@@ -3311,7 +3342,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         "Total Discount",
 
                         if (guestDiscount == 0.0) {
-                            "$" + MethodUtils.roundOffAmountString(0.0)
+                            "$" + MethodUtils.roundOffAmountString(0.00)
                         } else {
 
                             "-$" + MethodUtils.roundOffAmountString(guestDiscount)
@@ -3410,8 +3441,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 )
             }
 
-
-            /*if (getOrderDetailsResponse?.cash_discount_or_surcharge != null) {
+            if (cashDiscountGlobal > 0) {
+                var cashDis =
+                    cashDiscountGlobal / (getOrderDetailsResponse?.guestAttributes?.size?.minus(
+                        1
+                    ) ?: 1)
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addTextFont(Builder.FONT_E)
@@ -3428,19 +3462,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 builder.addText(
                     padLine(
                         "Cash Discount",
-                        if (getOrderDetailsResponse?.cash_discount_or_surcharge == 0.0) {
-                            "$" + getOrderDetailsResponse?.cash_discount_or_surcharge?.let {
-                                MethodUtils.roundOffAmountString(
-                                    it
-                                )
-                            }
-                        } else {
-                            "-$" + getOrderDetailsResponse?.cash_discount_or_surcharge?.let {
-                                MethodUtils.roundOffAmountString(
-                                    it
-                                )
-                            }
-                        },
+
+                        "-$" + MethodUtils.roundOffAmountString(cashDis),
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             24
                         } else {
@@ -3448,7 +3471,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         }
                     )
                 )
-            }*/
+            }
+
 
             builder.addTextLineSpace(30)
             builder.addFeedUnit(30)
@@ -4016,7 +4040,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
                         val current = LocalDateTime.now()
-                        val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:aa")
+                        val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:a")
                         val formatted = current.format(formatter)
 
                         builder.addTextLineSpace(30)
@@ -4120,7 +4144,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                     builder.addText(
                         padLine(
-                            if (customerSettingModel.showTeam) {
+                            if (customerSettingModel.showOrderTime) {
                                 "Order Time:" + Constants.getReceiptFormatDateFromUTCServer(
                                     getOrderDetailsResponse?.createdAt.toString()
                                 )
@@ -4162,7 +4186,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                         builder.addText(
                             padLine(
-                                if (customerSettingModel.showTeam) {
+                                if (customerSettingModel.showPrintTime) {
                                     "Print Time:" + formatted
                                 } else {
                                     ""
@@ -4256,7 +4280,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         "Total Discount",
 
                         if (getOrderDetailsResponse?.totalDiscount == 0.0) {
-                            "$" + MethodUtils.roundOffAmountString(0.0)
+                            "$" + MethodUtils.roundOffAmountString(0.00)
                         } else {
                             getOrderDetailsResponse?.totalDiscount?.let {
                                 "-$" + MethodUtils.roundOffAmountString(it)
@@ -4386,7 +4410,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
 
-            if (getOrderDetailsResponse?.cash_discount_or_surcharge != null) {
+            if (cashDiscountGlobal > 0) {
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addTextFont(Builder.FONT_E)
@@ -4403,19 +4427,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 builder.addText(
                     padLine(
                         "Cash Discount",
-                        if (getOrderDetailsResponse?.cash_discount_or_surcharge == 0.0) {
-                            "$" + getOrderDetailsResponse?.cash_discount_or_surcharge?.let {
-                                MethodUtils.roundOffAmountString(
-                                    it
-                                )
-                            }
-                        } else {
-                            "-$" + getOrderDetailsResponse?.cash_discount_or_surcharge?.let {
-                                MethodUtils.roundOffAmountString(
-                                    it
-                                )
-                            }
-                        },
+
+                        "-$" + MethodUtils.roundOffAmountString(cashDiscountGlobal),
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             24
                         } else {
@@ -4496,7 +4509,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 }
             }
 
-            if (getOrderDetailsResponse?.totalTips == 0.0) {
+            /*if (getOrderDetailsResponse?.totalTips == 0.0) {
                 builder.addFeedLine(1)
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
@@ -4532,7 +4545,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         }
                     )
                 )
-            }
+            }*/
 
 
             if (customerSettingModel.showTipSuggestion) {

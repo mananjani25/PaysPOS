@@ -162,7 +162,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             }
 
 
-            Log.e("GuestPAid","${list.get(position).isPaid}")
+            Log.e("GuestPAid", "${list.get(position).isPaid}")
 
             guestAmt += list.get(0).guestDividedAmt
 
@@ -182,14 +182,12 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 binding.btnPay.visibility = View.GONE
                 binding.btnPaid.visibility = View.VISIBLE
 
-            }
-            else if (list.get(position).isPaid){
+            } else if (list.get(position).isPaid) {
                 binding.btnPay.visibility = View.GONE
                 binding.btnPaid.visibility = View.VISIBLE
 
 
-            }
-            else if (noItem && guestAmt == 0.0) {
+            } else if (noItem && guestAmt == 0.0) {
                 binding.btnPaid.visibility = View.GONE
                 binding.btnPay.visibility = View.GONE
             } else {
@@ -242,9 +240,10 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             Log.e("TODAY", "orderfinalAmt:  ${finalAmt}")
 
             var guestOrderDisShare = 0.0
+            Log.e(TAG, "")
             if (list.get(0).orderDiscount > 0) {
                 guestOrderDisShare =
-                    (finalAmt * list.get(0).orderDiscount) / list.get(0).orderTotalAmount
+                    (finalAmt * list.get(0).orderDiscount) / (list.get(0).orderTotalAmount + list.get(0).orderDiscount)
 
                 Log.e("TODAY", "guestOrderDisShare  ${guestOrderDisShare}")
 

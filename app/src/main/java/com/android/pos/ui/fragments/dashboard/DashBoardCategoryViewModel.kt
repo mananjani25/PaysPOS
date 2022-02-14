@@ -570,58 +570,74 @@ class DashBoardCategoryViewModel @Inject constructor(
             } else {
 
 
-                cartList[0].items?.forEach { item ->
-                    totalCount += item.itemQuantity
-                    if (!item.isManualSales) {
-                        subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+                if (cartList[0].items?.isEmpty() == false) {
+
+
+                    cartList[0].items?.forEach { item ->
+                        totalCount += item.itemQuantity
+                        if (!item.isManualSales) {
+                            subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+                        } else {
+                            subTotalPrice += (item.price * item.itemQuantity) - item.discountPrice
+                        }
+
+                        taxCalculation(item)
+                        Log.d("yash", "TaxCalculation: " + totalTax)
+
+                        item.modifiers.forEach {
+                            subTotalPrice += (it.price * it.itemQuantity)
+
+                        }
+                    }
+
+
+                    serviceChargeCalculation(cartList)
+                    subTotalPrice -= cartList[0].discountPrice
+
+
+
+                    cartList[0].items!!.forEach {
+                        if (!it.isManualSales) {
+                            totalDiscount += (it.discountPrice * it.itemQuantity)
+                        } else {
+                            totalDiscount += it.discountPrice
+                        }
+                    }
+
+                    totalPrice = (subTotalPrice + totalTax + totalServiceCharge)
+
+
+                    //loyalty point and price calculation
+                    amountToBePaid = totalPrice
+
+
+                    if (selectedCustomer == null) {
+                        var fnAmount = amountToBePaid
+                        MethodUtils.setPriceTextView(
+                            txtTotalAmount,
+                            fnAmount
+                        )
                     } else {
-                        subTotalPrice += (item.price * item.itemQuantity) - item.discountPrice
+                        var fnAmount = amountToBePaid
+                        checkAppliedLoyaltyProgram(
+                            selectedCustomer,
+                            fnAmount,
+                            txtTotalAmount
+                        )
                     }
 
-                    taxCalculation(item)
-                    Log.d("yash", "TaxCalculation: " + totalTax)
-
-                    item.modifiers.forEach {
-                        subTotalPrice += (it.price * it.itemQuantity)
-
-                    }
-                }
-
-
-                serviceChargeCalculation(cartList)
-                subTotalPrice -= cartList[0].discountPrice
-
-
-
-                cartList[0].items!!.forEach {
-                    if (!it.isManualSales) {
-                        totalDiscount += (it.discountPrice * it.itemQuantity)
-                    } else {
-                        totalDiscount += it.discountPrice
-                    }
-                }
-
-                totalPrice = (subTotalPrice + totalTax + totalServiceCharge)
-
-
-                //loyalty point and price calculation
-                amountToBePaid = totalPrice
-                if (selectedCustomer == null) {
-                    var fnAmount = amountToBePaid
-                    MethodUtils.setPriceTextView(
-                        txtTotalAmount,
-                        fnAmount
-                    )
+                    Log.e("amountToBePaid", "" + amountToBePaid)
                 } else {
-                    var fnAmount = amountToBePaid
-                    checkAppliedLoyaltyProgram(
-                        selectedCustomer,
-                        fnAmount,
-                        txtTotalAmount
-                    )
+
+                    nonCashAdj = 0.0
+                    totalPrice = 0.0
+                    totalCount = 0
+                    subTotalPrice = 0.0
+                    totalDiscount = 0.0
+                    totalTax = 0.0
+                    totalServiceCharge = 0.0
+                    amountToBePaid = 0.0
                 }
-
-
             }
         }
         //totalAmmount = totalPrice-cartList[0].discountPrice

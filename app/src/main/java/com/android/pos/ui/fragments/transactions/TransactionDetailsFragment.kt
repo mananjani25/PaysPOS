@@ -10,7 +10,6 @@ import android.util.Log
 import android.view.*
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
-import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -722,7 +721,7 @@ class TransactionDetailsFragment : Fragment() {
 
                     builder.addText(
                         padLine(
-                            if (customerSettingModel.showTeam) {
+                            if (customerSettingModel.showOrderTime) {
                                 "Order Time:" + Constants.getReceiptFormatDateFromUTCServer(
                                     paymentDetailsResponse?.data.order?.created_at.toString()
                                 )
@@ -763,7 +762,7 @@ class TransactionDetailsFragment : Fragment() {
 
                         builder.addText(
                             padLine(
-                                if (customerSettingModel.showTeam) {
+                                if (customerSettingModel.showPrintTime) {
                                     "Print Time:" + formatted
                                 } else {
                                     ""

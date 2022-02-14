@@ -747,7 +747,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         getCashPaymentOptionList(_totalPrice + tipAmount)
         MethodUtils.setPriceTextView(binding.txtTipAmt, tipAmount)
         binding.txtCardAmount.text =
-            "$ " + String.format("%.2f", cardPaymentAmount+tipAmount)
+            "$ " + String.format("%.2f", cardPaymentAmount + tipAmount)
     }
 
 
@@ -1343,7 +1343,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     future_delivery_date,
                     false,
                     totalDiscount / splitValue,
-                    tipAmount / splitValue,
+                    tipAmount,
                     splitValue,
                     redeemLoyaltyInfo,
                     cashDiscountSurcharge / splitValue,
@@ -1397,7 +1397,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     future_delivery_date,
                     false,
                     totalDiscount / splitValue,
-                    tipAmount / splitValue,
+                    tipAmount,
                     splitValue,
                     redeemLoyaltyInfo,
                     cashDiscountSurcharge / splitValue,
@@ -1723,7 +1723,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                             }
                             isSplitByAmount -> {
                                 val bundle = Bundle()
-                                bundle.putDouble("PaidAmount", cardPaymentAmount )
+                                bundle.putDouble("PaidAmount", cardPaymentAmount)
                                 var wholetotalPriceTemp = String.format(
                                     "%.2f",
                                     prefProvider.getValue("WholeTotal", "").toDouble()

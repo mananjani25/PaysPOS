@@ -751,7 +751,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                 binding.layoutCart.rvCart.visibility = View.VISIBLE
                 binding.layoutCart.rvCartDineIn.visibility = View.GONE
-                binding.layoutCart.llPayment.visibility = View.VISIBLE
+                if (cartList[0].items?.isEmpty() == true) {
+                    binding.layoutCart.llPayment.gone()
+                } else
+                    binding.layoutCart.llPayment.visible()
 
                 Log.e(TAG, "cartList[0].items > ${cartList[0].items?.size}")
                 Log.e(TAG, "viewModel.destroyedList > ${viewModel.destroyedList.size}")
@@ -780,10 +783,22 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     }
                 } else {
                     binding.layoutCart.txtDineInProceed.visibility = View.GONE
+                    binding.layoutCart.rvCart.visible()
+                    if (cartList[0].items?.isEmpty() == true) {
+                        binding.layoutCart.llPayment.gone()
+                    } else
+                        binding.layoutCart.llPayment.visible()
+                    //  binding.layoutCart.llPayment.visible()
                 }
             } else {
                 Log.e("!_@_", "rlSave -- VISIBLE ")
                 binding.layoutCart.rlSave.visibility = View.VISIBLE
+                binding.layoutCart.rvCart.visible()
+                //  binding.layoutCart.llPayment.visible()
+                if (cartList[0].items?.isEmpty() == true) {
+                    binding.layoutCart.llPayment.gone()
+                } else
+                    binding.layoutCart.llPayment.visible()
             }
 
 
@@ -795,13 +810,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 requireContext()
             )
 
-            if (binding.layoutCart.rvCart.isVisible()) {
-                binding.layoutCart.rvCart.gone()
-            }
-
-            if (binding.layoutCart.llPayment.isVisible()) {
-                binding.layoutCart.llPayment.gone()
-            }
+            binding.layoutCart.rvCart.gone()
+            binding.layoutCart.llPayment.gone()
 
 
         }
@@ -2007,7 +2017,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         result.discountType == requireContext().getString(R.string.disc_percentage) -> {
 
                             data.discountPrice = calculateDiscountPercentage(
-                                data.price,
+                                itemPriceWithModifies(data),
                                 result.percentage
                             )
                             totalDiscountMannualAdded = data.discountPrice
@@ -2657,13 +2667,22 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         ).toString()
                     )
                 }
-                bundle.putDouble("subTotalPrice", if (viewModel.subTotalPrice < 0) 0.0 else viewModel.subTotalPrice)
-                bundle.putDouble("totalTax", if (viewModel.subTotalPrice < 0) 0.0 else viewModel.totalTax)
+                bundle.putDouble(
+                    "subTotalPrice",
+                    if (viewModel.subTotalPrice < 0) 0.0 else viewModel.subTotalPrice
+                )
+                bundle.putDouble(
+                    "totalTax",
+                    if (viewModel.subTotalPrice < 0) 0.0 else viewModel.totalTax
+                )
                 bundle.putDouble(
                     "totalDiscount",
                     viewModel.totalDiscount + cartList[0].discountPrice
                 )
-                bundle.putDouble("totalServiceCharge", if (viewModel.subTotalPrice < 0) 0.0 else viewModel.totalServiceCharge )
+                bundle.putDouble(
+                    "totalServiceCharge",
+                    if (viewModel.subTotalPrice < 0) 0.0 else viewModel.totalServiceCharge
+                )
                 bundle.putString("future_delivery_date", future_delivery_date)
                 bundle.putString("future_delivery_time", future_delivery_time)
                 cartList[0].customer = assignCustomer
@@ -2829,6 +2848,24 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         }
     }
 
+    private fun itemPriceWithModifies(model: TbItem): Double {
+
+        return if (model.modifiers.isNotEmpty()) {
+
+            var totalPrice = 0.0
+
+            val mList = model.modifiers
+            mList.forEach { items ->
+                totalPrice += items.price
+            }
+
+            (model.price) + totalPrice
+        } else {
+
+            model.price
+
+        }
+    }
 
     private fun deleteButton(position: Int): SwipeHelper.UnderlayButton {
         return SwipeHelper.UnderlayButton(
@@ -2905,7 +2942,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                                 PERCENTAGE -> {
 
                                     data.discountPrice = calculateDiscountPercentage(
-                                        totalPrice(data),
+                                        itemPriceWithModifies(data),
                                         result.percentage
                                     )
 
