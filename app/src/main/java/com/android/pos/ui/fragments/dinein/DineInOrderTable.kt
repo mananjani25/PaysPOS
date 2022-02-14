@@ -1236,7 +1236,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                             .lowercase() == guestItem[j].timestamp.trim()
                                             .lowercase()
                                     ) {
-                                        val guestAttr = baseResponse.guestAttributes.get(j)
+                                     //   val guestAttr = baseResponse.guestAttributes.get(j)
                                         //Whole Table Calculation
                                         totalItemDiscount += it.discountAmount
 
