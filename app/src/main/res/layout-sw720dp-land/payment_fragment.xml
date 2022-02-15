@@ -511,7 +511,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:gravity="start"
-                    android:textColor="@color/drawerBack"
+                    android:textColor="@color/colorRed"
                     android:textSize="@dimen/_5mdpi"
                     tools:text="$20.00" />
 

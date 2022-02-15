@@ -345,6 +345,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         actualDiscount: Double,
         redeemLoyaltyInfo: RedeemLoyaltyInfo?
     ) {
+        Log.e(TAG,"actualAmount  ${actualAmount}")
         MethodUtils.setPriceTextView(binding.txtTotal, actualAmount)
         MethodUtils.setPriceTextView(binding.txtSubTotal, actualSubTotal)
         MethodUtils.setPriceTextView(binding.txtTax, actualTax)
@@ -455,6 +456,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 //                    binding.txtCardAmount.text =
 //                        "$" + String.format("%.2f", remainingAmount)
                 }
+                Log.e(TAG, "remainingAmount  ${remainingAmount}")
                 MethodUtils.setPriceTextView(binding.txtTotalAmount, remainingAmount)
                 getCashPaymentOptionList(remainingAmount)
 
@@ -527,6 +529,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
     }
 
     private fun setUpPaymentSummary() {
+        Log.e(TAG,"SetupSummaryTotal  ${totalPrice}")
         MethodUtils.setPriceTextView(binding.txtTotal, totalPrice)
         MethodUtils.setPriceTextView(binding.txtSubTotal, subTotalPrice)
         MethodUtils.setPriceTextView(binding.txtTax, totalTax)
@@ -614,7 +617,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
             MethodUtils.setPriceTextView(
                 binding.txtTotalAmount,
-                totalPrice / splitValue
+                cardPaymentAmount
             )
 
 
