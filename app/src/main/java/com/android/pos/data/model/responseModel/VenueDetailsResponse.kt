@@ -94,6 +94,8 @@ data class VenueDetailsResponse(
         data class Logo(
             @SerializedName("name")
             val name: String,
+            @SerializedName("url")
+            val logoUrl:String,
             @SerializedName("record")
             val record: Record
         ) {

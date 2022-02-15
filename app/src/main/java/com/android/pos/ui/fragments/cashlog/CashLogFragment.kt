@@ -72,7 +72,7 @@ class CashLogFragment : Fragment(), AdapterView.OnItemSelectedListener {
         loadTerminals()
 
         binding.txtHome.setOnClickListener {
-            findNavController().navigate(R.id.action_settings_to_dashboardCategory)
+            findNavController().navigate(R.id.action_cashLogFragment_to_dashboardCategoryNew)
         }
         binding.imgDrawer.setOnClickListener {
             (requireActivity() as MainActivity).enableDrawer()
@@ -153,6 +153,7 @@ class CashLogFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
 
     }
+
     fun timeCalculateForStartEndTime(hour: Int, minute: Int, isStart: String): String {
         var timestring = ""
         var hoursfinal: Int = 0
@@ -210,6 +211,7 @@ class CashLogFragment : Fragment(), AdapterView.OnItemSelectedListener {
         }
         return "$startDatestring $timestring"
     }
+
     private fun differnceTrue(date1: String, date2: String?): Long {
         var dateType1: Date
         var dateType2: Date
@@ -227,6 +229,7 @@ class CashLogFragment : Fragment(), AdapterView.OnItemSelectedListener {
         }
         return daydifference
     }
+
     private fun setupAdapter() {
 
         binding.rvOpenOrder.addItemDecoration(

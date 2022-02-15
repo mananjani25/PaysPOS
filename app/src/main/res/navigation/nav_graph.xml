@@ -879,7 +879,13 @@
     <fragment
         android:id="@+id/cashLogFragment"
         android:name="com.android.pos.ui.fragments.cashlog.CashLogFragment"
-        android:label="CashLogFragment" />
+        android:label="CashLogFragment" >
+        <action
+            android:id="@+id/action_cashLogFragment_to_dashboardCategoryNew"
+            app:destination="@id/dashboardCategoryNew"
+            app:popUpTo="@id/cashLogFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
     <action
         android:id="@+id/action_global_cashLogFragment"
         app:destination="@id/cashLogFragment" />
@@ -1089,6 +1095,11 @@
             android:id="@+id/action_hardware_to_printerQueue"
             app:destination="@id/printerQueue"
             app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_hardware_to_dashboardCategoryNew"
+            app:destination="@id/dashboardCategoryNew"
+            app:popUpTo="@id/hardware"
+            app:popUpToInclusive="true" />
     </fragment>
     <dialog
         android:id="@+id/printerTypeSelection"

@@ -137,6 +137,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
         isLastPayment = requireArguments().getBoolean("isLastPayment")
         Log.e(TAG, "isLastPayment:  ${isLastPayment}")
         totalPrice = requireArguments().getDouble("totalPrice")
+        Log.e(TAG, "totalPrice:  ${totalPrice}")
         subTotalPrice = requireArguments().getDouble("subTotalPrice")
         totalServiceCharge = requireArguments().getDouble("totalServiceCharge")
         divideCashDiscount = requireArguments().getDouble("divideCashDiscount")
@@ -362,7 +363,8 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
 
         getCashPaymentOptionList(_totalPrice + tipAmount)
         MethodUtils.setPriceTextView(binding.txtTipAmt, tipAmount)
-        MethodUtils.setPriceTextView(binding.txtTotal, _totalPrice + tipAmount)
+        Log.e(TAG,"_totalPrice:  ${_totalPrice}")
+        MethodUtils.setPriceTextView(binding.txtTotal, cardPaymentAmount + tipAmount)
         cardPaymentAmount += tipAmount
         binding.txtCardAmount.text =
             "$ " + String.format("%.2f", cardPaymentAmount)
@@ -1154,7 +1156,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                 cardPaymentAmount = totalPrice
                 binding.linearNonCashAdjamounnt.visibility = View.VISIBLE
 
-                binding.txtNoncashAdj.text = "$ " + String.format("%.2f", divideCashDiscount)
+                binding.txtNoncashAdj.text = "-$ " + String.format("%.2f", divideCashDiscount)
                 noCashAdj = divideCashDiscount
                 totalPrice -= divideCashDiscount
             } else if (cashDiscountType == "SurCharge") {
@@ -1170,7 +1172,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
         }
         MethodUtils.setPriceTextView(
             binding.txtTotal,
-            (totalPrice + tipAmount)
+            (totalPrice + divideCashDiscount + tipAmount)
         )
         MethodUtils.setPriceTextView(
             binding.txtTotalAmount,
@@ -1201,12 +1203,12 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                 if (splitValue != -1) {
                     noCashAdj = MethodUtils.roundOffAmountDouble(divideCashDiscount / splitValue)
                     binding.txtNoncashAdj.text =
-                        "$ " + String.format("%.2f", divideCashDiscount / splitValue)
+                        "-$ " + String.format("%.2f", divideCashDiscount / splitValue)
                     totalPrice += (divideCashDiscount / splitValue)
                 } else {
                     noCashAdj = divideCashDiscount
                     binding.txtNoncashAdj.text =
-                        "$ " + String.format("%.2f", divideCashDiscount)
+                        "-$ " + String.format("%.2f", divideCashDiscount)
                     totalPrice += (divideCashDiscount)
                 }
             }
@@ -1243,7 +1245,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                 cardPaymentAmount = totalPrice
                 binding.linearNonCashAdjamounnt.visibility = View.VISIBLE
                 noCashAdj = divideCashDiscount
-                binding.txtNoncashAdj.text = "$ " + String.format("%.2f", divideCashDiscount)
+                binding.txtNoncashAdj.text = "-$ " + String.format("%.2f", divideCashDiscount)
                 totalPrice -= divideCashDiscount
             } else if (cashDiscountType == "SurCharge") {
                 binding.linearNonCashAdjamounnt.visibility = View.GONE
@@ -1258,7 +1260,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
         }
         MethodUtils.setPriceTextView(
             binding.txtTotal,
-            (totalPrice + tipAmount)
+            (totalPrice + divideCashDiscount + tipAmount)
         )
         MethodUtils.setPriceTextView(
             binding.txtTotalAmount,
@@ -1815,7 +1817,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                     guestRequestModel?.paymentAttributes!!.taxAmount =
                         totalTax / splitValue
                     guestRequestModel?.paymentAttributes!!.tips =
-                        tipAmount / splitValue
+                        tipAmount
                     guestRequestModel?.paymentAttributes!!.totalDiscount =
                         totaldiscount / splitValue
                     guestRequestModel?.paymentAttributes!!.paymentType = paymentType
@@ -1908,7 +1910,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                     guestRequestModel?.paymentAttributes!!.taxAmount =
                         totalTax / splitValue
                     guestRequestModel?.paymentAttributes!!.tips =
-                        tipAmount / splitValue
+                        tipAmount
                     guestRequestModel?.paymentAttributes!!.totalDiscount =
                         totaldiscount / splitValue
                     guestRequestModel?.paymentAttributes!!.paymentType = paymentType
@@ -2049,7 +2051,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                     subTotal = subTotalPrice / splitValue
                     taxAmount = totalTax / splitValue
                     terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
-                    tips = tipAmount / splitValue
+                    tips = tipAmount
                     tipsAdjusted = false
                     totalDiscount = totaldiscount / splitValue
                     order_id = orderId
@@ -2092,7 +2094,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                     subTotal = subTotalPrice / splitValue
                     taxAmount = totalTax / splitValue
                     terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
-                    tips = tipAmount / splitValue
+                    tips = tipAmount
                     tipsAdjusted = false
                     totalDiscount = totaldiscount / splitValue
                     order_id = orderId

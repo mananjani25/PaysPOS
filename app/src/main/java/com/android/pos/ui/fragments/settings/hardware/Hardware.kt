@@ -33,6 +33,9 @@ class Hardware : Fragment(), HardwareListAdapter.HardwareListner {
         binding.imgBack.setOnClickListener {
             findNavController().navigateUp()
         }
+        binding.txtHome.setOnClickListener {
+            findNavController().navigate(R.id.action_hardware_to_dashboardCategoryNew)
+        }
     }
 
     private fun setAdapter() {

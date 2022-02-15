@@ -3,6 +3,7 @@ package com.android.pos.ui.fragments.payment
 
 import android.content.Context.WINDOW_SERVICE
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Point
 import android.os.Build
 import android.os.Bundle
@@ -41,6 +42,7 @@ import com.android.pos.data.remote.Constants.SAVE_SPLIT_BUNDLE
 import com.android.pos.data.remote.Constants.SUB_TOTAL
 import com.android.pos.data.remote.Constants.SUB_TOTAL_DINEIN
 import com.android.pos.data.remote.Constants.TOTAL_PRICE_DINEIN
+import com.android.pos.data.remote.Constants.VENUE_LOGO
 import com.android.pos.data.remote.Constants.getReceiptFormatDateFromUTCServer
 import com.android.pos.databinding.FragmentOrderCompletBinding
 import com.android.pos.di.PrefProvider
@@ -50,6 +52,7 @@ import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.printer.PrinterClass.BLUETOOTH_TIMEOUT
 import com.android.pos.utils.statusUtils.Status
+import com.epson.epos2.printer.Printer
 import com.epson.eposprint.BatteryStatusChangeEventListener
 import com.epson.eposprint.Builder
 import com.epson.eposprint.Print
@@ -57,6 +60,10 @@ import com.epson.eposprint.StatusChangeEventListener
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
+import java.io.IOException
+import java.io.InputStream
+import java.net.HttpURLConnection
+import java.net.URL
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
@@ -830,6 +837,28 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     }, PrinterClass.language, requireActivity()
                 )
 
+            if (customerSettingModel.showVenueLogo && prefProvider.getValue(VENUE_LOGO, "")
+                    .isNotEmpty()
+            ) {
+                builder.addFeedLine(1)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+
+                /* var bitmap = getBitmapFromURL(prefProvider.getValue(VENUE_LOGO, ""))*/
+
+                val decodedString: ByteArray = android.util.Base64.decode(
+                    prefProvider.getValue(VENUE_LOGO, ""),
+                    android.util.Base64.DEFAULT
+                )
+                val bitmap: Bitmap =
+                    BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+
+                val newBitmap = Bitmap.createScaledBitmap(bitmap!!, 210, 210, true)
+                builder.addImage(
+                    newBitmap, 0, 0,
+                    newBitmap.width, newBitmap.height, Builder.COLOR_1, Builder.MODE_MONO,
+                    Builder.HALFTONE_DITHER, 1.0
+                )
+            }
 
 
             if (paymentType.isNotEmpty()) {
@@ -1813,6 +1842,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
             try {
+                builder.addPulse(Printer.DRAWER_HIGH,Printer.PULSE_100)
                 PrinterClass.getPrinter()?.sendData(
                     builder,
                     PrinterClass.BLUETOOTH_TIMEOUT, status, battery
@@ -1853,6 +1883,28 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 )
 
 
+            if (customerSettingModel.showVenueLogo && prefProvider.getValue(VENUE_LOGO, "")
+                    .isNotEmpty()
+            ) {
+                builder.addFeedLine(1)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+
+                /* var bitmap = getBitmapFromURL(prefProvider.getValue(VENUE_LOGO, ""))*/
+
+                val decodedString: ByteArray = android.util.Base64.decode(
+                    prefProvider.getValue(VENUE_LOGO, ""),
+                    android.util.Base64.DEFAULT
+                )
+                val bitmap: Bitmap =
+                    BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+
+                val newBitmap = Bitmap.createScaledBitmap(bitmap!!, 210, 210, true)
+                builder.addImage(
+                    newBitmap, 0, 0,
+                    newBitmap.width, newBitmap.height, Builder.COLOR_1, Builder.MODE_MONO,
+                    Builder.HALFTONE_DITHER, 1.0
+                )
+            }
 
             if (paymentType.isNotEmpty()) {
                 builder.addTextFont(Builder.FONT_E)
@@ -2886,7 +2938,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             try {
 
 
-                requireActivity().runOnUiThread {
+                builder.addPulse(Printer.DRAWER_HIGH,Printer.PULSE_100)
+
                     PrinterClass.getPrinter()?.sendData(
                         builder,
                         if (customerReceiptPrinters.name.substring(0, 6).toString()
@@ -2901,7 +2954,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                         }, status, battery
                     )
-                }
+
                 PrinterClass.closePrinter()
 
                 //findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
@@ -3317,9 +3370,33 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         customerReceiptPrinters.name
                     }, PrinterClass.language, requireActivity()
                 )
+
+            Log.e(TAG, "getVanueLogo:  ${prefProvider.getValue(VENUE_LOGO, "")}")
+            if (customerSettingModel.showVenueLogo && prefProvider.getValue(VENUE_LOGO, "")
+                    .isNotEmpty()
+            ) {
+                builder.addFeedLine(1)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+
+               /* var bitmap = getBitmapFromURL(prefProvider.getValue(VENUE_LOGO, ""))*/
+
+                val decodedString: ByteArray = android.util.Base64.decode(
+                    prefProvider.getValue(VENUE_LOGO, ""),
+                    android.util.Base64.DEFAULT
+                )
+                val bitmap: Bitmap =
+                    BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+
+                val newBitmap = Bitmap.createScaledBitmap(bitmap!!, 210, 210, true)
+                builder.addImage(
+                    newBitmap, 0, 0,
+                    newBitmap.width, newBitmap.height, Builder.COLOR_1, Builder.MODE_MONO,
+                    Builder.HALFTONE_DITHER, 1.0
+                )
+            }
+
+
             builder.addFeedLine(1)
-
-
             builder.addTextFont(Builder.FONT_E)
 
             builder.addTextLang(Builder.LANG_EN)
@@ -4329,7 +4406,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             val battery = IntArray(1)
 
 
+
             try {
+                builder.addPulse(com.epson.epos2.printer.Printer.DRAWER_HIGH,com.epson.epos2.printer.Printer.PULSE_100)
                 PrinterClass.getPrinter()?.sendData(
                     builder,
                     BLUETOOTH_TIMEOUT, status, battery
@@ -4891,6 +4970,20 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     override fun onBatteryStatusChangeEvent(p0: String?, p1: Int) {
         Log.e(TAG, "onBatteryEventPrinter:  $p0")
 
+    }
+
+    fun getBitmapFromURL(src: String?): Bitmap? {
+        return try {
+            val url = URL(src)
+            val connection: HttpURLConnection = url.openConnection() as HttpURLConnection
+            connection.setDoInput(true)
+            connection.connect()
+            val input: InputStream = connection.getInputStream()
+            BitmapFactory.decodeStream(input)
+        } catch (e: IOException) {
+            // Log exception
+            null
+        }
     }
 
 

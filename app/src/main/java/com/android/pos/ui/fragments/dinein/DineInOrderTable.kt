@@ -378,6 +378,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             )
             val bundle = Bundle()
             bundle.putDouble("totalPrice", MethodUtils.roundOffAmountDouble(toFinalAmt))
+            Log.e(TAG, "toFinalAmt:  ${toFinalAmt}")
             bundle.putDouble("subTotalPrice", MethodUtils.roundOffAmountDouble(subTotalDInin))
             bundle.putDouble("totalTax", MethodUtils.roundOffAmountDouble(finalTaxAmt))
             bundle.putParcelable("model", model)
@@ -1236,7 +1237,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                             .lowercase() == guestItem[j].timestamp.trim()
                                             .lowercase()
                                     ) {
-                                        val guestAttr = baseResponse.guestAttributes.get(j)
+                                        //   val guestAttr = baseResponse.guestAttributes.get(j)
                                         //Whole Table Calculation
                                         totalItemDiscount += it.discountAmount
 
