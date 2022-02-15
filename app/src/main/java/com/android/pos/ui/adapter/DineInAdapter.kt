@@ -133,7 +133,7 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>(), MyCall
                     binding.llCustomerDialog.visibility = View.GONE
                 }
 
-                //  listner.onHeaderSelected(layoutPosition)
+                listner.onHeaderSelected(layoutPosition)
                 list.get(0).selectedPosition = layoutPosition
                 notifyDataSetChanged()
             }
