@@ -11,6 +11,7 @@ import java.util.*
 object Constants {
     const val ARG_PARAM1 = "param1"
     const val ARG_PARAM2 = "param2"
+    const val ARG_PARAM3 = "param2"
 
     //Database Name
     const val DATABASE_NAME = "androidPos-db"
@@ -425,5 +426,6 @@ object Constants {
     const val TOTAL_DISCOUNT_DINEIN = "totalDiscount_dinein"
     const val SERVICE_CHARGE_DINEIN = "servicecharge_dinein"
     const val TOTAL_PRICE_DINEIN = "totalprice_dinein"
+    const val LAYOUT_ORIENTATION = "layout_orientation"
 
 }

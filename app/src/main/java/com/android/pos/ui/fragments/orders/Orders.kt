@@ -36,6 +36,8 @@ class Orders : Fragment() {
     private var upcomingOrdersCount: Int? = 0
     val TAG = this.javaClass.name
     private lateinit var binding: FragmentInventoryBinding
+    var startDate:String?=null
+    var endDate:String?=null
 
     private val viewModel by viewModels<ActiveOrderViewModel>()
 
@@ -54,10 +56,16 @@ class Orders : Fragment() {
         override fun onReceive(context: Context?, intent: Intent?) {
 
             val isCount = intent?.getBooleanExtra("isCount", false)
+            startDate = intent?.getStringExtra("start_date")
+            endDate = intent?.getStringExtra("end_date")
+
+            getOrderCountsObserver(startDate,endDate)
+
             if (isCount == true) {
 
                 val count = intent.getIntExtra("count", 0)
                 val orderType = intent.getStringExtra("param1")
+
                 when (orderType) {
                     "0" -> {
                         //active
@@ -96,7 +104,7 @@ class Orders : Fragment() {
         configureToolbar()
         changePosition(0)
         // setAdapter(0)
-        getOrderCountsObserver()
+        getOrderCountsObserver("","")
         requireContext().registerReceiver(broadcastReceiver, IntentFilter("cancelled"));
         findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<String>(KEY)
             ?.observe(viewLifecycleOwner) { it ->
@@ -126,10 +134,8 @@ class Orders : Fragment() {
     }
 
 
-    private fun getOrderCountsObserver() {
-        viewModel.orderCounts().observe(viewLifecycleOwner, {
-
-
+    private fun getOrderCountsObserver(startDate: String?, endDate: String?) {
+        viewModel.orderCounts(startDate,endDate).observe(viewLifecycleOwner, {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
@@ -176,27 +182,27 @@ class Orders : Fragment() {
         mPos = position
         when (position) {
             0 -> {
-                val activeOrders = ActiveOrderFragment.newInstance("0")
+                val activeOrders = ActiveOrderFragment("0",startDate,endDate)
                 loadFragment(activeOrders)
                 binding.commonToolbar.txtSetItem.visibility = View.GONE
                 binding.commonToolbar.txtSubTitle.text = "Active Orders"
             }
             1 -> {
-                val upcomingOrders = ActiveOrderFragment.newInstance("Upcoming")
+                val upcomingOrders = ActiveOrderFragment("Upcoming",startDate,endDate)
                 loadFragment(upcomingOrders)
                 binding.commonToolbar.txtSetItem.visibility = View.GONE
                 binding.commonToolbar.txtSubTitle.text = "Upcoming Orders"
 
             }
             2 -> {
-                val modifier: Fragment = ActiveOrderFragment.newInstance("1")
+                val modifier: Fragment = ActiveOrderFragment("1",startDate,endDate)
                 loadFragment(modifier)
                 binding.commonToolbar.txtSetItem.visibility = View.GONE
                 binding.commonToolbar.txtSubTitle.text = "Completed"
             }
 
             3 -> {
-                val cancelled = ActiveOrderFragment.newInstance("2")
+                val cancelled = ActiveOrderFragment("2",startDate,endDate)
                 loadFragment(cancelled)
                 binding.commonToolbar.txtSetItem.visibility = View.GONE
                 binding.commonToolbar.txtSubTitle.text = "Cancelled Orders"

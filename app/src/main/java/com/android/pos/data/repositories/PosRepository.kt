@@ -693,11 +693,9 @@ class PosRepository @Inject constructor(
     }
 
 
-    fun getOpenOrders(param1: String): LiveData<Resource<OpenOrderResponse>> =
+    fun getOpenOrders(paymentStatus: String, startDate: String, endDate: String): LiveData<Resource<OpenOrderResponse>> =
         performGetOperationNew(networkCall = {
-            if (param1 == "Upcoming") apiHelperNew.getUpcomingOpenOrders() else apiHelperNew.getOpenOrders(
-                param1
-            )
+            if (paymentStatus == "Upcoming") apiHelperNew.getUpcomingOpenOrders() else apiHelperNew.getOpenOrders(paymentStatus,startDate,endDate)
         })
 
 
@@ -800,7 +798,7 @@ class PosRepository @Inject constructor(
         appDatabase.customerSettingsDao().delete()
     }
 
-    fun orderCounts() =
-        performGetOperationNew(networkCall = { apiHelperNew.orderCounts() })
+    fun orderCounts(startDate: String?, endDate: String?) =
+        performGetOperationNew(networkCall = { apiHelperNew.orderCounts(startDate,endDate) })
 }
 

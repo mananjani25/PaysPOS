@@ -61,6 +61,7 @@ import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
 import com.android.pos.data.remote.Constants.HORIZONTAL
 import com.android.pos.data.remote.Constants.IS_NEXT_AMOUNT
 import com.android.pos.data.remote.Constants.IS_ORDER_UPDATE
+import com.android.pos.data.remote.Constants.LAYOUT_ORIENTATION
 import com.android.pos.data.remote.Constants.LOYALTY_ADDED
 import com.android.pos.data.remote.Constants.MANUALSALE
 import com.android.pos.data.remote.Constants.MERGED
@@ -258,6 +259,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 
+
         return binding.root
     }
 
@@ -422,7 +424,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private fun initScanner() {
         //barcode event listener
         (activity as MainActivity).addDevEventsDelegate(this)
-
     }
 
 
@@ -1120,6 +1121,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     }
 
     private fun horizontalTabList() {
+        prefProvider.setValue(LAYOUT_ORIENTATION, "0")
         val params = binding.rvTabLayout.layoutParams
         params.height = LinearLayout.LayoutParams.WRAP_CONTENT
         params.width = 0
@@ -1205,6 +1207,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     }
 
     private fun verticalTabList() {
+        prefProvider.setValue(LAYOUT_ORIENTATION, "1")
         val params: ViewGroup.LayoutParams = binding.rvTabLayout.layoutParams
         params.height = 0
         params.width = LinearLayout.LayoutParams.WRAP_CONTENT
@@ -1372,6 +1375,12 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         }
 
                         ProgressUtils.dismissProgressDialog()
+
+                        if (prefProvider.getValue(LAYOUT_ORIENTATION,"") == "0")
+                            horizontalTabList()
+                        else
+                            verticalTabList()
+
                     }
                     Status.ERROR ->
                         ProgressUtils.dismissProgressDialog()
