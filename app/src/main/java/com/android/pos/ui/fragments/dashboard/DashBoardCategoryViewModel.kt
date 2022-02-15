@@ -2,6 +2,9 @@ package com.android.pos.ui.fragments.dashboard
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.util.Base64
 import android.util.Log
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.lifecycle.*
@@ -25,6 +28,7 @@ import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.remote.Constants.SYSTEM_TIMEZONE
 import com.android.pos.data.remote.Constants.UPDATE
+import com.android.pos.data.remote.Constants.VENUE_LOGO
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.TaxServiceChargeRepository
 import com.android.pos.data.repositories.TipDiscountRepository
@@ -36,8 +40,14 @@ import com.android.pos.utils.TimeFormatUtils
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
 import com.google.gson.Gson
+import com.squareup.okhttp.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import java.io.ByteArrayOutputStream
+import java.io.IOException
+import java.io.InputStream
+import java.net.HttpURLConnection
+import java.net.URL
 import java.util.*
 import javax.inject.Inject
 import kotlin.collections.ArrayList
@@ -1600,6 +1610,39 @@ class DashBoardCategoryViewModel @Inject constructor(
                             resource.data?.let {
                                 Log.e(TAG, "FullData  ${Gson().toJson(it)}")
 
+
+                                /*   try {
+                                       if (it.data.logo != null && it.data.logo.logoUrl.isNotEmpty()) {
+                                           Log.e(
+                                               TAG,
+                                               "VenueLogo  ${Gson().toJson(it.data.logo.logoUrl)}"
+                                           )
+                                           val bitmap = getBitmapFromURL(it.data.logo.logoUrl)
+                                           var baseBitmap = bitmap?.let { it1 -> encodeTobase64(it1) }
+                                           if (baseBitmap?.isNotEmpty() == true) {
+                                               baseBitmap?.let { it1 ->
+                                                   prefProvider.setValue(
+                                                       VENUE_LOGO,
+                                                       it1
+                                                   )
+                                               }
+                                           }
+
+
+                                       }
+
+                                   } catch (e: Exception) {
+                                       e.printStackTrace()
+                                   }
+   */
+                                if (it.data.logo != null && it.data.logo.logoUrl.isNotEmpty()) {
+
+                                    downaloadVenueImage(it.data.logo.logoUrl)
+                                    /*   prefProvider.setValue(
+                                           VENUE_LOGO,
+                                           it.data.logo.logoUrl
+                                       )*/
+                                }
                                 prefProvider.setValue(BUSINESS_NAME, it.data.businessName)
                                 prefProvider.setValue(SYSTEM_TIMEZONE, it.data.timeZone)
                                 prefProvider.setValue(BUSINESS_PHONE_NO, it.data.phoneNumber)
@@ -1685,5 +1728,58 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     }
 
+    fun getBitmapFromURL(src: String?): Bitmap? {
+        return try {
+            val url = URL(src)
+            val connection: HttpURLConnection = url.openConnection() as HttpURLConnection
+            connection.setDoInput(true)
+            connection.connect()
+            val input: InputStream = connection.getInputStream()
+            BitmapFactory.decodeStream(input)
+        } catch (e: IOException) {
+            // Log exception
+            null
+        }
+    }
 
+    fun encodeTobase64(image: Bitmap): String? {
+        val baos = ByteArrayOutputStream()
+        image.compress(Bitmap.CompressFormat.PNG, 100, baos)
+        val b: ByteArray = baos.toByteArray()
+        val imageEncoded: String = android.util.Base64.encodeToString(b, Base64.DEFAULT)
+        Log.d("Image Log:", imageEncoded)
+        return imageEncoded
+    }
+
+    fun downaloadVenueImage(url: String) {
+        val client = OkHttpClient()
+
+        val request: Request = Request.Builder()
+            .url(url)
+            .build()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(request: Request?, e: IOException?) {
+                return
+
+            }
+
+            override fun onResponse(response: Response) {
+                if (response.isSuccessful) {
+                    val bitmap = BitmapFactory.decodeStream(response.body().byteStream())
+                    var base64 = ""
+                    base64 = encodeTobase64(bitmap) ?: ""
+
+                    if (base64.isNotEmpty()) {
+                        prefProvider.setValue(VENUE_LOGO, base64)
+
+                    }
+
+
+                }
+
+            }
+
+        })
+    }
 }

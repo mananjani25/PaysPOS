@@ -3,7 +3,6 @@ package com.android.pos.data.model.responseModel
 
 import android.os.Parcel
 import android.os.Parcelable
-import com.android.pos.data.model.requestModel.GuestsAttributes
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
@@ -265,7 +264,7 @@ data class CreateOrderResponse(
                 @SerializedName("first_name") var firstName: String,
                 @SerializedName("last_name") var lastName: String,
                 @SerializedName("team_role_id") var teamRoleId: Int,
-                @SerializedName("hourly_wages") var hourlyWages: Int
+                @SerializedName("hourly_wages") var hourlyWages: Double
 
             )
 
