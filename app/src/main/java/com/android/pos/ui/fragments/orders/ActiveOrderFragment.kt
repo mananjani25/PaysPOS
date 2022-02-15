@@ -1,5 +1,7 @@
 package com.android.pos.ui.fragments.orders
 
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -8,10 +10,8 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -25,6 +25,8 @@ import com.android.pos.data.model.responseModel.OpenOrderResponse
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ARG_PARAM1
+import com.android.pos.data.remote.Constants.ARG_PARAM2
+import com.android.pos.data.remote.Constants.ARG_PARAM3
 import com.android.pos.data.remote.Constants.BUSINESS_ADDRESS
 import com.android.pos.data.remote.Constants.PRINT_PAID
 import com.android.pos.data.remote.Constants.PRINT_UNPAID
@@ -43,15 +45,18 @@ import com.epson.eposprint.Builder
 import com.epson.eposprint.Print
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
+import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.inject.Inject
 import kotlin.collections.ArrayList
+import kotlin.math.abs
 
 @AndroidEntryPoint
-class ActiveOrderFragment : Fragment(), OrderCallBack {
-    private var param1: String = "Unpaid"
+class ActiveOrderFragment(var param1: String, var startDateTime: String?,var endDateTime: String?) : Fragment(), OrderCallBack {
+    private var paramStartDate: String = ""
+    private var paramEndDate: String = ""
 
     private var itemPos: Int = 0
     private lateinit var binding: FragmentActiveOrdersBinding
@@ -62,27 +67,47 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
     private val TAG = "ActiveOrderFragment"
     private var tipsList: List<GetTipReponse.Data> = listOf()
 
+    private lateinit var startDate: DatePickerDialog.OnDateSetListener
+    private lateinit var endDate: DatePickerDialog.OnDateSetListener
+    private lateinit var startTime: TimePickerDialog.OnTimeSetListener
+    private lateinit var endTime: TimePickerDialog.OnTimeSetListener
+
+    val myCalendar = Calendar.getInstance()
+    val myCalendar1 = Calendar.getInstance()
+    val myCalendar2 = Calendar.getInstance()
+    val myCalendar3 = Calendar.getInstance()
+
+
     @Inject
     lateinit var prefProvider: PrefProvider
 
     @Inject
     lateinit var rolePermission: RolePermission
 
+/*
     companion object {
         @JvmStatic
-        fun newInstance(param1: String) =
+        fun newInstance(param1: String, startTime: String?, endTime: String?) =
             ActiveOrderFragment().apply {
                 arguments = Bundle().apply {
                     putString(ARG_PARAM1, param1)
+                    putString(ARG_PARAM2, startTime)
+                    putString(ARG_PARAM3, endTime)
                 }
             }
     }
+*/
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+/*
         arguments?.let {
             param1 = it.getString(ARG_PARAM1).toString()
+            paramStartDate = it.getString(ARG_PARAM2).toString()
+            paramEndDate = it.getString(ARG_PARAM3).toString()
         }
+*/
+        viewModel.setCurrentDate(myCalendar,startDateTime,endDateTime)
     }
 
 
@@ -94,8 +119,81 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
         binding = FragmentActiveOrdersBinding.inflate(inflater, container, false)
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
+
+
+
+        startDatePickerObserver()
+        endDatePickerObserver()
         getCustomerReceiptSettings()
         observeTipsList()
+
+        startTime = TimePickerDialog.OnTimeSetListener { view, hour, minute ->
+            val timecalender = Calendar.getInstance()
+            timecalender.set(Calendar.HOUR_OF_DAY, hour)
+            timecalender.set(Calendar.MINUTE, minute)
+            viewModel.startDate.value = timeCalculateForStartEndTime(hour, minute, "isstart")
+            if (differnceTrue(viewModel.startDate.value!!, viewModel.endDate.value) <= 30) {
+                /*checkFilter = true
+                currentPage = 1
+                apiCallTimeSheet()*/
+                getOpenOrders()
+            } else {
+                AlertUtils.showCustomAlertWithListenerWithOK(
+                    requireActivity(),
+                    "Please Select date in 30 Days."
+                ) { _, _ ->
+                }
+            }
+        }
+
+        endTime = TimePickerDialog.OnTimeSetListener { view, hour, minute ->
+            val timecalender = Calendar.getInstance()
+            timecalender.set(Calendar.HOUR_OF_DAY, hour)
+            timecalender.set(Calendar.MINUTE, minute)
+            viewModel.endDate.value = timeCalculateForStartEndTime(hour, minute, "isend")
+            /*checkFilter = true
+            currentPage = 1*/
+            if (differnceTrue(viewModel.endDate.value!!, viewModel.startDate.value) <= 30)
+                getOpenOrders()
+            else {
+                AlertUtils.showCustomAlertWithListenerWithOK(
+                    requireActivity(),
+                    "Please Select date in 30 Days."
+                ) { _, _ ->
+                }
+            }
+
+        }
+
+        startDate = DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
+            myCalendar.set(Calendar.YEAR, year)
+            myCalendar.set(Calendar.MONTH, monthOfYear)
+            myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+            TimePickerDialog(
+                requireActivity(),
+                startTime,
+                myCalendar2.get(2),
+                myCalendar2.get(2),
+                false
+            ).show()
+        }
+
+        endDate = DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
+            myCalendar1.set(Calendar.YEAR, year)
+            myCalendar1.set(Calendar.MONTH, monthOfYear)
+            myCalendar1.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+
+            TimePickerDialog(
+                requireActivity(),
+                endTime,
+                myCalendar3.get(2),
+                myCalendar3.get(2),
+                false
+            ).show()
+
+        }
+
+
         return binding.root
     }
 
@@ -131,6 +229,8 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
                         intent.action = "cancelled"
                         intent.putExtra("isCount", false)
                         intent.putExtra("position", 3)
+                        intent.putExtra("start_date", viewModel.startDate.value.toString())
+                        intent.putExtra("end_date", viewModel.endDate.value.toString())
                         requireContext().sendBroadcast(intent)
                     }
                 }
@@ -153,9 +253,11 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
     }
 
     private fun getOpenOrders() {
-
-
-        viewModel.openOrders(param1).observe(viewLifecycleOwner, { it ->
+        viewModel.openOrders(
+            param1,
+            viewModel.startDate.value.toString(),
+            viewModel.endDate.value.toString()
+        ).observe(viewLifecycleOwner, { it ->
 
             it?.let { resource ->
                 when (resource.status) {
@@ -181,6 +283,8 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
                             intent.putExtra("isCount", true)
                             intent.putExtra("param1", param1)
                             intent.putExtra("count", it.data.orders.size)
+                            intent.putExtra("start_date", viewModel.startDate.value.toString())
+                            intent.putExtra("end_date", viewModel.endDate.value.toString())
                             requireContext().sendBroadcast(intent)
                         }
                     }
@@ -1663,4 +1767,110 @@ class ActiveOrderFragment : Fragment(), OrderCallBack {
         }
         return salt.toString()
     }
+
+    fun timeCalculateForStartEndTime(hour: Int, minute: Int, isStart: String): String {
+        var timestring = ""
+        var hoursfinal: Int = 0
+        if ((hour == 12 && minute > 0) || (hour > 12 && minute > 0) || (hour > 12 && minute == 0)) {
+            if (hour == 12) {
+                hoursfinal = hour
+            } else {
+                hoursfinal = hour - 12
+            }
+            if (hoursfinal < 10) {
+                if (minute < 10) {
+                    timestring = "0$hoursfinal:0$minute PM"
+                } else {
+                    timestring = "0$hoursfinal:$minute PM"
+                }
+            } else {
+                if (minute < 10) {
+                    timestring = "$hoursfinal:0$minute PM"
+                } else {
+                    timestring = "$hoursfinal:$minute PM"
+                }
+            }
+        } else {
+            if (hour == 0) {
+                if (minute < 10) {
+                    timestring = "${hour.plus(12)}:0$minute AM"
+                } else {
+                    timestring = "${hour.plus(12)}:$minute AM"
+                }
+            } else {
+                if (hour < 10) {
+                    if (minute < 10) {
+                        timestring = "0$hour:0$minute AM"
+                    } else {
+                        timestring = "0$hour:$minute AM"
+                    }
+                } else {
+                    if (minute < 10) {
+                        timestring = "$hour:0$minute AM"
+                    } else {
+                        timestring = "$hour:$minute AM"
+                    }
+                }
+            }
+
+        }
+
+        val myFormat = "MM/dd/yyyy" //In which you need put here
+        val sdf = SimpleDateFormat(myFormat, Locale.getDefault())
+        var startDatestring = ""
+        if (isStart == "isstart") {
+            startDatestring = sdf.format(myCalendar.time)
+        } else {
+            startDatestring = sdf.format(myCalendar1.time)
+        }
+        return "$startDatestring $timestring"
+    }
+
+    private fun differnceTrue(date1: String, date2: String?): Long {
+        var dateType1: Date
+        var dateType2: Date
+        var daydifference = "0".toLong()
+//        11/30/2021 09:40 AM
+        try {
+            var dates = SimpleDateFormat("MM/dd/yyyy")
+            dateType1 = dates.parse(date1.substringBefore(" "))
+            dateType2 = dates.parse(date2?.substringBefore(" "))
+            var differencedate = abs(dateType1.time - dateType2.time)
+            daydifference = differencedate / (24 * 60 * 60 * 1000)
+            Log.d("yash", "differnceTrue: " + daydifference)
+            return daydifference
+        } catch (e: Exception) {
+        }
+        return daydifference
+    }
+
+    private fun startDatePickerObserver() {
+        viewModel.startDateSelection.observe(requireActivity(), { event ->
+            event.getContentIfNotHandled()?.let {
+                //currentPage = 1
+                DatePickerDialog(
+                    requireActivity(), startDate, myCalendar
+                        .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                    myCalendar.get(Calendar.DAY_OF_MONTH)
+
+                ).show()
+            }
+
+        })
+    }
+
+    private fun endDatePickerObserver() {
+        viewModel.endDateSelection.observe(requireActivity(), { event ->
+            event.getContentIfNotHandled()?.let {
+                //currentPage = 1
+                DatePickerDialog(
+                    requireActivity(), endDate, myCalendar1
+                        .get(Calendar.YEAR), myCalendar1.get(Calendar.MONTH),
+                    myCalendar1.get(Calendar.DAY_OF_MONTH)
+
+                ).show()
+            }
+        })
+    }
+
 }

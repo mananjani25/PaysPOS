@@ -597,8 +597,17 @@ interface ApiService {
         @Query("finalrewards") finalrewards: Int,
     ): CustomerAssignedResponse
 
+   /* @GET(OPEN_ORDERS)
+    suspend fun getOpenOrders(@Query("payment_status") payment_status: LinkedHashMap<String, String>): OpenOrderResponse*/
+
+    /*@GET(OPEN_ORDERS)
+    suspend fun getOpenOrders(@Query("payment_status") payment_status: String): OpenOrderResponse*/
+
     @GET(OPEN_ORDERS)
-    suspend fun getOpenOrders(@Query("payment_status") payment_status: String): OpenOrderResponse
+    suspend fun getOpenOrders(
+        @Query("payment_status") paymentStatus: String,
+        @Query("start_date") startDate: String,
+        @Query("end_date") endDate: String):OpenOrderResponse
 
     @GET(OPEN_ORDERS)
     suspend fun getUpcomingOpenOrders(
@@ -714,5 +723,6 @@ interface ApiService {
     suspend fun createQueuePrinter(@Body createPrinterQueueRequest: CreateQueuePrinterRequestModel): BaseResponse
 
     @GET(ORDER_COUNTS)
-    suspend fun orderCounts(): OrderCountsResponse
+    suspend fun orderCounts( @Query("start_date") startDate: String?,
+                             @Query("end_date") endDate: String?): OrderCountsResponse
 }

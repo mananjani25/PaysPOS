@@ -425,8 +425,8 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun assignCustomerOrder(orderId: Int, customerId: Int, newPos: Int,paymentId: Int,finalrewards:Int) =
         getResult { apiService.assignCustomerOrder(orderId, customerId, newPos,paymentId,finalrewards) }
 
-    suspend fun getOpenOrders(param1: String) =
-        getResult { apiService.getOpenOrders(param1) }
+    suspend fun getOpenOrders(paymentStatus: String, startDate: String, endDate: String) =
+        getResult { apiService.getOpenOrders(paymentStatus,startDate,endDate) }
 
     suspend fun getUpcomingOpenOrders() =
         getResult { apiService.getUpcomingOpenOrders(true) }
@@ -511,7 +511,7 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
             apiService.createQueuePrinter(createQueuePrinterModel)
         }
 
-    suspend fun orderCounts() =
-        getResult { apiService.orderCounts() }
+    suspend fun orderCounts(startDate: String?, endDate: String?) =
+        getResult { apiService.orderCounts(startDate,endDate) }
 
 }
