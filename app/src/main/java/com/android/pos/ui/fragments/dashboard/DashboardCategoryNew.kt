@@ -56,6 +56,7 @@ import com.android.pos.data.remote.Constants.CUSTOMER_NAME
 import com.android.pos.data.remote.Constants.DELETE
 import com.android.pos.data.remote.Constants.DIALOG_KEY_VARIATION_DETAILS
 import com.android.pos.data.remote.Constants.DINE_IN
+import com.android.pos.data.remote.Constants.DINE_INGUEST_SELECTED
 import com.android.pos.data.remote.Constants.DINE_IN_LIST_EDIT
 import com.android.pos.data.remote.Constants.DINE_IN_STATUS
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
@@ -699,6 +700,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 if (cartList[0].items?.isNotEmpty() == true) {
 
                     val dineList = cartList[0].dineInList ?: dineInCartAdapter.getList()
+                    // mannual sale added in dineinn //yash
                     cartList[0].items?.forEach {
 
                         if (it.isManualSales && dineList.isNotEmpty()) {
@@ -706,7 +708,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             if (it.timeStamp == null || it.timeStamp?.lowercase() == "null".lowercase()) {
                                 it.timeStamp = viewModel.randomOfflineId()
                             }
-                            dineList[0].items.add(it)
+                            dineList.get(0).selectedPosition = prefProvider.getValueInt(Constants.DINE_INGUEST_SELECTED,0)
+                            dineList[prefProvider.getValueInt(Constants.DINE_INGUEST_SELECTED,0)].items.add(it)
+                            Log.d("yash", "bindData: dineine HEaderPositonn "+prefProvider.getValueInt(Constants.DINE_INGUEST_SELECTED,0))
 
                         }
                         cartList[0].items?.toCollection(arrayListOf())?.clear()
@@ -1622,6 +1626,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             cartList[0].orderType = DINE_IN
                         }
 
+                        // yash simple dashboard add cart
                         val dineInList = dineInCartAdapter.getList()
                         dineInList.get(0).selectedPosition = dineInCartAdapter.getHeaderPosition()
                         viewModel.cartLogic(cartList, item, ADD, dineInList = dineInList)
@@ -2461,6 +2466,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 ) {
                     positiveButton(getString(R.string.tv_delete)) {
                         // Do positive stuff here
+                        prefProvider.setValueInt(DINE_INGUEST_SELECTED,0)
 
                         totalDiscountMannualAdded = 0.0
                         if (prefProvider.getValue(ORDER_TYPE, "").toString() == DINE_IN) {
@@ -3084,7 +3090,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     }
 
     override fun onHeaderSelected(position: Int) {
-
+        prefProvider.setValueInt(DINE_INGUEST_SELECTED, position)
+        Log.d(TAG, "onHeaderSelected: header position : $position")
     }
 
     @SuppressLint("SetTextI18n")
