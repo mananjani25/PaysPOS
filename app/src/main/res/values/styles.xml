@@ -15,7 +15,7 @@
         <item name="android:padding">@dimen/_4sdp</item>
     </style>
 
-    <style name="ReportTitleStyle" parent="CustomFontMediumStyle">
+    <style name="ReportTitleStyle" parent="CustomFontSemiBold">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:background">@drawable/background_timesheet</item>

@@ -17,84 +17,91 @@
         android:layout_marginBottom="@dimen/_10sdp"
         android:orientation="vertical">
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <RelativeLayout
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/imgBack"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/imgBack"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_gravity="center"
-                    android:background="?attr/selectableItemBackground"
-                    android:padding="@dimen/_6sdp"
-                    app:srcCompat="@drawable/ic_cancel_white"
-                    app:tint="@color/viewTextColor" />
-
-            </RelativeLayout>
+                android:layout_centerVertical="true"
+                android:layout_gravity="center"
+                android:background="?attr/selectableItemBackground"
+                android:padding="@dimen/_4sdp"
+                app:srcCompat="@drawable/ic_cancel_white"
+                app:tint="@color/viewTextColor" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtTitle"
                 style="@style/CustomFontBold"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
                 android:layout_gravity="center"
                 android:layout_marginLeft="@dimen/_10sdp"
                 android:layout_marginRight="@dimen/_10sdp"
-                android:layout_weight="1"
                 android:gravity="center"
                 android:padding="@dimen/_4sdp"
                 android:text="@string/employee_report"
                 android:textColor="@color/viewTextColor"
                 android:textSize="@dimen/_6mdpi" />
 
-            <TextView
-                android:id="@+id/txtEmail"
-                style="@style/CustomFontBold"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginEnd="@dimen/_10sdp"
-                android:padding="@dimen/_6sdp"
-                android:text="@string/tv_email"
-                android:gravity="center"
-                android:layout_gravity="center"
-                android:textColor="@color/btnColor"
-                android:textSize="@dimen/_6mdpi"
-                android:visibility="visible" />
-
-            <TextView
-                android:id="@+id/txtClockOut"
-                style="@style/CustomFontBold"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginEnd="@dimen/_10sdp"
-                android:padding="@dimen/_6sdp"
-                android:gravity="center"
-                android:layout_gravity="center"
-                android:text="@string/tv_clock_out"
-                android:textColor="@color/btnColor"
-                android:textSize="@dimen/_6mdpi"
-                android:visibility="visible" />
-
-            <TextView
-                android:id="@+id/txtHome"
-                style="@style/CustomFontBold"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/_10sdp"
-                android:padding="@dimen/_6sdp"
-                android:text="@string/tv_home"
-                android:textColor="@color/txt_color_blue"
-                android:textSize="@dimen/_7mdpi"
-                android:visibility="gone" />
-        </LinearLayout>
+                android:layout_alignParentEnd="true"
+                android:gravity="center"
+                android:orientation="horizontal"
+                tools:ignore="RelativeOverlap">
+
+                <TextView
+                    android:id="@+id/txtEmail"
+                    style="@style/CustomFontBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:background="?attr/selectableItemBackground"
+                    android:gravity="center"
+                    android:padding="@dimen/_6sdp"
+                    android:text="@string/tv_email"
+                    android:textColor="@color/btnColor"
+                    android:textSize="@dimen/_6mdpi"
+                    android:visibility="visible" />
+
+                <TextView
+                    android:id="@+id/txtClockOut"
+                    style="@style/CustomFontBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginEnd="@dimen/_10sdp"
+                    android:background="?attr/selectableItemBackground"
+                    android:gravity="center"
+                    android:padding="@dimen/_6sdp"
+                    android:text="@string/tv_clock_out"
+                    android:textColor="@color/btnColor"
+                    android:textSize="@dimen/_6mdpi"
+                    android:visibility="visible"
+                    tools:ignore="RelativeOverlap" />
+
+                <TextView
+                    android:id="@+id/txtHome"
+                    style="@style/CustomFontBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/_10sdp"
+                    android:padding="@dimen/_6sdp"
+                    android:text="@string/tv_home"
+                    android:textColor="@color/txt_color_blue"
+                    android:textSize="@dimen/_7mdpi"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+
+        </RelativeLayout>
+
 
         <View
             android:layout_width="match_parent"
@@ -338,7 +345,7 @@
                     android:visibility="gone">
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontSemiBold"
+                        style="@style/CustomFontBold"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -348,7 +355,7 @@
                         android:textSize="@dimen/_5mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontSemiBold"
+                        style="@style/CustomFontBold"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -358,7 +365,7 @@
                         android:textSize="@dimen/_5mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontSemiBold"
+                        style="@style/CustomFontBold"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -368,7 +375,7 @@
                         android:textSize="@dimen/_5mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontSemiBold"
+                        style="@style/CustomFontBold"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -379,7 +386,7 @@
 
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontSemiBold"
+                        style="@style/CustomFontBold"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -389,7 +396,7 @@
                         android:textSize="@dimen/_5mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontSemiBold"
+                        style="@style/CustomFontBold"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -666,7 +673,8 @@
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtTotalPayments"
                     style="@style/ReportTitleStyle"
-                    android:text="@string/total_payments" />
+                    android:text="@string/total_payments"
+                    tools:ignore="TooManyViews" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvTotalPayments"
@@ -674,6 +682,46 @@
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:itemCount="2"
                     tools:listitem="@layout/view_sales_report" />
+
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtCreditCardBreakDown"
+                    style="@style/ReportTitleStyle"
+                    android:text="CREDIT CARD BREAKDOWN"
+                    tools:ignore="TooManyViews" />
+
+                <LinearLayout
+                    android:id="@+id/ilCreditCardBreakDown"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/_5sdp">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/ReportItemHeaderText"
+                        android:gravity="start"
+                        android:text="Card Name" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtRefund"
+                        style="@style/ReportItemHeaderText"
+                        android:layout_marginEnd="@dimen/_5sdp"
+                        android:gravity="end"
+                        android:text="Tip" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/ReportItemHeaderText"
+                        android:gravity="end"
+                        android:text="@string/amount" />
+
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvCreditCardBreakDown"
+                    style="@style/ReportRecyclerViewstyle"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:itemCount="2"
+                    tools:listitem="@layout/view_payment_details" />
 
 
                 <androidx.appcompat.widget.AppCompatTextView

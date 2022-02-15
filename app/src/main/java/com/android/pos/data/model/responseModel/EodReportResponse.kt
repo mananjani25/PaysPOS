@@ -58,7 +58,15 @@ data class EodReportResponse(
             val tips: Double,
             @SerializedName("value")
             val value: Double
-        )
+        ) {
+            fun showFormattedValue() = "$" + String.format(
+                "%.2f", value ?: 0.0
+            )
+
+            fun showFormattedValueTips() = "$" + String.format(
+                "%.2f", tips ?: 0.0
+            )
+        }
 
         data class ClockInClockOut(
             @SerializedName("key")

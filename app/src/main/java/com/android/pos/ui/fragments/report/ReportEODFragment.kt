@@ -18,7 +18,6 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.android.pos.R
 import com.android.pos.data.entities.Employee
-import com.android.pos.data.model.responseModel.VenueDetailsResponse
 import com.android.pos.databinding.FragmentReportEodBinding
 import com.android.pos.ui.adapter.*
 import com.android.pos.ui.fragments.loginscreen.ClockInOwnerViewModel
@@ -49,7 +48,6 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     private lateinit var startTime: TimePickerDialog.OnTimeSetListener
     private lateinit var endTime: TimePickerDialog.OnTimeSetListener
-    private lateinit var terminalListGlobal: ArrayList<VenueDetailsResponse.Data.Terminal>
 
     private val terminalAdapter by lazy { TerminalAdapter() }
     private val salesReportAdapter by lazy { SalesReportAdapter() }
@@ -60,20 +58,17 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
     private val discountDetailsAdapter by lazy { SalesReportAdapter() }
     private val salesTaxSummaryAdapter by lazy { SalesReportAdapter() }
     private val cashEventSummaryAdapter by lazy { PaymentDetailsAdapter(hideRefund = true) }
-    private val creditTipAuditAdapter by lazy { PaymentDetailsAdapter(hideRefund = true) }
     private val totalPaymentsAdapter by lazy { SalesReportAdapter() }
     private val cashPaymentsAdapter by lazy { SalesReportAdapter() }
-    private val employeeAdapter by lazy { EmployeeAdapter() }
-    private val paymentDetailsAdapter by lazy { PaymentDetailsAdapter(hideRefund = true) }
-    private val employeeReportsAdapter by lazy { EmployeeReportAdapter() }
+    private val paymentDetailsAdapter by lazy { PaymentDetailsAdapter(hideRefund = false) }
     private val otherDetailsAdapter by lazy { SalesReportAdapter() }
     private val serviceChargeDetailsAdapter by lazy { ServiceChargeDetailsAdapter() }
-    private val tipDetailsAdapter by lazy { PaymentDetailsAdapter(hideRefund = true) }
+    private val tipDetailsAdapter by lazy { PaymentDetailsAdapter(hideRefund = false) }
 
 
     private val salesOrderDetailsAdapter by lazy { SalesOrderDetailsAdapter() }
 
-    private val wastage_detailsAdapter by lazy { PaymentDetailsAdapter(hideRefund = true) }
+    private val creditCardBreakdownAdapter by lazy { CreditCardBreakDownAdapter(hideRefund = false) }
 
     private lateinit var teamEmployeeListGlobal: ArrayList<Employee>
 
@@ -321,19 +316,14 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
         binding.rvDiscountDetails.adapter = discountDetailsAdapter
         binding.rvSalesTaxSummary.adapter = salesTaxSummaryAdapter
         binding.rvRefundAndVoid.adapter = cashEventSummaryAdapter
-//        binding.rvCreditTipAudit.adapter = creditTipAuditAdapter
         binding.rvTotalPayments.adapter = totalPaymentsAdapter
         binding.rvCashPayments.adapter = cashPaymentsAdapter
-//        binding.rvEmployeeData.adapter = employeeAdapter
         binding.rvPaymentDetails.adapter = paymentDetailsAdapter
-//        binding.rvEmpReport.adapter = employeeReportsAdapter
         binding.rvOtherDetails.adapter = otherDetailsAdapter
         binding.rvServiceChargeDetails.adapter = serviceChargeDetailsAdapter
         binding.rvTipsDetails.adapter = tipDetailsAdapter
         binding.rvCashLog.adapter = cashLogAdapter
-
-//        binding.rvWastageDetails.adapter = wastage_detailsAdapter
-
+        binding.rvCreditCardBreakDown.adapter = creditCardBreakdownAdapter
         binding.rvSalesDetails.adapter = salesOrderDetailsAdapter
     }
 
@@ -507,6 +497,19 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
 
                 showHide(
+                    rvMedia = binding.rvCreditCardBreakDown,
+                    textView = binding.txtCreditCardBreakDown,
+                    headerView = null,
+                    visible = it.otherDetails.isNotEmpty()
+                )
+                if (it.creditCardBreakdown.isEmpty()) {
+                    binding.ilCreditCardBreakDown.gone()
+                } else {
+                    binding.ilCreditCardBreakDown.visible()
+                }
+                creditCardBreakdownAdapter.add(it.creditCardBreakdown)
+
+                showHide(
                     rvMedia = binding.rvSalesDetails,
                     textView = binding.txtSalesDetails,
                     headerView = null,
@@ -542,9 +545,9 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
             textView?.visible()
             headerView?.root?.visible()
 
-            if (headerView == binding.ilPaymentDetails) {
-                binding.ilPaymentDetails.txtRefund.gone()
-            }
+//            if (headerView == binding.ilPaymentDetails) {
+//                binding.ilPaymentDetails.txtRefund.gone()
+//            }
         } else {
             rvMedia.gone()
             textView?.gone()
@@ -630,19 +633,6 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
         binding.spTerminals.setSelection(defaultEmployeePos)
 
-    }
-
-    private fun getEmployeeId(position: Int): Int? {
-        return if (this::teamEmployeeListGlobal.isInitialized) {
-
-            if (position == -1) {
-                teamEmployeeListGlobal?.get(0)?.id
-            } else {
-                teamEmployeeListGlobal?.get(position)?.id
-            }
-        } else {
-            -1
-        }
     }
 
 
