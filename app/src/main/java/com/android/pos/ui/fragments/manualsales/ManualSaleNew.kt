@@ -86,8 +86,6 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         binding = FragmentManualSaleNewBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
         getLoyaltyPrograms()
-        binding.footer.imgInfo.visibility = View.GONE
-        binding.footer.imgDelete.visibility = View.GONE
         getServiceCharge()
         Log.e(TAG, "CategoryId: ${prefProvider.getValueInt(MANUAL_SALE_CATEGORY_ID, 1)}")
         Log.e(TAG, "CategoryItemId: ${prefProvider.getValueInt(MANUAL_SALE_ITEM_ID, 1)}")
@@ -478,26 +476,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         binding.llInfo.setOnClickListener {
             showPopupWindow(it)
         }
-        binding.footer.imgDelete.setOnClickListener {
 
-            if (cartList?.isNotEmpty() == true) {
-                alert(
-                    getString(R.string.app_name),
-                    getString(R.string.delete_items_message)
-                ) {
-                    positiveButton(getString(R.string.tv_delete)) {
-                        viewModel.deleteCart()
-
-                        binding.txtTotalAmount.setText("$0.00")
-
-                    }
-                    negativeButton(R.string.tv_cancel) {
-
-                    }
-                }
-            }
-
-        }
         binding.txtCrtNewCustomer.setOnClickListener {
             if (prefProvider.getValue(CUSTOMER_NAME, "").toString().isNotEmpty()) {
                 clearCustomer()

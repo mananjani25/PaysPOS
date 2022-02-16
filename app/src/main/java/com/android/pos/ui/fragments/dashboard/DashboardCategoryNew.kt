@@ -61,6 +61,7 @@ import com.android.pos.data.remote.Constants.DINE_IN_LIST_EDIT
 import com.android.pos.data.remote.Constants.DINE_IN_STATUS
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
+import com.android.pos.data.remote.Constants.EMPLOYEE_ROLE
 import com.android.pos.data.remote.Constants.HORIZONTAL
 import com.android.pos.data.remote.Constants.IS_NEXT_AMOUNT
 import com.android.pos.data.remote.Constants.IS_ORDER_UPDATE
@@ -247,15 +248,15 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
 
 
-        binding.footer.txtEmployeeName.setOnClickListener {
-
-            findNavController().navigate(R.id.action_dashboardCategoryNew_to_reportEODFragment)
+        binding.footer.linearEmpnameRole.setOnClickListener {
+            var bundle = Bundle()
+            bundle.putBoolean("isSwap",true)
+            bundle.putBoolean("isDashboard", false)
+            findNavController().navigate(R.id.action_dashboardCategoryNew_to_passcode,bundle)
         }
 
-        binding.footer.imgClock.setOnClickListener {
-
+        binding.footer.linearClockout.setOnClickListener {
             findNavController().navigate(R.id.action_dashboardCategoryNew_to_reportEODFragment)
-
         }
 
         val callback: OnBackPressedCallback =
@@ -339,7 +340,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         binding.layoutCart.imgOrderMenu.setOnClickListener(this)
         binding.layoutCart.txtAddDiscount.setOnClickListener(this)
 
-        binding.footer.txtEmployeeName.text = prefProvider.getValue(EMPLOYEE_NAME, "")
+        binding.footer.txtEmployeeName.text =
+            prefProvider.getValue(EMPLOYEE_NAME, "").toString() + " / " + prefProvider.getValue(
+                EMPLOYEE_ROLE, "")
         binding.root.setOnClickListener {
             if (binding.layoutCart.llCustomerDialog.visibility == View.VISIBLE) {
                 binding.layoutCart.llCustomerDialog.visibility = View.GONE
@@ -708,9 +711,19 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             if (it.timeStamp == null || it.timeStamp?.lowercase() == "null".lowercase()) {
                                 it.timeStamp = viewModel.randomOfflineId()
                             }
-                            dineList.get(0).selectedPosition = prefProvider.getValueInt(Constants.DINE_INGUEST_SELECTED,0)
-                            dineList[prefProvider.getValueInt(Constants.DINE_INGUEST_SELECTED,0)].items.add(it)
-                            Log.d("yash", "bindData: dineine HEaderPositonn "+prefProvider.getValueInt(Constants.DINE_INGUEST_SELECTED,0))
+                            dineList.get(0).selectedPosition =
+                                prefProvider.getValueInt(Constants.DINE_INGUEST_SELECTED, 0)
+                            dineList[prefProvider.getValueInt(
+                                Constants.DINE_INGUEST_SELECTED,
+                                0
+                            )].items.add(it)
+                            Log.d(
+                                "yash",
+                                "bindData: dineine HEaderPositonn " + prefProvider.getValueInt(
+                                    Constants.DINE_INGUEST_SELECTED,
+                                    0
+                                )
+                            )
 
                         }
                         cartList[0].items?.toCollection(arrayListOf())?.clear()
@@ -1386,7 +1399,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                         ProgressUtils.dismissProgressDialog()
 
-                        if (prefProvider.getValue(LAYOUT_ORIENTATION,"") == "0")
+                        if (prefProvider.getValue(LAYOUT_ORIENTATION, "") == "0")
                             horizontalTabList()
                         else
                             verticalTabList()
@@ -2466,7 +2479,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 ) {
                     positiveButton(getString(R.string.tv_delete)) {
                         // Do positive stuff here
-                        prefProvider.setValueInt(DINE_INGUEST_SELECTED,0)
+                        prefProvider.setValueInt(DINE_INGUEST_SELECTED, 0)
 
                         totalDiscountMannualAdded = 0.0
                         if (prefProvider.getValue(ORDER_TYPE, "").toString() == DINE_IN) {
@@ -4243,6 +4256,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             }
         })
     }
+
     fun getBitmapFromURL(src: String?): Bitmap? {
         return try {
             val url = URL(src)

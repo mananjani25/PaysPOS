@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.db.IDataManager
 import com.android.pos.data.entities.TbCategory
+import com.android.pos.data.entities.UserSwapModel
 import com.android.pos.data.remote.ApiHelper
 import com.android.pos.utils.statusUtils.Resource
 import javax.inject.Inject
@@ -17,6 +18,18 @@ class UserRepository @Inject constructor(
 
     suspend fun getDefaultTerminal(uniq_id: String) =
         apiHelperNew.getDefaultTerminal(uniq_id)
+
+    suspend fun addUserClockInData(userSwapModel: UserSwapModel) {
+        appDatabase.userSwapDao().add(userSwapModel)
+    }
+
+    suspend fun userClockInData():List<UserSwapModel> {
+        return appDatabase.userSwapDao().userList()
+    }
+
+    suspend fun removeUserClockInData(id: Int) {
+        appDatabase.userSwapDao().deleteUser(id)
+    }
 
     suspend fun employeeClockIn(data: HashMap<String, String>) = apiHelperNew.employeeClockIn(data)
 

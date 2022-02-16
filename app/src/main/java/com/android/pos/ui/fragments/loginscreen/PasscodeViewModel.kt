@@ -1,9 +1,11 @@
 package com.android.pos.ui.fragments.loginscreen
 
+import android.os.Build
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.android.pos.data.entities.UserSwapModel
 import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
@@ -18,6 +20,7 @@ import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import java.sql.Timestamp
 import javax.inject.Inject
 
 @HiltViewModel
@@ -33,6 +36,10 @@ class PasscodeViewModel @Inject constructor(
     private val _data = MutableLiveData<Event<BaseResponse>>()
     val data: LiveData<Event<BaseResponse>> = _data
 
+
+    public val _userList = MutableLiveData<Event<List<UserSwapModel>>>()
+    val userList: LiveData<Event<List<UserSwapModel>>> = _userList
+
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
@@ -40,6 +47,15 @@ class PasscodeViewModel @Inject constructor(
 
     fun isDashboardData(isDashboard: Boolean) {
         this.isDashboard = isDashboard
+    }
+
+    fun getAllUserClockInData() {
+        viewModelScope.launch {
+            var userListtemp: List<UserSwapModel> = arrayListOf()
+            userListtemp =
+                userRepository.userClockInData()
+            _userList.value = Event(userListtemp)
+        }
     }
 
     fun submit(passcode: String) {
@@ -59,6 +75,10 @@ class PasscodeViewModel @Inject constructor(
                         resource.data.let {
                             if (it?.status == 200) {
                                 resource.data?.let {
+                                    if (prefProvider.getValueInt(EMPLOYEE_ID, 0) != 0) {
+                                        var employeeId = prefProvider.getValueInt(EMPLOYEE_ID, 0)
+                                        userRepository.removeUserClockInData(employeeId)
+                                    }
                                     _data.value = Event(it)
                                 }
                             } else {
@@ -93,6 +113,23 @@ class PasscodeViewModel @Inject constructor(
                         resource.data.let {
                             if (it?.status == 200) {
                                 resource.data?.let {
+                                    var date_time = ""
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                        date_time = Timestamp(System.currentTimeMillis()).toString()
+                                    }
+
+                                    userRepository.addUserClockInData(
+
+                                        UserSwapModel(
+                                            it.data.employeeId,
+                                            it.data.employee_name,
+                                            it.data.employee_role.toString(),
+                                            it.data.team_role_id!!,
+                                            date_time,
+                                            passcode
+                                        )
+                                    )
+
                                     prefProvider.setValueboolean(IS_CLOCKOUT, true)
                                     prefProvider.setValueInt(EMPLOYEE_ID, it.data.employeeId)
                                     prefProvider.setValue(EMPLOYEE_NAME, it.data.employee_name)
