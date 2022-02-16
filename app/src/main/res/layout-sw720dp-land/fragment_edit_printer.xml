@@ -19,8 +19,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:padding="@dimen/_6sdp"
                 android:background="?attr/selectableItemBackground"
+                android:padding="@dimen/_6sdp"
                 android:src="@drawable/ic_cancel_black"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -106,9 +106,9 @@
                         android:layout_centerVertical="true"
                         android:layout_marginEnd="@dimen/_5sdp"
                         android:background="@null"
+                        android:digits="@string/disable_emoji_string"
                         android:imeOptions="actionDone"
                         android:inputType="textVisiblePassword"
-                        android:digits="@string/disable_emoji_string"
                         android:textColor="@color/colorAB"
                         android:textSize="@dimen/_5mdpi" />
 
@@ -180,6 +180,21 @@
                         android:layout_marginEnd="@dimen/_5sdp"
                         android:text="Select printer type >"
                         android:textColor="@color/colorAB"
+                        android:textSize="@dimen/_5mdpi"
+                        android:visibility="gone" />
+
+                    <Spinner
+                        android:id="@+id/spnPrinterCat"
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:layout_gravity="center"
+                        android:layout_marginEnd="@dimen/_5sdp"
+                        android:padding="@dimen/_5sdp"
+                        android:spinnerMode="dropdown"
+                        android:textColor="@color/color96"
                         android:textSize="@dimen/_5mdpi" />
 
 
