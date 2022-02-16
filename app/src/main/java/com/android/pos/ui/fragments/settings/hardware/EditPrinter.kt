@@ -5,10 +5,14 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.data.model.PrinterListModel
+import com.android.pos.data.remote.Constants.CUSTOMER
+import com.android.pos.data.remote.Constants.KITCHEN
+import com.android.pos.data.remote.Constants.KITCHENANDCUSTOMER
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.data.remote.Constants.createRequestModelForUpdatePrinter
@@ -28,6 +32,8 @@ class EditPrinter : Fragment() {
     private lateinit var adapter: EditPrinterListAdapter
     private var printerModel: PrinterListModel? = null
     private val viewModel by viewModels<PrinterViewModel>()
+    private lateinit var arrayAdapter: ArrayAdapter<String>
+    private var list = arrayListOf<String>(CUSTOMER, KITCHEN, KITCHENANDCUSTOMER)
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -39,6 +45,8 @@ class EditPrinter : Fragment() {
     ): View? {
         binding = FragmentEditPrinterBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
+        arrayAdapter =
+            ArrayAdapter(binding.root.context, android.R.layout.simple_spinner_dropdown_item)
         observeShowProgress()
         updateDate()
         return binding.root
