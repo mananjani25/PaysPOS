@@ -135,28 +135,33 @@ class Orders : Fragment() {
 
 
     private fun getOrderCountsObserver(startDate: String?, endDate: String?) {
-        viewModel.orderCounts(startDate,endDate).observe(viewLifecycleOwner, {
-            it?.let { resource ->
-                when (resource.status) {
-                    Status.SUCCESS -> {
+        try {
+            viewModel.orderCounts(startDate,endDate).observe(viewLifecycleOwner, {
+                it?.let { resource ->
+                    when (resource.status) {
+                        Status.SUCCESS -> {
 
-                        activeOrdersCount = it.data?.data?.activeOrders
-                        cancelledOrdersCount = it.data?.data?.cancelledOrders
-                        completedOrdersCount = it.data?.data?.completedOrders
-                        upcomingOrdersCount = it.data?.data?.upcomingOrders
+                            activeOrdersCount = it.data?.data?.activeOrders
+                            cancelledOrdersCount = it.data?.data?.cancelledOrders
+                            completedOrdersCount = it.data?.data?.completedOrders
+                            upcomingOrdersCount = it.data?.data?.upcomingOrders
 
-                        setAdapter(mPos)
+                            setAdapter(mPos)
 
-                    }
-                    Status.ERROR -> {
-                        setAdapter(mPos)
-                    }
-                    Status.LOADING -> {
-                        setAdapter(mPos)
+                        }
+                        Status.ERROR -> {
+                            setAdapter(mPos)
+                        }
+                        Status.LOADING -> {
+                            setAdapter(mPos)
+                        }
                     }
                 }
-            }
-        })
+            })
+
+        }catch (e:Exception){
+            e.printStackTrace()
+        }
     }
 
     override fun onDestroy() {
