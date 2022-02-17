@@ -93,12 +93,12 @@ class CustomerListAdapter(
             if (isSelectedPos == pos) {
                 binding.layout.background =
                     binding.root.context.getDrawable(R.color.txt_color_blue)
-                binding.txtName.setTextColor(binding.root.context.getColorCompat(R.color.white))
-                binding.txtNumber.setTextColor(binding.root.context.getColorCompat(R.color.white))
-            } else {
-                binding.layout.background = binding.root.context.getDrawable(R.color.white)
                 binding.txtName.setTextColor(binding.root.context.getColorCompat(R.color.txtColor))
-                binding.txtNumber.setTextColor(binding.root.context.getColorCompat(R.color.colorB9))
+                binding.txtNumber.setTextColor(binding.root.context.getColorCompat(R.color.txtColor))
+            } else {
+                binding.layout.background = binding.root.context.getDrawable(R.color.bg_color)
+                binding.txtName.setTextColor(binding.root.context.getColorCompat(R.color.txtColor))
+                binding.txtNumber.setTextColor(binding.root.context.getColorCompat(R.color.txtColor))
             }
 
             binding.model = model

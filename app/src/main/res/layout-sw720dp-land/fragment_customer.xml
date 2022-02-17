@@ -6,7 +6,8 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/bg_color">
 
         <include
             android:id="@+id/layoutTool"
@@ -26,11 +27,12 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="0.25"
                 android:orientation="vertical">
+
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:id="@+id/linearCustomerDialog"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/txtColor"
+                    android:background="@color/bg_color"
                     android:gravity="center"
                     android:orientation="vertical"
                     android:visibility="gone">
@@ -102,13 +104,14 @@
 
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
+
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:id="@+id/linearSearchView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/linearCustomerDialog"
                     android:orientation="horizontal"
-                    android:padding="@dimen/_5sdp">
+                    android:padding="@dimen/_7sdp">
 
                     <ImageView
                         android:id="@+id/imgSearch"
@@ -118,8 +121,7 @@
                         android:layout_marginEnd="@dimen/_10sdp"
                         android:layout_toStartOf="@+id/autoSearch"
                         android:contentDescription="@string/search"
-                        android:src="@drawable/ic_search"
-                        app:tint="@color/black" />
+                        android:src="@drawable/ic_search" />
 
                     <EditText
                         android:id="@+id/autoSearch"
@@ -129,11 +131,11 @@
                         android:layout_marginEnd="@dimen/_5sdp"
                         android:layout_toStartOf="@+id/imgOptionMenu"
                         android:background="@null"
+                        android:digits="@string/disable_emoji_string"
                         android:fontFamily="@font/sf_pro_display_regular"
-                        android:hint="@string/name_phone_email_or_company"
+                        android:hint="@string/name_phone_email"
                         android:imeOptions="actionDone"
                         android:inputType="text"
-                        android:digits="@string/disable_emoji_string"
                         android:singleLine="true"
                         android:textColor="@color/black"
                         android:textColorHint="#C4C4C4"
@@ -152,7 +154,6 @@
                     android:orientation="vertical"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:listitem="@layout/view_customer_list" />
-
 
 
             </RelativeLayout>
