@@ -131,6 +131,8 @@ dependencies {
     //passcode
     implementation project(path: ':passcodeview')
 
+    
+
     //Masking
     implementation 'com.github.santalu:mask-edittext:1.1.1'
 
@@ -171,4 +173,6 @@ dependencies {
 
     //Phone no Fromating
     implementation 'com.googlecode.libphonenumber:libphonenumber:7.2.2'
+    implementation 'com.github.poovamraj:PinEditTextField:1.2.6'
+
 }

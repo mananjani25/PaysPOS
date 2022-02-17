@@ -14,8 +14,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/txtColor"
-        android:gravity="center_horizontal"
+        android:background="#1D1D1F"
         android:orientation="vertical">
 
         <LinearLayout
@@ -57,35 +56,115 @@
             </RelativeLayout>
         </LinearLayout>
 
-        <LinearLayout
+
+        <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/llChild"
-            android:orientation="vertical">
+            android:layout_below="@id/llChild"
+            android:layout_marginTop="@dimen/_20sdp"
+            android:orientation="horizontal">
 
-            <TextView
-                style="@style/CustomFontRegularStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:padding="@dimen/_10sdp"
-                android:text="@string/tv_enter_your_passcode"
-                android:textColor="@color/white"
-                android:textSize="@dimen/_8mdpi" />
-
-            <in.arjsna.passcodeview.PassCodeView
-                android:id="@+id/passCodeView"
-                android:layout_width="@dimen/_250sdp"
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:padding="@dimen/_25sdp"
-                app:digit_size="@dimen/_10sdp"
-                app:digits="4"
-                app:empty_drawable="@drawable/empty_dot"
-                app:filled_drawable="@drawable/bg_round"
-                app:key_text_size="@dimen/_10mdpi" />
-        </LinearLayout>
+                android:layout_weight="6"
+                android:orientation="vertical">
 
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_weight="6"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/_2sdp"
+                        android:src="@drawable/ic_lock" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/_2sdp"
+                        android:text="@string/bold_pos"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_15sdp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/_5sdp"
+                        android:text="@string/blockchain_point_of_sale"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_7sdp"
+                        android:textStyle="normal" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_weight="6"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical">
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/_2sdp"
+                        android:gravity="center">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="@dimen/_10sdp"
+                            android:src="@drawable/day" />
+
+                        <TextView
+                            android:id="@+id/current_time"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/bold_pos"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/_20sdp"
+                            android:textStyle="bold" />
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <TextView
+                        android:id="@+id/current_Date"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:layout_marginBottom="@dimen/_5sdp"
+                        android:gravity="end"
+                        android:text="@string/blockchain_point_of_sale"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_7sdp"
+                        android:textStyle="normal" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/llChild"
+                android:layout_weight="4"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
+
+
+                <include
+                    android:id="@+id/passcodeView"
+                    layout="@layout/passcodeviewcustom"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </androidx.appcompat.widget.LinearLayoutCompat>
     </RelativeLayout>
 </layout>

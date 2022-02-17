@@ -714,6 +714,8 @@
     <string name="add_new_customer_">+ Add New Customer</string>
     <string name="search_customer">Search Customer</string>
     <string name="recently_created">Recently Created</string>
+    <string name="bold_pos">BOLD POS</string>
+    <string name="blockchain_point_of_sale">Blockchain Point of Sale</string>
 
 
 </resources>
