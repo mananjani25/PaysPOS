@@ -25,6 +25,10 @@ class EditPrinterListAdapter : RecyclerView.Adapter<EditPrinterListAdapter.MyVie
 
 
             if (model.printerSettings.size == 2 ) {
+                binding.txtKitReceipt.visible()
+                binding.txtCustomerReceipt.visible()
+                binding.chBoxCustomerManual2.visible()
+                binding.chBoxKitchenManual2.visible()
                 if (model.printerSettings.get(0).printType == Constants.CUSTOMER) {
                   /*  binding.chBoxCustomerManual.isChecked =
                         model.printerSettings.get(0).manualPrinting*/
@@ -53,6 +57,8 @@ class EditPrinterListAdapter : RecyclerView.Adapter<EditPrinterListAdapter.MyVie
                     binding.chBoxCustomerManual2.isChecked =
                         model.printerSettings.get(1).autoPrinting
                 }
+
+
 
             } else if (model.printerSettings.size == 1) {
 
@@ -194,6 +200,8 @@ class EditPrinterListAdapter : RecyclerView.Adapter<EditPrinterListAdapter.MyVie
 
     @SuppressLint("NotifyDataSetChanged")
     fun setList(dataList: ArrayList<PrinterResponse.Data.OrderTypes>) {
+        list.clear()
+        list = arrayListOf()
         this.list = dataList
         notifyDataSetChanged()
     }

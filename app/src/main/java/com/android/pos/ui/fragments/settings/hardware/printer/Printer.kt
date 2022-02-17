@@ -25,8 +25,6 @@ import com.android.pos.R
 import com.android.pos.data.entities.TbOrderType
 import com.android.pos.data.model.PrinterListModel
 import com.android.pos.data.model.requestModel.CreatePrinterRequestModel
-import com.android.pos.data.model.responseModel.PrinterResponse
-import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.AVAILABLE
 import com.android.pos.data.remote.Constants.BLUETOOTH
 import com.android.pos.data.remote.Constants.CUSTOMER
@@ -136,29 +134,29 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     }
 
 
-    private fun getOrderTypes() {
-        viewModel.orderTypes.observe(viewLifecycleOwner, {
-            when (it.status) {
-                Status.LOADING -> {
-                    ProgressUtils.showProgressDialog(requireActivity())
-                }
-                Status.ERROR -> {
-                    ProgressUtils.dismissProgressDialog()
-                }
-                Status.SUCCESS -> {
-                    ProgressUtils.dismissProgressDialog()
-                    if (it.data != null) {
-                        orderTypeList.clear()
-                        orderTypeList = arrayListOf()
-                        orderTypeList.addAll(it.data.toCollection(ArrayList()))
+        private fun getOrderTypes() {
+            viewModel.orderTypes.observe(viewLifecycleOwner, {
+                when (it.status) {
+                    Status.LOADING -> {
+                        ProgressUtils.showProgressDialog(requireActivity())
+                    }
+                    Status.ERROR -> {
+                        ProgressUtils.dismissProgressDialog()
+                    }
+                    Status.SUCCESS -> {
+                        ProgressUtils.dismissProgressDialog()
+                        if (it.data != null) {
+                            orderTypeList.clear()
+                            orderTypeList = arrayListOf()
+                            orderTypeList.addAll(it.data.toCollection(ArrayList()))
+
+                        }
+
 
                     }
-
-
                 }
-            }
-        })
-    }
+            })
+        }
 
     private fun getPrinterList() {
 
