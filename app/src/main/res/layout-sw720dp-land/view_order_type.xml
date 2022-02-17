@@ -21,7 +21,7 @@
         tools:text="Item 1"
         android:paddingVertical="@dimen/_5sdp"
         android:text="@{model.name}"
-        android:textColor="@color/viewTextColor"
+        android:textColor="@color/txtColor"
         android:textSize="@dimen/_5mdpi" />
 </layout>
 

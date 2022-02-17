@@ -26,13 +26,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="@dimen/_3sdp">
+            android:paddingVertical="@dimen/_7sdp">
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:paddingStart="@dimen/_3sdp"
                 android:paddingEnd="@dimen/_3sdp">
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -41,11 +40,11 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginStart="@dimen/_5sdp"
                     android:layout_weight="1"
                     android:gravity="start"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi"
+                    android:layout_marginStart="@dimen/_3sdp"
                     tools:text="Vishal Patel" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -81,11 +80,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
-                android:layout_marginStart="@dimen/_8sdp"
                 android:gravity="start"
                 android:textColor="@color/hint_color_"
                 android:textSize="@dimen/_5mdpi"
-                tools:text="(200) 300-4000" />
+                tools:text="(200) 300-4000"
+                android:layout_marginTop="@dimen/_3sdp"
+                android:layout_marginStart="@dimen/_3sdp"/>
         </androidx.appcompat.widget.LinearLayoutCompat>
 
         <View

@@ -8,7 +8,7 @@
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white"
+        android:background="@color/bg_color"
         android:orientation="vertical">
 
         <RelativeLayout
@@ -23,19 +23,37 @@
                 android:layout_centerVertical="true"
                 android:layout_gravity="center"
                 app:srcCompat="@drawable/ic_cancel_black"
-                app:tint="@color/viewTextColor" />
+                 />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
+                android:layout_centerInParent="true"
                 android:layout_gravity="center"
                 android:gravity="center"
-                android:text="@string/add_customer_to_sale"
+                android:text="@string/add_new_customer"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_7mdpi" />
+
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtHome"
+                style="@style/CustomFontBold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+
+                android:layout_marginStart="@dimen/_5sdp"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:layout_marginEnd="@dimen/_5sdp"
+                android:layout_marginBottom="@dimen/_5sdp"
+                android:text="@string/tv_home"
+                android:textColor="@color/txt_color_blue"
+                android:textSize="@dimen/_5mdpi"
+                app:textAllCaps="true" />
+
 
         </RelativeLayout>
 
@@ -57,13 +75,14 @@
                 android:background="@null"
                 android:drawableStart="@drawable/ic_search"
                 android:drawablePadding="@dimen/_10sdp"
-                android:hint="Name, Phone, Email or Company"
+                android:hint="@string/search_customer"
                 android:imeOptions="actionDone"
                 android:inputType="text"
-                android:padding="@dimen/_5sdp"
+                android:padding="@dimen/_10sdp"
                 android:textColor="@color/black"
+                android:layout_marginHorizontal="@dimen/_110sdp"
                 android:textColorHint="@color/hintColor"
-                android:textSize="@dimen/_6mdpi" />
+                android:textSize="@dimen/_5mdpi" />
 
             <View
                 android:layout_width="match_parent"
@@ -73,11 +92,9 @@
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginStart="@dimen/_50sdp"
-                android:layout_marginTop="@dimen/_10sdp"
-                android:layout_marginEnd="@dimen/_50sdp"
-                android:layout_marginBottom="@dimen/_10sdp"
-                android:background="@color/white"
+                android:layout_marginHorizontal="@dimen/_110sdp"
+                android:layout_marginVertical="@dimen/_10sdp"
+                android:background="@color/bg_color"
                 android:orientation="vertical">
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -86,14 +103,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginTop="@dimen/_10sdp"
                     android:layout_marginBottom="@dimen/_10sdp"
                     android:background="@drawable/bg_button_border_gray"
                     android:gravity="center"
-                    android:padding="@dimen/_5sdp"
-                    android:text="+ Create Customer"
-                    android:textColor="@color/btnColor"
-                    android:textSize="@dimen/_6mdpi"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:padding="@dimen/_8sdp"
+                    android:text="@string/add_new_customer_"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_7sdp"
                     app:textAllCaps="false" />
 
                 <ProgressBar
@@ -105,12 +122,27 @@
                     android:layout_weight="1"
                     android:visibility="gone" />
 
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:text="@string/recently_created"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_5sdp"
+                    android:layout_marginStart="@dimen/_3sdp"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    app:textAllCaps="true" />
+
+
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvCustomerList"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:visibility="gone"
+                    android:layout_marginTop="@dimen/_5sdp"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:itemCount="5"
                     tools:listitem="@layout/view_category" />
