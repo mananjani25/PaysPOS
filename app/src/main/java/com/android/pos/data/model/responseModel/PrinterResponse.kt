@@ -1,15 +1,8 @@
 package com.android.pos.data.model.responseModel
 
-import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import androidx.room.TypeConverter
-import androidx.room.TypeConverters
-import com.android.pos.data.typeconvert.TCCustomerReceiptPrinters
-import com.android.pos.data.typeconvert.TCOrderTypes
-import com.android.pos.data.typeconvert.TCPrinterCategories
 import com.google.gson.annotations.SerializedName
-import kotlinx.parcelize.Parcelize
 
 
 data class PrinterResponse(
@@ -91,14 +84,15 @@ data class PrinterResponse(
 
         data class PrinterSettings(
 
-            @SerializedName("id") var id: Int,
+            @SerializedName("id") var id: Int?=null,
             @SerializedName("order_type_id") var orderTypeId: Int,
             @SerializedName("print_type") var printType: String,
             @SerializedName("manual_printing") var manualPrinting: Boolean,
             @SerializedName("auto_printing") var autoPrinting: Boolean,
             @SerializedName("printer_id") var printerId: Int,
             @SerializedName("created_at") var createdAt: String,
-            @SerializedName("updated_at") var updatedAt: String
+            @SerializedName("updated_at") var updatedAt: String,
+            @SerializedName("_destroy") var isDestroy: Boolean = false
 
         )
 

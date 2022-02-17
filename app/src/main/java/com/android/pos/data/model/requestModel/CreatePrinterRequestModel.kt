@@ -28,7 +28,8 @@ data class CreatePrinterRequestModel(
         @SerializedName("order_type_id") var orderTypeId: Int? = null,
         @SerializedName("print_type") var printType: String? = null,
         @SerializedName("manual_printing") var manualPrinting: Boolean = false,
-        @SerializedName("auto_printing") var autoPrinting: Boolean = true
+        @SerializedName("auto_printing") var autoPrinting: Boolean = true,
+        @SerializedName("_destroy") var isDestroy: Boolean = false
 
-    )
+        )
 }

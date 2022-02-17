@@ -275,6 +275,71 @@ object Constants {
     const val IN_PROCESS = "IN PROCESS"
     const val COMPLETED = "COMPLETED"
 
+    fun createRequestModelForUpdatePritnerType(
+        oldList: ArrayList<PrinterResponse.Data.OrderTypes>?,
+        adapterList: ArrayList<PrinterResponse.Data.OrderTypes>,
+        printerModel: PrinterListModel?
+    ): CreatePrinterRequestModel {
+
+        var list: ArrayList<CreatePrinterRequestModel.PrinterSettingsAttributes> = arrayListOf()
+
+
+        oldList?.forEach {
+            it.printerSettings.forEach {
+
+                it.isDestroy = true
+                list.add(
+                    CreatePrinterRequestModel.PrinterSettingsAttributes(
+                        it.id,
+                        it.orderTypeId,
+                        it.printType,
+                        it.manualPrinting,
+                        it.autoPrinting,
+                        true
+                    )
+                )
+
+            }
+        }
+
+
+
+        Log.e("adapterList", "adapterList  ${Gson().toJson(list)}")
+
+        for (i in 0 until adapterList.size) {
+            adapterList.get(i).printerSettings.forEach {
+                list.add(
+                    CreatePrinterRequestModel.PrinterSettingsAttributes(
+                        it.id,
+                        it.orderTypeId,
+                        it.printType,
+                        it.manualPrinting,
+                        it.autoPrinting,
+                        it.isDestroy
+                    )
+                )
+
+            }
+
+        }
+
+
+        val model = CreatePrinterRequestModel(
+            id = printerModel?.id,
+            name = printerModel?.printerName,
+            macAddress = printerModel?.deviceModel?.macAddress,
+            modalName = printerModel?.deviceModel?.printerName,
+            status = printerModel!!.isActive,
+            ip_address = printerModel.deviceModel?.ipAddress,
+            receiptPrintType = printerModel.type,
+            printer_type = printerModel.connectionType,
+            printerSettingsAttributes = list
+        )
+
+        return model
+    }
+
+
     fun createRequestModelForUpdatePrinter(
         model: ArrayList<PrinterResponse.Data.OrderTypes>,
         printerModel: PrinterListModel?
@@ -289,7 +354,8 @@ object Constants {
                         it.printerSettings.get(i).orderTypeId,
                         it.printerSettings.get(i).printType,
                         it.printerSettings.get(i).manualPrinting,
-                        it.printerSettings.get(i).autoPrinting
+                        it.printerSettings.get(i).autoPrinting,
+                        it.printerSettings.get(i).isDestroy
                     )
                 )
 
@@ -415,9 +481,6 @@ object Constants {
     const val TOTAL_DISCOUNT_ACTUAL = "totalDiscountactual"
     const val TOTAL_PRICE_ACTUAL = "totalPriceActual"
     const val TOTAL_SERVICE_CHARGE_ACTUAL = "totalServiceChargeactual"
-
-
-
 
 
     // dinein
