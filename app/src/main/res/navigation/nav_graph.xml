@@ -682,6 +682,9 @@
         <action
             android:id="@+id/action_assignCustomerOrderFragment_to_addEditCustomer"
             app:destination="@id/addEditCustomer" />
+        <action
+            android:id="@+id/action_assignCustomerOrderFragment_to_dashboard_category_new"
+            app:destination="@id/dashboardCategoryNew" />
     </fragment>
     <fragment
         android:id="@+id/manualSales"

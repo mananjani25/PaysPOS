@@ -28,7 +28,7 @@ class MainApplication : Application() {
         FirebaseApp.initializeApp(this)
        // TestFairy.begin(this, "SDK-TVuIrZk6");
         instance = this
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
 
         Foreground.init(this)
         createNotificationChannel()

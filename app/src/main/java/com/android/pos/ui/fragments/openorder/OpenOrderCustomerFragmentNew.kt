@@ -549,11 +549,11 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
                 binding.llCustomerDetails.visibility = View.VISIBLE
                 binding.llDeliveryAddress.visibility = View.GONE
                 binding.llBillingAddress.visibility = View.GONE
-                binding.txtCustomerDetails.setTextColor(resources.getColor(color.white))
-                binding.txtDeliveryAddress.setTextColor(resources.getColor(color.drawerBack50))
+                binding.txtCustomerDetails.setTextColor(resources.getColor(color.txtColor))
+                binding.txtDeliveryAddress.setTextColor(resources.getColor(color.txtColor))
 
                 binding.txtCustomerDetails.setBackgroundColor(resources.getColor(color.btnColor))
-                binding.txtDeliveryAddress.setBackgroundColor(resources.getColor(color.white))
+                binding.txtDeliveryAddress.setBackgroundColor(resources.getColor(color.bg_color))
 
             }
             R.id.txtDeliveryAddress -> {
@@ -562,10 +562,10 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
                 binding.llCustomerDetails.visibility = View.GONE
 
 
-                binding.txtCustomerDetails.setTextColor(resources.getColor(color.drawerBack50))
-                binding.txtDeliveryAddress.setTextColor(resources.getColor(color.white))
+                binding.txtCustomerDetails.setTextColor(resources.getColor(color.txtColor))
+                binding.txtDeliveryAddress.setTextColor(resources.getColor(color.txtColor))
 
-                binding.txtCustomerDetails.setBackgroundColor(resources.getColor(color.white))
+                binding.txtCustomerDetails.setBackgroundColor(resources.getColor(color.bg_color))
                 binding.txtDeliveryAddress.setBackgroundColor(resources.getColor(color.btnColor))
 
             }
@@ -619,19 +619,19 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
             }
             R.id.txtPickup -> {
                 type = Constants.PICK_UP
-                binding.txtPickup.setTextColor(resources.getColor(color.white))
-                binding.txtDelivery.setTextColor(resources.getColor(color.drawerBack50))
+                binding.txtPickup.setTextColor(resources.getColor(color.txtColor))
+                binding.txtDelivery.setTextColor(resources.getColor(color.txtColor))
 
                 binding.txtPickup.setBackgroundColor(resources.getColor(color.btnColor))
-                binding.txtDelivery.setBackgroundColor(resources.getColor(color.white))
+                binding.txtDelivery.setBackgroundColor(resources.getColor(color.bg_color))
 
             }
             R.id.txtDelivery -> {
                 type = Constants.DELIVERY
-                binding.txtPickup.setTextColor(resources.getColor(color.drawerBack50))
-                binding.txtDelivery.setTextColor(resources.getColor(color.white))
+                binding.txtPickup.setTextColor(resources.getColor(color.txtColor))
+                binding.txtDelivery.setTextColor(resources.getColor(color.txtColor))
 
-                binding.txtPickup.setBackgroundColor(resources.getColor(color.white))
+                binding.txtPickup.setBackgroundColor(resources.getColor(color.bg_color))
                 binding.txtDelivery.setBackgroundColor(resources.getColor(color.btnColor))
             }
             R.id.btnClearCustomer -> {
