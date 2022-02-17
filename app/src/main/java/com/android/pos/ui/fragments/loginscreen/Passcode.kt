@@ -13,7 +13,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
-import com.android.pos.data.entities.UserSwapModel
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentPasscodeBinding
 import com.android.pos.di.PrefProvider
@@ -48,12 +47,10 @@ class Passcode : Fragment() {
         val callback: OnBackPressedCallback =
             object : OnBackPressedCallback(true /* enabled by default */) {
                 override fun handleOnBackPressed() {
-                    if (isClockOut) {
-                        (requireActivity() as MainActivity).finish()
-
-                    } else {
+                    if(isSwap || isDashboard){
                         findNavController().navigateUp()
-
+                    }else{
+                        (requireActivity() as MainActivity).finish()
                     }
                 }
             }
@@ -138,68 +135,16 @@ class Passcode : Fragment() {
     }
 
     private fun navigate() {
-        viewModel.userList.observe(viewLifecycleOwner, { event ->
-            event.getContentIfNotHandled().let {
-                try {
-                    if (it?.size!! > 0) {
-                        prefProvider.setValueboolean(Constants.IS_CLOCKOUT, true)
-                        it[it.size - 1].employee_id.let { it1 ->
-                            prefProvider.setValueInt(
-                                Constants.EMPLOYEE_ID,
-                                it1
-                            )
-                        }
-                        it[it.size - 1].employee_name.let { it1 ->
-                            prefProvider.setValue(
-                                Constants.EMPLOYEE_NAME,
-                                it1
-                            )
-                        }
-
-                        it[it.size - 1].employee_role.let { it1 ->
-                            prefProvider.setValue(
-                                Constants.EMPLOYEE_ROLE,
-                                it1
-                            )
-                        }
-                        prefProvider.setValueInt(
-                            Constants.EMPLOYEE_ROLE_ID,
-                            it.get(it.size - 1).team_role_id ?: 0
-                        )
-                        it.get(it.size - 1)
-                            .let { it1 -> prefProvider.setValue(Constants.PASSCODE, it1.passcode) }
-
-                        isDashboard = false
-                        isClockOut = true
-                        viewModel.isDashboardData(isDashboard)
-                        binding.passCodeView.setPassCode("")
-                        binding.tvWelcomeTag.text = getString(R.string.tv_clock_in)
-                        AlertUtils.showCustomAlertWithListenerWithOK(
-                            requireContext(),
-                            validationmsg
-                        ) { _, _ ->
-                            validationmsg = ""
-                            findNavController().navigate(R.id.action_passcode_to_dashboard)
-                        }
-                    } else {
-                        isDashboard = false
-                        isClockOut = true
-                        viewModel.isDashboardData(isDashboard)
-                        binding.passCodeView.setPassCode("")
-                        binding.tvWelcomeTag.text = getString(R.string.tv_clock_in)
-                        AlertUtils.showCustomAlert(requireContext(), validationmsg)
-                    }
-
-                } catch (e: Exception) {
-                }
-            }
-        })
-
         viewModel.data.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
                 validationmsg = it.message
                 if (isDashboard) {
-                    viewModel.getAllUserClockInData()
+                    isDashboard = false
+                    isClockOut = true
+                    viewModel.isDashboardData(isDashboard)
+                    binding.passCodeView.setPassCode("")
+                    binding.tvWelcomeTag.text = getString(R.string.tv_clock_in)
+                    AlertUtils.showCustomAlert(requireContext(), validationmsg)
                 } else {
                     findNavController().navigate(R.id.action_passcode_to_dashboard)
                 }

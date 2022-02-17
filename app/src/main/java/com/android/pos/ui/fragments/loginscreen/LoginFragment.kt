@@ -48,7 +48,7 @@ class LoginFragment : Fragment() {
 
         if (prefProvider.getValue(AUTH_TOKEN, "").toString().isNotEmpty()) {
             if (!prefProvider.getValueboolean(IS_CLOCKOUT, false)) {
-                findNavController().navigate(R.id.action_login_to_scheduledShifts)
+                findNavController().navigate(R.id.action_login_to_passcode)
             } else {
                 findNavController().navigate(R.id.action_login_to_dashboardCategory)
             }
@@ -135,7 +135,7 @@ class LoginFragment : Fragment() {
         viewModel.data.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
-                    findNavController().navigate(R.id.action_login_to_scheduledShifts)
+                    findNavController().navigate(R.id.action_login_to_passcode)
                 }
             }
         })

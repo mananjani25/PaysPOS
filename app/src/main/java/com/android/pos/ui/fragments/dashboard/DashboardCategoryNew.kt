@@ -250,9 +250,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         binding.footer.linearEmpnameRole.setOnClickListener {
             var bundle = Bundle()
-            bundle.putBoolean("isSwap",true)
+            bundle.putBoolean("isSwap", true)
             bundle.putBoolean("isDashboard", false)
-            findNavController().navigate(R.id.action_dashboardCategoryNew_to_passcode,bundle)
+            findNavController().navigate(R.id.action_dashboardCategoryNew_to_passcode, bundle)
         }
 
         binding.footer.linearClockout.setOnClickListener {
@@ -341,8 +341,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         binding.layoutCart.txtAddDiscount.setOnClickListener(this)
 
         binding.footer.txtEmployeeName.text =
-            prefProvider.getValue(EMPLOYEE_NAME, "").toString() + " / " + prefProvider.getValue(
-                EMPLOYEE_ROLE, "")
+            prefProvider.getValue(EMPLOYEE_NAME, "").toString()
         binding.root.setOnClickListener {
             if (binding.layoutCart.llCustomerDialog.visibility == View.VISIBLE) {
                 binding.layoutCart.llCustomerDialog.visibility = View.GONE
@@ -998,9 +997,11 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         val imgCalculator: ImageView = footerView.findViewById(R.id.imgCalculator)
         val txtCheckOut: TextView = footerView.findViewById(R.id.txtCheckOut)
-
+        val txtEmployeename: TextView = footerView.findViewById(R.id.txtEmployeeName)
         val imgMore: ImageView = footerView.findViewById(R.id.imgMore)
         val txtMore: TextView = footerView.findViewById(R.id.txtMore)
+        val linearEmprole: LinearLayoutCompat = footerView.findViewById(R.id.linear_empname_role)
+        val linearclockout: LinearLayoutCompat = footerView.findViewById(R.id.linear_clockout)
         val linearMore: LinearLayout = footerView.findViewById(R.id.linearMore)
         val linearHome: LinearLayout = dialog.findViewById(R.id.linearHome)
         val linearOrders: LinearLayout = dialog.findViewById(R.id.linearOrders)
@@ -1021,9 +1022,19 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             footer.findViewById<LinearLayout>(R.id.linearTransaction)
         val linearCheckOut: LinearLayout = footer.findViewById(R.id.linearCheckOut)
 
-
-
-
+        linearEmprole.setOnClickListener {
+            dialog.dismiss()
+            var bundle = Bundle()
+            bundle.putBoolean("isSwap", true)
+            bundle.putBoolean("isDashboard", false)
+            findNavController().navigate(R.id.action_dashboardCategoryNew_to_passcode, bundle)
+        }
+        linearclockout.setOnClickListener {
+            dialog.dismiss()
+            findNavController().navigate(R.id.action_dashboardCategoryNew_to_reportEODFragment)
+        }
+        txtEmployeename.text =
+            prefProvider.getValue(EMPLOYEE_NAME, "").toString()
         txtBusinessName.text = getString(R.string.business_name) + ": " + prefProvider.getValue(
             Constants.BUSINESS_NAME,
             ""

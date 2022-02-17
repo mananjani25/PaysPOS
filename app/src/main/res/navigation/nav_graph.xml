@@ -12,8 +12,8 @@
         android:label="Login"
         tools:layout="@layout/fragment_login">
         <action
-            android:id="@+id/action_login_to_scheduledShifts"
-            app:destination="@id/scheduledShifts"
+            android:id="@+id/action_login_to_passcode"
+            app:destination="@id/passcode"
             app:enterAnim="@anim/nav_default_enter_anim"
             app:popUpTo="@id/login"
             app:popUpToInclusive="true" />
@@ -694,6 +694,13 @@
         android:label="ManualSaleNew"
         tools:layout="@layout/fragment_manual_sale_new">
 
+        <action
+            android:id="@+id/action_manualSaleNew_to_passcode"
+            app:destination="@id/passcode"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_manualSaleNew_to_reportEODFragment"
+            app:destination="@id/reportEODFragment" />
         <action
             android:id="@+id/action_manualSaleNew_to_transactionFragment"
             app:destination="@id/transactionFragment"
