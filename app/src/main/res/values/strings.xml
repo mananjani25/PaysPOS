@@ -464,7 +464,7 @@
     <string name="tv_date_time">Date/Time</string>
     <string name="tv_total_amount">Total Amount</string>
     <string name="tv_tip_amount">Tip Amount</string>
-    <string name="tv_transaction_receipt_id"><![CDATA[Order ID & Receipt ID]]></string>
+    <string name="tv_transaction_receipt_id"><![CDATA[Transactions & Receipt ID]]></string>
     <string name="manual_sale">Manual Sale</string>
     <string name="tv_team_member">Team Member</string>
     <string name="tv_print">Print</string>

@@ -27,7 +27,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Three layer ice cream"
-                    android:textColor="@color/black"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_5mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
