@@ -36,6 +36,7 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
         if (checkBluetoothAvailable()) {
             initializeScanner()
         } else {
+
             Toast.makeText(this, "Bluetooth is not supported !!", Toast.LENGTH_SHORT).show()
         }
     }
