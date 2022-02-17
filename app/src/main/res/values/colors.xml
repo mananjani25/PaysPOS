@@ -17,7 +17,7 @@
     <color name="btnColor">#FF6700</color>
     <color name="view">#535353</color>
     <color name="boxColor">#9FA2A9</color>
-    <color name="txtColor">#FFFFFF</color>
+    <color name="txtColor">#292E32</color>
     <!--<color name="hintColor">#C5C5C6</color>-->
     <color name="hintColor">#656565</color>
     <color name="viewTextColor">#111214</color>
@@ -104,4 +104,8 @@
     <color name="yellow_edit_order">#FAA81C</color>
     <color name="green_pay_total">#12BC4B</color>
     <color name="bg_color">#FFFFFF</color>
+
+    <color name="whiteA1">#000000</color>
+    <color name="blackA1">#FFFFFF</color>
+    <color name="menu_item_border">#585858</color>
 </resources>

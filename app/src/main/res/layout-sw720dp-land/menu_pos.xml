@@ -231,7 +231,7 @@
                         android:layout_gravity="center"
                         android:layout_marginStart="@dimen/_7sdp"
                         android:gravity="center"
-                        android:text="Cash Log"
+                        android:text="@string/cash_log"
                         android:textColor="@color/txtColor"
                         android:textSize="@dimen/_6mdpi" />
 
@@ -361,7 +361,7 @@
                         android:layout_gravity="center"
                         android:layout_marginStart="@dimen/_7sdp"
                         android:gravity="center"
-                        android:text="Customers"
+                        android:text="@string/customers"
                         android:textColor="@color/txtColor"
                         android:textSize="@dimen/_6mdpi" />
 
@@ -527,7 +527,7 @@
                         android:layout_gravity="center"
                         android:layout_marginStart="@dimen/_7sdp"
                         android:gravity="center"
-                        android:text="Support"
+                        android:text="@string/support"
                         android:textColor="@color/txtColor"
                         android:textSize="@dimen/_6mdpi" />
 

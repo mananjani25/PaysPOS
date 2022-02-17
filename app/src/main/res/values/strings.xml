@@ -129,6 +129,7 @@
     <string name="tv_add_job_title">Add Job Title</string>
     <string name="tv_team_permissions">Choose Role</string>
     <string name="tv_clock_in">Clock In</string>
+    <string name="tv_team">Team</string>
     <string name="tv_continue_to_pos">Continue to POS</string>
     <string name="name">Name <font color='#E90C0C'>*</font></string>
     <string name="item_name_1">Item Name <font color='#E90C0C'>*</font></string>
@@ -714,6 +715,10 @@
     <string name="add_new_customer_">+ Add New Customer</string>
     <string name="search_customer">Search Customer</string>
     <string name="recently_created">Recently Created</string>
+    <string name="setup">Setup</string>
+    <string name="cash_log">Cash Log</string>
+    <string name="customers">Customers</string>
+    <string name="support">Support</string>
 
 
 </resources>

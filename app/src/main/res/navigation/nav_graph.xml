@@ -473,6 +473,10 @@
         <action
             android:id="@+id/action_dashboardCategoryNew_to_reportEODFragment"
             app:destination="@id/reportEODFragment" />
+        <action
+            android:id="@+id/action_dashboardCategoryNew_to_menuFragment"
+            app:destination="@id/menuFragment"
+            app:enterAnim="@anim/nav_default_enter_anim" />
 
     </fragment>
     <action
@@ -765,6 +769,10 @@
             android:id="@+id/action_manualSaleNew_to_Cashlog"
             app:destination="@id/cashLogFragment"
             app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_manualSaleNew_to_menuFragment"
+            app:destination="@id/menuFragment"
+            app:enterAnim="@anim/nav_default_enter_anim" />
     </fragment>
     <dialog
         android:id="@+id/assignTeamMemberListDialog"
@@ -894,7 +902,7 @@
     <fragment
         android:id="@+id/cashLogFragment"
         android:name="com.android.pos.ui.fragments.cashlog.CashLogFragment"
-        android:label="CashLogFragment" >
+        android:label="CashLogFragment">
         <action
             android:id="@+id/action_cashLogFragment_to_dashboardCategoryNew"
             app:destination="@id/dashboardCategoryNew"
@@ -1097,7 +1105,7 @@
     <fragment
         android:id="@+id/hardware"
         android:name="com.android.pos.ui.fragments.settings.hardware.Hardware"
-        tools:layout="@layout/fragment_hardware" >
+        tools:layout="@layout/fragment_hardware">
         <action
             android:id="@+id/action_hardware_to_printer"
             app:destination="@id/printer"
@@ -1138,5 +1146,55 @@
         android:id="@+id/sendReceiptFragment"
         android:name="com.android.pos.ui.dialog.SendReceiptFragment"
         android:label="SendReceiptFragment" />
+    <dialog
+        android:id="@+id/menuFragment"
+        android:name="com.android.pos.ui.fragments.posmenu.MenuFragment"
+        android:label="MenuFragment" >
+        <action
+            android:id="@+id/action_menuFragment_to_settings"
+            app:destination="@id/settings"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_menuFragment_to_hardware"
+            app:destination="@id/hardware"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_menuFragment_to_orders"
+            app:destination="@id/orders"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_menuFragment_to_teamList"
+            app:destination="@id/teamList"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_menuFragment_to_inventory"
+            app:destination="@id/inventory"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_menuFragment_to_transactionFragment"
+            app:destination="@id/transactionFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:popUpToInclusive="true" />
+        <action
+                android:id="@+id/action_menuFragment_to_reports"
+            app:destination="@id/reports"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_menuFragment_to_cashLogFragment"
+            app:destination="@id/cashLogFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_menuFragment_to_customer"
+            app:destination="@id/customer"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:popUpToInclusive="true" />
+    </dialog>
 
 </navigation>

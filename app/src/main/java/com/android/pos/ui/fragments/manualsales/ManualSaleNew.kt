@@ -15,7 +15,6 @@ import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.LinearLayoutCompat
-import androidx.constraintlayout.widget.Group
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -44,7 +43,6 @@ import com.android.pos.utils.callback.ManualSaleOptionsCustomCallback
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.visible
-import com.google.android.material.tabs.TabItem
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -65,6 +63,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
     private val viewModel by viewModels<ManualSaleViewModel>()
     var amountToBepaid = 0.0
     var totalquantity = 0
+
     @Inject
     lateinit var rolePermission: RolePermission
     private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
@@ -73,7 +72,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
     private var taxList: List<TaxData>? = null
     private var assignCustomer: TbCustomer? = null
     private var isPayClicked: Boolean = false
-    var tabItemMOdel=TbItem()
+    var tabItemMOdel = TbItem()
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -137,9 +136,9 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         callbackForDialog()
         binding.footer.linearEmpnameRole.setOnClickListener {
             var bundle = Bundle()
-            bundle.putBoolean("isSwap",true)
+            bundle.putBoolean("isSwap", true)
             bundle.putBoolean("isDashboard", false)
-            findNavController().navigate(R.id.action_manualSaleNew_to_passcode,bundle)
+            findNavController().navigate(R.id.action_manualSaleNew_to_passcode, bundle)
         }
 
         binding.footer.linearClockout.setOnClickListener {
@@ -347,13 +346,17 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                     } else {
 
                         val navControll = findNavController()
-                        val bundle=Bundle()
-                        bundle.putString("manualSale",MANUALSALE)
-                        arguments?.getString("headerPosition")?.toInt()?.let { it1 -> bundle.putInt("headerPosition", it1)
+                        val bundle = Bundle()
+                        bundle.putString("manualSale", MANUALSALE)
+                        arguments?.getString("headerPosition")?.toInt()?.let { it1 ->
+                            bundle.putInt("headerPosition", it1)
                         }
-                        bundle.putString("tabItem",Gson().toJson(tabItemMOdel))
-                        bundle.putParcelableArrayList("guestsList",arguments?.getParcelableArrayList("guestsList"))
-                        navControll.previousBackStackEntry?.savedStateHandle?.set(KEY,bundle)
+                        bundle.putString("tabItem", Gson().toJson(tabItemMOdel))
+                        bundle.putParcelableArrayList(
+                            "guestsList",
+                            arguments?.getParcelableArrayList("guestsList")
+                        )
+                        navControll.previousBackStackEntry?.savedStateHandle?.set(KEY, bundle)
                         navControll.popBackStack()
 
 /*                        val navControll = findNavController()
@@ -377,10 +380,10 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 }
 
                 if (isPayClicked && viewModel.totalPrice != 0.0) {
-                       findNavController().navigate(
-                           R.id.action_manualSaleNew_to_paymentFragment,
-                           bundle
-                       )
+                    findNavController().navigate(
+                        R.id.action_manualSaleNew_to_paymentFragment,
+                        bundle
+                    )
 
                 } else {
                     val navControll = findNavController()
@@ -477,13 +480,13 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         }
 
         binding.footer.linearMore.setOnClickListener {
-            dialogPOSMenu()
+            findNavController().navigate(R.id.action_manualSaleNew_to_menuFragment)
+            //dialogPOSMenu()
         }
 
         binding.footer.linearTransaction.setOnClickListener {
             if (rolePermission.hasTransactionPermission(binding.root)) {
                 findNavController().navigate(R.id.action_manualSaleNew_to_transactionFragment)
-
             }
         }
         binding.footer.linearOpenOrders.setOnClickListener {
@@ -847,7 +850,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         if (model.discountPrice != 0.0) {
             txtTitle.text = model.name + "  $" + String.format(
                 "%.2f",
-                ((model.price * model.itemQuantity)  - model.discountPrice)
+                ((model.price * model.itemQuantity) - model.discountPrice)
             )
         } else {
             txtTitle.text = model.name + "  $" + String.format(
@@ -1123,7 +1126,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         val txtCheckOut: TextView = footerView.findViewById(R.id.txtCheckOut)
 
         val imgMore: ImageView = footerView.findViewById(R.id.imgMore)
-        val txtEmployeename : TextView = footerView.findViewById(R.id.txtEmployeeName)
+        val txtEmployeename: TextView = footerView.findViewById(R.id.txtEmployeeName)
         val txtMore: TextView = footerView.findViewById(R.id.txtMore)
         val linearMore: LinearLayout = footerView.findViewById(R.id.linearMore)
         val linearHome: LinearLayout = dialog.findViewById(R.id.linearHome)
