@@ -14,7 +14,7 @@
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white"
+        android:background="@color/bg_color"
         android:orientation="vertical">
 
         <include
@@ -24,7 +24,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
-            android:background="@color/colorNewBorder" />
+            android:background="@color/view" />
 
 
         <androidx.core.widget.NestedScrollView
@@ -35,9 +35,11 @@
 
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_15sdp"
+                android:layout_marginTop="@dimen/_10sdp"
                 android:orientation="vertical"
-                android:padding="@dimen/_10sdp">
+                android:padding="@dimen/_10sdp"
+                android:layout_marginHorizontal="@dimen/_80sdp"
+                >
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -52,6 +54,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="@dimen/_5sdp"
                         android:layout_weight="1"
+
                         android:orientation="vertical">
 
                         <TextView
@@ -61,7 +64,8 @@
                             android:layout_height="wrap_content"
                             android:text="@string/first_name"
                             android:textColor="@color/color65"
-                            android:textSize="@dimen/_5mdpi" />
+                            android:textSize="@dimen/_5mdpi"
+                            android:visibility="gone"/>
 
                         <androidx.appcompat.widget.AppCompatEditText
                             android:id="@+id/edtFName"
@@ -71,14 +75,15 @@
                             android:layout_marginTop="@dimen/_5sdp"
                             android:background="@drawable/background_square_border_grey"
                             android:imeOptions="actionNext"
-                            android:padding="@dimen/_5sdp"
+                            android:padding="@dimen/_9sdp"
                             android:maxLength="30"
                             android:inputType="textCapWords|textVisiblePassword"
                             android:digits="@string/character_String"
                             android:text="@={viewModel.addCustomerDetails.data.first_name}"
                             android:textColor="@color/txtColor"
                             android:textColorHint="@color/hintColor"
-                            android:textSize="@dimen/_5mdpi" />
+                            android:textSize="@dimen/_5mdpi"
+                            android:hint="@string/first_name"/>
                     </LinearLayout>
 
                     <LinearLayout
@@ -95,6 +100,7 @@
                             android:layout_height="wrap_content"
                             android:text="@string/last_name_"
                             android:textColor="@color/color65"
+                            android:visibility="gone"
                             android:textSize="@dimen/_5mdpi" />
 
                         <androidx.appcompat.widget.AppCompatEditText
@@ -107,11 +113,12 @@
                             android:imeOptions="actionNext"
                             android:inputType="textCapWords|textVisiblePassword"
                             android:digits="@string/character_String"
-                            android:padding="@dimen/_5sdp"
+                            android:padding="@dimen/_9sdp"
                             android:text="@={viewModel.addCustomerDetails.data.last_name}"
                             android:textColor="@color/txtColor"
                             android:textColorHint="@color/hintColor"
                             android:textSize="@dimen/_5mdpi"
+                            android:hint="@string/last_name_"
                             android:maxLength="30"/>
                     </LinearLayout>
 
@@ -123,8 +130,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/_15sdp"
                     android:layout_marginTop="@dimen/_10sdp"
-                    android:text="@string/_phone"
-                    android:textColor="@color/color65"
+                    android:text="@string/_phone_number"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_5mdpi"
                     android:visibility="visible" />
 
@@ -144,7 +151,7 @@
                         android:layout_height="wrap_content"
                         android:background="@null"
                         android:enabled="false"
-                        android:padding="@dimen/_5sdp"
+                        android:padding="@dimen/_9sdp"
                         android:textColor="@color/txt_color_blue"
                         android:textSize="@dimen/_5mdpi"
                         android:theme="@style/SpinnerTheme" />
@@ -152,7 +159,7 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="0.5dp"
-                        android:background="@color/colorNewBorder" />
+                        android:background="@color/view" />
 
                     <com.santalu.maskedittext.MaskEditText
                         android:id="@+id/edtPhoneNo"
@@ -163,7 +170,7 @@
                         android:hint="(201) 555-0123"
                         android:inputType="number"
                         android:maxLength="20"
-                        android:padding="@dimen/_5sdp"
+                        android:padding="@dimen/_9sdp"
                         android:text="@={viewModel.phoneNo}"
                         android:textColor="@color/txtColor"
                         android:textColorHint="@color/hint_color_"
@@ -179,6 +186,7 @@
                     android:layout_marginStart="@dimen/_15sdp"
                     android:layout_marginTop="@dimen/_10sdp"
                     android:text="@string/tv_email_address_"
+                    android:visibility="gone"
                     android:textColor="@color/color65"
                     android:textSize="@dimen/_5mdpi" />
 
@@ -194,10 +202,12 @@
                     android:imeOptions="actionNext"
                     android:digits="@string/disable_emoji_string"
                     android:inputType="textVisiblePassword"
-                    android:padding="@dimen/_5sdp"
+                    android:padding="@dimen/_9sdp"
                     android:text="@={viewModel.addCustomerDetails.data.email}"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_5mdpi" />
+                    android:textSize="@dimen/_5mdpi"
+                    android:textColorHint="@color/hintColor"
+                    android:hint="@string/tv_email_address_"/>
 
 
                 <RelativeLayout
@@ -211,8 +221,8 @@
                         style="@style/CustomFontSemiBold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Address"
-                        android:textColor="@color/color65"
+                        android:text="@string/tv_address"
+                        android:textColor="@color/txtColor"
                         android:textSize="@dimen/_5mdpi" />
 
                     <ImageView
@@ -434,7 +444,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/_15sdp"
                     android:layout_marginTop="@dimen/_10sdp"
-                    android:text="Company"
+                    android:text="@string/company"
+                    android:visibility="gone"
                     android:textColor="@color/color65"
                     android:textSize="@dimen/_5mdpi" />
 
@@ -449,10 +460,12 @@
                     android:background="@drawable/background_square_border_grey"
                     android:imeOptions="actionDone"
                     android:inputType="textVisiblePassword"
-                    android:padding="@dimen/_5sdp"
+                    android:padding="@dimen/_9sdp"
                     android:text="@={viewModel.addCustomerDetails.data.company}"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_5mdpi" />
+                    android:textSize="@dimen/_5mdpi"
+                    android:textColorHint="@color/hintColor"
+                    android:hint="@string/company"/>
 
                 <TextView
                     style="@style/CustomFontSemiBold"
@@ -461,6 +474,7 @@
                     android:layout_marginStart="@dimen/_15sdp"
                     android:layout_marginTop="@dimen/_10sdp"
                     android:text="@string/tv_birthday_"
+                    android:visibility="gone"
                     android:textColor="@color/color65"
                     android:textSize="@dimen/_5mdpi" />
 
@@ -475,8 +489,10 @@
                     android:layout_marginBottom="@dimen/_15sdp"
                     android:background="@drawable/background_square_border_grey"
                     android:clickable="true"
-                    android:padding="@dimen/_5sdp"
+                    android:padding="@dimen/_9sdp"
+                    android:hint="@string/tv_birthday_"
                     android:text=""
+                    android:textColorHint="@color/hintColor"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_5mdpi" />
 

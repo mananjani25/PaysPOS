@@ -146,6 +146,9 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
         binding.txtCreateCustomer.setOnClickListener {
             findNavController().navigate(R.id.action_assignCustomerOrderFragment_to_addEditCustomer)
         }
+        binding.txtHome.setOnClickListener {
+            findNavController().navigate(R.id.action_assignCustomerOrderFragment_to_dashboard_category_new)
+        }
 
     }
 

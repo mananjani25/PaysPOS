@@ -32,6 +32,7 @@
     <string name="last_name_">Last Name</string>
     <string name="phone">Mobile Number <font color='#E90C0C'>*</font></string>
     <string name="_phone">Mobile Number</string>
+    <string name="_phone_number">Phone Number</string>
     <string name="address_empty_validation">Please Enter Full Address</string>
     <string name="birth_date_validation">Please Enter Birth Date</string>
     `
@@ -709,6 +710,10 @@
     <string name="email_address_teammember">Email Address<font color='#E90C0C'>*</font></string>
     <string name="search_team_members">Search Team Members</string>
     <string name="default_notification_channel_id">POS_ANDROID</string>
+    <string name="add_new_customer">Add New Customer</string>
+    <string name="add_new_customer_">+ Add New Customer</string>
+    <string name="search_customer">Search Customer</string>
+    <string name="recently_created">Recently Created</string>
 
 
 </resources>

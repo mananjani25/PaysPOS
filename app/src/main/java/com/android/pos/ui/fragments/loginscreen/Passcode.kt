@@ -32,6 +32,8 @@ class Passcode : Fragment() {
     private val viewModel by viewModels<PasscodeViewModel>()
     var isDashboard: Boolean = false
     var isClockOut: Boolean = false
+    var isSwap: Boolean = false
+    var validationmsg: String = ""
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -45,12 +47,10 @@ class Passcode : Fragment() {
         val callback: OnBackPressedCallback =
             object : OnBackPressedCallback(true /* enabled by default */) {
                 override fun handleOnBackPressed() {
-                    if (isClockOut) {
-                        (requireActivity() as MainActivity).finish()
-
-                    } else {
+                    if(isSwap || isDashboard){
                         findNavController().navigateUp()
-
+                    }else{
+                        (requireActivity() as MainActivity).finish()
                     }
                 }
             }
@@ -59,10 +59,15 @@ class Passcode : Fragment() {
         binding.lifecycleOwner = this
         binding.passcodeViewModel = viewModel
         isDashboard = arguments?.getBoolean("isDashboard")!!
+        isSwap = arguments?.getBoolean("isSwap")!!
 
-        if (isDashboard) {
-            binding.tvWelcomeTag.text = getString(R.string.tv_clock_out)
-            viewModel.isDashboardData(isDashboard)
+        if (isSwap) {
+            binding.tvWelcomeTag.text = getString(R.string.tv_clock_in)
+        } else {
+            if (isDashboard) {
+                binding.tvWelcomeTag.text = getString(R.string.tv_clock_out)
+                viewModel.isDashboardData(isDashboard)
+            }
         }
 
         setupSnackbar()
@@ -104,7 +109,6 @@ class Passcode : Fragment() {
         }
 
         binding.Cancel.setOnClickListener {
-            //findNavController().navigateUp()
             if (isClockOut) {
                 (requireActivity() as MainActivity).finish()
 
@@ -131,18 +135,18 @@ class Passcode : Fragment() {
     }
 
     private fun navigate() {
-
         viewModel.data.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
+                validationmsg = it.message
                 if (isDashboard) {
                     isDashboard = false
                     isClockOut = true
                     viewModel.isDashboardData(isDashboard)
                     binding.passCodeView.setPassCode("")
                     binding.tvWelcomeTag.text = getString(R.string.tv_clock_in)
-                    AlertUtils.showCustomAlert(requireActivity(), it.message)
+                    AlertUtils.showCustomAlert(requireContext(), validationmsg)
                 } else {
-                    findNavController().navigate(R.id.action_passcode_to_clockInOwner)
+                    findNavController().navigate(R.id.action_passcode_to_dashboard)
                 }
             }
         })
