@@ -42,6 +42,7 @@ class PasscodeViewModel @Inject constructor(
         this.isDashboard = isDashboard
     }
 
+
     fun submit(passcode: String) {
         _showProgress.value = Event(true)
         if (isDashboard) {

@@ -86,8 +86,6 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         binding = FragmentManualSaleNewBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
         getLoyaltyPrograms()
-        binding.footer.imgInfo.visibility = View.GONE
-        binding.footer.imgDelete.visibility = View.GONE
         getServiceCharge()
         Log.e(TAG, "CategoryId: ${prefProvider.getValueInt(MANUAL_SALE_CATEGORY_ID, 1)}")
         Log.e(TAG, "CategoryItemId: ${prefProvider.getValueInt(MANUAL_SALE_ITEM_ID, 1)}")
@@ -126,6 +124,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             prefProvider.getValueboolean(LOYALTY_ADDED, false)
         //    prefProvider.setValue(CUSTOMER_NAME, "")
 
+        binding.footer.txtEmployeeName.text =
+            prefProvider.getValue(Constants.EMPLOYEE_NAME, "").toString()
 
         getManualCategoryId()
         onConfig()
@@ -135,6 +135,20 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         onClick()
         listner()
         callbackForDialog()
+        binding.footer.linearEmpnameRole.setOnClickListener {
+            var bundle = Bundle()
+            bundle.putBoolean("isSwap",true)
+            bundle.putBoolean("isDashboard", false)
+            findNavController().navigate(R.id.action_manualSaleNew_to_passcode,bundle)
+        }
+
+        binding.footer.linearClockout.setOnClickListener {
+            findNavController().navigate(R.id.action_manualSaleNew_to_reportEODFragment)
+        }
+
+        binding.layoutMenu.txtProducts.setOnClickListener {
+            findNavController().popBackStack()
+        }
     }
 
     private fun getManualCategoryId() {
@@ -478,26 +492,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         binding.llInfo.setOnClickListener {
             showPopupWindow(it)
         }
-        binding.footer.imgDelete.setOnClickListener {
 
-            if (cartList?.isNotEmpty() == true) {
-                alert(
-                    getString(R.string.app_name),
-                    getString(R.string.delete_items_message)
-                ) {
-                    positiveButton(getString(R.string.tv_delete)) {
-                        viewModel.deleteCart()
-
-                        binding.txtTotalAmount.setText("$0.00")
-
-                    }
-                    negativeButton(R.string.tv_cancel) {
-
-                    }
-                }
-            }
-
-        }
         binding.txtCrtNewCustomer.setOnClickListener {
             if (prefProvider.getValue(CUSTOMER_NAME, "").toString().isNotEmpty()) {
                 clearCustomer()
@@ -1128,10 +1123,13 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         val txtCheckOut: TextView = footerView.findViewById(R.id.txtCheckOut)
 
         val imgMore: ImageView = footerView.findViewById(R.id.imgMore)
+        val txtEmployeename : TextView = footerView.findViewById(R.id.txtEmployeeName)
         val txtMore: TextView = footerView.findViewById(R.id.txtMore)
         val linearMore: LinearLayout = footerView.findViewById(R.id.linearMore)
         val linearHome: LinearLayout = dialog.findViewById(R.id.linearHome)
         val linearOrders: LinearLayout = dialog.findViewById(R.id.linearOrders)
+        val linearEmprole: LinearLayoutCompat = footerView.findViewById(R.id.linear_empname_role)
+        val linearclockout: LinearLayoutCompat = footerView.findViewById(R.id.linear_clockout)
         val linearTransaction: LinearLayout = dialog.findViewById(R.id.linearTransaction)
         val linearCash: LinearLayout = dialog.findViewById(R.id.linearCash)
         val linearReports: LinearLayout = dialog.findViewById(R.id.linearReports)
@@ -1139,9 +1137,29 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         val linearTeam: LinearLayout = dialog.findViewById(R.id.linearTeam)
         val linearHardware: LinearLayout = dialog.findViewById(R.id.linearHardware)
         val linearInventory: LinearLayout = dialog.findViewById(R.id.linearInventory)
+        val txtBusinessName: TextView = dialog.findViewById(R.id.txtBusinessName)
         val linearSetting: LinearLayout = dialog.findViewById(R.id.linearSetting)
         val linearSupport: LinearLayout = dialog.findViewById(R.id.linearSupport)
 
+        txtEmployeename.text =
+            prefProvider.getValue(Constants.EMPLOYEE_NAME, "").toString()
+        txtBusinessName.text = getString(R.string.business_name) + ": " + prefProvider.getValue(
+            Constants.BUSINESS_NAME,
+            ""
+        )
+
+
+        linearEmprole.setOnClickListener {
+            dialog.dismiss()
+            var bundle = Bundle()
+            bundle.putBoolean("isSwap", true)
+            bundle.putBoolean("isDashboard", false)
+            findNavController().navigate(R.id.action_manualSaleNew_to_passcode, bundle)
+        }
+        linearclockout.setOnClickListener {
+            dialog.dismiss()
+            findNavController().navigate(R.id.action_manualSaleNew_to_reportEODFragment)
+        }
         linearHome.setOnClickListener {
             findNavController().popBackStack()
             closeDialog(dialog)

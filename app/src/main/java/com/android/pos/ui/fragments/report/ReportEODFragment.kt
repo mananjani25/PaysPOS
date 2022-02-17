@@ -145,6 +145,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
                     val bundle = Bundle()
                     bundle.putBoolean("isDashboard", true)
+                    bundle.putBoolean("isSwap",false)
                     findNavController().navigate(
                         R.id.action_reportEODFragment_to_passcode,
                         bundle
