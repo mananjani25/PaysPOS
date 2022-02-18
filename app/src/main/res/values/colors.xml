@@ -106,6 +106,8 @@
     <color name="green_pay_total">#12BC4B</color>
     <color name="bg_color">#FFFFFF</color>
 
+    <color name="strokeColor">#535353</color>
+    <color name="backgroundColor">#2D2D2D</color>//Same in both mode
     <color name="whiteA1">#000000</color>
     <color name="blackA1">#FFFFFF</color>
     <color name="menu_item_border">#585858</color>

@@ -107,4 +107,6 @@
     <color name="whiteA1">#FFFFFF</color>
     <color name="blackA1">#000000</color>
     <color name="menu_item_border">#585858</color>
+    <color name="backgroundColor">#2D2D2D</color>//Same in both mode
+    <color name="strokeColor">#535353</color>
 </resources>
