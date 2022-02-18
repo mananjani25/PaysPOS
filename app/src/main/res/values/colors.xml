@@ -10,6 +10,7 @@
     <color name="white90">#E6FFFFFF</color>
     <color name="white_">#FBF6F6</color>
 
+    <color name="border_grey">#585858</color>
     <color name="cool_grey">#8d989e</color>
     <!--<color name="hint_color">#4c000000</color>-->
     <color name="hint_color">#656565</color>

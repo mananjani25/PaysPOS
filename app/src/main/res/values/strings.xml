@@ -719,6 +719,8 @@
     <string name="cash_log">Cash Log</string>
     <string name="customers">Customers</string>
     <string name="support">Support</string>
+    <string name="bold_pos">BOLD POS</string>
+    <string name="blockchain_point_of_sale">Blockchain Point of Sale</string>
 
 
 </resources>
