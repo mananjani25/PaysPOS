@@ -309,25 +309,7 @@ class Passcode : Fragment() {
                 var value = s.toString()
                 if (value.length == 4) {
                     Log.e("passCodeView", value)
-
-                    if (isDashboard) {
-                        if (prefProvider.getValue(PASSCODE, "")
-                                .toString() == value
-                        ) {
-                            viewModel.submit(value)
-                        } else {
-                            clearBackground()
-                            binding.passcodeView.circlePin.setText("")
-                            AlertUtils.showCustomAlert(
-                                requireActivity(),
-                                "You have entered wrong Passcode."
-                            )
-
-                        }
-                    } else {
-                        viewModel.submit(value)
-                    }
-
+                    viewModel.submit(value)
                 }
 
                 Log.d("yash", "afterTextChanged: $value")
