@@ -18,12 +18,12 @@
     <style name="ReportTitleStyle" parent="CustomFontSemiBold">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:background">@drawable/background_timesheet</item>
+        <item name="android:background">@drawable/background_drawer_button_green</item>
         <item name="android:gravity">center</item>
         <item name="android:paddingTop">@dimen/_5sdp</item>
         <item name="android:paddingBottom">@dimen/_5sdp</item>
         <item name="android:textAllCaps">true</item>
-        <item name="android:textColor">@color/txtColor</item>
+        <item name="android:textColor">@color/white</item>
         <item name="android:textSize">@dimen/_6mdpi</item>
     </style>
 

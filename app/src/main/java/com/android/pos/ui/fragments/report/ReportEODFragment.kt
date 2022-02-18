@@ -109,10 +109,9 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
         binding.txtEmail.setOnClickListener {
 
 
-            viewModel.getEmployeeEmail.observe(viewLifecycleOwner, {
+            viewModel.getEmployeeEmail.observe(viewLifecycleOwner) {
 
                 if (it.status == Status.SUCCESS) {
-
                     val bundle = Bundle()
                     bundle.putBoolean("EOD", true)
                     bundle.putInt("type", 2)
@@ -122,7 +121,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                         bundle
                     )
                 }
-            })
+            }
 
 
             //  viewModel.getReportSummary("")
@@ -558,7 +557,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     private fun loadTerminals() {
 
-        viewModel.employeeData.observe(viewLifecycleOwner, {
+        viewModel.employeeData.observe(viewLifecycleOwner) {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
@@ -619,7 +618,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     }
                 }
             }
-        })
+        }
     }
 
     private fun setUpEmployeeSpinnerAdapter(terminalList: ArrayList<String>) {

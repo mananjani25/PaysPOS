@@ -23,7 +23,11 @@ class ItemListAdapter(private val isChoose: Boolean) :
         fun bind(item: TbItem) {
             binding.model = item
             binding.executePendingBindings()
-
+            if (absoluteAdapterPosition == 0) {
+                binding.firstviewItems.visibility = View.VISIBLE
+            } else {
+                binding.firstviewItems.visibility = View.GONE
+            }
             if (isChoose) {
                 binding.ivCheck.visibility = View.VISIBLE
             } else {

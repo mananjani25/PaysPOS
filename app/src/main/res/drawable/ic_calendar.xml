@@ -1,0 +1,36 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="25dp"
+    android:height="25dp"
+    android:viewportWidth="39.281"
+    android:viewportHeight="35.445">
+  <path
+      android:pathData="M11.048,17.185L8.593,17.185a1.151,1.151 0,0 0,0 2.3h2.455a1.151,1.151 0,0 0,0 -2.3Z"
+      android:fillColor="@color/drawable_ic_color"/>
+  <path
+      android:pathData="M11.048,22.096L8.593,22.096a1.151,1.151 0,0 0,0 2.3h2.455a1.151,1.151 0,0 0,0 -2.3Z"
+      android:fillColor="@color/drawable_ic_color"/>
+  <path
+      android:pathData="M11.048,27.006L8.593,27.006a1.151,1.151 0,1 0,0 2.3h2.455a1.151,1.151 0,1 0,0 -2.3Z"
+      android:fillColor="@color/drawable_ic_color"/>
+  <path
+      android:pathData="M20.868,17.185h-2.455a1.151,1.151 0,1 0,0 2.3h2.455a1.151,1.151 0,1 0,0 -2.3Z"
+      android:fillColor="@color/drawable_ic_color"/>
+  <path
+      android:pathData="M20.868,22.096h-2.455a1.151,1.151 0,0 0,0 2.3h2.455a1.151,1.151 0,1 0,0 -2.3Z"
+      android:fillColor="@color/drawable_ic_color"/>
+  <path
+      android:pathData="M20.868,27.006h-2.455a1.151,1.151 0,1 0,0 2.3h2.455a1.151,1.151 0,1 0,0 -2.3Z"
+      android:fillColor="@color/drawable_ic_color"/>
+  <path
+      android:pathData="M30.688,17.185h-2.455a1.151,1.151 0,1 0,0 2.3h2.455a1.151,1.151 0,0 0,0 -2.3Z"
+      android:fillColor="@color/drawable_ic_color"/>
+  <path
+      android:pathData="M30.688,22.096h-2.455a1.151,1.151 0,0 0,0 2.3h2.455a1.151,1.151 0,0 0,0 -2.3Z"
+      android:fillColor="@color/drawable_ic_color"/>
+  <path
+      android:pathData="M30.688,27.006h-2.455a1.151,1.151 0,1 0,0 2.3h2.455a1.151,1.151 0,1 0,0 -2.3Z"
+      android:fillColor="@color/drawable_ic_color"/>
+  <path
+      android:pathData="M35.829,3.069L33.067,3.069L33.067,1.151a1.151,1.151 0,0 0,-2.3 0v1.918L20.791,3.069L20.791,1.151a1.151,1.151 0,1 0,-2.3 0v1.918L8.516,3.069L8.516,1.151a1.151,1.151 0,1 0,-2.3 0v1.918L3.452,3.069A3.456,3.456 0,0 0,0 6.521L0,31.993a3.456,3.456 0,0 0,3.452 3.452L35.829,35.445a3.456,3.456 0,0 0,3.452 -3.452L39.281,6.521A3.456,3.456 0,0 0,35.829 3.069ZM2.3,6.521A1.152,1.152 0,0 1,3.452 5.37L6.214,5.37v1.918a1.151,1.151 0,0 0,2.3 0L8.514,5.37L18.49,5.37v1.918a1.151,1.151 0,0 0,2.3 0L20.79,5.37h9.974v1.918a1.151,1.151 0,0 0,2.3 0L33.064,5.37h2.762a1.152,1.152 0,0 1,1.151 1.151v4.527L2.3,11.048ZM35.829,33.143L3.452,33.143A1.152,1.152 0,0 1,2.3 31.993L2.3,13.349L36.979,13.349L36.979,31.993A1.152,1.152 0,0 1,35.829 33.143Z"
+      android:fillColor="@color/drawable_ic_color"/>
+</vector>

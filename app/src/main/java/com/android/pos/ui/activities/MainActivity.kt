@@ -76,7 +76,7 @@ class MainActivity : BaseScannerActivity() {
             window.statusBarColor = getColor(R.color.txtColorGray)
         }
         binding = DataBindingUtil.setContentView(this, R.layout.parent_activity)
-
+        supportActionBar?.hide()
         binding.lifecycleOwner = this
 
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)

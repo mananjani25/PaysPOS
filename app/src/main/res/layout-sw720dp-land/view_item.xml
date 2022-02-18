@@ -14,7 +14,7 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/selectableItemBackground">
+        android:background="@color/bg_color">
 
 
         <androidx.appcompat.widget.LinearLayoutCompat
@@ -23,22 +23,23 @@
             android:orientation="vertical">
 
             <View
+                android:id="@+id/firstview_items"
                 android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/view" />
+                android:background="@color/cool_grey" />
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/_27sdp"
                 android:orientation="horizontal">
 
 
                 <androidx.appcompat.widget.AppCompatImageView
                     profileImage="@{model.imageUrl != null ? model.imageUrl : null}"
-                    android:layout_width="@dimen/_20sdp"
-                    android:layout_height="@dimen/_20sdp"
-                    android:layout_gravity="center"
+                    android:layout_width="@dimen/_30sdp"
+                    android:layout_height="@dimen/_27sdp"
+                    android:layout_gravity="center|center_vertical"
                     thumbHolder="@{model.thumbImageUrl != null ? model.thumbImageUrl : null}"
                     android:scaleType="centerCrop"
                     app:srcCompat="@android:drawable/screen_background_dark_transparent" />
@@ -46,10 +47,10 @@
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontSemiBold"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center|center_vertical"
                     android:layout_weight="1"
-                    android:gravity="start"
+                    android:gravity="start|center_vertical"
                     android:padding="@dimen/_5sdp"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_5mdpi"
@@ -80,10 +81,10 @@
 
 
             <View
-                android:visibility="gone"
+                android:visibility="visible"
                 android:layout_width="match_parent"
-                android:layout_height="0.3dp"
-                android:background="@color/view" />
+                android:layout_height="1dp"
+                android:background="@color/cool_grey" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 

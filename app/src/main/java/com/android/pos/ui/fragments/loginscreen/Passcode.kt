@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -64,6 +65,7 @@ class Passcode : Fragment() {
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_passcode, container, false)
         requireActivity().window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
         binding.lifecycleOwner = this
         binding.passcodeViewModel = viewModel
         isDashboard = arguments?.getBoolean("isDashboard")!!
@@ -286,6 +288,7 @@ class Passcode : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        (requireActivity() as AppCompatActivity).supportActionBar?.hide()
 
 
         val typeface: Typeface? =
@@ -377,10 +380,16 @@ class Passcode : Fragment() {
     }
 
     private fun setupSnackbar() {
+        viewModel.snackbarText.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled().let {
+                clearBackground()
+                binding.passcodeView.circlePin.setText("")
+                AlertUtils.showCustomAlert(
+                    requireActivity(),
+                    it
+                )
+            }
 
-
-        binding.root.liveSnackBar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
-
-
+        }
     }
 }

@@ -27,8 +27,8 @@ class PasscodeViewModel @Inject constructor(
 ) :
     ViewModel() {
 
-    private val _snackbarText = MutableLiveData<Event<Any?>>()
-    val snackbarText: LiveData<Event<Any?>> = _snackbarText
+    private val _snackbarText = MutableLiveData<Event<String>>()
+    val snackbarText: LiveData<Event<String>> = _snackbarText
 
     private val _data = MutableLiveData<Event<BaseResponse>>()
     val data: LiveData<Event<BaseResponse>> = _data
@@ -63,7 +63,7 @@ class PasscodeViewModel @Inject constructor(
                                     _data.value = Event(it)
                                 }
                             } else {
-                                _snackbarText.value = Event(resource.message)
+                                _snackbarText.value = Event(resource.message.toString())
                             }
 
                         }
@@ -71,7 +71,7 @@ class PasscodeViewModel @Inject constructor(
                     }
 
                     Status.ERROR -> {
-                        _snackbarText.value = Event(resource.message)
+                        _snackbarText.value = Event(resource.message.toString())
                         _showProgress.value = Event(false)
                     }
 
@@ -112,7 +112,7 @@ class PasscodeViewModel @Inject constructor(
 
                                 }
                             } else {
-                                _snackbarText.value = Event(resource.message)
+                                _snackbarText.value = Event(resource.message.toString())
                             }
 
                         }
@@ -121,7 +121,7 @@ class PasscodeViewModel @Inject constructor(
                     }
 
                     Status.ERROR -> {
-                        _snackbarText.value = Event(resource.message)
+                        _snackbarText.value = Event(resource.message.toString())
                         _showProgress.value = Event(false)
                     }
 
@@ -148,14 +148,14 @@ class PasscodeViewModel @Inject constructor(
 
                         }
                     } else {
-                        _snackbarText.value = Event(employeeLogin.message)
+                        _snackbarText.value = Event(employeeLogin.message.toString())
                     }
 
                 }
             }
 
             Status.ERROR -> {
-                _snackbarText.value = Event(employeeLogin.message)
+                _snackbarText.value = Event(employeeLogin.message.toString())
                 _showProgress.value = Event(false)
             }
 

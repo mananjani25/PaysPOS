@@ -47,7 +47,7 @@ class HideCategoryListing : Fragment() {
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_categories, container, false)
         binding.lifecycleOwner = this
-        binding.txtCreateCategory.visibility = View.GONE
+        binding.txtCreatecatagory.visibility = View.GONE
         return binding.root
     }
 
@@ -64,7 +64,7 @@ class HideCategoryListing : Fragment() {
 
     private fun categoriesObserver() {
 
-        viewModel.unhideCategories.observe(viewLifecycleOwner, {
+        viewModel.unhideCategories.observe(viewLifecycleOwner) {
 
             it?.let { resource ->
                 when (resource.status) {
@@ -73,7 +73,7 @@ class HideCategoryListing : Fragment() {
                         binding.progressCircular.visibility = View.GONE
                         it.data?.let { it1 ->
                             adapter.add(it1)
-                            binding.etSearch.hint = "Search (" + it1.size + ") Categories"
+                            binding.edtSearch.hint = "Search (" + it1.size + ") Categories"
                         }
                     }
                     Status.ERROR -> {
@@ -88,7 +88,7 @@ class HideCategoryListing : Fragment() {
             }
 
 
-        })
+        }
     }
 
 
@@ -127,7 +127,7 @@ class HideCategoryListing : Fragment() {
     }
 
     private fun onClick() {
-        binding.txtCreateCategory.setOnClickListener {
+        binding.txtCreatecatagory.setOnClickListener {
             findNavController().navigate(R.id.action_inventory_to_createCategory)
         }
     }
@@ -267,7 +267,7 @@ class HideCategoryListing : Fragment() {
 
         touchHelper.attachToRecyclerView(binding.rvCategoriesList)
 
-        binding.etSearch.addTextChangedListener(object : TextWatcher {
+        binding.edtSearch.addTextChangedListener(object : TextWatcher {
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
                 // TODO Auto-generated method stub
 

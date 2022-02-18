@@ -65,7 +65,7 @@ class Categories : Fragment() {
 
     private fun categoriesObserver() {
 
-        viewModel._getCategories().observe(viewLifecycleOwner, {
+        viewModel._getCategories().observe(viewLifecycleOwner) {
 
             it?.let { resource ->
                 when (resource.status) {
@@ -76,7 +76,7 @@ class Categories : Fragment() {
                         it.data?.let { it1 ->
 
                             adapter.add(it1)
-                            binding.etSearch.hint = "Search (" + it1.size + ") Categories"
+                            binding.edtSearch.hint = "Search (" + it1.size + ") Categories"
                         }
                     }
                     Status.ERROR -> {
@@ -91,7 +91,7 @@ class Categories : Fragment() {
             }
 
 
-        })
+        }
     }
 
 
@@ -132,7 +132,7 @@ class Categories : Fragment() {
     }
 
     private fun onClick() {
-        binding.txtCreateCategory.setOnClickListener {
+        binding.txtCreatecatagory.setOnClickListener {
             findNavController().navigate(R.id.action_inventory_to_createCategory)
         }
     }
@@ -277,7 +277,7 @@ class Categories : Fragment() {
 
         touchHelper.attachToRecyclerView(binding.rvCategoriesList)
 
-        binding.etSearch.addTextChangedListener(object : TextWatcher {
+        binding.edtSearch.addTextChangedListener(object : TextWatcher {
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
                 // TODO Auto-generated method stub
 

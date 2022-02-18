@@ -9,27 +9,37 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <androidx.appcompat.widget.AppCompatEditText
-            android:id="@+id/edtSearch"
-            style="@style/CustomFontRegularStyle"
+        <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@null"
-            android:drawableStart="@drawable/ic_search"
-            android:drawablePadding="@dimen/_10sdp"
-            android:hint="@string/search_options"
-            android:imeOptions="actionDone"
-            android:inputType="textVisiblePassword"
-            android:padding="@dimen/_4sdp"
-            android:textColor="@color/black"
-            android:textColorHint="@color/hintColor"
-            android:textSize="@dimen/_5mdpi" />
+            android:orientation="vertical"
+            android:layout_height="wrap_content">
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/view" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/view" />
 
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/edtSearch"
+                style="@style/CustomFontRegularStyle"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_25sdp"
+                android:background="@null"
+                android:drawableStart="@drawable/ic_search"
+                android:drawablePadding="@dimen/_10sdp"
+                android:imeOptions="actionDone"
+                android:inputType="textVisiblePassword"
+                android:padding="@dimen/_4sdp"
+                android:textColor="@color/black"
+                android:textColorHint="@color/hintColor"
+                android:textSize="@dimen/_5mdpi" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/view" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"

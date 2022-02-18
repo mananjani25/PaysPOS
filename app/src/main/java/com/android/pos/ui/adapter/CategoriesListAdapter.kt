@@ -2,6 +2,7 @@ package com.android.pos.ui.adapter
 
 import android.text.TextUtils
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
@@ -24,7 +25,11 @@ class CategoriesListAdapter(private val isChoose: Boolean) :
         fun bind(item: TbCategory) {
             binding.model = item
             binding.executePendingBindings()
-
+            if(absoluteAdapterPosition==0){
+                binding.firstviewCategory.visibility = View.VISIBLE
+            }else{
+                binding.firstviewCategory.visibility = View.GONE
+            }
             if (isChoose) {
                 if (mpos == bindingAdapterPosition) {
                     binding.imageCheck.setImageResource(R.drawable.ic_outline_radio_button_checked)

@@ -17,47 +17,54 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <View
-            android:visibility="gone"
-            android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:background="@color/view" />
-
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="@dimen/_5sdp">
+            android:orientation="vertical"
+            android:layout_height="wrap_content">
 
-            <androidx.appcompat.widget.AppCompatTextView
-                style="@style/CustomFontSemiBold"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/_5sdp"
-                android:layout_weight="1"
-                android:gravity="start"
-                android:text="@{model.name}"
-                android:textColor="@color/viewTextColor"
-                android:textSize="@dimen/_5mdpi" />
+            <View
+                android:id="@+id/firstview_category"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/cool_grey"
+                android:visibility="gone" />
 
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/imageCheck"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/_5sdp"
-                android:layout_marginEnd="@dimen/_10sdp"
-                app:srcCompat="@drawable/ic_baseline_menu" />
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_27sdp"
+                android:orientation="horizontal"
+                >
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:layout_weight="1"
+                    android:gravity="start"
+                    android:text="@{model.name}"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_5mdpi" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/imageCheck"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:layout_marginEnd="@dimen/_10sdp"
+                    app:srcCompat="@drawable/ic_baseline_menu" />
 
 
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <View
+
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/cool_grey"
+                android:visibility="visible" />
         </androidx.appcompat.widget.LinearLayoutCompat>
-
-        <View
-            android:visibility="gone"
-            android:layout_width="match_parent"
-            android:layout_height="0.1dp"
-            android:background="@color/view" />
-
     </androidx.appcompat.widget.LinearLayoutCompat>
 </layout>

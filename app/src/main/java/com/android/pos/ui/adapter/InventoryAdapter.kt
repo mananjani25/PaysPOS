@@ -1,7 +1,10 @@
 package com.android.pos.ui.adapter
 
 import android.content.Context
+import android.graphics.Typeface
+import android.opengl.Visibility
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.model.InventoryItemModel
@@ -17,11 +20,23 @@ class InventoryAdapter(
         RecyclerView.ViewHolder(binding.root) {
         fun bind(item: InventoryItemModel) {
             binding.model = item
+            if(absoluteAdapterPosition==0){
+                binding.firstview.visibility = View.VISIBLE
+            }else{
+                binding.firstview.visibility = View.GONE
+            }
+            if(item.isSelected){
+                binding.txtTitle.setTypeface(binding.txtTitle.typeface,Typeface.BOLD)
+            }else{
+                binding.txtTitle.setTypeface(binding.txtTitle.typeface,Typeface.NORMAL)
+            }
             binding.executePendingBindings()
+
         }
 
         init {
             binding.root.setOnClickListener {
+
                 listener.onItemSelect(layoutPosition)
                 for (i in 0 until list.size) {
                     list[i].isSelected = i == layoutPosition

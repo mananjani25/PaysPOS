@@ -105,6 +105,7 @@
     <color name="green_pay_total">#12BC4B</color>
     <color name="bg_color">#1D1D1F</color>
     <color name="whiteA1">#FFFFFF</color>
+    <color name="drawable_ic_color">#ffffff</color>
     <color name="blackA1">#000000</color>
     <color name="menu_item_border">#585858</color>
     <color name="backgroundColor">#2D2D2D</color>//Same in both mode
