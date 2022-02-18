@@ -48,7 +48,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:gravity="start"
-                    android:textColor="@color/viewTextColor"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_5mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -56,7 +56,7 @@
                     style="@style/CustomFontSemiBold"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/color65"
+                    android:textColor="@color/txtColorGray"
                     android:textSize="@dimen/_5mdpi" />
             </LinearLayout>
 
@@ -69,7 +69,7 @@
                 android:layout_marginStart="@dimen/_5sdp"
                 android:gravity="start"
                 android:padding="@dimen/_5sdp"
-                android:textColor="@color/color96"
+                android:textColor="@color/txtColor"
                 android:textSize="@dimen/_5mdpi" />
 
             <androidx.appcompat.widget.AppCompatImageView

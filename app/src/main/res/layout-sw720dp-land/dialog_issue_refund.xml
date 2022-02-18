@@ -18,7 +18,8 @@
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:background="@color/bg_color">
 
         <RelativeLayout
             android:id="@+id/rlMain"
@@ -34,7 +35,7 @@
                 android:padding="@dimen/_6sdp"
                 android:background="?attr/selectableItemBackground"
                 app:srcCompat="@drawable/ic_cancel_black"
-                app:tint="@color/viewTextColor" />
+                 />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
@@ -97,13 +98,14 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:background="@drawable/radio_flat_selector"
                         android:button="@android:color/transparent"
                         android:checked="true"
                         android:gravity="center"
-                        android:padding="@dimen/_6sdp"
+                        android:padding="@dimen/border_view_padding_x_large"
                         android:text="@string/tv_items"
-                        android:textColor="@color/radio_flat_text_selector"
+                        android:layout_margin="@dimen/_5sdp"
+                        android:background="@drawable/btn_background_secondary"
+                        android:textColor="@color/white"
                         android:textSize="@dimen/_6mdpi" />
 
                     <RadioButton
@@ -112,12 +114,13 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:background="@drawable/radio_flat_selector"
                         android:button="@android:color/transparent"
                         android:gravity="center"
-                        android:padding="@dimen/_6sdp"
+                        android:padding="@dimen/border_view_padding_x_large"
                         android:text="@string/tv_amount"
-                        android:textColor="@color/radio_flat_text_selector"
+                        android:layout_margin="@dimen/_5sdp"
+                        android:background="@drawable/background_square_border_grey"
+                        android:textColor="@color/txtColor"
                         android:textSize="@dimen/_6mdpi" />
 
                 </RadioGroup>
@@ -169,7 +172,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/_3sdp"
                     android:text="@string/tv_amount_to_refund"
-                    android:textColor="@color/black"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_5mdpi" />
 
                 <LinearLayout

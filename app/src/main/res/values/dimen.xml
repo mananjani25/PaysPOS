@@ -27,6 +27,7 @@
 
 
     <dimen name="text_size_large">@dimen/_7sdp</dimen>
+    <dimen name="text_size_medium">@dimen/_6sdp</dimen>
     <dimen name="text_size_x_large">@dimen/_8sdp</dimen>
     <dimen name="text_size_normal">@dimen/_5sdp</dimen>
     <dimen name="text_size_small">@dimen/_3sdp</dimen>

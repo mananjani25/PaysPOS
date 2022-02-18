@@ -47,7 +47,7 @@
     <color name="drawerBack30">#4D292E32</color>
 
 
-    <color name="txtColorGray">#F8F8F8</color>
+    <color name="txtColorGray">#656565</color>
 
     <color name="txtColorItem">#7B7B7B</color>
 
@@ -106,8 +106,9 @@
     <color name="green_pay_total">#12BC4B</color>
     <color name="bg_color">#FFFFFF</color>
 
+
     <color name="strokeColor">#535353</color>
-    <color name="backgroundColor">#2D2D2D</color>//Same in both mode
+    <color name="grayBackgroundColor">#2D2D2D</color>//Same in both mode
     <color name="whiteA1">#000000</color>
     <color name="blackA1">#FFFFFF</color>
     <color name="menu_item_border">#585858</color>

@@ -142,7 +142,7 @@
                             android:padding="@dimen/_5sdp"
                             android:text="@string/pick_up"
                             android:textAllCaps="true"
-                            android:textColor="@color/txtColor"
+                            android:textColor="@color/white"
                             android:textSize="@dimen/_5mdpi" />
 
                         <androidx.appcompat.widget.AppCompatTextView
@@ -182,7 +182,7 @@
                             android:padding="@dimen/_5sdp"
                             android:text="@string/customer_details"
                             android:textAllCaps="true"
-                            android:textColor="@color/txtColor"
+                            android:textColor="@color/white"
                             android:textSize="@dimen/_5mdpi" />
 
                         <androidx.appcompat.widget.AppCompatTextView

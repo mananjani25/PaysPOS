@@ -6,9 +6,10 @@
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_2sdp"
         android:orientation="horizontal"
-        android:padding="@dimen/_2sdp">
+        android:paddingHorizontal="@dimen/_5sdp"
+        android:paddingVertical="@dimen/_4sdp"
+        android:weightSum="5">
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
@@ -27,16 +28,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Three layer ice cream"
-                    android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_5mdpi" />
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_size_medium" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvModifierName"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/color65"
-                    android:textSize="@dimen/_5mdpi" />
+                    android:textColor="@color/txtColorGray"
+                    android:textSize="@dimen/text_size_medium" />
 
 
             </LinearLayout>
@@ -45,14 +46,14 @@
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvQuantity"
                 style="@style/CustomFontSemiBold"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginStart="@dimen/_5sdp"
-                android:gravity="center"
-                android:text="x 1"
-                android:textColor="@color/color88"
-                android:textSize="@dimen/_5mdpi" />
+                android:gravity="end"
+                android:layout_marginRight="@dimen/_3sdp"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_medium"
+                android:layout_weight="1"/>
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvRate"
@@ -60,12 +61,24 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
-                android:layout_marginEnd="@dimen/_5sdp"
                 android:layout_weight="1"
                 android:gravity="end"
                 android:text="$3.50"
-                android:textColor="@color/drawerBack"
-                android:textSize="@dimen/_5mdpi"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_medium"
+                tools:text="$20.00" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvTotal"
+                style="@style/CustomFontBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:text="$3.50"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_medium"
                 tools:text="$20.00" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
